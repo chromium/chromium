@@ -8,7 +8,6 @@ function TestConfig() {
   this.mediaFile = null;
   this.keySystem = null;
   this.mediaType = null;
-  this.licenseServerURL = null;
   this.useMSE = false;
   this.runFPS = false;
   this.playCount = 0;
@@ -45,9 +44,6 @@ TestConfig.updateDocument = function() {
   document.getElementById(MEDIA_FILE_ELEMENT_ID).value =
       this.mediaFile || DEFAULT_MEDIA_FILE;
 
-  document.getElementById(LICENSE_SERVER_ELEMENT_ID).value =
-      this.licenseServerURL || DEFAULT_LICENSE_SERVER;
-
   if (this.keySystem)
     Utils.ensureOptionInList(KEYSYSTEM_ELEMENT_ID, this.keySystem);
   if (this.mediaType)
@@ -63,6 +59,4 @@ TestConfig.init = function() {
   this.mediaType = document.getElementById(MEDIA_TYPE_ELEMENT_ID).value;
   this.useMSE = document.getElementById(USE_MSE_ELEMENT_ID).value == 'true';
   this.playCount = document.getElementById(USE_PLAY_COUNT_ELEMENT_ID).value;
-  this.licenseServerURL =
-      document.getElementById(LICENSE_SERVER_ELEMENT_ID).value;
 };

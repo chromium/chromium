@@ -26,10 +26,7 @@ WidevinePlayer.prototype.onMessage = function(message) {
     mediaKeySession.update(key)
         .catch(function(error) { Utils.failTest(error, EME_UPDATE_FAILED); });
   }
-  Utils.sendRequest('POST',
-                    'arraybuffer',
-                    Utils.convertToUint8Array(message.message),
-                    this.testConfig.licenseServerURL,
+  Utils.sendRequest(Utils.convertToUint8Array(message.message),
                     onSuccess,
                     this.testConfig.forceInvalidResponse);
 };

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <title>Test that remove() succeeds on temporary sessions</title>
 // This test is similar to the layout test
-// encrypted-media-session-remove-temporary.html, but needs to run as a
-// browser test as it needs access to a license server (for Widevine).
+// encrypted-media-session-remove-temporary.html, but runs as a
+// browser test to verify EME behavior in the browser.
 
 <div id="logs"></div>
 <script src='eme_player_js/app_loader.js' type='text/javascript'></script>
 <script type='text/javascript'>
-  // This test only uses |keySystem| and |licenseServerURL|.
+  // This test only uses |keySystem|.
   var testConfig = new TestConfig();
   testConfig.loadQueryParams();
 
@@ -30,8 +30,7 @@
       mediaKeySession.update(key).then(resolve, reject);
     }
     Utils.sendRequest(
-        'POST', 'arraybuffer', Utils.convertToUint8Array(event.message),
-        this.testConfig.licenseServerURL, onSuccess);
+        Utils.convertToUint8Array(event.message), onSuccess);
   };
 
   // Code for using the ClearKey key system.

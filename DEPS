@@ -4014,13 +4014,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  # Only Linux test license server is available.
-  'src/third_party/widevine/test/license_server': {
-      'url': Var('chrome_git') + '/chrome/deps/widevine/test/license_server.git' + '@' +
-        '8b195ed15e73e2ecc9861afb05e6af0b4bdf7413',
-      'condition': 'checkout_linux and checkout_src_internal',
-  },
-
   'src/third_party/wix': {
       'url': Var('chrome_git') + '/chrome/deps/wix/v3_5_2519.git' + '@' +
         'd0745e3bc7a7a83b8848d9384ac0178036c1fd04',

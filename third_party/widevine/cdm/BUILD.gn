@@ -86,11 +86,3 @@ if (bundle_widevine_cdm) {
     # NOP
   }
 }
-
-# This target exists for tests to depend on that pulls in a runtime dependency
-# on the license server.
-group("widevine_test_license_server") {
-  if (bundle_widevine_cdm && (is_linux || is_chromeos)) {
-    data = [ "//third_party/widevine/test/license_server/" ]
-  }
-}

@@ -227,56 +227,14 @@ Utils.resetTitleChange = function() {
   document.title = '';
 };
 
-Utils.sendRequest = function(
-    requestType, responseType, message, serverURL, onResponseCallbackFn,
-    forceInvalidResponse) {
-  var requestAttemptCount = 0;
-  var REQUEST_RETRY_DELAY_MS = 3000;
-  var REQUEST_TIMEOUT_MS = 1000;
-
-  function sendRequestAttempt() {
-    // No limit on the number of retries. This will retry on failures
-    // until the test framework stops the test.
-    requestAttemptCount++;
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.responseType = responseType;
-    xmlhttp.open(requestType, serverURL, true);
-    xmlhttp.onerror = function(e) {
-      Utils.timeLog('Request status: ' + this.statusText);
-      Utils.timeLog('FAILED: License request XHR failed with network error.');
-      Utils.timeLog('Retrying request in ' + REQUEST_RETRY_DELAY_MS + 'ms');
-      setTimeout(sendRequestAttempt, REQUEST_RETRY_DELAY_MS);
-    };
-    xmlhttp.onload = function(e) {
-      if (this.status == 200) {
-        onResponseCallbackFn(this.response);
-      } else if (this.status == 404 && serverURL == DEFAULT_LICENSE_SERVER) {
-        // If using the default license server, no page available means there
-        // is no license server configured.
-        onResponseCallbackFn(Utils.convertToUint8Array("No license."));
-      } else {
-        Utils.timeLog('Bad response status: ' + this.status);
-        Utils.timeLog('Bad response: ' + this.response);
-        Utils.timeLog('Retrying request in ' + REQUEST_RETRY_DELAY_MS + 'ms');
-        setTimeout(sendRequestAttempt, REQUEST_RETRY_DELAY_MS);
-      }
-    };
-    xmlhttp.timeout = REQUEST_TIMEOUT_MS;
-    xmlhttp.ontimeout = function(e) {
-      Utils.timeLog('Request timeout');
-      Utils.timeLog('Retrying request in ' + REQUEST_RETRY_DELAY_MS + 'ms');
-      setTimeout(sendRequestAttempt, REQUEST_RETRY_DELAY_MS);
-    }
-    Utils.timeLog('Attempt (' + requestAttemptCount +
-                  '): sending request to server: ' + serverURL);
-    xmlhttp.send(message);
-  }
-
+Utils.sendRequest = function(message, onResponseCallbackFn, forceInvalidResponse) {
   if (forceInvalidResponse) {
     Utils.timeLog('Not sending request - forcing an invalid response.');
     return onResponseCallbackFn(Utils.convertToUint8Array("Invalid response."));
   }
-  sendRequestAttempt();
+
+  Utils.failTest('License server requests are no longer supported.',
+                 EME_UPDATE_FAILED);
 };
 
 Utils.setResultInTitle = function(title) {

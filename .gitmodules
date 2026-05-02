@@ -887,10 +887,6 @@
 	path = third_party/widevine/scripts
 	url = https://chrome-internal.googlesource.com/chrome/deps/widevine/scripts
 	gclient-condition = checkout_src_internal
-[submodule "third_party/widevine/test/license_server"]
-	path = third_party/widevine/test/license_server
-	url = https://chrome-internal.googlesource.com/chrome/deps/widevine/test/license_server
-	gclient-condition = checkout_linux and checkout_src_internal
 [submodule "third_party/wix"]
 	path = third_party/wix
 	url = https://chrome-internal.googlesource.com/chrome/deps/wix/v3_5_2519

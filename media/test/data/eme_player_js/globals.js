@@ -12,8 +12,6 @@ var EME_RENEWAL_MESSAGE_HEADER = 'RENEWAL';
 var KEY = new Uint8Array([0xeb, 0xdd, 0x62, 0xf1, 0x68, 0x14, 0xd2, 0x7b,
                           0x68, 0xef, 0x12, 0x2a, 0xfc, 0xe4, 0xae, 0x3c]);
 
-var DEFAULT_LICENSE_SERVER = document.location.origin + '/license_server';
-
 var DEFAULT_MEDIA_FILE = 'http://shadi.kir/alcatraz/Chrome_44-enc_av.webm';
 
 // Key ID used for init data.
@@ -86,7 +84,6 @@ var MEDIA_TYPES = {
 // Global document elements ID's.
 var VIDEO_ELEMENT_ID = 'video';
 var MEDIA_FILE_ELEMENT_ID = 'mediaFile';
-var LICENSE_SERVER_ELEMENT_ID = 'licenseServer';
 var KEYSYSTEM_ELEMENT_ID = 'keySystemList';
 var MEDIA_TYPE_ELEMENT_ID = 'mediaTypeList';
 var USE_MSE_ELEMENT_ID = 'useMSE';

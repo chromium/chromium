@@ -7,43 +7,32 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/media/media_browsertest.h"
-#include "chrome/browser/media/test_license_server.h"
-#include "chrome/browser/media/wv_test_license_server_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/test_launcher_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/variations/variations_switches.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/key_system_names.h"
-#include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
-#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <mfapi.h>
@@ -190,9 +179,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
                                  const std::string& key_system,
                                  const base::StringPairs& query_params,
                                  const std::string& expected_title) {
-    base::StringPairs new_query_params = query_params;
-    StartLicenseServerIfNeeded(key_system, &new_query_params);
-    RunMediaTestPage(html_page, new_query_params, expected_title, true);
+    RunMediaTestPage(html_page, query_params, expected_title, true);
   }
 
   // Tests |html_page| using |media_file| and |key_system|.
@@ -275,50 +262,16 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
                               query_params, expected_title);
   }
 
-  // Starts a license server if available for the |key_system| and adds a
-  // 'licenseServerURL' query parameter to |query_params|.
-  void StartLicenseServerIfNeeded(const std::string& key_system,
-                                  base::StringPairs* query_params) {
-    std::unique_ptr<TestLicenseServerConfig> config =
-        GetServerConfig(key_system);
-    if (!config) {
-      return;
-    }
-    license_server_ = std::make_unique<TestLicenseServer>(std::move(config));
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      EXPECT_TRUE(license_server_->Start());
-    }
-    query_params->push_back(
-        std::make_pair("licenseServerURL", license_server_->GetServerURL()));
-  }
-
   bool IsPlayBackPossible(const std::string& key_system) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
-    if (IsWidevine(key_system) && !GetServerConfig(key_system)) {
+    if (IsWidevine(key_system)) {
       return false;
     }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
     return true;
   }
 
-  std::unique_ptr<TestLicenseServerConfig> GetServerConfig(
-      const std::string& key_system) {
-#if BUILDFLAG(ENABLE_WIDEVINE)
-    if (IsWidevine(key_system)) {
-      std::unique_ptr<TestLicenseServerConfig> config(
-          new WVTestLicenseServerConfig);
-      if (config->IsPlatformSupported()) {
-        return config;
-      }
-    }
-#endif  // BUILDFLAG(ENABLE_WIDEVINE)
-    return nullptr;
-  }
-
  protected:
-  std::unique_ptr<TestLicenseServer> license_server_;
-
   // We want to fail quickly when a test fails because an error is encountered.
   void AddWaitForTitles(content::TitleWatcher* title_watcher) override {
     MediaBrowserTest::AddWaitForTitles(title_watcher);
@@ -358,13 +311,6 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       base::CommandLine* command_line,
       const std::vector<base::test::FeatureRefAndParams>&
           enable_additional_features = {}) {
-    if (GetServerConfig(key_system)) {
-      // Since the web and license servers listen on different ports, we need to
-      // disable web-security to send license requests to the license server.
-      // TODO(shadi): Add port forwarding to the test web server configuration.
-      command_line->AppendSwitch(switches::kDisableWebSecurity);
-    }
-
     // TODO(crbug.com/40787541): WhatsNewUI might be causing timeouts.
     command_line->AppendSwitch(switches::kNoFirstRun);
 
@@ -770,6 +716,7 @@ class ParameterizedEncryptedMediaTestBase : public EncryptedMediaTestBase {
     }
     query_params.emplace_back("keySystem", CurrentKeySystem());
     query_params.emplace_back("policyCheck", "1");
+
     RunEncryptedMediaTestPage(kDefaultEmePlayer, CurrentKeySystem(),
                               query_params, kUnitTestSuccess);
   }

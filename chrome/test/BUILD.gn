@@ -3427,7 +3427,6 @@ if (!is_android) {
       "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
       "//third_party/private_membership:private_membership_proto",
       "//third_party/shell-encryption:serialization_proto",
-      "//third_party/widevine/cdm:widevine_test_license_server",
       "//tools/media_engagement_preload:make_dafsa_runtime",
     ]
 
@@ -3614,9 +3613,6 @@ if (!is_android) {
       "../browser/media/media_engagement_autoplay_browsertest.cc",
       "../browser/media/media_engagement_browsertest.cc",
       "../browser/media/media_session_browsertest.cc",
-      "../browser/media/test_license_server.cc",
-      "../browser/media/test_license_server.h",
-      "../browser/media/test_license_server_config.h",
       "../browser/media/unified_autoplay_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
       "../browser/media/webrtc/display_media_access_handler_browsertest.cc",
@@ -3639,8 +3635,6 @@ if (!is_android) {
       "../browser/media/webrtc/webrtc_video_high_bitrate_browsertest.cc",
       "../browser/media/webrtc/webrtc_video_quality_browsertest.cc",
       "../browser/media/webrtc/webrtc_webcam_browsertest.cc",
-      "../browser/media/wv_test_license_server_config.cc",
-      "../browser/media/wv_test_license_server_config.h",
       "../browser/metrics/desktop_session_duration/audible_contents_tracker_browsertest.cc",
       "../browser/metrics/dwa_browsertest.cc",
       "../browser/metrics/metrics_reporting_state_browsertest.cc",

@@ -308,7 +308,6 @@ per-file third_party/widevine/cdm/linux=*
 per-file third_party/widevine/cdm/mac=*
 per-file third_party/widevine/cdm/win=*
 per-file third_party/widevine/scripts=*
-per-file third_party/widevine/test/license_server=*
 per-file third_party/wix=*
 per-file third_party/wuffs/src=*
 per-file third_party/xnnpack/src=*
