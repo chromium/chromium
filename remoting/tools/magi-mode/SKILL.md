@@ -56,9 +56,9 @@ code or summarize state itself. It delegates to several auxiliary personas:
   that a required expertise is lacking in the current catalog, they MUST invoke
   a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
   generating the missing persona markdown file in
-  `src/remoting/tools/magi-mode/personas/`, updating the `PERSONAS.md` catalog,
-  and committing these changes as a separate prerequisite Git/Jujutsu commit
-  before the main architectural work begins.
+  `src/remoting/tools/magi-mode/personas/` and updating the `PERSONAS.md` catalog.
+  *CRITICAL:* These MAGI system changes MUST NOT be entangled with the main work CL
+  (see VCS Isolation rule below).
 - **Transparency:** The Orchestrator MUST output the Engineering Manager's
   persona selection logic to the human. Ensure the workspace is clean.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
@@ -71,8 +71,10 @@ code or summarize state itself. It delegates to several auxiliary personas:
 - **Mandate:** Create necessary files, define class interfaces, set up Mojo
   pipes, and GN/DEPS rules. Leave implementation details empty or stubbed (e.g.,
   `NOTIMPLEMENTED()`).
-- **Commit:** The Orchestrator commits this state as the "Base Scaffold" so all
-  parallel ideators share the exact same multi-file API boundaries.
+- **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
+  the "Base Scaffold" so all parallel ideators share the exact same multi-file API
+  boundaries. The Synthesizing Architect will eventually amend/squash the final
+  implementation into this scaffold, ensuring no broken stubs land in the final CL.
 
 ### 3. Parallel Compute (Ideation)
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
@@ -146,9 +148,12 @@ Once consensus is reached, the Orchestrator MUST invoke a "Trainer" sub-agent.
 The Trainer evaluates the final State Block and Review Analyst constraints to
 identify systemic gaps in the Personas' knowledge. If a Persona made a recurring
 mistake or lacked domain context, the Trainer proposes an upgrade to their
-`personas/*.md` file, saving the draft as `[persona].magi.training`. These
-updates should be committed as a separate background or prerequisite commit to
-isolate them from the main CL.
+`personas/*.md` file and applies the improvements.
+
+**VCS Isolation Rule:** Any modifications to MAGI files (e.g., adding/updating
+personas by the Recruiter or Trainer) MUST be excluded from the feature/bugfix
+CL. Ensure MAGI paths are not staged during upload. Once the main solution is
+uploaded, create a completely separate, independent CL for the MAGI upgrades.
 
 ### 9. Validation
 Run the standard suite (`git cl presubmit`, `gn check`, and unit tests).
