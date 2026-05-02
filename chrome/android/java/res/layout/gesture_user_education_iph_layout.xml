@@ -34,10 +34,10 @@ found in the LICENSE file.
                 android:importantForAccessibility="no"/>
 
             <TextView
+                android:id="@+id/iph_bubble_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/iph_bubble_text_padding"
-                android:text="@string/iph_gesture_user_education_text_bubble"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.OnAccent1"
                 android:background="@drawable/gesture_user_education_iph_bubble_background" />
         </LinearLayout>

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -166,6 +167,13 @@ public class GestureUserEducationIphController {
                             .build();
 
             mScrimManager.showScrim(mScrimPropertyModel);
+
+            TextView iphBubbleText =
+                    mGestureUserEducationIphLayout.findViewById(R.id.iph_bubble_text);
+            iphBubbleText.setText(
+                    LocalizationUtils.isLayoutRtl()
+                            ? R.string.iph_gesture_user_education_text_bubble_right
+                            : R.string.iph_gesture_user_education_text_bubble_left);
 
             // Adjust animation direction based on RTL.
             float rtlSign = LocalizationUtils.isLayoutRtl() ? -1.0f : 1.0f;
