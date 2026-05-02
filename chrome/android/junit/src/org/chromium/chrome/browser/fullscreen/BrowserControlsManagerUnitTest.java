@@ -804,6 +804,28 @@ public class BrowserControlsManagerUnitTest {
         verify(mContainerView).requestLayout();
     }
 
+    @Test
+    public void testBottomControlsHeightAnimation() {
+        // Simulate that we can't animate native browser controls so browser-driven animation runs.
+        when(mBrowserControlsManager.getTab()).thenReturn(null);
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT + 10, 10);
+        assertEquals(
+                "Bottom controls should be animating.",
+                true,
+                mBrowserControlsManager.hasBottomControlsHeightAnimation());
+
+        if (mBrowserControlsManager.getControlsAnimatorForTesting() != null) {
+            mBrowserControlsManager.getControlsAnimatorForTesting().end();
+        }
+        assertEquals(
+                "Bottom controls should not be animating after animation end.",
+                false,
+                mBrowserControlsManager.hasBottomControlsHeightAnimation());
+        verify(mBrowserControlsStateProviderObserver).onBottomControlsHeightAnimationEnded();
+    }
+
     private void verifyUpdateOffsetTagDefinitions(
             OffsetTagConstraints top, OffsetTagConstraints content, OffsetTagConstraints bottom) {
         BrowserControlsOffsetTagConstraints expectedConstraints =

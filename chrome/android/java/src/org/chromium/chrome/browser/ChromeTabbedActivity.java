@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -926,11 +927,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                                     || (type == TabLaunchType.FROM_RECENT_TABS
                                             && !DeviceClassManager.enableAnimations())) {
-                                Toast.makeText(
-                                                ChromeTabbedActivity.this,
-                                                R.string.open_in_new_tab_toast,
-                                                Toast.LENGTH_SHORT)
-                                        .show();
+                                // Post the toast to allow the browser controls to start to update.
+                                PostTask.postTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        ChromeTabbedActivity.this::showOpenInNewTabToast);
                             }
                             // If tab was marked as in the fullscreen mode, restore it. Used for
                             // Fullscreen to screen feature during activity recreation.
@@ -995,6 +995,46 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         RecordUserAction.record("MobileTopToolbarNewTabButton");
 
         RecordUserAction.record("MobileNewTabOpened");
+    }
+
+    private void showOpenInNewTabToast() {
+        Toast toast = Toast.makeText(this, R.string.open_in_new_tab_toast, Toast.LENGTH_SHORT);
+        Runnable showToast =
+                () -> {
+                    int yMargin =
+                            getResources()
+                                    .getDimensionPixelSize(R.dimen.background_tab_toast_y_margin);
+                    var browserControlsManager = getBrowserControlsManager();
+                    int offsetFromControls =
+                            browserControlsManager.getBottomControlsHeight()
+                                    - browserControlsManager.getBottomControlOffset();
+                    int bottomInset =
+                            mEdgeToEdgeControllerSupplier != null
+                                            && mEdgeToEdgeControllerSupplier.get() != null
+                                    ? mEdgeToEdgeControllerSupplier.get().getBottomInsetPx()
+                                    : 0;
+                    toast.setGravity(
+                            toast.getGravity(),
+                            toast.getXOffset(),
+                            Math.max(
+                                    toast.getYOffset(),
+                                    offsetFromControls - bottomInset + yMargin));
+                    toast.show();
+                };
+
+        var browserControlsManager = getBrowserControlsManager();
+        if (browserControlsManager.hasBottomControlsHeightAnimation()) {
+            browserControlsManager.addObserver(
+                    new BrowserControlsStateProvider.Observer() {
+                        @Override
+                        public void onBottomControlsHeightAnimationEnded() {
+                            browserControlsManager.removeObserver(this);
+                            showToast.run();
+                        }
+                    });
+        } else {
+            showToast.run();
+        }
     }
 
     private HubLayoutDependencyHolder createHubLayoutDependencyHolder() {

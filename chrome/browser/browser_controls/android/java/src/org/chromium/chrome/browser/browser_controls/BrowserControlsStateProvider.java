@@ -70,6 +70,9 @@ public interface BrowserControlsStateProvider {
         default void onBottomControlsHeightChanged(
                 int bottomControlsHeight, int bottomControlsMinHeight) {}
 
+        /** Called when the animation of the height of the bottom controls ends. */
+        default void onBottomControlsHeightAnimationEnded() {}
+
         /** Called when the height of the top controls are changed. */
         default void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
 
@@ -167,6 +170,11 @@ public interface BrowserControlsStateProvider {
      * @return Whether or not the browser controls height changes should be animated.
      */
     boolean shouldAnimateBrowserControlsHeightChanges();
+
+    /**
+     * @return Whether or not the height of the bottom controls is currently animating.
+     */
+    boolean hasBottomControlsHeightAnimation();
 
     /**
      * @return The offset of the controls from the bottom of the screen.

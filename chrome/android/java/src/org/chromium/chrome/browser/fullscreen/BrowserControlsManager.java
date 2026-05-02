@@ -440,8 +440,16 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
     }
 
+    @Override
+    public boolean hasBottomControlsHeightAnimation() {
+        return mHasBottomControlsHeightAnimation;
+    }
+
     private void bottomControlsAnimationEnded() {
         mHasBottomControlsHeightAnimation = false;
+        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+            obs.onBottomControlsHeightAnimationEnded();
+        }
         if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
                     mBottomControlsHeight,

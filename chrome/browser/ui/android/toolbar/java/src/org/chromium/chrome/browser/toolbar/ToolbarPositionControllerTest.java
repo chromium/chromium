@@ -235,6 +235,11 @@ public class ToolbarPositionControllerTest {
                 }
 
                 @Override
+                public boolean hasBottomControlsHeightAnimation() {
+                    return false;
+                }
+
+                @Override
                 public int getBottomControlOffset() {
                     return mRendererBottomControlsOffset;
                 }
