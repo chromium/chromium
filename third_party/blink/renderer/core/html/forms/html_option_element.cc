@@ -191,10 +191,25 @@ bool HTMLOptionElement::IsKeyboardFocusableSlow(
     }
   }
 
-  // TODO(crbug.com/357649033): consider implementing "memory" to only make only
-  // the last focused option in a select focusable, so that tabbing out and back
-  // into an in-page select results in the same <option> being focused.
-  return true;
+  HTMLOptionElement* first_focusable_option = nullptr;
+  HTMLOptionElement* first_selected_option = nullptr;
+  for (HTMLOptionElement& option : OwnerSelectElement()->GetOptionList()) {
+    if (!first_focusable_option && option.IsFocusable()) {
+      first_focusable_option = &option;
+    }
+    if (option.Selected() && option.IsFocusable()) {
+      first_selected_option = &option;
+      break;
+    }
+  }
+
+  if (first_selected_option) {
+    return this == first_selected_option;
+  } else if (first_focusable_option) {
+    return this == first_focusable_option;
+  } else {
+    return true;
+  }
 }
 
 bool HTMLOptionElement::MatchesDefaultPseudoClass() const {
