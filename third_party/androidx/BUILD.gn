@@ -1780,8 +1780,22 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
+      ":androidx_xr_runtime_runtime_interfaces_java",
       ":androidx_xr_runtime_runtime_manifest_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_openxr_java") {
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime_openxr/runtime-openxr.aar"
+    info_path = "committed/libs/androidx_xr_runtime_runtime_openxr/androidx_xr_runtime_runtime_openxr.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_lifecycle_lifecycle_common_java",
+      ":androidx_lifecycle_lifecycle_process_java",
+      ":androidx_xr_runtime_runtime_interfaces_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -4283,6 +4297,25 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_interfaces_java") {
+    aar_path = "cipd/libs/androidx_xr_runtime_runtime_interfaces/runtime-interfaces.aar"
+    info_path = "committed/libs/androidx_xr_runtime_runtime_interfaces/androidx_xr_runtime_runtime_interfaces.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_lifecycle_lifecycle_common_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_xr_runtime_runtime_manifest_java") {
     aar_path =
         "cipd/libs/androidx_xr_runtime_runtime_manifest/runtime-manifest.aar"
@@ -4366,6 +4399,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_xr_runtime_runtime_java",
       ":androidx_xr_scenecore_scenecore_runtime_java",
+      ":androidx_xr_scenecore_scenecore_spatial_core_java",
       "//third_party/android_deps:com_google_ar_impress_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",

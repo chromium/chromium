@@ -1,0 +1,20 @@
+Name: XR Runtime interfaces
+Short Name: runtime-interfaces
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/runtime/runtime-interfaces/1.0.0-alpha12/runtime-interfaces-1.0.0-alpha12.aar
+Version: 1.0.0-alpha12
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Internal interfaces for the JXR runtime.
+
+See also: https://developer.android.com/jetpack/androidx/releases/xr-runtime#1.0.0-alpha12
+
+
+Local Modifications:
+No modifications.
