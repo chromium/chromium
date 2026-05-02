@@ -777,7 +777,8 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.model_path = weights_path_str.data();
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
-  // TODO(crbug.com/400998489): Cache files are experimental for now.
+  // TODO(crbug.com/461547475): Determine whether weight caches should be used
+  // for GPU or just CPU only.
   data.cache_file = params->backend_type == ml::ModelBackendType::kCpuBackend &&
                             assets.cache.IsValid()
                         ? assets.cache.TakePlatformFile()

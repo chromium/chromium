@@ -38,6 +38,8 @@ struct ModelAssets {
   mojo_base.mojom.File? cache;
   mojo_base.mojom.File? encoder_cache;
   mojo_base.mojom.File? adapter_cache;
+  // On GPU-specific backend, the program cache is used to store the compiled
+  // shaders into a single cache for the model.
   [MinVersion=2] mojo_base.mojom.File? program_cache;
 };
 

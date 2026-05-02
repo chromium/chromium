@@ -53,7 +53,7 @@ void FakeBaseModelAsset::Write(Content&& content) {
   CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightsFile),
                         base::NumberToString(content.weight)));
   if (content.cache_weight) {
-    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kExperimentalCacheFile),
+    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightCacheFile),
                           base::NumberToString(content.cache_weight)));
   }
   if (content.encoder_cache_weight) {

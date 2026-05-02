@@ -395,8 +395,9 @@ TEST_F(SessionImplTest, TokenLimitsCapped) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
-  // TODO(crbug.com/400998489): Cache files are experimental for now. Stop
-  // setting this feature flag once that's no longer the case.
+  // TODO(crbug.com/461547475): Determine whether weight caches should be used
+  // for GPU or just CPU only. Stop setting this feature flag once that's no
+  // longer the case.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kOptimizationGuideOnDeviceModel,

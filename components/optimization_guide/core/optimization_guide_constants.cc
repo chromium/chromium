@@ -45,7 +45,7 @@ const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
 const base::FilePath::CharType kWeightsFile[] =
     FILE_PATH_LITERAL("weights.bin");
 
-const base::FilePath::CharType kExperimentalCacheFile[] =
+const base::FilePath::CharType kWeightCacheFile[] =
     FILE_PATH_LITERAL("cache.bin");
 
 const base::FilePath::CharType kEncoderCacheFile[] =

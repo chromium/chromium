@@ -555,7 +555,7 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   // We should not get here unless the asset is available.
   paths.weights = *ResolveFile(recipe.weights_file());
   if (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU) {
-    paths.cache = paths.weights.DirName().Append(kExperimentalCacheFile);
+    paths.cache = paths.weights.DirName().Append(kWeightCacheFile);
   }
   paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
   paths.adapter_cache = paths.weights.DirName().Append(kAdapterCacheFile);
