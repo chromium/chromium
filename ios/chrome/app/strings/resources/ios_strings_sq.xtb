@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Imazhet nuk mund të ngarkoheshin</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Ruaje në një mënyrë tjetër</translation>
+<translation id="3571703298474554279">Një mënyrë më e shpejtë për të përdorur aplikacionin</translation>
 <translation id="3572503683475187385">Skeda aktuale ndahet me Gemini kur ti fillon një bisedë të re. Kur ndan një skedë me Gemini, përmbajtjet dhe URL-ja e saj dërgohen te Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
@@ -1701,6 +1702,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6871397658902960384">Fillo të shfletosh</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Ruaj fjalëkalimin në llogari}other{Ruaj fjalëkalimet në llogari}}</translation>
 <translation id="6875166646976836138">Gjithashtu, mund t'i shohësh dhe t'i menaxhosh këta artikuj te faqeshënuesit, lista e leximit ose te menaxheri i fjalëkalimeve.</translation>
+<translation id="6878052248816456143">Qasu te skedarët në "Diskun e Google" në çdo kohë.</translation>
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Ruaj {COUNT} fjalëkalim në "Llogarinë tënde të Google"}other{Ruaj {COUNT} fjalëkalime në "Llogarinë tënde të Google"}}</translation>
 <translation id="6888009575607455378">Je i sigurt që dëshiron t'i heqësh ndryshimet e tua?</translation>
@@ -1814,6 +1816,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7345061034321640811">Importimi nuk lejohet</translation>
 <translation id="7347998088283246662">Importo fjalëkalimet, historikun, faqeshënuesit etj.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
+<translation id="7363497636543208734">Navigimi në aplikacion është më i lehtë tani.</translation>
 <translation id="7364796246159120393">Zgjidh skedarin</translation>
 <translation id="736564850024123010">Ndërroje pozicionin e shiritit të adresave për një përvojë të personalizuar.</translation>
 <translation id="7366909168761621528">Të dhënat e shfletimit</translation>

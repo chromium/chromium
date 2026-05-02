@@ -3066,6 +3066,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3053273573829329829">Aktiveer gebruiker-PIN</translation>
 <translation id="3053274730492362225">Moenie flits nie</translation>
 <translation id="3057938290530993634">Tik en hou om jou mees besoekte webwerwe vas te speld vir maklike toegang volgende keer</translation>
+<translation id="3058002721610176427">Verander jou PIN en wagwoord</translation>
 <translation id="3058498974290601450">Jy kan sinkronisering enige tyd in Instellings aanskakel</translation>
 <translation id="3060694926634506594">Vaardighede</translation>
 <translation id="3060952009917586498">Verander toesteltaal. Huidige taal is <ph name="LANGUAGE" />.</translation>
@@ -3317,6 +3318,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3254506277019076812">Voeg vaardigheid by</translation>
 <translation id="3254516606912442756">Outomatiese bespeuring van tydsone is gedeaktiveer</translation>
 <translation id="3255747772218936245">Installeer opdatering</translation>
+<translation id="3256274561709196882">Verander jou PIN</translation>
 <translation id="3257733480216378006">Laat <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> toe?</translation>
 <translation id="325797067711573598">Verdagte aflaai geblokkeer</translation>
 <translation id="3259723213051400722">Probeer weer.</translation>
@@ -4432,6 +4434,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3995963973192100066">Speel animasie</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Om jou data te beskerm, is toestemmings verwyder van ’n werf wat jy nie onlangs besoek het nie}other{Om jou data te beskerm, is toestemmings verwyder van werwe wat jy nie onlangs besoek het nie}}</translation>
 <translation id="399788104667917863">Spel aan nutsbalk vas</translation>
+<translation id="3998431043924115701">Vra vrae terwyl jy blaai</translation>
 <translation id="3998780825367526465">Wys voorskouprente vir oortjies</translation>
 <translation id="3998976413398910035">Bestuur drukkers</translation>
 <translation id="4000360130639414007">Jy sal nie Android-apps of die Google Play Winkel kan gebruik nie</translation>
@@ -5561,6 +5564,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 boekmerk is uitgevee}other{{COUNT} boekmerke is uitgevee}}</translation>
 <translation id="481689174647911539">Hierdie lêer is dalk ’n virus of wanware.<ph name="LINE_BREAK" />Jy kan dit na Google Veiligblaai toe stuur om te kyk of dit onveilig is. Dit neem gewoonlik ’n paar sekondes om te skandeer.</translation>
 <translation id="4816900689218414104">Skep ’n toegangsleutel op ’n foon of tablet</translation>
+<translation id="4818449958253566215">Voeg tans by Begin-kieslys</translation>
 <translation id="481852950686014162">Gaan aan waar jy opgehou het in Gemini en KI-modus</translation>
 <translation id="4819323978093861656">{0,plural, =0{Maak nou toe.}=1{Maak toe oor: 1 sekonde}other{Maak toe oor: # sekondes}}</translation>
 <translation id="4819818293886748542">Kry ’n steundienstenutsdingskakel</translation>
@@ -6809,6 +6813,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5697664819730124632">Voeg ’n prent by en herverbeel dit</translation>
 <translation id="5697832193891326782">Emosiekoon-kieser</translation>
 <translation id="5698136107297470317">Jy is op die punt jou <ph name="BRAND" />-data uit te vee</translation>
+<translation id="5698815246352480266">Jy kan aanhou om met KI-modus te klets sonder om oortjies te wissel. Verifieer dat dit jy is om te begin. Jy sal ook jou wagwoorde en meer op al jou toestelle kry.</translation>
 <translation id="5698878456427040674">Kyk of die gekose rekening gesteun word.</translation>
 <translation id="5698900765010620315">Laekontrasdonker</translation>
 <translation id="5699227710146832453">Vanaf jou</translation>
@@ -7066,6 +7071,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5870155679953074650">Harde foute</translation>
 <translation id="587234395549708302">Maak boekmerke skoon?</translation>
 <translation id="5875534259258494936">Skermdeling het geëindig</translation>
+<translation id="5876691914815078365">Chrome-apps &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nuwe oortjie aan die regterkant</translation>
 <translation id="5877064549588274448">Kanaal het verander. Herbegin jou toestel om veranderinge toe te pas.</translation>
 <translation id="5877584842898320529">Die geselekteerde drukker is nie beskikbaar nie of is nie reg geïnstalleer nie. <ph name="BR" /> Gaan jou drukker na of probeer 'n ander drukker kies.</translation>
@@ -11079,6 +11085,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8673026256276578048">Deursoek die web …</translation>
 <translation id="867329473311423817">Word toegelaat om vensters op al jou skerms te bestuur</translation>
 <translation id="8673383193459449849">Bedienerprobleem</translation>
+<translation id="8673530374848624865">Jou admin het die sekuriteitvereistes vir jou toestel opgedateer</translation>
 <translation id="8674903726754070732">Ongelukkig is jou rekenaar opgestel met ’n misvormde hardeware-ID. Dit verhinder Chrome-bedryfstelsel om met die nuutste sekuriteitsoplossings op te dateer, en jou rekenaar <ph name="BEGIN_BOLD" />sal dalk blootgestel wees aan kwaadwillige aanvalle<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Werwe gebruik hierdie kenmerk om outomaties na volskerm te gaan. Gebruikerinteraksie word gewoonlik vereis om na volskerm te gaan.</translation>
 <translation id="8675704450909805533">Die installeerder kon nie 'n geldige bestemming kry om <ph name="DEVICE_OS" /> te installeer nie.</translation>

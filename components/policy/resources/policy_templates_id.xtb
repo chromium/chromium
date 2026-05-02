@@ -3352,6 +3352,7 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, menu aksesibilitas me
 <translation id="3127816006382989270">Mengizinkan akses ke daftar URL dalam mode Samaran.</translation>
 <translation id="3128072319047570212">Setelan keygen</translation>
 <translation id="3131703464330936425">Jangan izinkan roaming data seluler</translation>
+<translation id="3131928857191083710">Setelan ukuran pool soket</translation>
 <translation id="3135820765957090754">Jika setelan ini diaktifkan, pengguna akan diizinkan untuk menyinkronkan konfigurasi jaringan Wi-Fi antara perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung. Sebelum konfigurasi jaringan Wi-Fi dapat disinkronkan, pengguna harus secara eksplisit memilih untuk menggunakan fitur ini dengan menyelesaikan alur penyiapan.
 
       Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menyinkronkan konfigurasi jaringan Wi-Fi.

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
 <translation id="1036436692654972538">သင့်စက်တွင် သိမ်းသည်</translation>
 <translation id="1036881361735705143">C4 စာအိတ်</translation>
+<translation id="1038106730571050514">အကြံပြုချက်များ ပြရန်</translation>
 <translation id="1038168778161626396">ကုဒ်သွင်းမှု သာလျှင်</translation>
 <translation id="1038842779957582377">မသိရ အမည်</translation>
 <translation id="1041998700806130099">အလုပ် စာမျက်နှာ မက်ဆေ့ဂျ်</translation>
@@ -2975,6 +2976,7 @@
 <translation id="5600044805561809264">ဘရောက်စ်လုပ်နေရင်း သင်မျှဝေထားသော တဘ်များအကြောင်း အလွယ်တကူမေးနိုင်သည်။</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> (သို့) <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">စီမံရေးရာမှ အကူအညီမရနိုင်ပါ။</translation>
+<translation id="5604254791550001355">မေးမြန်းချက် ပြင်ရန်</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{ပြီးခဲ့သော ၁ နာရီက သုံးခဲ့သည်}other{ပြီးခဲ့သော # နာရီက သုံးခဲ့သည်}}</translation>
 <translation id="5605249000617390290">ဈေးနှုန်းခြေရာခံခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="5605670050355397069">လယ်ဂျာ</translation>
@@ -3405,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC-</translation>
 <translation id="629730747756840877">အကောင့်</translation>
+<translation id="6299098428775578517">အကြံပြုချက် ဆက်တင်များ</translation>
 <translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6301104306974789820">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ ရယူရန်</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> ခွင့်ပြုချက် အသေးစိတ်ကို ပြပါ</translation>

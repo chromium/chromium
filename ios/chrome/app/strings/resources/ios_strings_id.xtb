@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Tidak dapat memuat gambar</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> dari <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Simpan dengan cara lain</translation>
+<translation id="3571703298474554279">Cara yang lebih cepat untuk menggunakan aplikasi</translation>
 <translation id="3572503683475187385">Tab saat ini dibagikan kepada Gemini saat Anda memulai percakapan baru. Saat Anda membagikan tab kepada Gemini, konten dan URL-nya akan dikirim ke Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Di Akun Google Anda</translation>
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6871397658902960384">Mulai menjelajah</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Simpan sandi di akun}other{Simpan sandi di akun}}</translation>
 <translation id="6875166646976836138">Anda juga dapat melihat dan mengelola item ini di bookmark, daftar bacaan, atau pengelola sandi.</translation>
+<translation id="6878052248816456143">Akses file di Google Drive Anda kapan saja.</translation>
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Simpan {COUNT} sandi di Akun Google Anda}other{Simpan {COUNT} sandi di Akun Google Anda}}</translation>
 <translation id="6888009575607455378">Yakin ingin menghapus perubahan?</translation>
@@ -1814,6 +1816,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7345061034321640811">Impor tidak diizinkan</translation>
 <translation id="7347998088283246662">Impor sandi, histori, bookmark, dan lainnya</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
+<translation id="7363497636543208734">Menjelajah di aplikasi kini lebih mudah.</translation>
 <translation id="7364796246159120393">Pilih File</translation>
 <translation id="736564850024123010">Ganti posisi kolom URL untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7366909168761621528">Data browsing</translation>

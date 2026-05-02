@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Kon nie prente laai nie</translation>
 <translation id="3565930036634619844">Oortjie. <ph name="TAB_INDEX" /> van <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Stoor op ’n ander manier</translation>
+<translation id="3571703298474554279">’n Vinniger manier om die app te gebruik</translation>
 <translation id="3572503683475187385">Die huidige oortjie word met Gemini gedeel wanneer jy ’n nuwe klets begin. Wanneer jy ’n oortjie met Gemini deel, word hul inhoud en URL na Google toe gestuur. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">In jou Google-rekening</translation>
 <translation id="3575234738189584619">Soek met Lens</translation>
@@ -1701,6 +1702,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6871397658902960384">Begin blaai</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Stoor wagwoord in rekening}other{Stoor wagwoorde in rekening}}</translation>
 <translation id="6875166646976836138">Jy kan ook hierdie items in jou boekmerke, leeslys of wagwoordbestuurder bekyk en bestuur.</translation>
+<translation id="6878052248816456143">Kry enige tyd toegang tot lêers in jou Google Drive.</translation>
 <translation id="6882836635272038266">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Stoor {COUNT} wagwoord in jou Google-rekening}other{Stoor {COUNT} wagwoorde in jou Google-rekening}}</translation>
 <translation id="6888009575607455378">Is jy seker jy wil jou veranderinge weggooi?</translation>
@@ -1814,6 +1816,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7345061034321640811">Invoer word nie toegelaat nie</translation>
 <translation id="7347998088283246662">Voer wagwoorde, geskiedenis, boekmerke en meer in</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
+<translation id="7363497636543208734">Dis nou makliker om in die app rond te beweeg.</translation>
 <translation id="7364796246159120393">Kies lêer</translation>
 <translation id="736564850024123010">Verander die posisie van jou adresbalk vir ’n gepasmaakte ervaring.</translation>
 <translation id="7366909168761621528">Blaaierdata</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1036436692654972538">ඔබේ උපාංගයට සුරකියි</translation>
 <translation id="1036881361735705143">ලියුම් කවරය C4</translation>
+<translation id="1038106730571050514">යෝජනා පෙන්වන්න</translation>
 <translation id="1038168778161626396">Encipher පමණි</translation>
 <translation id="1038842779957582377">නොදන්නා නමක්</translation>
 <translation id="1041998700806130099">වැඩ පත්‍ර පණිවුඩය</translation>
@@ -2974,6 +2975,7 @@
 <translation id="5600044805561809264">ඔබ බ්‍රවුස් කරන විට ඔබ බෙදා ගන්නා පටිති පිළිබඳව ඔබට පහසුවෙන් ප්‍රශ්න ඇසිය හැක.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> හෝ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">කළමනාකරණය සහාය නොදක්වයි</translation>
+<translation id="5604254791550001355">ප්‍රේරකය සංස්කරණය කරන්න</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{පැය 1කට පෙර සක්‍රිය}one{පැය #කට පෙර සක්‍රිය}other{පැය #කට පෙර සක්‍රිය}}</translation>
 <translation id="5605249000617390290">මිල හඹා යෑම ගැන තව දැන ගන්න</translation>
 <translation id="5605670050355397069">ලෙජරය</translation>
@@ -3405,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">ගිණුම</translation>
+<translation id="6299098428775578517">යෝජනා සැකසීම්</translation>
 <translation id="6300452962057769623">{0,plural, =0{ඔබගේ උපාංගය දැන් යළි ආරම්භ වනු ඇත}=1{ඔබගේ උපාංගය තත්පර 1කින් යළි ආරම්භ වනු ඇත}one{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}other{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}}</translation>
 <translation id="6301104306974789820">මිල නිරීක්ෂණ දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> අවසර විස්තර පෙන්වන්න</translation>

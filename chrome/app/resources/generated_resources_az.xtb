@@ -3056,6 +3056,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3053273573829329829">İstifadəçi kodunu daxil edin</translation>
 <translation id="3053274730492362225">Yanıb-sönməsin</translation>
 <translation id="3057938290530993634">Növbəti dəfə asan giriş üçün ən çox daxil olduğunuz veb-saytları bərkitmək məqsədilə basıb saxlayın</translation>
+<translation id="3058002721610176427">PIN və parolunuzu dəyişin</translation>
 <translation id="3058498974290601450">Sinxronizasiyanı istənilən vaxt ayarlarda deaktiv edə bilərsiniz</translation>
 <translation id="3060694926634506594">Bacarıqlar</translation>
 <translation id="3060952009917586498">Cihazın dilini dəyişin. Cari dil: <ph name="LANGUAGE" />.</translation>
@@ -3307,6 +3308,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3254506277019076812">Bacarıq əlavə edin</translation>
 <translation id="3254516606912442756">Saat qurşağının avtomatik aşkarlanması deaktiv edildi</translation>
 <translation id="3255747772218936245">Güncəllənməni quraşdırın</translation>
+<translation id="3256274561709196882">PIN-i dəyişin</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> girişinə icazə verilsin?</translation>
 <translation id="325797067711573598">Şübhəli endirmə bloklandı</translation>
 <translation id="3259723213051400722">Yenidən cəhd edin.</translation>
@@ -4422,6 +4424,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3995963973192100066">Animasiyanı oxudun</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Datanı qorumaq üçün son vaxtlar daxil olmadığınız saytdakı icazələr silindi}other{Datanı qorumaq üçün son vaxtlar daxil olmadığınız saytlardakı icazələr silindi}}</translation>
 <translation id="399788104667917863">Alətlər panelinə bərkidin</translation>
+<translation id="3998431043924115701">Axtarış edərkən suallar verin</translation>
 <translation id="3998780825367526465">Tabda şəkil önbaxışlarını göstərin</translation>
 <translation id="3998976413398910035">Printerləri idarə edin</translation>
 <translation id="4000360130639414007">Android tətbiqlərindən və ya Google Play Market-dən istifadə edə bilməyəcəksiniz</translation>
@@ -5549,6 +5552,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4816336393325437908">{COUNT,plural, =1{1 əlfəcin silindi}other{{COUNT} əlfəcin silindi}}</translation>
 <translation id="481689174647911539">Bu fayl virus və ya zərərli proqram ola bilər.<ph name="LINE_BREAK" />Təhlükəsizlik yoxlanışı üçün onu Google Güvənli Axtarışa göndərə bilərsiniz. Skan bir neçə saniyə çəkir.</translation>
 <translation id="4816900689218414104">Telefon və ya planşetdə giriş açarı yaradın</translation>
+<translation id="4818449958253566215">Başlanğıc menyusuna əlavə edilir</translation>
 <translation id="481852950686014162">Gemini və Sİ rejimində qaldığınız yerdən davam edin</translation>
 <translation id="4819323978093861656">{0,plural, =0{İndi bağlanır.}=1{1 saniyə sonra bağlanacaq}other{# saniyə sonra bağlanacaq}}</translation>
 <translation id="4819818293886748542">Dəstək aləti keçidi əldə edin</translation>
@@ -6796,6 +6800,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5697664819730124632">Şəkil əlavə edin və yenidən təsəvvür edin</translation>
 <translation id="5697832193891326782">Emoji Seçicisi</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> datasını silmək üzrəsiniz</translation>
+<translation id="5698815246352480266">Tabları dəyişmədən Sİ rejimi ilə söhbətə davam edə bilərsiniz. Başlamaq üçün kimliyinizi doğrulayın. Bütün cihazlarınızda parollarınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="5698878456427040674">Seçilmiş hesabın dəstəklənib-dəstəklənmədiyini yoxlayın.</translation>
 <translation id="5698900765010620315">Aşağı kontrastlı tünd</translation>
 <translation id="5699227710146832453">Buradan:</translation>
@@ -7053,6 +7058,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5870155679953074650">Ağır zədələr</translation>
 <translation id="587234395549708302">Əlfəcinlər silinsin?</translation>
 <translation id="5875534259258494936">Ekran paylaşımı sona çatdı</translation>
+<translation id="5876691914815078365">Chrome Tətbiqləri &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Sağa Yeni Panel</translation>
 <translation id="5877064549588274448">Kanal dəyişdi. Dəyişiklikləri tətbiq etmək üçün cihazınızı yenidən başladın.</translation>
 <translation id="5877584842898320529">Seçilmiş printer əlçatan deyil və ya düzgün quraşdırılmayıb. <ph name="BR" /> Printerinizi yoxlayın və ya başqa printer seçin.</translation>
@@ -11064,6 +11070,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8673026256276578048">Vebdə axtarın...</translation>
 <translation id="867329473311423817">Bütün displeylərinizdə pəncərələri idarə etməyə icazə verilir</translation>
 <translation id="8673383193459449849">Server problemi</translation>
+<translation id="8673530374848624865">Administratorunuz cihazınız üçün təhlükəsizlik tələblərini güncəllədi</translation>
 <translation id="8674903726754070732">Kompüteriniz düzgün olmayan avadanlıq ID-si ilə sazlanıb. Bu, ChromeOS'i ən son güvənlik bərpaları etməyə mane ola və kompüteriniz <ph name="BEGIN_BOLD" />hücumlara məruz qala bilər<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Saytlar tam ekrana avtomatik daxil olmaq üçün bu funksiyadan istifadə edir. Tipik olaraq tam ekrana daxil olmaq üçün istifadəçi interaksiyası tələb edilir.</translation>
 <translation id="8675704450909805533">Quraşdırıcı <ph name="DEVICE_OS" /> sistemini quraşdırmaq üçün etibarlı bir yer tapa bilmədi.</translation>

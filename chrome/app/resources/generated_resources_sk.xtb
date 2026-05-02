@@ -3055,6 +3055,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3053273573829329829">Povoliť PIN používateľa</translation>
 <translation id="3053274730492362225">Neblikať</translation>
 <translation id="3057938290530993634">Pridržaním pripnete svoje najnavštevovanejšie weby, aby ste k nim mali nabudúce jednoduchý prístup.</translation>
+<translation id="3058002721610176427">Zmeňte PIN a heslo</translation>
 <translation id="3058498974290601450">Synchronizáciu môžete kedykoľvek zapnúť v nastaveniach</translation>
 <translation id="3060694926634506594">Zručnosti</translation>
 <translation id="3060952009917586498">Zmeňte jazyk zariadenia. Aktuálne používate jazyk <ph name="LANGUAGE" />.</translation>
@@ -3306,6 +3307,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3254506277019076812">Pridanie zručnosti</translation>
 <translation id="3254516606912442756">Automatické zisťovanie časového pásma je deaktivované</translation>
 <translation id="3255747772218936245">Inštalovať aktualizáciu</translation>
+<translation id="3256274561709196882">Zmeňte PIN</translation>
 <translation id="3257733480216378006">Chcete povoliť <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Bolo zablokované podozrivé sťahovanie</translation>
 <translation id="3259723213051400722">Skúste to znova.</translation>
@@ -4421,6 +4423,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3995963973192100066">Prehrať animáciu</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Kvôli ochrane vašich údajov boli odstránené povolenia webu, ktorý ste v poslednom čase nenavštívili}few{Kvôli ochrane vašich údajov boli odstránené povolenia webov, ktoré ste v poslednom čase nenavštívili}many{To protect your data, permissions were removed from sites you haven't visited recently}other{Kvôli ochrane vašich údajov boli odstránené povolenia webov, ktoré ste v poslednom čase nenavštívili}}</translation>
 <translation id="399788104667917863">Pripnúť na panel s nástrojmi</translation>
+<translation id="3998431043924115701">Klaďte otázky počas prehliadania</translation>
 <translation id="3998780825367526465">Zobrazovať ukážky karty ako obrázky</translation>
 <translation id="3998976413398910035">Spravovať tlačiarne</translation>
 <translation id="4000360130639414007">Nebudete môcť používať aplikácie pre Android ani Obchod Google Play</translation>
@@ -5550,6 +5553,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4816336393325437908">{COUNT,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {COUNT} záložky}many{{COUNT} bookmarks deleted}other{Bolo odstránených {COUNT} záložiek}}</translation>
 <translation id="481689174647911539">Tento súbor môže byť vírus alebo malvér.<ph name="LINE_BREAK" />Môžete ho poslať Bezpečnému prehliadaniu Google, ktoré skontrolujte, či je bezpečný. Kontrola zvyčajne trvá niekoľko sekúnd.</translation>
 <translation id="4816900689218414104">Vytvorte v telefóne alebo tablete prístupový kľúč</translation>
+<translation id="4818449958253566215">Pridanie do ponuky Štart</translation>
 <translation id="481852950686014162">Pokračujte v Gemini aj režime AI tam, kde ste prestali</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvárajú sa.}=1{Zavrú sa o 1 sekundu}few{Zavrú sa o # sekundy}many{Zavrú sa o # sekundy}other{Zavrú sa o # sekúnd}}</translation>
 <translation id="4819818293886748542">Získajte odkaz na nástroj podpory</translation>
@@ -6795,6 +6799,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5697664819730124632">Pridajte obrázok a pretvorte ho</translation>
 <translation id="5697832193891326782">Výber emodži</translation>
 <translation id="5698136107297470317">Chystáte sa odstrániť údaje v službe <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Môžete pokračovať v čete s režimom AI bez prepínania kariet. Ak chcete začať, overte svoju totožnosť. Navyše budete mať k dispozícii heslá a ďalší obsah vo všetkých svojich zariadeniach.</translation>
 <translation id="5698878456427040674">Skontrolujte, či je vybraný účet podporovaný.</translation>
 <translation id="5698900765010620315">Tmavý s nízkym kontrastom</translation>
 <translation id="5699227710146832453">Zo zariadenia</translation>
@@ -7052,6 +7057,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5870155679953074650">Závažné chyby</translation>
 <translation id="587234395549708302">Chcete vymazať záložky?</translation>
 <translation id="5875534259258494936">Zdieľanie obrazovky bolo ukončené</translation>
+<translation id="5876691914815078365">Aplikácie pre Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nová karta vpravo</translation>
 <translation id="5877064549588274448">Kanál sa zmenil. Ak chcete zmeny použiť, reštartujte zariadenie.</translation>
 <translation id="5877584842898320529">Vybraná tlačiareň nie je k dispozícii alebo nie je správne nainštalovaná. <ph name="BR" />Skontrolujte tlačiareň alebo skúste vybrať inú.</translation>
@@ -11069,6 +11075,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8673026256276578048">Vyhľadávanie na webe...</translation>
 <translation id="867329473311423817">Môže spravovať okná na všetkých obrazovkách</translation>
 <translation id="8673383193459449849">Problém servera</translation>
+<translation id="8673530374848624865">Správca aktualizoval bezpečnostné požiadavky pre vaše zariadenie</translation>
 <translation id="8674903726754070732">Váš počítač je žiaľ nakonfigurovaný pomocou poškodeného identifikátora hardvéru. Systému Chrome OS to bráni získať aktualizácie s najnovšími opravami zabezpečenia a váš počítač <ph name="BEGIN_BOLD" />môže byť nedostatočne zabezpečený proti škodlivým útokom<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Weby pomocou tejto funkcie budú automaticky zobrazovať obsah na celej obrazovke. Prechod na celú obrazovku zvyčajne vyžaduje interakciu používateľa.</translation>
 <translation id="8675704450909805533">Inštalátoru sa nepodarilo nájsť platné cieľové umiestnenie na inštaláciu operačného systému <ph name="DEVICE_OS" />.</translation>

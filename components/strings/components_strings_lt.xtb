@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1036436692654972538">Išsaugoma įrenginyje</translation>
 <translation id="1036881361735705143">C4 vokas</translation>
+<translation id="1038106730571050514">Rodyti pasiūlymus</translation>
 <translation id="1038168778161626396">Tik šifruoti</translation>
 <translation id="1038842779957582377">nežinomas pavadinimas</translation>
 <translation id="1041998700806130099">Užduoties lapo pranešimas</translation>
@@ -2975,6 +2976,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5600044805561809264">Naršydami galite lengvai užduoti klausimų apie bendrinamus skirtukus.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> arba <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Tvarkymas nepalaikomas</translation>
+<translation id="5604254791550001355">Užklausos redagavimas</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktyvus prieš 1 valandą}one{Aktyvus prieš # valandą}few{Aktyvus prieš # valandas}many{Aktyvus prieš # valandos}other{Aktyvus prieš # valandų}}</translation>
 <translation id="5605249000617390290">Sužinokite daugiau apie kainų stebėjimą</translation>
 <translation id="5605670050355397069">Buhalterinis</translation>
@@ -3406,6 +3408,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Kortelės patvirtinimo kodas CVC:</translation>
 <translation id="629730747756840877">Paskyra</translation>
+<translation id="6299098428775578517">Pasiūlymų nustatymai</translation>
 <translation id="6300452962057769623">{0,plural, =0{Jūsų įrenginys dabar bus paleistas iš naujo}=1{Jūsų įrenginys bus paleistas iš naujo po vienos sekundės}one{Jūsų įrenginys bus paleistas iš naujo po # sekundės}few{Jūsų įrenginys bus paleistas iš naujo po # sekundžių}many{Jūsų įrenginys bus paleistas iš naujo po # sekundės}other{Jūsų įrenginys bus paleistas iš naujo po # sekundžių}}</translation>
 <translation id="6301104306974789820">Gaukite kainų stebėjimo pranešimus</translation>
 <translation id="6302546952464230349">Rodyti išsamią leidimo „<ph name="PERMISSION_NAME" />“ informaciją</translation>

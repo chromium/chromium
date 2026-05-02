@@ -2169,6 +2169,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2460826998961521840">Sådan bruger du adgangsnøgler, der er gemt på din Google-konto</translation>
 <translation id="2461550163693930491">Tillad ikke, at websites kan rulle i og zoome ind på delte faner</translation>
 <translation id="2461593638794842577">Du kan deaktivere denne indstilling, hvis du kun vil gemme dine adgangskoder på denne enhed</translation>
+<translation id="2462550463312552298">Opsummer dette dokument</translation>
 <translation id="2462724976360937186">Nøgle-id for certifikatautoritet</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> blev tilføjet</translation>
 <translation id="2464075479326723132">Du får vist foreslåede filer, som hjælper dig med nemt at vende tilbage til din seneste aktivitet i Microsoft SharePoint og OneDrive.
@@ -3068,6 +3069,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3053273573829329829">Aktivér brugerens pinkode</translation>
 <translation id="3053274730492362225">Blink ikke</translation>
 <translation id="3057938290530993634">Hold fingeren på feltet for at fastgøre dine mest besøgte websites, så du nemt kan tilgå dem næste gang</translation>
+<translation id="3058002721610176427">Skift din pinkode og adgangskode</translation>
 <translation id="3058498974290601450">Du kan til enhver tid aktivere synkronisering i indstillingerne</translation>
 <translation id="3060694926634506594">Færdigheder</translation>
 <translation id="3060952009917586498">Skift enhedens sprog Det nuværende sprog er <ph name="LANGUAGE" />.</translation>
@@ -3319,6 +3321,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3254506277019076812">Tilføj færdighed</translation>
 <translation id="3254516606912442756">Automatisk registrering af tidszone er deaktiveret</translation>
 <translation id="3255747772218936245">Installer opdatering</translation>
+<translation id="3256274561709196882">Skift pinkode</translation>
 <translation id="3257733480216378006">Vil du tillade brugen af <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Mistænkelig download blev blokeret</translation>
 <translation id="3259723213051400722">Prøv igen.</translation>
@@ -4323,6 +4326,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3924788966103416622">En ekstern app vil have fuld kontrol over denne Chrome-session for at foretage fejlretning. Dette omfatter adgang til dine gemte data, cookies og websitedata samt muligheden for at gå til en hvilken som helst webadresse.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Andre brugere på denne enhed kan også bruge dette netværk</translation>
+<translation id="3925934852713265455">Stil spørgsmål om dine faner</translation>
 <translation id="3926002189479431949">Smart Lock-telefon er blevet ændret</translation>
 <translation id="3926410220776569451">Adgang til kameraet er blokeret</translation>
 <translation id="3927932062596804919">Afvis</translation>
@@ -4434,6 +4438,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3995963973192100066">Afspil animation</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}one{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}other{Tilladelserne blev fjernet fra websites, du ikke har besøgt for nylig, for at beskytte dine data}}</translation>
 <translation id="399788104667917863">Fastgør til værktøjslinje</translation>
+<translation id="3998431043924115701">Stil spørgsmål, mens du browser</translation>
 <translation id="3998780825367526465">Vis billeder med forhåndsvisning af faner</translation>
 <translation id="3998976413398910035">Administrer printere</translation>
 <translation id="4000360130639414007">Du kan ikke bruge Android-apps eller Google Play Butik</translation>
@@ -5563,6 +5568,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bogmærke blev slettet}one{{COUNT} bogmærke blev slettet}other{{COUNT} bogmærker blev slettet}}</translation>
 <translation id="481689174647911539">Denne fil kan være en virus eller malware.<ph name="LINE_BREAK" />Du kan sende den til Google Beskyttet browsing for at tjekke, om den er usikker. Det tager normalt et par sekunder at scanne filer.</translation>
 <translation id="4816900689218414104">Opret en adgangsnøgle på en telefon eller tablet</translation>
+<translation id="4818449958253566215">Føjer til startmenu</translation>
 <translation id="481852950686014162">Fortsæt, hvor du slap, i Gemini og AI-tilstand</translation>
 <translation id="4819323978093861656">{0,plural, =0{Lukker nu.}=1{Lukker om: 1 sekund}one{Lukker om: # sekund}other{Lukker om: # sekunder}}</translation>
 <translation id="4819818293886748542">Få et link til supportværktøjet</translation>
@@ -6810,6 +6816,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5697664819730124632">Tilføj et billede, og transformér det</translation>
 <translation id="5697832193891326782">Emojivælger</translation>
 <translation id="5698136107297470317">Du er ved at slette dine data fra <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Du kan fortsætte med at chatte med AI-tilstand uden at skifte faner. Verificer din identitet for at komme i gang. Du kan også se dine adgangskoder m.m. på alle dine enheder.</translation>
 <translation id="5698878456427040674">Tjek, om den valgte konto understøttes.</translation>
 <translation id="5698900765010620315">Mørk med lav kontrast</translation>
 <translation id="5699227710146832453">Fra din</translation>
@@ -7067,6 +7074,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5870155679953074650">Hårde fejl</translation>
 <translation id="587234395549708302">Vil du rydde op i dine bogmærker?</translation>
 <translation id="5875534259258494936">Skærmdeling er afsluttet</translation>
+<translation id="5876691914815078365">Chrome-apps &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Ny fane til højre</translation>
 <translation id="5877064549588274448">Kanalen er ændret. Genstart din enhed for at anvende ændringerne.</translation>
 <translation id="5877584842898320529">Den valgte printer er enten ikke tilgængelig eller ikke installeret korrekt.<ph name="BR" />Tjek din printer, eller vælg en anden printer.</translation>
@@ -11083,6 +11091,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8673026256276578048">Søg på nettet...</translation>
 <translation id="867329473311423817">Har tilladelse til at administrere vinduer på alle dine skærme</translation>
 <translation id="8673383193459449849">Serverproblem</translation>
+<translation id="8673530374848624865">Din administrator har opdateret sikkerhedskravene for din enhed</translation>
 <translation id="8674903726754070732">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer ChromeOS i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondsindede angreb<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Websites anvender denne funktion til automatisk at åbne i fuld skærm. Aktivering af fuld skærm kræver typisk brugerinteraktion.</translation>
 <translation id="8675704450909805533">Installationsprogrammet kunne ikke finde en gyldig destination til installation af <ph name="DEVICE_OS" />.</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Учитавање слика није успело</translation>
 <translation id="3565930036634619844">Картица. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Сачувај други начин</translation>
+<translation id="3571703298474554279">Бржи начин коришћења апликације</translation>
 <translation id="3572503683475187385">Актуелна картица се дели са Gemini-јем када започнете нови чет. Када делите картицу са Gemini-јем, њен садржај и URL шаљу се Google-у. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">На Google налогу</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
@@ -1701,6 +1702,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6871397658902960384">Почните да прегледате</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Сачувај лозинку на налогу}one{Сачувај лозинке на налогу}few{Сачувај лозинке на налогу}other{Сачувај лозинке на налогу}}</translation>
 <translation id="6875166646976836138">Можете и да прегледате ове ставке и управљате њима у обележивачима, на листи за читање или у менаџеру лозинки.</translation>
+<translation id="6878052248816456143">Приступајте фајловима на Google диску у сваком тренутку.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтова, преузимања и додатака за које се зна да су штетни.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Сачувајте {COUNT} лозинку на Google налогу}one{Сачувајте {COUNT} лозинку на Google налогу}few{Сачувајте {COUNT} лозинке на Google налогу}other{Сачувајте {COUNT} лозинке на Google налогу}}</translation>
 <translation id="6888009575607455378">Желите ли стварно да одбаците промене?</translation>
@@ -1814,6 +1816,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7345061034321640811">Увоз није дозвољен</translation>
 <translation id="7347998088283246662">Увезите лозинке, историју, обележиваче и друго</translation>
 <translation id="7352651011704765696">Дошло је до грешке</translation>
+<translation id="7363497636543208734">Кретање апликацијом сада је једноставније.</translation>
 <translation id="7364796246159120393">Одабери фајл</translation>
 <translation id="736564850024123010">Промените положај траке за адресу да бисте имали прилагођени доживљај.</translation>
 <translation id="7366909168761621528">Подаци прегледања</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036436692654972538">Ruajtur në pajisjen tënde</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
+<translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038168778161626396">Vetëm shifrues</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
 <translation id="1041998700806130099">Mesazhi i fletës së punës</translation>
@@ -2974,6 +2975,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5600044805561809264">Mund të bësh me lehtësi pyetje për skedat që po ndan ndërkohë që shfleton.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ose <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Menaxhimi nuk mbështetet</translation>
+<translation id="5604254791550001355">Redakto kërkesën</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktiv 1 orë më parë}other{Aktiv # orë më parë}}</translation>
 <translation id="5605249000617390290">Mëso më shumë për monitorimin e çmimeve</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3404,6 +3406,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Llogaria</translation>
+<translation id="6299098428775578517">Cilësimet e sugjerimeve</translation>
 <translation id="6300452962057769623">{0,plural, =0{Pajisja do të riniset tani}=1{Pajisja do të riniset pas 1 sekonde}other{Pajisja do të riniset pas # sekondash}}</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
 <translation id="6302546952464230349">Shfaq detajet e lejes (<ph name="PERMISSION_NAME" />)</translation>

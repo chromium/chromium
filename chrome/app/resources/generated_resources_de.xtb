@@ -3050,6 +3050,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Nutzer-PIN aktivieren</translation>
 <translation id="3053274730492362225">Nicht blinken</translation>
 <translation id="3057938290530993634">Halte deine am häufigsten besuchten Websites gedrückt, um sie anzupinnen und so beim nächsten Mal leichter darauf zugreifen zu können</translation>
+<translation id="3058002721610176427">PIN und Passwort ändern</translation>
 <translation id="3058498974290601450">Du kannst die Synchronisierung jederzeit in den Einstellungen aktivieren</translation>
 <translation id="3060694926634506594">Skills</translation>
 <translation id="3060952009917586498">Ändere die Gerätesprache. Die aktuelle Sprache ist <ph name="LANGUAGE" />.</translation>
@@ -3299,6 +3300,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3254506277019076812">Skill hinzufügen</translation>
 <translation id="3254516606912442756">Automatische Zeitzonenerkennung ist deaktiviert</translation>
 <translation id="3255747772218936245">Update installieren</translation>
+<translation id="3256274561709196882">PIN ändern</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> zulassen?</translation>
 <translation id="325797067711573598">Verdächtiger Download blockiert</translation>
 <translation id="3259723213051400722">Bitte versuche es noch einmal.</translation>
@@ -4414,6 +4416,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3995963973192100066">Animation abspielen</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Zum Schutz deiner Daten wurden einer Website, die du in letzter Zeit nicht besucht hast, Berechtigungen entzogen}other{Zum Schutz deiner Daten wurden Websites, die du in letzter Zeit nicht besucht hast, Berechtigungen entzogen}}</translation>
 <translation id="399788104667917863">An Symbolleiste anpinnen</translation>
+<translation id="3998431043924115701">Beim Surfen Fragen stellen</translation>
 <translation id="3998780825367526465">Vorschaubilder auf Tabs anzeigen</translation>
 <translation id="3998976413398910035">Drucker verwalten</translation>
 <translation id="4000360130639414007">Du kannst weder Android-Apps noch den Google Play Store verwenden</translation>
@@ -5543,6 +5546,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4816336393325437908">{COUNT,plural, =1{1 Lesezeichen gelöscht}other{{COUNT} Lesezeichen gelöscht}}</translation>
 <translation id="481689174647911539">Bei dieser Datei handelt es sich möglicherweise um einen Virus oder Malware.<ph name="LINE_BREAK" />Du kannst sie an Google Safe Browsing senden, um zu überprüfen, ob sie unsicher ist. Der Scan dauert in der Regel einige Sekunden.</translation>
 <translation id="4816900689218414104">Passkey auf einem Smartphone oder Tablet erstellen</translation>
+<translation id="4818449958253566215">Wird zum Startmenü hinzugefügt</translation>
 <translation id="481852950686014162">Dort weitermachen, wo du in Gemini und im KI-Modus aufgehört hast</translation>
 <translation id="4819323978093861656">{0,plural, =0{Wird jetzt geschlossen.}=1{Wird geschlossen in: 1 Sekunde}other{Wird geschlossen in: # Sekunden}}</translation>
 <translation id="4819818293886748542">Link zum Supporttool abrufen</translation>
@@ -6786,6 +6790,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5697664819730124632">Bild hinzufügen und neu gestalten</translation>
 <translation id="5697832193891326782">Emoji-Auswahl</translation>
 <translation id="5698136107297470317">Du bist dabei, deine <ph name="BRAND" />-Daten zu löschen</translation>
+<translation id="5698815246352480266">Du kannst jetzt im KI-Modus weiterchatten, ohne den Tab zu wechseln. Bestätige zuerst deine Identität. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen.</translation>
 <translation id="5698878456427040674">Prüfe, ob das ausgewählte Konto unterstützt wird.</translation>
 <translation id="5698900765010620315">Niedriger Kontrast, dunkel</translation>
 <translation id="5699227710146832453">Von</translation>
@@ -7043,6 +7048,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5870155679953074650">Harte Fehler</translation>
 <translation id="587234395549708302">Lesezeichen bereinigen?</translation>
 <translation id="5875534259258494936">Bildschirmfreigabe beendet</translation>
+<translation id="5876691914815078365">Chrome-Apps &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Neuer Tab rechts</translation>
 <translation id="5877064549588274448">Kanal geändert. Starte dein Gerät neu, um die Änderungen zu übernehmen.</translation>
 <translation id="5877584842898320529">Der ausgewählte Drucker ist entweder nicht verfügbar oder nicht ordnungsgemäß installiert. <ph name="BR" /> Überprüfe den Drucker oder wähle einen anderen Drucker aus.</translation>
@@ -11056,6 +11062,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8673026256276578048">Im Web suchen...</translation>
 <translation id="867329473311423817">Websites dürfen Fenster auf allen deinen Bildschirmen verwalten</translation>
 <translation id="8673383193459449849">Serverfehler</translation>
+<translation id="8673530374848624865">Dein Administrator hat die Sicherheitsanforderungen für dein Gerät aktualisiert</translation>
 <translation id="8674903726754070732">Dein Computer wurde mit einer ungültigen Hardware-ID konfiguriert. Daher kann Chrome OS keine aktuellen Sicherheitsupdates installieren und dein Computer ist <ph name="BEGIN_BOLD" />möglicherweise anfällig für schädliche Angriffe<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Websites verwenden diese Funktion, um automatisch den Vollbildmodus zu aktivieren. Der Vollbildmodus erfordert normalerweise eine Nutzerinteraktion.</translation>
 <translation id="8675704450909805533">Das Installationsprogramm konnte für <ph name="DEVICE_OS" /> keinen gültigen Zielspeicherort finden.</translation>

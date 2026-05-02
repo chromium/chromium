@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">ምስሎችን መጫን አልተቻለም።</translation>
 <translation id="3565930036634619844">ትር። <ph name="TAB_INDEX" /> ከ<ph name="NUMBER_OF_TABS" />።</translation>
 <translation id="3567168891086460374">በሌላ መንገድ አስቀምጥ</translation>
+<translation id="3571703298474554279">መተግበሪያውን ለመጠቀም ፈጣን መንገድ</translation>
 <translation id="3572503683475187385">አዲስ ውይይት ሲጀምሩ የአሁኑ ትር ለGemini ይጋራል። ትርን ለGemini ሲያጋሩ ይዘቶቻቸው እና ዩአርኤላቸው ወደ Google ይላካሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">በእርስዎ የGoogle መለያ ውስጥ</translation>
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
@@ -1701,6 +1702,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6871397658902960384">ማሰስ ጀምር</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{የይለፍ ቃል በመለያ ውስጥ አስቀምጥ}one{የይለፍ ቃል በመለያ ውስጥ አስቀምጥ}other{የይለፍ ቃላትን በመለያ ውስጥ አስቀምጥ}}</translation>
 <translation id="6875166646976836138">እንዲሁም እነዚህን ንጥሎች በእርስዎ ዕልባቶች፣ የንባብ ዝርዝር ወይም የይለፍ ቃል አስተዳዳሪ ውስጥ መመልከት እና ማስተዳደር ይችላሉ።</translation>
+<translation id="6878052248816456143">በGoogle Drive ውስጥ ያሉ ፋይሎችን በማንኛውም ጊዜ ይድረሱ።</translation>
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በGoogle መለያዎ ውስጥ ያስቀምጡ}one{{COUNT} የይለፍ ቃል በGoogle መለያዎ ውስጥ ያስቀምጡ}other{{COUNT} የይለፍ ቃላት በGoogle መለያዎ ውስጥ ያስቀምጡ}}</translation>
 <translation id="6888009575607455378">እርግጠኛ ነዎት ለውጦችዎን ማስወገድ ይፈልጋሉ?</translation>
@@ -1814,6 +1816,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7345061034321640811">ማምጣት አይፈቀድም</translation>
 <translation id="7347998088283246662">የይለፍ ቃላትን፣ ታሪክን፣ ዕልባቶችን እና ሌሎችንም ያስመጡ</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
+<translation id="7363497636543208734">በመተግበሪያው ውስጥ መዞር አሁን ቀላል ነው።</translation>
 <translation id="7364796246159120393">ፋይል ምረጥ</translation>
 <translation id="736564850024123010">ብጁ ለተደረገ ተሞክሮ የአድራሻ አሞሌዎን ቦታ ይቀይሩ።</translation>
 <translation id="7366909168761621528">የአሰሳ ውሂብ</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">फोटोहरू लोड गर्न सकिएन</translation>
 <translation id="3565930036634619844">ट्याब। <ph name="NUMBER_OF_TABS" /> मध्ये <ph name="TAB_INDEX" /> औँ।</translation>
 <translation id="3567168891086460374">अर्को तरिकाले सेभ गर्नुहोस्</translation>
+<translation id="3571703298474554279">यो एप प्रयोग गर्ने अझ छिटो तरिका</translation>
 <translation id="3572503683475187385">तपाईंले नयाँ च्याट सुरु गर्दा हालको ट्याब Gemini सँग सेयर गरिन्छ। तपाईंले Gemini सँग ट्याब सेयर गर्नुभयो भने उक्त ट्याबमा भएका कन्टेन्ट र URL हरू Google मा पठाइन्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">तपाईंको Google खातामा</translation>
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">ब्राउज गर्न थाल्नुहोस्</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{यो पासवर्ड खातामा सेभ गर्नुहोस्}other{यी पासवर्डहरू खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="6875166646976836138">तपाईं आफ्ना बुकमार्क, रिडिङ लिस्ट वा पासवर्ड म्यानेजरमा गएर पनि यी सामग्री हेर्न तथा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
+<translation id="6878052248816456143">जुनसुकै बेला आफ्नो Google Drive मा भएका फाइलहरू एक्सेस गर्नुहोस्।</translation>
 <translation id="6882836635272038266">खतरनाक मानिने वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट स्तरीय सुरक्षा।</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{आफ्नो Google खातामा {COUNT} वटा पासवर्ड सेभ गर्नुहोस्}other{आफ्नो Google खातामा {COUNT} वटा पासवर्ड सेभ गर्नुहोस्}}</translation>
 <translation id="6888009575607455378">तपाईंले आफूले गरेका परिवर्तनहरू खारेज गर्न चाहनुभएकै हो?</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">इम्पोर्ट गर्ने अनुमति दिइएको छैन</translation>
 <translation id="7347998088283246662">पासवर्ड, हिस्ट्री, बुकमार्क र अन्य कुरा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
+<translation id="7363497636543208734">अब यो एपमा एक ठाउँबाट अर्को ठाउँमा जान अझ सजिलो भएको छ।</translation>
 <translation id="7364796246159120393">फाइल छान्नुहोस्</translation>
 <translation id="736564850024123010">कस्टमाइज गरिएको सुविधा प्राप्त गर्न आफ्नो एड्रेस बार राखिने ठाउँ बदल्नुहोस्।</translation>
 <translation id="7366909168761621528">ब्राउजिङको डेटा</translation>

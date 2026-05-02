@@ -215,6 +215,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Dostosuj swój nowy profil Chromium</translation>
+<translation id="3189205223539394158">Możesz kontynuować czat w Trybie AI bez przełączania kart. Aby rozpocząć, zaloguj się w Chromium. Będziesz też mieć dostęp do haseł i innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="3224847870593914902">Aby usunąć konto Google z Chromium, wyloguj się z Chromium na stronie Ustawienia</translation>
 <translation id="3234316605225071811">Później Chromium może zapytać, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
 <translation id="3258596308407688501">Chromium nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>

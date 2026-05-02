@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036436692654972538">Se guarda en tu dispositivo</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
+<translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038168778161626396">Solo cifrar</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
 <translation id="1041998700806130099">Mensaje de hoja de tarea</translation>
@@ -2974,6 +2975,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5600044805561809264">Puedes hacer preguntas fácilmente sobre las pestañas que compartes mientras navegas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administración no admitida</translation>
+<translation id="5604254791550001355">Editar prompt</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Activo hace 1 hora}other{Activo hace # horas}}</translation>
 <translation id="5605249000617390290">Más información sobre el seguimiento de precios</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3407,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Cuenta</translation>
+<translation id="6299098428775578517">Configuración de sugerencias</translation>
 <translation id="6300452962057769623">{0,plural, =0{Tu dispositivo se reiniciará ahora}=1{Tu dispositivo se reiniciará dentro de 1 segundo}other{Tu dispositivo se reiniciará dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Recibe notificaciones de seguimiento de precios</translation>
 <translation id="6302546952464230349">Mostrar detalles del permiso <ph name="PERMISSION_NAME" /></translation>

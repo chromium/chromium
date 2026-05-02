@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036436692654972538">기기에 저장된 정보입니다</translation>
 <translation id="1036881361735705143">봉투 C4</translation>
+<translation id="1038106730571050514">추천 보기</translation>
 <translation id="1038168778161626396">암호화만</translation>
 <translation id="1038842779957582377">알 수 없는 이름</translation>
 <translation id="1041998700806130099">작업 시트 메시지</translation>
@@ -2974,6 +2975,7 @@
 <translation id="5600044805561809264">웹 탐색 중에도 공유 탭에 대한 질문을 쉽게 할 수 있습니다.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> 또는 <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
+<translation id="5604254791550001355">프롬프트 수정</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{마지막 사용 시간: 1시간 전}other{마지막 사용 시간: #시간 전}}</translation>
 <translation id="5605249000617390290">가격 추적 자세히 알아보기</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">계정</translation>
+<translation id="6299098428775578517">추천 설정</translation>
 <translation id="6300452962057769623">{0,plural, =0{지금 기기가 다시 시작됩니다}=1{1초 후에 기기가 다시 시작됩니다}other{#초 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> 권한 세부정보 표시</translation>

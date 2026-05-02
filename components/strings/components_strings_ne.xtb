@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1036436692654972538">तपाईंको डिभाइसमा सेभ गरिएको जानकारी</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
+<translation id="1038106730571050514">सुझावहरू देखाउनुहोस्</translation>
 <translation id="1038168778161626396">एन्साइफर मात्रै</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">कार्य पानासम्बन्धी सन्देश</translation>
@@ -2972,6 +2973,7 @@
 <translation id="5600044805561809264">तपाईं ब्राउज गर्दै गर्दा आफूले सेयर गरिरहेका ट्याबका बारेमा सजिलैसँग प्रश्नहरू सोध्न सक्नुहुन्छ।</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> वा <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">व्यवस्थापन समर्थित छैन</translation>
+<translation id="5604254791550001355">प्रम्प्ट सम्पादन गर्नुहोस्</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{१ घण्टाअघि सक्रिय थियो}other{# घण्टाअघि सक्रिय थियो}}</translation>
 <translation id="5605249000617390290">मूल्य ट्र्याक गर्ने सुविधाका बारेमा थप जान्नुहोस्</translation>
 <translation id="5605670050355397069">लेजर</translation>
@@ -3403,6 +3405,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">खाता</translation>
+<translation id="6299098428775578517">सुझावसम्बन्धी सेटिङ</translation>
 <translation id="6300452962057769623">{0,plural, =0{तपाईंको डिभाइस अब रिस्टार्ट हुने छ}=1{तपाईंको डिभाइस १ सेकेन्डमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # सेकेन्डमा रिस्टार्ट हुने छ}}</translation>
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> प्रयोग गर्ने अनुमतिसम्बन्धी विवरण देखाउनुहोस्</translation>

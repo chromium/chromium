@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036436692654972538">デバイスに保存します</translation>
 <translation id="1036881361735705143">C4 封筒</translation>
+<translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038168778161626396">暗号化のみ</translation>
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
@@ -391,6 +392,7 @@
 <translation id="1595731774593926493">Redress 番号の削除</translation>
 <translation id="1597307423671074806">WebM 動画</translation>
 <translation id="159800670740560023">Chrome のヒントのリンクです。Enter キーを押すと <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> を開きます</translation>
+<translation id="1599079390582151174">送信しました。他のデバイスで Chrome を開きます。</translation>
 <translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">美容、フィットネス</translation>
@@ -1781,6 +1783,7 @@
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3754664361823138853">履歴ページを開く(&amp;O)</translation>
+<translation id="3757511311058373406">自動ブラウジング フィルタ</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
 <translation id="3760561303380396507">CVC の代わりに Windows Hello を使用しますか？</translation>
 <translation id="3761171036307311438">名義人名:</translation>

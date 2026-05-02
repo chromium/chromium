@@ -3055,6 +3055,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Zapnout uživatelský PIN</translation>
 <translation id="3053274730492362225">Neblikat</translation>
 <translation id="3057938290530993634">Weby, které nejčastěji navštěvujete, si můžete klepnutím a podržením připnout, aby příště byly snadno k dispozici</translation>
+<translation id="3058002721610176427">Změňte PIN a heslo</translation>
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3060694926634506594">Dovednosti</translation>
 <translation id="3060952009917586498">Změňte název zařízení. Stávající jazyk je <ph name="LANGUAGE" />.</translation>
@@ -3304,6 +3305,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3254506277019076812">Přidání dovednosti</translation>
 <translation id="3254516606912442756">Automatická detekce časového pásma je vypnutá</translation>
 <translation id="3255747772218936245">Nainstalovat aktualizaci</translation>
+<translation id="3256274561709196882">Změňte si PIN</translation>
 <translation id="3257733480216378006">Povolit <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Bylo zablokováno stažení podezřelého souboru</translation>
 <translation id="3259723213051400722">Zkuste to znovu.</translation>
@@ -4418,6 +4420,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3995963973192100066">Přehrát animaci</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Z důvodu ochrany vašich dat byla odebrána oprávnění webu, který jste v poslední době nenavštívili}few{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}many{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}other{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}}</translation>
 <translation id="399788104667917863">Připnout na lištu</translation>
+<translation id="3998431043924115701">Pokládejte při procházení otázky</translation>
 <translation id="3998780825367526465">Zobrazovat obrázky s náhledy karet</translation>
 <translation id="3998976413398910035">Spravovat tiskárny</translation>
 <translation id="4000360130639414007">Nebudete moct používat aplikace pro Android ani Obchod Google Play</translation>
@@ -5547,6 +5550,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4816336393325437908">{COUNT,plural, =1{Byla smazána 1 záložka}few{Byly smazány {COUNT} záložky}many{Bylo smazáno {COUNT} záložky}other{Bylo smazáno {COUNT} záložek}}</translation>
 <translation id="481689174647911539">Tento soubor může být vir nebo malware.<ph name="LINE_BREAK" />Můžete ho odeslat do Bezpečného prohlížení Google ke kontrole, zda je bezpečný. Kontroly obvykle trvají několik sekund.</translation>
 <translation id="4816900689218414104">Vytvořte na telefonu nebo tabletu přístupový klíč</translation>
+<translation id="4818449958253566215">Přidání do nabídky Start</translation>
 <translation id="481852950686014162">Pokračujte v Gemini a režimu AI tam, kde jste skončili</translation>
 <translation id="4819323978093861656">{0,plural, =0{Probíhá zavírání.}=1{K zavření dojde za 1 sekundu}few{K zavření dojde za # sekundy}many{K zavření dojde za # sekundy}other{K zavření dojde za # sekund}}</translation>
 <translation id="4819818293886748542">Získání odkazu na nástroj podpory</translation>
@@ -6790,6 +6794,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5697664819730124632">Přidejte obrázek a přetvořte ho</translation>
 <translation id="5697832193891326782">Výběr smajlíků</translation>
 <translation id="5698136107297470317">Chystáte se smazat svá data ze <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">S režimem AI můžete chatovat i bez přepínání karet. Nejdřív ověřte, že jste to vy. Na všech svých zařízeních budete mít také k dispozici svá hesla a další informace.</translation>
 <translation id="5698878456427040674">Zkontrolujte, zda je vybraný účet podporován.</translation>
 <translation id="5698900765010620315">Tmavý s nízkým kontrastem</translation>
 <translation id="5699227710146832453">Ze zařízení</translation>
@@ -7047,6 +7052,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5870155679953074650">Chyby stránkování na disk</translation>
 <translation id="587234395549708302">Uklidit záložky?</translation>
 <translation id="5875534259258494936">Sdílení obrazovky bylo ukončeno</translation>
+<translation id="5876691914815078365">Aplikace pro Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nová karta napravo</translation>
 <translation id="5877064549588274448">Verze byla změněna. Změny se projeví po restartování zařízení.</translation>
 <translation id="5877584842898320529">Zvolená tiskárna není k dispozici nebo není správně nainstalovaná. <ph name="BR" /> Zkontrolujte tiskárnu nebo vyberte jinou.</translation>
@@ -11063,6 +11069,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8673026256276578048">Vyhledávání na webu...</translation>
 <translation id="867329473311423817">Má povoleno spravovat okna na všech obrazovkách</translation>
 <translation id="8673383193459449849">Problém se serverem</translation>
+<translation id="8673530374848624865">Administrátor aktualizoval požadavky na zabezpečení vašeho zařízení</translation>
 <translation id="8674903726754070732">Váš počítač je bohužel nakonfigurován pomocí chybného čísla hardwaru. Systému ChromeOS to zabraňuje získat aktualizace s nejnovějšími bezpečnostními opravami, a počítač tak <ph name="BEGIN_BOLD" />může být zranitelnější v případě útoků<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Weby tuto funkci používají k automatické aktivaci režimu celé obrazovky. Obvykle je k aktivaci režimu celé obrazovky potřeba interakce uživatele.</translation>
 <translation id="8675704450909805533">Instalačnímu programu se nepodařilo najít platný cíl k instalaci systému <ph name="DEVICE_OS" />.</translation>

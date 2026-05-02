@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036436692654972538">Qurilmangizda saqlanadi</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
+<translation id="1038106730571050514">Variantlar taklif qilish</translation>
 <translation id="1038168778161626396">Faqat shifrdan chiqarish</translation>
 <translation id="1038842779957582377">noma’lum ism</translation>
 <translation id="1041998700806130099">Vazifa varagʻidagi xabar</translation>
@@ -390,6 +391,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1595731774593926493">Redress raqamini oʻchirish</translation>
 <translation id="1597307423671074806">WebM video</translation>
 <translation id="159800670740560023">Chrome maslahati havolasi, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> sahifasini ochish uchun Enter tugmasini bosing</translation>
+<translation id="1599079390582151174">Yuborildi. Boshqa qurilmada Chrome brauzerini oching.</translation>
 <translation id="1599199147673445968">Karta yangimi? <ph name="BEGIN_LINK" />Karta ma’lumotlarini kiriting<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Goʻzallik va fitnes</translation>
@@ -1776,6 +1778,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3752543821772132562">Rad etildi, chunki <ph name="POLICY_NAME" /> sozlanmagan.</translation>
 <translation id="3754210790023674521">Tasvir ustida tasvir rejimidan chiqish</translation>
 <translation id="3754664361823138853">Tarix sahifasini &amp;ochish</translation>
+<translation id="3757511311058373406">Avtomatik kezish filtrlari</translation>
 <translation id="3759461132968374835">Yaqinda yuz bergan ishdan chiqishlar haqidagi yozuvlar yo‘q. Ishdan chiqishlar jurnali o‘chiqligida yuz bergan ishdan chiqishlar bu yerda ko‘rsatilmaydi.</translation>
 <translation id="3760561303380396507">CVC oʻrniga Windows Hello ishlatilsinmi?</translation>
 <translation id="3761171036307311438">Karta egasining ismi:</translation>

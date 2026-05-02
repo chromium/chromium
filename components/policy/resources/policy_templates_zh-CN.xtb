@@ -3212,6 +3212,7 @@ PAC 样式的字符串：
 <translation id="3127816006382989270">允许在无痕模式下访问一系列网址。</translation>
 <translation id="3128072319047570212">Keygen 设置</translation>
 <translation id="3131703464330936425">不允许使用移动数据漫游</translation>
+<translation id="3131928857191083710">套接字池大小设置</translation>
 <translation id="3135820765957090754">如果此设置已启用，用户将能够在其 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。不过，用户必须通过完成一个设置流程来明确选择启用这项功能，才能同步 Wi-Fi 网络配置。
 
       如果此设置已停用，用户将无法同步 Wi-Fi 网络配置。

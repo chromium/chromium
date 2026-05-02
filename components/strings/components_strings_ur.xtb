@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036436692654972538">آپ کے آلے میں محفوظ کیا گیا</translation>
 <translation id="1036881361735705143">‏C4 لفافہ</translation>
+<translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1038168778161626396">صرف انسائفر</translation>
 <translation id="1038842779957582377">نامعلوم نام</translation>
 <translation id="1041998700806130099">جاب شیٹ کا پیغام</translation>
@@ -2975,6 +2976,7 @@
 <translation id="5600044805561809264">براؤز کرتے وقت آپ آسانی سے اپنے اشتراک کردہ ٹیبز کے بارے میں سوالات پوچھ سکتے ہیں۔</translation>
 <translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> یا <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">مینیجمنٹ تعاون یافتہ نہیں ہے</translation>
+<translation id="5604254791550001355">پرامپٹ میں ترمیم کریں</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{‫1 گھنٹہ پہلے فعال}other{‫# گھنٹے قبل فعال}}</translation>
 <translation id="5605249000617390290">قیمت کی ٹریکنگ کے بارے میں مزید جانیں</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3407,6 +3409,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">اکاؤنٹ</translation>
+<translation id="6299098428775578517">تجویز کی ترتیبات</translation>
 <translation id="6300452962057769623">{0,plural, =0{آپ کا آلہ ابھی ری اسٹارٹ ہوگا}=1{آپ کا آلہ 1 سیکنڈ میں ری اسٹارٹ ہوگا}other{آپ کا آلہ # سیکنڈ میں ری اسٹارٹ ہوگا}}</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> اجازت کی تفصیلات دکھائیں</translation>

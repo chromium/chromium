@@ -3062,6 +3062,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3053273573829329829">Активиране на ПИН на потребителя</translation>
 <translation id="3053274730492362225">Без мигане</translation>
 <translation id="3057938290530993634">Докоснете и задръжте, за да фиксирате най-посещаваните от вас уебсайтове за лесен достъп следващия път</translation>
+<translation id="3058002721610176427">Променете ПИН кода и паролата си</translation>
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3060694926634506594">Умения</translation>
 <translation id="3060952009917586498">Променете езика на устройството. Текущият е <ph name="LANGUAGE" />.</translation>
@@ -3313,6 +3314,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3254506277019076812">Добавяне на умение</translation>
 <translation id="3254516606912442756">Автоматичното установяване на часовата зона е деактивирано</translation>
 <translation id="3255747772218936245">Инсталиране на актуализацията</translation>
+<translation id="3256274561709196882">Променете ПИН кода си</translation>
 <translation id="3257733480216378006">Да се разреши ли <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Блокирано е подозрително изтегляне</translation>
 <translation id="3259723213051400722">Моля, опитайте отново.</translation>
@@ -4429,6 +4431,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3995963973192100066">Пускане на анимацията</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{С цел защита на данните ви бяха премахнати разрешенията за сайт, който не сте посещавали наскоро}other{С цел защита на данните ви бяха премахнати разрешенията за сайтове, които не сте посещавали наскоро}}</translation>
 <translation id="399788104667917863">Фиксиране в лентата с инструменти</translation>
+<translation id="3998431043924115701">Задавайте въпроси, докато сърфирате</translation>
 <translation id="3998780825367526465">Показване на изображения за визуализация на разделите</translation>
 <translation id="3998976413398910035">Управление на принтерите</translation>
 <translation id="4000360130639414007">Няма да можете да използвате приложения за Android, нито Google Play Магазин</translation>
@@ -5558,6 +5561,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4816336393325437908">{COUNT,plural, =1{Изтрихте 1 отметка}other{Изтрихте {COUNT} отметки}}</translation>
 <translation id="481689174647911539">Този файл може да е вирус или злонамерен софтуер.<ph name="LINE_BREAK" />Можете да го изпратите до Google Безопасно сърфиране, за да проверите дали е опасен. Сканирането обикновено отнема няколко секунди.</translation>
 <translation id="4816900689218414104">Създаване на ключ за достъп на телефон или таблет</translation>
+<translation id="4818449958253566215">Добавяне към менюто „Старт“</translation>
 <translation id="481852950686014162">Продължавайте оттам, откъдето сте прекъснали, в Gemini и режима с AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затваря се сега.}=1{Затваря се след 1 секунда}other{Затваря се след # секунди}}</translation>
 <translation id="4819818293886748542">Получаване на връзка към инструмента за поддръжка</translation>
@@ -6806,6 +6810,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5697664819730124632">Добавете изображение и го трансформирайте</translation>
 <translation id="5697832193891326782">Инструмент за избор на емоджи</translation>
 <translation id="5698136107297470317">Напът сте да изтриете данните си от <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Можете да продължите да разговаряте в режим с AI, без да превключвате между раздели. За да започнете, потвърдете, че това сте вие. Също така ще получите паролите си и др. на всичките си устройства.</translation>
 <translation id="5698878456427040674">Проверете дали избраният профил се поддържа.</translation>
 <translation id="5698900765010620315">Тъмна тема с нисък контраст</translation>
 <translation id="5699227710146832453">От</translation>
@@ -7063,6 +7068,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5870155679953074650">Съществени грешки</translation>
 <translation id="587234395549708302">Да се изчистят ли отметките?</translation>
 <translation id="5875534259258494936">Споделянето на екрана приключи</translation>
+<translation id="5876691914815078365">Приложения за Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Нов раздел отдясно</translation>
 <translation id="5877064549588274448">Каналът бе променен. Рестартирайте устройството си, за да се приложат промените.</translation>
 <translation id="5877584842898320529">Избраният принтер не е налице или не е инсталиран правилно.<ph name="BR" /> Проверете го или опитайте да изберете друг.</translation>
@@ -11077,6 +11083,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8673026256276578048">Търсене в мрежата...</translation>
 <translation id="867329473311423817">С разрешение за управление на прозорците на всичките ви дисплеи</translation>
 <translation id="8673383193459449849">Проблем със сървъра</translation>
+<translation id="8673530374848624865">Администраторът ви актуализира изискванията за сигурност за устройството ви</translation>
 <translation id="8674903726754070732">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на Chrome OS да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Сайтовете използват тази функция с цел автоматично преминаване в режим на цял екран. Обикновено за това е необходимо потребителско взаимодействие.</translation>
 <translation id="8675704450909805533">Инсталационната програма не можа да намери валидно място, където да инсталира <ph name="DEVICE_OS" />.</translation>

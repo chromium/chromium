@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1036436692654972538">Jūsu ierīcē saglabātie dati</translation>
 <translation id="1036881361735705143">Aploksne C4</translation>
+<translation id="1038106730571050514">Rādīt ieteikumus</translation>
 <translation id="1038168778161626396">Tikai šifrēt</translation>
 <translation id="1038842779957582377">nezināms nosaukums</translation>
 <translation id="1041998700806130099">Uzdevuma lapas ziņojums</translation>
@@ -2972,6 +2973,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5600044805561809264">Pārlūkošanas laikā varat ērti uzdot jautājumus par cilnēm, ko kopīgojat.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> vai <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
+<translation id="5604254791550001355">Rediģēt uzvedni</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktīvs pirms 1 stundas}zero{Aktīvs pirms # stundām}one{Aktīvs pirms # stundas}other{Aktīvs pirms # stundām}}</translation>
 <translation id="5605249000617390290">Uzzināt vairāk par cenu izsekošanu</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3403,6 +3405,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Konts</translation>
+<translation id="6299098428775578517">Ieteikumu iestatījumi</translation>
 <translation id="6300452962057769623">{0,plural, =0{Jūsu ierīce tiks restartēta tūlīt}=1{Jūsu ierīce tiks restartēta pēc 1 sekundes}zero{Jūsu ierīce tiks restartēta # sekundēm}one{Jūsu ierīce tiks restartēta # sekundes}other{Jūsu ierīce tiks restartēta # sekundēm}}</translation>
 <translation id="6301104306974789820">Saņemt cenu izsekošanas paziņojumus</translation>
 <translation id="6302546952464230349">Rādīt informāciju par atļauju “<ph name="PERMISSION_NAME" />”</translation>

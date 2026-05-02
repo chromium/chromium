@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Nevarēja ielādēt attēlus.</translation>
 <translation id="3565930036634619844">Cilne numur <ph name="TAB_INDEX" />, kopējais skaits ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Saglabāt citā veidā</translation>
+<translation id="3571703298474554279">Ātrāks lietotnes izmantošanas veids</translation>
 <translation id="3572503683475187385">Pašreizējā cilne tiek kopīgota ar Gemini, kad sākat jaunu tērzēšanas sarunu. Kad kopīgojat cilni ar Gemini, tās saturs un URL tiek nosūtīts uz Google serveriem. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">Jūsu Google kontā</translation>
 <translation id="3575234738189584619">Meklēt ar Lens</translation>
@@ -1701,6 +1702,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6871397658902960384">Sākt pārlūkošanu</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Saglabāt paroli kontā}zero{Saglabāt paroles kontā}one{Saglabāt paroles kontā}other{Saglabāt paroles kontā}}</translation>
 <translation id="6875166646976836138">Šos vienumus varat arī skatīt un pārvaldīt savās grāmatzīmēs, lasīšanas sarakstā vai paroļu pārvaldniekā.</translation>
+<translation id="6878052248816456143">Jebkurā laikā varat piekļūt failiem savā Google diskā.</translation>
 <translation id="6882836635272038266">Standarta aizsardzība pret zināmām bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Saglabājiet {COUNT} paroli savā Google kontā}zero{Saglabājiet {COUNT} paroles savā Google kontā}one{Saglabājiet {COUNT} paroli savā Google kontā}other{Saglabājiet {COUNT} paroles savā Google kontā}}</translation>
 <translation id="6888009575607455378">Vai tiešām vēlaties atmest veiktās izmaiņas?</translation>
@@ -1814,6 +1816,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7345061034321640811">Importēšana nav atļauta</translation>
 <translation id="7347998088283246662">Importējiet paroles, vēsturi, grāmatzīmes un citus datus.</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
+<translation id="7363497636543208734">Tagad ir ērtāk izmantot lietotni.</translation>
 <translation id="7364796246159120393">Izvēlēties failu</translation>
 <translation id="736564850024123010">Mainiet adreses joslas pozīciju, lai pielāgotu saskarni savai gaumei un vajadzībām.</translation>
 <translation id="7366909168761621528">Pārlūkošanas dati</translation>

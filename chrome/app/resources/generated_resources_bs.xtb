@@ -3065,7 +3065,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3053273573829329829">Omogući korisnički pin</translation>
 <translation id="3053274730492362225">Nemoj treptati</translation>
 <translation id="3057938290530993634">Dodirnite i zadržite da zakačite svoje najposjećenije web lokacije da im lako pristupite sljedeći put</translation>
-<translation id="3058002721610176427">Promijenite PIN i zaporku</translation>
+<translation id="3058002721610176427">Promijenite PIN i lozinku</translation>
 <translation id="3058498974290601450">Sinhronizaciju uvijek možete uključiti u postavkama</translation>
 <translation id="3060694926634506594">Vještine</translation>
 <translation id="3060952009917586498">Mijenjanje jezika uređaja. Trenutni jezik je <ph name="LANGUAGE" />.</translation>
@@ -4433,7 +4433,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3995963973192100066">Reproduciranje animacije</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacije koju u posljednje vrijeme niste posjetili}one{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}few{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}other{Radi zaštite vaših podataka uklonjena su odobrenja s web lokacija koje u posljednje vrijeme niste posjetili}}</translation>
 <translation id="399788104667917863">Zakačite na alatnu traku</translation>
-<translation id="3998431043924115701">Postavljajte pitanja dok pregledavate</translation>
+<translation id="3998431043924115701">Postavljajte pitanja dok pregledate</translation>
 <translation id="3998780825367526465">Prikaži slike pregleda kartica</translation>
 <translation id="3998976413398910035">Upravljajte štampačima</translation>
 <translation id="4000360130639414007">Nećete moći koristiti Android aplikacije ni Google Play trgovinu</translation>
@@ -5563,7 +5563,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je {COUNT} oznaka}few{Izbrisane su {COUNT} oznake}other{Izbrisano je {COUNT} oznaka}}</translation>
 <translation id="481689174647911539">Fajl je možda virus ili zlonamjerni softver.<ph name="LINE_BREAK" />Možete ga poslati na Sigurno pregledanje na Googleu da provjerite je li nesiguran. Skeniranja obično traju nekoliko sekundi.</translation>
 <translation id="4816900689218414104">Kreirajte pristupni ključ na telefonu ili tabletu</translation>
-<translation id="4818449958253566215">Dodavanje na izbornik Start</translation>
+<translation id="4818449958253566215">Dodavanje na meni Start</translation>
 <translation id="481852950686014162">Nastavite tamo gdje ste stali u Geminiju i AI načinu rada</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvaraju se sada.}=1{Zatvaraju se za 1 sekundu}one{Zatvaraju se za # sekundu}few{Zatvaraju se za # sekunde}other{Zatvaraju se za # sekundi}}</translation>
 <translation id="4819818293886748542">Preuzmite link alata za podršku</translation>
@@ -6811,7 +6811,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5697664819730124632">Dodajte sliku i redizajnirajte je</translation>
 <translation id="5697832193891326782">Izbornik emoji sličica</translation>
 <translation id="5698136107297470317">Izbrisat ćete podatke usluge <ph name="BRAND" /></translation>
-<translation id="5698815246352480266">Možete nastaviti razgovarati u AI načinu bez prebacivanja kartica. Za početak potvrdite svoj identitet. Također ćete moći pristupati svojim zaporkama i drugim podacima na svim svojim uređajima.</translation>
+<translation id="5698815246352480266">Možete nastaviti chatati s AI načinom rada bez promjene kartica. Da započnete, potvrdite identitet. Također ćete dobiti svoje lozinke i druge stavke na svim svojim uređajima.</translation>
 <translation id="5698878456427040674">Provjerite je li odabrani račun podržan.</translation>
 <translation id="5698900765010620315">Tamna tema u niskom kontrastu</translation>
 <translation id="5699227710146832453">S uređaja</translation>

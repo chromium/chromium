@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">无法加载图片</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
 <translation id="3567168891086460374">换一种方式保存</translation>
+<translation id="3571703298474554279">更快捷的应用使用方式</translation>
 <translation id="3572503683475187385">开始新对话时，系统会与 Gemini 分享当前标签页。如果与 Gemini 分享标签页，系统就会将其内容和网址发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">开始浏览</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{将密码保存到账号}other{将密码保存到账号}}</translation>
 <translation id="6875166646976836138">您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
+<translation id="6878052248816456143">随时访问 Google 云端硬盘中的文件。</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{将 {COUNT} 个密码保存到您的 Google 账号}other{将 {COUNT} 个密码保存到您的 Google 账号}}</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">不得导入</translation>
 <translation id="7347998088283246662">导入密码、历史记录、书签等</translation>
 <translation id="7352651011704765696">出了点问题</translation>
+<translation id="7363497636543208734">现在，在应用中浏览更轻松。</translation>
 <translation id="7364796246159120393">选择文件</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>

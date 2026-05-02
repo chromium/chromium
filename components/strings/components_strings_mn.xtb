@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036436692654972538">Таны төхөөрөмжид хадгална</translation>
 <translation id="1036881361735705143">Дугтуй C4</translation>
+<translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038168778161626396">Зөвхөн шифрлэх</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн мессеж</translation>
@@ -2975,6 +2976,7 @@
 <translation id="5600044805561809264">Та үзэх явцдаа хуваалцаж буй табуудынхаа талаар асуултыг хялбархан тавьж болно.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Удирдлагын зүгээс зөвшөөрөл олгоогүй байна</translation>
+<translation id="5604254791550001355">Зааврыг засах</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 цагийн өмнө идэвхтэй байсан}other{# цагийн өмнө идэвхтэй байсан}}</translation>
 <translation id="5605249000617390290">Үнэ хянах талаар нэмэлт мэдээлэл авах</translation>
 <translation id="5605670050355397069">Тайлан</translation>
@@ -3405,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Данс</translation>
+<translation id="6299098428775578517">Зөвлөмжийн тохиргоо</translation>
 <translation id="6300452962057769623">{0,plural, =0{Таны төхөөрөмжийг одоо эхлүүлнэ}=1{Таны төхөөрөмжийг 1 секундийн дараа эхлүүлнэ}other{Таны төхөөрөмжийг # секундийн дараа эхлүүлнэ}}</translation>
 <translation id="6301104306974789820">Үнэ хянах мэдэгдэл авах</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> зөвшөөрлийн дэлгэрэнгүйг харуулах</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Imeshindwa kupakia picha</translation>
 <translation id="3565930036634619844">Kichupo. <ph name="TAB_INDEX" /> kati ya <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Hifadhi kwa njia nyingine</translation>
+<translation id="3571703298474554279">Njia ya haraka zaidi ya kutumia programu</translation>
 <translation id="3572503683475187385">Kichupo unachotumia sasa kinaruhusiwa kufikiwa na Gemini unapoanzisha gumzo jipya. Ukiruhusu Gemini ifikie kichupo, maudhui na URL ya kichupo hutumwa kwenda Google. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Katika Akaunti yako ya Google</translation>
 <translation id="3575234738189584619">Tafuta ukitumia Lenzi</translation>
@@ -1701,6 +1702,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6871397658902960384">Anza kuvinjari</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Hifadhi nenosiri kwenye akaunti}other{Hifadhi manenosiri kwenye akaunti}}</translation>
 <translation id="6875166646976836138">Unaweza pia kuangalia na kudhibiti vipengee hivi kwenye alamisho, orodha ya kusoma au kidhibiti chako cha manenosiri.</translation>
+<translation id="6878052248816456143">Fikia faili zilizo kwenye Hifadhi yako ya Google wakati wowote.</translation>
 <translation id="6882836635272038266">Ulinzi wa kawaida dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Hifadhi nenosiri {COUNT} kwenye Akaunti yako ya Google}other{Hifadhi manenosiri {COUNT} kwenye Akaunti yako ya Google}}</translation>
 <translation id="6888009575607455378">Je, una uhakika unataka kufuta mabadiliko uliyofanya?</translation>
@@ -1814,6 +1816,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7345061034321640811">Huruhusiwi kupakia</translation>
 <translation id="7347998088283246662">Pakia manenosiri, historia, alamisho na zaidi</translation>
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
+<translation id="7363497636543208734">Sasa ni rahisi zaidi kuvinjari kwenye programu.</translation>
 <translation id="7364796246159120393">Chagua Faili</translation>
 <translation id="736564850024123010">Badilisha nafasi ya sehemu ya anwani ili uitumie upendavyo.</translation>
 <translation id="7366909168761621528">Data ya kuvinjari</translation>

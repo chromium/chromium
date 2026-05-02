@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Зургуудыг ачаалж чадсангүй</translation>
 <translation id="3565930036634619844">Таб. <ph name="NUMBER_OF_TABS" />-н <ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">Өөр аргаар хадгалах</translation>
+<translation id="3571703298474554279">Аппыг ашиглах илүү хурдан арга</translation>
 <translation id="3572503683475187385">Таныг шинэ чат эхлүүлэхэд одоогийн табыг Gemini-тай хуваалцана. Таныг Gemini-тай таб хуваалцахад тухайн табын контент, URL-г Google-д илгээнэ. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Таны Google Бүртгэлд</translation>
 <translation id="3575234738189584619">Lens-р хайх</translation>
@@ -1701,6 +1702,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6871397658902960384">Үзэж эхлээрэй</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Нууц үгийг бүртгэлд хадгалах}other{Нууц үгнүүдийг бүртгэлд хадгалах}}</translation>
 <translation id="6875166646976836138">Та мөн эдгээр зүйлийг хавчуурга, унших жагсаалт, нууц үгний менежертээ харах болон удирдах боломжтой.</translation>
+<translation id="6878052248816456143">Google Драйв дахь файлууддаа хүссэн үедээ хандаарай.</translation>
 <translation id="6882836635272038266">Аюултай гэж мэдэгдсэн веб сайт, таталт болон өргөтгөлийн эсрэг стандарт хамгаалалт.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Таны Google Бүртгэлд {COUNT} нууц үг хадгална}other{Таны Google Бүртгэлд {COUNT} нууц үг хадгална}}</translation>
 <translation id="6888009575607455378">Та өөрчлөлт оруулахаа болихдоо итгэлтэй байна уу?</translation>
@@ -1814,6 +1816,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7345061034321640811">Импортлохыг зөвшөөрдөггүй</translation>
 <translation id="7347998088283246662">Нууц үг, түүх, хавчуурга болон бусад зүйлийг импортлоорой</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
+<translation id="7363497636543208734">Аппад шилжих илүү хялбар боллоо.</translation>
 <translation id="7364796246159120393">Файлаа сонгоно уу</translation>
 <translation id="736564850024123010">Өөрчилсөн хэрэглээнд зориулж хаяг оруулах хэсгийн байрлалаа сэлгэнэ үү.</translation>
 <translation id="7366909168761621528">Хайх өгөгдөл</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036436692654972538">Құрылғыға сақталады.</translation>
 <translation id="1036881361735705143">C4 хатқалтасы</translation>
+<translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038168778161626396">Тек шифрдан шығару</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
@@ -391,6 +392,7 @@
 <translation id="1595731774593926493">Қайта қарау нөмірін жою</translation>
 <translation id="1597307423671074806">WebM бейнесі</translation>
 <translation id="159800670740560023">Chrome кеңесінің сілтемесі. <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> сілтемесін ашу үшін Enter пернесін басыңыз</translation>
+<translation id="1599079390582151174">Жіберілді. Chrome браузерін екінші құрылғыдан ашыңыз.</translation>
 <translation id="1599199147673445968">Жаңа карта ма? <ph name="BEGIN_LINK" />Карта деректемелерін енгізіңіз<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Сұлулық және фитнес</translation>
@@ -1780,6 +1782,7 @@
 <translation id="3752543821772132562">Еленбеген, себебі <ph name="POLICY_NAME" /> орнатылмаған.</translation>
 <translation id="3754210790023674521">"Суреттегі сурет" режимінен шығу</translation>
 <translation id="3754664361823138853">Тарих бетін &amp;ашу</translation>
+<translation id="3757511311058373406">Автоматты түрде шолу сүзгілері</translation>
 <translation id="3759461132968374835">Жақында хабарланған жаңылыстар жоқ. Жаңылыс туралы хабарлау өшірілген кезде орын алған жаңылыстар мұнда көрсетілмейді.</translation>
 <translation id="3760561303380396507">CVC орнына Windows Hello қолданасыз ба?</translation>
 <translation id="3761171036307311438">Карта иесінің аты-жөні:</translation>

@@ -3053,6 +3053,7 @@
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
 <translation id="3057938290530993634">按住即可釘選最常造訪的網站，方便下次存取</translation>
+<translation id="3058002721610176427">變更 PIN 碼和密碼</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3060694926634506594">技能</translation>
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
@@ -3301,6 +3302,7 @@
 <translation id="3254506277019076812">新增技能</translation>
 <translation id="3254516606912442756">自動偵測時區功能已停用</translation>
 <translation id="3255747772218936245">安裝更新</translation>
+<translation id="3256274561709196882">變更 PIN 碼</translation>
 <translation id="3257733480216378006">要允許「<ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />」嗎？</translation>
 <translation id="325797067711573598">已封鎖可疑的下載作業</translation>
 <translation id="3259723213051400722">請再試一次。</translation>
@@ -4415,6 +4417,7 @@
 <translation id="3995963973192100066">播放動畫</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{為保護你的資料，系統已將權限從近期未造訪的一個網站移除}other{為保護你的資料，系統已將權限從近期未造訪的多個網站移除}}</translation>
 <translation id="399788104667917863">在工具列中固定</translation>
+<translation id="3998431043924115701">瀏覽時提問</translation>
 <translation id="3998780825367526465">顯示分頁預覽圖片</translation>
 <translation id="3998976413398910035">管理印表機</translation>
 <translation id="4000360130639414007">你將無法使用 Android 應用程式或 Google Play 商店</translation>
@@ -5541,6 +5544,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="481689174647911539">這個檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />你可以將檔案傳送給 Google 安全瀏覽，檢查是否安全。掃描通常需要幾秒鐘的時間。</translation>
 <translation id="4816900689218414104">在手機或平板電腦上建立密碼金鑰</translation>
+<translation id="4818449958253566215">新增到「開始」功能表</translation>
 <translation id="481852950686014162">接續使用 Gemini 和 AI 模式</translation>
 <translation id="4819323978093861656">{0,plural, =0{立即關閉。}=1{關閉時間：1 秒後}other{關閉時間：# 秒後}}</translation>
 <translation id="4819818293886748542">取得 Support Tool 連結</translation>
@@ -6784,6 +6788,7 @@
 <translation id="5697664819730124632">新增圖像並改造</translation>
 <translation id="5697832193891326782">表情符號挑選器</translation>
 <translation id="5698136107297470317">你即將刪除 <ph name="BRAND" />的資料</translation>
+<translation id="5698815246352480266">你可以繼續與 AI 模式對話，不必切換分頁。通過身分驗證即可使用，密碼和其他資料也會同步到所有裝置。</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="5698900765010620315">低對比深色</translation>
 <translation id="5699227710146832453">來自：</translation>
@@ -7041,6 +7046,7 @@
 <translation id="5870155679953074650">硬性錯誤數</translation>
 <translation id="587234395549708302">要清理書籤嗎？</translation>
 <translation id="5875534259258494936">已終止分享螢幕畫面</translation>
+<translation id="5876691914815078365">Chrome 應用程式 &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">在右側新增分頁</translation>
 <translation id="5877064549588274448">版本已變更。請重新啟動裝置以套用變更。</translation>
 <translation id="5877584842898320529">選取的印表機無法使用或未正確安裝。<ph name="BR" />請檢查你的印表機，或改選其他印表機。</translation>
@@ -11052,6 +11058,7 @@
 <translation id="8673026256276578048">搜尋網頁...</translation>
 <translation id="867329473311423817">已允許管理所有螢幕上的視窗</translation>
 <translation id="8673383193459449849">伺服器問題</translation>
+<translation id="8673530374848624865">管理員已更新裝置的安全性規定</translation>
 <translation id="8674903726754070732">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 Chrome OS 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="8675657007450883866">網站會使用這項功能自動進入全螢幕模式。通常使用者必須進行互動才能進入全螢幕模式。</translation>
 <translation id="8675704450909805533">安裝程式找不到可安裝 <ph name="DEVICE_OS" /> 的有效目的地。</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1036436692654972538">Spara på enheten</translation>
 <translation id="1036881361735705143">C4-kuvert</translation>
+<translation id="1038106730571050514">Visa förslag</translation>
 <translation id="1038168778161626396">Endast chiffrering</translation>
 <translation id="1038842779957582377">okänt namn</translation>
 <translation id="1041998700806130099">Meddelande på arbetsorder</translation>
@@ -391,6 +392,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1595731774593926493">Radera ditt Redress Number</translation>
 <translation id="1597307423671074806">WebM-video</translation>
 <translation id="159800670740560023">Länk till Chrome-tips – tryck på Retur för att öppna <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
+<translation id="1599079390582151174">Skickat. Öppna Chrome på den andra enheten.</translation>
 <translation id="1599199147673445968">Har du ett nytt kort? <ph name="BEGIN_LINK" />Ange kortuppgifter<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ZIP-arkiv</translation>
 <translation id="1604192142734009334">Skönhet och träning</translation>
@@ -1781,6 +1783,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3752543821772132562">Ignoreras eftersom <ph name="POLICY_NAME" /> inte har angetts.</translation>
 <translation id="3754210790023674521">Avsluta bild-i-bild-läge</translation>
 <translation id="3754664361823138853">&amp;Öppna sidan Historik</translation>
+<translation id="3757511311058373406">Filter för automatisk webbsökning</translation>
 <translation id="3759461132968374835">Inga krascher har rapporterats nyligen. Krascher som uppstod när kraschrapporteringen var inaktiverad visas inte här.</translation>
 <translation id="3760561303380396507">Vill du använda Windows Hello i stället för CVC?</translation>
 <translation id="3761171036307311438">Namn på kort:</translation>

@@ -3045,6 +3045,7 @@
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3053274730492362225">不闪烁</translation>
 <translation id="3057938290530993634">按住即可固定最常用的网站，方便以后访问</translation>
+<translation id="3058002721610176427">更改 PIN 码和密码</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060694926634506594">技能</translation>
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
@@ -3294,6 +3295,7 @@
 <translation id="3254506277019076812">添加技能</translation>
 <translation id="3254516606912442756">已停用自动检测时区的功能</translation>
 <translation id="3255747772218936245">安装更新</translation>
+<translation id="3256274561709196882">更改 PIN 码</translation>
 <translation id="3257733480216378006">允许 <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 款扩展程序访问此网站？</translation>
 <translation id="325797067711573598">已阻止可疑下载操作</translation>
 <translation id="3259723213051400722">请重试。</translation>
@@ -4408,6 +4410,7 @@
 <translation id="3995963973192100066">播放动画</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{为保护您的数据，已撤销您近期未访问过的一个网站的权限}other{为保护您的数据，已撤销您近期未访问过的多个网站的权限}}</translation>
 <translation id="399788104667917863">固定到工具栏</translation>
+<translation id="3998431043924115701">在浏览时提问</translation>
 <translation id="3998780825367526465">显示标签页预览图片</translation>
 <translation id="3998976413398910035">管理打印机</translation>
 <translation id="4000360130639414007">您将无法使用 Android 应用或 Google Play 商店</translation>
@@ -5537,6 +5540,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{已删除 1 个书签}other{已删除 {COUNT} 个书签}}</translation>
 <translation id="481689174647911539">此文件可能是病毒或恶意软件。<ph name="LINE_BREAK" />您可将它发送给 Google 安全浏览服务以检查它是否安全。扫描通常需要几秒钟的时间。</translation>
 <translation id="4816900689218414104">在手机或平板电脑上创建通行密钥</translation>
+<translation id="4818449958253566215">添加到“开始”菜单</translation>
 <translation id="481852950686014162">在 Gemini 和 AI 模式中从上次停下的地方继续</translation>
 <translation id="4819323978093861656">{0,plural, =0{正在关闭。}=1{将在 1 秒后关闭}other{将在 # 秒后关闭}}</translation>
 <translation id="4819818293886748542">获取支持工具链接</translation>
@@ -6780,6 +6784,7 @@
 <translation id="5697664819730124632">添加图片并进行创意编辑</translation>
 <translation id="5697832193891326782">表情符号选择器</translation>
 <translation id="5698136107297470317">您即将删除 <ph name="BRAND" />数据</translation>
+<translation id="5698815246352480266">无需切换标签页，即可继续在 AI 模式下对话。如需开始使用，请验证您的身份。登录后，您还可在自己的所有设备上同步保存的密码等信息。</translation>
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
 <translation id="5698900765010620315">低对比度深色</translation>
 <translation id="5699227710146832453">来自您的：</translation>
@@ -7037,6 +7042,7 @@
 <translation id="5870155679953074650">硬故障数</translation>
 <translation id="587234395549708302">要清理书签吗？</translation>
 <translation id="5875534259258494936">屏幕共享已结束</translation>
+<translation id="5876691914815078365">Chrome 应用 &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">在右侧新增标签页</translation>
 <translation id="5877064549588274448">版本已更改。请重新启动设备来应用这些变更。</translation>
 <translation id="5877584842898320529">所选打印机不可用或未正确安装。<ph name="BR" />请检查打印机，或尝试另选一台打印机。</translation>
@@ -11050,6 +11056,7 @@
 <translation id="8673026256276578048">搜索网页...</translation>
 <translation id="867329473311423817">可以管理您的所有显示屏上的窗口</translation>
 <translation id="8673383193459449849">服务器出现问题</translation>
+<translation id="8673530374848624865">管理员更新了设备的安全要求</translation>
 <translation id="8674903726754070732">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 Chrome 操作系统无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
 <translation id="8675657007450883866">网站会使用此功能自动进入全屏模式。通常情况下，需要用户进行互动，才能进入全屏模式。</translation>
 <translation id="8675704450909805533">安装程序找不到可安装 <ph name="DEVICE_OS" /> 的有效目的地。</translation>

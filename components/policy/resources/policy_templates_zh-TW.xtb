@@ -3144,6 +3144,7 @@ PAC 樣式的字串：
 <translation id="3127816006382989270">允許在無痕模式下存取清單中的網址。</translation>
 <translation id="3128072319047570212">Keygen 設定</translation>
 <translation id="3131703464330936425">不允許行動數據漫遊服務</translation>
+<translation id="3131928857191083710">通訊端集區大小設定</translation>
 <translation id="3135820765957090754">如果啟用這項設定，使用者將可在搭載 <ph name="PRODUCT_OS_NAME" /> 的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。使用者必須完成設定流程來明確選擇要啟用這項功能，才能同步 Wi-Fi 網路設定。
 
       如果停用這項設定，使用者就無法同步 Wi-Fi 網路設定。

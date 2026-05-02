@@ -3054,6 +3054,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3053274730492362225">Sin parpadeo</translation>
 <translation id="3057938290530993634">Mantén pulsado para fijar los sitios web que más visitas y acceder a ellos fácilmente la próxima vez</translation>
+<translation id="3058002721610176427">Cambiar el PIN y la contraseña</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en cualquier momento desde la configuración</translation>
 <translation id="3060694926634506594">Habilidades</translation>
 <translation id="3060952009917586498">Cambiar el idioma del dispositivo. El idioma actual es el <ph name="LANGUAGE" />.</translation>
@@ -3305,6 +3306,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3254506277019076812">Añadir habilidad</translation>
 <translation id="3254516606912442756">Se ha inhabilitado la detección automática de la zona horaria</translation>
 <translation id="3255747772218936245">Instalar actualización</translation>
+<translation id="3256274561709196882">Cambiar el PIN</translation>
 <translation id="3257733480216378006">¿Permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Descarga sospechosa bloqueada</translation>
 <translation id="3259723213051400722">Vuelve a intentarlo.</translation>
@@ -4419,6 +4421,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3995963973192100066">Reproducir animación</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Para proteger tus datos, se han eliminado los permisos de un sitio que no has visitado recientemente}other{Para proteger tus datos, se han eliminado los permisos de los sitios que no has visitado recientemente}}</translation>
 <translation id="399788104667917863">Fijar en la barra de herramientas</translation>
+<translation id="3998431043924115701">Haz preguntas mientras navegas</translation>
 <translation id="3998780825367526465">Mostrar imágenes de vista previa de las pestañas</translation>
 <translation id="3998976413398910035">Administrar impresoras</translation>
 <translation id="4000360130639414007">No podrás usar aplicaciones Android ni Google Play Store</translation>
@@ -5548,6 +5551,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="481689174647911539">Este archivo podría ser un virus o malware.<ph name="LINE_BREAK" />Puedes enviarlo a Navegación segura de Google para comprobar su seguridad. Los análisis suelen tardar unos segundos.</translation>
 <translation id="4816900689218414104">Crear una llave de acceso en un teléfono o tablet</translation>
+<translation id="4818449958253566215">Añadiendo al menú Inicio</translation>
 <translation id="481852950686014162">Sigue donde lo dejaste en Gemini y el Modo IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{Cerrando}=1{Se cerrarán en 1 segundo}other{Se cerrarán en # segundos}}</translation>
 <translation id="4819818293886748542">Obtén un enlace a la herramienta de asistencia</translation>
@@ -6793,6 +6797,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5697664819730124632">Añade una imagen y rediséñala</translation>
 <translation id="5697832193891326782">Selector de emojis</translation>
 <translation id="5698136107297470317">Estás a punto de eliminar tus datos de <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Puedes seguir conversando con el Modo IA sin cambiar de pestaña. Para empezar, verifica tu identidad. También tendrás tus contraseñas y otra información en todos tus dispositivos.</translation>
 <translation id="5698878456427040674">Comprueba que la cuenta seleccionada es compatible.</translation>
 <translation id="5698900765010620315">Oscuro de bajo contraste</translation>
 <translation id="5699227710146832453">De tu</translation>
@@ -7050,6 +7055,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5870155679953074650">Fallos complejos</translation>
 <translation id="587234395549708302">¿Borrar marcadores?</translation>
 <translation id="5875534259258494936">Pantalla compartida ha finalizado</translation>
+<translation id="5876691914815078365">Aplicaciones de Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nueva pestaña a la derecha</translation>
 <translation id="5877064549588274448">Se ha cambiado el canal. Reinicia el dispositivo para aplicar los cambios.</translation>
 <translation id="5877584842898320529">La impresora seleccionada no se encuentra disponible o no está bien instalada. <ph name="BR" /> Compruébala o prueba a seleccionar otra.</translation>
@@ -11064,6 +11070,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8673026256276578048">Búsqueda en la Web...</translation>
 <translation id="867329473311423817">Tienen permiso para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="8673383193459449849">Problema en el servidor</translation>
+<translation id="8673530374848624865">Tu administrador ha actualizado los requisitos de seguridad de tu dispositivo</translation>
 <translation id="8674903726754070732">Lamentablemente, tu ordenador está configurado con un identificador de hardware incorrecto. Esto impide que ChromeOS se actualice con los últimos parches de seguridad y hace que el ordenador <ph name="BEGIN_BOLD" />pueda ser vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Los sitios usan esta función para activar la pantalla completa automáticamente. Normalmente, para activar la pantalla completa, se necesita la interacción del usuario.</translation>
 <translation id="8675704450909805533">El instalador no ha encontrado un destino válido donde instalar <ph name="DEVICE_OS" />.</translation>

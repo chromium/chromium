@@ -3292,6 +3292,7 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3127816006382989270">Gizli modda URL listesine erişime izin ver.</translation>
 <translation id="3128072319047570212">Anahtar oluşturucu ayarları</translation>
 <translation id="3131703464330936425">Mobil veri dolaşımına izin verme</translation>
+<translation id="3131928857191083710">Yuva havuzu boyutu ayarları</translation>
 <translation id="3135820765957090754">Bu ayar etkinleştirildiğinde kullanıcıların, <ph name="PRODUCT_OS_NAME" /> cihazları ile bağlı Android telefonları arasında kablosuz ağ yapılandırmalarını senkronize etmelerine izin verilir. Kablosuz ağ yapılandırmaları senkronize edilmeden önce kullanıcıların bir kurulum akışını tamamlayarak bu özelliğe açık bir şekilde kaydolmaları gerekir.
 
       Bu ayar devre dışı bırakılırsa kullanıcıların, kablosuz ağ yapılandırmalarını senkronize etmelerine izin verilmez.

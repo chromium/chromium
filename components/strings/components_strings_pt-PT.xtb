@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036436692654972538">Guarda no seu dispositivo</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
+<translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1038168778161626396">Cifrar apenas</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
@@ -391,6 +392,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1595731774593926493">Elimine o número de correção</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link de dica do Chrome, prima Enter para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
+<translation id="1599079390582151174">Enviado. Abra o Chrome no seu outro dispositivo.</translation>
 <translation id="1599199147673445968">Tem um cartão novo? <ph name="BEGIN_LINK" />Introduza os detalhes do cartão<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Criar ZIP</translation>
 <translation id="1604192142734009334">Beleza e fitness</translation>
@@ -1781,6 +1783,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
 <translation id="3754210790023674521">Sair de ecrã no ecrã</translation>
 <translation id="3754664361823138853">&amp;Abrir a página Histórico</translation>
+<translation id="3757511311058373406">Filtros de navegação automática</translation>
 <translation id="3759461132968374835">Não tem comunicado falhas recentemente. As falhas que tenham ocorrido enquanto a criação de relatórios de falha esteve desativada não surgem aqui.</translation>
 <translation id="3760561303380396507">Quer utilizar o Windows Hello em vez do CVC?</translation>
 <translation id="3761171036307311438">Nome no cartão:</translation>

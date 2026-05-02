@@ -3069,6 +3069,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3053273573829329829">Įgalinti naudotojo PIN kodą</translation>
 <translation id="3053274730492362225">Nemirksi</translation>
 <translation id="3057938290530993634">Palieskite ir palaikykite, kad prisegtumėte dažniausiai lankomas svetaines, kad kitą kartą galėtumėte lengvai pasiekti</translation>
+<translation id="3058002721610176427">PIN kodo ir slaptažodžio keitimas</translation>
 <translation id="3058498974290601450">Galite bet kada įjungti sinchronizavimą „Nustatymų“ skiltyje</translation>
 <translation id="3060694926634506594">Įgūdžiai</translation>
 <translation id="3060952009917586498">Keiskite įrenginio kalbą. Dabartinė kalba yra <ph name="LANGUAGE" />.</translation>
@@ -3320,6 +3321,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3254506277019076812">Įgūdžio pridėjimas</translation>
 <translation id="3254516606912442756">Automatinis laiko juostos aptikimas išjungtas</translation>
 <translation id="3255747772218936245">Įdiegti naujinį</translation>
+<translation id="3256274561709196882">PIN kodo pakeitimas</translation>
 <translation id="3257733480216378006">Leisti <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Užblokuotas įtartinas atsisiuntimas</translation>
 <translation id="3259723213051400722">Bandykite dar kartą.</translation>
@@ -4435,6 +4437,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3995963973192100066">Paleisti animaciją</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Siekiant apsaugoti jūsų duomenis, leidimai buvo pašalinti iš svetainės, kurioje pastaruoju metu nesilankėte}one{Siekiant apsaugoti jūsų duomenis, leidimai buvo pašalinti iš svetainių, kuriose pastaruoju metu nesilankėte}few{Siekiant apsaugoti jūsų duomenis, leidimai buvo pašalinti iš svetainių, kuriose pastaruoju metu nesilankėte}many{Siekiant apsaugoti jūsų duomenis, leidimai buvo pašalinti iš svetainių, kuriose pastaruoju metu nesilankėte}other{Siekiant apsaugoti jūsų duomenis, leidimai buvo pašalinti iš svetainių, kuriose pastaruoju metu nesilankėte}}</translation>
 <translation id="399788104667917863">Prisegti prie įrankių juostos</translation>
+<translation id="3998431043924115701">Užduokite klausimų naršydami</translation>
 <translation id="3998780825367526465">Rodyti skirtukų peržiūros vaizdus</translation>
 <translation id="3998976413398910035">Tvarkyti spausdintuvus</translation>
 <translation id="4000360130639414007">Negalėsite naudoti „Android“ programų ar „Google Play“ parduotuvės</translation>
@@ -5564,6 +5567,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4816336393325437908">{COUNT,plural, =1{Ištrinta 1 žymė}one{Ištrinta {COUNT} žymė}few{Ištrintos {COUNT} žymės}many{Ištrinta {COUNT} žymės}other{Ištrinta {COUNT} žymių}}</translation>
 <translation id="481689174647911539">Šis failas gali būti virusas arba kenkėjiška programa.<ph name="LINE_BREAK" />Galite nusiųsti jį „Google“ saugaus naršymo paslaugai, kad patikrintumėte, ar jis nesaugus. Nuskaitymas paprastai trunka kelias sekundes.</translation>
 <translation id="4816900689218414104">Slaptažodžio kūrimas telefonu ar planšetiniu kompiuteriu</translation>
+<translation id="4818449958253566215">Pridedama prie pradžios meniu</translation>
 <translation id="481852950686014162">Tęskite ten, kur baigėte, naudodami „Gemini“ ir DI režimą</translation>
 <translation id="4819323978093861656">{0,plural, =0{Uždaroma dabar.}=1{Bus uždaryta po: vienos sekundės}one{Bus uždaryta po: # sekundės}few{Bus uždaryta po: # sekundžių}many{Bus uždaryta po: # sekundės}other{Bus uždaryta po: # sekundžių}}</translation>
 <translation id="4819818293886748542">Gauti palaikymo įrankio nuorodą</translation>
@@ -6812,6 +6816,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5697664819730124632">Pridėkite vaizdą ir jį perkurkite</translation>
 <translation id="5697832193891326782">Jaustukų rinkiklis</translation>
 <translation id="5698136107297470317">Ketinate ištrinti paslaugos <ph name="BRAND" /> duomenis</translation>
+<translation id="5698815246352480266">Galite toliau kalbėti naudodami DI režimą neperjungdami skirtukų. Jei norite pradėti, patvirtinkite savo tapatybę. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose.</translation>
 <translation id="5698878456427040674">Patikrinkite, ar pasirinkta paskyra palaikoma.</translation>
 <translation id="5698900765010620315">Mažo kontrasto tamsioji</translation>
 <translation id="5699227710146832453">Iš jūsų</translation>
@@ -7069,6 +7074,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5870155679953074650">Sunkūs gedimai</translation>
 <translation id="587234395549708302">Išvalyti žymes?</translation>
 <translation id="5875534259258494936">Ekrano bendrinimas baigtas</translation>
+<translation id="5876691914815078365">„Chrome“ programos &gt; „<ph name="APP_NAME" />“</translation>
 <translation id="5876851302954717356">Naujas skirtukas dešinėje</translation>
 <translation id="5877064549588274448">Kanalas pakeistas. Kad pritaikytumėte pakeitimus, iš naujo paleiskite įrenginį.</translation>
 <translation id="5877584842898320529">Pasirinktas spausdintuvas nepasiekiamas arba netinkamai įdiegtas. <ph name="BR" /> Patikrinkite spausdintuvą arba pabandykite pasirinkti kitą spausdintuvą.</translation>
@@ -11089,6 +11095,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8673026256276578048">Ieškoti žiniatinklyje...</translation>
 <translation id="867329473311423817">Leidžiama tvarkyti langus visuose ekranuose</translation>
 <translation id="8673383193459449849">Serverio problema</translation>
+<translation id="8673530374848624865">Administratorius atnaujino įrenginio saugos reikalavimus</translation>
 <translation id="8674903726754070732">Deja, jūsų kompiuteris sukonfigūruotas naudojant netinkamai suformuotą aparatinės įrangos ID. Tai neleidžia „Chrome“ OS atnaujinti naujausiais saugos pataisymais, o jūsų kompiuteris <ph name="BEGIN_BOLD" />gali būti neatsparus kenkėjiškoms atakoms<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Svetainėse naudojama ši funkcija, kad būtų galima automatiškai įjungti viso ekrano režimą. Paprastai norint įjungti viso ekrano režimą reikia naudotojo sąveikos.</translation>
 <translation id="8675704450909805533">Diegimo programai nepavyko rasti tinkamos paskirties vietos, kad būtų galima įdiegti „<ph name="DEVICE_OS" />“.</translation>

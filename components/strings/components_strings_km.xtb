@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">បិទ</translation>
 <translation id="1036436692654972538">រក្សាទុក​ទៅក្នុង​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="1036881361735705143">ស្រោមសំបុត្រ C4</translation>
+<translation id="1038106730571050514">បង្ហាញ​ការណែនាំ</translation>
 <translation id="1038168778161626396">បម្លែងតែប៉ុណ្ណោះ</translation>
 <translation id="1038842779957582377">ឈ្មោះមិនស្គាល់</translation>
 <translation id="1041998700806130099">សារអំពី​សន្លឹកកិច្ចការ</translation>
@@ -2978,6 +2979,7 @@
 <translation id="5600044805561809264">អ្នកអាច​ងាយស្រួល​សួរសំណួរ​អំពី​ផ្ទាំង​ដែលអ្នក​កំពុង​ចែករំលែក នៅពេល​ដែលអ្នក​រុករក។</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ឬ <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ការគ្រប់គ្រងមិនត្រូវបានគាំទ្រទេ</translation>
+<translation id="5604254791550001355">កែ​សារតម្រុយ</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{សកម្ម 1 ម៉ោង​មុន}other{សកម្ម # ម៉ោង​មុន}}</translation>
 <translation id="5605249000617390290">ស្វែងយល់​បន្ថែម​អំពី​ការតាមដាន​តម្លៃ</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3409,6 +3411,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC៖</translation>
 <translation id="629730747756840877">គណនី</translation>
+<translation id="6299098428775578517">ការកំណត់​ការណែនាំ</translation>
 <translation id="6300452962057769623">{0,plural, =0{ឧបករណ៍របស់អ្នកនឹងចាប់ផ្ដើមឡើងវិញឥឡូវនេះ}=1{ឧបករណ៍របស់អ្នកនឹងចាប់ផ្ដើមឡើងវិញក្នុងរយៈពេល 1 វិនាទីទៀត}other{ឧបករណ៍របស់អ្នកនឹងចាប់ផ្ដើមឡើងវិញក្នុងរយៈពេល # វិនាទីទៀត}}</translation>
 <translation id="6301104306974789820">ទទួលការជូនដំណឹង​ពីការតាមដាន​តម្លៃ</translation>
 <translation id="6302546952464230349">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ការអនុញ្ញាត <ph name="PERMISSION_NAME" /></translation>

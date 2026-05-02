@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036436692654972538">در دستگاهتان ذخیره می‌شود</translation>
 <translation id="1036881361735705143">پاکت سی۴</translation>
+<translation id="1038106730571050514">نمایش پیشنهادها</translation>
 <translation id="1038168778161626396">فقط به رمز درآورد</translation>
 <translation id="1038842779957582377">نام ناشناس</translation>
 <translation id="1041998700806130099">پیام برگ کار</translation>
@@ -2975,6 +2976,7 @@
 <translation id="5600044805561809264">هنگام مرور کردن، می‌توانید به‌راحتی درباره زبانه‌هایی که هم‌رسانی می‌کنید سؤال بپرسید.</translation>
 <translation id="5603469469737324249">‫<ph name="ISSUER_1_NAME" /> یا <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">مدیریت پشتیبانی نمی‌شود</translation>
+<translation id="5604254791550001355">ویرایش کردن پیام‌واره</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{‫۱ ساعت قبل فعال بود}one{‫# ساعت قبل فعال بود}other{‫# ساعت قبل فعال بود}}</translation>
 <translation id="5605249000617390290">درباره پیگیری قیمت بیشتر بدانید</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3408,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">حساب</translation>
+<translation id="6299098428775578517">تنظیمات پیشنهاد</translation>
 <translation id="6300452962057769623">{0,plural, =0{دستگاه اکنون بازراه‌اندازی خواهد شد}=1{دستگاه یک ثانیه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # ثانیه دیگر بازراه‌اندازی خواهد شد}}</translation>
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
 <translation id="6302546952464230349">نمایش جزئیات اجازه <ph name="PERMISSION_NAME" /></translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvaj drugi način</translation>
+<translation id="3571703298474554279">Brži način korišćenja aplikacije</translation>
 <translation id="3572503683475187385">Aktuelna kartica se deli sa Gemini-jem kada započnete novi čet. Kada delite karticu sa Gemini-jem, njen sadržaj i URL šalju se Google-u. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Google nalogu</translation>
 <translation id="3575234738189584619">Pretražujte pomoću Objektiva</translation>
@@ -1701,6 +1702,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6871397658902960384">Počnite da pregledate</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Sačuvaj lozinku na nalogu}one{Sačuvaj lozinke na nalogu}few{Sačuvaj lozinke na nalogu}other{Sačuvaj lozinke na nalogu}}</translation>
 <translation id="6875166646976836138">Možete i da pregledate ove stavke i upravljate njima u obeleživačima, na listi za čitanje ili u menadžeru lozinki.</translation>
+<translation id="6878052248816456143">Pristupajte fajlovima na Google disku u svakom trenutku.</translation>
 <translation id="6882836635272038266">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Sačuvajte {COUNT} lozinku na Google nalogu}one{Sačuvajte {COUNT} lozinku na Google nalogu}few{Sačuvajte {COUNT} lozinke na Google nalogu}other{Sačuvajte {COUNT} lozinke na Google nalogu}}</translation>
 <translation id="6888009575607455378">Želite li stvarno da odbacite promene?</translation>
@@ -1814,6 +1816,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7345061034321640811">Uvoz nije dozvoljen</translation>
 <translation id="7347998088283246662">Uvezite lozinke, istoriju, obeleživače i drugo</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
+<translation id="7363497636543208734">Kretanje aplikacijom sada je jednostavnije.</translation>
 <translation id="7364796246159120393">Odaberi fajl</translation>
 <translation id="736564850024123010">Promenite položaj trake za adresu da biste imali prilagođeni doživljaj.</translation>
 <translation id="7366909168761621528">Podaci pregledanja</translation>

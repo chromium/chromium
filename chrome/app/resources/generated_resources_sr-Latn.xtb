@@ -3051,6 +3051,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3053273573829329829">Omogući PIN korisnika</translation>
 <translation id="3053274730492362225">Ne trepći</translation>
 <translation id="3057938290530993634">Dodirnite i zadržite da biste zakačili najposećenije veb-sajtove radi lakšeg pristupa sledeći put</translation>
+<translation id="3058002721610176427">Promenite PIN i lozinku</translation>
 <translation id="3058498974290601450">Možete da uključite sinhronizaciju u podešavanjima u bilo kom trenutku</translation>
 <translation id="3060694926634506594">Veštine</translation>
 <translation id="3060952009917586498">Promenite jezik uređaja. Aktuelni jezik je <ph name="LANGUAGE" />.</translation>
@@ -3302,6 +3303,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3254506277019076812">Dodajte veštinu</translation>
 <translation id="3254516606912442756">Automatsko otkrivanje vremenske zone je onemogućeno</translation>
 <translation id="3255747772218936245">Instaliraj ažuriranje</translation>
+<translation id="3256274561709196882">Promenite PIN</translation>
 <translation id="3257733480216378006">Želite da dozvolite dodatak <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Sumnjivo preuzimanje je blokirano</translation>
 <translation id="3259723213051400722">Probajte ponovo.</translation>
@@ -4417,6 +4419,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3995963973192100066">Pustite animaciju</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Da bismo zaštitili podatke, dozvole su uklonjene za sajt koji niste nedavno posećivali}one{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}few{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}other{Da bismo zaštitili podatke, dozvole su uklonjene za sajtove koje niste nedavno posećivali}}</translation>
 <translation id="399788104667917863">Zakačite na traku s alatkama</translation>
+<translation id="3998431043924115701">Postavljajte pitanja dok pregledate</translation>
 <translation id="3998780825367526465">Prikaži slike za pregled kartica</translation>
 <translation id="3998976413398910035">Upravljajte štampačima</translation>
 <translation id="4000360130639414007">Nećete moći da koristite Android aplikacije niti Google Play prodavnicu</translation>
@@ -5546,6 +5549,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4816336393325437908">{COUNT,plural, =1{1 obeleživač je izbrisan}one{{COUNT} obeleživač je izbrisan}few{{COUNT} obeleživača su izbrisana}other{{COUNT} obeleživača je izbrisano}}</translation>
 <translation id="481689174647911539">Ovaj fajl je možda virus ili malver.<ph name="LINE_BREAK" />Možete da ga pošaljete Google bezbednom pregledanju da biste proverili da li je bezbedan. Skeniranje obično traje nekoliko sekundi.</translation>
 <translation id="4816900689218414104">Napravite pristupni ključ na telefonu ili tabletu</translation>
+<translation id="4818449958253566215">Dodaje se u meni Start</translation>
 <translation id="481852950686014162">Nastavite tamo gde ste stali u Gemini-ju i AI režimu</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvara se odmah.}=1{Zatvara se za 1 sekundu}one{Zatvara se za # sekundu}few{Zatvara se za # sekunde}other{Zatvara se za # sekundi}}</translation>
 <translation id="4819818293886748542">Preuzmite link alatke za podršku</translation>
@@ -6792,6 +6796,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5697664819730124632">Dodajte sliku i redizajnirajte je</translation>
 <translation id="5697832193891326782">Birač emodžija</translation>
 <translation id="5698136107297470317">Izbrisaćete podatke tipa <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Možete da nastavite da četujete sa AI režimom bez prelaska na drugu karticu. Za početak potvrdite da ste to vi. Moći ćete i da pristupate lozinkama i drugom sadržaju na svim uređajima.</translation>
 <translation id="5698878456427040674">Proverite da li je izabrani nalog podržan.</translation>
 <translation id="5698900765010620315">Tamna niskog kontrasta</translation>
 <translation id="5699227710146832453">Sa uređaja</translation>
@@ -7049,6 +7054,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5870155679953074650">Greške u vezi sa hard-diskom</translation>
 <translation id="587234395549708302">Želite da obrišete obeleživače?</translation>
 <translation id="5875534259258494936">Deljenje sadržaja ekrana je završeno</translation>
+<translation id="5876691914815078365">Chrome aplikacije &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nova kartica na desnoj strani</translation>
 <translation id="5877064549588274448">Kanal je promenjen. Pokrenite ponovo uređaj da biste primenili promene.</translation>
 <translation id="5877584842898320529">Izabrani štampač nije dostupan ili nije pravilno instaliran. <ph name="BR" /> Proverite štampač ili izaberite neki drugi.</translation>
@@ -11067,6 +11073,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8673026256276578048">Pretraži Veb...</translation>
 <translation id="867329473311423817">Dozvoljeno im je da upravljaju prozorima na svim ekranima</translation>
 <translation id="8673383193459449849">Problem sa serverom</translation>
+<translation id="8673530374848624865">Administrator je ažurirao bezbednosne uslove za uređaj</translation>
 <translation id="8674903726754070732">Nažalost, računar je konfigurisan pomoću pogrešno formatiranog ID-a hardvera. To sprečava da se Chrome OS ažurira najnovijim bezbednosnim ispravkama i računar <ph name="BEGIN_BOLD" />može da bude podložan zlonamernim napadima<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Sajtovi koriste ovu funkciju da bi automatski ušli u režim celog ekrana. Za prelazak na ceo ekran obično je potrebna interakcija korisnika.</translation>
 <translation id="8675704450909805533">Program za instalaciju nije uspeo da pronađe ispravno odredište za instaliranje sistema <ph name="DEVICE_OS" />.</translation>

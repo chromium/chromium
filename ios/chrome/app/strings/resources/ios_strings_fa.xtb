@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">بار کردن تصاویر ممکن نبود</translation>
 <translation id="3565930036634619844">زبانه. ‫<ph name="TAB_INDEX" /> از <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ذخیره به روشی دیگر</translation>
+<translation id="3571703298474554279">روشی سریع‌تر برای استفاده از برنامه</translation>
 <translation id="3572503683475187385">‏وقتی که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. وقتی که زبانه‌ای را با Gemini هم‌رسانی می‌کنید، محتوا و نشانی وب آن به Google ارسال می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏در «حساب Google» شما</translation>
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
@@ -1701,6 +1702,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6871397658902960384">شروع مرور</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{ذخیره کردن گذرواژه در حساب}one{ذخیره کردن گذرواژه در حساب}other{ذخیره کردن گذرواژه‌ها در حساب}}</translation>
 <translation id="6875166646976836138">همچنین می‌توانید این موارد را در نشانک‌ها، «فهرست خواندن»، یا «مدیر گذرواژه» مشاهده و مدیریت کنید.</translation>
+<translation id="6878052248816456143">‏هرزمان خواستید به فایل‌های Google Drive خود دسترسی داشته باشید.</translation>
 <translation id="6882836635272038266">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}one{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}other{‏ذخیره کردن {COUNT} گذرواژه در «حساب Google» شما}}</translation>
 <translation id="6888009575607455378">مطمئن هستید می‌خواهید از تغییراتتان صرف‌نظر کنید؟</translation>
@@ -1814,6 +1816,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7345061034321640811">وارد کردن مجاز نیست</translation>
 <translation id="7347998088283246662">گذرواژه‌ها، سابقه، نشانک‌ها، و موارد دیگر را وارد کنید.</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
+<translation id="7363497636543208734">اکنون گشت‌وگذار در برنامه آسان‌تر شده است.</translation>
 <translation id="7364796246159120393">انتخاب فایل</translation>
 <translation id="736564850024123010">برای داشتن تجربه‌ای سفارشی‌سازی‌شده، جای نوار نشانی را تغییر دهید.</translation>
 <translation id="7366909168761621528">داده‌های مرور</translation>

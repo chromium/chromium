@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1036436692654972538">ບັນທຶກໃສ່ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
+<translation id="1038106730571050514">ສະແດງການແນະນຳ</translation>
 <translation id="1038168778161626396">ປ່ຽນເປັນລະຫັດເທົ່ານັ້ນ</translation>
 <translation id="1038842779957582377">ຊື່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="1041998700806130099">ຂໍ້ຄວາມແຜ່ນວຽກ</translation>
@@ -2974,6 +2975,7 @@
 <translation id="5600044805561809264">ທ່ານສາມາດຖາມຄຳຖາມກ່ຽວກັບແຖບທີ່ທ່ານກຳລັງແບ່ງປັນໄດ້ຢ່າງງ່າຍດາຍໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງ.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ຫຼື <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">ການຈັດການບໍ່ໄດ້ຮັບການຮອງຮັບ</translation>
+<translation id="5604254791550001355">ແກ້ໄຂພຣອມ</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{ນຳໃຊ້ເມື່ອ 1 ຊົ່ວໂມງກ່ອນ}other{ນຳໃຊ້ເມື່ອ # ຊົ່ວໂມງກ່ອນ}}</translation>
 <translation id="5605249000617390290">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕາມລາຄາ</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">ບັນ​ຊີ</translation>
+<translation id="6299098428775578517">ການຕັ້ງຄ່າຄຳແນະນຳ</translation>
 <translation id="6300452962057769623">{0,plural, =0{ຕອນນີ້ຈະຣີສະຕາດອຸປະກອນຂອງທ່ານແລ້ວ}=1{ອຸປະກອນຂອງທ່ານຈະຣີສະຕາດໃນ 1 ວິນາທີ}other{ອຸປະກອນຂອງທ່ານຈະຣີສະຕາດໃນ # ວິນາທີ}}</translation>
 <translation id="6301104306974789820">ຮັບການແຈ້ງເຕືອນການຕິດຕາມລາຄາ</translation>
 <translation id="6302546952464230349">ສະແດງລາຍລະອຽດຂອງການອະນຸຍາດ <ph name="PERMISSION_NAME" /></translation>

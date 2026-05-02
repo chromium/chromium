@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1036436692654972538">Stoor op jou toestel</translation>
 <translation id="1036881361735705143">Koevert C4</translation>
+<translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1038168778161626396">Net met syfers</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Taakbladsyboodskap</translation>
@@ -2974,6 +2975,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5600044805561809264">Jy kan maklik vrae vra oor die oortjies wat jy deel terwyl jy blaai.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> of <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Bestuur word nie gesteun nie</translation>
+<translation id="5604254791550001355">Wysig instruksieteks</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktief 1 uur gelede}other{Aktief # uur gelede}}</translation>
 <translation id="5605249000617390290">Kom meer te wete oor prysnasporing</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3405,6 +3407,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Rekening</translation>
+<translation id="6299098428775578517">Voorstelinstellings</translation>
 <translation id="6300452962057769623">{0,plural, =0{Jou toestel sal nou herbegin}=1{Jou toestel sal oor 1 sekonde herbegin}other{Jou toestel sal oor # sekondes herbegin}}</translation>
 <translation id="6301104306974789820">Kry prysnasporingkennisgewings</translation>
 <translation id="6302546952464230349">Wys <ph name="PERMISSION_NAME" />-toestemmingbesonderhede</translation>

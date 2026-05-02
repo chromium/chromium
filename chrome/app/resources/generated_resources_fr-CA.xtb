@@ -3056,6 +3056,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3053273573829329829">Activer le NIP de l'utilisateur</translation>
 <translation id="3053274730492362225">Ne clignote pas</translation>
 <translation id="3057938290530993634">Maintenez le doigt sur l'écran pour épingler vos sites Web les plus visités afin d'y accéder facilement la prochaine fois.</translation>
+<translation id="3058002721610176427">Modifier votre NIP et votre mot de passe</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3060694926634506594">Compétences</translation>
 <translation id="3060952009917586498">Modifier la langue de l'appareil. La langue actuelle est : <ph name="LANGUAGE" />.</translation>
@@ -3307,6 +3308,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3254506277019076812">Ajouter une compétence</translation>
 <translation id="3254516606912442756">Détection de fuseau horaire automatique désactivée</translation>
 <translation id="3255747772218936245">Installer la mise à jour</translation>
+<translation id="3256274561709196882">Modifier votre NIP</translation>
 <translation id="3257733480216378006">Autoriser <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Téléchargement suspect bloqué</translation>
 <translation id="3259723213051400722">Veuillez réessayer.</translation>
@@ -4422,6 +4424,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3995963973192100066">Faire jouer l'animation</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Pour protéger vos données, les autorisations ont été retirées pour un site que vous n'avez pas visité récemment}one{Pour protéger vos données, les autorisations ont été retirées pour un site que vous n'avez pas visité récemment}other{Pour protéger vos données, les autorisations ont été retirées pour des sites que vous n'avez pas visités récemment}}</translation>
 <translation id="399788104667917863">Épingler à la barre d'outils</translation>
+<translation id="3998431043924115701">Posez des questions pendant la navigation</translation>
 <translation id="3998780825367526465">Afficher les images d'aperçu des onglets</translation>
 <translation id="3998976413398910035">Gérer les imprimantes</translation>
 <translation id="4000360130639414007">Vous ne pourrez pas utiliser les applications Android ni la boutique Google Play Store</translation>
@@ -5551,6 +5554,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
 <translation id="481689174647911539">Ce fichier peut être un virus ou un logiciel malveillant.<ph name="LINE_BREAK" />Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
 <translation id="4816900689218414104">Créer une clé d'accès sur un téléphone ou une tablette</translation>
+<translation id="4818449958253566215">Ajout d'un onglet au menu Démarrer en cours…</translation>
 <translation id="481852950686014162">Reprendre là où vous vous étiez arrêté dans Gemini et en mode IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fermeture maintenant.}=1{Fermeture dans : 1 seconde}one{Fermeture dans : # seconde}other{Fermeture dans : # secondes}}</translation>
 <translation id="4819818293886748542">Obtenir un lien vers l'outil d'assistance</translation>
@@ -6796,6 +6800,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5697664819730124632">Ajoutez une image et réimaginez-la</translation>
 <translation id="5697832193891326782">Sélecteur d'emoji</translation>
 <translation id="5698136107297470317">Vous êtes sur le point de supprimer vos données du <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Vous pouvez continuer à clavarder avec le mode IA sans changer d'onglet. Pour commencer, confirmez votre identité. Vous obtiendrez également vos mots de passe et bien plus encore sur tous vos appareils.</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est pris en charge.</translation>
 <translation id="5698900765010620315">Sombre à contraste faible</translation>
 <translation id="5699227710146832453">À partir de votre</translation>
@@ -7053,6 +7058,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5870155679953074650">Défaillances matérielles</translation>
 <translation id="587234395549708302">Nettoyer les favoris?</translation>
 <translation id="5875534259258494936">Le partage d'écran est terminé</translation>
+<translation id="5876691914815078365">Applis Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nouvel onglet à droite</translation>
 <translation id="5877064549588274448">La version a été changée. Redémarrez votre appareil pour appliquer les modifications.</translation>
 <translation id="5877584842898320529">L'imprimante sélectionnée n'est pas accessible ou n'est pas installée correctement. <ph name="BR" /> Veuillez vérifier votre imprimante ou essayez d'en sélectionner une autre.</translation>
@@ -11068,6 +11074,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8673026256276578048">Rechercher sur Internet...</translation>
 <translation id="867329473311423817">Autorisé à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8673383193459449849">Problème de serveur</translation>
+<translation id="8673530374848624865">Votre administrateur a mis à jour les exigences de sécurité pour votre appareil</translation>
 <translation id="8674903726754070732">Malheureusement, votre ordinateur est configuré avec un identifiant de matériel malformé. Cela empêche l'installation des derniers correctifs de sécurité pour Chrome OS. Votre ordinateur <ph name="BEGIN_BOLD" />peut ainsi être vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Les sites utilisent cette fonctionnalité pour entrer automatiquement en mode Plein écran. En règle générale, l'entrée en mode Plein écran nécessite une interaction de l'utilisateur.</translation>
 <translation id="8675704450909805533">Le programme d'installation n'a pas trouvé de destination valide pour l'installation de <ph name="DEVICE_OS" />.</translation>

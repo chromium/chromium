@@ -3052,6 +3052,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3053273573829329829">Gaitu erabiltzailearen PINa</translation>
 <translation id="3053274730492362225">Ez egin keinurik</translation>
 <translation id="3057938290530993634">Eduki sakatuta gehien bisitatzen dituzun webguneak ainguratzeko, hurrengoan erraz atzitu ahal izateko</translation>
+<translation id="3058002721610176427">Aldatu PINa eta pasahitza</translation>
 <translation id="3058498974290601450">Sinkronizazioa aktibatzeko, joan ezarpenetara</translation>
 <translation id="3060694926634506594">Gaitasunak</translation>
 <translation id="3060952009917586498">Aldatu gailuaren hizkuntza. Oraingo hizkuntza <ph name="LANGUAGE" /> da.</translation>
@@ -3301,6 +3302,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3254506277019076812">Gehitu gaitasun bat</translation>
 <translation id="3254516606912442756">Desgaituta dago ordu-zonaren hautemate automatikoa</translation>
 <translation id="3255747772218936245">Instalatu eguneratzea</translation>
+<translation id="3256274561709196882">Aldatu PINa</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> onartu nahi dituzu?</translation>
 <translation id="325797067711573598">Deskarga susmagarri bat blokeatu da</translation>
 <translation id="3259723213051400722">Saiatu berriro.</translation>
@@ -4416,6 +4418,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3995963973192100066">Erreproduzitu animazioa</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Zure datuak babesteko, baimenak kendu zaizkio azkenaldian bisitatu ez duzun webgune bati}other{Zure datuak babesteko, baimenak kendu zaizkie azkenaldian bisitatu ez dituzun webgune batzuei}}</translation>
 <translation id="399788104667917863">Ainguratu tresna-barran</translation>
+<translation id="3998431043924115701">Egin galderak sarea arakatu bitartean</translation>
 <translation id="3998780825367526465">Erakutsi fitxen aurrebisten irudiak</translation>
 <translation id="3998976413398910035">Kudeatu inprimagailuak</translation>
 <translation id="4000360130639414007">Ezin izango dituzu erabili Android-erako aplikazioak edo Google Play Store</translation>
@@ -5545,6 +5548,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4816336393325437908">{COUNT,plural, =1{1 laster-marka ezabatu da}other{{COUNT} laster-marka ezabatu dira}}</translation>
 <translation id="481689174647911539">Baliteke fitxategi hau birusa edo malwarea izatea.<ph name="LINE_BREAK" />Segurua den ala ez egiaztatzeko, Google-ren Arakatze segurua eginbideari bidal diezaiokezu. Segundo gutxi batzuk behar izaten dira egiaztatzeko.</translation>
 <translation id="4816900689218414104">Sortu sarbide-gako bat telefono edo tableta batean</translation>
+<translation id="4818449958253566215">Hasierako menuan gehitzen</translation>
 <translation id="481852950686014162">Berrekin utzitako tokitik Gemini-n eta AA moduan</translation>
 <translation id="4819323978093861656">{0,plural, =0{Itxi egingo da.}=1{Segundo bat barru itxiko da}other{# segundo barru itxiko da}}</translation>
 <translation id="4819818293886748542">Lortu laguntza-tresnarako esteka bat</translation>
@@ -6788,6 +6792,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5697664819730124632">Gehitu irudi bat eta irudika ezazu berriro</translation>
 <translation id="5697832193891326782">Emoji-hautatzailea</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> zerbitzuko datuak ezabatuko dituzu</translation>
+<translation id="5698815246352480266">AA moduarekin elkarrizketak izaten jarrai dezakezu fitxaz aldatu gabe. Hasteko, egiaztatu zeu zarela. Pasahitzak eta beste ere izango dituzu gailu guztietan.</translation>
 <translation id="5698878456427040674">Egiaztatu hautatutako kontua onartzen den.</translation>
 <translation id="5698900765010620315">Kontraste txikiko gai iluna</translation>
 <translation id="5699227710146832453">Hemendik:</translation>
@@ -7045,6 +7050,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5870155679953074650">Hutsegite larriak</translation>
 <translation id="587234395549708302">Laster-markak garbitu nahi dituzu?</translation>
 <translation id="5875534259258494936">Amaitu da pantaila-partekatzea</translation>
+<translation id="5876691914815078365">Chrome-ren aplikazioak &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Fitxa berria eskuinean</translation>
 <translation id="5877064549588274448">Kanala aldatu da. Aldaketak aplikatzeko berrabiarazi gailua.</translation>
 <translation id="5877584842898320529">Hautatutako inprimagailua ez dago erabilgarri edo ez da behar bezala instalatu. <ph name="BR" /> Egiaztatu inprimagailua edo hautatu beste bat.</translation>
@@ -11056,6 +11062,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8673026256276578048">Bilatu Interneten…</translation>
 <translation id="867329473311423817">Leihoak pantaila guztietan kudeatzeko baimena dutenak</translation>
 <translation id="8673383193459449849">Zerbitzariaren arazoa</translation>
+<translation id="8673530374848624865">Administratzaileak gailuaren segurtasun-eskakizunak eguneratu ditu</translation>
 <translation id="8674903726754070732">Ordenagailua gaizki eratutako hardware-identifikatzaile batekin konfiguratuta dago. Ondorioz, ezin da eguneratu Chrome OS azken segurtasun-konponketekin, eta baliteke ordenagailuak <ph name="BEGIN_BOLD" />asmo txarreko erasoak jasotzea<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Webguneek eginbide hau erabiltzen dute pantaila osoko moduan automatikoki sartzeko. Normalean, pantaila osoan sartzeko erabiltzailearen interakzio osoa behar da.</translation>
 <translation id="8675704450909805533">Instalatzaileak ezin izan du aurkitu <ph name="DEVICE_OS" /> instalatzeko balio duen helmugarik.</translation>

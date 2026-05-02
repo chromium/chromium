@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Resimler yüklenemedi</translation>
 <translation id="3565930036634619844">Sekme. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Başka şekilde kaydet</translation>
+<translation id="3571703298474554279">Uygulamayı daha hızlı kullanın</translation>
 <translation id="3572503683475187385">Yeni bir sohbet başlattığınızda geçerli sekme Gemini ile paylaşılır. Gemini ile paylaştığınız sekmelerin içerikleri ve URL'leri Google'a gönderilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">Google Hesabınızda</translation>
 <translation id="3575234738189584619">Lens ile ara</translation>
@@ -1701,6 +1702,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6871397658902960384">Göz atmaya başlayın</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Şifreyi hesaba kaydet}other{Şifreleri hesaba kaydet}}</translation>
 <translation id="6875166646976836138">Bu öğeleri yer işaretlerinizde, okuma listenizde veya şifre yöneticinizde de görüntüleyebilir ve yönetebilirsiniz.</translation>
+<translation id="6878052248816456143">Google Drive'ınızdaki dosyalara istediğiniz zaman erişin.</translation>
 <translation id="6882836635272038266">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı standart koruma.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} şifreyi Google Hesabınıza kaydedin}other{{COUNT} şifreyi Google Hesabınıza kaydedin}}</translation>
 <translation id="6888009575607455378">Değişikliklerinizi iptal etmek istediğinizden emin misiniz?</translation>
@@ -1814,6 +1816,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7345061034321640811">İçe aktarmaya izin verilmiyor</translation>
 <translation id="7347998088283246662">Şifreler, geçmiş, yer işaretleri ve daha fazlasını içe aktarın</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
+<translation id="7363497636543208734">Uygulamada gezinmek artık daha kolay.</translation>
 <translation id="7364796246159120393">Dosya Seç</translation>
 <translation id="736564850024123010">Özelleştirilmiş bir deneyim için adres çubuğunuzun konumunu değiştirin.</translation>
 <translation id="7366909168761621528">Tarama verileri</translation>

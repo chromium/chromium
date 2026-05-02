@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Vala</translation>
 <translation id="1036436692654972538">Ilondoloza edivayisini yakho</translation>
 <translation id="1036881361735705143">Imvilophu ye-C4</translation>
+<translation id="1038106730571050514">Bonisa iziphakamiso</translation>
 <translation id="1038168778161626396">I-encipher kuphela</translation>
 <translation id="1038842779957582377">igama elingaziwa</translation>
 <translation id="1041998700806130099">Umlayezo weshidi lomsebenzi</translation>
@@ -2971,6 +2972,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5600044805561809264">Ungabuza imibuzo emayelana namathebhu owabelana ngawo kalula njengoba ubhrawuza.</translation>
 <translation id="5603469469737324249">I-<ph name="ISSUER_1_NAME" /> noma i-<ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Ukuphathwa akusekelwe</translation>
+<translation id="5604254791550001355">Hlela umyalelo</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Ibisebenza ehorani eli-1 elidlule}one{Ibisebenza emahora angu-# adlule}other{Ibisebenza emahora angu-# adlule}}</translation>
 <translation id="5605249000617390290">Funda kabanzi mayelana nokulandelela intengo</translation>
 <translation id="5605670050355397069">I-Ledger</translation>
@@ -3402,6 +3404,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6293309776179964942">I-JIS B5</translation>
 <translation id="6295618774959045776">I-CVC:</translation>
 <translation id="629730747756840877">I-akhawunti</translation>
+<translation id="6299098428775578517">Amasethingi esiphakamiso</translation>
 <translation id="6300452962057769623">{0,plural, =0{Idivayisi yakho izoqala kabusha manje}=1{Idivayisi yakho izoqala kabusha ngomzuzwana o-1}one{Idivayisi yakho izoqala kabusha ngemizuzwana engu-#}other{Idivayisi yakho izoqala kabusha ngemizuzwana engu-#}}</translation>
 <translation id="6301104306974789820">Thola izaziso zentengo yokulandelela</translation>
 <translation id="6302546952464230349">Bonisa imininingwane yemvume ye-<ph name="PERMISSION_NAME" /></translation>

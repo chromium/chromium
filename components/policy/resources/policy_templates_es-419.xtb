@@ -3345,6 +3345,7 @@ Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilid
 <translation id="3127816006382989270">Permite el acceso a una lista de URLs en el modo Incógnito.</translation>
 <translation id="3128072319047570212">Configuración de keygen</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos móviles</translation>
+<translation id="3131928857191083710">Configuración del tamaño del grupo de sockets</translation>
 <translation id="3135820765957090754">Si habilitas esta configuración, los usuarios podrán sincronizar los ajustes de la red Wi-Fi entre sus dispositivos con <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado. Para poder sincronizar los ajustes de la red Wi-Fi, los usuarios deben habilitar esta función de forma explícita completando un flujo de configuración.
 
       Si inhabilitas esta configuración, los usuarios no podrán sincronizar los ajustes de la red Wi-Fi.

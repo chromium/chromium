@@ -3054,6 +3054,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3053273573829329829">Activer le code de l'utilisateur</translation>
 <translation id="3053274730492362225">Ne pas faire clignoter</translation>
 <translation id="3057938290530993634">Appuyez de manière prolongée pour épingler les sites Web que vous consultez le plus et y accéder facilement la prochaine fois</translation>
+<translation id="3058002721610176427">Modifiez votre code et votre mot de passe</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3060694926634506594">Skills</translation>
 <translation id="3060952009917586498">Modifier la langue de l'appareil. La langue actuelle est : <ph name="LANGUAGE" />.</translation>
@@ -3303,6 +3304,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3254506277019076812">Ajouter une compétence</translation>
 <translation id="3254516606912442756">Détection de fuseau horaire automatique désactivée</translation>
 <translation id="3255747772218936245">Installer la mise à jour</translation>
+<translation id="3256274561709196882">Modifiez votre code</translation>
 <translation id="3257733480216378006">Autoriser <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ?</translation>
 <translation id="325797067711573598">Téléchargement suspect bloqué</translation>
 <translation id="3259723213051400722">Veuillez réessayer.</translation>
@@ -4418,6 +4420,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3995963973192100066">Lire l'animation</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}one{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}other{Pour protéger vos données, les autorisations de sites que vous n'avez pas consultés récemment ont été supprimées}}</translation>
 <translation id="399788104667917863">Épingler à la barre d'outils</translation>
+<translation id="3998431043924115701">Posez des questions pendant que vous naviguez</translation>
 <translation id="3998780825367526465">Afficher les aperçus des onglets</translation>
 <translation id="3998976413398910035">Gérer les imprimantes</translation>
 <translation id="4000360130639414007">Vous ne pourrez pas utiliser les applis Android ni le Google Play Store</translation>
@@ -5547,6 +5550,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
 <translation id="481689174647911539">Ce fichier est peut-être un virus ou un logiciel malveillant.<ph name="LINE_BREAK" />Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
 <translation id="4816900689218414104">Créer une clé d'accès sur un téléphone ou une tablette</translation>
+<translation id="4818449958253566215">Ajout au menu Démarrer</translation>
 <translation id="481852950686014162">Reprenez là où vous en étiez avec Gemini et le Mode IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fermeture maintenant.}=1{Fermeture dans : 1 seconde}one{Fermeture dans : # seconde}other{Fermeture dans : # secondes}}</translation>
 <translation id="4819818293886748542">Obtenir un lien vers l'outil d'assistance</translation>
@@ -6793,6 +6797,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5697664819730124632">Ajoutez une image et réinventez-la</translation>
 <translation id="5697832193891326782">Sélecteur d'emoji</translation>
 <translation id="5698136107297470317">Vous êtes sur le point de supprimer les données du <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Vous pouvez continuer à discuter en Mode IA sans changer d'onglet. Pour commencer, confirmez votre identité. Vous pourrez également accéder à vos mots de passe et à d'autres données sur tous vos appareils.</translation>
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est compatible.</translation>
 <translation id="5698900765010620315">Sombre à faible contraste</translation>
 <translation id="5699227710146832453">Depuis votre</translation>
@@ -7050,6 +7055,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5870155679953074650">Défauts matériels</translation>
 <translation id="587234395549708302">Organiser les favoris ?</translation>
 <translation id="5875534259258494936">Partage d'écran terminé</translation>
+<translation id="5876691914815078365">Applications Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nouvel onglet à droite</translation>
 <translation id="5877064549588274448">La version a été modifiée. Redémarrez votre appareil pour appliquer les modifications.</translation>
 <translation id="5877584842898320529">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. <ph name="BR" /> Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
@@ -11066,6 +11072,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8673026256276578048">Rechercher sur le Web...</translation>
 <translation id="867329473311423817">Autorisé(s) à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="8673383193459449849">Problème avec le serveur.</translation>
+<translation id="8673530374848624865">Votre administrateur a mis à jour les exigences de sécurité pour votre appareil</translation>
 <translation id="8674903726754070732">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cela empêche l'installation des derniers correctifs de sécurité sur Chrome OS et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Les sites utilisent cette fonctionnalité pour passer automatiquement en plein écran. En règle générale, l'accès en plein écran nécessite une interaction de l'utilisateur.</translation>
 <translation id="8675704450909805533">Le programme d'installation n'a pas trouvé de destination valide pour installer <ph name="DEVICE_OS" />.</translation>

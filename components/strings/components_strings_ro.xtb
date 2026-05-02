@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1036436692654972538">Salvează pe dispozitiv</translation>
 <translation id="1036881361735705143">Plic C4</translation>
+<translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1038168778161626396">Numai cifrare</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
@@ -2974,6 +2975,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5600044805561809264">Poți să pui cu ușurință întrebări despre filele pe care le trimiți în timp ce navighezi.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> sau <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Gestionarea nu este acceptată</translation>
+<translation id="5604254791550001355">Editează solicitarea</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Activ acum o oră}few{Activ acum # ore}other{Activ acum # de ore}}</translation>
 <translation id="5605249000617390290">Află mai multe despre urmărirea prețurilor</translation>
 <translation id="5605670050355397069">Registru</translation>
@@ -3405,6 +3407,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Cont</translation>
+<translation id="6299098428775578517">Setări pentru sugestii</translation>
 <translation id="6300452962057769623">{0,plural, =0{Dispozitivul va reporni acum}=1{Dispozitivul va reporni într-o secundă}few{Dispozitivul va reporni în # secunde}other{Dispozitivul va reporni în # de secunde}}</translation>
 <translation id="6301104306974789820">Primește notificări de urmărire a prețurilor</translation>
 <translation id="6302546952464230349">Afișează detaliile permisiunii <ph name="PERMISSION_NAME" /></translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
+<translation id="3571703298474554279">Une façon plus rapide d'utiliser l'appli</translation>
 <translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Lorsque vous partagez un onglet avec Gemini, son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6871397658902960384">Commencer la navigation</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Enregistrer le mot de passe dans le compte}one{Enregistrer le mot de passe dans le compte}other{Enregistrer les mots de passe dans le compte}}</translation>
 <translation id="6875166646976836138">Vous pouvez aussi afficher et gérer ces éléments dans les favoris, la liste de lecture ou le Gestionnaire de mots de passe.</translation>
+<translation id="6878052248816456143">Accédez à vos fichiers dans Google Drive à tout moment.</translation>
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Enregistrer {COUNT} mot de passe dans votre compte Google}one{Enregistrer {COUNT} mot de passe dans votre compte Google}other{Enregistrer {COUNT} mots de passe dans votre compte Google}}</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications ?</translation>
@@ -1814,6 +1816,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7345061034321640811">Importation non autorisée</translation>
 <translation id="7347998088283246662">Importez vos mots de passe, historique, favoris et plus encore</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
+<translation id="7363497636543208734">Il est désormais plus facile de naviguer dans l'appli.</translation>
 <translation id="7364796246159120393">Choisir un fichier</translation>
 <translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7366909168761621528">Données de navigation</translation>

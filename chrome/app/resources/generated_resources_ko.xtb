@@ -3068,6 +3068,7 @@
 <translation id="3053273573829329829">사용자 PIN 사용</translation>
 <translation id="3053274730492362225">깜박이지 않음</translation>
 <translation id="3057938290530993634">다음에 쉽게 액세스할 수 있도록 자주 방문하는 웹사이트를 고정하려면 길게 탭하세요.</translation>
+<translation id="3058002721610176427">PIN 및 비밀번호 변경</translation>
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3060694926634506594">역량</translation>
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
@@ -3319,6 +3320,7 @@
 <translation id="3254506277019076812">스킬 추가</translation>
 <translation id="3254516606912442756">시간대 자동설정이 사용 중지됩니다</translation>
 <translation id="3255747772218936245">업데이트 설치</translation>
+<translation id="3256274561709196882">PIN 변경</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> 확장 프로그램을 허용하시겠습니까?</translation>
 <translation id="325797067711573598">의심스러운 다운로드 차단됨</translation>
 <translation id="3259723213051400722">다시 시도해 주세요.</translation>
@@ -4434,6 +4436,7 @@
 <translation id="3995963973192100066">애니메이션 재생</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}other{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}}</translation>
 <translation id="399788104667917863">툴바에 고정</translation>
+<translation id="3998431043924115701">브라우징하면서 질문하세요</translation>
 <translation id="3998780825367526465">탭 미리보기 이미지 표시</translation>
 <translation id="3998976413398910035">프린터 관리</translation>
 <translation id="4000360130639414007">Android 앱 또는 Google Play 스토어를 사용할 수 없게 됩니다.</translation>
@@ -5561,6 +5564,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{북마크 1개 삭제됨}other{북마크 {COUNT}개 삭제됨}}</translation>
 <translation id="481689174647911539">바이러스 또는 멀웨어일 수 있는 파일입니다.<ph name="LINE_BREAK" />안전하지 않은 파일인지 확인하기 위해 이 파일을 Google 세이프 브라우징에 전송할 수 있습니다. 검사는 일반적으로 몇 초 정도 걸립니다.</translation>
 <translation id="4816900689218414104">휴대전화 또는 태블릿에서 패스키 만들기</translation>
+<translation id="4818449958253566215">시작 메뉴에 추가하기</translation>
 <translation id="481852950686014162">Gemini 및 AI 모드에서 중단한 부분부터 이어서 진행하세요</translation>
 <translation id="4819323978093861656">{0,plural, =0{지금 종료 중입니다.}=1{1초 후 종료됨}other{#초 후 종료됨}}</translation>
 <translation id="4819818293886748542">지원 도구 링크 가져오기</translation>
@@ -6808,6 +6812,7 @@
 <translation id="5697664819730124632">이미지를 추가하고 변신시켜 보세요</translation>
 <translation id="5697832193891326782">그림 이모티콘 선택 도구</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> 데이터를 삭제하려고 합니다</translation>
+<translation id="5698815246352480266">탭을 전환하지 않고도 AI 모드로 계속 채팅할 수 있습니다. 시작하려면 본인 인증을 진행하세요. 이렇게 하면 이용 중인 모든 기기에서 비밀번호 등도 사용할 수 있습니다.</translation>
 <translation id="5698878456427040674">선택한 계정이 지원되는지 확인하세요.</translation>
 <translation id="5698900765010620315">저대비 어두움</translation>
 <translation id="5699227710146832453">다음에서 가져옴:</translation>
@@ -7065,6 +7070,7 @@
 <translation id="5870155679953074650">하드 결함</translation>
 <translation id="587234395549708302">북마크를 정리하시겠습니까?</translation>
 <translation id="5875534259258494936">화면 공유 종료됨</translation>
+<translation id="5876691914815078365">Chrome 앱 &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">오른쪽에 새 탭 열기</translation>
 <translation id="5877064549588274448">채널이 변경되었습니다. 변경사항을 적용하려면 기기를 다시 시작하세요.</translation>
 <translation id="5877584842898320529">선택한 프린터가 사용할 수 없거나 제대로 설치되어 있지 않습니다. <ph name="BR" /> 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
@@ -11078,6 +11084,7 @@
 <translation id="8673026256276578048">웹 검색...</translation>
 <translation id="867329473311423817">모든 디스플레이의 창 관리 허용됨</translation>
 <translation id="8673383193459449849">서버 문제</translation>
+<translation id="8673530374848624865">관리자가 기기의 보안 요구사항을 업데이트했습니다</translation>
 <translation id="8674903726754070732">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">사이트에서 이 기능을 사용하여 전체 화면으로 자동 전환합니다. 일반적으로 전체 화면으로 전환하려면 사용자 상호작용이 필요합니다.</translation>
 <translation id="8675704450909805533">설치 프로그램이 <ph name="DEVICE_OS" /> 설치를 위한 유효한 위치를 찾을 수 없습니다</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Şəkillər yüklənmir</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Başqa cür saxlayın</translation>
+<translation id="3571703298474554279">Tətbiqdən istifadə etməyin daha sürətli yolu</translation>
 <translation id="3572503683475187385">Yeni söhbətə başladığınız zaman cari tab Gemini ilə paylaşılır. Tabı Gemini ilə paylaşdığınız zaman tabın kontenti və URL-i Google-a göndərilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google Hesabında</translation>
 <translation id="3575234738189584619">Linza ilə axtarış edin</translation>
@@ -1701,6 +1702,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6871397658902960384">Axtarışa başlayın</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Parolu hesabda yadda saxlayın}other{Parolları hesabda yadda saxlayın}}</translation>
 <translation id="6875166646976836138">Əlfəcinlər, oxu siyahısı və ya parol menecerində bu elementlərə baxa və onları idarə edə bilərsiniz</translation>
+<translation id="6878052248816456143">İstənilən vaxt Google Diskinizdəki fayllara daxil olun.</translation>
 <translation id="6882836635272038266">Təhlükəli hesab edilən veb saytlar, endirmələr və artırmalara qarşı standart qoruma.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} parolu Google Hesabında yadda saxlayın}other{{COUNT} parolu Google Hesabında yadda saxlayın}}</translation>
 <translation id="6888009575607455378">Dəyişiklikləri ləğv etmək istədiyinizə əminsiniz?</translation>
@@ -1814,6 +1816,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7345061034321640811">İmporta icazə verilmir</translation>
 <translation id="7347998088283246662">Parolları, tarixçəni, əlfəcinləri və s. import edin</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
+<translation id="7363497636543208734">Tətbiqdə hərəkət etmək artıq daha asandır.</translation>
 <translation id="7364796246159120393">Fayl seçin</translation>
 <translation id="736564850024123010">Fərdi təcrübə üçün ünvan panelinin yerini dəyişin.</translation>
 <translation id="7366909168761621528">Axtarış Datası</translation>

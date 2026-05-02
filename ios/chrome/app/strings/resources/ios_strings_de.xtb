@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Bilder konnten nicht geladen werden</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Anders speichern</translation>
+<translation id="3571703298474554279">Schnellere Nutzung der App</translation>
 <translation id="3572503683475187385">Der aktuelle Tab wird mit Gemini geteilt, wenn du einen neuen Chat startest. Inhalte und URLs geteilter Tabs werden an Google gesendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Im Google-Konto</translation>
 <translation id="3575234738189584619">Mit Lens suchen</translation>
@@ -1701,6 +1702,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6871397658902960384">Jetzt surfen</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Passwort im Konto speichern}other{Passwörter im Konto speichern}}</translation>
 <translation id="6875166646976836138">Du kannst diese Elemente auch in deinen Lesezeichen, in deiner Leseliste oder im Passwortmanager sehen und verwalten.</translation>
+<translation id="6878052248816456143">Du kannst jederzeit auf Dateien in Google Drive zugreifen.</translation>
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} Passwort in deinem Google-Konto speichern}other{{COUNT} Passwörter in deinem Google-Konto speichern}}</translation>
 <translation id="6888009575607455378">Möchtest du die Änderungen wirklich verwerfen?</translation>
@@ -1814,6 +1816,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7345061034321640811">Import nicht zulässig</translation>
 <translation id="7347998088283246662">Du kannst Passwörter, deinen Verlauf, Lesezeichen und mehr importieren</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
+<translation id="7363497636543208734">Die Bedienung der App ist jetzt einfacher.</translation>
 <translation id="7364796246159120393">Datei auswählen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="7366909168761621528">Browserdaten</translation>

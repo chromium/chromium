@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1036436692654972538">Түзмөгүңүзгө сакталат</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
+<translation id="1038106730571050514">Сунуштарды көрсөтүү</translation>
 <translation id="1038168778161626396">Шифрлегич гана</translation>
 <translation id="1038842779957582377">белгисиз ат</translation>
 <translation id="1041998700806130099">Жумуш барагынын билдирүүсү</translation>
@@ -2973,6 +2974,7 @@
 <translation id="5600044805561809264">Серептеп жатып, бөлүшүп жаткан өтмөктөр жөнүндө суроолорду оңой бере аласыз.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> же <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Башкаруу колдоого алынбайт</translation>
+<translation id="5604254791550001355">Кеңешти түзөтүү</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 саат мурда активдүү болгон}other{# саат мурда активдүү болгон}}</translation>
 <translation id="5605249000617390290">Баага көз салуу жөнүндө кеңири маалымат</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3404,6 +3406,7 @@
 <translation id="6293309776179964942">JIS B5 (182mm x 257mm)</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Аккаунт</translation>
+<translation id="6299098428775578517">Сунуштун параметрлери</translation>
 <translation id="6300452962057769623">{0,plural, =0{Түзмөгүңүз азыр өчүрүлүп күйгүзүлөт}=1{Түзмөгүңүз 1 секунддан кийин өчүрүлүп күйгүзүлөт}other{Түзмөгүңүз # секунддан кийин өчүрүлүп күйгүзүлөт}}</translation>
 <translation id="6301104306974789820">Баасы тууралуу билдирмелерди алуу</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> уруксатынын чоо-жайын көрүү</translation>

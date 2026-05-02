@@ -2076,6 +2076,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de série do dispositivo e dos componentes</translation>
 <translation id="2406153734066939945">Excluir este perfil e os dados dele?</translation>
+<translation id="2406942743794219791">Confirme seu mecanismo de busca padrão</translation>
 <translation id="2407671304279211586">Selecionar provedor de DNS</translation>
 <translation id="2408018932941436077">Salvando cartão</translation>
 <translation id="2408742686124047357">Fixar o Google Lens na barra de ferramentas para facilitar o acesso da próxima vez</translation>
@@ -3056,6 +3057,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3046892784550338476">Versão <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Página da web, completa</translation>
 <translation id="304747341537320566">Mecanismos de fala</translation>
+<translation id="3047618804758101928">A extensão "<ph name="EXTENSION_NAME" />" alterou suas configurações</translation>
 <translation id="3047678109605649715">Não há vozes em <ph name="LANGUAGE" /> no seu dispositivo. Libere espaço no dispositivo e tente de novo.</translation>
 <translation id="3048336643003835855">Dispositivos HID do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Iniciar (k)</translation>
@@ -10020,6 +10022,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7939062555109487992">Opções avançadas</translation>
 <translation id="793923212791838">Não é possível usar seu dispositivo com este site</translation>
 <translation id="7939328347457537652">Gerenciar certificados do dispositivo</translation>
+<translation id="7939918959917132075">Alterada pela extensão</translation>
 <translation id="7940087892955752820">Não foi possível cancelar o compartilhamento porque um aplicativo está usando a pasta. O compartilhamento da pasta será cancelado assim que o <ph name="SPECIFIC_NAME" /> for desligado.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Prontidão do tethering:</translation>

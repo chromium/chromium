@@ -3224,6 +3224,7 @@ Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottan
 <translation id="3127816006382989270">Autoriser l'accès à une liste d'URL en mode navigation privée.</translation>
 <translation id="3128072319047570212">Paramètres de keygen</translation>
 <translation id="3131703464330936425">Ne pas autoriser l'itinérance des données mobiles</translation>
+<translation id="3131928857191083710">Paramètres de taille du pool de sockets</translation>
 <translation id="3135820765957090754">Si ce paramètre est activé, les utilisateurs seront autorisés à synchroniser les configurations du réseau Wi-Fi entre leurs appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté. Pour pouvoir synchroniser les configurations du réseau Wi-Fi, les utilisateurs doivent au préalable activer explicitement cette fonctionnalité en suivant une procédure de configuration.
 
       Si ce paramètre est désactivé, les utilisateurs ne seront pas autorisés à synchroniser les configurations du réseau Wi-Fi.

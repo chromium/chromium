@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Pilte ei õnnestunud laadida</translation>
 <translation id="3565930036634619844">Vaheleht. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salvesta muul viisil</translation>
+<translation id="3571703298474554279">Kiirem viis rakenduse kasutamiseks</translation>
 <translation id="3572503683475187385">Uue vestluse alustamisel jagatakse praegust vahelehte Geminiga. Kui jagate vahelehte Geminiga, saadetakse selle sisu ja URL Google'ile. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Teie Google’i kontol</translation>
 <translation id="3575234738189584619">Otsi Lensiga</translation>
@@ -1701,6 +1702,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6871397658902960384">Alustage sirvimist</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Salvesta parool kontole}other{Salvesta paroolid kontole}}</translation>
 <translation id="6875166646976836138">Neid üksusi saate vaadata ja hallata ka järjehoidjates, lugemisloendis või paroolihalduris.</translation>
+<translation id="6878052248816456143">Pääsete oma Google Drive'i failidele igal ajal juurde.</translation>
 <translation id="6882836635272038266">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{{COUNT} parooli salvestamine teie Google’i kontole}other{{COUNT} parooli salvestamine teie Google’i kontole}}</translation>
 <translation id="6888009575607455378">Kas soovite kindlasti muudatustest loobuda?</translation>
@@ -1814,6 +1816,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7345061034321640811">Importimine pole lubatud</translation>
 <translation id="7347998088283246662">Importige paroole, ajalugu, järjehoidjaid ja muud.</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
+<translation id="7363497636543208734">Rakenduses navigeerimine on nüüd lihtsam.</translation>
 <translation id="7364796246159120393">Vali fail</translation>
 <translation id="736564850024123010">Kohandatud kasutuskogemuse saamiseks saate vahetada oma aadressiriba asukohta.</translation>
 <translation id="7366909168761621528">Sirvimisandmed</translation>

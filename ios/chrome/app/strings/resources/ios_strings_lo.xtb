@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">ບໍ່ສາມາດໂຫຼດຮູບໄດ້</translation>
 <translation id="3565930036634619844">ແຖບ. <ph name="TAB_INDEX" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ບັນທຶກດ້ວຍວິທີອື່ນ</translation>
+<translation id="3571703298474554279">ວິທີທີ່ໄວຂຶ້ນໃນການໃຊ້ແອັບ</translation>
 <translation id="3572503683475187385">ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ເມື່ອທ່ານເລີ່ມການສົນທະນາໃໝ່. ເມື່ອທ່ານແບ່ງປັນແຖບກັບ Gemini, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ຂອງແຖບໄປຫາ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="3575234738189584619">ຊອກຫາດ້ວຍ Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6871397658902960384">ເລີ່ມເລືອກເບິ່ງ</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ}other{ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ}}</translation>
 <translation id="6875166646976836138">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດເບິ່ງ ແລະ ຈັດການລາຍການເຫຼົ່ານີ້ໃນບຸກມາກ, ລາຍຊື່ການອ່ານ ຫຼື ຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານໄດ້ນຳ.</translation>
+<translation id="6878052248816456143">ເຂົ້າເຖິງໄຟລ໌ໃນ Google Drive ຂອງທ່ານໄດ້ທຸກເວລາ.</translation>
 <translation id="6882836635272038266">ການປົກປ້ອງມາດຕະຖານຕໍ່ກັບເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ຈັກວ່າເປັນອັນຕະລາຍ.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{ບັນທຶກລະຫັດຜ່ານ {COUNT} ລາຍການໃນບັນຊີ Google ຂອງທ່ານ}other{ບັນທຶກລະຫັດຜ່ານ {COUNT} ລາຍການໃນບັນຊີ Google ຂອງທ່ານ}}</translation>
 <translation id="6888009575607455378">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການຍົກເລີກການປ່ຽນແປງຂອງທ່ານ?</translation>
@@ -1814,6 +1816,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7345061034321640811">ບໍ່ອະນຸຍາດໃຫ້ນຳເຂົ້າ</translation>
 <translation id="7347998088283246662">ນຳເຂົ້າລະຫັດຜ່ານ, ປະຫວັດ, ບຸກມາກ ແລະ ອື່ນໆ</translation>
 <translation id="7352651011704765696">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ</translation>
+<translation id="7363497636543208734">ຕອນນີ້ການເຂົ້າໄປສ່ວນຕ່າງໆໃນແອັບເຮັດໄດ້ງ່າຍຂຶ້ນແລ້ວ.</translation>
 <translation id="7364796246159120393">ເລືອກ​ໄຟລ​໌</translation>
 <translation id="736564850024123010">ສະຫຼັບຕຳແໜ່ງຂອງແຖບທີ່ຢູ່ຂອງທ່ານເພື່ອປະສົບການໃນການນຳໃຊ້ທີ່ປັບແຕ່ງເອງໄດ້.</translation>
 <translation id="7366909168761621528">ຂໍ້ມູນການທ່ອງເວັບ</translation>

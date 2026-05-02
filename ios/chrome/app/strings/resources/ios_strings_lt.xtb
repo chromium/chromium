@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Nepavyko įkelti vaizdų</translation>
 <translation id="3565930036634619844">Skirtukas. <ph name="TAB_INDEX" /> iš <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Išsaugoti kitu būdu</translation>
+<translation id="3571703298474554279">Greitesnis programos naudojimo būdas</translation>
 <translation id="3572503683475187385">Pradėjus naują pokalbį, dabartinis skirtukas bendrinamas su „Gemini“. Kai bendrinate skirtuką su „Gemini“, jo turinys ir URL siunčiami „Google“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">„Google“ paskyroje</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
@@ -1701,6 +1702,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6871397658902960384">Pradėkite naršyti</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Išsaugoti slaptažodį paskyroje}one{Išsaugoti slaptažodžius paskyroje}few{Išsaugoti slaptažodžius paskyroje}many{Išsaugoti slaptažodžius paskyroje}other{Išsaugoti slaptažodžius paskyroje}}</translation>
 <translation id="6875166646976836138">Šiuos elementus taip pat galite peržiūrėti ir tvarkyti žymėse, skaitymo sąraše arba slaptažodžių tvarkyklėje.</translation>
+<translation id="6878052248816456143">Pasiekite failus „Google“ diske bet kuriuo metu.</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Išsaugokite {COUNT} slaptažodį „Google“ paskyroje}one{Išsaugokite {COUNT} slaptažodį „Google“ paskyroje}few{Išsaugokite {COUNT} slaptažodžius „Google“ paskyroje}many{Išsaugokite {COUNT} slaptažodžio „Google“ paskyroje}other{Išsaugokite {COUNT} slaptažodžių „Google“ paskyroje}}</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
@@ -1814,6 +1816,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7345061034321640811">Importuoti neleidžiama</translation>
 <translation id="7347998088283246662">Importuokite slaptažodžius, istoriją, žymes ir kt.</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
+<translation id="7363497636543208734">Dabar programoje lengviau naršyti.</translation>
 <translation id="7364796246159120393">Pasirinkti failą</translation>
 <translation id="736564850024123010">Perjunkite adreso juostos poziciją, kad galėtumėte naudotis tinkintomis funkcijomis.</translation>
 <translation id="7366909168761621528">Naršymo duomenys</translation>

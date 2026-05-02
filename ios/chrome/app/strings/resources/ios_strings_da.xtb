@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Billederne kunne ikke indlæses</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Gem på en anden måde</translation>
+<translation id="3571703298474554279">En hurtigere måde at bruge appen på</translation>
 <translation id="3572503683475187385">Den aktuelle fane deles med Gemini, når du starter en ny chat. Når du deler en fane med Gemini, sendes dens indhold og webadresse til Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">På din Google-konto</translation>
 <translation id="3575234738189584619">Søg med Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6871397658902960384">Browse</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Gem adgangskoden på kontoen}one{Gem adgangskoden på kontoen}other{Gem adgangskoderne på kontoen}}</translation>
 <translation id="6875166646976836138">Du kan også se og administrere disse elementer i dine bogmærker, på din læseliste eller via Adgangskodeadministrator.</translation>
+<translation id="6878052248816456143">Få adgang til filer i Google Drev når som helst.</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Gem {COUNT} adgangskode på din Google-konto}one{Gem {COUNT} adgangskode på din Google-konto}other{Gem {COUNT} adgangskoder på din Google-konto}}</translation>
 <translation id="6888009575607455378">Er du sikker på, at du vil kassere dine ændringer?</translation>
@@ -1814,6 +1816,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7345061034321640811">Import er ikke tilladt</translation>
 <translation id="7347998088283246662">Importér adgangskoder, historik, bogmærker m.m.</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
+<translation id="7363497636543208734">Det er nemmere at navigere i appen nu.</translation>
 <translation id="7364796246159120393">Vælg fil</translation>
 <translation id="736564850024123010">Flyt din adresselinje for at få en tilpasset oplevelse.</translation>
 <translation id="7366909168761621528">Browserdata</translation>

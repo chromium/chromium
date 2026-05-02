@@ -3222,6 +3222,7 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3127816006382989270">Zugriff auf eine Liste von URLs im Inkognitomodus erlauben.</translation>
 <translation id="3128072319047570212">Keygen-Einstellungen</translation>
 <translation id="3131703464330936425">Mobilfunk-Roaming nicht zulassen</translation>
+<translation id="3131928857191083710">Einstellungen für die Socket-Pool-Größe</translation>
 <translation id="3135820765957090754">Wenn diese Einstellung aktiviert ist, können Nutzer WLAN-Konfigurationen zwischen <ph name="PRODUCT_OS_NAME" />-Gerät(en) und einem verbundenen Android-Smartphone synchronisieren. Damit die WLAN-Konfigurationen synchronisiert werden können, muss diese Funktion durch Nutzer eingerichtet und explizit freigeschaltet werden.
 
       Ist diese Einstellung deaktiviert, können Nutzer die WLAN-Konfigurationen nicht synchronisieren.

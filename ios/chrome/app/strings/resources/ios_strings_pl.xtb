@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Nie udało się załadować obrazów</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Zapisz w inny sposób</translation>
+<translation id="3571703298474554279">Szybszy sposób korzystania z aplikacji</translation>
 <translation id="3572503683475187385">Gdy rozpoczynasz nowy czat, bieżąca karta jest udostępniana Gemini. Gdy udostępniasz kartę Gemini, jej zawartość i adres URL są wysyłane do Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Twoim koncie Google</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
@@ -1701,6 +1702,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6871397658902960384">Rozpocznij przeglądanie</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Zapisz hasło na koncie}few{Zapisz hasła na koncie}many{Zapisz hasła na koncie}other{Zapisz hasła na koncie}}</translation>
 <translation id="6875166646976836138">Możesz też wyświetlać te elementy i zarządzać nimi w zakładkach, na liście Do przeczytania i w Menedżerze haseł.</translation>
+<translation id="6878052248816456143">Korzystaj z plików na Dysku Google w dowolnym momencie.</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Zapisz {COUNT} hasło na koncie Google}few{Zapisz {COUNT} hasła na koncie Google}many{Zapisz {COUNT} haseł na koncie Google}other{Zapisz {COUNT} hasła na koncie Google}}</translation>
 <translation id="6888009575607455378">Czy na pewno chcesz odrzucić zmiany?</translation>
@@ -1814,6 +1816,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7345061034321640811">Import niedozwolony</translation>
 <translation id="7347998088283246662">Importuj hasła, historię, zakładki i inne dane</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
+<translation id="7363497636543208734">Poruszanie się po aplikacji jest teraz łatwiejsze.</translation>
 <translation id="7364796246159120393">Wybierz plik</translation>
 <translation id="736564850024123010">Zmień położenie paska adresu, aby dostosować przeglądanie do swoich potrzeb.</translation>
 <translation id="7366909168761621528">Dane przeglądania</translation>

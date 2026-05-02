@@ -3055,6 +3055,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3053273573829329829">Iespējot lietotāja PIN</translation>
 <translation id="3053274730492362225">Nemirgot</translation>
 <translation id="3057938290530993634">Pieskarieties un turiet, lai piespraustu visbiežāk apmeklētās vietnes un nākamreiz varētu tām ērti piekļūt.</translation>
+<translation id="3058002721610176427">PIN un paroles maiņa</translation>
 <translation id="3058498974290601450">Jebkurā brīdī varat ieslēgt sinhronizāciju iestatījumos.</translation>
 <translation id="3060694926634506594">Prasmes</translation>
 <translation id="3060952009917586498">Varat mainīt ierīces valodu. Pašreizējā valoda: <ph name="LANGUAGE" />.</translation>
@@ -3304,6 +3305,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3254506277019076812">Prasmes pievienošana</translation>
 <translation id="3254516606912442756">Automātiska laika joslu noteikšana ir atspējota</translation>
 <translation id="3255747772218936245">Instalēt atjauninājumu</translation>
+<translation id="3256274561709196882">PIN maiņa</translation>
 <translation id="3257733480216378006">Vai atļaut paplašinājumus (skaits: <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />)?</translation>
 <translation id="325797067711573598">Bloķēta aizdomīga lejupielāde</translation>
 <translation id="3259723213051400722">Lūdzu, mēģiniet vēlreiz.</translation>
@@ -4419,6 +4421,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3995963973192100066">Atskaņot animāciju</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnes, kas pēdējā laikā nav apmeklēta.}zero{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, kas pēdējā laikā nav apmeklētas.}one{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, kas pēdējā laikā nav apmeklētas.}other{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, kas pēdējā laikā nav apmeklētas.}}</translation>
 <translation id="399788104667917863">Piespraust rīkjoslai</translation>
+<translation id="3998431043924115701">Jautājumu uzdošana pārlūkošanas laikā</translation>
 <translation id="3998780825367526465">Rādīt cilnes priekšskatījuma attēlus</translation>
 <translation id="3998976413398910035">Pārvaldīt printerus</translation>
 <translation id="4000360130639414007">Jūs nevarēsiet izmantot Android lietotnes vai Google Play veikalu</translation>
@@ -5548,6 +5551,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4816336393325437908">{COUNT,plural, =1{Izdzēsta viena grāmatzīme}zero{Izdzēstas {COUNT} grāmatzīmes}one{Izdzēsta {COUNT} grāmatzīme}other{Izdzēstas {COUNT} grāmatzīmes}}</translation>
 <translation id="481689174647911539">Iespējams, šis fails ir vīruss vai ļaunprātīga programmatūra.<ph name="LINE_BREAK" />Varat nosūtīt to funkcijai “Google droša pārlūkošana”, lai pārbaudītu, vai tas ir nedrošs. Pārbaude parasti ilgst dažas sekundes.</translation>
 <translation id="4816900689218414104">Piekļuves atslēgas izveide tālrunī vai planšetdatorā</translation>
+<translation id="4818449958253566215">Pievienošana izvēlnei Sākt</translation>
 <translation id="481852950686014162">Turpiniet iesākto pakalpojumā Gemini un MI režīmā</translation>
 <translation id="4819323978093861656">{0,plural, =0{Notiek aizvēršana.}=1{Tiks aizvērts pēc vienas sekundes}zero{Tiks aizvērts pēc # sekundēm}one{Tiks aizvērts pēc # sekundes}other{Tiks aizvērts pēc # sekundēm}}</translation>
 <translation id="4819818293886748542">Iegūt atbalsta rīka saiti</translation>
@@ -6792,6 +6796,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5697664819730124632">Pievienojiet attēlu un pārveidojiet to</translation>
 <translation id="5697832193891326782">Emocijzīmju atlasītājs</translation>
 <translation id="5698136107297470317">Pakalpojumā <ph name="BRAND" /> saglabāto datu dzēšana</translation>
+<translation id="5698815246352480266">Varat turpināt tērzēšanu MI režīmā, nepārslēdzot cilnes. Lai sāktu darbu, verificējiet savu identitāti. Jūs arī varēsiet piekļūt parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="5698878456427040674">Pārbaudiet, vai atlasītais konts tiek atbalstīts.</translation>
 <translation id="5698900765010620315">Maza kontrasta tumšais motīvs</translation>
 <translation id="5699227710146832453">No:</translation>
@@ -7049,6 +7054,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5870155679953074650">Nopietnas kļūdas</translation>
 <translation id="587234395549708302">Vai notīrīt grāmatzīmes?</translation>
 <translation id="5875534259258494936">Ekrāna kopīgošana ir beigusies</translation>
+<translation id="5876691914815078365">Chrome lietotnes &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Jauna cilne pa labi</translation>
 <translation id="5877064549588274448">Kanāls tika mainīts. Lai lietotu izmaiņas, restartējiet ierīci.</translation>
 <translation id="5877584842898320529">Atlasītais printeris nav pieejams vai nav instalēts pareizi. <ph name="BR" /> Pārbaudiet savu printeri vai pamēģiniet atlasīt citu printeri.</translation>
@@ -11066,6 +11072,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8673026256276578048">Meklēt tīmeklī...</translation>
 <translation id="867329473311423817">Atļauts pārvaldīt logus visos jūsu displejos</translation>
 <translation id="8673383193459449849">Radās servera problēma.</translation>
+<translation id="8673530374848624865">Administrators atjaunināja jūsu ierīces drošības prasības.</translation>
 <translation id="8674903726754070732">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Tādēļ operētājsistēmu Chrome OS nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, <ph name="BEGIN_BOLD" />iespējams, nav aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Vietnēs šī funkcija tiek izmantota automātiskai pāriešanai pilnekrāna režīmā. Parasti pāriešanai pilnekrāna režīmā ir nepieciešama lietotāja mijiedarbība.</translation>
 <translation id="8675704450909805533">Instalēšanas programma nevarēja atrast derīgu galamērķi operētājsistēmas <ph name="DEVICE_OS" /> instalēšanai.</translation>

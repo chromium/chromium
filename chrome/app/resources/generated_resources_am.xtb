@@ -3062,6 +3062,7 @@
 <translation id="3053273573829329829">የተጠቃሚ ፒን ያንቁ</translation>
 <translation id="3053274730492362225">ብልጭ ድርግም አያድርጉ</translation>
 <translation id="3057938290530993634">በቀጣይ ጊዜ በቀላሉ ለመድረስ በጣም የተጎበኙ ድር ጣቢያዎችዎን ለመሰካት መታ አድርገው ይያዙ</translation>
+<translation id="3058002721610176427">የእርስዎን ፒን እና የይለፍ ቃል ይለውጡ</translation>
 <translation id="3058498974290601450">ስምረትን በማንኛውም ጊዜ በቅንብሮች ውስጥ ማብራት ይችላሉ።</translation>
 <translation id="3060694926634506594">ችሎታዎች</translation>
 <translation id="3060952009917586498">የመሣሪያ ቋንቋን ይቀይሩ። የአሁኑ ቋንቋ <ph name="LANGUAGE" /> ነው።</translation>
@@ -3313,6 +3314,7 @@
 <translation id="3254506277019076812">ክህሎት ያክሉ</translation>
 <translation id="3254516606912442756">ራስ-ሰር ሰዓት ሰቅ ማግኘት ተሰናክሏል</translation>
 <translation id="3255747772218936245">ዝማኔን ጫን</translation>
+<translation id="3256274561709196882">ፒንዎን ይቀይሩ</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> ይፈቀድለት?</translation>
 <translation id="325797067711573598">አጠራጣሪ ውርድ ታግዷል</translation>
 <translation id="3259723213051400722">እባክዎ እንደገና ይሞክሩ።</translation>
@@ -4428,6 +4430,7 @@
 <translation id="3995963973192100066">እነማ አጫውት</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኘ ጣቢያ ተወግደዋል}one{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኘ ጣቢያ ተወግደዋል}other{ውሂብዎን ለመጠበቅ፣ ፈቃዶች በቅርቡ ካልተጎበኙ ጣቢያዎች ተወግደዋል}}</translation>
 <translation id="399788104667917863">ወደ የመሣሪያ አሞሌ ፒን አድርግ</translation>
+<translation id="3998431043924115701">በሚያስሱበት ጊዜ ጥያቄዎችን ይጠይቁ</translation>
 <translation id="3998780825367526465">የትር ቅድመ እይታ ምስሎችን አሳይ</translation>
 <translation id="3998976413398910035">አታሚዎችን አስተዳድር</translation>
 <translation id="4000360130639414007">የAndroid መተግበሪያ ወይም የGoogle Play መደብርን መጠቀም አይችሉም</translation>
@@ -5555,6 +5558,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 እልባት ተሰርዟል}one{{COUNT} እልባቶች ተሰርዘዋል}other{{COUNT} እልባቶች ተሰርዘዋል}}</translation>
 <translation id="481689174647911539">ይህ ፋይል ቫይረስ ወይም ተንኮል አዘል ዌር ሊሆን ይችላል።<ph name="LINE_BREAK" />ደህንነቱ ያልተጠበቀ ከሆነ ለመፈተሽ ወደ Google ጥንቃቄ አሰሳ ሊልኩት ይችላሉ። ቅኝቶች በተለምዶ ጥቂት ሰከንዶችን ይወስዳሉ።</translation>
 <translation id="4816900689218414104">በስልክ ወይም ጡባዊ ላይ የይለፍ ቁልፍ ይፍጠሩ</translation>
+<translation id="4818449958253566215">ወደ የጀምር ምናሌ በማከል ላይ</translation>
 <translation id="481852950686014162">Gemini እና የሰው ሠራሽ አስተውሎት ሁነታ ላይ ካቆሙበት ይቀጥሉ</translation>
 <translation id="4819323978093861656">{0,plural, =0{አሁን በመዝጋት ላይ።}=1{በሚከተለው ጊዜ ውስጥ በመዝጋት ላይ፦ 1 ሰከንድ}one{በሚከተለው ጊዜ ውስጥ በመዝጋት ላይ፦ # ሰከንድ}other{በሚከተለው ጊዜ ውስጥ በመዝጋት ላይ፦ # ሰከንዶች}}</translation>
 <translation id="4819818293886748542">የድጋፍ መሣሪያ አገናኝ ያግኙ</translation>
@@ -6802,6 +6806,7 @@
 <translation id="5697664819730124632">ምስል ያክሉ እና እንደገና ያስቡት</translation>
 <translation id="5697832193891326782">ስሜት ገላጭ ምስል መራጭ</translation>
 <translation id="5698136107297470317">የእስርዎን <ph name="BRAND" /> ውሂብ ሊሰርዙ ነው</translation>
+<translation id="5698815246352480266">ትሮችን ሳይቀይሩ ከሰው ሠራሽ አስተውሎት ሁነታ ጋር መወያየት መቀጠል ይችላሉ። ለመጀመር እርስዎ መሆንዎን ያረጋግጡ። እንዲሁም የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ያገኛሉ።</translation>
 <translation id="5698878456427040674">የተመረጠው መለያ የሚደገፍ እንደሆነ ይፈትሹ።</translation>
 <translation id="5698900765010620315">ዝቅተኛ ንፅፅር ጠቆር ያለ</translation>
 <translation id="5699227710146832453">ከእርስዎ</translation>
@@ -7059,6 +7064,7 @@
 <translation id="5870155679953074650">ከባድ ስህተቶች</translation>
 <translation id="587234395549708302">ዕልባቶች ይጽዱ?</translation>
 <translation id="5875534259258494936">ማያ ገጽን ማጋራት አብቅቷል</translation>
+<translation id="5876691914815078365">የChrome መተግበሪያዎች &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">በቀኝ በኩል አዲስ ትር</translation>
 <translation id="5877064549588274448">ሰርጥ ተለውጧል። ለውጦችን ለመተግበር መሳሪያዎን ዳግም ያስጀምሩ።</translation>
 <translation id="5877584842898320529">የተመረጠው አታሚ የለም ወይም በትክክል አልተጫነም። <ph name="BR" /> አታሚዎን ይፈትሹት ወይም ሌላ አታሚ ለመምረጥ ይሞክሩ።</translation>
@@ -11080,6 +11086,7 @@ nil</translation>
 <translation id="8673026256276578048">ድሩን ፈልግ...</translation>
 <translation id="867329473311423817">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ማስተዳደር ይፈቀዳል</translation>
 <translation id="8673383193459449849">የአገልጋይ ችግር</translation>
+<translation id="8673530374848624865">አስተዳዳሪዎ የመሣሪያዎን የደህንነት መስፈርቶች አዘምነዋል</translation>
 <translation id="8674903726754070732">የአጋጣሚ ነገር ሆኖ ኮምፒውተርዎ የተዋቀረው በተበላሸ የሃርድዌር መታወቂያ ነው። ይህ ChromeOS በቅርብ ጊዜዎቹ የደህንነት ጥገናዎች እንዳይዘመን ያግደዋል እና የእርስዎ ኮምፒውተር <ph name="BEGIN_BOLD" />ለተንኮል-አዘል ጥቃቶች የተጋለጠ ሊሆን ይችላል<ph name="END_BOLD" />።</translation>
 <translation id="8675657007450883866">ጣቢያዎች በቀጥታ ወደ ሙሉ ገጽ ዕይታ ለመግባት ይህንን ባህሪ ይጠቀማሉ። በተለምዶ ወደ ሙሉ ገጽ ዕይታ መግባት የተጠቃሚ መስተጋብር ያስፈልገዋል።</translation>
 <translation id="8675704450909805533">ጫኚው <ph name="DEVICE_OS" />ን ለመጫን ትክክለኛ መዳረሻ ማግኘት አልቻለም።</translation>

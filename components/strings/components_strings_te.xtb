@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036436692654972538">మీ డివైజ్‌లో సేవ్ అవుతుంది</translation>
 <translation id="1036881361735705143">ఎన్వలప్ C4</translation>
+<translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038168778161626396">కోడ్ మాత్రమే</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ మెసేజ్‌</translation>
@@ -386,6 +387,7 @@
 <translation id="1595731774593926493">రిడ్రస్ నంబర్‌ను తొలగించండి</translation>
 <translation id="1597307423671074806">WebM వీడియో</translation>
 <translation id="159800670740560023">Chrome చిట్కా లింక్, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />‌ను తెరవడానికి Enterను నొక్కండి</translation>
+<translation id="1599079390582151174">పంపబడింది. మీ ఇతర డివైజ్‌లలో Chromeను తెరవండి.</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">అందం &amp; ఆరోగ్యం</translation>
@@ -1776,6 +1778,7 @@
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> సెట్ చేసి లేని కారణంగా విస్మరించబడింది.</translation>
 <translation id="3754210790023674521">చిత్రంలో చిత్రం మోడ్ నుండి నిష్క్రమింపజేయి</translation>
 <translation id="3754664361823138853">&amp;హిస్టరీ పేజీని తెరవండి</translation>
+<translation id="3757511311058373406">ఆటోమేటిక్ బ్రౌజ్ ఫిల్టర్‌లు</translation>
 <translation id="3759461132968374835">మీకు ఇటీవల నివేదించిన క్రాష్‌లు లేవు. క్రాష్‌ నివేదన నిలిపివేసినపుడు ఏర్పడే క్రాష్‌లు ఇక్కడ కనిపించవు.</translation>
 <translation id="3760561303380396507">CVCకి బదులుగా Windows Helloను ఉపయోగించాలా?</translation>
 <translation id="3761171036307311438">కార్డ్ పేరు:</translation>
@@ -2969,6 +2972,7 @@
 <translation id="5600044805561809264">మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీరు షేర్ చేస్తున్న ట్యాబ్‌ల గురించి సులభంగా ప్రశ్నలు అడగవచ్చు.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> లేదా <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">నిర్వహణకు మద్దతు లేదు</translation>
+<translation id="5604254791550001355">ప్రాంప్ట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{1 గంట క్రితం యాక్టివ్‌గా ఉంది}other{# గంటల క్రితం యాక్టివ్‌గా ఉంది}}</translation>
 <translation id="5605249000617390290">ధర ట్రాకింగ్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="5605670050355397069">లెడ్జర్</translation>
@@ -3400,6 +3404,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">ఖాతా</translation>
+<translation id="6299098428775578517">సూచన సెట్టింగ్‌లు</translation>
 <translation id="6300452962057769623">{0,plural, =0{మీ పరికరం ఇప్పుడు రీస్టార్ట్ అవుతుంది}=1{మీ పరికరం 1 సెకనులో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # సెకన్లలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> అనుమతి వివరాలను చూడండి</translation>

@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036436692654972538">Pohranjuje se na uređaju</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
+<translation id="1038106730571050514">Prikažite prijedloge</translation>
 <translation id="1038168778161626396">Samo šifriranje</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka u tabeli za posao</translation>
@@ -2974,7 +2975,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5600044805561809264">Možete lako postavljati pitanja o karticama koje dijelite dok pregledate.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> ili <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Upravljanje nije podržano</translation>
-<translation id="5604254791550001355">Uredi upit</translation>
+<translation id="5604254791550001355">Uredite upit</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Uređaj je bio aktivan prije 1 sat}one{Uređaj je bio aktivan prije # sat}few{Uređaj je bio aktivan prije # sata}other{Uređaj je bio aktivan prije # sati}}</translation>
 <translation id="5605249000617390290">Saznajte više o praćenju cijena</translation>
 <translation id="5605670050355397069">Ledger</translation>

@@ -3051,6 +3051,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Kullanıcı pin kodunu etkinleştir</translation>
 <translation id="3053274730492362225">Yanıp sönmesin</translation>
 <translation id="3057938290530993634">Bir dahaki sefere kolayca erişebilmek için en çok ziyaret ettiğiniz web sitelerine dokunup basılı tutarak bu siteleri sabitleyin</translation>
+<translation id="3058002721610176427">PIN'inizi ve şifrenizi değiştirin</translation>
 <translation id="3058498974290601450">Senkronizasyonu istediğiniz zaman ayarlardan açabilirsiniz</translation>
 <translation id="3060694926634506594">Skills</translation>
 <translation id="3060952009917586498">Cihaz dilini değiştirin. Mevcut dil: <ph name="LANGUAGE" />.</translation>
@@ -3300,6 +3301,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3254506277019076812">Beceri ekleyin</translation>
 <translation id="3254516606912442756">Otomatik saat dilimi algılama devre dışı</translation>
 <translation id="3255747772218936245">Güncellemeyi yükle</translation>
+<translation id="3256274561709196882">PIN'inizi değiştirin</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> uzantısına izin verilsin mi?</translation>
 <translation id="325797067711573598">Şüpheli indirme işlemi engellendi</translation>
 <translation id="3259723213051400722">Lütfen tekrar deneyin.</translation>
@@ -4415,6 +4417,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3995963973192100066">Animasyonu oynat</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Yakın zamanda ziyaret etmediğiniz sitenin izinleri, verilerinizi korumak için kaldırıldı}other{Yakın zamanda ziyaret etmediğiniz sitelerin izinleri, verilerinizi korumak için kaldırıldı}}</translation>
 <translation id="399788104667917863">Araç çubuğuna sabitle</translation>
+<translation id="3998431043924115701">İnternette gezinirken soru sorun</translation>
 <translation id="3998780825367526465">Sekme önizleme resimlerini göster</translation>
 <translation id="3998976413398910035">Yazıcıları yönetme</translation>
 <translation id="4000360130639414007">Android uygulamalarını veya Google Play Store'u kullanamazsınız</translation>
@@ -5544,6 +5547,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4816336393325437908">{COUNT,plural, =1{1 yer işareti silindi}other{{COUNT} yer işareti silindi}}</translation>
 <translation id="481689174647911539">Bu dosya virüs veya kötü amaçlı yazılım olabilir.<ph name="LINE_BREAK" />Güvenli olup olmadığını kontrol etmek için Google Güvenli Tarama'ya gönderebilirsiniz. Taramalar genellikle birkaç saniye sürer.</translation>
 <translation id="4816900689218414104">Telefonda veya tablette geçiş anahtarı oluşturun</translation>
+<translation id="4818449958253566215">Başlat menüsüne ekleniyor</translation>
 <translation id="481852950686014162">Gemini ve AI Modu'nda kaldığınız yerden devam edin</translation>
 <translation id="4819323978093861656">{0,plural, =0{Şimdi kapatılıyor.}=1{1 saniye sonra kapatılacak}other{# saniye sonra kapatılacak}}</translation>
 <translation id="4819818293886748542">Destek aracı bağlantısı alın</translation>
@@ -6791,6 +6795,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5697664819730124632">Resim ekleyip yeniden tasarlayın</translation>
 <translation id="5697832193891326782">Emoji Seçici</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> verilerinizi silmek üzeresiniz</translation>
+<translation id="5698815246352480266">Sekme değiştirmeden AI Modu ile sohbet etmeye devam edebilirsiniz. Başlamak için kimliğinizi doğrulayın. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
 <translation id="5698878456427040674">Seçilen hesabın desteklenip desteklenmediğini kontrol edin.</translation>
 <translation id="5698900765010620315">Düşük kontrastlı koyu tema</translation>
 <translation id="5699227710146832453">Cihazınızdan:</translation>
@@ -7048,6 +7053,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5870155679953074650">Donanım hataları</translation>
 <translation id="587234395549708302">Yer işaretleri temizlensin mi?</translation>
 <translation id="5875534259258494936">Ekran paylaşımı sona erdi</translation>
+<translation id="5876691914815078365">Chrome Uygulamaları &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Sağa Yeni Sekme</translation>
 <translation id="5877064549588274448">Kanal değişti. Değişikliklerin uygulanması için cihazınızı yeniden başlatın.</translation>
 <translation id="5877584842898320529">Seçilen yazıcı kullanılamıyor veya doğru yüklenmemiş. <ph name="BR" /> Yazıcınızı kontrol edin veya başka yazıcı seçmeyi deneyin.</translation>
@@ -11061,6 +11067,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8673026256276578048">Web’de ara...</translation>
 <translation id="867329473311423817">Tüm ekranlarınızda pencereleri yönetmesine izin verilen siteler</translation>
 <translation id="8673383193459449849">Sunucu sorunu</translation>
+<translation id="8673530374848624865">Yöneticiniz, cihazınızın güvenlik koşullarını güncelledi</translation>
 <translation id="8674903726754070732">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum ChromeOS'nin en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="8675657007450883866">Siteler, tam ekran moduna otomatik olarak girmek için bu özelliği kullanır. Tam ekran moduna girmek için genellikle kullanıcı etkileşimi gerekir.</translation>
 <translation id="8675704450909805533">Yükleyici, <ph name="DEVICE_OS" /> yüklemesini gerçekleştirecek geçerli bir hedef bulamadı.</translation>

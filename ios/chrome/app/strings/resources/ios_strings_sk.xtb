@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Obrázky sa nepodarilo načítať</translation>
 <translation id="3565930036634619844">Karta. <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Uložiť inak</translation>
+<translation id="3571703298474554279">Rýchlejší spôsob používania aplikácie</translation>
 <translation id="3572503683475187385">Aktuálna karta sa bude zdieľať s Gemini, keď začnete nový čet. Keď zdieľate kartu s Gemini, jej obsah a webová adresa sa odošlú Googlu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Vo vašom účte Google</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
@@ -1701,6 +1702,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6871397658902960384">Začať prehliadať</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Uložiť heslo do účtu}few{Uložiť heslá do účtu}many{Save passwords in account}other{Uložiť heslá do účtu}}</translation>
 <translation id="6875166646976836138">Tieto položky si môžete zobraziť a spravovať aj v záložkách, čitateľskom zozname alebo Správcovi hesiel.</translation>
+<translation id="6878052248816456143">Získajte prístup k súborom na Disku Google kedykoľvek.</translation>
 <translation id="6882836635272038266">Štandardná ochrana pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Uložte si {COUNT} heslo do účtu Google}few{Uložte si {COUNT} heslá do účtu Google}many{Save {COUNT} passwords in your Google Account}other{Uložte si {COUNT} hesiel do účtu Google}}</translation>
 <translation id="6888009575607455378">Naozaj chcete zmeny zahodiť?</translation>
@@ -1814,6 +1816,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7345061034321640811">Import nie je povolený</translation>
 <translation id="7347998088283246662">Importujte heslá, históriu, záložky a ďalší obsah</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
+<translation id="7363497636543208734">V aplikácii sa teraz ľahšie orientuje.</translation>
 <translation id="7364796246159120393">Vybrať súbor</translation>
 <translation id="736564850024123010">Zmenou umiestnenia panela s adresou získate prispôsobenejšie prostredie.</translation>
 <translation id="7366909168761621528">Údaje prehliadania</translation>

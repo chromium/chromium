@@ -22,6 +22,7 @@
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1036436692654972538">Ukládá se do vašeho zařízení</translation>
 <translation id="1036881361735705143">Obálka C4</translation>
+<translation id="1038106730571050514">Zobrazit návrhy</translation>
 <translation id="1038168778161626396">Pouze šifrování</translation>
 <translation id="1038842779957582377">neznámé jméno</translation>
 <translation id="1041998700806130099">Zpráva listu úlohy</translation>
@@ -2970,6 +2971,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5600044805561809264">Při prohlížení můžete snadno pokládat otázky týkající se sdílených karet.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> nebo <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Správa není podporována</translation>
+<translation id="5604254791550001355">Upravit prompt</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Aktivní před 1 hodinou}few{Aktivní před # hodinami}many{Aktivní před # hodiny}other{Aktivní před # hodinami}}</translation>
 <translation id="5605249000617390290">Další informace o sledování cen</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3400,6 +3402,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Bezpečnostní kód kreditní karty (CVC):</translation>
 <translation id="629730747756840877">Účet</translation>
+<translation id="6299098428775578517">Nastavení návrhů</translation>
 <translation id="6300452962057769623">{0,plural, =0{Zařízení se teď restartuje}=1{Zařízení se za 1 sekundu restartuje}few{Zařízení se za # sekundy restartuje}many{Zařízení se za # sekundy restartuje}other{Zařízení se za # sekund restartuje}}</translation>
 <translation id="6301104306974789820">Dostávat oznámení o sledování cen</translation>
 <translation id="6302546952464230349">Zobrazit podrobnosti oprávnění <ph name="PERMISSION_NAME" /></translation>

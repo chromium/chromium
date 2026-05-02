@@ -3227,6 +3227,7 @@ Si se inhabilita esta política o no se define, el menú de accesibilidad flotan
 <translation id="3127816006382989270">Permite el acceso a una lista de URLs en modo Incógnito.</translation>
 <translation id="3128072319047570212">Configuración del generador de claves</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos de móviles</translation>
+<translation id="3131928857191083710">Configuración de tamaño de grupo de sockets</translation>
 <translation id="3135820765957090754">Si se habilita esta opción, los usuarios podrán sincronizar los ajustes de la red Wi‑Fi entre sus dispositivos <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado. Para poder sincronizar los ajustes de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
 
       Si se inhabilita esta opción, los usuarios no podrán sincronizar los ajustes de la red Wi‑Fi.

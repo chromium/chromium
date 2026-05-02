@@ -721,7 +721,7 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspjelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvajte na drugi način</translation>
-<translation id="3571703298474554279">Brži način upotrebe aplikacije</translation>
+<translation id="3571703298474554279">Brži način korištenja aplikacije</translation>
 <translation id="3572503683475187385">Trenutna kartica se dijeli s Geminijem kada pokrenete novi chat. Kada podijelite karticu s Geminijem, njeni sadržaji i URL se šalju Googleu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
@@ -1702,7 +1702,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6871397658902960384">Počnite preglédati</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Sačuvaj lozinku na račun}one{Sačuvaj lozinke na račun}few{Sačuvaj lozinke na račun}other{Sačuvaj lozinke na račun}}</translation>
 <translation id="6875166646976836138">Također možete pregledati te stavke i upravljati njima u oznakama, na listi za čitanje ili upravitelju lozinki.</translation>
-<translation id="6878052248816456143">Pristupite datotekama na Google disku kad god želite.</translation>
+<translation id="6878052248816456143">Pristupajte fajlovima na Google Disku bilo kada.</translation>
 <translation id="6882836635272038266">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Sačuvajte {COUNT} lozinku na Google račun}one{Sačuvajte {COUNT} lozinku na Google račun}few{Sačuvajte {COUNT} lozinke na Google račun}other{Sačuvajte {COUNT} lozinki na Google račun}}</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
@@ -1816,7 +1816,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7345061034321640811">Uvoz nije dozvoljen</translation>
 <translation id="7347998088283246662">Uvezite lozinke, historiju, oznake i drugo</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
-<translation id="7363497636543208734">Kretanje aplikacijom sada je jednostavnije.</translation>
+<translation id="7363497636543208734">Kretanje u aplikaciji je sada lakše.</translation>
 <translation id="7364796246159120393">Odabir fajla</translation>
 <translation id="736564850024123010">Promijenite položaj trake za adresu radi prilagođenog iskustva.</translation>
 <translation id="7366909168761621528">Podaci pregledanja</translation>

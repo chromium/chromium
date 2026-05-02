@@ -3065,6 +3065,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3053273573829329829">Aktifkan PIN pengguna</translation>
 <translation id="3053274730492362225">Jangan berkedip</translation>
 <translation id="3057938290530993634">Sentuh lama untuk menyematkan situs yang paling sering dikunjungi agar mudah diakses lain kali</translation>
+<translation id="3058002721610176427">Ubah PIN dan sandi Anda</translation>
 <translation id="3058498974290601450">Anda dapat mengaktifkan sinkronisasi kapan saja di setelan</translation>
 <translation id="3060694926634506594">Keahlian</translation>
 <translation id="3060952009917586498">Ubah bahasa perangkat. Bahasa saat ini adalah <ph name="LANGUAGE" />.</translation>
@@ -3316,6 +3317,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3254506277019076812">Tambahkan keahlian</translation>
 <translation id="3254516606912442756">Deteksi zona waktu otomatis dinonaktifkan</translation>
 <translation id="3255747772218936245">Instal update</translation>
+<translation id="3256274561709196882">Ubah PIN Anda</translation>
 <translation id="3257733480216378006">Izinkan <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Download yang mencurigakan diblokir</translation>
 <translation id="3259723213051400722">Harap coba lagi.</translation>
@@ -4431,6 +4433,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3995963973192100066">Putar animasi</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}}</translation>
 <translation id="399788104667917863">Sematkan ke toolbar</translation>
+<translation id="3998431043924115701">Ajukan pertanyaan saat Anda menjelajah</translation>
 <translation id="3998780825367526465">Tampilkan gambar pratinjau tab</translation>
 <translation id="3998976413398910035">Kelola printer</translation>
 <translation id="4000360130639414007">Anda tidak akan dapat menggunakan aplikasi Android atau Google Play Store</translation>
@@ -5560,6 +5563,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark dihapus}other{{COUNT} bookmark dihapus}}</translation>
 <translation id="481689174647911539">File ini mungkin adalah virus atau malware.<ph name="LINE_BREAK" />Anda dapat mengirimkannya ke Google Safe Browsing untuk memeriksa apakah file ini tidak aman. Pemindaian biasanya memerlukan waktu beberapa detik.</translation>
 <translation id="4816900689218414104">Buat kunci sandi di ponsel atau tablet</translation>
+<translation id="4818449958253566215">Menambahkan ke Menu Start</translation>
 <translation id="481852950686014162">Lanjutkan aktivitas terakhir Anda di Gemini dan Mode AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Menutup sekarang.}=1{Menutup dalam: 1 detik}other{Menutup dalam: # detik}}</translation>
 <translation id="4819818293886748542">Dapatkan link Alat Dukungan</translation>
@@ -6807,6 +6811,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5697664819730124632">Tambahkan gambar dan edit instan</translation>
 <translation id="5697832193891326782">Alat Pilih Emoji</translation>
 <translation id="5698136107297470317">Anda akan menghapus data <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Anda dapat terus melakukan percakapan dengan Mode AI tanpa beralih tab. Untuk memulai, verifikasi identitas Anda. Anda juga akan mendapatkan sandi dan info Anda yang lain di semua perangkat Anda.</translation>
 <translation id="5698878456427040674">Periksa apakah akun yang dipilih didukung.</translation>
 <translation id="5698900765010620315">Gelap kontras rendah</translation>
 <translation id="5699227710146832453">Dari</translation>
@@ -7064,6 +7069,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5870155679953074650">Hard fault</translation>
 <translation id="587234395549708302">Bersihkan Bookmark?</translation>
 <translation id="5875534259258494936">Berbagi layar telah berakhir</translation>
+<translation id="5876691914815078365">Aplikasi Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Tab Baru di Sebelah Kanan</translation>
 <translation id="5877064549588274448">Saluran diubah. Mulai ulang perangkat Anda untuk menerapkan perubahan.</translation>
 <translation id="5877584842898320529">Printer yang dipilih tidak tersedia atau tidak terinstal dengan benar. <ph name="BR" /> Periksa printer atau coba pilih printer lain.</translation>
@@ -11077,6 +11083,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8673026256276578048">Telusuri Web...</translation>
 <translation id="867329473311423817">Diizinkan untuk mengelola jendela di semua layar</translation>
 <translation id="8673383193459449849">Server bermasalah</translation>
+<translation id="8673530374848624865">Administrator Anda telah memperbarui persyaratan keamanan untuk perangkat Anda</translation>
 <translation id="8674903726754070732">Sayangnya, komputer Anda dikonfigurasi dengan ID hardware yang salah. Hal ini mencegah ChromeOS diupdate dengan perbaikan keamanan terbaru dan komputer Anda <ph name="BEGIN_BOLD" />mungkin rentan terhadap serangan berbahaya<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Situs menggunakan fitur ini untuk masuk ke layar penuh secara otomatis. Biasanya, memasuki layar penuh memerlukan interaksi pengguna.</translation>
 <translation id="8675704450909805533">Penginstal tidak dapat menemukan tujuan yang valid untuk menginstal <ph name="DEVICE_OS" />.</translation>

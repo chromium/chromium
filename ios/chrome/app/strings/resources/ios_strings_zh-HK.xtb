@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3567168891086460374">儲存其他方式</translation>
+<translation id="3571703298474554279">提升使用效率</translation>
 <translation id="3572503683475187385">發起新對話時，系統會與 Gemini 分享目前分頁。與 Gemini 分享分頁時，分頁內容和網址會傳送至 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">開始瀏覽</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{將密碼儲存至帳戶中}other{將密碼儲存至帳戶中}}</translation>
 <translation id="6875166646976836138">你亦可在書籤、閱讀清單或密碼管理工具中查看和管理這些項目。</translation>
+<translation id="6878052248816456143">隨時存取「Google 雲端硬碟」檔案。</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{將 {COUNT} 個密碼儲存在你的 Google 帳戶中}other{將 {COUNT} 個密碼儲存在你的 Google 帳戶中}}</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">不允許匯入</translation>
 <translation id="7347998088283246662">匯入密碼、記錄、書籤等內容</translation>
 <translation id="7352651011704765696">發生問題</translation>
+<translation id="7363497636543208734">應用程式操作現在更輕鬆。</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="736564850024123010">切換網址列的位置，享受自訂的使用體驗。</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>

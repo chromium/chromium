@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Ezin izan dira kargatu irudiak</translation>
 <translation id="3565930036634619844">Fitxa. <ph name="NUMBER_OF_TABS" /> fitxatatik <ph name="TAB_INDEX" />garrena.</translation>
 <translation id="3567168891086460374">Gorde beste modu batera</translation>
+<translation id="3571703298474554279">Aplikazioa erabiltzeko modu bizkorragoa</translation>
 <translation id="3572503683475187385">Elkarrizketa bat hasten duzunean, irekita daukazun fitxa Gemini-rekin partekatzen da. Fitxa bat Gemini-rekin partekatzen duzunean, haren edukia eta URLa Google-ra bidaltzen dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google-ko kontuan daudenak</translation>
 <translation id="3575234738189584619">Bilatu Lens bidez</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">Hasi arakatzen</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Gorde pasahitza kontuan}other{Gorde pasahitzak kontuan}}</translation>
 <translation id="6875166646976836138">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu.</translation>
+<translation id="6878052248816456143">Atzitu Google Drive-ko fitxategiak nahi duzunean.</translation>
 <translation id="6882836635272038266">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Gorde {COUNT} pasahitz Google-ko kontuan}other{Gorde {COUNT} pasahitz Google-ko kontuan}}</translation>
 <translation id="6888009575607455378">Ziur aldaketak baztertu nahi dituzula?</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">Inportazioa ez dago baimenduta</translation>
 <translation id="7347998088283246662">Inportatu pasahitzak, historia, laster-markak eta abar</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
+<translation id="7363497636543208734">Orain, errazagoa da aplikazioan nabigatzea.</translation>
 <translation id="7364796246159120393">Aukeratu fitxategia</translation>
 <translation id="736564850024123010">Zerbitzua pertsonalizatzeko, aldatu helbide-barraren posizioa.</translation>
 <translation id="7366909168761621528">Arakatze-datuak</translation>

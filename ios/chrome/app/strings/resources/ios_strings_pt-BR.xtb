@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Preencher automaticamente o número do cartão que termina em <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rolo da câmera</translation>
+<translation id="3746269120925354434">Informações salvas na Carteira do Google</translation>
 <translation id="3750225824417196283">Nova página de guia anônima</translation>
 <translation id="3751873026576444885">Parar de pesquisar na tela com o Google Lens</translation>
 <translation id="3753408171347588045">Monitorando preços</translation>
@@ -2175,6 +2176,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8533670235862049797">A Navegação Segura está ativada</translation>
 <translation id="8534481786647257214">A postagem no Google+ foi concluída.</translation>
 <translation id="8535368836838588657">Mostrar senha</translation>
+<translation id="8540426897269305488">Fazer login com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Confira as configurações padrão do seu navegador</translation>
 <translation id="854938212724803178">Você tem 1 senha comprometida. Corrija o problema agora para se proteger.</translation>
 <translation id="8551311254462607218">Na barra de endereço, toque no ícone de câmera do Google Lens</translation>

@@ -3054,6 +3054,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Activează codul PIN pentru utilizator</translation>
 <translation id="3053274730492362225">Fără clipire</translation>
 <translation id="3057938290530993634">Atinge lung pentru a fixa cele mai accesate site-uri pentru acces ușor data viitoare.</translation>
+<translation id="3058002721610176427">Schimbă codul PIN și parola</translation>
 <translation id="3058498974290601450">Poți să activezi sincronizarea oricând în setări</translation>
 <translation id="3060694926634506594">Abilități</translation>
 <translation id="3060952009917586498">Schimbă limba dispozitivului. Limba actuală este <ph name="LANGUAGE" />.</translation>
@@ -3304,6 +3305,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3254506277019076812">Adaugă o abilitate</translation>
 <translation id="3254516606912442756">Detectarea automată a fusului orar este dezactivată</translation>
 <translation id="3255747772218936245">Instalează actualizarea</translation>
+<translation id="3256274561709196882">Schimbă-ți codul PIN</translation>
 <translation id="3257733480216378006">Permiți <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Descărcarea a fost blocată deoarece este suspectă</translation>
 <translation id="3259723213051400722">Încearcă din nou.</translation>
@@ -4419,6 +4421,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3995963973192100066">Redă animația</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Pentru a-ți proteja datele, s-au eliminat permisiunile pentru un site pe care nu l-ai accesat recent}few{Pentru a-ți proteja datele, s-au eliminat permisiunile pentru site-urile pe care nu le-ai accesat recent}other{Pentru a-ți proteja datele, s-au eliminat permisiunile pentru site-urile pe care nu le-ai accesat recent}}</translation>
 <translation id="399788104667917863">Fixează în bara de instrumente</translation>
+<translation id="3998431043924115701">Pune întrebări în timp ce navighezi</translation>
 <translation id="3998780825367526465">Afișează imaginile de previzualizare a filelor</translation>
 <translation id="3998976413398910035">Gestionează imprimantele</translation>
 <translation id="4000360130639414007">Nu vei putea să folosești aplicațiile pentru Android sau Magazinul Google Play</translation>
@@ -5548,6 +5551,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4816336393325437908">{COUNT,plural, =1{Un marcaj șters}few{{COUNT} marcaje șterse}other{{COUNT} de marcaje șterse}}</translation>
 <translation id="481689174647911539">Fișierul poate fi un virus sau un program malware.<ph name="LINE_BREAK" />Poți să-l trimiți la Navigarea sigură Google pentru a verifica dacă este nesigur. De obicei, verificările durează câteva secunde.</translation>
 <translation id="4816900689218414104">Creează o cheie de acces pe telefon sau pe tabletă</translation>
+<translation id="4818449958253566215">Se adaugă în meniul Start</translation>
 <translation id="481852950686014162">Reia de unde ai rămas în Gemini și Modul AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Se închide.}=1{Se închide în o secundă}few{Se închide în # secunde}other{Se închide în # de secunde}}</translation>
 <translation id="4819818293886748542">Obține linkul către Instrumentul de asistență</translation>
@@ -6793,6 +6797,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5697664819730124632">Adaugă o imagine și reimagineaz-o</translation>
 <translation id="5697832193891326782">Selector de emoji</translation>
 <translation id="5698136107297470317">Ești pe cale să ștergi datele <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Poți să conversezi în continuare prin chat cu Modul AI fără să schimbi filele. Pentru a începe, confirmă-ți identitatea. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele.</translation>
 <translation id="5698878456427040674">Verifică dacă este acceptat contul selectat.</translation>
 <translation id="5698900765010620315">Întunecată, cu contrast redus</translation>
 <translation id="5699227710146832453">De pe</translation>
@@ -7050,6 +7055,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5870155679953074650">Erori de hardware</translation>
 <translation id="587234395549708302">Ștergi marcajele?</translation>
 <translation id="5875534259258494936">S-a oprit accesul la ecran</translation>
+<translation id="5876691914815078365">Aplicații Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Filă nouă la dreapta</translation>
 <translation id="5877064549588274448">Canalul a fost schimbat. Reporniți dispozitivul pentru a aplica modificările.</translation>
 <translation id="5877584842898320529">Imprimanta selectată nu este disponibilă sau nu este instalată corect. <ph name="BR" /> Verifică imprimanta sau încearcă să selectezi altă imprimantă.</translation>
@@ -11066,6 +11072,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8673026256276578048">Caută pe web...</translation>
 <translation id="867329473311423817">Au permisiunea de a gestiona ferestre pe toate ecranele</translation>
 <translation id="8673383193459449849">Problemă de server</translation>
+<translation id="8673530374848624865">Administratorul a actualizat cerințele de securitate pentru dispozitivul tău</translation>
 <translation id="8674903726754070732">Din păcate, computerul este configurat cu un ID de hardware incorect. Acest lucru împiedică actualizarea sistemului de operare Chrome cu cele mai recente remedieri de securitate, iar computerul <ph name="BEGIN_BOLD" />ar putea fi vulnerabil la atacuri<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Site-urile folosesc această funcție pentru a accesa automat modul ecran complet. De obicei, accesarea ecranului complet necesită interacțiunea cu utilizatorul.</translation>
 <translation id="8675704450909805533">Programul de instalare nu a găsit o destinație validă pentru a instala <ph name="DEVICE_OS" />.</translation>

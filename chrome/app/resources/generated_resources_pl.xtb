@@ -3038,6 +3038,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3053273573829329829">Włącz kod PIN użytkownika</translation>
 <translation id="3053274730492362225">Nie mrugaj</translation>
 <translation id="3057938290530993634">Naciśnij i przytrzymaj, aby przypiąć najczęściej odwiedzane strony i mieć do nich łatwy dostęp</translation>
+<translation id="3058002721610176427">Zmień kod PIN i hasło</translation>
 <translation id="3058498974290601450">W każdej chwili możesz włączyć synchronizację w ustawieniach</translation>
 <translation id="3060694926634506594">Umiejętności</translation>
 <translation id="3060952009917586498">Zmień język urządzenia. Bieżący język to <ph name="LANGUAGE" />.</translation>
@@ -3287,6 +3288,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3254506277019076812">Dodaj umiejętność</translation>
 <translation id="3254516606912442756">Automatyczne wykrywanie strefy czasowej jest wyłączone</translation>
 <translation id="3255747772218936245">Zainstaluj aktualizację</translation>
+<translation id="3256274561709196882">Zmień kod PIN</translation>
 <translation id="3257733480216378006">Zezwolić na <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Zablokowano podejrzaną próbę pobierania</translation>
 <translation id="3259723213051400722">Spróbuj jeszcze raz.</translation>
@@ -4398,6 +4400,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3995963973192100066">Odtwórz animację</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Aby chronić Twoje dane, usunęliśmy uprawnienia witryny, której ostatnio nie odwiedzasz}few{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których ostatnio nie odwiedzasz}many{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których ostatnio nie odwiedzasz}other{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których ostatnio nie odwiedzasz}}</translation>
 <translation id="399788104667917863">Przypnij do paska narzędzi</translation>
+<translation id="3998431043924115701">Zadawaj pytania podczas przeglądania</translation>
 <translation id="3998780825367526465">Pokaż obrazy podglądu kart</translation>
 <translation id="3998976413398910035">Zarządzaj drukarkami</translation>
 <translation id="4000360130639414007">Nie będziesz mieć możliwości korzystania z aplikacji na Androida ani ze Sklepu Google Play</translation>
@@ -5527,6 +5530,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Usunięto 1 zakładkę}few{Usunięto {COUNT} zakładki}many{Usunięto {COUNT} zakładek}other{Usunięto {COUNT} zakładki}}</translation>
 <translation id="481689174647911539">Ten plik może zawierać wirusa lub złośliwe oprogramowanie.<ph name="LINE_BREAK" />Aby to sprawdzić, możesz wysłać go do Bezpiecznego przeglądania Google. Skanowanie zazwyczaj trwa kilka sekund.</translation>
 <translation id="4816900689218414104">Utwórz klucz na telefonie lub tablecie</translation>
+<translation id="4818449958253566215">Dodaję do menu Start</translation>
 <translation id="481852950686014162">Zacznij od tego samego miejsca w Gemini i Trybie AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zamykam.}=1{Zamykam za: 1 sekundę}few{Zamykam za: # sekundy}many{Zamykam za: # sekund}other{Zamykam za: # sekundy}}</translation>
 <translation id="4819818293886748542">Uzyskaj link do narzędzia pomocy</translation>
@@ -6771,6 +6775,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5697664819730124632">Dodaj obraz i go zmień</translation>
 <translation id="5697832193891326782">Selektor emotikonów</translation>
 <translation id="5698136107297470317">Zamierzasz usunąć dane z aplikacji <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Możesz kontynuować czat w Trybie AI bez przełączania kart. Aby rozpocząć, potwierdź swoją tożsamość. Będziesz też mieć dostęp do haseł i innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="5698878456427040674">Sprawdź, czy wybrane konto jest obsługiwane.</translation>
 <translation id="5698900765010620315">Ciemny o niskim kontraście</translation>
 <translation id="5699227710146832453">Źródło:</translation>
@@ -7028,6 +7033,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5870155679953074650">Poważne błędy</translation>
 <translation id="587234395549708302">Usunąć zakładki?</translation>
 <translation id="5875534259258494936">Udostępnianie ekranu zostało zakończone</translation>
+<translation id="5876691914815078365">Aplikacje Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Nowa karta po prawej</translation>
 <translation id="5877064549588274448">Kanał został zmieniony. Aby zastosować zmiany, uruchom ponownie urządzenie.</translation>
 <translation id="5877584842898320529">Wybrana drukarka jest niedostępna lub nieprawidłowo zainstalowana. <ph name="BR" /> Sprawdź ją lub wybierz inną.</translation>
@@ -11041,6 +11047,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8673026256276578048">Szukaj w internecie</translation>
 <translation id="867329473311423817">Zezwolono na zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="8673383193459449849">Problem z serwerem</translation>
+<translation id="8673530374848624865">Administrator zaktualizował wymagania bezpieczeństwa dotyczące Twojego urządzenia</translation>
 <translation id="8674903726754070732">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Ta sytuacja uniemożliwia zaktualizowanie Chrome OS za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na złośliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Strony używają tej funkcji, aby automatycznie włączać pełny ekran. Uruchamianie trybu pełnoekranowego wymaga zwykle działania ze strony użytkownika.</translation>
 <translation id="8675704450909805533">Instalator nie znalazł prawidłowego miejsca docelowego, w którym mógłby zainstalować system operacyjny <ph name="DEVICE_OS" />.</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">No se han podido cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
+<translation id="3571703298474554279">Una forma más rápida de usar la aplicación</translation>
 <translation id="3572503683475187385">La pestaña actual se comparte con Gemini cuando inicias una conversación. Cuando compartes una pestaña con Gemini, el contenido y la URL se envían a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">En tu cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -1701,6 +1702,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6871397658902960384">Empezar a navegar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Guardar contraseña en la cuenta}other{Guardar contraseñas en la cuenta}}</translation>
 <translation id="6875166646976836138">También puedes ver y gestionar estos elementos en tus marcadores, la lista de lectura o el Gestor de contraseñas.</translation>
+<translation id="6878052248816456143">Accede a los archivos de tu Google Drive en cualquier momento.</translation>
 <translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Guarda {COUNT} contraseña en tu cuenta de Google}other{Guarda {COUNT} contraseñas en tu cuenta de Google}}</translation>
 <translation id="6888009575607455378">¿Seguro que quieres descartar los cambios?</translation>
@@ -1814,6 +1816,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7345061034321640811">Importación no permitida</translation>
 <translation id="7347998088283246662">Importa tus contraseñas, historial, marcadores y más</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
+<translation id="7363497636543208734">Ahora es más fácil moverse por la aplicación.</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para personalizar tu experiencia.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>

@@ -3050,6 +3050,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3053273573829329829">Aktivizo kodin PIN të përdoruesit</translation>
 <translation id="3053274730492362225">Mos pulso</translation>
 <translation id="3057938290530993634">Trokit dhe mbaj shtypur për të gozhduar uebsajtet që viziton më shpesh për qasje me lehtësi herën tjetër</translation>
+<translation id="3058002721610176427">Ndrysho kodin PIN dhe fjalëkalimin</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
 <translation id="3060694926634506594">Aftësitë</translation>
 <translation id="3060952009917586498">Ndrysho gjuhën e pajisjes. Gjuha aktuale është <ph name="LANGUAGE" />.</translation>
@@ -3301,6 +3302,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3254506277019076812">Shto aftësi</translation>
 <translation id="3254516606912442756">Zbulimi automatik i brezit orar është çaktivizuar</translation>
 <translation id="3255747772218936245">Instalo përditësimin</translation>
+<translation id="3256274561709196882">Ndrysho kodin PIN</translation>
 <translation id="3257733480216378006">Të lejohet <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Një shkarkim i dyshimtë u bllokua</translation>
 <translation id="3259723213051400722">Provo përsëri.</translation>
@@ -4416,6 +4418,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3995963973192100066">Luaj animacionin</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Për të mbrojtur të dhënat e tua, lejet u hoqën nga një sajt që nuk e ke vizituar së fundi}other{Për të mbrojtur të dhënat e tua, lejet u hoqën nga sajtet që nuk i ke vizituar së fundi}}</translation>
 <translation id="399788104667917863">Gozhdo te shiriti i veglave</translation>
+<translation id="3998431043924115701">Bëj pyetje ndërkohë që shfleton</translation>
 <translation id="3998780825367526465">Shfaq imazhet e pamjes paraprake të skedave</translation>
 <translation id="3998976413398910035">Menaxho printerët</translation>
 <translation id="4000360130639414007">Nuk do të mund të përdorësh aplikacionet për Android ose "Dyqanin e Google Play"</translation>
@@ -5545,6 +5548,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{U fshi 1 faqëshënues}other{U fshinë {COUNT} faqeshënues}}</translation>
 <translation id="481689174647911539">Ky skedar mund të jetë një virus ose softuer keqdashës.<ph name="LINE_BREAK" />Mund ta dërgosh atë te "Shfletimi i sigurt i Google" për të kontrolluar nëse nuk është i sigurt. Skanimet zakonisht zgjasin disa sekonda.</translation>
 <translation id="4816900689218414104">Krijo një çelës kalimi në telefon ose tablet</translation>
+<translation id="4818449958253566215">Po shtohet te menyja Start</translation>
 <translation id="481852950686014162">Vazhdo aty ku e ke lënë në Gemini dhe në "Modalitetin e IA-së"</translation>
 <translation id="4819323978093861656">{0,plural, =0{Po mbyllet tani.}=1{Do të mbyllet pas: 1 sekonde}other{Do të mbyllet pas: # sekondash}}</translation>
 <translation id="4819818293886748542">Merr një lidhje për veglën e mbështetjes</translation>
@@ -6790,6 +6794,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5697664819730124632">Shto një imazh dhe rikrijoje atë</translation>
 <translation id="5697832193891326782">Zgjedhësi i emoji-ve</translation>
 <translation id="5698136107297470317">Je duke fshirë të dhënat e tua të "<ph name="BRAND" />"</translation>
+<translation id="5698815246352480266">Mund të vazhdosh të bisedosh me "Modalitetin e IA-së" pa ndërruar skedat. Për të filluar, verifiko që je ti. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua.</translation>
 <translation id="5698878456427040674">Kontrollo nëse llogaria e zgjedhur mbështetet.</translation>
 <translation id="5698900765010620315">Tema e errët me kontrast të ulët</translation>
 <translation id="5699227710146832453">Nga</translation>
@@ -7047,6 +7052,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5870155679953074650">Defekte të harduerit</translation>
 <translation id="587234395549708302">Të pastrohen faqeshënuesit?</translation>
 <translation id="5875534259258494936">Ndarja e ekranit mbaroi</translation>
+<translation id="5876691914815078365">Aplikacionet e Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Skedë e re djathtas</translation>
 <translation id="5877064549588274448">Kanali ndryshoi. Rinise pajisjen tënde për të zbatuar ndryshimet.</translation>
 <translation id="5877584842898320529">Printeri i zgjedhur nuk ofrohet ose nuk është instaluar si duhet. <ph name="BR" /> Kontrollo printerin ose provo të zgjedhësh një printer tjetër.</translation>
@@ -11060,6 +11066,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8673026256276578048">Kërko në ueb...</translation>
 <translation id="867329473311423817">Lejohen të menaxhojnë dritaret në të gjitha ekranet e tua</translation>
 <translation id="8673383193459449849">Problem në server</translation>
+<translation id="8673530374848624865">Administratori yt ka përditësuar kërkesat e sigurisë për pajisjen tënde</translation>
 <translation id="8674903726754070732">Fatkeqësisht, kompjuteri yt është konfiguruar me një ID hardueri të keqformuar. Kjo parandalon përditësimin e CromeOS me rregullimet më të fundit të sigurisë dhe kompjuteri yt <ph name="BEGIN_BOLD" />mund të jetë i cenueshëm ndaj sulmeve keqdashëse<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Sajtet e përdorin këtë veçori për të kaluar automatikisht në ekran të plotë. Zakonisht, për të kaluar në ekran të plotë kërkohet ndërveprimi i përdoruesit.</translation>
 <translation id="8675704450909805533">Instaluesi nuk mund të gjente një destinacion të vlefshëm për të instaluar <ph name="DEVICE_OS" />.</translation>

@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Nu s-au putut încărca imaginile</translation>
 <translation id="3565930036634619844">Filă. <ph name="TAB_INDEX" /> din <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salvează altfel</translation>
+<translation id="3571703298474554279">Un mod mai rapid de a folosi aplicația</translation>
 <translation id="3572503683475187385">Fila actuală este trimisă la Gemini când începi un chat nou. Când trimiți o filă la Gemini, conținutul și adresa URL ale acesteia sunt trimise la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">În Contul Google</translation>
 <translation id="3575234738189584619">Caută cu Lens</translation>
@@ -1701,6 +1702,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6871397658902960384">Începe să răsfoiești</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Salvează parola în cont}few{Salvează parolele în cont}other{Salvează parolele în cont}}</translation>
 <translation id="6875166646976836138">Poți și să vezi și să gestionezi aceste elemente în marcaje, în lista de lecturi sau în managerul de parole.</translation>
+<translation id="6878052248816456143">Accesează oricând fișierele din Google Drive.</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Salvează {COUNT} parolă în Contul Google}few{Salvează {COUNT} parole în Contul Google}other{Salvează {COUNT} de parole în Contul Google}}</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
@@ -1814,6 +1816,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7345061034321640811">Importarea nu este permisă</translation>
 <translation id="7347998088283246662">Importă parolele, istoricul, marcajele și multe altele.</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
+<translation id="7363497636543208734">Acum este mai ușor să navighezi în aplicație.</translation>
 <translation id="7364796246159120393">Alege fișierul</translation>
 <translation id="736564850024123010">Schimbă poziția barei de adrese pentru o experiență personalizată.</translation>
 <translation id="7366909168761621528">Date de navigare</translation>
