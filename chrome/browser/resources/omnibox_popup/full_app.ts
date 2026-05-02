@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/searchbox/searchbox.js';
+import './omnibox_popup_searchbox.js';
 import '/strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -66,7 +66,7 @@ export class OmniboxFullAppElement extends CrLitElement {
       return;
     }
 
-    const searchbox = this.shadowRoot.querySelector('cr-searchbox');
+    const searchbox = this.shadowRoot.querySelector('omnibox-popup-searchbox');
     assert(searchbox);
     searchbox.focusInput();
   }

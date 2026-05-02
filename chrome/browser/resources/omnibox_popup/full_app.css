@@ -7,7 +7,7 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-cr-searchbox {
+omnibox-popup-searchbox {
   --cr-searchbox-height: 36px;
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-top-position: 0;
@@ -15,12 +15,12 @@ cr-searchbox {
   display: block;
 }
 
-:host([omnibox-popup-debug-enabled_]) cr-searchbox::part(searchbox-input) {
+:host([omnibox-popup-debug-enabled_]) omnibox-popup-searchbox::part(searchbox-input) {
   /* For debugging purposes, makes it more obvious when the WebUI input is
    * showing. */
   background-color: lightgreen;
 }
 
-cr-searchbox::part(dropdown-content) {
+omnibox-popup-searchbox::part(dropdown-content) {
   border-radius: 0;
 }

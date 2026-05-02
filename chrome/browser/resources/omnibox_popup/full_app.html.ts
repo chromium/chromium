@@ -9,7 +9,7 @@ import type {OmniboxFullAppElement} from './full_app.js';
 export function getHtml(this: OmniboxFullAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-searchbox></cr-searchbox>
+<omnibox-popup-searchbox></omnibox-popup-searchbox>
 <!--_html_template_end_-->`;
   // clang-format on
 }
