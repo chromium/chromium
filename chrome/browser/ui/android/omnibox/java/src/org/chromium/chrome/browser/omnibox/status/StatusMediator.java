@@ -82,7 +82,6 @@ public class StatusMediator
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final PermissionStatusHandler mPermissionStatusHandler;
     private final Handler mIconTaskHandler = new Handler();
-    private final Handler mStoreIconHandler = new Handler();
     private final PageInfoIphController mPageInfoIphController;
     private final PageInfoAction mPageInfoAction;
     private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
@@ -109,7 +108,6 @@ public class StatusMediator
     private @ColorRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
-    private boolean mIsStoreIconShowing;
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
@@ -213,7 +211,6 @@ public class StatusMediator
         }
 
         mPermissionStatusHandler.destroy();
-        mStoreIconHandler.removeCallbacksAndMessages(null);
         mIconTaskHandler.removeCallbacksAndMessages(null);
 
         var templateUrlService = mTemplateUrlServiceSupplier.get();
@@ -318,7 +315,6 @@ public class StatusMediator
 
         mUrlHasFocus = urlHasFocus;
         updateVerboseStatusTextVisibility();
-        updateStatusVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
         updateStatusViewVisibility();
         updateStatusViewMinWidth();
@@ -349,10 +345,6 @@ public class StatusMediator
 
     public void setUseSmallWidget(boolean useSmallWidget) {
         mModel.set(StatusProperties.USE_SMALL_WIDGET, useSmallWidget);
-    }
-
-    void updateStatusVisibility() {
-        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /** Specify minimum width of an URL field. */
@@ -472,8 +464,6 @@ public class StatusMediator
     /** Update selection of icon presented on the location bar. */
     @Override
     public void updateLocationBarIcon(@IconTransitionType int transitionType) {
-        // Reset the store icon status.
-        mIsStoreIconShowing = false;
         mIsSecurityViewShown = false;
 
         @DrawableRes int iconRes = Resources.ID_NULL;
@@ -765,9 +755,7 @@ public class StatusMediator
     }
 
     private void resetEmbeddedIconHandlers() {
-        mStoreIconHandler.removeCallbacksAndMessages(null);
         mIconTaskHandler.removeCallbacksAndMessages(null);
-        mIsStoreIconShowing = false;
     }
 
     /**
@@ -778,8 +766,6 @@ public class StatusMediator
         ChromePageInfoHighlight highlight = mPermissionStatusHandler.getPageInfoHighlight();
         if (highlight != null) {
             return highlight;
-        } else if (mIsStoreIconShowing) {
-            return ChromePageInfoHighlight.forStoreInfo(/* highlightStoreInfo= */ true);
         } else {
             return ChromePageInfoHighlight.noHighlight();
         }
@@ -925,8 +911,7 @@ public class StatusMediator
                         || mShowStatusIconForSecureOrigins
                         || mIsSecurityViewShown
                         || hasStatusIconResource()
-                        || shouldShowVerboseStatusText()
-                        || mIsStoreIconShowing);
+                        || shouldShowVerboseStatusText());
     }
 
     private boolean hasStatusIconResource() {
@@ -972,9 +957,5 @@ public class StatusMediator
 
     public PermissionStatusHandler getPermissionStatusHandlerForTesting() {
         return mPermissionStatusHandler;
-    }
-
-    boolean isStoreIconShowingForTesting() {
-        return mIsStoreIconShowing;
     }
 }

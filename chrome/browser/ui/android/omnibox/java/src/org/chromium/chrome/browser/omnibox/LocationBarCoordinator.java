@@ -491,9 +491,7 @@ public class LocationBarCoordinator
         profileObservableSupplier.addSyncObserverAndPostIfNonNull(profileObserver);
 
         if (isPhoneLayout()) {
-            mSubCoordinator =
-                    new LocationBarCoordinatorPhone(
-                            (LocationBarPhone) locationBarLayout, mStatusCoordinator);
+            mSubCoordinator = new LocationBarCoordinatorPhone((LocationBarPhone) locationBarLayout);
         } else if (isTabletLayout()) {
             mSubCoordinator =
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);

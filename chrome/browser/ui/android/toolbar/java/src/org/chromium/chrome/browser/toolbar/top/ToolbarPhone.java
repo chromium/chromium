@@ -130,7 +130,6 @@ public class ToolbarPhone extends ToolbarLayout
     public static final int URL_FOCUS_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final int URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS = 100;
     private static final int URL_CLEAR_FOCUS_TABSTACK_DELAY_MS = 200;
-    private static final int URL_CLEAR_FOCUS_MENU_DELAY_MS = 250;
 
     public static final int BUTTON_TRANSITION_DURATION_MS = 225;
 
@@ -2285,10 +2284,6 @@ public class ToolbarPhone extends ToolbarLayout
         animator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         animators.add(animator);
 
-        mLocationBar
-                .getPhoneCoordinator()
-                .populateFadeAnimation(animators, 0, URL_FOCUS_CHANGE_ANIMATION_DURATION_MS, 0);
-
         float density = getContext().getResources().getDisplayMetrics().density;
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         float toolbarButtonTranslationX =
@@ -2372,14 +2367,6 @@ public class ToolbarPhone extends ToolbarLayout
             animator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
             animators.add(animator);
         }
-
-        mLocationBar
-                .getPhoneCoordinator()
-                .populateFadeAnimation(
-                        animators,
-                        URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS,
-                        URL_CLEAR_FOCUS_MENU_DELAY_MS,
-                        1);
 
         if (isLocationBarShownInNtp() && mNtpSearchBoxScrollFraction == 0f) return;
 

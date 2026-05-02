@@ -4,33 +4,25 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.animation.Animator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
-
-import java.util.List;
 
 /** A supplement to {@link LocationBarCoordinator} with methods specific to smaller devices. */
 @NullMarked
 public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCoordinator {
     private LocationBarPhone mLocationBarPhone;
-    private StatusCoordinator mStatusCoordinator;
 
-    public LocationBarCoordinatorPhone(
-            LocationBarPhone phoneLayout, StatusCoordinator statusCoordinator) {
+    public LocationBarCoordinatorPhone(LocationBarPhone phoneLayout) {
         mLocationBarPhone = phoneLayout;
-        mStatusCoordinator = statusCoordinator;
     }
 
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mLocationBarPhone = null;
-        mStatusCoordinator = null;
     }
 
     /**
@@ -40,19 +32,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
      */
     public int getOffsetOfFirstVisibleFocusedView() {
         return mLocationBarPhone.getOffsetOfFirstVisibleFocusedView();
-    }
-
-    /**
-     * Populates fade animator of status icon for location bar focus change animation.
-     *
-     * @param animators The target list to add animators to.
-     * @param startDelayMs Start delay of fade animation in milliseconds.
-     * @param durationMs Duration of fade animation in milliseconds.
-     * @param targetAlpha Target alpha value.
-     */
-    public void populateFadeAnimation(
-            List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
-        mStatusCoordinator.populateFadeAnimation(animators, startDelayMs, durationMs, targetAlpha);
     }
 
     /**

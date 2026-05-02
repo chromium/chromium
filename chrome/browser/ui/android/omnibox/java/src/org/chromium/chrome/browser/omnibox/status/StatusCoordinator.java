@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -42,7 +41,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -162,7 +160,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
-        mMediator.updateStatusVisibility();
     }
 
     /**
@@ -213,9 +210,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
 
     // LocationBarDataProvider.Observer implementation.
     @Override
-    public void onNtpStartedLoading() {
-        mMediator.updateStatusVisibility();
-    }
+    public void onNtpStartedLoading() {}
 
     @Override
     public void onSecurityStateChanged() {
@@ -346,15 +341,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         return mStatusView.isStatusIconAnimating();
     }
 
-    /** Returns the start time (ms) of the current or most recent status icon animation. */
     public long getAnimationStartTimeMs() {
         return mStatusView.getAnimationStartTimeMs();
     }
-
-    /**
-     * Populates an animation that fades =/unfades the entire StatusView container with the given
-     * start delay and duration, adding it to the given list of animators.
-     */
-    public void populateFadeAnimation(
-            List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {}
 }
