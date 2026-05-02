@@ -18,12 +18,11 @@ source_set("core") {
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",
-    "prefs.cc",
-    "prefs.h",
     "url_constants.h",
   ]
 
   public_deps = [
+    ":prefs",
     "//base",
     "//components/accessibility_annotator/core/annotation_reducer",
     "//components/accessibility_annotator/core/annotation_reducer:one_p_resolver",
@@ -48,6 +47,17 @@ source_set("features") {
     "accessibility_annotator_features.h",
   ]
   deps = [ "//base" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "prefs.cc",
+    "prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
 }
 
 source_set("test_support") {

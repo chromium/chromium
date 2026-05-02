@@ -1,6 +1,6 @@
 import("//build/config/features.gni")
 
-assert(use_blink) # Needed because of content/public/browser dependency.
+assert(use_blink)  # Needed because of content/public/browser dependency.
 
 static_library("first_run") {
   sources = [
@@ -27,6 +27,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core:prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gmock",

@@ -22,8 +22,8 @@ source_set("content_annotator") {
 
   deps = [
     "//base",
-    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core:prefs",
     "//components/history/core/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/passage_embeddings/core:passage_embeddings_types",
@@ -51,8 +51,8 @@ source_set("unit_tests") {
   deps = [
     ":content_annotator",
     "//base/test:test_support",
-    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core:prefs",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//components/passage_embeddings/core:test_support",
     "//components/prefs:test_support",
