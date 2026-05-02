@@ -1236,7 +1236,16 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
   }
   const base::DictValue& (base::Value::*get_dict)() const =
       &base::Value::GetDict;
-  filter_list->erase(std::ranges::find(*filter_list, filter, get_dict));
+  // NOTE: The filter may be absent for sub-event listeners if an extension
+  // asynchronously registers the same sub-event with a different filter. In
+  // that case prefs keep only the latest filter while stale in-memory lazy
+  // listeners can still be removed later. See crbug.com/502402731.
+  // TODO(crbug.com/508672617): remove the stale sub-event from the
+  // in-memory lazy listeners.
+  auto it = std::ranges::find(*filter_list, filter, get_dict);
+  if (it != filter_list->end()) {
+    filter_list->erase(it);
+  }
 }
 
 const base::DictValue* EventRouter::GetFilteredEvents(
