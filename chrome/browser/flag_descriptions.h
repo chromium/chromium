@@ -3557,9 +3557,9 @@ inline constexpr char kWebUIOmniboxPopupSelectionControlName[] =
 inline constexpr char kWebUIOmniboxPopupSelectionControlDescription[] =
     "If enabled, the WebUI omnibox popup will control its own selection state.";
 
-inline constexpr char kWebUIRefreshName[] = "WebUI Refresh";
-inline constexpr char kWebUIRefreshDescription[] =
-    "Enables the WebUI Refresh feature.";
+inline constexpr char kWebuiRefresh2026Name[] = "WebUI Refresh 2026";
+inline constexpr char kWebuiRefresh2026Description[] =
+    "Enables the WebUI Refresh 2026 feature.";
 
 inline constexpr char kOmniboxDynamicMaxAutocompleteName[] =
     "Omnibox Dynamic Max Autocomplete";

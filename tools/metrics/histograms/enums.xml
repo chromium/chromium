@@ -7809,6 +7809,7 @@ from previous Chrome versions.
   <int value="-2085212970" label="FastPairHID:enabled"/>
   <int value="-2085198282"
       label="SeparateLocalAndAccountSearchEngines:disabled"/>
+  <int value="-2085066157" label="WebuiRefresh2026:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
@@ -11510,7 +11511,6 @@ from previous Chrome versions.
   <int value="-871450829"
       label="ThreadedScrollPreventRenderingStarvation:disabled"/>
   <int value="-871419968" label="FilesTrashDrive:enabled"/>
-  <int value="-871100145" label="WebUIRefresh:disabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-870118210" label="AutofillEnableCardBenefitsSync:enabled"/>
@@ -14007,7 +14007,6 @@ from previous Chrome versions.
   <int value="-42707046" label="TouchDragAndDrop:enabled"/>
   <int value="-42326303" label="MediaCodecLowDelayMode:enabled"/>
   <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
-  <int value="-41617344" label="WebUIRefresh:enabled"/>
   <int value="-41548966" label="AutocorrectUseReplaceSurroundingText:disabled"/>
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41263570" label="OmniboxToolbelt:enabled"/>
@@ -15555,6 +15554,7 @@ from previous Chrome versions.
   <int value="464979219" label="CrOSLateBootAudioHFPOffload:disabled"/>
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
   <int value="466248382" label="disable-push-api-background-mode"/>
+  <int value="466421847" label="WebuiRefresh2026:enabled"/>
   <int value="467078443" label="FwupdDeveloperMode:disabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
