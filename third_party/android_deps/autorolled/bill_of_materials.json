@@ -1932,12 +1932,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "4.0.0"
+        "version": "4.1.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "4.0.0"
+        "version": "4.1.0"
     },
     {
         "name": "animal-sniffer-annotations",
