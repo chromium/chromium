@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -137,6 +138,7 @@ public class SearchActivityUnitTest {
     private ShadowActivity mShadowActivity;
     private SearchBoxDataProvider mDataProvider;
     private View mAnchorView;
+    private View mControlContainer;
 
     @Before
     public void setUp() {
@@ -168,6 +170,10 @@ public class SearchActivityUnitTest {
                 ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
         mAnchorView.setBackground(anchorViewBackground);
         mActivity.setAnchorViewForTesting(mAnchorView);
+
+        mControlContainer = new View(mActivity);
+        doReturn(mControlContainer).when(mActivity).findViewById(R.id.control_container);
+
         mActivity.setLocationBarCoordinatorForTesting(mLocationBarCoordinator);
 
         lenient().when(mLocationBar.getBackground()).thenReturn(mSearchBoxBackground);
@@ -1116,34 +1122,46 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         // Assert that the search box has the correct color scheme on inflation.
+        int expectedRegularColor = mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg);
         assertEquals(
-                ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg)),
+                ColorStateList.valueOf(expectedRegularColor),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground)
                 .setBackgroundColor(
                         ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
+        // Assert that the control container has the same color as the anchor view.
+        assertEquals(
+                expectedRegularColor,
+                ((ColorDrawable) mControlContainer.getBackground()).getColor());
 
         // Toggle the incognito state and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(true);
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
+        int expectedIncognitoColor = mActivity.getColor(R.color.omnibox_dropdown_bg_incognito);
         assertEquals(
-                ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_dropdown_bg_incognito)),
+                ColorStateList.valueOf(expectedIncognitoColor),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground)
                 .setBackgroundColor(
                         ContextCompat.getColor(
                                 mActivity, R.color.toolbar_text_box_background_incognito));
+        assertEquals(
+                expectedIncognitoColor,
+                ((ColorDrawable) mControlContainer.getBackground()).getColor());
 
         // Toggle to non-incognito and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(false);
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
         assertEquals(
-                ColorStateList.valueOf(mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg)),
+                ColorStateList.valueOf(expectedRegularColor),
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground, times(2))
                 .setBackgroundColor(
                         ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
+        assertEquals(
+                expectedRegularColor,
+                ((ColorDrawable) mControlContainer.getBackground()).getColor());
     }
 }
