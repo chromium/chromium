@@ -16,9 +16,9 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -103,8 +103,11 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 };
 
 void CancelNudge(const std::string& id) {
-  Shell::Get()->anchored_nudge_manager()->Cancel(id);
-  base::RunLoop().RunUntilIdle();
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  nudge_manager->Cancel(id);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !nudge_manager->GetNudgeIfShown(id); }));
 }
 
 }  // namespace
