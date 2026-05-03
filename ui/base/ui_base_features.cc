@@ -440,6 +440,12 @@ bool IsHandleIMESpanChangesOnUpdateCompositionEnabled() {
       features::kHandleIMESpanChangesOnUpdateComposition);
 }
 
+BASE_FEATURE(kTSFHonorAutocorrectOff, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsTSFHonorAutocorrectOffEnabled() {
+  return base::FeatureList::IsEnabled(features::kTSFHonorAutocorrectOff);
+}
+
 BASE_FEATURE(kUseSystemDefaultAccentColors, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStringWidthCache, base::FEATURE_ENABLED_BY_DEFAULT);

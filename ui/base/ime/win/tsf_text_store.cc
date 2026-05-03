@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
@@ -659,10 +660,19 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (features::IsHandleIMESpanChangesOnUpdateCompositionEnabled()) {
     on_update_composition_called_ = false;
   }
+  // Save the buffer state before the lock for autocorrect detection.
+  const bool should_block_autocorrect =
+      features::IsTSFHonorAutocorrectOffEnabled() &&
+      (text_input_client_->GetTextInputFlags() &
+       TEXT_INPUT_FLAG_AUTOCORRECT_OFF) != 0;
+  const bool had_composition_at_lock_start = has_composition_range_;
+  const std::u16string pre_lock_buffer =
+      should_block_autocorrect ? string_buffer_document_ : std::u16string();
+
   // if there is not already some composition text, they we are about to start
-  // composition. we need to set last_composition_start to the selection start.
-  // Otherwise we are updating an existing composition, we should use the cached
-  // composition_start_ for reference.
+  // composition. we need to set `last_composition_start` to the selection
+  // start. Otherwise we are updating an existing composition, we should use
+  // the cached `composition_start_` for reference.
   const size_t last_composition_start = text_input_client_->HasCompositionText()
                                             ? composition_start_
                                             : selection_.start();
@@ -674,6 +684,13 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   current_lock_type_ = 0;
 
   // Handles the pending lock requests.
+  // Note: The `pre_lock_buffer` snapshot (taken before the main lock is
+  // granted) intentionally spans queued locks as well. Queued locks occur
+  // when TSF requests a lock while one is already held (concurrent lock
+  // requests), which does not happen in the touch keyboard autocorrect
+  // flow, that uses separate RequestLock calls. If queued locks causing
+  // false positives becomes an issue in practice, consider re-snapshotting
+  // per queued lock.
   while (!lock_queue_.empty()) {
     current_lock_type_ = lock_queue_.front();
     lock_queue_.pop_front();
@@ -691,6 +708,39 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
 
   if (!text_input_client_)
     return E_UNEXPECTED;
+
+  // Detect and revert touch keyboard autocorrect when the HTML element has
+  // the autocorrect="off" attribute (a web-standard hint on <input> and
+  // <textarea> elements that tells the user agent not to autocorrect).
+  //
+  // The Windows touch keyboard performs autocorrect by replacing
+  // already-committed text via a separate TSF SetText call after the word
+  // is completed (e.g., when the user presses space).
+  //
+  // Compare the buffer before and after the lock. If existing text was
+  // modified (`pre_lock_buffer` is not a prefix of
+  // `string_buffer_document_`) and there was no active composition at
+  // lock start, this is an autocorrect replacement by the touch keyboard.
+  if (should_block_autocorrect && !pre_lock_buffer.empty() &&
+      !string_pending_insertion_.empty() && !had_composition_at_lock_start &&
+      !has_composition_range_) {
+    // Check if the pre-lock buffer content was preserved. Normal typing
+    // appends new characters, so the old content remains as a prefix.
+    // Autocorrect replaces existing characters, breaking the prefix.
+    const bool existing_text_modified =
+        !base::StartsWith(string_buffer_document_, pre_lock_buffer);
+
+    if (existing_text_modified) {
+      string_buffer_document_ = pre_lock_buffer;
+      string_pending_insertion_.clear();
+      selection_.set_start(pre_lock_buffer.size());
+      selection_.set_end(pre_lock_buffer.size());
+      edit_flag_ = false;
+      ResetCacheAfterEditSession();
+      CalculateTextandSelectionDiffAndNotifyIfNeeded();
+      return S_OK;
+    }
+  }
 
   // If string_pending_insertion_ is empty, then there are four cases:
   // 1. there is no composition We only need to do comparison between our

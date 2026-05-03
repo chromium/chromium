@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
@@ -29,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -4764,6 +4766,649 @@ TEST_F(TSFTextStoreTest, TextInputClientReentrancTest) {
   result = kInvalidResult;
   EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
   EXPECT_EQ(S_OK, result);
+}
+
+// The Windows touch keyboard performs autocorrect by replacing
+// already-committed text in a separate TSF lock cycle (no composition active).
+// When the HTML element has autocorrect="off", the replacement should be
+// reverted. This test simulates: user types "truf " (committed), then touch KB
+// replaces "truf" with "true" via SetText in a new lock. With autocorrect off,
+// the buffer should revert to "truf " and InsertText should NOT be called.
+class AutocorrectOffRevertTestCallback : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffRevertTestCallback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffRevertTestCallback(const AutocorrectOffRevertTestCallback&) =
+      delete;
+  AutocorrectOffRevertTestCallback& operator=(
+      const AutocorrectOffRevertTestCallback&) = delete;
+
+  // Lock 1: Simulate committed text "truf " already in the buffer.
+  // This represents the state after the user finishes typing a word and space.
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"truf ", S_OK);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"truf ", text);
+    // Sync callback state to reflect committed text for subsequent locks.
+    SetTextRange(0, 5);
+    SetSelectionRange(5, 5);
+    SetTextBuffer(u"truf ");
+  }
+
+  // Lock 2: Touch keyboard autocorrects "truf" -> "true" via SetText.
+  // No composition is active — this is a post-commit replacement.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"truf ", 5);
+    // Replace "truf" (0-4) with "true", keeping the trailing space.
+    SetTextTest(0, 4, L"true", S_OK);
+    GetTextTest(0, -1, L"true ", 5);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffRevertsReplacement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // Return TEXT_INPUT_FLAG_AUTOCORRECT_OFF for GetTextInputFlags.
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffRevertTestCallback callback(text_store_.get());
+
+  // InsertText is called for the first lock (committing "truf "), but should
+  // NOT be called for the second lock (the autocorrect should be reverted).
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOffRevertTestCallback::InsertText1));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOffRevertTestCallback::LockGranted1))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOffRevertTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "truf ".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Touch keyboard tries to replace "truf" with "true".
+  // With autocorrect off, the fix should revert the buffer.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the buffer was reverted to the pre-lock state.
+  EXPECT_EQ(u"truf ", *string_buffer());
+}
+
+// When autocorrect is ON (default), touch keyboard autocorrect should be
+// allowed through. The buffer should contain the corrected text and InsertText
+// should be called with the replacement.
+class AutocorrectOnAllowTestCallback : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOnAllowTestCallback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOnAllowTestCallback(const AutocorrectOnAllowTestCallback&) =
+      delete;
+  AutocorrectOnAllowTestCallback& operator=(
+      const AutocorrectOnAllowTestCallback&) = delete;
+
+  // Lock 1: Commit "vegen " into the buffer.
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"vegen ", S_OK);
+    SetSelectionTest(6, 6, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"vegen ", text);
+    // Sync callback state to reflect committed text for subsequent locks.
+    SetTextRange(0, 6);
+    SetSelectionRange(6, 6);
+    SetTextBuffer(u"vegen ");
+  }
+
+  // Lock 2: Touch keyboard autocorrects "vegen" -> "vegan" via SetText.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"vegen ", 6);
+    SetTextTest(0, 5, L"vegan", S_OK);
+    GetTextTest(0, -1, L"vegan ", 6);
+    SetSelectionTest(6, 6, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"vegan", text);
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOnAllowsReplacement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // Return 0 for GetTextInputFlags (autocorrect is ON by default).
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(0));
+
+  AutocorrectOnAllowTestCallback callback(text_store_.get());
+
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(&callback, &AutocorrectOnAllowTestCallback::InsertText1))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::LockGranted1))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "vegen ".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Touch keyboard autocorrects "vegen" -> "vegan".
+  // With autocorrect on, the replacement should go through.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the buffer contains the corrected text.
+  EXPECT_EQ(u"vegan ", *string_buffer());
+}
+
+// When the feature flag kTSFHonorAutocorrectOff is disabled (kill switch),
+// autocorrect should go through even when autocorrect="off" is set.
+TEST_F(TSFTextStoreTest, AutocorrectOffFeatureDisabledAllowsReplacement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // autocorrect="off" is set, but the feature flag is disabled.
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  // Reuses AutocorrectOnAllowTestCallback because the expected behavior is
+  // identical: the replacement should go through (not be reverted).
+  AutocorrectOnAllowTestCallback callback(text_store_.get());
+
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(&callback, &AutocorrectOnAllowTestCallback::InsertText1))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::LockGranted1))
+      .WillOnce(
+          Invoke(&callback, &AutocorrectOnAllowTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "vegen ".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Touch keyboard autocorrects "vegen" -> "vegan".
+  // Even though autocorrect="off", the flag is disabled so replacement
+  // should go through.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the replacement was NOT reverted.
+  EXPECT_EQ(u"vegan ", *string_buffer());
+}
+
+// When autocorrect is OFF, normal typing (appending text without modifying
+// existing content) should NOT be blocked. Only replacement of existing text
+// should be reverted.
+class AutocorrectOffNormalTypingTestCallback : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffNormalTypingTestCallback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffNormalTypingTestCallback(
+      const AutocorrectOffNormalTypingTestCallback&) = delete;
+  AutocorrectOffNormalTypingTestCallback& operator=(
+      const AutocorrectOffNormalTypingTestCallback&) = delete;
+
+  // Lock 1: Commit initial text "hel".
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"hel", S_OK);
+    SetSelectionTest(3, 3, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"hel", text);
+    // Sync callback state to reflect committed text for subsequent locks.
+    SetTextRange(0, 3);
+    SetSelectionRange(3, 3);
+    SetTextBuffer(u"hel");
+  }
+
+  // Lock 2: Normal typing appends "lo" — no replacement of existing text.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"hel", 3);
+    SetTextTest(3, 3, L"lo", S_OK);
+    GetTextTest(0, -1, L"hello", 5);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"lo", text);
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffAllowsNormalTyping) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // Return TEXT_INPUT_FLAG_AUTOCORRECT_OFF for GetTextInputFlags.
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffNormalTypingTestCallback callback(text_store_.get());
+
+  // InsertText should be called for BOTH locks — normal typing is not blocked.
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffNormalTypingTestCallback::InsertText1))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffNormalTypingTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffNormalTypingTestCallback::LockGranted1))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffNormalTypingTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  // Lock 1: Commit "hel".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Normal append of "lo" — should go through even with autocorrect
+  // off.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the buffer contains the full text.
+  EXPECT_EQ(u"hello", *string_buffer());
+}
+
+// When autocorrect is OFF but there is an ACTIVE COMPOSITION (IME input),
+// text replacement should be ALLOWED. This ensures legitimate IME operations
+// (e.g., Chinese/Japanese character composition) are not blocked by the
+// autocorrect fix. The fix specifically checks for no-composition to
+// distinguish touch keyboard autocorrect from IME composition.
+class AutocorrectOffWithCompositionTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffWithCompositionTestCallback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffWithCompositionTestCallback(
+      const AutocorrectOffWithCompositionTestCallback&) = delete;
+  AutocorrectOffWithCompositionTestCallback& operator=(
+      const AutocorrectOffWithCompositionTestCallback&) = delete;
+
+  // Lock 1: Start composition with initial text "ni" (e.g., pinyin input).
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"ni", S_OK);
+    SetSelectionTest(2, 2, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = true;  // Active composition!
+    composition_range()->set_start(0);
+    composition_range()->set_end(2);
+    return S_OK;
+  }
+
+  void SetCompositionText1(const ui::CompositionText& composition) {
+    EXPECT_EQ(u"ni", composition.text);
+    // Sync state for next lock.
+    SetTextRange(0, 2);
+    SetSelectionRange(2, 2);
+    SetTextBuffer(u"ni");
+    SetCompositionTextRange(0, 2);
+  }
+
+  // Lock 2: IME refines composition "ni" -> "你" (Chinese character).
+  // This is a replacement during ACTIVE composition — should be allowed.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"ni", 2);
+    // Replace "ni" with Chinese character — this is IME composition, not
+    // autocorrect.
+    SetTextTest(0, 2, L"\u4F60", S_OK);  // 你 = U+4F60
+    GetTextTest(0, -1, L"\u4F60", 1);
+    SetSelectionTest(1, 1, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = true;  // Still composing!
+    composition_range()->set_start(0);
+    composition_range()->set_end(1);
+    return S_OK;
+  }
+
+  void SetCompositionText2(const ui::CompositionText& composition) {
+    // IME replaced "ni" with Chinese character — this should go through.
+    EXPECT_EQ(u"\u4F60", composition.text);
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffAllowsCompositionReplacement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // Autocorrect is OFF, but IME composition should still work.
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffWithCompositionTestCallback callback(text_store_.get());
+
+  // SetCompositionText should be called for BOTH locks — IME is not blocked.
+  EXPECT_CALL(text_input_client_, SetCompositionText(_))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffWithCompositionTestCallback::SetCompositionText1))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffWithCompositionTestCallback::SetCompositionText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(
+          &callback, &AutocorrectOffWithCompositionTestCallback::LockGranted1))
+      .WillOnce(Invoke(
+          &callback, &AutocorrectOffWithCompositionTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  ON_CALL(text_input_client_, GetCompositionTextRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetCompositionTextRange));
+
+  // Lock 1: Start composition with "ni".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: IME replaces "ni" with Chinese character.
+  // Even though autocorrect is off, this should go through because
+  // composition was active at lock start.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the buffer contains the Chinese character (replacement allowed).
+  EXPECT_EQ(u"\u4F60", *string_buffer());
+}
+
+// When autocorrect is OFF and a Korean IME starts a new composition in the
+// middle of existing committed Korean text (no composition before the lock,
+// but composition created during the lock), the IME input should be allowed.
+// The autocorrect detection checks both `had_composition_at_lock_start` and
+// `has_composition_range_` to ensure it only reverts text modifications that
+// occur entirely outside of any composition.
+class AutocorrectOffIMENewCompositionMidTextTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffIMENewCompositionMidTextTestCallback(
+      TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffIMENewCompositionMidTextTestCallback(
+      const AutocorrectOffIMENewCompositionMidTextTestCallback&) = delete;
+  AutocorrectOffIMENewCompositionMidTextTestCallback& operator=(
+      const AutocorrectOffIMENewCompositionMidTextTestCallback&) = delete;
+
+  // Lock 1: Commit Korean text "\uD55C\uAD6D" (한국) into the buffer.
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"\uD55C\uAD6D", S_OK);
+    SetSelectionTest(2, 2, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"\uD55C\uAD6D", text);  // 한국
+    SetTextRange(0, 2);
+    SetSelectionRange(2, 2);
+    SetTextBuffer(u"\uD55C\uAD6D");
+  }
+
+  // Lock 2: Korean IME starts a NEW composition in the middle of "한국" at
+  // position 1. The user placed the cursor between 한 and 국 and typed a
+  // Korean consonant ㄴ (U+3134). No composition existed before, but one is
+  // created during this lock. The buffer changes from "한국" to "한ㄴ국",
+  // which breaks the prefix check. This should NOT be reverted.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"\uD55C\uAD6D", 2);
+    // Move selection to middle of text (cursor after 한).
+    SetSelectionTest(1, 1, S_OK);
+    // Korean IME inserts ㄴ at position 1 — starts composition.
+    SetTextTest(1, 1, L"\u3134", S_OK);  // ㄴ
+    GetTextTest(0, -1, L"\uD55C\u3134\uAD6D", 3);
+    SetSelectionTest(2, 2, S_OK);
+    *edit_flag() = true;
+    // Composition was created during this lock — this is the key difference
+    // from autocorrect.
+    *has_composition_range() = true;
+    composition_range()->set_start(1);
+    composition_range()->set_end(2);
+    *composition_start() = 1;
+    return S_OK;
+  }
+
+  void SetCompositionText1(const ui::CompositionText& composition) {
+    // Korean IME composition ㄴ should go through.
+    EXPECT_EQ(u"\u3134", composition.text);
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffAllowsIMENewCompositionMidText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  // Autocorrect is OFF, but Korean IME new composition in middle should still
+  // work.
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffIMENewCompositionMidTextTestCallback callback(
+      text_store_.get());
+
+  // InsertText for lock 1 (commit "한국"), SetCompositionText for lock 2
+  // (Korean IME composition).
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffIMENewCompositionMidTextTestCallback::InsertText1));
+
+  EXPECT_CALL(text_input_client_, SetCompositionText(_))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffIMENewCompositionMidTextTestCallback::
+              SetCompositionText1));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffIMENewCompositionMidTextTestCallback::LockGranted1))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffIMENewCompositionMidTextTestCallback::LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  ON_CALL(text_input_client_, GetCompositionTextRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetCompositionTextRange));
+
+  // Lock 1: Commit "한국".
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Lock 2: Korean IME starts new composition in middle of "한국".
+  // This should NOT be reverted — the composition created during the lock
+  // distinguishes this from autocorrect.
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  // Verify the buffer contains "한ㄴ국" (Korean IME insertion preserved, not
+  // reverted).
+  EXPECT_EQ(u"\uD55C\u3134\uAD6D", *string_buffer());
 }
 
 }  // namespace
