@@ -414,6 +414,13 @@ class ExecutionProviderInitializer {
   bool TryActivateEPCatalog() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    // Versions checks should have happened in the GPU process before we
+    // bounce here to the host. To avoid a compromised GPU process crashing
+    // the browser process, return the GPU process an empty set of EPs.
+    if (base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) {
+      return false;
+    }
+
     // Initialize the dependency on the runtime package to ensure the EP
     // Catalog can be used.
     if (InitializePackageDependencyForProcess(kWinAppRuntimePackageFamilyName,

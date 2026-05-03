@@ -4,15 +4,21 @@
 
 #include "services/webnn/ort/context_provider_ort.h"
 
-#include "base/win/windows_version.h"
-#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
+#include "base/feature_list.h"
 #include "services/webnn/public/mojom/features.mojom.h"
 
 namespace webnn::ort {
 
-bool ShouldCreateOrtContext(const mojom::CreateContextOptions& options) {
-  return base::win::GetVersion() >= kWinAppRuntimeSupportedMinVersion &&
-         base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime);
+bool ShouldTryCreateOrtContext() {
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime)) {
+    return false;
+  }
+
+  // While it might be tempting, ShouldTryCreateOrtContext intentionally does
+  // NOT call `PlatformFunctions::EnsureInitialized()`. `EnsureInitialized()`
+  // loads onnxruntime.dll so the first call must always be done on a background
+  // Chromium thread.
+  return true;
 }
 
 }  // namespace webnn::ort

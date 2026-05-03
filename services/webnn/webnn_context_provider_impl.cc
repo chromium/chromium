@@ -33,10 +33,12 @@
 #if BUILDFLAG(IS_WIN)
 #include <string>
 
+#include "base/win/windows_version.h"
 #include "services/webnn/ort/context_impl_ort.h"      // nogncheck
 #include "services/webnn/ort/context_provider_ort.h"  // nogncheck
 #include "services/webnn/ort/environment.h"           // nogncheck
 #include "services/webnn/ort/ort_session_options.h"   // nogncheck
+#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 #include "services/webnn/webnn_switches.h"
 #endif
 
@@ -338,14 +340,16 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (ort::ShouldCreateOrtContext(*options)) {
+  if (ort::ShouldTryCreateOrtContext()) {
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
 
     scoped_trace.AddStep("EnsureWebNNExecutionProvidersReady");
 
-    // If ignore IHV EPs, use empty `ep_package_info` to create the ORT context.
-    if (command_line->HasSwitch(switches::kWebNNOrtIgnoreIhvEps)) {
+    // If we're on a version of Windows which doesn't support EPs, or we're told
+    // to ignore EPs, use empty `ep_package_info` to create the ORT context.
+    if ((base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) ||
+        command_line->HasSwitch(switches::kWebNNOrtIgnoreIhvEps)) {
       DidEnsureWebNNExecutionProvidersReady(
           std::move(scoped_trace), std::move(options),
           std::move(write_tensor_producer), std::move(write_tensor_consumer),

@@ -81,6 +81,10 @@ source_set("webnn_service_base") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "//services/webnn/public/cpp:win" ]
+  }
+
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]

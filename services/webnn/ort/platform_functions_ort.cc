@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util_win.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
@@ -26,43 +27,84 @@ constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 
 }  // namespace
 
-PlatformFunctions::PlatformFunctions() {
-  // If the switch `kWebNNOrtLibraryPathForTesting` is used, try to load ONNX
-  // Runtime library from the specified path for testing development ORT build.
-  // Otherwise, try to load it from the Windows ML package path.
-  base::FilePath ort_library_path;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+// The PlatformFunctions instance is a process-lifetime object. Once
+// constructed, it is never destroyed (the destructor is never called).
+// static
+PlatformFunctions* PlatformFunctions::g_instance_ = nullptr;
+
+// static
+bool PlatformFunctions::InitializeFromCommandLine() {
+  CHECK(!g_instance_);
+
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtLibraryPathForTesting)) {
-    base::FilePath base_path =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            switches::kWebNNOrtLibraryPathForTesting);
-    if (base_path.empty()) {
-      LOG(ERROR) << "[WebNN] The specified ONNX Runtime library path is empty.";
-      return;
-    }
-    ort_library_path = base_path.Append(kOnnxRuntimeLibraryName);
-  } else {
-    ort_library_path = InitializePackageDependency(
-        kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion);
-    if (ort_library_path.empty()) {
-      return;
-    }
-    ort_library_path = ort_library_path.Append(kOnnxRuntimeLibraryName);
+    return false;
   }
 
+  base::FilePath base_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kWebNNOrtLibraryPathForTesting);
+  if (base_path.empty()) {
+    LOG(ERROR) << "[WebNN] The specified ONNX Runtime library path is empty.";
+    return false;
+  }
+
+  return InitializeFromPath(base_path.Append(kOnnxRuntimeLibraryName));
+}
+
+// static
+bool PlatformFunctions::InitializeWinML() {
+  CHECK(!g_instance_);
+
+  if (base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) {
+    return false;
+  }
+
+  base::FilePath package_path = InitializePackageDependency(
+      kWinAppRuntimePackageFamilyName, kWinAppRuntimePackageMinVersion);
+  if (package_path.empty()) {
+    return false;
+  }
+
+  return InitializeFromPath(package_path.Append(kOnnxRuntimeLibraryName));
+}
+
+// static
+bool PlatformFunctions::EnsureInitialized() {
+  // The static local with a lambda initializer guarantees thread-safe
+  // one-time initialization per the C++ standard ([stmt.dcl]).
+  static bool initialized = []() {
+    if (InitializeFromCommandLine()) {
+      return true;
+    }
+    return InitializeWinML();
+  }();
+
+  return initialized;
+}
+
+// static
+PlatformFunctions* PlatformFunctions::GetInstance() {
+  CHECK(g_instance_);
+  return g_instance_;
+}
+
+// static
+bool PlatformFunctions::InitializeFromPath(
+    const base::FilePath& ort_library_path) {
   base::ScopedNativeLibrary ort_library = base::ScopedNativeLibrary(
       base::LoadNativeLibrary(ort_library_path, nullptr));
   if (!ort_library.is_valid()) {
     LOG(ERROR) << "[WebNN] Failed to load ONNX Runtime library from the path: "
                << ort_library_path;
-    return;
+    return false;
   }
 
   OrtGetApiBaseProc ort_get_api_base_proc = reinterpret_cast<OrtGetApiBaseProc>(
       ort_library.GetFunctionPointer("OrtGetApiBase"));
   if (!ort_get_api_base_proc) {
     LOG(ERROR) << "[WebNN] Failed to get OrtGetApiBase function.";
-    return;
+    return false;
   }
 
   // Request the API version matching the headers we are built against.
@@ -70,32 +112,29 @@ PlatformFunctions::PlatformFunctions() {
   if (!ort_api) {
     LOG(ERROR) << "[WebNN] Failed to get OrtApi for API Version "
                << ORT_API_VERSION;
-    return;
+    return false;
   }
 
   const OrtModelEditorApi* ort_model_editor_api = ort_api->GetModelEditorApi();
   if (!ort_model_editor_api) {
     LOG(ERROR) << "[WebNN] Failed to get OrtModelEditorApi.";
-    return;
+    return false;
   }
 
-  ort_library_ = std::move(ort_library);
-  ort_api_ = ort_api;
-  ort_model_editor_api_ = ort_model_editor_api;
+  g_instance_ = new PlatformFunctions(std::move(ort_library), ort_api,
+                                      ort_model_editor_api);
+  return true;
 }
 
-// static
-PlatformFunctions* PlatformFunctions::GetInstance() {
-  static base::NoDestructor<PlatformFunctions> instance;
-  if (!instance->AllFunctionsLoaded()) {
-    return nullptr;
-  }
-  return instance.get();
-}
+PlatformFunctions::PlatformFunctions(
+    base::ScopedNativeLibrary ort_library,
+    const OrtApi* ort_api,
+    const OrtModelEditorApi* ort_model_editor_api)
+    : ort_library_(std::move(ort_library)),
+      ort_api_(ort_api),
+      ort_model_editor_api_(ort_model_editor_api) {}
 
-bool PlatformFunctions::AllFunctionsLoaded() {
-  return ort_api_ && ort_model_editor_api_;
-}
+PlatformFunctions::~PlatformFunctions() = default;
 
 base::FilePath PlatformFunctions::InitializePackageDependency(
     base::wcstring_view package_family_name,
