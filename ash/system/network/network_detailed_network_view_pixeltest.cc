@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <vector>
 
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
@@ -17,6 +18,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "ui/views/controls/scroll_view.h"
@@ -28,6 +30,7 @@ namespace {
 
 using ::chromeos::network_config::FakeCrosNetworkConfig;
 using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::NetworkType;
 using network_config::CrosNetworkConfigTestHelper;
@@ -70,7 +73,15 @@ class NetworkDetailedNetworkViewPixelTest : public AshTestBase {
         ->system_tray_model()
         ->network_state_model()
         ->ConfigureRemoteForTesting(cros_network_->GetPendingRemote());
-    base::RunLoop().RunUntilIdle();
+    // Ensure the test remote receives the observer registration above.
+    base::RunLoop run_loop;
+    Shell::Get()
+        ->system_tray_model()
+        ->network_state_model()
+        ->cros_network_config()
+        ->GetDeviceStateList(base::BindLambdaForTesting(
+            [&](std::vector<DeviceStatePropertiesPtr>) { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
