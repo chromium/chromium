@@ -756,7 +756,7 @@ class Browser : public TabStripModelObserver,
 
   std::vector<StatusBubble*> GetStatusBubblesForTesting();
   UnloadController* GetUnloadControllerForTesting() {
-    return &unload_controller_;
+    return UnloadController::From(this);
   }
 
   // BrowserWindowInterface overrides:
@@ -1292,8 +1292,6 @@ class Browser : public TabStripModelObserver,
   bool initial_visible_on_all_workspaces_state_;
 
   CreationSource creation_source_ = CreationSource::kUnknown;
-
-  UnloadController unload_controller_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;

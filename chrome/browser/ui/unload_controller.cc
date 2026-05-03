@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+DEFINE_USER_DATA(UnloadController);
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,8 +43,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 // UnloadController, public:
 
-UnloadController::UnloadController(Browser* browser)
-    : browser_(browser),
+// static
+UnloadController* UnloadController::From(BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+const UnloadController* UnloadController::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+UnloadController::UnloadController(BrowserWindowInterface* browser)
+    : browser_(browser->GetBrowserForMigrationOnly()),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
       web_contents_collection_(this),
       is_attempting_to_close_browser_(false) {
   browser_->tab_strip_model()->AddObserver(this);

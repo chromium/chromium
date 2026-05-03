@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
@@ -555,6 +556,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<ash::boca::OnTaskLockedController>(
           *browser, browser);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  unload_controller_ = std::make_unique<UnloadController>(browser);
 
   // Initialize embedder features last.
   embedder_browser_window_features_ =
@@ -1043,6 +1046,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
   ai_overlay_dialog_controller_.reset();
+  unload_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   initial_web_ui_manager_.reset();
   tab_search_toolbar_button_controller_.reset();

@@ -101,6 +101,7 @@ class ToastController;
 class ToastService;
 class TranslateBubbleController;
 class UpgradeNotificationController;
+class UnloadController;
 class VerticalTabIphController;
 class WebUIBrowserExclusiveAccessContext;
 class WebUIBrowserSidePanelUI;
@@ -758,6 +759,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<UpgradeNotificationController>
       upgrade_notification_controller_;
+
+  std::unique_ptr<UnloadController> unload_controller_;
 
   // Helper which implements the ContentSettingBubbleModel interface.
   std::unique_ptr<BrowserContentSettingBubbleModelDelegate>

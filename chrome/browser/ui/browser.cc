@@ -580,7 +580,6 @@ Browser::Browser(const CreateParams& params)
       initial_visible_on_all_workspaces_state_(
           params.initial_visible_on_all_workspaces_state),
       creation_source_(params.creation_source),
-      unload_controller_(this),
       window_has_shown_(false),
       user_title_(params.user_title),
       initial_vertical_tab_strip_collapsed_(
@@ -968,7 +967,7 @@ bool Browser::HandleBeforeClose() {
       return BrowserWindowInterface::ClosingStatus::kDeniedByUser;
     }
 
-    return unload_controller_.GetBrowserClosingStatus();
+    return UnloadController::From(this)->GetBrowserClosingStatus();
   };
 
   // Notify clients if close was cancelled.
@@ -987,30 +986,31 @@ bool Browser::TryToCloseWindow(
     const base::RepeatingCallback<void(bool)>& on_close_confirmed) {
   cancel_download_confirmation_state_ =
       CancelDownloadConfirmationState::kResponseReceived;
-  return unload_controller_.TryToCloseWindow(skip_beforeunload,
-                                             on_close_confirmed);
+  return UnloadController::From(this)->TryToCloseWindow(skip_beforeunload,
+                                                        on_close_confirmed);
 }
 
 void Browser::ResetTryToCloseWindow() {
   cancel_download_confirmation_state_ =
       CancelDownloadConfirmationState::kNotPrompted;
-  unload_controller_.ResetTryToCloseWindow();
+  UnloadController::From(this)->ResetTryToCloseWindow();
 }
 
 bool Browser::IsAttemptingToCloseBrowser() const {
-  return unload_controller_.is_attempting_to_close_browser();
+  return UnloadController::From(this)->is_attempting_to_close_browser();
 }
 
 bool Browser::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* web_contents) {
   return !force_skip_warning_user_on_close_ &&
-         unload_controller_.ShouldRunUnloadEventsHelper(web_contents);
+         UnloadController::From(this)->ShouldRunUnloadEventsHelper(
+             web_contents);
 }
 
 bool Browser::RunUnloadListenerBeforeClosing(
     content::WebContents* web_contents) {
   return !force_skip_warning_user_on_close_ &&
-         unload_controller_.RunUnloadEventsHelper(web_contents);
+         UnloadController::From(this)->RunUnloadEventsHelper(web_contents);
 }
 
 void Browser::SetWindowUserTitle(const std::string& user_title) {
@@ -1773,7 +1773,7 @@ bool Browser::HandleKeyboardEvent(content::WebContents* source,
 }
 
 bool Browser::TabsNeedBeforeUnloadFired() const {
-  return unload_controller_.TabsNeedBeforeUnloadFired();
+  return UnloadController::From(this)->TabsNeedBeforeUnloadFired();
 }
 
 bool Browser::CanDragEnter(content::WebContents* source,
@@ -2136,7 +2136,7 @@ void Browser::LoadingStateChanged(WebContents* source,
 }
 
 void Browser::CloseContents(WebContents* source) {
-  if (unload_controller_.CanCloseContents(source)) {
+  if (UnloadController::From(this)->CanCloseContents(source)) {
     chrome::CloseWebContents(this, source, true);
   }
 }
@@ -2237,7 +2237,7 @@ void Browser::BeforeUnloadFired(WebContents* web_contents,
   }
 
   *proceed_to_fire_unload =
-      unload_controller_.BeforeUnloadFired(web_contents, proceed);
+      UnloadController::From(this)->BeforeUnloadFired(web_contents, proceed);
 }
 
 bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
@@ -3452,7 +3452,7 @@ void Browser::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {
     case WarnBeforeClosingResult::kDoNotClose:
       // Reset UnloadController::is_attempting_to_close_browser_ so that we
       // don't prompt every time any tab is closed. http://crbug.com/40336263
-      unload_controller_.CancelWindowClose();
+      UnloadController::From(this)->CancelWindowClose();
   }
 }
 

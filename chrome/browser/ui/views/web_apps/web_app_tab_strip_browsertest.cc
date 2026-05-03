@@ -1073,12 +1073,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, HomeTabCantBeClosedUsingJS) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
 
-  UnloadController unload_controller(app_browser);
+  UnloadController* unload_controller = UnloadController::From(app_browser);
 
   // Check that the home tab can be closed since it is the only tab in the
   // window.
   EXPECT_TRUE(
-      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(0)));
+      unload_controller->CanCloseContents(tab_strip->GetWebContentsAt(0)));
 
   // Open another tab.
   OpenUrlAndWait(app_browser,
@@ -1087,11 +1087,11 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, HomeTabCantBeClosedUsingJS) {
 
   // Check that the home tab can't be closed.
   EXPECT_FALSE(
-      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(0)));
+      unload_controller->CanCloseContents(tab_strip->GetWebContentsAt(0)));
 
   // Check that non home tab is closable.
   EXPECT_TRUE(
-      unload_controller.CanCloseContents(tab_strip->GetWebContentsAt(1)));
+      unload_controller->CanCloseContents(tab_strip->GetWebContentsAt(1)));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, HomeTabScopeSegmentWildcard) {

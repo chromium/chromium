@@ -74,11 +74,11 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  UnloadController unload_controller(browser);
+  UnloadController* unload_controller = UnloadController::From(browser);
   EXPECT_EQ(kShouldPreventClose
                 ? BrowserWindowInterface::ClosingStatus::kDeniedByPolicy
                 : BrowserWindowInterface::ClosingStatus::kPermitted,
-            unload_controller.GetBrowserClosingStatus());
+            unload_controller->GetBrowserClosingStatus());
 }
 
 // Flaky on IS_CHROMEOS. crbug.com/369817361
@@ -105,9 +105,9 @@ IN_PROC_BROWSER_TEST_F(
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 
-  UnloadController unload_controller(browser);
+  UnloadController* unload_controller = UnloadController::From(browser);
   EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kPermitted,
-            unload_controller.GetBrowserClosingStatus());
+            unload_controller->GetBrowserClosingStatus());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -135,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   // Verify tab cannot be closed.
   content::WebContents* const active_web_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
-  UnloadController unload_controller(app_browser);
-  EXPECT_FALSE(unload_controller.CanCloseContents(active_web_contents));
+  UnloadController* unload_controller = UnloadController::From(app_browser);
+  EXPECT_FALSE(unload_controller->CanCloseContents(active_web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
@@ -151,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   // Verify tab can be closed.
   content::WebContents* const active_web_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
-  UnloadController unload_controller(app_browser);
-  EXPECT_TRUE(unload_controller.CanCloseContents(active_web_contents));
+  UnloadController* unload_controller = UnloadController::From(app_browser);
+  EXPECT_TRUE(unload_controller->CanCloseContents(active_web_contents));
 }
 
 #endif
