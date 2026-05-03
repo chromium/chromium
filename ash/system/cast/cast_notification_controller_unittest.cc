@@ -9,7 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -197,10 +197,9 @@ TEST_P(CastNotificationControllerTest, FreezeWithTrayOpen) {
   ClickOnNotificationButton(0);
   EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
 
-  // Allow the Widget to close and notify the CastNotificationController.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(cast_config_.freeze_route_count(), 1u);
+  // Wait until the widget closes and notifies the CastNotificationController.
+  ASSERT_TRUE(base::test::RunUntil(
+      [this] { return cast_config_.freeze_route_count() == 1u; }));
 }
 
 // Regression test for b/280864232
