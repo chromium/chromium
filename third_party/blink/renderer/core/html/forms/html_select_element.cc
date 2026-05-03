@@ -930,6 +930,7 @@ void HTMLSelectElement::OptionRemoved(HTMLOptionElement& option) {
   SetRecalcListItems();
 
   if (option.Selected() &&
+      !descendant_selectedcontents_.IsEmpty() &&
       RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
     GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
         BindOnce(&HTMLSelectElement::UpdateAllSelectedcontents,
