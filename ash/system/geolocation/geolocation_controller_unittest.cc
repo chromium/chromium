@@ -305,8 +305,9 @@ TEST_F(GeolocationControllerTest, InvalidPositions) {
   // update to its observers.
   EXPECT_TRUE(timer_ptr()->IsRunning());
   timer_ptr()->FireNow();
-  // Wait for the request and response to finish.
-  base::RunLoop().RunUntilIdle();
+  // Invalid responses do not notify observers. Run the posted URL loader
+  // response at the current mock time without firing the request retry timer.
+  task_environment()->FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0, observer.position_received_num());
   // With error response, the server will retry with another timer which we
   // have no control over, so `mock_timer_ptr_` will not be running (refers to
