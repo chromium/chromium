@@ -2975,6 +2975,7 @@
 <translation id="5600044805561809264">Може лесно да поставувате прашања за картичките што ги споделувате додека прелистувате.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> или <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Управувањето не е поддржано</translation>
+<translation id="5604254791550001355">Изменете го барањето</translation>
 <translation id="560431066250575003">{HOURS,plural, =1{Активност пред 1 час}one{Активност пред # час}other{Активност пред # часа}}</translation>
 <translation id="5605249000617390290">Дознајте повеќе за следењето цени</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3406,6 +3407,7 @@
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="629730747756840877">Сметка</translation>
+<translation id="6299098428775578517">Поставки за предлози</translation>
 <translation id="6300452962057769623">{0,plural, =0{Уредот ќе се рестартира сега}=1{Уредот ќе се рестартира за 1 секунда}one{Уредот ќе се рестартира за # секунда}other{Уредот ќе се рестартира за # секунди}}</translation>
 <translation id="6301104306974789820">Добивајте известувања за следењето на цената</translation>
 <translation id="6302546952464230349">Прикажи детали за дозволата за <ph name="PERMISSION_NAME" /></translation>

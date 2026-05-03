@@ -392,6 +392,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1595731774593926493">Delete redress number</translation>
 <translation id="1597307423671074806">WebM video</translation>
 <translation id="159800670740560023">Chrome tip link, press Enter to open <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
+<translation id="1599079390582151174">Sent. Open Chrome on your other device.</translation>
 <translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1604192142734009334">Beauty and fitness</translation>
@@ -1782,6 +1783,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3752543821772132562">Ignored because <ph name="POLICY_NAME" /> is not set.</translation>
 <translation id="3754210790023674521">Exit picture-in-picture</translation>
 <translation id="3754664361823138853">&amp;Open history page</translation>
+<translation id="3757511311058373406">Auto browse filters</translation>
 <translation id="3759461132968374835">You have no recently reported crashes.  Crashes that occurred when crash reporting was disabled will not appear here.</translation>
 <translation id="3760561303380396507">Use Windows Hello instead of CVC?</translation>
 <translation id="3761171036307311438">Name on card:</translation>

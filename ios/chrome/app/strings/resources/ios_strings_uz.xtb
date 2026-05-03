@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Karta raqamini (<ph name="LAST_DIGITS" />) avtomatik kiritish</translation>
 <translation id="3738428049780661523">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamera jildi</translation>
+<translation id="3746269120925354434">Axborot Google Walletga saqlandi</translation>
 <translation id="3750225824417196283">Yangi inkognito varaq sahifasi</translation>
 <translation id="3751873026576444885">Google Lens bilan ekrandan qidiruvni toʻxtatish</translation>
 <translation id="3753408171347588045">Narxlarni kuzatish</translation>
@@ -2175,6 +2176,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8533670235862049797">Saytlarni xavfsiz kezish rejimi yoniq</translation>
 <translation id="8534481786647257214">Google+’ga joylandi.</translation>
 <translation id="8535368836838588657">Parolni ochiqlash</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> orqali kirish</translation>
 <translation id="8545276357312221485">Birlamchi brauzer sozlamalarini tekshiring</translation>
 <translation id="854938212724803178">1 ta parolingiz oshkor qilingan. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="8551311254462607218">Manzil qatorida Google Lens kamera belgisini bosing</translation>

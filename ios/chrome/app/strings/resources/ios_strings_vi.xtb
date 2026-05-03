@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Không tải được hình ảnh</translation>
 <translation id="3565930036634619844">Thẻ. <ph name="TAB_INDEX" /> trên <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lưu theo cách khác</translation>
+<translation id="3571703298474554279">Dùng ứng dụng theo cách nhanh hơn</translation>
 <translation id="3572503683475187385">Thẻ hiện tại sẽ được chia sẻ với Gemini khi bạn bắt đầu một cuộc trò chuyện mới. Khi bạn chia sẻ một thẻ với Gemini, nội dung và URL của thẻ đó sẽ được gửi đến Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Trong Tài khoản Google của bạn</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
@@ -1701,6 +1702,7 @@
 <translation id="6871397658902960384">Bắt đầu duyệt web</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Lưu mật khẩu vào tài khoản}other{Lưu mật khẩu vào tài khoản}}</translation>
 <translation id="6875166646976836138">Bạn cũng có thể xem và quản lý các mục này trong phần dấu trang, danh sách đọc hoặc trình quản lý mật khẩu.</translation>
+<translation id="6878052248816456143">Truy cập vào các tệp trên Google Drive của bạn bất cứ lúc nào.</translation>
 <translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Lưu {COUNT} mật khẩu vào Tài khoản Google của bạn}other{Lưu {COUNT} mật khẩu vào Tài khoản Google của bạn}}</translation>
 <translation id="6888009575607455378">Bạn có chắc chắn muốn hủy các nội dung mình thay đổi không?</translation>
@@ -1814,6 +1816,7 @@
 <translation id="7345061034321640811">Không được phép nhập</translation>
 <translation id="7347998088283246662">Nhập mật khẩu, nhật ký, dấu trang và nhiều dữ liệu khác</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
+<translation id="7363497636543208734">Giờ đây, bạn có thể di chuyển trong ứng dụng dễ dàng hơn.</translation>
 <translation id="7364796246159120393">Chọn tệp</translation>
 <translation id="736564850024123010">Chuyển vị trí của thanh địa chỉ để có trải nghiệm phù hợp.</translation>
 <translation id="7366909168761621528">Dữ liệu duyệt web</translation>

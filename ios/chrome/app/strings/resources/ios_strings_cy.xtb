@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">Methu â llwytho lluniau</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> o <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Cadw mewn ffordd arall</translation>
+<translation id="3571703298474554279">Ffordd gyflymach o ddefnyddio'r ap</translation>
 <translation id="3572503683475187385">Mae'r tab presennol yn cael ei rannu â Gemini pan fyddwch yn dechrau sgwrs newydd. Pan fyddwch yn rhannu tab gyda Gemini, anfonir ei gynnwys a'i URL at Google. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Yn eich Cyfrif Google</translation>
 <translation id="3575234738189584619">Chwilio gyda Lens</translation>
@@ -1701,6 +1702,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6871397658902960384">Dechrau pori</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Cadw cyfrinair yn y cyfrif}zero{Cadw cyfrineiriau yn y cyfrif}two{Cadw cyfrineiriau yn y cyfrif}few{Cadw cyfrineiriau yn y cyfrif}many{Cadw cyfrineiriau yn y cyfrif}other{Cadw cyfrineiriau yn y cyfrif}}</translation>
 <translation id="6875166646976836138">Gallwch hefyd weld a rheoli'r eitemau hyn yn eich nodau tudalen, rhestr ddarllen, neu reolwr cyfrineiriau.</translation>
+<translation id="6878052248816456143">Cael mynediad at ffeiliau yn eich Google Drive unrhyw bryd.</translation>
 <translation id="6882836635272038266">Amddiffyniad safonol yn erbyn gwefannau, lawrlwythiadau, ac estyniadau y gwyddys eu bod yn beryglus.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Cadw {COUNT} cyfrinair yn eich Cyfrif Google}zero{Cadw {COUNT} cyfrinair yn eich Cyfrif Google}two{Cadw {COUNT} gyfrinair yn eich Cyfrif Google}few{Cadw {COUNT} cyfrinair yn eich Cyfrif Google}many{Cadw {COUNT} cyfrinair yn eich Cyfrif Google}other{Cadw {COUNT} cyfrinair yn eich Cyfrif Google}}</translation>
 <translation id="6888009575607455378">Ydych chi'n siŵr eich bod am gael gwared ar eich newidiadau?</translation>
@@ -1814,6 +1816,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7345061034321640811">Ni chaniateir mewnforio</translation>
 <translation id="7347998088283246662">Mewnforio cyfrineiriau, hanes, nodau tudalen a rhagor</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
+<translation id="7363497636543208734">Mae symud o gwmpas yn yr ap yn haws nawr.</translation>
 <translation id="7364796246159120393">Dewis Ffeil</translation>
 <translation id="736564850024123010">Newidiwch leoliad eich bar cyfeiriad i gael profiad sydd wedi'i bersonolieiddio.</translation>
 <translation id="7366909168761621528">Data pori</translation>

@@ -2064,6 +2064,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2402226831639195063">Ohanglar</translation>
 <translation id="2405887402346713222">Qurilma va komponent serial raqami</translation>
 <translation id="2406153734066939945">Bu profil va undagi axborotlar oʻchirilsinmi?</translation>
+<translation id="2406942743794219791">Istalgan birlamchi qidiruv tizimini tasdiqlang</translation>
 <translation id="2407671304279211586">DNS provayderini tanlash</translation>
 <translation id="2408018932941436077">Karta saqlanmoqda</translation>
 <translation id="2408742686124047357">Keyin oson ochish uchun Google Lensni asboblar paneliga mahkamlang</translation>
@@ -3045,6 +3046,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3046892784550338476">Versiya: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">To‘liq veb-sahifa</translation>
 <translation id="304747341537320566">Nutq sintezatorlari</translation>
+<translation id="3047618804758101928">“<ph name="EXTENSION_NAME" />” kengaytmasi sozlamalaringizni oʻzgartirdi</translation>
 <translation id="3047678109605649715">Qurilmangizda <ph name="LANGUAGE" /> ovozlari mavjud emas. Qurilmada joy boʻshating va qayta urining.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> ishlab chiqargan HID qurilmalar</translation>
 <translation id="3048589239114571785">Ijro (k)</translation>
@@ -10001,6 +10003,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7939062555109487992">Kengaytirilgan sozlamalar</translation>
 <translation id="793923212791838">Qurilmangiz bu saytda ishlamaydi</translation>
 <translation id="7939328347457537652">Qurilma sertifikatlarini boshqarish</translation>
+<translation id="7939918959917132075">Kengaytma bunga oʻzgartirdi</translation>
 <translation id="7940087892955752820">Bu jild bandligi sababli umumiy ruxsat bekor qilinmadi. Jildga umumiy ruxsat <ph name="SPECIFIC_NAME" /> qayta ishga tushganda bekor qilinadi.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> asosida saralash</translation>
 <translation id="7941179291434537290">Modem rejimiga tayyorlik:</translation>

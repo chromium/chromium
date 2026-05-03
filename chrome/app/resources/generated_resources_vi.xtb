@@ -3066,6 +3066,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3053273573829329829">Cho phép mã pin của người dùng</translation>
 <translation id="3053274730492362225">Không nhấp nháy</translation>
 <translation id="3057938290530993634">Nhấn và giữ để ghim những trang web bạn truy cập nhiều nhất, giúp dễ dàng truy cập vào lần tới</translation>
+<translation id="3058002721610176427">Thay đổi mã PIN và mật khẩu</translation>
 <translation id="3058498974290601450">Bạn có thể bật tính năng đồng bộ hóa bất cứ lúc nào trong phần cài đặt</translation>
 <translation id="3060694926634506594">Kỹ năng</translation>
 <translation id="3060952009917586498">Thay đổi ngôn ngữ của thiết bị. Ngôn ngữ hiện tại là <ph name="LANGUAGE" />.</translation>
@@ -3317,6 +3318,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3254506277019076812">Thêm kỹ năng</translation>
 <translation id="3254516606912442756">Chế độ Tự động phát hiện múi giờ bị tắt</translation>
 <translation id="3255747772218936245">Cài đặt bản cập nhật</translation>
+<translation id="3256274561709196882">Thay đổi mã PIN</translation>
 <translation id="3257733480216378006">Cho phép <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
 <translation id="325797067711573598">Đã chặn hoạt động tải xuống đáng ngờ</translation>
 <translation id="3259723213051400722">Vui lòng thử lại.</translation>
@@ -4432,6 +4434,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3995963973192100066">Phát ảnh động</translation>
 <translation id="3997572437374206064">{NUM_SITES,plural, =1{Để bảo vệ dữ liệu của bạn, chúng tôi đã loại bỏ quyền khỏi một trang web mà gần đây bạn không truy cập}other{Để bảo vệ dữ liệu của bạn, chúng tôi đã loại bỏ quyền khỏi các trang web mà gần đây bạn không truy cập}}</translation>
 <translation id="399788104667917863">Ghim vào thanh công cụ</translation>
+<translation id="3998431043924115701">Đặt câu hỏi trong khi duyệt web</translation>
 <translation id="3998780825367526465">Hiện hình ảnh xem trước của thẻ</translation>
 <translation id="3998976413398910035">Quản lý máy in</translation>
 <translation id="4000360130639414007">Bạn sẽ không thể dùng ứng dụng Android hoặc Cửa hàng Google Play</translation>
@@ -5561,6 +5564,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4816336393325437908">{COUNT,plural, =1{Đã xóa 1 dấu trang}other{Đã xóa {COUNT} dấu trang}}</translation>
 <translation id="481689174647911539">Tệp này có thể là virus hoặc phần mềm độc hại.<ph name="LINE_BREAK" />Bạn có thể gửi tệp tới tính năng Duyệt web An toàn của Google để kiểm tra xem tệp có an toàn hay không. Quá trình quét thường mất vài giây.</translation>
 <translation id="4816900689218414104">Tạo một khoá đăng nhập trên điện thoại hoặc máy tính bảng</translation>
+<translation id="4818449958253566215">Thêm vào trình đơn Start (Bắt đầu)</translation>
 <translation id="481852950686014162">Tiếp tục từ nơi bạn bỏ dở trên Gemini và Chế độ AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Sẽ đóng ngay bây giờ.}=1{Sẽ đóng sau 1 giây}other{Sẽ đóng sau # giây}}</translation>
 <translation id="4819818293886748542">Nhận đường liên kết đến Công cụ hỗ trợ</translation>
@@ -6808,6 +6812,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5697664819730124632">Thêm một hình ảnh và tái tạo hình ảnh đó</translation>
 <translation id="5697832193891326782">Bộ chọn biểu tượng cảm xúc</translation>
 <translation id="5698136107297470317">Bạn sắp xoá dữ liệu <ph name="BRAND" /></translation>
+<translation id="5698815246352480266">Bạn có thể tiếp tục trò chuyện với Chế độ AI mà không cần chuyển đổi giữa các thẻ. Để bắt đầu, hãy xác minh danh tính của bạn. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
 <translation id="5698878456427040674">Kiểm tra xem tài khoản đã chọn có được hỗ trợ hay không.</translation>
 <translation id="5698900765010620315">Giao diện tối với độ tương phản thấp</translation>
 <translation id="5699227710146832453">Từ</translation>
@@ -7065,6 +7070,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5870155679953074650">Lỗi phần cứng</translation>
 <translation id="587234395549708302">Dọn dẹp dấu trang?</translation>
 <translation id="5875534259258494936">Đã dừng chia sẻ màn hình</translation>
+<translation id="5876691914815078365">Ứng dụng Chrome &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Thẻ mới ở bên phải</translation>
 <translation id="5877064549588274448">Kênh đã thay đổi. Hãy khởi động lại thiết bị để áp dụng thay đổi.</translation>
 <translation id="5877584842898320529">Máy in đã chọn không sử dụng được hoặc không được cài đặt chính xác. <ph name="BR" /> Hãy kiểm tra máy in hoặc thử chọn một máy in khác.</translation>
@@ -11081,6 +11087,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8673026256276578048">Tìm kiếm Web...</translation>
 <translation id="867329473311423817">Được phép quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="8673383193459449849">Sự cố máy chủ</translation>
+<translation id="8673530374848624865">Quản trị viên đã cập nhật các yêu cầu bảo mật đối với thiết bị của bạn</translation>
 <translation id="8674903726754070732">Rất tiếc, máy tính của bạn được định cấu hình bằng một mã phần cứng không đúng định dạng. Tình trạng này ngăn ChromeOS cập nhật các bản vá bảo mật mới nhất và máy tính của bạn <ph name="BEGIN_BOLD" />có nguy cơ bị tấn công<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Các trang web dùng tính năng này để tự động chuyển sang chế độ toàn màn hình. Thông thường, việc chuyển sang chế độ toàn màn hình cần có sự can thiệp của người dùng.</translation>
 <translation id="8675704450909805533">Trình cài đặt không tìm thấy đích đến hợp lệ để cài đặt <ph name="DEVICE_OS" />.</translation>
