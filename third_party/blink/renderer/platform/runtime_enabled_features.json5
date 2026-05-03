@@ -1210,13 +1210,6 @@
       status: "experimental",
     },
     {
-      // Makes the command event not composed. Launched in M141.
-      // https://github.com/whatwg/html/pull/11255
-      // https://issues.chromium.org/issues/414826954
-      name: "CommandEventNotComposed",
-      status: "stable",
-    },
-    {
       // @container allowing multiple comma separated container queries.
       // Also introduces the 'conditions' attribute on CSSContainerRule.
       name: "CommaSeparatedContainerQueries",
