@@ -120,9 +120,6 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
   StartPrePrefetchRequestInternal(
       std::unique_ptr<const PrefetchRequest> prefetch_request);
 
-  PrefetchUpdateHeadersParams PreCalculatePrePrefetchHeadersOnUI(
-      BrowserContext* browser_context,
-      const PrePrefetchPreCalculatedHeadersKey& key) const;
 
   // This is UI-thread bound, and must not be dereferenced during this
   // `PrePrefetchServiceCore` sequence.

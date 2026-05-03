@@ -84,6 +84,54 @@ CreateURLLoaderFactoryOnUI(BrowserContext* browser_context) {
   return pending_factory;
 }
 
+PrefetchUpdateHeadersParams PreCalculatePrePrefetchHeadersOnUI(
+    BrowserContext* browser_context,
+    const PrePrefetchPreCalculatedHeadersKey& key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Create a tentative `PrefetchRequest` to pre-calculate headers based on
+  // `PrePrefetchPreCalculatedHeadersKey`.
+  // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
+  // calculate the header is redundant and ambiguous since some members do not
+  // affect the header construction. Once we sort out the general
+  // `PrefetchRequest` subset that is required for header construction, we can
+  // create and pass it to the utility function instead.
+  std::unique_ptr<const PrefetchRequest> tentative_prefetch_request =
+      PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
+          browser_context, key.origin.GetURL(),
+          PrefetchType(PreloadingTriggerType::kEmbedder,
+                       /*use_prefetch_proxy=*/true),
+          /*histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
+          key.javascript_enabled,
+          /*referring_origin=*/std::nullopt,
+          /*no_vary_search_hint=*/std::nullopt,
+          /*priority=*/std::nullopt,
+          /*preload_pipeline_info=*/
+          PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+          /*attempt=*/nullptr, /*additional_headers=*/{},
+          /*request_status_listener=*/nullptr,
+          /*ttl=*/PrefetchContainerDefaultTtlInPrefetchService(),
+          /*should_append_variations_header=*/
+          key.should_append_variations_header,
+          /*should_disable_block_until_head_timeout=*/false);
+
+  // We can safely assume `is_first_party_context_for_variations_header` to be
+  // true here because currently PrePrefetches always have no initiator origin.
+  // See `variations::IsFirstPartyContext()` for the details.
+  // Note: if `should_append_variations_header` is false, variations header
+  // will not be created anyway, so this value won't matter.
+  // TODO(crbug.com/470242977): Revisit once we set `request_initiator`.
+  const bool is_first_party_context_for_variations_header = true;
+
+  return PrepareInitialHeadersForPrefetchPhase2(
+      key.origin.GetURL(), *tentative_prefetch_request,
+      is_first_party_context_for_variations_header);
+
+  // If we will have additional UI thread dependent headers other than
+  // prefetch standard ones above, that should also be considered here,
+  // including the one that can come from embedders.
+}
+
 }  // namespace
 
 // The internal class owned by `PrePrefetchServiceImpl` to run the substantial
@@ -146,10 +194,11 @@ class PrePrefetchServiceCore {
         it != ui_thread_pre_calculated_headers_map_.end()) {
       ui_thread_pre_calculated_headers = &it->second;
     } else {
-      // If we can't find the proper pre-calculated headers with the current
-      // request, just make this request fail right now.
-      // TODO(crbug.com/452389538): `postTask` to the UI thread to calculate and
-      // cache the header for this request.
+      // Refreshing the headers requires a thread hop to the UI thread, which
+      // would delay this request and nullify the benefit of PrePrefetch.
+      // Instead, we fail the current request quickly and asynchronously trigger
+      // pre-calculation for future requests.
+      PostTaskToPreCalculateHeaders(key);
       RecordPrePrefetchStartResultHistogram(
           PrePrefetchStartResult::kFailedPreCalculatedHeadersNotMatched);
       *out_handle = nullptr;
@@ -217,6 +266,36 @@ class PrePrefetchServiceCore {
     factory_.set_disconnect_handler(base::BindRepeating(
         &PrePrefetchServiceCore::PostTaskToGetNewURLLoaderFactory,
         weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void PostTaskToPreCalculateHeaders(
+      const PrePrefetchPreCalculatedHeadersKey& key) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    content::GetUIThreadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<BrowserContext> browser_context,
+               PrePrefetchPreCalculatedHeadersKey key)
+                -> std::optional<PrefetchUpdateHeadersParams> {
+              DCHECK_CURRENTLY_ON(BrowserThread::UI);
+              return browser_context ? std::make_optional(
+                                           PreCalculatePrePrefetchHeadersOnUI(
+                                               browser_context.get(), key))
+                                     : std::nullopt;
+            },
+            browser_context_weak_on_ui_thread_, key),
+        base::BindOnce(&PrePrefetchServiceCore::UpdatePreCalculatedHeaders,
+                       weak_ptr_factory_.GetWeakPtr(), key));
+  }
+
+  void UpdatePreCalculatedHeaders(
+      PrePrefetchPreCalculatedHeadersKey key,
+      std::optional<PrefetchUpdateHeadersParams> params) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!params) {
+      return;
+    }
+    ui_thread_pre_calculated_headers_map_[std::move(key)] = std::move(*params);
   }
 
   base::WeakPtr<BrowserContext> browser_context_weak_on_ui_thread_;
@@ -297,54 +376,6 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
       std::move(pending_factory),
       std::move(ui_thread_pre_calculated_headers_map),
       std::move(embedder_non_ui_thread_update_headers_callbacks));
-}
-
-PrefetchUpdateHeadersParams
-PrePrefetchServiceImpl::PreCalculatePrePrefetchHeadersOnUI(
-    BrowserContext* browser_context,
-    const PrePrefetchPreCalculatedHeadersKey& key) const {
-  // Create a tentative `PrefetchRequest` to pre-calculate headers based on
-  // `PrePrefetchPreCalculatedHeadersKey`.
-  // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
-  // calculate the header is redundant and ambiguous since some members are not
-  // affected to the header construction. Once we sort out the general
-  // `PrefetchRequest` subset that are required for header construction, we can
-  // create and pass it to the utility function instead.
-  std::unique_ptr<const PrefetchRequest> tentative_prefetch_request =
-      PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
-          browser_context, key.origin.GetURL(),
-          PrefetchType(PreloadingTriggerType::kEmbedder,
-                       /*use_prefetch_proxy=*/true),
-          /*histogram_suffix=*/"Tentative", blink::mojom::Referrer(),
-          key.javascript_enabled,
-          /*referring_origin=*/std::nullopt,
-          /*no_vary_search_hint=*/std::nullopt,
-          /*priority=*/std::nullopt,
-          /*preload_pipeline_info=*/
-          PreloadPipelineInfo::Create(
-              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-          /*attempt=*/nullptr, /*additional_headers=*/{},
-          /*request_status_listener=*/nullptr,
-          /*ttl=*/PrefetchContainerDefaultTtlInPrefetchService(),
-          /*should_append_variations_header=*/
-          key.should_append_variations_header,
-          /*should_disable_block_until_head_timeout=*/false);
-
-  // We can safely assume `is_first_party_context_for_variations_header` to be
-  // true here because currently PrePrefetches always have no initiator origin.
-  // See `variations::IsFirstPartyContext()` for the details.
-  // Note: if `should_append_variations_header` is false, variations header
-  // will not be created anyway, so this value won't matter.
-  // TODO(crbug.com/470242977): Revisit once we set `request_initiator`.
-  const bool is_first_party_context_for_variations_header = true;
-
-  return PrepareInitialHeadersForPrefetchPhase2(
-      key.origin.GetURL(), *tentative_prefetch_request,
-      is_first_party_context_for_variations_header);
-
-  // If we will have additional UI thread dependent headers other than
-  // prefetch standard ones above, that should also be considered here,
-  // including the one that can come from embedders.
 }
 
 PrePrefetchServiceImpl::~PrePrefetchServiceImpl() {
