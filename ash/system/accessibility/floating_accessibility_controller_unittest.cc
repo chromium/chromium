@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -78,12 +79,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   }
 
   void WaitUntilAccessibilityTrayClosed() {
-    // Waiting until accessibility tray is closed
-    // after being notified from the observer.
-    base::RunLoop run_loop;
-    while (detailed_view_shown()) {
-      run_loop.RunUntilIdle();
-    }
+    // Wait until the accessibility tray is closed after being notified from
+    // the observer.
+    ASSERT_TRUE(
+        base::test::RunUntil([this] { return !detailed_view_shown(); }));
   }
 
   views::View* GetMenuButton(FloatingAccessibilityView::ButtonId button_id) {
