@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sqlite_vfs/client.h"
+#include "components/sqlite_vfs/constants.h"
 #include "components/sqlite_vfs/multiprocess_test.test-mojom.h"
 #include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "components/sqlite_vfs/sqlite_sandboxed_vfs.h"
@@ -1236,6 +1237,28 @@ TEST_P(VfsTransitionMultiprocessTest, TransitionAfterCrash) {
   sql::Database db_2(MakeDatabaseOptionsForFileSet(file_set_2), "Test");
 
   EXPECT_TRUE(db_2.Open(file_set_2.GetDbVirtualFilePath()));
+
+  // Confirm that the database is using the expected journal mode.
+  {
+    sql::Statement s(db_2.GetUniqueStatement("PRAGMA journal_mode"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(s.ColumnString(0), !wal ? "wal" : "truncate");
+  }
+
+  // Execute a statement and confirm once again.
+  ASSERT_TRUE(db_2.Execute("INSERT INTO test (val) VALUES ('later')"));
+  {
+    sql::Statement s(db_2.GetUniqueStatement("PRAGMA journal_mode"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(s.ColumnString(0), !wal ? "wal" : "truncate");
+  }
+
+  // Confirm that the unused journal file is empty.
+  auto* extension = wal ? kWalJournalFileExtension : kJournalFileExtension;
+  EXPECT_EQ(base::GetFileSize(file_set_directory()
+                                  .Append(base::FilePath(kBaseName))
+                                  .AddExtension(extension)),
+            0LL);
 }
 
 INSTANTIATE_TEST_SUITE_P(

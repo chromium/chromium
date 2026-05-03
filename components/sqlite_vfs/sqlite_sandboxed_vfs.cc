@@ -150,6 +150,16 @@ SqliteSandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
     return std::nullopt;
   }
 
+  // SQLite truncates files to zero length rather than deleting them in various
+  // places (e.g., the main journal file when using journal_mode=TRUNCATE). To
+  // accommodate this, the built-in VFSes all treat a zero-length file as if it
+  // does not exist. The same must be done here. One side-effect of not doing
+  // this is that the SQLite pager will treat the presence of an empty
+  // write-ahead log file as an indication that the database is in WAL mode.
+  if (it->second->GetFile().GetLength() == 0) {
+    return std::nullopt;
+  }
+
   // The files will never be received without read access.
   // Write access is conditional on the file being opened for write.
   return sql::SandboxedVfs::PathAccessInfo{
