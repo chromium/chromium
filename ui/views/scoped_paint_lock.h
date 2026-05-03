@@ -13,7 +13,8 @@ namespace views {
 
 class View;
 
-// Adds a lock to the view that prevents painting.
+// A scoped lock that prevents a View and its entire subtree from being painted
+// for the lifetime of the lock.
 class VIEWS_EXPORT ScopedPaintLock : public ViewObserver {
  public:
   explicit ScopedPaintLock(View* view);
