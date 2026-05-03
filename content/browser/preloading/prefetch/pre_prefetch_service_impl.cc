@@ -271,6 +271,11 @@ class PrePrefetchServiceCore {
   void PostTaskToPreCalculateHeaders(
       const PrePrefetchPreCalculatedHeadersKey& key) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Avoid posting multiple tasks before the previous one has completed by
+    // `UpdatePreCalculatedHeaders()` for the same key.
+    if (!pending_pre_calculate_headers_keys_.insert(key).second) {
+      return;
+    }
     content::GetUIThreadTaskRunner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
@@ -292,6 +297,8 @@ class PrePrefetchServiceCore {
       PrePrefetchPreCalculatedHeadersKey key,
       std::optional<PrefetchUpdateHeadersParams> params) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(pending_pre_calculate_headers_keys_.contains(key));
+    pending_pre_calculate_headers_keys_.erase(key);
     if (!params) {
       return;
     }
@@ -308,6 +315,11 @@ class PrePrefetchServiceCore {
   // TODO(crbug.com/452389538): Consider how to refresh these.
   std::map<PrePrefetchPreCalculatedHeadersKey, PrefetchUpdateHeadersParams>
       ui_thread_pre_calculated_headers_map_;
+
+  // Tracks in-flight header pre-calculation requests to avoid posting duplicate
+  // UI tasks for the exact same key parameters.
+  base::flat_set<PrePrefetchPreCalculatedHeadersKey>
+      pending_pre_calculate_headers_keys_;
 
   // Callbacks that can be called on `PrePrefetchContainer::Start()`
   // (`PrePrefetchServiceCore` sequence) to modify the PrePrefetch initial

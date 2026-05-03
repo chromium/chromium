@@ -259,6 +259,75 @@ TEST_F(PrePrefetchServiceImplTest,
   EXPECT_NE(handle2, nullptr);
 }
 
+// Test that deduplicated in-flight header pre-calculation requests won't cause
+// any crash.
+TEST_F(PrePrefetchServiceImplTest, DeduplicatesInFlightPreCalculationRequests) {
+  const GURL prefetch_url("https://example.com/prefetch");
+
+  auto service = PrePrefetchService::Create(
+      browser_context(),
+      /*embedder_non_ui_thread_update_headers_callbacks=*/{},
+      /*initial_origin_hint=*/std::nullopt,
+      /*initial_javascript_enabled_hint=*/std::nullopt,
+      /*initial_should_append_variations_header_hint=*/std::nullopt);
+  ASSERT_NE(service, nullptr);
+
+  std::unique_ptr<PrePrefetchHandle> handle1;
+  std::unique_ptr<PrePrefetchHandle> handle2;
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Start duplicated PrePrefetches for `prefetch_url`, which will trigger two
+  // header pre-calculation refresh requests.
+  // Block the UI thread using `WaitableEvent` to prevent fast UI tasks from
+  // racing ahead before both requests complete submitting to the
+  // `PrePrefetchServiceCore`.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](PrePrefetchService* service_ptr, const GURL& url,
+             std::unique_ptr<PrePrefetchHandle>* handle1_ptr,
+             std::unique_ptr<PrePrefetchHandle>* handle2_ptr,
+             base::WaitableEvent* event_ptr) {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            *handle1_ptr = service_ptr->StartPrePrefetchRequest(
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
+                /*javascript_enabled=*/true,
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/content::PrefetchPriority::kHighest,
+                /*additional_headers=*/{},
+                /*request_status_listener=*/nullptr, base::TimeDelta(),
+                /*should_append_variations_header=*/false,
+                /*should_disable_block_until_head_timeout=*/false,
+                /*should_bypass_http_cache=*/false);
+
+            *handle2_ptr = service_ptr->StartPrePrefetchRequest(
+                url, test::kPreloadingEmbedderHistogramSuffixForTesting,
+                /*javascript_enabled=*/true,
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/content::PrefetchPriority::kHighest,
+                /*additional_headers=*/{},
+                /*request_status_listener=*/nullptr, base::TimeDelta(),
+                /*should_append_variations_header=*/false,
+                /*should_disable_block_until_head_timeout=*/false,
+                /*should_bypass_http_cache=*/false);
+
+            event_ptr->Signal();
+          },
+          service.get(), prefetch_url, &handle1, &handle2, &event));
+
+  event.Wait();
+
+  EXPECT_EQ(handle1, nullptr);
+  EXPECT_EQ(handle2, nullptr);
+
+  // Drains all scheduled tasks. If deduplication tracking failed,
+  // `UpdatePreCalculatedHeaders()` would crash due to
+  // `CHECK(pending_pre_calculate_headers_keys_.contains(key))`.
+  RunUntilIdle();
+}
+
 // Test that `PrePrefetchServiceImpl` fails if we do not have a connected
 // `URLLoaderFactory` and refresh is ongoing.
 TEST_F(PrePrefetchServiceImplTest,
