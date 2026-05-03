@@ -7,6 +7,7 @@
 <meta name="assert" value="When preserving privacy for readback, use the CSS System Highlight colors.">
 <script src="/wpt_internal/css/support/markers.js"></script>
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
   :focus {
     outline: none;
@@ -27,14 +28,11 @@
   </div>
 </canvas>
 <script>
-  async function runTest() {
+  onload = async () => {
     setSelection(editable, 5, 11)
 
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     canvas.getContext("2d").drawElementImage(child, 0, 0);
     takeScreenshot();
-  }
-
-  onload = () => runTest();
+  };
 </script>

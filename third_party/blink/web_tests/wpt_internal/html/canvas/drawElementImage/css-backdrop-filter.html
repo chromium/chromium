@@ -7,6 +7,7 @@
   <link rel="match" href="css-backdrop-filter-ref.html">
   <meta name="assert" value="A div with a CSS backdrop-filter filters canvas content and paints with the filter in the correct area.">
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     canvas {
       background: red;
@@ -27,7 +28,8 @@
   </canvas>
 
   <script>
-    function runTest() {
+    onload = async () => {
+      await waitForCanvasPaint(canvas);
       var context = canvas.getContext("2d");
       context.fillStyle = 'green';
       // The fillRect is required to have some content behind the filter.
@@ -38,8 +40,7 @@
       context.fill();
       context.drawElementImage(child, 0, 0);
       takeScreenshot();
-    }
-    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+    };
   </script>
 </body>
 </html>

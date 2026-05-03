@@ -5,6 +5,7 @@
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="shadow-basic-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <meta name=fuzzy content="0-2;0-1990">
 <style>
 #child {
@@ -22,7 +23,8 @@
 </canvas>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   var context = canvas.getContext("2d");
   context.shadowColor = "black";
   context.shadowBlur = 5;
@@ -30,9 +32,6 @@ function runTest() {
   context.shadowOffsetY = 10;
   context.drawElementImage(child, 20, 30);
   takeScreenshot();
-}
-
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
-
+};
 </script>
 </html>

@@ -3,6 +3,7 @@
 <meta charset="UTF-8">
 <title>drawElementImage does not draw grammar with custom highlights - ref</title>
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
   #child {
     width: 100px;
@@ -23,18 +24,15 @@
   </div>
 </canvas>
 <script>
-  async function runTest() {
+  onload = async () => {
     let r = new Range();
     r.setStart(document.body, 0);
     r.setEnd(document.body, 1);
     CSS.highlights.set("example-highlight", new Highlight(r));
 
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     canvas.getContext("2d").drawElementImage(child, 0, 0);
     takeScreenshot();
-  }
-
-  onload = () => runTest();
+  };
 </script>
 </html>

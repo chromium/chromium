@@ -5,6 +5,7 @@
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     #wrapper {
       width: 100px;
@@ -40,8 +41,7 @@
   <script>
     window.onload = () => {
       promise_test(async function(t) {
-        await new Promise(requestAnimationFrame);
-        await new Promise(setTimeout);
+        await waitForCanvasPaint(canvas);
 
         var ctx = canvas.getContext('2d');
         ctx.drawElementImage(document.getElementById('wrapper'), 0, 0);

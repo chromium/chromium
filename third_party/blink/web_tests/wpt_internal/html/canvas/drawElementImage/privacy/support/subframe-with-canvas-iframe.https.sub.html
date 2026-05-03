@@ -5,6 +5,7 @@
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <script src='../../support/getPixel.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
   #child {
     width: 10px;
@@ -41,8 +42,7 @@
     function pendingIframeLoaded() {
       if (!--sPendingIframesToLoad) {
         promise_test(async function(t) {
-          await new Promise(requestAnimationFrame);
-          await new Promise(setTimeout);
+          await waitForCanvasPaint(canvas);
           assert_not_equals(window.innerWidth, 0, "Window should have a non-zero width");
           const context = canvas.getContext("2d");
           context.drawElementImage(child, 0, 0);

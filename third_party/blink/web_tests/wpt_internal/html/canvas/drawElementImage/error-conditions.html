@@ -4,6 +4,7 @@
 <link rel="author" href="mailto:chrishtr@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <style>
 #child {
@@ -29,8 +30,7 @@
 
 <script>
 promise_test(async () => {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+  await waitForCanvasPaint(canvas);
 
   assert_throws_js(TypeError,
     () => canvas.getContext("2d").drawElementImage(grandchild, 20, 30),
@@ -48,8 +48,7 @@ promise_test(async () => {
     "Can't get element transform if layoutsubtree is not specified.");
 
   canvas.toggleAttribute("layoutsubtree"); // Add attribute.
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+  await waitForCanvasPaint(canvas);
   // Should not throw an exception.
   canvas.getContext("2d").drawElementImage(child, 20, 30);
   let img = canvas.captureElementImage(child);

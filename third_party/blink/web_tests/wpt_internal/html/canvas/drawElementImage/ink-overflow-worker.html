@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
   <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <style>
  body {
@@ -129,11 +130,10 @@ const workerUrl = URL.createObjectURL(new Blob([workerCode], { type: 'applicatio
       worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
     });
   }
-})().then(() => {
+})().then(async () => {
   // Wait for the worker thread to update before taking a screenshot.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(takeScreenshot);
-  });
+  await waitForCanvasPaint(document.querySelector("canvas"));
+  takeScreenshot();
 });
 
 </script>

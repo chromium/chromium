@@ -5,6 +5,7 @@
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="compositing-op-basic-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -21,16 +22,14 @@
 </canvas>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   var context = canvas.getContext("2d");
   context.fillStyle = "blue";
   context.fillRect(70, 80, 110, 100);
   context.globalCompositeOperation = "source-atop";
   context.drawElementImage(child, 20, 30);
   takeScreenshot();
-}
-
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
-
+};
 </script>
 </html>

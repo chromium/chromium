@@ -5,6 +5,7 @@
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <style>
 div {
@@ -33,8 +34,7 @@ canvas {
 <script>
 onload = () => {
   promise_test(async (t) => {
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas1);
     assert_throws_dom(
       "InvalidStateError",
       () => canvas1.getContext("2d").drawElementImage(child1, 20, 30),

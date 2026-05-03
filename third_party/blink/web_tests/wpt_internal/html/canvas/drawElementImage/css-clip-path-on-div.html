@@ -7,6 +7,7 @@
   <meta name="assert" value="A div with a CSS clip-path paints clipped.">
   <meta name="fuzzy" content="maxDifference=0-1;totalPixels=0-2">
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     div {
       width: 100px;
@@ -22,12 +23,12 @@
   </canvas>
 
   <script>
-    function runTest() {
+    onload = async () => {
+      await waitForCanvasPaint(canvas);
       var context = canvas.getContext("2d");
       context.drawElementImage(child, 0, 0);
       takeScreenshot();
-    }
-    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+    };
   </script>
 </body>
 </html>

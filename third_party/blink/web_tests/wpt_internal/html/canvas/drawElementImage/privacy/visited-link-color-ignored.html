@@ -4,6 +4,7 @@
   <title>drawElementImage does not reveal visited link colors</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     #link {
       width: 100px;
@@ -26,8 +27,7 @@
   <script>
     window.onload = () => {
       promise_test(async function(t) {
-        await new Promise(requestAnimationFrame);
-        await new Promise(setTimeout);
+        await waitForCanvasPaint(canvas);
 
         var context = canvas.getContext("2d");
 

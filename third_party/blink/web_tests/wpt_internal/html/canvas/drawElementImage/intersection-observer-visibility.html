@@ -3,6 +3,7 @@
 <title>Elements under canvas should report intersections, but not visibility</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <canvas id=canvas width="200" height="200" layoutsubtree>
   <div id=target>hello world</div>
@@ -10,8 +11,7 @@
 
 <script>
 promise_test(async function(t) {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+  await waitForCanvasPaint(canvas);
   canvas.getContext('2d').drawElementImage(target, 0, 0);
 
   await new Promise(r => requestAnimationFrame(r));
@@ -32,7 +32,7 @@ promise_test(async function(t) {
 
   await new Promise(r => requestAnimationFrame(r));
   await new Promise(r => requestAnimationFrame(r));
-  await new Promise(r => setTimeout(r, 100))
+  await new Promise(r => setTimeout(r, 100));
 
   assert_equals(intersectingIntersections, 1);
   assert_equals(visibleIntersections, 0);

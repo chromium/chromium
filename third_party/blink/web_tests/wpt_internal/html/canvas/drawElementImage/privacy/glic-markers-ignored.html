@@ -8,6 +8,7 @@
 <meta name="assert" value="When preserving privacy for readback, do not draw markers for GLIC.">
 <script src="/wpt_internal/css/support/markers.js"></script>
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
   #child {
     width: 100px;
@@ -32,8 +33,7 @@
       internals.setMarker(document, range, "glic");
     }
     await new Promise(resolve => setTimeout(resolve, 500));
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     canvas.getContext("2d").drawElementImage(child, 0, 0);
     takeScreenshot();
   }

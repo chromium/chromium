@@ -2,6 +2,7 @@
 <title>canvas.drawElementImage with zero dimensions does nothing</title>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -16,18 +17,13 @@
 <script>
 'use strict';
 
-async function waitForOneFrame() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
-}
-
 promise_test(async t => {
   const child = document.getElementById('child');
   const context = canvas.getContext('2d', { willReadFrequently: true });
   context.fillStyle = 'red';
   context.fillRect(0, 0, 200, 200);
 
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   // Draw with zero destination size
   context.drawElementImage(child, 0, 0, 0, 0);
@@ -40,14 +36,14 @@ promise_test(async t => {
   // Draw with zero box size.
   child.style.width = '0px';
   child.style.height = '0px';
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
   context.drawElementImage(child, 0, 0);
   assert_array_equals(context.getImageData(0, 0, 1, 1).data, [255, 0, 0, 255]);
 
   // Draw normally to verify it works
   child.style.width = '100px';
   child.style.height = '100px';
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
   context.drawElementImage(child, 0, 0);
   assert_array_equals(context.getImageData(0, 0, 1, 1).data, [0, 128, 0, 255]);
 }, 'drawElementImage with zero size does nothing');

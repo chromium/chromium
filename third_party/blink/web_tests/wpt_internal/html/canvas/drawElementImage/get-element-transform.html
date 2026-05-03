@@ -4,20 +4,16 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <canvas id="canvas" style="width: 100px; height: 100px;" width="100" height="100" layoutsubtree>
   <div id="element" style="width: 10px; height: 10px;"></div>
 </canvas>
 <script>
   'use strict';
 
-  async function waitForOneFrame() {
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
-  }
-
   promise_test(async t => {
     let draw_transform = new DOMMatrix();
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -25,7 +21,7 @@
 
   promise_test(async t => {
     let draw_transform = new DOMMatrix().translateSelf(17, -9);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().translateSelf(17, -9);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -35,10 +31,10 @@
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     element.style.transformOrigin = '0 0';
     let draw_transform = new DOMMatrix().scaleSelf(2, 0.5);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().scaleSelf(2, 0.5);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -48,10 +44,10 @@
     t.add_cleanup(() => {
       element.style.transform = '';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     element.style.transform = 'rotate(45deg)';
     let draw_transform = new DOMMatrix();
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -61,10 +57,10 @@
     t.add_cleanup(() => {
       canvas.getContext('2d').reset();
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.getContext('2d').translate(7, 11);
     let ctm = canvas.getContext('2d').getTransform();
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, ctm);
     let expected = new DOMMatrix().translateSelf(7, 11);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -74,10 +70,10 @@
     t.add_cleanup(async () => {
       canvas.style.zoom = '';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.style.zoom = '1.5';
     let draw_transform = new DOMMatrix().translateSelf(7, 11);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().translateSelf(7, 11);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
@@ -87,10 +83,10 @@
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     element.style.transformOrigin = '5px 5px';
     let draw_transform = new DOMMatrix().rotateSelf(45);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix()
       .translateSelf(-5, -5)
@@ -104,11 +100,11 @@
       canvas.width = 100;
       canvas.height = 100;
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.width = 200;
     canvas.height = 50;
     let draw_transform = new DOMMatrix().translateSelf(7, 11);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix()
       .scaleSelf(0.5, 2)
@@ -122,11 +118,11 @@
       canvas.style.width = '100px';
       canvas.style.height = '100px';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.style.width = '50px';
     canvas.style.height = '200px';
     let draw_transform = new DOMMatrix().translateSelf(7, 11);
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix()
       .scaleSelf(0.5, 2)
@@ -141,14 +137,14 @@
       canvas.height = 100;
       element.style.transformOrigin = '0 0';
     });
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.width = 200;
     canvas.height = 50;
     let draw_transform = new DOMMatrix()
       .translateSelf(42, 17)
       .rotateSelf(45);
     element.style.transformOrigin = '5px 5px';
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix()
       .translateSelf(-5, -5)
@@ -165,7 +161,7 @@
       canvas.setAttribute('layoutsubtree', 'true');
     });
     canvas.removeAttribute('layoutsubtree');
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
 
     canvas.setAttribute('layoutsubtree', 'true');
     let draw_transform = new DOMMatrix();
@@ -174,7 +170,7 @@
       () => canvas.getElementTransform(element, draw_transform),
       'getElementTransform should throw prior to onpaint.');
 
-    await waitForOneFrame();
+    await waitForCanvasPaint(canvas);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());

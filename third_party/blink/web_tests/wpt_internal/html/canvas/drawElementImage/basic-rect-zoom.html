@@ -5,6 +5,7 @@
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="basic-rect-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 body {
   zoom: 200%;
@@ -27,19 +28,13 @@ body {
 </canvas>
 
 <script>
-async function runTest() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+onload = async () => {
   const rectangle = canvas.getBoundingClientRect();
   canvas.width = rectangle.width * devicePixelRatio;
   canvas.height = rectangle.height * devicePixelRatio;
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+  await waitForCanvasPaint(canvas);
   canvas.getContext("2d").drawElementImage(child, 20 * devicePixelRatio, 30 * devicePixelRatio);
   takeScreenshot();
-}
-
-onload = runTest;
-
+};
 </script>
 </html>

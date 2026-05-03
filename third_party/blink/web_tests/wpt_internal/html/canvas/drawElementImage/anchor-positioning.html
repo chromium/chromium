@@ -4,6 +4,7 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="match" href="anchor-positioning-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
   #canvas {
     width: 200px;
@@ -35,12 +36,12 @@
 <div id=anchored></div>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   var context = canvas.getContext('2d');
   let matrix = context.drawElementImage(anchor, 50, 50);
   anchor.style.transform = matrix.toString();
   takeScreenshot();
-}
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
+};
 </script>
 </html>

@@ -7,6 +7,7 @@
   <link rel="match" href="css-backdrop-filter-with-sibling-ref.html">
   <meta name="assert" value="A div with a aibling and a CSS backdrop-filter over a parent div paints with the filter in the correct area.">
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     canvas {
       background: red;
@@ -37,12 +38,12 @@
   </canvas>
 
   <script>
-    function runTest() {
+    onload = async () => {
+      await waitForCanvasPaint(canvas);
       var context = canvas.getContext("2d");
       context.drawElementImage(child, 0, 0);
       takeScreenshot();
-    }
-    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+    };
   </script>
 </body>
 </html>

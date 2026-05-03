@@ -3,16 +3,12 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <canvas id="canvas" style="width: 100px; height: 100px;" width="100" height="100" layoutsubtree>
   <div id="element" style="width: 10px; height: 10px;">hello</div>
 </canvas>
 <script>
 'use strict';
-
-async function waitOneFrame() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
-}
 
 const workerCode = `
   let ctx;
@@ -120,7 +116,7 @@ function runTest() {
   worker.postMessage({ canvas: offscreen }, [offscreen]);
 
   promise_test(async t => {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 1, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -130,7 +126,7 @@ function runTest() {
   }, 'Draw/Element transform at the origin should be an identity matrix');
 
   promise_test(async t => {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 2, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -143,9 +139,8 @@ function runTest() {
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
-    await waitOneFrame();
     element.style.transformOrigin = '0 0';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 3, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -158,9 +153,8 @@ function runTest() {
     t.add_cleanup(() => {
       element.style.transform = '';
     });
-    await waitOneFrame();
     element.style.transform = 'rotate(45deg)';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 4, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -170,7 +164,7 @@ function runTest() {
   }, 'Draw/Element transform should not include transform on the element');
 
   promise_test(async t => {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 5, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -183,9 +177,8 @@ function runTest() {
     t.add_cleanup(async () => {
       canvas.style.zoom = '';
     });
-    await waitOneFrame();
     canvas.style.zoom = '1.5';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 6, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -198,9 +191,8 @@ function runTest() {
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
-    await waitOneFrame();
     element.style.transformOrigin = '0 0';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 7, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -213,9 +205,8 @@ function runTest() {
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
-    await waitOneFrame();
     element.style.transformOrigin = '5px 5px';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 8, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -232,7 +223,7 @@ function runTest() {
       worker.postMessage({ width: 100, height: 100 });
     });
     worker.postMessage({ width: 200, height: 50 });
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 9, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -246,10 +237,9 @@ function runTest() {
       canvas.style.width = '100px';
       canvas.style.height = '100px';
     });
-    await waitOneFrame();
     canvas.style.width = '50px';
     canvas.style.height = '200px';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 10, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -264,11 +254,10 @@ function runTest() {
       canvas.style.zoom = '';
       element.style.transformOrigin = '0 0';
     });
-    await waitOneFrame();
     worker.postMessage({ width: 200, height: 50 });
     canvas.style.zoom = 1.5;
     element.style.transformOrigin = '5px 5px';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 11, elementImage }, [elementImage]);
     let result = await getWorkerResult();
@@ -285,7 +274,7 @@ function runTest() {
   }, 'Draw/Element transform should account for canvas pixel scale, zoom, transform-origin, CTM, and x and y');
 
   promise_test(async t => {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let elementImage = canvas.captureElementImage(element);
     worker.postMessage({ testId: 12, elementImage }, [elementImage]);
     let result = await getWorkerResult();

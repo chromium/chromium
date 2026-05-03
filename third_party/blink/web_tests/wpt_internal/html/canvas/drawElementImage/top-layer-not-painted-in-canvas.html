@@ -5,6 +5,7 @@
 <link rel="help" href="https://www.w3.org/TR/css-position-4/#top-layer">
 <link rel="match" href="top-layer-not-painted-in-canvas-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <style>
   dialog {
@@ -27,15 +28,12 @@
 </canvas>
 
 <script>
-async function runTest() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   dialog.showModal();
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
+  await waitForCanvasPaint(canvas);
   canvas.getContext('2d').drawElementImage(target, 100, 0);
   takeScreenshot();
-}
-onload = () => runTest();
+};
 </script>
 </html>

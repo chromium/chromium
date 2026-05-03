@@ -4,6 +4,7 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="match" href="nested-canvas-invalidation-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <canvas id="canvas" layoutsubtree="true" width="100" height="100">
   <canvas id="nested" width="100" height="100"></canvas>
@@ -17,15 +18,13 @@
     nestedCtx.fillStyle = 'red';
     nestedCtx.fillRect(0, 0, 100, 100);
 
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     outerCtx.drawElementImage(nested, 0, 0);
 
     nestedCtx.fillStyle = 'green';
     nestedCtx.fillRect(0, 0, 100, 100);
 
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     outerCtx.drawElementImage(nested, 0, 0);
     takeScreenshot();
   }();

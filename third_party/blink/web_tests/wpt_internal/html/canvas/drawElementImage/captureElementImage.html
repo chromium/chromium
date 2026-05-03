@@ -2,6 +2,7 @@
 <title>canvas.captureElementImage returns a snapshot of an element that can be drawn into the canvas</title>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -16,22 +17,13 @@
 <script>
 'use strict';
 
-function waitForOneFrame() {
-  return new Promise(resolve => {
-    requestAnimationFrame(() => {
-      setTimeout(resolve, 0);
-    });
-  });
-}
-
 promise_test(async t => {
   const child = document.getElementById('child');
   t.add_cleanup(() => {
     child.style.width = '100px';
   });
 
-  // Wait a frame.
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   let elementImageA = canvas.captureElementImage(child);
   assert_equals(elementImageA.width, 100);
@@ -45,8 +37,7 @@ promise_test(async t => {
   assert_equals(elementImageB.width, 100);
   assert_equals(elementImageB.height, 100);
 
-  // Wait a frame.
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   // `captureElementImage` should return the updated element image size.
   let elementImageC = canvas.captureElementImage(child);
@@ -69,8 +60,7 @@ promise_test(async t => {
   let context = canvas.getContext('2d', { willReadFrequently: true });
   context.reset();
 
-  // Wait a frame.
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   let greenElementImage = canvas.captureElementImage(child);
   assert_equals(greenElementImage.width, 100);
@@ -80,8 +70,8 @@ promise_test(async t => {
 
   // Change the child to blue.
   child.style.background = 'blue';
-  // Wait a frame.
-  await waitForOneFrame();
+
+  await waitForCanvasPaint(canvas);
 
   let blueElementImage = canvas.captureElementImage(child);
   assert_equals(blueElementImage.width, 100);
@@ -98,8 +88,7 @@ promise_test(async t => {
 }, 'captureElementImage should return an object that can be drawn');
 
 promise_test(async t => {
-  // Wait a frame.
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   let elementImage = canvas.captureElementImage(child);
   assert_equals(elementImage.width, 100);
@@ -134,7 +123,7 @@ promise_test(async t => {
     nestedCanvas.remove();
   });
 
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   assert_throws_dom('NotSupportedError',
     () => nestedCanvas.captureElementImage(childDiv),

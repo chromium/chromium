@@ -2,6 +2,7 @@
 <title>OffscreenCanvas.drawElementImage should work in a worker thread</title>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -15,11 +16,6 @@
 
 <script>
 'use strict';
-
-async function waitForOneFrame() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
-}
 
 const workerCode = `
   let ctx;
@@ -35,8 +31,7 @@ const workerCode = `
 `;
 
 promise_test(async t => {
-  // Wait a frame.
-  await waitForOneFrame();
+  await waitForCanvasPaint(canvas);
 
   const blob = new Blob([workerCode], { type: 'application/javascript' });
   const worker = new Worker(URL.createObjectURL(blob));

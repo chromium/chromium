@@ -5,6 +5,7 @@
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <link rel="match" href="css-filter-image-ref.html">
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     canvas {
       width: 100px;
@@ -44,12 +45,12 @@
     </filter>
   </svg>
   <script>
-    function runTest() {
+    onload = async () => {
+      await waitForCanvasPaint(canvas);
       var context = canvas.getContext("2d");
       context.drawElementImage(wrapper, 0, 0);
       takeScreenshot();
-    }
-    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+    };
   </script>
 </body>
 </html>

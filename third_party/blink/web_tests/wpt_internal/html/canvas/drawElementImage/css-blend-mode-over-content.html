@@ -7,6 +7,7 @@
   <link rel="match" href="css-blend-mode-ref.html">
   <meta name="assert" value="CSS blend-mode is applied correctl over canvas content.">
   <script src="/common/reftest-wait.js"></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     canvas {
       background: red;
@@ -27,14 +28,14 @@
   </canvas>
 
   <script>
-    function runTest() {
+    onload = async () => {
+      await waitForCanvasPaint(canvas);
       var context = canvas.getContext("2d");
       context.fillStyle = 'white';
       context.fillRect(0, 0, 100, 100);
       context.drawElementImage(child, 10, 10);
       takeScreenshot();
-    }
-    onload = () => requestAnimationFrame(() => setTimeout(runTest));
+    };
   </script>
 </body>
 </html>

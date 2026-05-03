@@ -6,6 +6,7 @@
 <link rel="match" href="shadow-non-opaque-element-ref.html">
 <meta name=fuzzy content="0-2;0-2185">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -33,7 +34,8 @@
 </canvas>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   var context = canvas.getContext("2d");
   context.shadowColor = "black";
   context.shadowBlur = 5;
@@ -41,9 +43,6 @@ function runTest() {
   context.shadowOffsetY = 10;
   context.drawElementImage(child, 20, 30);
   takeScreenshot();
-}
-
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
-
+};
 </script>
 </html>

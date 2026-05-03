@@ -5,6 +5,7 @@
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="non-opaque-element-ref.html">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -32,12 +33,10 @@
 </canvas>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   canvas.getContext("2d").drawElementImage(child, 20, 30);
   takeScreenshot();
-}
-
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
-
+};
 </script>
 </html>

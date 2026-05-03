@@ -6,6 +6,7 @@
 <link rel="match" href="global-alpha-basic-ref.html">
 <meta name=fuzzy content="1;2500">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
 #child {
   width: 100px;
@@ -22,16 +23,14 @@
 </canvas>
 
 <script>
-function runTest() {
+onload = async () => {
+  await waitForCanvasPaint(canvas);
   var context = canvas.getContext("2d");
   context.fillStyle = "blue";
   context.fillRect(70, 80, 110, 100);
   context.globalAlpha = 0.5;
   context.drawElementImage(child, 20, 30);
   takeScreenshot();
-}
-
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
-
+};
 </script>
 </html>

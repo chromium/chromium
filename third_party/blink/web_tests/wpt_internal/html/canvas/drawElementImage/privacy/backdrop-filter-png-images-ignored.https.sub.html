@@ -6,6 +6,7 @@
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <script src='../support/getPixel.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
   <style>
     #wrapper {
       width: 10px;
@@ -55,8 +56,7 @@
           preloadImage(crossOriginFeImageEl.getAttribute('href'))
         ]);
 
-        await new Promise(requestAnimationFrame);
-        await new Promise(setTimeout);
+        await waitForCanvasPaint(canvas);
         var ctx = canvas.getContext('2d');
         ctx.drawElementImage(document.getElementById('wrapper'), 0, 0);
 

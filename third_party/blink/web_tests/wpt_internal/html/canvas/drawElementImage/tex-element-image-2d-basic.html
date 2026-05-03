@@ -5,6 +5,7 @@
     <title>Ensure texElementImage2D in texImage2D</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
     <style>
       .top-left {
         position: absolute;
@@ -188,7 +189,10 @@
         }, "verify the texElementImage2D works as expected");
       }
 
-      onload = () => requestAnimationFrame(() => setTimeout(runTest));
+      onload = async () => {
+        await waitForCanvasPaint(canvasHost);
+        runTest();
+      };
     </script>
   </body>
 </html>

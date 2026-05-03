@@ -5,6 +5,7 @@
 <link rel="match" href="opacity-animation-ref.html">
 <meta name="fuzzy" content="maxDifference=0-1;totalPixels=0-10000">
 <script src="/common/reftest-wait.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <style>
   @keyframes anim {
     0%      { opacity: 0; }
@@ -35,8 +36,7 @@
   onload = async function() {
     // Wait for the animation to start and progress at least one frame.
     await Promise.all(document.getAnimations().map(animation => animation.ready));
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
+    await waitForCanvasPaint(canvas);
     canvas.getContext('2d').drawElementImage(target, 100, 0);
     takeScreenshot();
   }();

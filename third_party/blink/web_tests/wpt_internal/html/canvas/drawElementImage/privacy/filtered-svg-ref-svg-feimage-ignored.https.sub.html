@@ -7,6 +7,7 @@
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <script src='../support/getPixel.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 </head>
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
@@ -25,8 +26,7 @@
   <script>
     window.onload = () => {
       promise_test(async function(t) {
-        await new Promise(requestAnimationFrame);
-        await new Promise(setTimeout);
+        await waitForCanvasPaint(canvas);
         const context = canvas.getContext("2d");
         context.drawElementImage(document.getElementById("child"), 0, 0);
 
