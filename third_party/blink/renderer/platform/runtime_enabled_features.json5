@@ -3602,15 +3602,6 @@
       status: "experimental",
     },
     {
-      // Improves the logic for removing focus from a currently focused <a>
-      // element when its href attribute is removed by considering other ways
-      // that an <a> may be focusable. Shipped in M142, should be safe to
-      // remove in M144.
-      // https://issues.chromium.org/issues/443585794
-      name: "LinkBlurImprovement",
-      status: "stable",
-    },
-    {
       name: "ListOwnerMustHaveCSSBox",
       status: "stable",
     },

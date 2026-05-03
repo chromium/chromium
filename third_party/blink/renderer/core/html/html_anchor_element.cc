@@ -225,16 +225,12 @@ void HTMLAnchorElementBase::AttributeChanged(
     return;
   if (params.name != html_names::kHrefAttr)
     return;
-  if (RuntimeEnabledFeatures::LinkBlurImprovementEnabled()) {
-    if (!IsLink() && AdjustedFocusedElementInTreeScope() == this) {
-      // Removing the href attribute might make this element no longer
-      // focusable, but other attributes like tabindex can keep it focusable.
-      // Style and layout are needed in order to check focusability.
-      GetDocument().UpdateStyleAndLayoutTree();
-      GetDocument().ClearFocusedElementIfNeeded();
-    }
-  } else if (!IsLink() && AdjustedFocusedElementInTreeScope() == this) {
-    blur();
+  if (!IsLink() && AdjustedFocusedElementInTreeScope() == this) {
+    // Removing the href attribute might make this element no longer
+    // focusable, but other attributes like tabindex can keep it focusable.
+    // Style and layout are needed in order to check focusability.
+    GetDocument().UpdateStyleAndLayoutTree();
+    GetDocument().ClearFocusedElementIfNeeded();
   }
 }
 
