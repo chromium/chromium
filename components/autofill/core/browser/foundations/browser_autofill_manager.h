@@ -211,13 +211,11 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillSuggestionDelegate::SuggestionMetadata& metadata,
       const FormFieldData& trigger_field);
 
-  // Virtual for testing
-  virtual void DidShowSuggestions(
-      base::span<const Suggestion> suggestions,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      AutofillExternalDelegate::UpdateSuggestionsCallback
-          update_suggestions_callback);
+  void DidShowSuggestions(base::span<const Suggestion> suggestions,
+                          const FormData& form,
+                          const FieldGlobalId& field_id,
+                          AutofillExternalDelegate::UpdateSuggestionsCallback
+                              update_suggestions_callback);
 
   // Invoked when the user selected the `suggestion` in a suggestions list from
   // single field filling.
