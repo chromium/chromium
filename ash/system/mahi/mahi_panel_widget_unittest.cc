@@ -16,6 +16,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -152,7 +153,11 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionAfterWorkAreaBoundsChange) {
       ->keyboard_controller()
       ->virtual_keyboard_controller()
       ->ForceShowKeyboard();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return WorkAreaInsets::ForWindow(widget->GetNativeWindow())
+               ->user_work_area_bounds()
+               .bottom() < default_work_area.bottom();
+  }));
 
   auto current_work_area = WorkAreaInsets::ForWindow(widget->GetNativeWindow())
                                ->user_work_area_bounds();
