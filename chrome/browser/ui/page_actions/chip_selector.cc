@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/page_actions/page_action_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/actions/action_id.h"
 
 namespace page_actions {
@@ -273,6 +274,11 @@ std::unique_ptr<ChipSelector> CreateChipSelector(
         show_anchored_message_callback,
     base::RepeatingCallback<void(actions::ActionId)>
         hide_anchored_message_callback) {
+  if (base::FeatureList::IsEnabled(features::kPageActionsPrioritySelector)) {
+    return std::make_unique<internal::PriorityChipSelector>(
+        show_chip_callback, hide_chip_callback, show_anchored_message_callback,
+        hide_anchored_message_callback);
+  }
   return std::make_unique<internal::DefaultChipSelector>(
       show_chip_callback, hide_chip_callback, show_anchored_message_callback,
       hide_anchored_message_callback);

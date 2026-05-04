@@ -17575,6 +17575,24 @@
             ]
         }
     ],
+    "PageActionsPrioritySelector": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageActionsPrioritySelector"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageContentAnnotationsBatchAnnotationsTimeout": [
         {
             "platforms": [

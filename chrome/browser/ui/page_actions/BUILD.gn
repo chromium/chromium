@@ -54,6 +54,7 @@ source_set("page_actions_impl") {
   deps = [
     ":page_actions",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
     "//content/public/browser",
     "//ui/gfx",
   ]

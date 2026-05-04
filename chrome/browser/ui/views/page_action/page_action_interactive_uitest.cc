@@ -126,6 +126,9 @@ class PageActionUiTestBase {
     // TODO(crbug.com/424806660): These tests should not be reliant on
     // kLensOverlayOmniboxEntryPoint being enabled, but disabling it causes them
     // to fail.
+    // TODO(crbug.com/482339938): SuggestionChipReordersMultipleActions is
+    // failing when kPageActionsPrioritySelector is enabled, since those 2 chips
+    // are no longer allowed to show at the same time.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
@@ -139,6 +142,7 @@ class PageActionUiTestBase {
         },
         /*disabled_features=*/{
             lens::features::kLensOverlay,
+            features::kPageActionsPrioritySelector,
         });
   }
 
