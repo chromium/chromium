@@ -886,14 +886,14 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //
   //  // Called by the implementation of DialogDelegate when the user clicks the
   //  // close/cancel buttons, or presses `esc`.
-  //  void Client::CloseWidget(Widget::CloseReason reason) {
+  //  void Client::CloseWidget(Widget::ClosedReason reason) {
   //    LogExactlyOnceOnWidgetDestruction(reason);
   //    widget_.reset();
   //  }
   //
   //  // If the client wants to close the widget, it can also do so.
   //  Client::ClientCloseWidget() {
-  //    CloseWidget(CloseReason::kUnspecified);
+  //    CloseWidget(Widget::ClosedReason::kUnspecified);
   //  }
   //
   // It is OK to not reset the Widget in the callback. This blocks the window
