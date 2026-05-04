@@ -15,6 +15,7 @@
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 #include "services/webnn/webnn_switches.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h"
 
@@ -217,5 +218,45 @@ SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
 }
 
 SessionOptions::~SessionOptions() = default;
+
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+SessionOptions::GetExecutionProvidersInfo() const {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  base::span<const OrtEpDevice* const> registered_ep_devices =
+      env_->GetRegisteredEpDevices();
+  std::vector<const OrtEpDevice*> selected_ep_devices =
+      Environment::SelectEpDevices(registered_ep_devices, device_type_);
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr> ep_details_list;
+  for (const OrtEpDevice* ep_device : selected_ep_devices) {
+    auto ep_details = mojom::WebNNExecutionProviderDetails::New();
+    // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+    ep_details->name = UNSAFE_BUFFERS(ort_api->EpDevice_EpName(ep_device));
+    // SAFETY: ORT guarantees that `ep_vendor` is valid and null-terminated.
+    ep_details->vendor = UNSAFE_BUFFERS(ort_api->EpDevice_EpVendor(ep_device));
+    const OrtHardwareDevice* hardware_device =
+        ort_api->EpDevice_Device(ep_device);
+    CHECK(hardware_device);
+    ep_details->hardware_type = OrtHardwareDeviceTypeToString(
+        ort_api->HardwareDevice_Type(hardware_device));
+    const OrtKeyValuePairs* ep_metadata =
+        ort_api->EpDevice_EpMetadata(ep_device);
+    CHECK(ep_metadata);
+    size_t num_entries = 0;
+    const char* const* keys = nullptr;
+    const char* const* values = nullptr;
+    ort_api->GetKeyValuePairs(ep_metadata, &keys, &values, &num_entries);
+    for (size_t i = 0; i < num_entries; ++i) {
+      // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
+      if (UNSAFE_BUFFERS(base::cstring_view(keys[i])) == "version") {
+        // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
+        ep_details->version = UNSAFE_BUFFERS(base::cstring_view(values[i]));
+        break;
+      }
+    }
+    ep_details->first_selected = (ep_device == first_selected_device_);
+    ep_details_list.push_back(std::move(ep_details));
+  }
+  return ep_details_list;
+}
 
 }  // namespace webnn::ort

@@ -37,6 +37,7 @@
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -260,6 +261,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   int tracing_id() const { return tracing_id_; }
 
   virtual std::string_view GetBackendName() const = 0;
+
+  virtual std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const = 0;
 
  protected:
   friend struct OnTaskRunnerDeleter;

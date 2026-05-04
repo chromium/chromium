@@ -21,6 +21,9 @@ void LogEpDevices(const OrtApi* ort_api,
                   base::span<const OrtEpDevice* const> ep_devices,
                   std::string_view prefix);
 
+std::string_view OrtHardwareDeviceTypeToString(
+    OrtHardwareDeviceType device_type);
+
 }  // namespace webnn::ort
 
 #endif  // SERVICES_WEBNN_ORT_LOGGING_H_

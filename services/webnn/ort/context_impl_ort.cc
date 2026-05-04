@@ -17,6 +17,7 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -634,6 +635,11 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
 
 std::string_view ContextImplOrt::GetBackendName() const {
   return "ONNX Runtime";
+}
+
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+ContextImplOrt::GetExecutionProvidersInfo() const {
+  return session_options_->GetExecutionProvidersInfo();
 }
 
 }  // namespace webnn::ort

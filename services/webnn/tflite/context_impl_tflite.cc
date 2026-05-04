@@ -182,4 +182,11 @@ std::string_view ContextImplTflite::GetBackendName() const {
   return "TensorFlow Lite";
 }
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+ContextImplTflite::GetExecutionProvidersInfo() const {
+  // TensorFlow Lite does not have the concept of execution providers, so we
+  // return an empty list.
+  return {};
+}
+
 }  // namespace webnn::tflite

@@ -20,6 +20,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -160,6 +161,11 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   }
 
   std::string_view GetBackendName() const override { return "Fake Backend"; }
+
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const override {
+    return {};
+  }
 
   // Owned by FakeWebNNBackend. May be null if no capture is needed.
   raw_ptr<base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>>

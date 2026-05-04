@@ -195,6 +195,7 @@ WebNNContextProviderImpl::PopulateContextsDetailsForIntrospection() {
     auto details = mojom::WebNNContextIntrospectionDetails::New();
     details->context_id = context_impl->tracing_id();
     details->context_backend = context_impl->GetBackendName();
+    details->execution_providers = context_impl->GetExecutionProvidersInfo();
     contexts_details.push_back(std::move(details));
   }
   return contexts_details;

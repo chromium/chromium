@@ -157,4 +157,11 @@ std::string_view ContextImplLiteRt::GetBackendName() const {
   return "LiteRT";
 }
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+ContextImplLiteRt::GetExecutionProvidersInfo() const {
+  // LiteRT does not have the concept of execution providers, so we return an
+  // empty list.
+  return {};
+}
+
 }  // namespace webnn::litert

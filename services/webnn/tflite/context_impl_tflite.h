@@ -111,6 +111,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       WebNNTensorImpl::RepresentationPtr representation) override;
 
   std::string_view GetBackendName() const override;
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const override;
 
   // Only be used in the GPU-process flow to indicate whether the profile is in
   // incognito.

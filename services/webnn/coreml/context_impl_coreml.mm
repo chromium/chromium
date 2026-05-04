@@ -116,4 +116,11 @@ std::string_view ContextImplCoreml::GetBackendName() const {
   return "CoreML";
 }
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+ContextImplCoreml::GetExecutionProvidersInfo() const {
+  // CoreML does not have the concept of execution providers, so we return an
+  // empty list.
+  return {};
+}
+
 }  // namespace webnn::coreml

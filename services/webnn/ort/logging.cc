@@ -36,18 +36,6 @@ OrtLoggingLevel StringToOrtLoggingLevel(std::string_view logging_level) {
   return ORT_LOGGING_LEVEL_ERROR;
 }
 
-std::string_view OrtHardwareDeviceTypeToString(
-    OrtHardwareDeviceType device_type) {
-  switch (device_type) {
-    case OrtHardwareDeviceType_CPU:
-      return "CPU";
-    case OrtHardwareDeviceType_GPU:
-      return "GPU";
-    case OrtHardwareDeviceType_NPU:
-      return "NPU";
-  }
-}
-
 std::string OrtKeyValuePairsToString(
     const OrtApi* ort_api,
     const OrtKeyValuePairs* ort_key_value_pairs) {
@@ -76,6 +64,18 @@ std::string Uint32ToHexString(uint32_t value) {
 }
 
 }  // namespace
+
+std::string_view OrtHardwareDeviceTypeToString(
+    OrtHardwareDeviceType device_type) {
+  switch (device_type) {
+    case OrtHardwareDeviceType_CPU:
+      return "CPU";
+    case OrtHardwareDeviceType_GPU:
+      return "GPU";
+    case OrtHardwareDeviceType_NPU:
+      return "NPU";
+  }
+}
 
 OrtLoggingLevel GetOrtLoggingLevel() {
   OrtLoggingLevel ort_logging_level = ORT_LOGGING_LEVEL_ERROR;

@@ -4,10 +4,28 @@
 
 module webnn.mojom;
 
+struct WebNNExecutionProviderDetails {
+  // Name of the execution provider, e.g. "OpenVINOExecutionProvider".
+  string name;
+  // Vendor of the execution provider, e.g. "Intel".
+  string vendor;
+  // Hardware type of the execution provider, e.g. "CPU", "GPU", "NPU".
+  string hardware_type;
+  // Version of the execution provider if provided otherwise empty.
+  string version;
+  // Indicates if this execution provider is the first selected one, otherwise
+  // the EP is a fallback option.
+  bool first_selected;
+};
+
 struct WebNNContextIntrospectionDetails {
   int32 context_id;
   // The backend used by the context, e.g. "CoreML", "LiteRT", etc.
   string context_backend;
+  // The list of execution providers supported by the context.
+  // This is backend-specific information and may be empty if the backend does
+  // not provide this information.
+  array<WebNNExecutionProviderDetails> execution_providers;
 };
 
 // Interface for the client to receive WebNN introspection data.

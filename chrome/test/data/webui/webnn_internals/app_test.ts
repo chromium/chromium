@@ -52,8 +52,8 @@ suite('WebnnInternalsUITest', function() {
   test('ShowActiveContexts', async function() {
     // Simulate the browser sending two active contexts.
     testProxy.page.onUpdateExistingContextDetails([
-      {contextId: 1, contextBackend: 'Test Backend'},
-      {contextId: 2, contextBackend: 'Test Backend 2'},
+      {contextId: 1, contextBackend: 'Test Backend', executionProviders: []},
+      {contextId: 2, contextBackend: 'Test Backend 2', executionProviders: []},
     ]);
     await microtasksFinished();
     const gridContainer =

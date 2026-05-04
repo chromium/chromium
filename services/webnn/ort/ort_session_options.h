@@ -12,6 +12,7 @@
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
@@ -35,6 +36,9 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   SessionOptions& operator=(const SessionOptions&) = delete;
 
   const OrtSessionOptions* get() const { return session_options_.get(); }
+
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const;
 
   // Returns the first selected EP device for WebNN.
   const OrtEpDevice* first_selected_device() const {

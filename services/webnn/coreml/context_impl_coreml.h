@@ -74,6 +74,9 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
 
   std::string_view GetBackendName() const override;
 
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const override;
+
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 

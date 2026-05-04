@@ -105,6 +105,9 @@ class ContextImplOrt final : public WebNNContextImpl {
 
   std::string_view GetBackendName() const override;
 
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const override;
+
   scoped_refptr<Environment> env_;
 
   // The session options are shared among all the sessions created by this
