@@ -85,9 +85,16 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
   // API, and if it fails use password_manager_util_mac::AuthenticateUser()
   // instead, until crbug.com/40236979 is fixed.
   if (!CanAuthenticateWithBiometrics()) {
-    OnAuthenticationCompleted(authenticator_->AuthenticateUserWithNonBiometrics(
+    // AuthenticateUserWithNonBiometrics runs a dialog with a nested run loop,
+    // so protect against this page disappearing within that nested run loop.
+    // https://crbug.com/508289938
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    bool success = authenticator_->AuthenticateUserWithNonBiometrics(
         l10n_util::GetStringFUTF16(IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX,
-                                   message)));
+                                   message));
+    if (weak_this) {
+      weak_this->OnAuthenticationCompleted(success);
+    }
     return;
   }
 
