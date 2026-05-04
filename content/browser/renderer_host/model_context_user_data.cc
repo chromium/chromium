@@ -29,6 +29,16 @@ bool IsScriptToolVisibleToOrigin(
   return false;
 }
 
+bool IsWebMCPEnabled(RenderFrameHost& rfh) {
+  // In the renderer, the WebMCP feature is implied by WebMCPTesting (in
+  // runtime_enabled_features.json5). Since this implication does not propagate
+  // automatically to the browser's base::FeatureList, we must explicitly check
+  // both features here to prevent renderer termination (bad IPC message).
+  return (base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
+          base::FeatureList::IsEnabled(blink::features::kWebMCPTesting)) &&
+         rfh.IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kTools);
+}
+
 }  // namespace
 
 DOCUMENT_USER_DATA_KEY_IMPL(ModelContextUserData);
@@ -68,9 +78,7 @@ void ModelContextUserData::BindModelContext(
 
 void ModelContextUserData::RegisterScriptTool(
     blink::mojom::ScriptToolPtr tool) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
-      !render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!IsWebMCPEnabled(render_frame_host())) {
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
                                     bad_message::RFHI_WEBMCP_NOT_ENABLED);
     return;
@@ -104,9 +112,7 @@ void ModelContextUserData::RegisterScriptTool(
 }
 
 void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
-      !render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!IsWebMCPEnabled(render_frame_host())) {
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
                                     bad_message::RFHI_WEBMCP_NOT_ENABLED);
     return;
@@ -129,9 +135,7 @@ void ModelContextUserData::UnregisterScriptTool(const std::string& name) {
 }
 
 void ModelContextUserData::GetScriptTools(GetScriptToolsCallback callback) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP) ||
-      !render_frame_host().IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kTools)) {
+  if (!IsWebMCPEnabled(render_frame_host())) {
     bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
                                     bad_message::RFHI_WEBMCP_NOT_ENABLED);
     std::move(callback).Run({});
