@@ -645,14 +645,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTestBase,
   EXPECT_EQ(profile->GetPath(), profile_path);
 }
 
-// Test is flaky on macOS. <https://crbug.com/397731710>
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EphemeralProfile DISABLED_EphemeralProfile
-#else
-#define MAYBE_EphemeralProfile EphemeralProfile
-#endif
-
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   // If multiprofile mode is not enabled, you can't switch between profiles.
   if (!profiles::IsMultipleProfilesEnabled())
     return;
@@ -713,10 +706,6 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
   base::FilePathWatcher watcher;
   base::RunLoop run_loop;
 
-// The following check is flaky on Windows.
-// TODO(crbug.com/40756611): re-enable this check when the profile directory
-// deletion works more reliably on Windows.
-#if !BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     watch_started = watcher.Watch(
         path_profile2, base::FilePathWatcher::Type::kNonRecursive,
@@ -730,7 +719,6 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
         }));
     ASSERT_TRUE(watch_started);
   }
-#endif  // !BUILDFLAG(IS_WIN)
 
   CloseBrowserSynchronously(browser_profile2);
   observer.Wait();
@@ -742,7 +730,9 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
     if (base::PathExists(path_profile2)) {
       run_loop.Run();
     }
-    EXPECT_FALSE(base::PathExists(path_profile2));
+    // It is not possible to check the non-existence of the file here, as it may
+    // have been recreated by pending file tasks after being deleted.
+    // See crbug.com/40756611.
   }
 }
 
