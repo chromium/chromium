@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "components/payments/core/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -18,7 +20,14 @@ namespace payments {
 namespace {
 
 class PaymentHandlerInstallFailedTest
-    : public PaymentRequestPlatformBrowserTestBase {
+    : public PaymentRequestPlatformBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  PaymentHandlerInstallFailedTest() {
+    feature_list_.InitWithFeatureState(
+        features::kPaymentRequestSupportReportingAppError, GetParam());
+  }
+
  private:
   void OnErrorDisplayed() override {
     PaymentRequestPlatformBrowserTestBase::OnErrorDisplayed();
@@ -28,12 +37,16 @@ class PaymentHandlerInstallFailedTest
   }
 
   void CloseDialog() { ASSERT_TRUE(test_controller()->CloseDialog()); }
+
+  base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerInstallFailedTest, testing::Bool());
 
 // When the service worker file is missing, the error message should mention
 // that the payment handler install failed. The metrics should record a failed
 // installation.
-IN_PROC_BROWSER_TEST_F(PaymentHandlerInstallFailedTest, Test) {
+IN_PROC_BROWSER_TEST_P(PaymentHandlerInstallFailedTest, Test) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.PaymentHandlerInstallSuccess", 0);
@@ -50,7 +63,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerInstallFailedTest, Test) {
       "PaymentRequest.PaymentHandlerInstallSuccess", 0);
 
   NavigateTo("b.com", "/payment_handler_status.html");
-  EXPECT_EQ("AbortError: Failed to install the payment handler.",
+  EXPECT_EQ(GetParam()
+                ? "OperationError: Failed to install the payment handler."
+                : "AbortError: Failed to install the payment handler.",
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("getStatus($1)", method_name)));
 
