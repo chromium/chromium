@@ -1534,6 +1534,112 @@ const FeatureEntry::Choice kContextualSuggestionsUiImprovementsChoices[] = {
      "OpenLensActionUITweaks"},
 };
 
+const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
+    {"MaxNumFiles", "1"},
+};
+const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
+    {
+        {"NtpComposeboxMaxNumFiles", "1"},
+};
+const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
+    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
+    {"- Next Experience Single Context", kComposeboxNextSingleContext, nullptr},
+    {"- Next Experience for Realbox Next", kComposeboxNextForRealboxNext,
+     nullptr},
+    {"- Next Experience Single Context for Realbox Next",
+     kComposeboxNextSingleContextForRealboxNext, nullptr},
+};
+
+const FeatureEntry::FeatureParam kShowNextRealboxCyclingPlaceholders[] = {
+    {"CyclingPlaceholders", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
+    {"- Show Next Realbox: Cycling placeholders",
+     kShowNextRealboxCyclingPlaceholders, nullptr},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas[] = {
+        {"NtpNextEnableCanvasChipParam", "true"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
+        {"kNtpNextShowStaticRecentTabChipParam", "false"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
+        [] = {
+            {"kNtpNextShowStaticRecentTabChipParam", "false"},
+            {"NtpNextEnableCanvasChipParam", "true"},
+};
+
+const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
+    {"NtpNextDisablementContextMenuParam", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
+    {"- Show Chips UI with a New Client and No Recent Tab Chip in the Steady "
+     "State",
+     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
+     nullptr},
+    {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
+     kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
+    {"- Show Chips UI with a New Client, Canvas Chip, and No Recent Tab Chip "
+     "in the Steady State",
+     kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
+     nullptr},
+    {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
+};
+
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
+    {
+        {"ModuleMinStalenessUpdateTimeInterval", "24h"},
+        {"StaleModulesCountThreshold", "14"},
+};
+
+const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalTesting[] =
+    {
+        {"ModuleMinStalenessUpdateTimeInterval", "1s"},
+        {"StaleModulesCountThreshold", "2"},
+};
+
+const FeatureEntry::FeatureVariation
+    kNtpFeatureOptimizationModuleRemovalVariations[] = {
+        {"- Default Auto-Removal Timing",
+         kNtpFeatureOptimizationModuleRemovalDefault, nullptr},
+        {"- Auto-Removal Timing for Testing",
+         kNtpFeatureOptimizationModuleRemovalTesting, nullptr},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpFeatureOptimizationShortcutsRemovalDefault[] = {
+        {"ShortcutsMinStalenessUpdateTimeInterval", "24h"},
+        {"StaleShortcutsCountThreshold", "60"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpFeatureOptimizationShortcutsRemovalTesting[] = {
+        {"ShortcutsMinStalenessUpdateTimeInterval", "1s"},
+        {"StaleShortcutsCountThreshold", "5"},
+};
+
+const FeatureEntry::FeatureVariation
+    kNtpFeatureOptimizationShortcutsRemovalVariations[] = {
+        {"- Default Auto-Removal Timing",
+         kNtpFeatureOptimizationShortcutsRemovalDefault, nullptr},
+        {"- Auto-Removal Timing for Testing",
+         kNtpFeatureOptimizationShortcutsRemovalTesting, nullptr},
+};
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+
 const FeatureEntry::FeatureParam kOmniboxToolbeltLensActionsZeroInputs[] = {
     {"KeepToolbeltAfterInput", "false"},
     {"ShowLensActionOnNonNtp", "true"},
@@ -1659,111 +1765,6 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
      kOmniboxToolbeltAllActionsZeroTypedInputs, nullptr},
 };
 
-const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
-    {"MaxNumFiles", "1"},
-};
-const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
-    {
-        {"NtpComposeboxMaxNumFiles", "1"},
-};
-const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- Next Experience Single Context", kComposeboxNextSingleContext, nullptr},
-    {"- Next Experience for Realbox Next", kComposeboxNextForRealboxNext,
-     nullptr},
-    {"- Next Experience Single Context for Realbox Next",
-     kComposeboxNextSingleContextForRealboxNext, nullptr},
-};
-
-const FeatureEntry::FeatureParam kShowNextRealboxCyclingPlaceholders[] = {
-    {"CyclingPlaceholders", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
-    {"- Show Next Realbox: Cycling placeholders",
-     kShowNextRealboxCyclingPlaceholders, nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas[] = {
-        {"NtpNextEnableCanvasChipParam", "true"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
-        {"kNtpNextShowStaticRecentTabChipParam", "false"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
-        [] = {
-            {"kNtpNextShowStaticRecentTabChipParam", "false"},
-            {"NtpNextEnableCanvasChipParam", "true"},
-};
-
-const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
-    {"NtpNextDisablementContextMenuParam", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Chips UI with a New Client and No Recent Tab Chip in the Steady "
-     "State",
-     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
-     nullptr},
-    {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
-     kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
-    {"- Show Chips UI with a New Client, Canvas Chip, and No Recent Tab Chip "
-     "in the Steady State",
-     kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
-     nullptr},
-    {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
-};
-
-const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
-    {
-        {"ModuleMinStalenessUpdateTimeInterval", "24h"},
-        {"StaleModulesCountThreshold", "14"},
-};
-
-const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalTesting[] =
-    {
-        {"ModuleMinStalenessUpdateTimeInterval", "1s"},
-        {"StaleModulesCountThreshold", "2"},
-};
-
-const FeatureEntry::FeatureVariation
-    kNtpFeatureOptimizationModuleRemovalVariations[] = {
-        {"- Default Auto-Removal Timing",
-         kNtpFeatureOptimizationModuleRemovalDefault, nullptr},
-        {"- Auto-Removal Timing for Testing",
-         kNtpFeatureOptimizationModuleRemovalTesting, nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpFeatureOptimizationShortcutsRemovalDefault[] = {
-        {"ShortcutsMinStalenessUpdateTimeInterval", "24h"},
-        {"StaleShortcutsCountThreshold", "60"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpFeatureOptimizationShortcutsRemovalTesting[] = {
-        {"ShortcutsMinStalenessUpdateTimeInterval", "1s"},
-        {"StaleShortcutsCountThreshold", "5"},
-};
-
-const FeatureEntry::FeatureVariation
-    kNtpFeatureOptimizationShortcutsRemovalVariations[] = {
-        {"- Default Auto-Removal Timing",
-         kNtpFeatureOptimizationShortcutsRemovalDefault, nullptr},
-        {"- Auto-Removal Timing for Testing",
-         kNtpFeatureOptimizationShortcutsRemovalTesting, nullptr},
-};
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
     {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
@@ -6508,12 +6509,6 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxContextualSearchOnFocusSuggestionsVariations,
          "OmniboxContextualSearchOnFocusSuggestions")},
 
-    {"omnibox-contextual-suggestions",
-     flag_descriptions::kOmniboxContextualSuggestionsName,
-     flag_descriptions::kOmniboxContextualSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
-                            kOmniboxContextualSuggestions)},
-
     {"searchbox-embedded-permission",
      flag_descriptions::kEmbeddedPermissionEnabledName,
      flag_descriptions::kEmbeddedPermissionEnabledDescription, kOsDesktop,
@@ -6535,13 +6530,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputName,
      flag_descriptions::kHideAimOmniboxEntrypointOnUserInputDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideAimEntrypointOnUserInput)},
-
-    {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
-     flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox_feature_configs::Toolbelt::kOmniboxToolbelt,
-         kOmniboxToolbeltVariations,
-         "OmniboxToolbelt")},
 
     {"omnibox-allow-ai-mode-matches",
      flag_descriptions::kOmniboxAllowAiModeMatchesName,
@@ -6624,6 +6612,20 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox_feature_configs::AdjustOmniboxIndent::kAdjustOmniboxIndent)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
+
+    {"omnibox-contextual-suggestions",
+     flag_descriptions::kOmniboxContextualSuggestionsName,
+     flag_descriptions::kOmniboxContextualSuggestionsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
+                            kOmniboxContextualSuggestions)},
+
+    {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
+     flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::Toolbelt::kOmniboxToolbelt,
+         kOmniboxToolbeltVariations,
+         "OmniboxToolbelt")},
 
     {"aim-server-eligibility",
      flag_descriptions::kOmniboxAimServerEligibilityName,
