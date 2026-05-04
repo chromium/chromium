@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/osauth/impl/auth_factor_configuration_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/base/backoff_entry.h"
 
@@ -67,6 +68,10 @@ class PasswordSyncTokenVerifier : public KeyedService,
   void RecheckAfter(base::TimeDelta delay);
   // Init sync token.
   void CreateTokenAsync();
+  // Perform the actual token check.
+  void PerformTokenCheck();
+  // Perform the actual token fetch.
+  void PerformFetchToken();
 
   const raw_ref<PrefService> local_state_;
 
@@ -74,6 +79,8 @@ class PasswordSyncTokenVerifier : public KeyedService,
   const raw_ptr<const user_manager::User> primary_user_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
   net::BackoffEntry retry_backoff_;
+
+  AuthFactorConfigurationHelper auth_factor_configuration_helper_;
 
   base::WeakPtrFactory<PasswordSyncTokenVerifier> weak_ptr_factory_{this};
 

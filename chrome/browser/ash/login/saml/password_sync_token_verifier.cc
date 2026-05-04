@@ -7,10 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -77,15 +79,27 @@ void PasswordSyncTokenVerifier::CreateTokenAsync() {
 }
 
 void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
-  // TODO: b/498965905 - Only check password sync when the user has a gaia
-  // password.
-
   // In-session password change is as of now the only way to trigger the sync
   // token update. We do not need to poll if this feature is not enabled.
   PrefService* prefs = primary_profile_->GetPrefs();
   if (!prefs->GetBoolean(prefs::kSamlInSessionPasswordChangeEnabled)) {
     return;
   }
+
+  if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
+    auth_factor_configuration_helper_.CheckHasOnlinePasswordAndContinue(
+        primary_user_->GetAccountId(),
+        /*on_has_online_password=*/
+        base::BindOnce(&PasswordSyncTokenVerifier::PerformTokenCheck,
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*on_no_online_password=*/base::DoNothing());
+    return;
+  }
+
+  PerformTokenCheck();
+}
+
+void PasswordSyncTokenVerifier::PerformTokenCheck() {
   DCHECK(!password_sync_token_fetcher_);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
@@ -118,6 +132,20 @@ void PasswordSyncTokenVerifier::FetchSyncTokenOnReauth() {
     return;
   }
 
+  if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
+    auth_factor_configuration_helper_.CheckHasOnlinePasswordAndContinue(
+        primary_user_->GetAccountId(),
+        /*on_has_online_password=*/
+        base::BindOnce(&PasswordSyncTokenVerifier::PerformFetchToken,
+                       weak_ptr_factory_.GetWeakPtr()),
+        /*on_no_online_password=*/base::DoNothing());
+    return;
+  }
+
+  PerformFetchToken();
+}
+
+void PasswordSyncTokenVerifier::PerformFetchToken() {
   DCHECK(!password_sync_token_fetcher_);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();

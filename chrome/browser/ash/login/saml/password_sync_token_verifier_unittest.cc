@@ -58,7 +58,9 @@ class PasswordSyncTokenVerifierTest : public testing::TestWithParam<bool> {
   void CreatePasswordSyncTokenVerifier();
   void DestroyPasswordSyncTokenVerifier();
   void OnTokenVerified(bool is_verified);
-  bool PasswordSyncTokenFetcherIsAllocated();
+  bool IsPasswordSyncTokenFetcherInitialized();
+  void CheckForPasswordNotInSyncAndWait();
+  void FetchSyncTokenOnReauthAndWait();
 
   const AccountId saml_login_account_id_ =
       AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
@@ -99,6 +101,7 @@ PasswordSyncTokenVerifierTest::~PasswordSyncTokenVerifierTest() {
 
 void PasswordSyncTokenVerifierTest::SetUp() {
   FakeUserDataAuthClient::InitializeFake();
+  FakeUserDataAuthClient::Get()->set_add_default_password_factor(true);
   ASSERT_TRUE(profile_manager_.SetUp());
   primary_profile_ = profile_manager_.CreateTestingProfile("test1");
 
@@ -111,6 +114,10 @@ void PasswordSyncTokenVerifierTest::SetUp() {
   ASSERT_TRUE(user_manager_->GetActiveUser());
   primary_profile_->GetPrefs()->SetBoolean(
       prefs::kSamlInSessionPasswordChangeEnabled, true);
+  // User needs to exist in FakeUserDataAuthClient to clear the auth factors.
+  const auto account_id =
+      cryptohome::CreateAccountIdentifierFromAccountId(saml_login_account_id_);
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_id);
 }
 
 void PasswordSyncTokenVerifierTest::CreatePasswordSyncTokenVerifier() {
@@ -130,9 +137,29 @@ void PasswordSyncTokenVerifierTest::OnTokenVerified(bool is_verified) {
   verifier_->OnTokenVerified(is_verified);
 }
 
+bool PasswordSyncTokenVerifierTest::IsPasswordSyncTokenFetcherInitialized() {
+  return !!verifier_->password_sync_token_fetcher_;
+}
+
+void PasswordSyncTokenVerifierTest::CheckForPasswordNotInSyncAndWait() {
+  verifier_->CheckForPasswordNotInSync();
+  // We use `RunUntilIdle` to wait for the async auth factor check that
+  // happens before the token check when kManagedLocalPinAndPassword
+  // feature is enabled.
+  test_environment_.RunUntilIdle();
+}
+
+void PasswordSyncTokenVerifierTest::FetchSyncTokenOnReauthAndWait() {
+  verifier_->FetchSyncTokenOnReauth();
+  // We use `RunUntilIdle` to wait for the async auth factor check that
+  // happens before the token fetch when kManagedLocalPinAndPassword
+  // feature is enabled.
+  test_environment_.RunUntilIdle();
+}
+
 TEST_P(PasswordSyncTokenVerifierTest, EmptySyncToken) {
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(false);
   EXPECT_TRUE(user_manager_->GetActiveUser()->force_online_signin());
 }
@@ -140,7 +167,7 @@ TEST_P(PasswordSyncTokenVerifierTest, EmptySyncToken) {
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationPassed) {
   known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(true);
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
 }
@@ -148,7 +175,7 @@ TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationPassed) {
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationFailed) {
   known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(false);
   EXPECT_TRUE(user_manager_->GetActiveUser()->force_online_signin());
 }
@@ -156,7 +183,7 @@ TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationFailed) {
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationAfterDelay) {
   known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(true);
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
   test_environment_.FastForwardBy(kSyncTokenCheckInterval);
@@ -167,7 +194,7 @@ TEST_P(PasswordSyncTokenVerifierTest, SyncTokenValidationAfterDelay) {
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenNoRecheckExecuted) {
   known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(true);
   EXPECT_FALSE(user_manager_->GetActiveUser()->force_online_signin());
   known_user_->SetPasswordSyncToken(saml_login_account_id_, std::string());
@@ -180,7 +207,7 @@ TEST_P(PasswordSyncTokenVerifierTest, PasswordChangePolicyNotSet) {
       prefs::kSamlInSessionPasswordChangeEnabled, false);
   known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
   CreatePasswordSyncTokenVerifier();
-  verifier_->CheckForPasswordNotInSync();
+  CheckForPasswordNotInSyncAndWait();
   OnTokenVerified(true);
   known_user_->SetPasswordSyncToken(saml_login_account_id_, std::string());
   test_environment_.FastForwardBy(kSyncTokenCheckInterval);
@@ -189,7 +216,7 @@ TEST_P(PasswordSyncTokenVerifierTest, PasswordChangePolicyNotSet) {
 
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenNotSet) {
   CreatePasswordSyncTokenVerifier();
-  verifier_->FetchSyncTokenOnReauth();
+  FetchSyncTokenOnReauthAndWait();
   verifier_->OnTokenFetched(kSyncToken);
   EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
@@ -197,7 +224,7 @@ TEST_P(PasswordSyncTokenVerifierTest, SyncTokenNotSet) {
 
 TEST_P(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
   CreatePasswordSyncTokenVerifier();
-  verifier_->FetchSyncTokenOnReauth();
+  FetchSyncTokenOnReauthAndWait();
   verifier_->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kGetNoList);
   verifier_->OnTokenCreated(kSyncToken);
   EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
@@ -206,7 +233,7 @@ TEST_P(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
 
 TEST_P(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
   CreatePasswordSyncTokenVerifier();
-  verifier_->FetchSyncTokenOnReauth();
+  FetchSyncTokenOnReauthAndWait();
   // Token API not initilized for the user - request token creation.
   verifier_->OnTokenFetched(std::string());
   verifier_->OnTokenCreated(kSyncToken);
@@ -232,6 +259,37 @@ TEST_P(PasswordSyncTokenVerifierTest, ValidateSyncTokenHistogram) {
   verifier_->RecordTokenPollingStart();
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.SAML.InSessionPasswordSyncEvent", 0, 1);
+}
+
+TEST_P(PasswordSyncTokenVerifierTest, NoGaiaPasswordWithFlagEnabled) {
+  if (!GetParam()) {
+    return;
+  }
+  // Remove all auth factors including the default Gaia password.
+  FakeUserDataAuthClient::TestApi::Get()->ClearAuthFactors(
+      cryptohome::CreateAccountIdentifierFromAccountId(saml_login_account_id_));
+
+  known_user_->SetPasswordSyncToken(saml_login_account_id_, kSyncToken);
+  CreatePasswordSyncTokenVerifier();
+  CheckForPasswordNotInSyncAndWait();
+
+  // Fetcher should not be allocated because there is no Gaia password.
+  EXPECT_FALSE(IsPasswordSyncTokenFetcherInitialized());
+}
+
+TEST_P(PasswordSyncTokenVerifierTest, NoGaiaPasswordOnReauthWithFlagEnabled) {
+  if (!GetParam()) {
+    return;
+  }
+  // Remove all auth factors including the default Gaia password.
+  FakeUserDataAuthClient::TestApi::Get()->ClearAuthFactors(
+      cryptohome::CreateAccountIdentifierFromAccountId(saml_login_account_id_));
+
+  CreatePasswordSyncTokenVerifier();
+  FetchSyncTokenOnReauthAndWait();
+
+  // Fetcher should not be allocated because there is no Gaia password.
+  EXPECT_FALSE(IsPasswordSyncTokenFetcherInitialized());
 }
 
 INSTANTIATE_TEST_SUITE_P(PasswordSyncTokenVerifierTestInstantiation,
