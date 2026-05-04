@@ -486,7 +486,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "asan",
-            "lsan",
             "fuzzer",
             "v8_sandbox_testing",
             "release_builder",
