@@ -156,7 +156,7 @@ extension UIView {
     }
     set {
       objc_setAssociatedObject(
-        self, UIView.MirrorViewInWindowKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
+        self, UIView.MirrorViewInWindowKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
 
