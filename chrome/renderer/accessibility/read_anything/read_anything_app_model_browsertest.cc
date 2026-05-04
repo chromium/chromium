@@ -2513,3 +2513,89 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_ResetsMappingState) {
   EXPECT_TRUE(model().text_to_ax_map().empty());
   EXPECT_TRUE(model().text_to_ax_map_index().empty());
 }
+
+TEST_F(ReadAnythingAppModelTest,
+       MapRenderedTextToTree_ClearsPreviousDataOnNewCall) {
+  // Setup a valid tree with text and flatten it to populate data.
+  ui::AXTreeUpdate update1;
+  test::SetUpdateTreeID(&update1, tree_id_);
+  update1.root_id = 1;
+  update1.nodes = {test::TextNode(1, u"Existing Text")};
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update1)});
+  model().SetActiveTreeId(tree_id_);
+
+  // Execute the flattening logic via MapRenderedTextToTree
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree({"Existing Text"});
+
+  // Verify flattened tree data has been populated.
+  ASSERT_EQ(model().global_ax_tree_text(), u"Existing Text");
+  ASSERT_EQ(model().flattened_ax_tree_nodes().size(), 1u);
+
+  // Setup a new "empty" tree.
+  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, tree_id_2);
+  update2.root_id = 10;
+  update2.nodes = {
+      test::GenericContainerNode(10)};  // Root with no text content
+  ApplyAccessibilityUpdates(tree_id_2, {std::move(update2)});
+  model().SetActiveTreeId(tree_id_2);
+
+  // Execute the flattening logic via MapRenderedTextToTree
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree({});
+
+  // Verify that global_ax_tree_text_ and flattened_ax_tree_nodes_ were
+  // cleared.
+  EXPECT_TRUE(model().global_ax_tree_text().empty());
+  EXPECT_TRUE(model().flattened_ax_tree_nodes().empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, FlattenAXTree_BuildsContiguousString) {
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+
+  // Create a tree structure:
+  //      1 (root)
+  //     / \
+  //    2   3 (container)
+  //         \
+  //          4 (text)
+
+  ui::AXNodeData node1 = test::GenericContainerNode(1);
+  node1.child_ids = {2, 3};
+  ui::AXNodeData node2 = test::TextNode(2, u"Hello");
+  ui::AXNodeData node3 = test::GenericContainerNode(3);
+  node3.child_ids = {4};
+  ui::AXNodeData node4 = test::TextNode(4, u" world!");
+  update.nodes = {std::move(node1), std::move(node2), std::move(node3),
+                  std::move(node4)};
+
+  // Process the tree update and set it as the model's active tree.
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  model().SetActiveTreeId(tree_id_);
+
+  // Execute the flattening logic via MapRenderedTextToTree
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree({});
+
+  // Verify the global string concatenation matches the expected string.
+  std::u16string expected_text = u"Hello world!";
+  EXPECT_EQ(model().global_ax_tree_text(), expected_text);
+
+  // Verify the mapping segments (metadata)
+  const auto& segments = model().flattened_ax_tree_nodes();
+  ASSERT_EQ(segments.size(), 2u);
+
+  // First segment: "Hello"
+  EXPECT_EQ(segments[0].id, 2);
+  EXPECT_EQ(segments[0].text, u"Hello");
+  EXPECT_EQ(segments[0].start_offset, 0u);
+
+  // Second segment: " world!"
+  EXPECT_EQ(segments[1].id, 4);
+  EXPECT_EQ(segments[1].text, u" world!");
+  EXPECT_EQ(segments[1].start_offset, 5u);  // Starts after "Hello"
+}

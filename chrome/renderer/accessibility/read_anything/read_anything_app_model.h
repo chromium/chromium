@@ -156,6 +156,18 @@ class ReadAnythingAppModel {
     int end;
   };
 
+  // Represents a segment of the flattened |global_ax_tree_text_| and the AXNode
+  // it comes from. This metadata allows the mapping algorithm for text
+  // selection to translate a character range found in |global_ax_tree_text_|
+  // back into its original AXNode and relative offset.
+  struct AXNodeSegment {
+    ui::AXNodeID id;
+    std::u16string text;
+    // The 0-based starting index of this node's text within the
+    // concatenated |global_ax_tree_text_| string.
+    size_t start_offset;
+  };
+
   // Represents a grouping of AXTreeUpdates received in the same accessibility
   // event.
   using Updates = std::vector<ui::AXTreeUpdate>;
@@ -434,6 +446,13 @@ class ReadAnythingAppModel {
   std::vector<MappingSegment> GetAXMappingForText(
       const std::string& text) const;
 
+  const std::u16string& global_ax_tree_text() const {
+    return global_ax_tree_text_;
+  }
+  const std::vector<AXNodeSegment>& flattened_ax_tree_nodes() const {
+    return flattened_ax_tree_nodes_;
+  }
+
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool page_finished_loading) {
     page_finished_loading_ = page_finished_loading;
@@ -674,6 +693,10 @@ class ReadAnythingAppModel {
   std::map<std::string, std::vector<AnchorData>> CollectAnchorsFromAXTree(
       ui::AXSerializableTree* tree);
 
+  // Traverses the AXTree to create a flattened text representation for the text
+  // selection mapping algorithm.
+  void FlattenAXTree(ui::AXSerializableTree* tree);
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
 
@@ -825,6 +848,17 @@ class ReadAnythingAppModel {
   // This index ensures that if "Hello" appears twice, the first call gets the
   // first occurrence and the second call gets the second.
   mutable std::map<std::string, size_t> text_to_ax_map_index_;
+
+  // A contiguous string representation of all leaf text nodes in the original
+  // page's AXTree, in reading order. This serves as the global "search space"
+  // for the select text mapping algorithm.
+  std::u16string global_ax_tree_text_;
+
+  // A mapping that links character offsets in |global_ax_tree_text_| back to
+  // their source AXNodes. Each segment stores the AXNodeID and its starting
+  // position within the global string. This is used to translate mapping
+  // results back into AXTree coordinates.
+  std::vector<AXNodeSegment> flattened_ax_tree_nodes_;
 
   // The distillation method that will be used for the next content update.
   DistillationMethod next_distillation_method_;

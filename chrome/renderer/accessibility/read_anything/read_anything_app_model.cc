@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <stack>
 #include <string>
 #include <utility>
 
@@ -1382,6 +1383,8 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   text_to_ax_map_index_.clear();
   should_map_rendered_text_to_tree_for_readability_ = false;
 
+  FlattenAXTree(tree);
+
   // TODO: crbug.com/507448617 - Implement mapping algorithm
   // The mapping algorithm results are populated into |text_to_ax_map_|, where
   // each block string maps to a vector of its occurrences in the page.
@@ -1390,6 +1393,61 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   // linked to their respective AXNodes in the order they appear in the
   // distilled DOM.
   return true;
+}
+
+// TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text
+// traversal methods.
+void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
+  flattened_ax_tree_nodes_.clear();
+  global_ax_tree_text_.clear();
+  if (!tree || !tree->root()) {
+    return;
+  }
+
+  std::stack<ui::AXNode*> stack;
+  stack.push(tree->root());
+
+  // Traverse tree in pre-order DFS to build a contiguous text representation.
+  while (!stack.empty()) {
+    ui::AXNode* node = stack.top();
+    stack.pop();
+
+    // Check if current node should be added to |global_ax_tree_text_|.
+    // We use IsLeaf() because it identifies nodes that the accessibility engine
+    // considers semantic units (like StaticText). This automatically skips
+    // "virtual" internal layout nodes like kInlineTextBox (negative IDs)
+    // while keeping structural nodes that contain text.
+    if (node->IsLeaf()) {
+      // Only process nodes that actually contribute readable
+      // text. This helper (from read_anything_node_utils.cc) filters out
+      // decorative/empty tags that shouldn't be part of the text alignment.
+      if (!a11y::IsTextForReadAnything(node, is_pdf_, IsDocs())) {
+        continue;
+      }
+
+      // Use a11y::GetTextContent to get the node's normalized text. Add this
+      // text to the global string and record the node's position.
+      std::u16string node_text = a11y::GetTextContent(node, is_pdf_, IsDocs());
+      if (!node_text.empty()) {
+        flattened_ax_tree_nodes_.push_back(
+            {node->id(), node_text, global_ax_tree_text_.length()});
+        global_ax_tree_text_ += node_text;
+      }
+      // Since this is a leaf node we don't need to process its children.
+      continue;
+    }
+
+    // Add unignored descendants to the stack for processing.
+    std::vector<ui::AXNode*> children_to_push;
+    for (auto it = node->UnignoredChildrenBegin();
+         it != node->UnignoredChildrenEnd(); ++it) {
+      children_to_push.push_back(&*it);
+    }
+    // Push children in reverse order for pre-order traversal.
+    for (ui::AXNode* child : base::Reversed(children_to_push)) {
+      stack.push(child);
+    }
+  }
 }
 
 std::vector<ReadAnythingAppModel::MappingSegment>
