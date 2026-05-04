@@ -8010,6 +8010,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time it takes to execute SocketPosix::DoRead. Emitted at the end of
     DoRead. Subsampled to 1/1000.
+
+    A few words on Rationale. This histogram can be used as an exemplary task
+    duration on the network thread. Sometimes it will take several milliseconds
+    to do a socket read due to OS state, like thrashing, or just randomly
+    descheduling the task from the CPU. This DoReadDuration will show how often
+    these events happen across the fleet. Regardless of its slowness in the
+    field, the assumption is that the read duration cannot be realistically
+    improved in the app. In other words, this duration is 'good enough' for any
+    task on this thread. This will be a useful baseline when compared to
+    duration of other tasks on the network thread, such as
+    OnHandshakeIOCompleteDuration.
   </summary>
 </histogram>
 
