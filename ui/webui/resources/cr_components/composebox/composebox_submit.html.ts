@@ -14,6 +14,7 @@ export function getHtml(this: ComposeboxSubmitElement) {
 <div id="submitContainer" class="icon-fade" part="submit"
     tabindex="-1" @click="${this.onSubmitClick_}"
     @focusin="${this.onSubmitFocusin_}">
+  <div id="submitEnergy" part="button-energy"></div>
   <div id="submitOverlay" part="submit-overlay"
       title="${this.submitButtonTitle || this.i18n('composeboxSubmitButtonTitle')}">
   </div>
