@@ -77,7 +77,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   void StopBeginFrame();
 
   // Implements base::PowerSuspendObserver.
-  void OnSuspend() override;
   void OnResume() override;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;

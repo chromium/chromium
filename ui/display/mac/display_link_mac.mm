@@ -16,7 +16,7 @@
 namespace ui {
 
 // For testing only. Create CADisplayLink in the GPU process.
-BASE_FEATURE(kCADisplayLinkinGpu, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCADisplayLinkInGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac
@@ -52,12 +52,15 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
 
   // CADisplayLink is available only for MacOS 14.0+.
   if (@available(macos 14.0, *)) {
-    if (base::FeatureList::IsEnabled(kCADisplayLinkinGpu)) {
+    if (base::FeatureList::IsEnabled(kCADisplayLinkInGpu)) {
       return CADisplayLinkMac::GetForDisplay(display_id);
     }
   }
 
   if (SupportsDisplayLinkMacInBrowser()) {
+    if (CADisplayLinkMac::IsValidInGpuProcess(display_id)) {
+      return CADisplayLinkMac::GetForDisplay(display_id);
+    }
     return ExternalDisplayLinkMac::GetForDisplay(display_id);
   }
 
@@ -73,6 +76,10 @@ std::unique_ptr<PresentationCallbackMac>
 DisplayLinkMac::RegisterPresentationCallback(
     PresentationCallbackMac::Callback callback) {
   NOTREACHED();
+}
+
+bool DisplayLinkMac::NotifyEventAndCheckValidity(int64_t display_id) {
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -109,6 +109,18 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   // AddSupportedDisplayLinkId().
   static bool IsDisplayLinkAllowed(int64_t display_id);
 
+  // CADisplayLink is not designed for multi-process use and can become
+  // non-functional in the GPU process following a power state change or a
+  // system refresh rate update.
+  //
+  // To handle this, CADisplayLinkMac is used in the GPU process by default,
+  // but if it becomes invalidated, the system falls back to creating a
+  // CADisplayLink in the Browser process, accessed via ExternalDisplayLinkMac.
+  //
+  // Returns true if the display link instance is still valid after a power
+  // event or refresh rate change.
+  virtual bool NotifyEventAndCheckValidity(int64_t display_id);
+
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the
   //   returned VSyncCallbackMac object is destroyed.

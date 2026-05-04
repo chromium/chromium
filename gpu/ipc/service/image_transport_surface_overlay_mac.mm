@@ -142,12 +142,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   no_post_task_for_callback = AllowCallbackWithoutPostTask();
 
   if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-    bool is_system_suspended =
-        base::PowerMonitor::GetInstance()
-            ->AddPowerSuspendObserverAndReturnSuspendedState(this);
-    if (is_system_suspended) {
-      OnSuspend();
-    }
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 #endif
 
@@ -345,8 +340,15 @@ void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id,
 }
 
 void ImageTransportSurfaceOverlayMacEGL::RefreshRateChangedOnSameDisplay() {
-  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
-  // and re-create a new displayLink if needed.
+  if (!ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return;
+  }
+
+  if (display_link_mac_ &&
+      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+    // Recreate a new DisplayLink
+    SetVSyncDisplayID(display_id_, /*force_update=*/true);
+  }
 }
 
 base::TimeTicks ImageTransportSurfaceOverlayMacEGL::GetDisplaytime(
@@ -421,17 +423,12 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
   }
 }
 
-void ImageTransportSurfaceOverlayMacEGL::OnSuspend() {
-  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
-  // and destroy the current displayLink if needed.
-}
-
 void ImageTransportSurfaceOverlayMacEGL::OnResume() {
-  // Only needs the first power suspend-resume event.
-  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-
-  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
-  // and re-create a new displayLink if needed.
+  if (display_link_mac_ &&
+      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+    // Recreate a new DisplayLink.
+    SetVSyncDisplayID(display_id_, /*force_update=*/true);
+  }
 }
 #endif
 }  // namespace gpu

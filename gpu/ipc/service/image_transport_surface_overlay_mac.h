@@ -91,7 +91,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
 
 #if BUILDFLAG(IS_MAC)
   // Implements base::PowerSuspendObserver.
-  void OnSuspend() override;
   void OnResume() override;
 
   // The expected display time from CVDisplayLinkCallback for the frame being

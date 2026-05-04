@@ -34,6 +34,13 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
 
   base::TimeTicks GetCurrentTime() const override;
 
+  // DisplayLinkMac implementation:
+  bool NotifyEventAndCheckValidity(int64_t display_id) override;
+
+  // Returns true if CADisplayLink is still working in the GPU process for the
+  // specified display.
+  static bool IsValidInGpuProcess(int64_t display_id);
+
  private:
   explicit CADisplayLinkMac(CGDirectDisplayID display_id);
   ~CADisplayLinkMac() override;

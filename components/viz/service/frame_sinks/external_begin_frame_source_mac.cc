@@ -73,12 +73,7 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
                      << "::ExternalBeginFrameSourceMac() ID:" << display_id;
 
   if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-    bool is_system_suspended =
-        base::PowerMonitor::GetInstance()
-            ->AddPowerSuspendObserverAndReturnSuspendedState(this);
-    if (is_system_suspended) {
-      OnSuspend();
-    }
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   if (display_id == display::kInvalidDisplayId) {
@@ -209,13 +204,19 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
 }
 
 void ExternalBeginFrameSourceMac::RefreshRateChangedOnSameDisplay() {
+  if (!ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return;
+  }
+
   // Forward the notification to output surface for frame presentation.
   output_surface_->RefreshRateChangedOnSameDisplay();
 
-  // TODO: For CADisplayLink only. Notify DisplayLinkMac and recreate a new
-  // displayLink if needed.
+  if (display_link_mac_ &&
+      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+    // Recreate a new one.
+    SetVSyncDisplayID(display_id_, /*force_update=*/true);
+  }
 }
-
 void ExternalBeginFrameSourceMac::StartBeginFrame() {
   if (display_link_mac_) {
     DCHECK(!vsync_callback_mac_);
@@ -507,17 +508,11 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
   return supported_intervals;
 }
 
-void ExternalBeginFrameSourceMac::OnSuspend() {
-  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
-  // and destroy the current displayLink if needed.
-}
-
 void ExternalBeginFrameSourceMac::OnResume() {
-  // Only needs the first power suspend-resume event.
-  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
-
-  // TODO(crbug.com/345275139): For CADisplayLink only. Notify DisplayLinkMac
-  // and re-create a new displayLink if needed.
+  if (display_link_mac_ &&
+      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+    // Recreate a new one.
+    SetVSyncDisplayID(display_id_, /*force_update=*/true);
+  }
 }
-
 }  // namespace viz
