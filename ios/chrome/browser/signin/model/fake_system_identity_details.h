@@ -26,6 +26,9 @@ using GetAccessTokenCallback =
     base::RepeatingCallback<id<RefreshAccessTokenError>(
         SystemIdentityManager::AccessTokenCallback)>;
 
+using GetAccessTokenRequestCallback = base::RepeatingCallback<void(
+    SystemIdentityManager::AccessTokenRequestCallback)>;
+
 // Helper object used by FakeSystemIdentityManager to attach state to
 // a SystemIdentity object via an association.
 @interface FakeSystemIdentityDetails : NSObject
@@ -51,6 +54,9 @@ using GetAccessTokenCallback =
 @property(nonatomic, strong) FakeRefreshAccessTokenError* error;
 
 @property(nonatomic) GetAccessTokenCallback getAccessTokenCallback;
+
+@property(nonatomic)
+    GetAccessTokenRequestCallback getAccessTokenRequestCallback;
 
 // Allows callers to modify internal capability state mappings for tests.
 @property(nonatomic, readonly)

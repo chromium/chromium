@@ -123,6 +123,8 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // account is requested.
   void SetGetAccessTokenCallback(const CoreAccountId& accountId,
                                  GetAccessTokenCallback callback);
+  void SetGetAccessTokenCallback(const CoreAccountId& accountId,
+                                 GetAccessTokenRequestCallback callback);
 
   // Simulates a failure next time the access token for `identity` would be
   // fetched and return the error that would be sent to the observers. The
@@ -167,6 +169,13 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final;
+  void GetAccessToken(id<SystemIdentity> identity,
+                      const std::string& client_id,
+                      const std::set<std::string>& scopes,
+                      AccessTokenRequestCallback callback) final;
   void FetchAvatarForIdentity(id<SystemIdentity> identity) final;
   UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity) final;
   void GetHostedDomain(id<SystemIdentity> identity,
@@ -203,8 +212,10 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                            bool removed_by_user);
 
   // Helper used to implement the asynchronous part of `GetAccessToken`.
+  void GetAccessTokenAsyncLegacy(id<SystemIdentity> identity,
+                                 AccessTokenCallback callback);
   void GetAccessTokenAsync(id<SystemIdentity> identity,
-                           AccessTokenCallback callback);
+                           AccessTokenRequestCallback callback);
 
   // Helper used to implement the asynchronous part of `FetchAvatarForIdentity`.
   void FetchAvatarForIdentityAsync(id<SystemIdentity> identity);
