@@ -4444,6 +4444,7 @@ if (!is_android) {
         "../browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac_browsertest.mm",
         "../browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.cc",
         "../browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h",
+        "../browser/net/chrome_mojo_proxy_resolver_mac_browsertest.cc",
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/shell_integration_mac_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",

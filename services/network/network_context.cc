@@ -2865,12 +2865,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::move(params_->proxy_resolver_factory));
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (params_->system_proxy_resolver) {
-    builder.SetMojoWindowsSystemProxyResolver(
+    builder.SetMojoSystemProxyResolver(
         std::move(params_->system_proxy_resolver));
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (params_->dhcp_wpad_url_client) {
