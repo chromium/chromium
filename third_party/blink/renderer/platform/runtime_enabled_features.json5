@@ -593,14 +593,6 @@
       status: "stable",
     },
     {
-      // Enables the new behavior for this spec change:
-      // https://github.com/whatwg/html/pull/11457
-      // https://issues.chromium.org/issues/433545121
-      // https://chromestatus.com/feature/5179013869993984
-      name: "AncestorRevealingNewSpec",
-      status: "stable",
-    },
-    {
       // This is a bug fix for rendering a missing focus ring on <a> elements.
       // Shipping in M147, safe to remove in M150.
       name: "AnchorFocusRingFix",

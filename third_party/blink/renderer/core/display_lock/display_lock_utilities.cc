@@ -877,87 +877,9 @@ bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
          !context->HadLifecycleUpdateSinceLastUnlock();
 }
 
-namespace {
-
-// This method follows the old spec and will be removed, hence the "Legacy"
-// name.
-bool LegacyExpandDetailsAncestors(const Node& node) {
-  // Since setting the open attribute could fire synchronous events (e.g.
-  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
-  // first iterate details elements and then open them all.
-  HeapVector<Member<HTMLDetailsElement>> details_to_open;
-
-  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
-    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
-      // If the active match is inside the <summary> of a <details>, then we
-      // shouldn't expand the <details> because the active match is already
-      // visible.
-      bool inside_summary = false;
-      Element& summary = details->MainSummary();
-      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
-        if (&ancestor == &summary) {
-          inside_summary = true;
-          break;
-        }
-      }
-
-      if (!inside_summary &&
-          !details->FastHasAttribute(html_names::kOpenAttr)) {
-        details_to_open.push_back(details);
-      }
-    }
-  }
-
-  for (HTMLDetailsElement* details : details_to_open) {
-    details->SetBooleanAttribute(html_names::kOpenAttr, true);
-  }
-
-  return details_to_open.size();
-}
-
-// This method follows the old spec and will be removed, hence the "Legacy"
-// name.
-bool LegacyRevealHiddenUntilFoundAncestors(const Node& node) {
-  // Since setting the open attribute could fire synchronous events (e.g.
-  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
-  // first iterate details elements and then open them all.
-  HeapVector<Member<HTMLElement>> elements_to_reveal;
-
-  for (Node& parent : AncestorTraversal<FlatTreeTraversal>(&node, true)) {
-    if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
-      if (EqualIgnoringAsciiCase(
-              element->FastGetAttribute(html_names::kHiddenAttr),
-              keywords::kUntilFound)) {
-        elements_to_reveal.push_back(element);
-      }
-    }
-  }
-
-  for (HTMLElement* element : elements_to_reveal) {
-    element->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
-  }
-
-  for (HTMLElement* element : elements_to_reveal) {
-    element->removeAttribute(html_names::kHiddenAttr);
-  }
-
-  return elements_to_reveal.size();
-}
-
-}  // namespace
-
 // static
 DisplayLockUtilities::RevealResult
 DisplayLockUtilities::RevealAutoExpandableAncestors(const Node& target) {
-  if (!RuntimeEnabledFeatures::AncestorRevealingNewSpecEnabled()) {
-    RevealResult reveal_result;
-    reveal_result.revealed_details = LegacyExpandDetailsAncestors(target);
-    reveal_result.revealed_hidden_until_found =
-        LegacyRevealHiddenUntilFoundAncestors(target);
-    return reveal_result;
-  }
-
   // https://html.spec.whatwg.org/#ancestor-revealing-algorithm
   enum class AncestorType {
     kDetails = 0,
