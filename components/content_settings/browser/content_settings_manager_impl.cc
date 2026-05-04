@@ -5,21 +5,20 @@
 #include "components/content_settings/browser/content_settings_manager_impl.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/thread_pool.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
-#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
@@ -32,11 +31,13 @@ namespace content_settings {
 namespace {
 using StorageType = mojom::ContentSettingsManager::StorageType;
 
-void OnStorageAccessed(content::RenderFrameHost* render_frame_host,
+void OnStorageAccessed(const content::GlobalRenderFrameHostToken& frame_token,
                        const GURL& origin_url,
                        const GURL& top_origin_url,
                        bool blocked_by_policy,
                        page_load_metrics::StorageType storage_type) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromFrameToken(frame_token);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
@@ -52,7 +53,7 @@ void OnStorageAccessed(content::RenderFrameHost* render_frame_host,
   }
 }
 
-void NotifyStorageAccess(content::RenderFrameHost* rfh,
+void NotifyStorageAccess(const content::GlobalRenderFrameHostToken& frame_token,
                          StorageType storage_type,
                          const url::Origin& top_frame_origin,
                          bool allowed) {
@@ -70,6 +71,12 @@ void NotifyStorageAccess(content::RenderFrameHost* rfh,
         return false;
     }
   })();
+
+  auto* rfh = content::RenderFrameHost::FromFrameToken(frame_token);
+
+  if (!rfh) {
+    return;
+  }
 
   auto metrics_type =
       ([storage_type]() -> std::optional<page_load_metrics::StorageType> {
@@ -91,15 +98,21 @@ void NotifyStorageAccess(content::RenderFrameHost* rfh,
 
   if (should_notify_pscs) {
     PageSpecificContentSettings::StorageAccessed(
-        storage_type, rfh->GetGlobalFrameToken(), rfh->GetStorageKey(),
-        !allowed);
+        storage_type, frame_token, rfh->GetStorageKey(), !allowed);
   }
 
   if (metrics_type) {
-    OnStorageAccessed(rfh, rfh->GetLastCommittedURL(),
+    OnStorageAccessed(frame_token, rfh->GetLastCommittedURL(),
                       top_frame_origin.GetURL(), !allowed,
                       metrics_type.value());
   }
+}
+
+void OnContentBlockedOnUI(
+    const content::GlobalRenderFrameHostToken& frame_token,
+    ContentSettingsType type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PageSpecificContentSettings::ContentBlocked(frame_token, type);
 }
 
 }  // namespace
@@ -113,18 +126,21 @@ void ContentSettingsManagerImpl::Create(
         receiver,
     std::unique_ptr<Delegate> delegate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      delegate->GetCookieSettings(render_process_host->GetBrowserContext());
-  mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new ContentSettingsManagerImpl(
-          render_process_host->GetDeprecatedID(), std::move(delegate),
-          std::move(cookie_settings))),
-      std::move(receiver));
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
+                                render_process_host->GetDeprecatedID(),
+                                std::move(receiver),
+                                delegate->GetCookieSettings(
+                                    render_process_host->GetBrowserContext()),
+                                std::move(delegate)));
 }
 
 void ContentSettingsManagerImpl::Clone(
     mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
         receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new ContentSettingsManagerImpl(*this)),
       std::move(receiver));
@@ -133,24 +149,11 @@ void ContentSettingsManagerImpl::Clone(
 void ContentSettingsManagerImpl::AllowStorageAccess(
     const blink::LocalFrameToken& frame_token,
     StorageType storage_type,
+    const url::Origin& origin,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
     base::OnceCallback<void(bool)> callback) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromFrameToken(
-          content::GlobalRenderFrameHostToken(render_process_id_, frame_token));
-  if (!render_frame_host) {
-    // Ideally this would never happen and we would kill the renderer reporting
-    // a mojo bad message here. Unfortunately, this does happen, because the
-    // renderer calls this method also from workers with the cached parent
-    // document frame_token. If this happens, we just return false here.
-    std::move(callback).Run(false);
-    return;
-  }
-
-  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
-  const url::Origin& top_frame_origin =
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
-  const net::SiteForCookies& site_for_cookies =
-      render_frame_host->GetIsolationInfoForSubresources().site_for_cookies();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL url = origin.GetURL();
 
   // TODO(crbug.com/40247160): Consider whether the following check should
@@ -190,24 +193,31 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     allowed = true;
   }
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  if (delegate_->AllowStorageAccess(render_frame_host, storage_type, url,
-                                    allowed, std::move(split_callback.first))) {
+  if (delegate_->AllowStorageAccess(
+          content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
+          storage_type, url, allowed, &callback)) {
+    DCHECK(!callback);
     return;
   }
 
-  NotifyStorageAccess(render_frame_host, storage_type, top_frame_origin,
-                      allowed);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyStorageAccess,
+                                content::GlobalRenderFrameHostToken(
+                                    render_process_id_, frame_token),
+                                storage_type, top_frame_origin, allowed));
 
-  std::move(split_callback.second).Run(allowed);
+  std::move(callback).Run(allowed);
 }
 
 void ContentSettingsManagerImpl::OnContentBlocked(
     const blink::LocalFrameToken& frame_token,
     ContentSettingsType type) {
-  PageSpecificContentSettings::ContentBlocked(
-      content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
-      type);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OnContentBlockedOnUI,
+                                content::GlobalRenderFrameHostToken(
+                                    render_process_id_, frame_token),
+                                type));
 }
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
@@ -225,5 +235,18 @@ ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     : delegate_(other.delegate_->Clone()),
       render_process_id_(other.render_process_id_),
       cookie_settings_(other.cookie_settings_) {}
+
+// static
+void ContentSettingsManagerImpl::CreateOnThread(
+    int render_process_id,
+    mojo::PendingReceiver<content_settings::mojom::ContentSettingsManager>
+        receiver,
+    scoped_refptr<CookieSettings> cookie_settings,
+    std::unique_ptr<Delegate> delegate) {
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new ContentSettingsManagerImpl(
+          render_process_id, std::move(delegate), cookie_settings)),
+      std::move(receiver));
+}
 
 }  // namespace content_settings

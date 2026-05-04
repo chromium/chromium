@@ -18,11 +18,11 @@ class ContentSettingsManagerDelegate
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
       content::BrowserContext* browser_context) override;
   bool AllowStorageAccess(
-      content::RenderFrameHost* render_frame_host,
+      const content::GlobalRenderFrameHostToken& frame_token,
       content_settings::mojom::ContentSettingsManager::StorageType storage_type,
       const GURL& url,
       bool allowed,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(bool)>* callback) override;
   std::unique_ptr<Delegate> Clone() override;
 };
 

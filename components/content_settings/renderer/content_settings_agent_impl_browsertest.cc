@@ -19,6 +19,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/features.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace content_settings {
@@ -54,6 +56,9 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   }
   void AllowStorageAccess(const blink::LocalFrameToken& frame_token,
                           StorageType storage_type,
+                          const url::Origin& origin,
+                          const net::SiteForCookies& site_for_cookies,
+                          const url::Origin& top_frame_origin,
                           base::OnceCallback<void(bool)> callback) override {
     ++log_->allow_storage_access_count;
     std::move(callback).Run(true);

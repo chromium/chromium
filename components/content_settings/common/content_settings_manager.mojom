@@ -35,7 +35,10 @@ interface ContentSettingsManager {
   [Sync]
   AllowStorageAccess(
       blink.mojom.LocalFrameToken frame_token,
-      StorageType storage_type) => (bool allowed);
+      StorageType storage_type,
+      url.mojom.Origin origin,
+      network.mojom.SiteForCookies site_for_cookies,
+      url.mojom.Origin top_frame_origin) => (bool allowed);
 
   // Tells the browser that content in the current page was blocked due to the
   // user's content settings.

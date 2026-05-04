@@ -25,6 +25,10 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
       frame->Top()->GetSecurityOrigin().IsOpaque())
     is_unique_origin_ = true;
 
+  document_origin_ = document.GetSecurityOrigin();
+  site_for_cookies_ = document.SiteForCookies();
+  top_frame_origin_ = document.TopFrameOrigin();
+
   content::ChildThread::Get()->BindHostReceiver(
       pending_content_settings_manager_.InitWithNewPipeAndPassReceiver());
 
@@ -47,6 +51,9 @@ WorkerContentSettingsClient::WorkerContentSettingsClient(
 WorkerContentSettingsClient::WorkerContentSettingsClient(
     const WorkerContentSettingsClient& other)
     : is_unique_origin_(other.is_unique_origin_),
+      document_origin_(other.document_origin_),
+      site_for_cookies_(other.site_for_cookies_),
+      top_frame_origin_(other.top_frame_origin_),
       allow_running_insecure_content_(other.allow_running_insecure_content_),
       frame_token_(other.frame_token_) {
   other.EnsureContentSettingsManager();
@@ -77,6 +84,7 @@ void WorkerContentSettingsClient::AllowStorageAccess(
       frame_token_,
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
+      document_origin_, site_for_cookies_, top_frame_origin_,
       std::move(callback));
 }
 
@@ -92,7 +100,7 @@ bool WorkerContentSettingsClient::AllowStorageAccessSync(
       frame_token_,
       content_settings::ContentSettingsAgentImpl::ConvertToMojoStorageType(
           storage_type),
-      &result);
+      document_origin_, site_for_cookies_, top_frame_origin_, &result);
   return result;
 }
 

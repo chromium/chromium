@@ -46,6 +46,9 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
 
   // Loading document context for this worker.
   bool is_unique_origin_ = false;
+  url::Origin document_origin_;
+  net::SiteForCookies site_for_cookies_;
+  url::Origin top_frame_origin_;
   bool allow_running_insecure_content_ = false;
   const blink::LocalFrameToken frame_token_;
   std::unique_ptr<RendererContentSettingRules> content_setting_rules_;
