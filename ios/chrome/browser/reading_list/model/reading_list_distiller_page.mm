@@ -16,6 +16,7 @@
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/browser/reading_list/model/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -78,7 +79,9 @@ ReadingListDistillerPage::ReadingListDistillerPage(
   DCHECK(delegate);
 }
 
-ReadingListDistillerPage::~ReadingListDistillerPage() {}
+ReadingListDistillerPage::~ReadingListDistillerPage() {
+  [windowed_container_ removeFromSuperview];
+}
 
 bool ReadingListDistillerPage::ShouldFetchOfflineData() {
   return true;
@@ -104,17 +107,11 @@ void ReadingListDistillerPage::DistillPageImpl(const GURL& url,
 
   DistillerPageIOS::DistillPageImpl(url, script);
 
-  // WKWebView sets the document.hidden property to true and the
-  // document.visibilityState to prerender if the page is not added to a view
-  // hierarchy. Some pages may not render their content in these conditions.
-  // Add the view and move it out of the screen far in the top left corner of
-  // the coordinate space.
-  CGRect frame = [GetAnyKeyWindow() frame];
-  frame.origin.x = -5 * std::max(frame.size.width, frame.size.height);
-  frame.origin.y = frame.origin.x;
+  if (!windowed_container_) {
+    windowed_container_ = [[WindowedContainerView alloc] init];
+  }
   DCHECK(![CurrentWebState()->GetView() superview]);
-  [CurrentWebState()->GetView() setFrame:frame];
-  [GetAnyKeyWindow() insertSubview:CurrentWebState()->GetView() atIndex:0];
+  [windowed_container_ addSubview:CurrentWebState()->GetView()];
 }
 
 void ReadingListDistillerPage::FetchFavicon(const GURL& page_url) {

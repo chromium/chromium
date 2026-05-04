@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 class ProfileIOS;
+@class WindowedContainerView;
 
 namespace reading_list {
 
@@ -122,6 +123,7 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   raw_ptr<FaviconWebStateDispatcher> web_state_dispatcher_;
   raw_ptr<ReadingListDistillerPageDelegate> delegate_;
   int delayed_task_id_;
+  WindowedContainerView* windowed_container_;
   base::WeakPtrFactory<ReadingListDistillerPage> weak_ptr_factory_;
 };
 
