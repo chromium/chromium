@@ -4,11 +4,14 @@
 
 #include "gpu/command_buffer/service/service_utils.h"
 
+#include <cmath>
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -354,37 +357,70 @@ uint32_t GetTextureTargetForIOSurfaces() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace {
+
+// Multiplier policy for kAggressiveShaderCacheLimits enabled.
+double GetAggressiveMemoryLimitMultiplier(int memory_limit) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android ignores pressure notifications in aggressive mode.
+  return 1.0;
+#else
+  // Desktop ignores pressure above the Moderate threshold (50%).
+  if (memory_limit >= base::kModerateMemoryPressureThreshold) {
+    return 1.0;
+  }
+  // Interpolate multiplier from 1.0 down to 0.25 between Moderate (50%) and
+  // Critical (0%).
+  double t = static_cast<double>(base::kModerateMemoryPressureThreshold -
+                                 memory_limit) /
+             base::kModerateMemoryPressureThreshold;
+  return std::lerp(1.0, 0.25, t);
+#endif
+}
+
+// Multiplier policy for kAggressiveShaderCacheLimits disabled.
+double GetDefaultMemoryLimitMultiplier(int memory_limit) {
+  // Scale quadratically (e.g., 25% cache size at 50% memory limit).
+  double ratio =
+      static_cast<double>(memory_limit) / base::kNoMemoryPressureThreshold;
+  return ratio * ratio;
+}
+
+}  // namespace
+
 size_t UpdateShaderCacheSizeOnMemoryPressure(
     size_t max_cache_size,
     base::MemoryPressureLevel memory_pressure_level) {
+  int memory_limit = base::kNoMemoryPressureThreshold;
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
-      return max_cache_size;
+      memory_limit = base::kNoMemoryPressureThreshold;
+      break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      if (base::FeatureList::IsEnabled(
-              ::features::kAggressiveShaderCacheLimits)) {
-        // Ignore moderate memory pressure.
-      } else {
-        max_cache_size /= 4;
-      }
+      memory_limit = base::kModerateMemoryPressureThreshold;
       break;
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      if (base::FeatureList::IsEnabled(
-              ::features::kAggressiveShaderCacheLimits)) {
-#if BUILDFLAG(IS_ANDROID)
-        // On Android, critical memory pressure notifications are very common,
-        // and not necessarily tied to actual critical memory pressure. Ignore.
-        break;
-#else
-        max_cache_size /= 4;
-#endif
-      } else {
-        max_cache_size = 0;
-      }
+      memory_limit = base::kCriticalMemoryPressureThreshold;
       break;
   }
+  return UpdateShaderCacheSizeOnMemoryLimit(max_cache_size, memory_limit);
+}
 
-  return max_cache_size;
+size_t UpdateShaderCacheSizeOnMemoryLimit(size_t max_cache_size,
+                                          int memory_limit) {
+  CHECK_GE(memory_limit, 0);
+
+  // Handle limits greater than 100%. Scales linearly.
+  if (memory_limit > base::kNoMemoryPressureThreshold) {
+    return base::ScaleByMemoryLimit(max_cache_size, memory_limit);
+  }
+
+  double multiplier =
+      base::FeatureList::IsEnabled(features::kAggressiveShaderCacheLimits)
+          ? GetAggressiveMemoryLimitMultiplier(memory_limit)
+          : GetDefaultMemoryLimitMultiplier(memory_limit);
+
+  return static_cast<size_t>(max_cache_size * multiplier);
 }
 
 }  // namespace gpu

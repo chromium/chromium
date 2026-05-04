@@ -55,6 +55,12 @@ GPU_GLES2_EXPORT size_t UpdateShaderCacheSizeOnMemoryPressure(
     size_t max_cache_size,
     base::MemoryPressureLevel memory_pressure_level);
 
+// Returns `max_cache_size` scaled according to the `memory_limit` (expressed as
+// a percentage) received from the memory coordinator. Supports values over
+// 100%, but does not support negative values.
+GPU_GLES2_EXPORT size_t
+UpdateShaderCacheSizeOnMemoryLimit(size_t max_cache_size, int memory_limit);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SERVICE_UTILS_H_
