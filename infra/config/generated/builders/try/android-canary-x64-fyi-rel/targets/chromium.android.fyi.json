@@ -3916,7 +3916,8 @@
       {
         "args": [
           "--extra-browser-args=--enable-crashpad",
-          "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_canary_google_apis_x64.textpb",
+          "--browser=android-chromium"
         ],
         "description": "Run with android_canary_google_apis_x64",
         "merge": {

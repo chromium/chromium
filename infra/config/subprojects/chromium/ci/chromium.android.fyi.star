@@ -454,6 +454,13 @@ ci.builder(
                     shards = 30,
                 ),
             ),
+            "telemetry_perf_unittests_android_chrome": targets.mixin(
+                # For whatever reason, automatic browser selection on this bot chooses
+                # webview instead of the full browser, so explicitly specify it here.
+                args = [
+                    "--browser=android-chromium",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -561,6 +568,13 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
+            "telemetry_perf_unittests_android_chrome": targets.mixin(
+                # For whatever reason, automatic browser selection on this bot chooses
+                # webview instead of the full browser, so explicitly specify it here.
+                args = [
+                    "--browser=android-chromium",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(
