@@ -59,6 +59,8 @@ export const MAX_CORNER_LENGTH_PX = 22;
 export const MAX_CORNER_RADIUS_PX = 14;
 // Cutout radius used with larger corner radii. Exported for testing.
 export const CUTOUT_RADIUS_PX = 5;
+const STATIC_REGION_RADIUS_PX = 24;
+
 // A cutout radius will only be used when the corner radius is above this
 // threshold.
 const CUTOUT_RADIUS_THRESHOLD_PX = 12;
@@ -418,7 +420,7 @@ export class PostSelectionRendererElement extends
     const rightOffset = 100 - (leftPercent + widthPercent);
     const bottomOffset = 100 - (topPercent + heightPercent);
 
-    const cornerRadius = 'var(--post-selection-cutout-corner-radius, 8px)';
+    const cornerRadius = 'var(--static-region-corner-radius, 24px)';
 
     return {
       id: region.id,
@@ -904,6 +906,11 @@ export class PostSelectionRendererElement extends
     this.style.setProperty(
         '--post-selection-cutout-corner-radius',
         toPixels(cornerDimensions.cutoutRadius));
+
+    if (this.multiRegionSelectionEnabled) {
+      this.style.setProperty(
+          '--static-region-corner-radius', toPixels(STATIC_REGION_RADIUS_PX));
+    }
   }
 
   private triggerNewBoxAnimation() {
@@ -948,8 +955,10 @@ export class PostSelectionRendererElement extends
 
   private getCornerDimensions(): CornerDimensions {
     const imageBounds = this.selectionOverlayRect;
-    if (!imageBounds || imageBounds.width === 0 || imageBounds.height === 0) {
-      // Renderer has probably not been sized yet. Return default values.
+    if (!imageBounds || imageBounds.width === 0 || imageBounds.height === 0 ||
+        !this.hasSelection()) {
+      // Renderer has probably not been sized yet or there is no selection.
+      // Return default values.
       return {
         length: MAX_CORNER_LENGTH_PX,
         radius: MAX_CORNER_RADIUS_PX,
