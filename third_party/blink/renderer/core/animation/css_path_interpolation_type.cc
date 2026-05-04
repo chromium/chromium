@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/shape_value.h"
 
 namespace blink {
 
@@ -41,6 +42,14 @@ const StylePath* GetPath(const CSSProperty& property,
         return nullptr;
       return DynamicTo<StylePath>(shape->GetBasicShape());
     }
+    case CSSPropertyID::kShapeOutside: {
+      const ShapeValue* shape_value = style.ShapeOutside();
+      if (!shape_value || shape_value->GetType() != ShapeValue::kShape ||
+          shape_value->CssBox() != CSSBoxType::kMissing) {
+        return nullptr;
+      }
+      return DynamicTo<StylePath>(shape_value->Shape());
+    }
     default:
       NOTREACHED();
   }
@@ -63,6 +72,11 @@ void SetPath(const CSSProperty& property,
       // TODO(pdr): Handle geometry box.
       builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
           path, GeometryBox::kBorderBox));
+      return;
+    case CSSPropertyID::kShapeOutside:
+      CHECK(path);
+      builder.SetShapeOutside(
+          MakeGarbageCollected<ShapeValue>(path, CSSBoxType::kMissing));
       return;
     default:
       NOTREACHED();

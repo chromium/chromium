@@ -441,16 +441,13 @@ const InterpolationTypes* InterpolationTypesMap::Get(
             MakeGarbageCollected<CSSBorderShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kClipPath:
+      case CSSPropertyID::kShapeOutside:
         applicable_types->push_back(
             MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
             MakeGarbageCollected<CSSPathInterpolationType>(property));
         applicable_types->push_back(
             MakeGarbageCollected<CSSShapeInterpolationType>(property));
-        break;
-      case CSSPropertyID::kShapeOutside:
-        applicable_types->push_back(
-            MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kRotate:
         applicable_types->push_back(

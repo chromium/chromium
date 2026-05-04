@@ -31,10 +31,11 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
                                              const NonInterpolableValue*,
                                              const CSSToLengthConversionData&);
 
-  static InterpolationValue MaybeConvertCSSValue(const CSSValue& value,
-                                                 const CSSProperty& property,
-                                                 GeometryBox geometry_box,
-                                                 CoordBox coord_box);
+  static InterpolationValue MaybeConvertCSSValue(
+      const CSSValue& value,
+      const CSSProperty& property,
+      std::optional<GeometryBox> geometry_box,
+      std::optional<CoordBox> coord_box);
   static InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
                                                    const CSSProperty& property,
                                                    double zoom,
