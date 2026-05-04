@@ -4,15 +4,9 @@
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
-
-bool StyleImage::IsCorsSameOrigin() const {
-  String unused_url;
-  return IsCorsSameOrigin(unused_url);
-}
 
 RespectImageOrientationEnum StyleImage::ForceOrientationIfNecessary(
     RespectImageOrientationEnum default_orientation) const {

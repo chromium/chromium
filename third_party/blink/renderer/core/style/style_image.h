@@ -86,10 +86,8 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // Any underlying resources this <image> references failed to load.
   virtual bool ErrorOccurred() const { return false; }
 
-  // Is the <image> considered same-origin? `failing_url` is set to the
-  // (potentially formatted) URL of the first non-same-origin <image>.
-  virtual bool IsCorsSameOrigin(String& failing_url) const = 0;
-  bool IsCorsSameOrigin() const;
+  // Is the <image> considered same-origin?
+  virtual bool IsCorsSameOrigin() const = 0;
 
   // Determine the natural dimensions (width, height, aspect ratio) of this
   // <image>, scaled by `multiplier`.

@@ -32,9 +32,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -135,20 +133,6 @@ void ShapeOutsideInfo::SetPercentageResolutionInlineSize(
 
   MarkShapeAsDirty();
   percentage_resolution_inline_size_ = percentage_resolution_inline_size;
-}
-
-static bool CheckShapeImageOrigin(Document& document,
-                                  const StyleImage& style_image) {
-  String failing_url;
-  if (style_image.IsCorsSameOrigin(failing_url)) {
-    return true;
-  }
-  String url_string = failing_url.IsNull() ? "''" : failing_url;
-  document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kSecurity,
-      mojom::ConsoleMessageLevel::kError,
-      StrCat({"Unsafe attempt to load URL ", url_string, "."})));
-  return false;
 }
 
 static PhysicalRect GetShapeImagePhysicalMarginRect(
@@ -293,10 +277,11 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
     case ShapeValue::kShape:
       return shape_value->Shape();
     case ShapeValue::kImage: {
-      StyleImage* image = shape_value->GetImage();
-      DCHECK(image);
-      return image->IsLoaded() && image->CanRender() &&
-             CheckShapeImageOrigin(box.GetDocument(), *image);
+      const StyleImage* image = shape_value->GetImage();
+      CHECK(image);
+      const bool image_is_usable = image->IsLoaded() && image->CanRender();
+      CHECK(!image_is_usable || image->IsCorsSameOrigin());
+      return image_is_usable;
     }
     case ShapeValue::kBox:
       return true;

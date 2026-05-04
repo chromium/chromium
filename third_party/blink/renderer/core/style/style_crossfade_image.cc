@@ -89,9 +89,9 @@ bool StyleCrossfadeImage::ErrorOccurred() const {
   });
 }
 
-bool StyleCrossfadeImage::IsCorsSameOrigin(String& failing_url) const {
-  return std::all_of(images_.begin(), images_.end(), [&](StyleImage* image) {
-    return !image || image->IsCorsSameOrigin(failing_url);
+bool StyleCrossfadeImage::IsCorsSameOrigin() const {
+  return std::all_of(images_.begin(), images_.end(), [](StyleImage* image) {
+    return !image || image->IsCorsSameOrigin();
   });
 }
 

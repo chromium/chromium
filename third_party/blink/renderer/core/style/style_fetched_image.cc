@@ -120,16 +120,12 @@ bool StyleFetchedImage::ErrorOccurred() const {
   return image_->ErrorOccurred();
 }
 
-bool StyleFetchedImage::IsCorsSameOrigin(String& failing_url) const {
+bool StyleFetchedImage::IsCorsSameOrigin() const {
   if (!image_->IsLoaded() && image_->GetImage() &&
       image_->GetImage()->IsSVGImage()) {
     return false;
   }
-  if (image_->IsCorsSameOrigin()) {
-    return true;
-  }
-  failing_url = image_->Url().ElidedString();
-  return false;
+  return image_->IsCorsSameOrigin();
 }
 
 float StyleFetchedImage::ApplyImageResolution(float multiplier) const {
