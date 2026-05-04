@@ -143,12 +143,14 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_entry_flow_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -804,6 +806,7 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinators for Gemini related logic.
   GeminiFirstRunCoordinator* _geminiFirstRunCoordinator;
+  GeminiEntryFlowCoordinator* _geminiEntryFlowCoordinator;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
@@ -1870,6 +1873,11 @@ const char kChromeAppStoreUrl[] =
   [_passkeyIncognitoCoordinator stop];
   _passkeyIncognitoCoordinator = nil;
 
+  if (IsGeneralizedGeminiEntryFlowEnabled()) {
+    [_geminiEntryFlowCoordinator stop];
+    _geminiEntryFlowCoordinator = nil;
+  }
+
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];
   }
@@ -2067,6 +2075,18 @@ const char kChromeAppStoreUrl[] =
   self.storeKitCoordinator.delegate = self;
   self.storeKitCoordinator.iTunesProductParameters = productParameters;
   [self.storeKitCoordinator start];
+}
+
+// Called when the Gemini entry flow coordinator finishes.
+- (void)geminiEntryFlowDidFinishWithResult:(GeminiEntryFlowResult)result
+                                completion:
+                                    (GeminiEntryFlowCompletion)completion {
+  [_geminiEntryFlowCoordinator stop];
+  _geminiEntryFlowCoordinator = nil;
+
+  if (completion) {
+    completion(result);
+  }
 }
 
 #pragma mark - ActivityServiceCommands
@@ -3639,6 +3659,40 @@ const char kChromeAppStoreUrl[] =
   }
 
   geminiBrowserAgent->StartGeminiFlow(self.viewController, startupState);
+}
+
+- (void)
+    startGeminiEntryFlowWithStartupState:(GeminiStartupState*)startupState
+                      baseViewController:(UIViewController*)baseViewController
+                             accessPoint:
+                                 (signin_metrics::AccessPoint)accessPoint
+                showSnackbarOnCompletion:(BOOL)showSnackbar
+                              completion:(GeminiEntryFlowCompletion)completion {
+  if (!IsGeneralizedGeminiEntryFlowEnabled()) {
+    return;
+  }
+
+  // Clean up any previous entry flow.
+  [_geminiEntryFlowCoordinator stop];
+  _geminiEntryFlowCoordinator = nil;
+
+  UIViewController* presenter =
+      baseViewController ? baseViewController : self.viewController;
+
+  __weak __typeof(self) weakSelf = self;
+  _geminiEntryFlowCoordinator = [[GeminiEntryFlowCoordinator alloc]
+      initWithBaseViewController:presenter
+                         browser:self.browser
+                    startupState:startupState
+                     accessPoint:accessPoint
+        showSnackbarOnCompletion:showSnackbar
+                      completion:^(GeminiEntryFlowResult result) {
+                        [weakSelf
+                            geminiEntryFlowDidFinishWithResult:result
+                                                    completion:completion];
+                      }];
+
+  [_geminiEntryFlowCoordinator start];
 }
 
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion {

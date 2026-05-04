@@ -57,6 +57,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/coordinator",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h",
   "+ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h",
   "+ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h",
   "+ios/chrome/browser/intelligence/features",

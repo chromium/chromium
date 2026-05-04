@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "gemini_entry_flow_coordinator.h",
+    "gemini_entry_flow_coordinator.mm",
     "gemini_first_run_coordinator.h",
     "gemini_first_run_coordinator.mm",
     "gemini_first_run_mediator.h",
@@ -15,6 +17,8 @@ source_set("coordinator") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//components/variations/service",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/bwg/metrics",
