@@ -730,8 +730,17 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewActiveIndexTest) {
 
 // Verifies that page and devtools WebViews are being correctly laid out
 // when DevTools is opened/closed/updated while docked.
+//
+// TODO(crbug.com/507885173): Flaky on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DevToolsDockedRemainsOpenInWithFocusInSplit \
+  DISABLED_DevToolsDockedRemainsOpenInWithFocusInSplit
+#else
+#define MAYBE_DevToolsDockedRemainsOpenInWithFocusInSplit \
+  DevToolsDockedRemainsOpenInWithFocusInSplit
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserViewTest,
-                       DevToolsDockedRemainsOpenInWithFocusInSplit) {
+                       MAYBE_DevToolsDockedRemainsOpenInWithFocusInSplit) {
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   chrome::AddTabAt(browser(), GURL(), -1, true);
