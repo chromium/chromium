@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -357,6 +358,16 @@ const EnterprisePolicyChecker* NoEnterprisePolicyChecker();
 
 // Returns a common mock TaskSourceInfo used by actor tests.
 const TaskSourceInfo& TestTaskSourceInfo();
+
+// Helper to mock the result returned on a TabObservation built using
+// actor::BuildActionsResultWithObservations. While live, use the provided
+// function to set TabObservationResults. Unset on destruction.
+class ScopedMockTabObservationResult {
+ public:
+  explicit ScopedMockTabObservationResult(
+      TabObservationResultOverrideCallback callback);
+  ~ScopedMockTabObservationResult();
+};
 
 // Helper struct for unit tests that require a mock TabInterface and its
 // associated ActorTabData.

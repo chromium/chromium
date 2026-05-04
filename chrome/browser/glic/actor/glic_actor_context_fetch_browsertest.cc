@@ -6,25 +6,41 @@
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic::actor {
 namespace {
 
+using ::actor::ScopedMockTabObservationResult;
 using ::base::test::ValueIs;
 using ::optimization_guide::proto::Actions;
 using ::optimization_guide::proto::ActionsResult;
 using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::TabObservation;
+using ::page_content_annotations::FetchPageContextResult;
 
 class GlicActorContextFetchFunctionalBrowserTest
-    : public GlicActorFunctionalBrowserTestBase {
+    : public GlicActorFunctionalBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  GlicActorContextFetchFunctionalBrowserTest() = default;
+  GlicActorContextFetchFunctionalBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ::actor::kGlicActorTabObservationController);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ::actor::kGlicActorTabObservationController);
+    }
+  }
   ~GlicActorContextFetchFunctionalBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicActorContextFetchFunctionalBrowserTest,
                        RetryFailedContextFetchAfterPerformActions) {
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   ASSERT_NE(task_id, TaskId());
@@ -56,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
   EXPECT_EQ(num_calls, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicActorContextFetchFunctionalBrowserTest,
                        FailedContextFetchOnlyRetriesOnce) {
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   ASSERT_NE(task_id, TaskId());
@@ -83,6 +99,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorContextFetchFunctionalBrowserTest,
 
   EXPECT_EQ(num_calls, 2);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicActorContextFetchFunctionalBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace glic::actor

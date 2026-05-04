@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
@@ -873,6 +874,16 @@ const TaskSourceInfo& TestTaskSourceInfo() {
   static base::NoDestructor<TaskSourceInfo> task_source_info(
       TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
   return *task_source_info.get();
+}
+
+ScopedMockTabObservationResult::ScopedMockTabObservationResult(
+    TabObservationResultOverrideCallback callback) {
+  SetTabObservationResultOverrideForTesting(std::move(callback));
+}
+
+ScopedMockTabObservationResult::~ScopedMockTabObservationResult() {
+  SetTabObservationResultOverrideForTesting(
+      TabObservationResultOverrideCallback());
 }
 
 TestTabState::TestTabState(content::WebContents* web_contents) {

@@ -125,6 +125,8 @@ extern const base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kActorScriptToolDelayObservation);
 extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
 
+BASE_DECLARE_FEATURE(kGlicActorTabObservationController);
+
 }  // namespace actor
 
 #endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

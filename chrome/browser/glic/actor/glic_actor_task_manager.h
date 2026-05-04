@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,8 @@ namespace actor {
 struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
+struct ObservationResult;
+class TabObservationController;
 }  // namespace actor
 
 namespace glic {
@@ -102,6 +105,14 @@ class GlicActorTaskManager {
       std::unique_ptr<optimization_guide::proto::ActionsResult> result,
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
           journal_entry);
+  void OnPerformActionsComplete(
+      mojom::WebClientHandler::PerformActionsCallback callback,
+      base::TimeTicks start_time,
+      std::vector<actor::ActionResultWithLatencyInfo> action_results,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_entry,
+      actor::TabObservationController* controller_ptr,
+      std::unique_ptr<actor::ObservationResult> result);
   void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
                         actor::TaskId task_id,
                         base::OnceClosure callback);
@@ -127,6 +138,9 @@ class GlicActorTaskManager {
   bool attempted_reload_after_crash_ = false;
   bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
+
+  std::vector<std::unique_ptr<actor::TabObservationController>>
+      observation_controllers_;
 
   const raw_ref<GlicActorPolicyChecker> actor_policy_checker_;
 

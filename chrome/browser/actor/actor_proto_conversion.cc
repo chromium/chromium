@@ -113,17 +113,6 @@ using ::tabs::TabInterface;
 
 namespace {
 
-// Test only callback for mutating and returning the TabObservationResult
-// provided from BuildActionsResultWithObservations.
-base::RepeatingCallback<void(apc::TabObservation*,
-                             const FetchPageContextResult&)>&
-GetTabObservationResultOverrideForTesting() {
-  static base::NoDestructor<base::RepeatingCallback<void(
-      apc::TabObservation*, const FetchPageContextResult&)>>
-      callback;
-  return *callback;
-}
-
 struct PageScopedParams {
   std::string document_identifier;
   TabHandle tab_handle;
@@ -1031,6 +1020,19 @@ void FetchCallback(
 
 }  // namespace
 
+void SetTabObservationResultOverrideForTesting(  // IN-TEST
+    base::RepeatingCallback<void(
+        optimization_guide::proto::TabObservation*,
+        const page_content_annotations::FetchPageContextResult&)> callback) {
+  GetTabObservationResultOverrideForTesting() = callback;  // IN-TEST
+}
+
+TabObservationResultOverrideCallback&
+GetTabObservationResultOverrideForTesting() {
+  static base::NoDestructor<TabObservationResultOverrideCallback> callback;
+  return *callback;
+}
+
 std::optional<
     page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions>
 GetScreenshotCollectionOptions(
@@ -1332,13 +1334,6 @@ void BuildActionsResultWithObservations(
                        action_results, actions_start_time,
                        base::TimeTicks::Now(), base::Unretained(latency_info)));
   }
-}
-
-void SetTabObservationResultOverrideForTesting(  // IN-TEST
-    base::RepeatingCallback<void(
-        optimization_guide::proto::TabObservation*,
-        const page_content_annotations::FetchPageContextResult&)> callback) {
-  GetTabObservationResultOverrideForTesting() = callback;  // IN-TEST
 }
 
 apc::ActionsResult BuildErrorActionsResult(

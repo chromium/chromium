@@ -26,17 +26,6 @@ MATCHER_P(HasResultCode, expected_code, "") {
   return arg.action_result() == static_cast<int32_t>(expected_code);
 }
 
-// Helper to mock the result returned on a TabObservation built using
-// actor::BuildActionsResultWithObservations. While live, use the provided
-// function to set TabObservationResults. Unset on destruction.
-class ScopedMockTabObservationResult {
- public:
-  explicit ScopedMockTabObservationResult(
-      base::RepeatingCallback<void(TabObservation*,
-                                   const FetchPageContextResult&)> callback);
-  ~ScopedMockTabObservationResult();
-};
-
 // Helper class that utilizes content::DOMMessageQueue to capture the result of
 // an asynchronous PerformActions call. It listens for messages sent via
 // domAutomationController and filters by request ID to ensure the correct

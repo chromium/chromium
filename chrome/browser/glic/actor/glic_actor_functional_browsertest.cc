@@ -14,18 +14,6 @@
 
 namespace glic::actor {
 
-ScopedMockTabObservationResult::ScopedMockTabObservationResult(
-    base::RepeatingCallback<void(TabObservation*,
-                                 const FetchPageContextResult&)> callback) {
-  ::actor::SetTabObservationResultOverrideForTesting(callback);
-}
-
-ScopedMockTabObservationResult::~ScopedMockTabObservationResult() {
-  ::actor::SetTabObservationResultOverrideForTesting(
-      base::RepeatingCallback<void(TabObservation*,
-                                   const FetchPageContextResult&)>());
-}
-
 AsyncActionWaiter::AsyncActionWaiter(content::RenderFrameHost* rfh,
                                      std::string request_id)
     : queue_(rfh), request_id_(std::move(request_id)) {}
