@@ -1877,6 +1877,70 @@ void SelectionFuzz(const Selection<gfx::SelectionBound>& input) {
 }
 FUZZ_TEST(StructTraitsTest, SelectionFuzz).WithDomains(AnySelection());
 
+auto AnySharedQuadState() {
+  return fuzztest::Map(
+      [](const gfx::Rect& quad_layer_rect,
+         const gfx::Rect& visible_quad_layer_rect,
+         const std::optional<gfx::Rect>& clip_rect, bool are_contents_opaque,
+         float opacity, int sorting_context_id, uint32_t layer_id,
+         bool is_fast_rounded_corner) {
+        SharedQuadState sqs;
+        sqs.SetAll(gfx::Transform(), quad_layer_rect, visible_quad_layer_rect,
+                   gfx::MaskFilterInfo(), clip_rect, are_contents_opaque,
+                   opacity, SkBlendMode::kSrcOver, sorting_context_id, layer_id,
+                   is_fast_rounded_corner);
+        return sqs;
+      },
+      AnyRect(), AnyRect(), fuzztest::OptionalOf(AnyRect()),
+      fuzztest::Arbitrary<bool>(), fuzztest::Arbitrary<float>(),
+      fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<uint32_t>(),
+      fuzztest::Arbitrary<bool>());
+}
+
+void SharedQuadStateFuzz(const SharedQuadState& input) {
+  SharedQuadState output;
+  mojo::test::SerializeAndDeserialize<mojom::SharedQuadState>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SharedQuadStateFuzz)
+    .WithDomains(AnySharedQuadState());
+
+auto AnyCompositorFrameTransitionDirective() {
+  return fuzztest::Map(
+      [](uint32_t sequence_id, bool maybe_cross_frame_sink) {
+        blink::ViewTransitionToken transition_token;
+        return CompositorFrameTransitionDirective::CreateSave(
+            transition_token, maybe_cross_frame_sink, sequence_id, {}, {},
+            false);
+      },
+      fuzztest::Arbitrary<uint32_t>(), fuzztest::Arbitrary<bool>());
+}
+
+void CompositorFrameTransitionDirectiveFuzz(
+    const CompositorFrameTransitionDirective& input) {
+  CompositorFrameTransitionDirective output;
+  mojo::test::SerializeAndDeserialize<
+      mojom::CompositorFrameTransitionDirective>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, CompositorFrameTransitionDirectiveFuzz)
+    .WithDomains(AnyCompositorFrameTransitionDirective());
+
+auto AnyCompositorFrame() {
+  return fuzztest::Map(
+      [](float device_scale_factor) {
+        auto frame = CompositorFrameBuilder().AddDefaultRenderPass().Build();
+        frame.metadata.device_scale_factor = device_scale_factor;
+        return frame;
+      },
+      fuzztest::Positive<float>());
+}
+
+void CompositorFrameFuzz(const CompositorFrame& input) {
+  CompositorFrame output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, CompositorFrameFuzz)
+    .WithDomains(AnyCompositorFrame());
+
 }  // namespace
 
 }  // namespace viz
