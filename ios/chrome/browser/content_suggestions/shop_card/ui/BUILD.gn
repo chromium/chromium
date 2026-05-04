@@ -7,8 +7,6 @@ source_set("ui") {
     "shop_card_commands.h",
     "shop_card_config.h",
     "shop_card_config.mm",
-    "shop_card_price_tracking_view.h",
-    "shop_card_price_tracking_view.mm",
     "shop_card_view.h",
     "shop_card_view.mm",
   ]
@@ -19,17 +17,13 @@ source_set("ui") {
     "//base",
     "//base:i18n",
     "//components/url_formatter",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/public:constants",
-    "//ios/chrome/browser/content_suggestions/tab_resumption/ui",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
-    "//ui/base",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

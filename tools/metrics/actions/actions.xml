@@ -18822,6 +18822,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.MagicStack.ShopCard.PriceTracking.Track">
+  <obsolete>Obsolete as of 05/2026.</obsolete>
   <owner>davidjm@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
@@ -18854,6 +18855,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.MagicStack.TabResumption.PriceTracking.OpenTab">
+  <obsolete>Obsolete as of 05/2026.</obsolete>
   <owner>davidjm@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <owner>gloriafang@google.com</owner>

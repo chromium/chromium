@@ -2190,18 +2190,6 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_TITLE" desc="Title for Reviews ShopCard in Magic Stack">
           Product reviews for you
       </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_1" desc="First alternate title for Track Price ShopCard in Magic Stack">
-          Products based on your interests
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_2" desc="Second alternate title for Track Price ShopCard in Magic Stack">
-          Track prices from your tabs
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_BUTTON" desc="Text for 'Track' Button in Track Price ShopCard in Magic Stack">
-          Track
-      </message>
-      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_CUSTOMIZE_CARDS" desc="Text for Track Price ShopCard in Customize Cards in Magic Stack">
-          Price tracking
-      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR" desc="Text for Snackbar if user taps 'Track' on Track price ShopCard in Magic Stack and the action fails">
           Couldn't track price.
       </message>

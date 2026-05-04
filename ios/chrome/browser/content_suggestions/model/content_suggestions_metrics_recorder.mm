@@ -140,10 +140,6 @@ const float kMaxModuleEngagementIndex = 50;
     if (shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
       base::RecordAction(
           base::UserMetricsAction(kTabResumptionWithPriceDropOpenTab));
-    } else if (shopCardData.shopCardItemType ==
-               ShopCardItemType::kPriceTrackableProductOnTab) {
-      base::RecordAction(
-          base::UserMetricsAction(kTabResumptionWithPriceTrackingOpenTab));
     }
   } else {
     base::RecordAction(base::UserMetricsAction(kTabResumptionOpenTab));
@@ -157,10 +153,6 @@ const float kMaxModuleEngagementIndex = 50;
     if (shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
       UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionWithPriceDropImpression, index,
                                  kMaxModuleEngagementIndex);
-    } else if (shopCardData.shopCardItemType ==
-               ShopCardItemType::kPriceTrackableProductOnTab) {
-      UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionWithPriceTrackingImpression,
-                                 index, kMaxModuleEngagementIndex);
     }
   } else {
     UMA_HISTOGRAM_EXACT_LINEAR(kTabResumptionImpression, index,

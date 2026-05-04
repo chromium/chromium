@@ -28,7 +28,6 @@ enum class ShopCardItemType {
   kPriceDropForTrackedProducts,
   kReviews,
   kPriceDropOnTab,
-  kPriceTrackableProductOnTab,
 };
 
 class GURL;

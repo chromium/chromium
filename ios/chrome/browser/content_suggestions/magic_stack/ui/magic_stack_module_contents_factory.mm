@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/content_suggestions/set_up_list/ui/set_up_list_item_view.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_view.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_action_item.h"
 #import "ios/chrome/browser/content_suggestions/shortcuts/ui/shortcuts_commands.h"
@@ -154,18 +153,10 @@
 }
 
 - (UIView*)tabResumptionViewForConfig:(TabResumptionConfig*)config {
-  if (config.shopCardData.shopCardItemType ==
-      ShopCardItemType::kPriceTrackableProductOnTab) {
-    ShopCardPriceTrackingView* shopCardPriceTrackingView =
-        [[ShopCardPriceTrackingView alloc] initWithConfig:config];
-    shopCardPriceTrackingView.tabResumptionHandler = config.commandHandler;
-    return shopCardPriceTrackingView;
-  } else {
-    TabResumptionView* tabResumptionView =
-        [[TabResumptionView alloc] initWithConfig:config];
-    tabResumptionView.tabResumptionHandler = config.commandHandler;
-    return tabResumptionView;
-  }
+  TabResumptionView* tabResumptionView =
+      [[TabResumptionView alloc] initWithConfig:config];
+  tabResumptionView.tabResumptionHandler = config.commandHandler;
+  return tabResumptionView;
 }
 
 - (UIView*)priceTrackingPromoViewForConfig:

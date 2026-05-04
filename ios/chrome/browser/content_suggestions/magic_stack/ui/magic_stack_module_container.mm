@@ -390,17 +390,6 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kMostVisited:
       return @"";
     case ContentSuggestionsModuleType::kTabResumption: {
-      TabResumptionConfig* tabResumptionConfig =
-          static_cast<TabResumptionConfig*>(config);
-      // Arm 4 of ShopCard is an alternative to Tab Resumption,
-      // triggered by Tab Resumption where the user is given the
-      // option to price track a URL for a price trackable URL.
-      if (tabResumptionConfig.shopCardData &&
-          tabResumptionConfig.shopCardData.shopCardItemType ==
-              ShopCardItemType::kPriceTrackableProductOnTab) {
-        return l10n_util::GetNSString(
-            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_ALT_TITLE_2);
-      }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE);
     }
     case ContentSuggestionsModuleType::kSafetyCheck:

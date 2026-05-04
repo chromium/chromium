@@ -3882,9 +3882,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PriceDrop"
         summary="a price drop is shown on Tab Resumption, if a price drop
                  exists for the URL"/>
-    <variant name="PriceTracking"
-        summary="the user can price track the tab resumption URL, if it is
-                 price trackable"/>
     <variant name="Regular"
         summary="regular Tab Resumption is shown with no variation"/>
   </token>
