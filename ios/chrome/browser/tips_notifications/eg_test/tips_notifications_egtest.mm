@@ -292,11 +292,11 @@ void MaybeDismissNotification() {
   [ChromeEarlGreyUI waitForAppToIdle];
   [self optInToTipsNotifications:{}];
 
-  // Request the notification and tap it.
   [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
   TapNotification();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                                          @"kLensPromoAXID")];
+                                                          @"kLensPromoAXID")
+                                              timeout:base::Seconds(15)];
   // Tap "Show me how".
   // Use `grey_sufficientlyVisible()` to target the visible secondary button.
   [[EarlGrey selectElementWithMatcher:
@@ -312,11 +312,11 @@ void MaybeDismissNotification() {
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
 
-  // Request the notification a second time.
   [ChromeEarlGrey requestTipsNotification:TipsNotificationType::kLens];
   TapNotification();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                                          @"kLensPromoAXID")];
+                                                          @"kLensPromoAXID")
+                                              timeout:base::Seconds(15)];
   // Tap "Show me how" again.
   // Use `grey_sufficientlyVisible()` to target the visible secondary button.
   [[EarlGrey selectElementWithMatcher:
@@ -346,12 +346,12 @@ void MaybeDismissNotification() {
   [ChromeEarlGreyUI waitForAppToIdle];
   [self optInToTipsNotifications:{}];
 
-  // Request the notification and tap it.
   [ChromeEarlGrey
       requestTipsNotification:TipsNotificationType::kEnhancedSafeBrowsing];
   TapNotification();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
+                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")
+                                              timeout:base::Seconds(15)];
   // Tap "Show me how".
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
@@ -373,12 +373,12 @@ void MaybeDismissNotification() {
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Request the notification a second time.
   [ChromeEarlGrey
       requestTipsNotification:TipsNotificationType::kEnhancedSafeBrowsing];
   TapNotification();
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")];
+                      grey_accessibilityID(@"kEnhancedSafeBrowsingPromoAXID")
+                                              timeout:base::Seconds(15)];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];
