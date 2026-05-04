@@ -137,7 +137,7 @@ TEST_F(LoopbackMixinTest,
   feature_list_.InitAndEnableFeature(kRestrictOwnAudioAddChromiumBack);
 #if BUILDFLAG(IS_MAC)
   std::string device_id = media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(
-      "org.chromium.Chromium");
+      "org.chromium.Chromium", base::GetCurrentProcId());
 #else
   std::string device_id =
       media::CreateRestrictOwnAudioBrowserLoopbackDeviceId();

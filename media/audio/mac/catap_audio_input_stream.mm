@@ -10,6 +10,7 @@
 #include <CoreAudio/CoreAudio.h>
 #import <Foundation/Foundation.h>
 #include <MacTypes.h>
+#include <libproc.h>
 #include <unistd.h>
 
 #include <string_view>
@@ -445,13 +446,6 @@ bool IsSameOrSubBundle(std::string_view process_bundle_id,
                           base::CompareCase::SENSITIVE);
 }
 
-// Returns the Bundle ID from an application loopback device ID.
-std::optional<std::string> GetCaptureApplication(std::string_view device_id) {
-  if (!AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)) {
-    return std::nullopt;
-  }
-  return GetBundleIdFromApplicationLoopbackDeviceId(device_id);
-}
 
 bool operator==(const AudioObjectPropertyAddress& x,
                 const AudioObjectPropertyAddress& y) {
@@ -621,8 +615,12 @@ CatapAudioInputStreamSource::Config::Config(
               ? frames_per_buffer * aggregate_device_sample_rate / sample_rate
               : frames_per_buffer),
       mute_local_device(MuteLocalPlaybackLoopback(device_id)),
-      exclude_chrome(ExcludeChromeLoopback(device_id)),
-      capture_application(GetCaptureApplication(device_id)) {}
+      exclude_chrome(ExcludeChromeLoopback(device_id)) {
+  if (AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)) {
+    std::tie(capture_application, capture_application_pid) =
+        ParseApplicationLoopbackDeviceId(device_id);
+  }
+}
 
 CatapAudioInputStreamSource::Config::Config(const Config& other) = default;
 CatapAudioInputStreamSource::Config::Config(Config&& other) = default;
@@ -645,6 +643,9 @@ std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
     << ", catap_channels: " << catap_channels;
   if (capture_application) {
     s << ", capture_application: " << *capture_application;
+  }
+  if (capture_application_pid) {
+    s << ", capture_application_pid: " << *capture_application_pid;
   }
   return s.str();
 }
@@ -727,7 +728,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open() {
     // Get a list of all CoreAudio process device IDs that belong to the
     // specified application.
     NSArray<NSNumber*>* process_audio_device_ids_to_include =
-        GetProcessAudioDeviceIds(*config_.capture_application);
+        GetProcessAudioDeviceIds(*config_.capture_application,
+                                 config_.capture_application_pid);
     if (![process_audio_device_ids_to_include count]) {
       SendLogMessage("%s => Could not determine audio objects that belong to "
                      "the application process.",
@@ -1215,7 +1217,8 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
 }
 
 NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
-    const std::string& main_bundle_id) {
+    const std::string& main_bundle_id,
+    std::optional<pid_t> application_pid) {
   base::ElapsedTimer timer;
 
   auto get_device_ids_result = GetAllProcessAudioDeviceIds(catap_api_.get());
@@ -1255,7 +1258,49 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
         base::SysCFStringRefToUTF8(cf_process_bundle_id.get());
 
     if (IsSameOrSubBundle(process_bundle_id, main_bundle_id)) {
-      [process_audio_device_ids_array addObject:@(device_id)];
+      if (!application_pid) {
+        [process_audio_device_ids_array addObject:@(device_id)];
+        continue;
+      }
+
+      // If the `application_pid` is non-empty, we will filter the process
+      // audio objects based on PID as well. We will only add the process
+      // audio object to the tap if its PID, or its parent's PID, matches
+      // `application_pid`.
+      //
+      // This solves the issue where audio processes of Chrome and Edge
+      // variants (stable, dev, beta, canary) have the same bundle ID as the
+      // main application, but different PIDs. Without PID filtering we would
+      // end up capturing audio from all variants.
+      int32_t process_id;
+      UInt32 property_size = sizeof(int32_t);
+      result = catap_api_->AudioObjectGetPropertyData(
+          device_id, &kAudioProcessPidAddress,
+          /*in_qualifier_data_size=*/0,
+          /*in_qualifier_data=*/nullptr, &property_size, &process_id);
+      if (result != noErr) {
+        SendLogMessage("%s => Could not determine process ID of process audio "
+                       "device ID. Result: %d",
+                       __func__, result);
+        continue;  // Skip this device and continue to the next.
+      }
+
+      // Add the audio device ID if the PID of the process audio
+      // object matches `application_pid`.
+      if (process_id == *application_pid) {
+        [process_audio_device_ids_array addObject:@(device_id)];
+        continue;
+      }
+
+      // If the PID for the process audio object did not match, we check if
+      // the parent process ID matches `application_pid`.
+      struct proc_bsdinfo process_info;
+      if (proc_pidinfo(process_id, PROC_PIDTBSDINFO, 0, &process_info,
+                       sizeof(process_info)) == sizeof(process_info)) {
+        if (static_cast<pid_t>(process_info.pbi_ppid) == *application_pid) {
+          [process_audio_device_ids_array addObject:@(device_id)];
+        }
+      }
     }
   }
 
@@ -1430,7 +1475,8 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
       // `config_.capture_application`.
       CHECK(config_.capture_application.has_value());
       NSArray<NSNumber*>* process_audio_device_ids_to_include =
-          GetProcessAudioDeviceIds(*config_.capture_application);
+          GetProcessAudioDeviceIds(*config_.capture_application,
+                                   config_.capture_application_pid);
       NSSet* new_tap_objects =
           [NSSet setWithArray:process_audio_device_ids_to_include];
       NSSet* current_tap_objects =

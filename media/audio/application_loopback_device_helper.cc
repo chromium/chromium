@@ -5,7 +5,6 @@
 #include "media/audio/application_loopback_device_helper.h"
 
 #include "base/notreached.h"
-#include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -56,8 +55,14 @@ GetApplicationIdFromApplicationLoopbackDeviceId(std::string_view device_id) {
 namespace {
 
 std::string BuildDeviceId(std::string_view base_id,
-                          std::string_view bundle_id) {
-  return base::StrCat({base_id, ":", bundle_id});
+                          std::string_view bundle_id,
+                          std::optional<pid_t> application_id) {
+  std::string device_id = base::StrCat({base_id, ":", bundle_id});
+  if (application_id.has_value()) {
+    device_id =
+        base::StrCat({device_id, ":", base::NumberToString(*application_id)});
+  }
+  return device_id;
 }
 
 }  // namespace
@@ -75,27 +80,45 @@ std::string MEDIA_EXPORT CreateRestrictOwnAudioBrowserLoopbackDeviceId() {
 }
 
 std::string MEDIA_EXPORT
-CreateApplicationLoopbackDeviceId(std::string_view bundle_id) {
+CreateApplicationLoopbackDeviceId(std::string_view bundle_id,
+                                  std::optional<pid_t> application_id) {
   return BuildDeviceId(AudioDeviceDescription::kApplicationLoopbackDeviceId,
-                       bundle_id);
+                       bundle_id, application_id);
 }
 
 std::string MEDIA_EXPORT
-CreateRestrictOwnAudioBrowserLoopbackDeviceId(std::string_view bundle_id) {
+CreateRestrictOwnAudioBrowserLoopbackDeviceId(std::string_view bundle_id,
+                                              pid_t application_id) {
   return BuildDeviceId(
       AudioDeviceDescription::kRestrictOwnAudioBrowserLoopbackDeviceId,
-      bundle_id);
+      bundle_id, std::make_optional(application_id));
 }
 
-std::string MEDIA_EXPORT
-GetBundleIdFromApplicationLoopbackDeviceId(std::string_view device_id) {
+std::pair<std::string, std::optional<pid_t>> MEDIA_EXPORT
+ParseApplicationLoopbackDeviceId(std::string_view device_id) {
   CHECK(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
-  size_t colon_pos = device_id.find(':');
-  CHECK(colon_pos != std::string::npos);
+  size_t first_colon_pos = device_id.find(':');
+  CHECK(first_colon_pos != std::string::npos);
 
-  std::string bundle_id = std::string(device_id.substr(colon_pos + 1));
+  size_t second_colon_pos = device_id.find(':', first_colon_pos + 1);
+
+  std::string bundle_id = std::string(device_id.substr(
+      first_colon_pos + 1, second_colon_pos - first_colon_pos - 1));
   CHECK(!bundle_id.empty());
-  return bundle_id;
+
+  std::optional<pid_t> application_id;
+  if (second_colon_pos != std::string::npos) {
+    std::string_view application_id_str =
+        device_id.substr(second_colon_pos + 1);
+    if (!application_id_str.empty()) {
+      pid_t pid;
+      if (base::StringToInt(application_id_str, &pid)) {
+        application_id = pid;
+      }
+    }
+  }
+
+  return {bundle_id, application_id};
 }
 
 #endif  // BUILDFLAG(IS_WIN)

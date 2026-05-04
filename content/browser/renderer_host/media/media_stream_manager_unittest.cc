@@ -1173,8 +1173,8 @@ TEST_F(MediaStreamManagerTest,
 TEST_F(MediaStreamManagerTest,
        GetDisplayMediaRequestApplicationAudioShareIsHashed) {
 #if BUILDFLAG(IS_MAC)
-  std::string device_id =
-      media::CreateApplicationLoopbackDeviceId("org.chromium.Chromium");
+  std::string device_id = media::CreateApplicationLoopbackDeviceId(
+      "org.chromium.Chromium", std::nullopt);
 #else
   std::string device_id = media::CreateApplicationLoopbackDeviceId(12345);
 #endif
