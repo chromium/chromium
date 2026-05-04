@@ -72,6 +72,9 @@ namespace {
 // Used as a flag to test dawn initialization failure.
 BASE_FEATURE(kForceDawnInitializeFailure, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if ShaderF16 Dawn feature is enabled for Graphite.
+BASE_FEATURE(kSkiaGraphiteF16, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Sets crash key in thread safe manner. This should be used for any crash keys
 // set from dawn error or device lost callbacks that may run on multiple
 // threads.
@@ -263,6 +266,11 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
   if (backend_type == wgpu::BackendType::OpenGLES &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
     features.push_back(wgpu::FeatureName::ANGLETextureSharing);
+  }
+
+  if (base::FeatureList::IsEnabled(kSkiaGraphiteF16) &&
+      adapter.HasFeature(wgpu::FeatureName::ShaderF16)) {
+    features.push_back(wgpu::FeatureName::ShaderF16);
   }
 
   constexpr wgpu::FeatureName kOptionalFeatures[] = {
