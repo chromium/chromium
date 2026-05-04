@@ -15,6 +15,7 @@ source_set("picture_in_picture") {
     "auto_picture_in_picture_safe_browsing_checker_client.h",
     "auto_picture_in_picture_tab_helper.h",
     "auto_picture_in_picture_tab_observer_helper_base.h",
+    "auto_picture_in_picture_window_occlusion_helper_base.h",
     "auto_pip_setting_helper.h",
   ]
   public_deps = [
@@ -72,6 +73,8 @@ source_set("impl") {
     "auto_picture_in_picture_safe_browsing_checker_client.cc",
     "auto_picture_in_picture_tab_helper.cc",
     "auto_picture_in_picture_tab_observer_helper_base.cc",
+    "auto_picture_in_picture_window_occlusion_helper_base.cc",
+    "auto_picture_in_picture_window_occlusion_helper_stub.cc",
     "auto_pip_setting_helper.cc",
   ]
 

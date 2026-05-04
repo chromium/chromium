@@ -41,6 +41,9 @@ class AutoPictureInPictureTabObserverHelperBase {
   // Returns the WebContents of the currently active tab in the observed model.
   virtual content::WebContents* GetActiveWebContents() const = 0;
 
+  // Returns true if the observed tab is currently activated.
+  virtual bool IsTabActivated() = 0;
+
  protected:
   void RunCallback(bool is_tab_activated);
 

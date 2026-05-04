@@ -1147,6 +1147,12 @@ inline constexpr char kAutoPictureInPictureForVideoPlaybackName[] =
 inline constexpr char kAutoPictureInPictureForVideoPlaybackDescription[] =
     "Enables auto picture in picture for video playback";
 
+inline constexpr char kAutoPictureInPictureOnWindowOccludedName[] =
+    "Auto picture in picture on window occluded";
+inline constexpr char kAutoPictureInPictureOnWindowOccludedDescription[] =
+    "Allows auto picture-in-picture to trigger when the window is occluded "
+    "by another window.";
+
 inline constexpr char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 inline constexpr char kBiometricReauthForPasswordFillingDescription[] =

@@ -38,6 +38,7 @@ class AutoPictureInPictureTabStripObserverHelper final
   void StartObserving() override;
   void StopObserving() override;
   content::WebContents* GetActiveWebContents() const override;
+  bool IsTabActivated() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

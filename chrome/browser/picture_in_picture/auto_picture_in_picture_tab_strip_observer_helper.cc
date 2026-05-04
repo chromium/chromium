@@ -166,3 +166,15 @@ AutoPictureInPictureTabStripObserverHelper::GetActiveWebContents() const {
 
   return observed_tab_strip_model_->GetActiveWebContents();
 }
+
+bool AutoPictureInPictureTabStripObserverHelper::IsTabActivated() {
+  // If we're currently observing the tab strip, then `is_tab_activated_` is
+  // current so we can just return it.
+  if (is_observing_) {
+    return is_tab_activated_;
+  }
+
+  // Otherwise, calculate it now.
+  UpdateIsTabActivated(GetCurrentTabStripModel());
+  return is_tab_activated_;
+}

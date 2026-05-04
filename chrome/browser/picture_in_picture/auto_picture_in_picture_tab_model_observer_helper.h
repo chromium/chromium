@@ -42,6 +42,7 @@ class AutoPictureInPictureTabModelObserverHelper final
   void StartObserving() override;
   void StopObserving() override;
   content::WebContents* GetActiveWebContents() const override;
+  bool IsTabActivated() override;
 
   // TabModelObserver:
   void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;

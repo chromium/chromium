@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_window_occlusion_helper_base.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -74,9 +75,15 @@ class AutoPictureInPictureTabHelper
   void MediaPictureInPictureChanged(bool is_in_picture_in_picture) override;
   void MediaSessionCreated(content::MediaSession* media_session) override;
 
-  // Called by `tab_strip_observer_helper_` when the tab changes between
+  // Called by `tab_observer_helper_` when the tab changes between
   // activated and unactivated.
   void OnTabActivatedChanged(bool is_tab_activated);
+
+  // Called by `window_occlusion_helper_` when the tab's window changes between
+  // occluded and unoccluded.
+  void OnOcclusionStateChanged(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState
+          occlusion_state);
 
 #if !BUILDFLAG(IS_ANDROID)
   // media_session::mojom::AudioFocusObserver:
@@ -206,6 +213,11 @@ class AutoPictureInPictureTabHelper
   // known, and various conditions that are used to allow/deny autopip requests.
   media::PictureInPictureEventsInfo::AutoPipInfo GetAutoPipInfo() const;
 
+  AutoPictureInPictureWindowOcclusionHelperBase*
+  window_occlusion_helper_for_testing() {
+    return window_occlusion_helper_.get();
+  }
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -236,7 +248,7 @@ class AutoPictureInPictureTabHelper
 
   void MaybeExitAutoPictureInPicture();
 
-  void MaybeStartOrStopObservingTabStrip();
+  void MaybeStartOrStopObservers();
 
   bool IsEligibleForAutoPictureInPicture(bool should_record_blocking_metrics);
 
@@ -350,8 +362,9 @@ class AutoPictureInPictureTabHelper
   std::unique_ptr<AutoPictureInPictureTabObserverHelperBase>
       tab_observer_helper_;
 
-  // True if the tab is the activated tab on its tab strip.
-  bool is_tab_activated_ = false;
+  // Notifies us when our tab's window becomes occluded or unoccluded.
+  std::unique_ptr<AutoPictureInPictureWindowOcclusionHelperBase>
+      window_occlusion_helper_;
 
   // True if the media session associated with the observed WebContents has
   // gained audio focus.

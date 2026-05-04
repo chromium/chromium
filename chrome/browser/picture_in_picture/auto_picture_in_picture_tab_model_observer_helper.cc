@@ -96,6 +96,18 @@ AutoPictureInPictureTabModelObserverHelper::GetActiveWebContents() const {
   return observed_tab_model_->GetActiveWebContents();
 }
 
+bool AutoPictureInPictureTabModelObserverHelper::IsTabActivated() {
+  // If we're currently observing the tab model, then `is_tab_activated_` is
+  // current so we can just return it.
+  if (is_observing_) {
+    return is_tab_activated_;
+  }
+
+  // Otherwise, calculate it now.
+  ReevaluateObservedModelAndState();
+  return is_tab_activated_;
+}
+
 void AutoPictureInPictureTabModelObserverHelper::DidSelectTab(
     TabAndroid* tab,
     TabModel::TabSelectionType type) {
@@ -152,6 +164,7 @@ void AutoPictureInPictureTabModelObserverHelper::
     UpdateIsTabActivated();
   }
 }
+
 void AutoPictureInPictureTabModelObserverHelper::UpdateIsTabActivated() {
   if (observed_tab_model_) {
     bool was_active = is_tab_activated_;
@@ -160,7 +173,7 @@ void AutoPictureInPictureTabModelObserverHelper::UpdateIsTabActivated() {
     // WebContents is the currently active one in that model.
     is_tab_activated_ = GetActiveWebContents() == GetObservedWebContents();
 
-    if (is_tab_activated_ != was_active) {
+    if (is_tab_activated_ != was_active && is_observing_) {
       RunCallback(is_tab_activated_);
     }
   }

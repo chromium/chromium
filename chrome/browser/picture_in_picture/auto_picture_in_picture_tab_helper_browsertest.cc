@@ -18,6 +18,7 @@
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/media/mock_media_engagement_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_observer_helper_base.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service.h"
@@ -191,6 +192,39 @@ class MockContentBrowserClient : public ChromeContentBrowserClient {
               (const content::WebContents& web_contents),
               (const, override));
 };
+
+class MockAutoPictureInPictureWindowOcclusionHelper
+    : public AutoPictureInPictureWindowOcclusionHelperBase {
+ public:
+  MockAutoPictureInPictureWindowOcclusionHelper(
+      content::WebContents* web_contents,
+      OcclusionStateChangedCallback callback)
+      : AutoPictureInPictureWindowOcclusionHelperBase(web_contents,
+                                                      std::move(callback)) {}
+
+  void SimulateOcclusionStateChange(OcclusionState state) {
+    state_ = state;
+    RunCallback(state);
+  }
+
+  // AutoPictureInPictureWindowOcclusionHelperBase:
+  MOCK_METHOD(void, StartObserving, (), (override));
+  MOCK_METHOD(void, StopObserving, (), (override));
+
+  OcclusionState GetOcclusionState() const override { return state_; }
+
+ private:
+  OcclusionState state_ = OcclusionState::kVisible;
+};
+
+std::unique_ptr<AutoPictureInPictureWindowOcclusionHelperBase>
+MockAutoPictureInPictureWindowOcclusionHelperFactory(
+    content::WebContents* web_contents,
+    AutoPictureInPictureWindowOcclusionHelperBase::OcclusionStateChangedCallback
+        callback) {
+  return std::make_unique<MockAutoPictureInPictureWindowOcclusionHelper>(
+      web_contents, std::move(callback));
+}
 
 // Helper class to wait for "recently audible" callbacks.
 class WasRecentlyAudibleWaiter {
@@ -3437,6 +3471,104 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
   CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
                                UkmEntry::kBrowserInitiatedName,
                                PromptResult::kAllowOnce);
+}
+
+class AutoPictureInPictureTabHelperWindowOcclusionDisabledBrowserTest
+    : public AutoPictureInPictureTabHelperBrowserTest {
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto features =
+        AutoPictureInPictureTabHelperBrowserTest::GetDisabledFeatures();
+    features.push_back(media::kAutoPictureInPictureOnWindowOccluded);
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureTabHelperWindowOcclusionDisabledBrowserTest,
+    TabHelperDoesNotCreateWindowOcclusionHelperWhenFeatureDisabled) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  // The tab helper should not have a window occlusion helper since the feature
+  // is disabled.
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  EXPECT_EQ(nullptr, tab_helper->window_occlusion_helper_for_testing());
+}
+
+class AutoPictureInPictureTabHelperWindowOcclusionBrowserTest
+    : public AutoPictureInPictureTabHelperBrowserTest {
+ public:
+  void SetUp() override {
+    AutoPictureInPictureWindowOcclusionHelperBase::SetFactoryForTesting(
+        base::BindRepeating(
+            &MockAutoPictureInPictureWindowOcclusionHelperFactory));
+
+    AutoPictureInPictureTabHelperBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    AutoPictureInPictureWindowOcclusionHelperBase::SetFactoryForTesting(
+        AutoPictureInPictureWindowOcclusionHelperBase::FactoryCallback());
+
+    AutoPictureInPictureTabHelperBrowserTest::TearDown();
+  }
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    auto features =
+        AutoPictureInPictureTabHelperBrowserTest::GetEnabledFeatures();
+    features.push_back(media::kAutoPictureInPictureOnWindowOccluded);
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperWindowOcclusionBrowserTest,
+                       WindowOcclusionTriggersAutoPip) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  auto* mock_occlusion_helper =
+      static_cast<MockAutoPictureInPictureWindowOcclusionHelper*>(
+          tab_helper->window_occlusion_helper_for_testing());
+  ASSERT_NE(nullptr, mock_occlusion_helper);
+
+  // Simulate the window becoming occluded.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  mock_occlusion_helper->SimulateOcclusionStateChange(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::kOccluded);
+  enter_pip_observer.Wait();
+
+  // The tab helper should indicate that we're now in pip.
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  // Simulate the window becoming hidden. This should not close the pip window.
+  mock_occlusion_helper->SimulateOcclusionStateChange(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::kHidden);
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  // Simulate the window becoming visible again.
+  content::MediaStartStopObserver exit_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  mock_occlusion_helper->SimulateOcclusionStateChange(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::kVisible);
+  exit_pip_observer.Wait();
+
+  // There should no longer be a picture-in-picture window.
+  EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
+
+  // Simulate the window becoming hidden. This should not open a pip window.
+  mock_occlusion_helper->SimulateOcclusionStateChange(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::kHidden);
+  EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
 }
 
 class AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest

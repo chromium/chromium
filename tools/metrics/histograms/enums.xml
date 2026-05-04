@@ -10133,6 +10133,8 @@ from previous Chrome versions.
   <int value="-1327982727" label="IsolatedWebAppAllowlist:enabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>
+  <int value="-1326597785"
+      label="AutoPictureInPictureOnWindowOccluded:disabled"/>
   <int value="-1326486858" label="ChromeWebuiRefresh2023:enabled"/>
   <int value="-1326463296" label="SSLCommittedInterstitials:disabled"/>
   <int value="-1325887476" label="NewPrintPreview:enabled"/>
@@ -16599,6 +16601,7 @@ from previous Chrome versions.
   <int value="813302293" label="RemoveStatusBarInWebApps:disabled"/>
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
+  <int value="814107660" label="AutoPictureInPictureOnWindowOccluded:enabled"/>
   <int value="814671037" label="VirtualKeyboardGlobalEmojiPreferences:enabled"/>
   <int value="815912654" label="EdgeToEdgeEverywhere:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>

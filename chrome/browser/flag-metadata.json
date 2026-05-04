@@ -753,6 +753,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "auto-picture-in-picture-on-window-occluded",
+    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "auto-revoke-suspicious-notification",
     "owners": ["skrakowi@google.com","minap@google.com","chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 147

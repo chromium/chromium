@@ -9047,6 +9047,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(media::kAutoPictureInPictureForVideoPlayback)},
 
+    {"auto-picture-in-picture-on-window-occluded",
+     flag_descriptions::kAutoPictureInPictureOnWindowOccludedName,
+     flag_descriptions::kAutoPictureInPictureOnWindowOccludedDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kAutoPictureInPictureOnWindowOccluded)},
+
     {"document-picture-in-picture-animate-resize",
      flag_descriptions::kDocumentPictureInPictureAnimateResizeName,
      flag_descriptions::kDocumentPictureInPictureAnimateResizeDescription,
