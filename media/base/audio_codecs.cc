@@ -5,6 +5,7 @@
 #include "media/base/audio_codecs.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -154,7 +155,7 @@ bool ParseDolbyAc4CodecId(const std::string& codec_id,
     return false;
   }
 
-  std::vector<std::string> elem = base::SplitString(
+  std::vector<std::string_view> elem = base::SplitStringPiece(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK(elem[0] == "ac-4");
 
@@ -257,7 +258,7 @@ bool ParseIamfCodecId(std::string_view codec_id,
     return false;
   }
 
-  std::vector<std::string> elem = base::SplitString(
+  std::vector<std::string_view> elem = base::SplitStringPiece(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (elem.size() < 4) {
     DVLOG(4) << __func__ << ": invalid IAMF codec id:" << codec_id;
