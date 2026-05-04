@@ -354,6 +354,8 @@ void GeminiBrowserAgent::ConfigureGemini() {
       [[GeminiStartupConfiguration alloc] init];
   config.authService = auth_service;
   config.gateway = bwg_gateway_;
+  config.imageRemixEnabled = gemini::IsFeatureAvailable(
+      gemini::Feature::kImageRemix, browser_->GetProfile());
 
   ios::provider::ConfigureWithStartupConfiguration(config);
 }
@@ -1203,12 +1205,11 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.entryPoint = entry_point;
   config.imageRemixIPHShouldShow =
       entry_point == gemini::EntryPoint::ImageRemixIPH;
-  config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
-  config.responseViewDynamicSizeEnabled =
-      IsGeminiResponseViewDynamicResizingEnabled();
-  config.geminiChatPersistenceEnabled = IsGeminiChatPersistenceEnabled();
+  // TODO(crbug.com/481733906): Remove once ios_internal has migrated to
+  // GeminiStartupConfiguration.
   config.imageRemixEnabled = gemini::IsFeatureAvailable(
       gemini::Feature::kImageRemix, browser_->GetProfile());
+
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.
   config.geminiLocationPermissionState =

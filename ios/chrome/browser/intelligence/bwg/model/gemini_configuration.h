@@ -96,19 +96,6 @@ class PageContext;
 // Whether to show the Gemini image remix in-product help in the Floaty.
 @property(nonatomic, assign) BOOL imageRemixIPHShouldShow;
 
-// Whether to use the response ready interval to show the response ready
-// notification in the floaty.
-@property(nonatomic, assign) double responseReadyInterval;
-
-// Whether to use the dynamic size for the response view in the floaty.
-@property(nonatomic, assign) BOOL responseViewDynamicSizeEnabled;
-
-// Whether chat persistence is enabled.
-@property(nonatomic, assign) BOOL geminiChatPersistenceEnabled;
-
-// Whether image remix is enabled.
-@property(nonatomic, assign) BOOL imageRemixEnabled;
-
 // The initial bottom offset of the floaty.
 @property(nonatomic, assign) CGFloat initialBottomOffset;
 
@@ -118,6 +105,12 @@ class PageContext;
 
 // The entry point where the floaty was triggered from.
 @property(nonatomic, assign) gemini::EntryPoint entryPoint;
+
+// TODO(crbug.com/481733906): Remove once ios_internal has migrated to
+// GeminiStartupConfiguration.
+// Whether image remix is enabled. This is not equivalent to a feature flag
+// because it has additional eligibility checks.
+@property(nonatomic, assign) BOOL imageRemixEnabled;
 
 @end
 

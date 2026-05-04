@@ -21,6 +21,10 @@ class AuthenticationService;
 // The BWG gateway for bridging internal protocols.
 @property(nonatomic, weak) id<BWGGatewayProtocol> gateway;
 
+// Whether image remix is enabled. This is not equivalent to a feature flag
+// because it has additional eligibility checks.
+@property(nonatomic, assign) BOOL imageRemixEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_STARTUP_CONFIGURATION_H_
