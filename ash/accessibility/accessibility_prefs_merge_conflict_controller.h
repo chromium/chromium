@@ -51,10 +51,11 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictController {
       base::DictValue locked_prefs,
       base::DictValue pending_prefs);
 
- private:
+ protected:
   explicit AccessibilityPrefsMergeConflictController(
       std::vector<PrefConflict> conflicts);
 
+ private:
   std::vector<PrefConflict> conflicts_;
 };
 

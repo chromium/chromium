@@ -26,6 +26,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -858,6 +859,8 @@ class ASH_EXPORT AccessibilityController
   // dialog.
   void OnRequestDisableFaceGazeAction(bool dialog_accepted);
 
+  void OnPrefsConflictResolutionDialogClosed();
+
   void RecordSelectToSpeakSpeechDuration(SelectToSpeakState old_state,
                                          SelectToSpeakState new_state);
 
@@ -956,6 +959,9 @@ class ASH_EXPORT AccessibilityController
 
   // The current AccessibilityConfirmationDialog, if one exists.
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
+
+  // The dialog to resolve OOBE / login screen and Sync preferences conflict.
+  views::UniqueWidgetPtr prefs_conflict_resolution_dialog_;
 
   base::RepeatingCallback<void()>
       show_confirmation_dialog_callback_for_testing_;

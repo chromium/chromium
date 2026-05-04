@@ -8410,6 +8410,20 @@ To shut down the device, press and hold the power button on the device again.
         Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots.
       </message>
 
+      <!-- Accessibility Preferences Conflict Resolution Dialog -->
+      <message name="IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_ACCEPT_BUTTON_TEXT" desc="Accept button text.">
+        Got it
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_CANCEL_BUTTON_TEXT" desc="Cancel button text.">
+        Go to Settings
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_DESCRIPTION" desc="Dialog description.">
+        These settings are syncing across your other ChromeOS devices. You can change them here, or manage the full list in Settings.
+      </message>
+      <message name="IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_TITLE" desc="Label of the title for the informed restore dialog.">
+        Synced accessibility settings
+      </message>
+
       <!-- Game Dashboard strings -->
       <message name="IDS_ASH_GAME_DASHBOARD_BACK_TOOLTIP" desc="Tooltip for the Game Dashboard back button.">
         Back
