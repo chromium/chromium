@@ -1487,7 +1487,9 @@
                     "enable_features": [
                         "AndroidGrammarCheck",
                         "AndroidSpellcheckFullApiBlink",
-                        "AndroidSpellcheckNativeUi"
+                        "AndroidSpellcheckNativeUi",
+                        "LeftClickToHandleSuggestion",
+                        "SpellCheckChunking"
                     ]
                 }
             ]
