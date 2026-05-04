@@ -465,12 +465,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
 
- private:
-  scoped_refptr<CanvasResourceSharedImage> CreateResource();
-
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
+
+ private:
+  scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
   const CanvasResourceSharedImage* resource() const {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
