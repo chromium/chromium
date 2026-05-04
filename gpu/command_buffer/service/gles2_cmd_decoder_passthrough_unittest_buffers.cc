@@ -691,5 +691,42 @@ TEST_F(GLES3DecoderPassthroughTest, CopyBufferSubDataValidArgs) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+TEST_F(GLES3DecoderPassthroughTest, BufferDataGLErrorLeavesStaleMapEntry) {
+  const GLenum kTarget = GL_ARRAY_BUFFER;
+  const GLsizeiptr kSize = 64;
+  const GLbitfield kAccess = GL_MAP_WRITE_BIT;
+
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t data_shm_id = shared_memory_id_;
+  uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
+
+  GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
+  DoBindBuffer(kTarget, kClientBufferId);
+  DoBufferData(kTarget, kSize, nullptr, GL_STREAM_DRAW);
+
+  // Map the buffer
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
+  cmds::MapBufferRange map_cmd;
+  map_cmd.Init(kTarget, 0, kSize, kAccess, data_shm_id, data_shm_offset,
+               result_shm_id, result_shm_offset);
+  *result = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(map_cmd));
+  EXPECT_EQ(1u, *result);
+
+  PassthroughResources* passthrough_resources = GetPassthroughResources();
+  EXPECT_NE(passthrough_resources->mapped_buffer_map.find(kClientBufferId),
+            passthrough_resources->mapped_buffer_map.end());
+
+  // Call BufferData with invalid size to trigger GL error
+  cmds::BufferData buffer_data_cmd;
+  buffer_data_cmd.Init(kTarget, -1, 0, 0, GL_STREAM_DRAW);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(buffer_data_cmd));
+
+  // The entry should be erased even after a GL error.
+  EXPECT_EQ(passthrough_resources->mapped_buffer_map.find(kClientBufferId),
+            passthrough_resources->mapped_buffer_map.end());
+}
+
 }  // namespace gles2
 }  // namespace gpu
