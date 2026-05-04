@@ -431,12 +431,6 @@ bool BrowserAccessibilityAndroid::IsFormDescendant() const {
 }
 
 bool BrowserAccessibilityAndroid::IsHeading() const {
-  BrowserAccessibilityAndroid* parent =
-      static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
-  if (parent && parent->IsHeading()) {
-    return true;
-  }
-
   return ui::IsHeading(GetRole());
 }
 

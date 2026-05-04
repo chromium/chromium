@@ -10,6 +10,6 @@ android.webkit.WebView focusable focused
 ++++++++++android.view.View role_description='link' clickable focusable link interesting name='Walking Tour in Amsterdam'
 ++++++++++++android.widget.Image content_description='Walking Tour in Amsterdam'
 ++++++++android.view.View role_description='heading 3 link' clickable heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
-++++++++++android.view.View role_description='heading 3 link' clickable focusable heading link interesting name='Dynamic Europe: Amsterdam, Prague, Berlin'
-++++++++++++android.widget.TextView heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++android.view.View role_description='heading 3 link' clickable focusable link interesting name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++android.widget.TextView name='Dynamic Europe: Amsterdam, Prague, Berlin'
 ++++++++android.widget.TextView interesting name='7 pm Tuesday, March 3, on TV'
