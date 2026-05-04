@@ -5,11 +5,13 @@
 #include "gpu/command_buffer/service/dawn_platform.h"
 
 #include <mutex>
+#include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_job.h"
 #include "base/task/thread_pool.h"
@@ -18,7 +20,12 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/vulkan/buildflags.h"
 #include "ui/gl/progress_reporter.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/vulkan/vulkan_util.h"
+#endif
 
 namespace gpu::webgpu {
 
@@ -169,6 +176,37 @@ void RecordDelayedUMA(scoped_refptr<DawnPlatform::CacheCountsMap> cache_map,
   }
 }
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+// A collection for which a unified metric is emitted for Ganesh/Graphite Vulkan
+// backends.
+constexpr auto kUnifiedSkiaMetrics =
+    base::MakeFixedFlatMap<std::string_view, void (*)(base::TimeDelta)>(
+        // Also emitted from CreateGraphicsPipelinesHook with same name.
+        {{"Vulkan.CreateGraphicsPipelines.CacheHit",
+          &gpu::EmitVkCreateGraphicsPipelinesUMA},
+         {"Vulkan.CreateGraphicsPipelines.CacheMiss",
+          &gpu::EmitVkCreateGraphicsPipelinesUMA}});
+
+bool ShouldEmitUnifiedHistogram(const std::string& uma_prefix,
+                                const char* name) {
+  if (uma_prefix == "GPU.GraphiteDawn." && kUnifiedSkiaMetrics.contains(name)) {
+    return true;
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+
+void EmitUnifiedHistogram(const std::string& uma_prefix,
+                          const char* name,
+                          int sample) {
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+  if (!ShouldEmitUnifiedHistogram(uma_prefix, name)) {
+    return;
+  }
+  kUnifiedSkiaMetrics.at(name)(base::Microseconds(sample));
+#endif  // BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+}
+
 }  // anonymous namespace
 
 DawnPlatform::CacheCountsMap::CacheCountsMap() = default;
@@ -270,6 +308,7 @@ void DawnPlatform::HistogramCustomCounts(const char* name,
   base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
                                  bucketCount);
   HistogramCacheCountHelper(name, sample, min, max, bucketCount);
+  EmitUnifiedHistogram(uma_prefix_, name, sample);
 }
 
 void DawnPlatform::HistogramCustomCountsHPC(const char* name,
@@ -281,6 +320,7 @@ void DawnPlatform::HistogramCustomCountsHPC(const char* name,
     base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
                                    bucketCount);
     HistogramCacheCountHelper(name, sample, min, max, bucketCount);
+    EmitUnifiedHistogram(uma_prefix_, name, sample);
   }
 }
 

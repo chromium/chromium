@@ -163,6 +163,9 @@ std::vector<VkDrmFormatModifierPropertiesEXT>
 QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
                                       VkFormat format);
 
+COMPONENT_EXPORT(VULKAN)
+void EmitVkCreateGraphicsPipelinesUMA(base::TimeDelta sample);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_

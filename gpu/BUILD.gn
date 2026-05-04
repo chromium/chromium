@@ -635,6 +635,7 @@ test("gpu_unittests") {
     "//gpu/ipc/common:test_support",
     "//gpu/ipc/host",
     "//gpu/ipc/service",
+    "//gpu/vulkan:buildflags",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",

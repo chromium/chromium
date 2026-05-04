@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "gpu/vulkan/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu::webgpu {
@@ -96,6 +97,26 @@ TEST_F(DawnPlatformTest, RecordsCacheHistogramsOnFramePresented) {
   histogram_tester_.ExpectUniqueSample(
       "GPU.GraphiteDawn.D3D11.CompileShader.CacheHit.Percentage.1stPresent", 66,
       1);
+}
+
+TEST_F(DawnPlatformTest, RecordsAbsoluteHistograms) {
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
+  {
+    // Test Graphite path: uses custom unified names.
+    DawnPlatform platform(nullptr, nullptr, "GPU.GraphiteDawn.", false);
+    platform.HistogramCustomCounts("Vulkan.CreateGraphicsPipelines.CacheHit",
+                                   10, 1, 100, 50);
+    histogram_tester_.ExpectUniqueSample(
+        "GPU.Vulkan.SkiaContext.vkCreateGraphicsPipelinesUS", 10, 1);
+  }
+#endif
+
+  {
+    // Test WebGPU path: no changes to name.
+    DawnPlatform platform(nullptr, nullptr, "GPU.WebGPU.", false);
+    platform.HistogramCustomCounts("Custom.Metric", 20, 1, 100, 50);
+    histogram_tester_.ExpectUniqueSample("GPU.WebGPU.Custom.Metric", 20, 1);
+  }
 }
 
 }  // namespace gpu::webgpu

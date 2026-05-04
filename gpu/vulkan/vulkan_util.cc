@@ -409,10 +409,9 @@ VkResult CreateGraphicsPipelinesHook(
     const VkAllocationCallbacks* pAllocator,
     VkPipeline* pPipelines) {
   absl::Cleanup uma_runner = [start_time = base::TimeTicks::Now()] {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
-        base::TimeTicks::Now() - start_time, base::Microseconds(100),
-        base::Microseconds(50000), 50);
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+    // Also emitted from DawnPlatform.
+    EmitVkCreateGraphicsPipelinesUMA(elapsed);
   };
   TRACE_EVENT0("gpu", "VulkanCreateGraphicsPipelines");
   return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
@@ -726,6 +725,12 @@ QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
   }
 
   return modifier_props;
+}
+
+void EmitVkCreateGraphicsPipelinesUMA(base::TimeDelta sample) {
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Vulkan.SkiaContext.vkCreateGraphicsPipelinesUS", sample,
+      base::Microseconds(50), base::Microseconds(1'000'000), 50);
 }
 
 }  // namespace gpu

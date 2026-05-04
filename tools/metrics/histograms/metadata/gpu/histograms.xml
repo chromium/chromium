@@ -1808,14 +1808,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
-    units="microseconds" expires_after="2026-09-06">
-  <owner>vasilyt@chromium.org</owner>
+<histogram name="GPU.Vulkan.SkiaContext.vkCreateGraphicsPipelinesUS"
+    units="microseconds" expires_after="2027-05-01">
+  <owner>hitawala@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
-    Duration of vkCreateGraphicsPipelines call. Recorded every time Skia creates
-    graphics pipeline. Only reported for platforms supporting high resolution
-    clocks.
+    Duration of vkCreateGraphicsPipelines call. Recorded every time
+    Ganesh-Vulkan or Graphite-Dawn on Skia context creates graphics pipeline.
+    Only reported for platforms supporting high resolution clocks.
   </summary>
 </histogram>
 
