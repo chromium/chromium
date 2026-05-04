@@ -2840,6 +2840,37 @@ chromium-metrics-reviews@google.com.
   <summary>Result of key signature verification from the policy data.</summary>
 </histogram>
 
+<histogram name="Enterprise.LocalAuthFactorsPolicy.ForcedReauth" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Recorded whenever the local auth factors policy is evaluated to determine if
+    online reauth should be forced. Recorded as true if forced, and false
+    otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged"
+    enum="LocalAuthFactorType" expires_after="2026-12-31">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Recorded whenever a local auth factor (PIN or local password) is changed for
+    a user under the local auth factors policy. Tracks which factor was changed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.LocalAuthFactorsPolicy.PasswordComplexity"
+    enum="LocalAuthFactorsComplexity" expires_after="2026-12-31">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Recorded whenever the password complexity policy is updated. Tracks the
+    enforced complexity level.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
     enum="BooleanSuccess" expires_after="2026-11-17">
   <owner>mpetrisor@chromium.org</owner>

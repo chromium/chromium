@@ -86,12 +86,15 @@ using BorrowContextCallback =
 
 // Maps the values of the same-named policy located in
 // components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml.
+// LINT.IfChange(LocalAuthFactorsComplexity)
 enum class LocalAuthFactorsComplexity {
   kNone = 1,
   kLow,
   kMedium,
   kHigh,
+  kMaxValue = kHigh,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:LocalAuthFactorsComplexity)
 
 }  // namespace ash
 

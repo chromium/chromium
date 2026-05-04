@@ -2652,6 +2652,26 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Fully managed"/>
 </enum>
 
+<!-- LINT.IfChange(LocalAuthFactorsComplexity) -->
+
+<enum name="LocalAuthFactorsComplexity">
+  <int value="1" label="None"/>
+  <int value="2" label="Low"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="High"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/osauth/public/common_types.h:LocalAuthFactorsComplexity) -->
+
+<!-- LINT.IfChange(LocalAuthFactorType) -->
+
+<enum name="LocalAuthFactorType">
+  <int value="0" label="PIN"/>
+  <int value="1" label="Local Password"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller.h:LocalAuthFactorType) -->
+
 <enum name="MachineLevelUserCloudPolicyEnrollmentResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to fetch DM Token from the server"/>

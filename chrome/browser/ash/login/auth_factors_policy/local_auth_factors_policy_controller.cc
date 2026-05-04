@@ -17,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_notification_delegate.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -217,6 +218,8 @@ void LocalAuthFactorsPolicyController::OnGetAuthFactorsConfiguration(
     ash::RecordReauthReason(user_context->GetAccountId(),
                             ash::ReauthReason::kForcedByLocalAuthFactorsPolicy);
   }
+  base::UmaHistogramBoolean("Enterprise.LocalAuthFactorsPolicy.ForcedReauth",
+                            has_local_auth_factors);
   VLOG(1) << "Local auth factors check. Forced online signin: "
           << has_local_auth_factors;
 }
@@ -248,10 +251,16 @@ void LocalAuthFactorsPolicyController::OnFactorChanged(AuthFactor factor) {
     case AuthFactor::kCryptohomePinV2:
       prefs().SetInteger(ash::prefs::kLocalPinVerifiedComplexity,
                          enforced_complexity);
+      base::UmaHistogramEnumeration(
+          "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged",
+          LocalAuthFactorType::kPin);
       break;
     case AuthFactor::kLocalPassword:
       prefs().SetInteger(ash::prefs::kLocalPasswordVerifiedComplexity,
                          enforced_complexity);
+      base::UmaHistogramEnumeration(
+          "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged",
+          LocalAuthFactorType::kLocalPassword);
       break;
     case AuthFactor::kRecovery:
     case AuthFactor::kGaiaPassword:
@@ -272,6 +281,9 @@ void LocalAuthFactorsPolicyController::OnComplexityPrefUpdated() {
     DismissComplexityUpdateNotification();
     return;
   }
+  base::UmaHistogramEnumeration(
+      "Enterprise.LocalAuthFactorsPolicy.PasswordComplexity",
+      static_cast<LocalAuthFactorsComplexity>(enforced_complexity));
 
   // If the policy requires a certain complexity, trigger the re-evaluation of
   // the notification.

@@ -26,6 +26,16 @@ namespace ash {
 
 class LocalAuthFactorsPolicyControllerTest;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(LocalAuthFactorType)
+enum class LocalAuthFactorType {
+  kPin = 0,
+  kLocalPassword = 1,
+  kMaxValue = kLocalPassword,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:LocalAuthFactorType)
+
 // Manages and enforces policies related to local authentication factors.
 // This class monitors changes in allowed local auth factors and their
 // complexity requirements. It ensures compliance by potentially forcing
