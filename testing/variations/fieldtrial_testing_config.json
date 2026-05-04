@@ -25906,7 +25906,6 @@
     "WebUIReloadButtonStudy": [
         {
             "platforms": [
-                "linux",
                 "mac"
             ],
             "experiments": [
