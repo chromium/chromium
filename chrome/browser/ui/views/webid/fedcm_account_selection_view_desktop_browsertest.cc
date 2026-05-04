@@ -503,6 +503,48 @@ IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
   EXPECT_EQ(popup_contents->GetLastCommittedURL(), popup_url);
 }
 
+IN_PROC_BROWSER_TEST_F(FedCmActorBrowserTest,
+                       FullscreenActorTaskDoesNotWithholdPopup) {
+  const GURL task_url =
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
+  const GURL popup_url =
+      embedded_https_test_server().GetURL("b.com", "/title2.html");
+  const GURL other_url =
+      embedded_https_test_server().GetURL("c.com", "/title3.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), task_url));
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  StartTask(tab);
+
+  // Open a new unrelated tab in the foreground.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), other_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Enter fullscreen mode.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+
+  // Now call ShowModalDialog. It should not be withheld because we are in
+  // fullscreen.
+  delegate_ = std::make_unique<FakeDelegate>(tab->GetContents());
+  account_selection_view_ =
+      std::make_unique<FedCmAccountSelectionView>(delegate_.get(), tab);
+
+  base::test::TestFuture<content::WebContents*> future_popup_contents;
+  content::WebContents* synchronous_contents =
+      account_selection_view_->ShowModalDialog(
+          popup_url, blink::mojom::RpMode::kPassive,
+          future_popup_contents.GetCallback());
+
+  // In fullscreen, it should NOT be withheld.
+  EXPECT_TRUE(synchronous_contents);
+
+  // Clean up: exit fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+}
+
 // Similar to `BackgroundActorTaskWithholdsPopup`, but we have the task tab
 // create an intermediate tab/popup and then that triggers the continuation
 // popup. We should still attribute the continuation popup to a backgrounded

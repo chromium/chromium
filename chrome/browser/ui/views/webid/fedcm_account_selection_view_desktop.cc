@@ -41,6 +41,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -874,8 +875,19 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
   UpdateDialogVisibilityAndPosition();
 
   if (tabs::TabInterface* initiating_task_tab = InitiatingTaskTab(tab_)) {
-    if (actor::IsRunningBackgroundActorTask(
-            *initiating_task_tab->GetContents())) {
+    content::WebContents* initiating_contents =
+        initiating_task_tab->GetContents();
+    // We check `GetDisplayMode` to track both tab and browser fullscreen.
+    bool in_fullscreen =
+        initiating_contents->GetDelegate() &&
+        initiating_contents->GetDelegate()->GetDisplayMode(
+            initiating_contents) == blink::mojom::DisplayMode::kFullscreen;
+    // If the tab is running a background actor task and is not in fullscreen,
+    // withhold the pop-up until the tab is foregrounded. Fullscreen tabs are
+    // not withheld because in that case we'd open a new tab instead of a pop-up
+    // window, so there's no need to withhold.
+    if (actor::IsRunningBackgroundActorTask(*initiating_contents) &&
+        !in_fullscreen) {
       tab_subscriptions_.push_back(
           initiating_task_tab->RegisterDidActivate(base::BindRepeating(
               &FedCmAccountSelectionView::BackgroundTaskTabForegrounded,
