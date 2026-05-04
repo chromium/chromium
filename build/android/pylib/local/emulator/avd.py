@@ -1073,19 +1073,21 @@ class _AvdInstance:
   def __str__(self):
     return '%s|%s' % (self._avd_name, (self._emulator_serial or id(self)))
 
-  def Start(self,
-            ensure_system_settings=True,
-            read_only=True,
-            window=False,
-            writable_system=False,
-            gpu_mode=None,
-            wipe_data=False,
-            debug_tags=None,
-            disk_size=None,
-            enable_network=False,
-            # TODO(crbug.com/364943269): Remove after clean all the references.
-            require_fast_start=False,  # pylint: disable=unused-argument
-            retries=0):
+  def Start(
+      self,
+      ensure_system_settings=True,
+      read_only=True,
+      window=False,
+      writable_system=False,
+      gpu_mode=None,
+      wipe_data=False,
+      debug_tags=None,
+      disk_size=None,
+      enable_network=False,
+      no_mouse_reposition=False,
+      # TODO(crbug.com/364943269): Remove after clean all the references.
+      require_fast_start=False,  # pylint: disable=unused-argument
+      retries=0):
     """Starts the emulator running an instance of the given AVD.
 
     Note when ensure_system_settings is True, the program will wait until the
@@ -1137,6 +1139,8 @@ class _AvdInstance:
         emulator_cmd.append('-wipe-data')
       if disk_size:
         emulator_cmd.extend(['-partition-size', str(disk_size)])
+      if no_mouse_reposition:
+        emulator_cmd.append('-no-mouse-reposition')
 
       if read_only:
         emulator_cmd.append('-read-only')

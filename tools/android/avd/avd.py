@@ -243,6 +243,11 @@ def main(raw_args):
       action='store_true',
       help='Deprecated and will be removed soon. Please use '
       '"proto/*_local.textpb" avd config files for local development.')
+  subparser.add_argument(
+      '--no-mouse-reposition',
+      action='store_true',
+      help= 'Do not reposition the mouse pointer when clicking in the' \
+      'emulator window.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
@@ -263,7 +268,8 @@ def main(raw_args):
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
                disk_size=args.disk_size,
-               enable_network=args.enable_network)
+               enable_network=args.enable_network,
+               no_mouse_reposition=args.no_mouse_reposition)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 
