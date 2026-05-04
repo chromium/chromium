@@ -65,8 +65,6 @@ class InteractiveDetector;
 class PerformanceTimingForReporting;
 class LocalDOMWindow;
 
-CORE_EXPORT BASE_DECLARE_FEATURE(kEventTimingReportingInStrictOrderOnly);
-
 class CORE_EXPORT WindowPerformance final : public Performance,
                                             public PerformanceMonitor::Client,
                                             public ExecutionContextClient,
@@ -254,8 +252,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void FlushEventTiming(InteractiveDetector* interactive_detector,
                         Member<PerformanceEventTiming> event_timing_entry);
 
-  void ReportEntriesWaitingForInteractionIdForIssue328902994();
-
   void TryReportAsFirstInputTiming(PerformanceEventTiming* event_timing_entry);
 
   // Notify observer that an event timing entry is ready and add it to the event
@@ -294,13 +290,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // PerformanceEventTiming, frame_index, keycode and pointerId.
   // We use the data to calculate events latencies.
   HeapVector<Member<PerformanceEventTiming>> event_timing_entries_;
-
-  // TODO(crbug.com/328902994): Temporary queue for kill-switch purposes.
-  // Store entries that have been reported to the performance timeline but are
-  // still waiting for an interactionId to be assigned before reporting to
-  // responsiveness metrics.
-  HeapVector<Member<PerformanceEventTiming>>
-      entries_waiting_for_interaction_id_for_issue328902994_;
 
   HeapVector<Member<PerformanceEventTiming>> active_event_timing_entries_;
 

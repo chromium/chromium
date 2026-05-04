@@ -147,8 +147,7 @@ class WindowPerformanceTest : public testing::Test,
   void SetUp() override {
     std::vector<base::test::FeatureRef> features{
         blink::features::
-            kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource,
-        blink::kEventTimingReportingInStrictOrderOnly};
+            kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource};
     if (GetParam()) {
       features_.InitWithFeatures(features, {});
     } else {

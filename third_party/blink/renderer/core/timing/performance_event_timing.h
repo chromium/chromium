@@ -160,10 +160,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   bool IsReadyForReporting() const;
 
-  // TODO(crbug.com/328902994): Temporary method for kill-switch purposes.
-  // Returns true if the entry has an end time, even if interactionId is not yet
-  // assigned.
-  bool IsReadyForReportingForIssue328902994() const;
 
   base::TimeTicks GetStartTime() const;
   base::TimeTicks GetEndTime() const;

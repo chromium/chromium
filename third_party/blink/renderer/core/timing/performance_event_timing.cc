@@ -172,9 +172,6 @@ bool PerformanceEventTiming::IsReadyForReporting() const {
          HasKnownInteractionID();
 }
 
-bool PerformanceEventTiming::IsReadyForReportingForIssue328902994() const {
-  return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime();
-}
 
 base::TimeTicks PerformanceEventTiming::GetStartTime() const {
   return reporting_info_.creation_time;
