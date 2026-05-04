@@ -135,7 +135,8 @@ public class FuseboxMetricsTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+                        ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
+                        /* hasColor= */ false);
         PopupButtonData data2 =
                 new PopupButtonData(
                         (data) -> {},
@@ -144,7 +145,8 @@ public class FuseboxMetricsTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                        /* hasColor= */ false);
         mPropertyModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, Arrays.asList(data1, data2));
 
@@ -232,10 +234,39 @@ public class FuseboxMetricsTest {
 
     @Test
     public void testNotifyAttachmentsPopupToggled_ShowPopup_ToolButtonsVisible() {
-        mPropertyModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE, true);
-        mPropertyModel.set(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE, true);
-        mPropertyModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, true);
-        mPropertyModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, false);
+        PopupButtonData dataAi =
+                new PopupButtonData(
+                        (data) -> {},
+                        "AI Mode",
+                        /* iconId= */ 0,
+                        /* enabled= */ true,
+                        /* selected= */ false,
+                        PopupButtonType.TOOL,
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                        /* hasColor= */ false);
+        PopupButtonData dataImage =
+                new PopupButtonData(
+                        (data) -> {},
+                        "Create Image",
+                        /* iconId= */ 0,
+                        /* enabled= */ true,
+                        /* selected= */ false,
+                        PopupButtonType.TOOL,
+                        ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
+                        /* hasColor= */ false);
+        PopupButtonData dataDeep =
+                new PopupButtonData(
+                        (data) -> {},
+                        "Deep Search",
+                        /* iconId= */ 0,
+                        /* enabled= */ true,
+                        /* selected= */ false,
+                        PopupButtonType.TOOL,
+                        ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                        /* hasColor= */ false);
+        mPropertyModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                Arrays.asList(dataAi, dataImage, dataDeep));
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

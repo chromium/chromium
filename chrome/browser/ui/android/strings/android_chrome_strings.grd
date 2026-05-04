@@ -5187,9 +5187,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_OMNIBOX_ADD_TABS" desc="Accessibility announcement when the 'Tabs' option in the Omnibox 'Add context' popup is highlighted.">
         Attach tabs
       </message>
-      <message name="IDS_ACCESSIBILITY_OMNIBOX_CREATE_IMAGE" desc="Accessibility announcement when the 'Create Image' option in the Omnibox 'Add context' popup is highlighted.">
-        Create image
-      </message>
 
       <message name="IDS_ACCESSIBILITY_SHARE_SELECTED_ITEMS" desc="Content description for the button to share selected items. [ICU Syntax]">
         {NUM_SELECTED, plural,

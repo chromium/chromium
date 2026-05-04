@@ -97,6 +97,7 @@ import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -191,6 +192,7 @@ public class FuseboxMediatorUnitTest {
                 .thenReturn(mInputStateSupplier);
         when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
                 .thenReturn(mSuggestedTabsSupplier);
+        when(mComposeboxQueryControllerBridge.isCreateImagesEligible()).thenReturn(true);
 
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
@@ -239,6 +241,42 @@ public class FuseboxMediatorUnitTest {
         lenient().doReturn(mAttachments).when(session).getFuseboxAttachmentModelList();
         lenient().doReturn(metrics).when(session).getMetrics();
         return session;
+    }
+
+    private void clickToolButton(int protoId) {
+        List<PopupButtonData> toolButtons =
+                mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        for (PopupButtonData data : toolButtons) {
+            if (data.protoId == protoId) {
+                data.onClicked.run();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Tool button not found for protoId: " + protoId);
+    }
+
+    private boolean isToolVisible(int protoId) {
+        List<PopupButtonData> toolButtons =
+                mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        if (toolButtons == null) return false;
+        for (PopupButtonData data : toolButtons) {
+            if (data.protoId == protoId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isToolEnabled(int protoId) {
+        List<PopupButtonData> toolButtons =
+                mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        if (toolButtons == null) return false;
+        for (PopupButtonData data : toolButtons) {
+            if (data.protoId == protoId) {
+                return data.enabled;
+            }
+        }
+        return false;
     }
 
     private void addTabAttachment(Tab tab) {
@@ -588,7 +626,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
 
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
@@ -600,7 +638,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertEquals(1, mAttachments.size());
 
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
         addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertEquals(1, mAttachments.size());
@@ -644,7 +682,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         histogramWatcher.assertExpected();
     }
 
@@ -654,7 +692,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
@@ -684,7 +722,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
 
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
@@ -787,7 +825,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.S_V2)
     public void testGalleryIntent_extraAllowMultiple_duringCreateImage() {
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
@@ -797,7 +835,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.TIRAMISU)
     public void testGalleryIntent_extraPickImagesMax_duringCreateImage() {
-        mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
@@ -841,14 +879,27 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupToolCanvasClicked_activatesCanvasMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_CANVAS_VALUE);
 
-        mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
@@ -858,14 +909,27 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupToolDeepSearchClicked_activatesDeepSearchMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
+
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ToolButtonSelected",
                         ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
 
-        mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
@@ -1027,43 +1091,69 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
                         FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
-            mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+            clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         }
     }
 
     @Test
     public void onToolCreateImageClicked_fromAiMode_doesNotRecordAiModeActivationSource() {
-        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
 
         try (var ignored =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Omnibox.MobileFusebox.AiModeActivationSource")
                         .build()) {
-            mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run();
+            clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         }
     }
 
     @Test
     public void onToolDeepSearchClicked_fromConventional_recordsAiModeActivationSource() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
 
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
                         FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
-            mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
+            clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         }
     }
 
     @Test
     public void onToolCanvasClicked_fromConventional_recordsAiModeActivationSource() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
 
         try (var ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
                         FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
-            mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
+            clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
         }
     }
 
@@ -1150,56 +1240,56 @@ public class FuseboxMediatorUnitTest {
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
         assertEquals(1, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
         assertEquals(1, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token-pdf", FuseboxAttachmentType.ATTACHMENT_PDF);
         assertEquals(1, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(1, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token3", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(2, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(1, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token4", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertEquals(1, mAttachments.size());
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token5", FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL);
         assertEquals(2, mAttachments.size());
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
     }
 
     @Test
@@ -1517,11 +1607,11 @@ public class FuseboxMediatorUnitTest {
     public void testPopupCreateImageButtonVisible() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         doReturn(false).when(mComposeboxQueryControllerBridge).isCreateImagesEligible();
         recreateMediator();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
+        assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
     }
 
     @Test
@@ -1554,6 +1644,16 @@ public class FuseboxMediatorUnitTest {
                         .setMenuLabel("Pro")
                         .setIcon(Icon.newBuilder().setIconId(IconResourceIds.TIMER).build())
                         .build();
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
         InputState state =
                 new InputState.Builder()
                         .withAllowedTools(
@@ -1566,16 +1666,23 @@ public class FuseboxMediatorUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withModelConfigs(
                                 new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
+                        .withToolConfigs(
+                                new byte[][] {
+                                    deepSearchConfig.toByteArray(), canvasConfig.toByteArray()
+                                })
                         .build();
         mInputStateSupplier.set(state);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, models.size());
@@ -1612,6 +1719,11 @@ public class FuseboxMediatorUnitTest {
                         .setMenuLabel("Auto")
                         .build();
 
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
         InputState state =
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
@@ -1624,10 +1736,11 @@ public class FuseboxMediatorUnitTest {
                         .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withModelConfigs(
                                 new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, models.size());
         assertTrue(models.get(0).enabled);
@@ -1649,6 +1762,16 @@ public class FuseboxMediatorUnitTest {
                         .setMenuLabel("Auto")
                         .build();
 
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas")
+                        .build();
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
         InputState state =
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
@@ -1659,10 +1782,14 @@ public class FuseboxMediatorUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withModelConfigs(
                                 new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
+                        .withToolConfigs(
+                                new byte[][] {
+                                    canvasConfig.toByteArray(), deepSearchConfig.toByteArray()
+                                })
                         .build();
         mInputStateSupplier.set(state);
 
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> modelButtons =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, modelButtons.size());
@@ -1757,44 +1884,59 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         recreateMediator();
 
+        ToolConfig imageGenConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setMenuLabel("Image Gen")
+                        .build();
+        ToolConfig imageGenUploadConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .setMenuLabel("Image Gen Upload")
+                        .build();
+
         InputState bothHidden = new InputState.Builder().build();
         mInputStateSupplier.set(bothHidden);
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenVisibleDisabled =
                 new InputState.Builder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withToolConfigs(new byte[][] {imageGenConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenVisibleDisabled);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenUploadVisibleDisabled =
                 new InputState.Builder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
                         .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withToolConfigs(new byte[][] {imageGenUploadConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenUploadVisibleDisabled);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
 
         InputState imageGenEnabled =
                 new InputState.Builder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withToolConfigs(new byte[][] {imageGenConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenEnabled);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenUploadEnabled =
                 new InputState.Builder()
                         .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withToolConfigs(new byte[][] {imageGenUploadConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenUploadEnabled);
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
     }
 
     @Test
@@ -1846,7 +1988,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testReconcileSuggestedTabs() {
         mMediator.beginInput(createSession());
-        mModel.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run();
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
 
         SuggestedTabInfo info =
                 new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);

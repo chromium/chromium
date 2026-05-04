@@ -33,30 +33,6 @@ found in the LICENSE file.
             style="@style/Fusebox.PopupMenu.Header"
             android:id="@+id/fusebox_tools_header"/>
 
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_ai_mode_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_create_image_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_deep_search_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <include
-            layout="@layout/fusebox_list_item"
-            android:id="@+id/fusebox_canvas_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
         <View
             style="@style/Fusebox.PopupMenu.Divider"
             android:id="@+id/fusebox_models_divider"/>

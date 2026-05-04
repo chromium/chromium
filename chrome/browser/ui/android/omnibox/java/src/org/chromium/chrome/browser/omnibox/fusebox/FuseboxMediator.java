@@ -67,6 +67,7 @@ import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.base.Clipboard;
@@ -172,11 +173,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, this::onCameraClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, this::onImagePickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, this::onFilePickerClicked);
-        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED, this::onToolAiModeClicked);
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED, this::onToolCreateImageClicked);
-        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED, this::onToolDeepSearchClicked);
-        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED, this::onToolCanvasClicked);
+        mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, List.of());
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of());
 
         mModel.set(
@@ -188,10 +185,7 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE,
                 OmniboxFeatures.sShowModelPicker.getValue());
-        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE, true);
-        mModel.set(FuseboxProperties.POPUP_TOOL_AI_MODE_ENABLED, true);
-        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, false);
-        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, false);
+
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
     }
@@ -245,9 +239,7 @@ import java.util.function.Supplier;
                 FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE,
                 mComposeboxQueryControllerBridge.isPdfUploadEligible());
         if (!OmniboxFeatures.sShowModelPicker.getValue() && mProfile != null) {
-            mModel.set(
-                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
-                    mComposeboxQueryControllerBridge.isCreateImagesEligible());
+            updateClientControlledToolButtonList();
         }
     }
 
@@ -392,28 +384,6 @@ import java.util.function.Supplier;
         if (trySetRequestType(requestType) && wasConventional) {
             FuseboxMetrics.notifyAiModeActivated(activationReason);
         }
-    }
-
-    private void onToolAiModeClicked() {
-        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-        activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.TOOL_MENU);
-    }
-
-    private void onToolCreateImageClicked() {
-        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-        activateAiMode(AutocompleteRequestType.IMAGE_GENERATION, AiModeActivationSource.TOOL_MENU);
-    }
-
-    private void onToolDeepSearchClicked() {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
-        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
-        activateAiMode(AutocompleteRequestType.DEEP_SEARCH, AiModeActivationSource.TOOL_MENU);
-    }
-
-    private void onToolCanvasClicked() {
-        assert OmniboxFeatures.sShowModelPicker.getValue();
-        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_CANVAS_VALUE);
-        activateAiMode(AutocompleteRequestType.CANVAS, AiModeActivationSource.TOOL_MENU);
     }
 
     /* package */ void setIsTextWrapping(boolean isTextWrapping) {
@@ -586,9 +556,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
 
         if (!OmniboxFeatures.sShowModelPicker.getValue()) {
-            mModel.set(
-                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
-                    areAttachmentsCompatibleWithCreateImage());
+            updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();
         }
     }
@@ -775,6 +743,7 @@ import java.util.function.Supplier;
                 onInputStateChange(inputState);
             }
         } else {
+            updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();
         }
     }
@@ -798,6 +767,38 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, allowNonImage);
+    }
+
+    private void updateClientControlledToolButtonList() {
+        assert !OmniboxFeatures.sShowModelPicker.getValue();
+        if (!isInInputSession()) return;
+        List<PopupButtonData> toolButtons = new ArrayList<>();
+
+        toolButtons.add(
+                new PopupButtonData(
+                        this::onDynamicButtonClicked,
+                        mContext.getString(R.string.ai_mode_entrypoint_label),
+                        R.drawable.search_spark_black_24dp,
+                        /* enabled= */ true,
+                        mInput.getRequestType() == AutocompleteRequestType.AI_MODE,
+                        PopupButtonType.TOOL,
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                        /* hasColor= */ false));
+
+        if (mComposeboxQueryControllerBridge.isCreateImagesEligible()) {
+            toolButtons.add(
+                    new PopupButtonData(
+                            this::onDynamicButtonClicked,
+                            mContext.getString(R.string.omnibox_create_image),
+                            R.drawable.create_image_24dp,
+                            areAttachmentsCompatibleWithCreateImage(),
+                            mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION,
+                            PopupButtonType.TOOL,
+                            ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
+                            /* hasColor= */ true));
+        }
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtons);
     }
 
     private void launchCamera() {
@@ -1024,28 +1025,54 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, imagesEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, filesEnabled);
 
-        boolean deepSearchVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
-        boolean canvasVisible = inputState.isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE);
-
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_HEADER_TEXT,
                 inputState.toolsSectionConfig.getHeader());
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
-                inputState.isImageGenToolVisible());
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
-                inputState.isImageGenToolEnabled());
 
-        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, deepSearchVisible);
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED,
-                inputState.isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+        List<PopupButtonData> toolButtonDataList = new ArrayList<>();
+        toolButtonDataList.add(
+                new PopupButtonData(
+                        this::onDynamicButtonClicked,
+                        mContext.getString(R.string.ai_mode_entrypoint_label),
+                        IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE,
+                        /* enabled= */ true,
+                        mInput != null
+                                && mInput.getRequestType() == AutocompleteRequestType.AI_MODE,
+                        PopupButtonType.TOOL,
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                        /* hasColor= */ false));
 
-        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, canvasVisible);
-        mModel.set(
-                FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED,
-                inputState.isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
+        for (ToolConfig toolConfig : inputState.toolConfigs) {
+            int toolMode = toolConfig.getToolValue();
+            if (!inputState.isToolVisible(toolMode)) continue;
+
+            String label = toolConfig.getMenuLabel();
+            int iconId =
+                    toolConfig.hasIcon() && toolConfig.getIcon().hasIconId()
+                            ? toolConfig.getIcon().getIconId().getNumber()
+                            : IconResourceIds.PLACE_WHITE_VALUE;
+            boolean selected =
+                    mInput != null
+                            && ToolModeUtils.getRequestTypeForToolMode(toolMode)
+                                    == mInput.getRequestType();
+            boolean enabled = inputState.isToolEnabled(toolMode);
+            boolean hasColor =
+                    toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_VALUE
+                            || toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE;
+
+            toolButtonDataList.add(
+                    new PopupButtonData(
+                            this::onDynamicButtonClicked,
+                            label,
+                            iconId,
+                            enabled,
+                            selected,
+                            PopupButtonType.TOOL,
+                            toolMode,
+                            hasColor));
+        }
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtonDataList);
 
         // The InputState is always targeting an AI Mode request and what would be possible, but the
         // user might not have activate AI Mode yet, in which case we do not want to show any
@@ -1071,7 +1098,8 @@ import java.util.function.Supplier;
                                 inputState.isModelEnabled(modelMode),
                                 selected,
                                 PopupButtonType.MODEL,
-                                modelMode));
+                                modelMode,
+                                /* hasColor= */ false));
             }
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;
@@ -1099,6 +1127,11 @@ import java.util.function.Supplier;
         if (data.type == PopupButtonType.MODEL) {
             FuseboxMetrics.notifyModelButtonSelected(data.protoId);
             setModelMode(data.protoId);
+        } else if (data.type == PopupButtonType.TOOL) {
+            FuseboxMetrics.notifyToolButtonSelected(data.protoId);
+            @AutocompleteRequestType
+            int requestType = ToolModeUtils.getRequestTypeForToolMode(data.protoId);
+            activateAiMode(requestType, AiModeActivationSource.TOOL_MENU);
         }
     }
 

@@ -20,8 +20,9 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** A popup for the Fusebox component. */
 @NullMarked
@@ -42,16 +43,13 @@ class FuseboxPopup {
     /* package */ final View mFileButton;
     /* package */ final View mToolsDivider;
     /* package */ final TextView mToolsHeader;
-    /* package */ final View mAiModeButton;
-    /* package */ final View mCreateImageButton;
-    /* package */ final View mDeepSearchButton;
-    /* package */ final View mCanvasButton;
+
     /* package */ final View mModelsDivider;
     /* package */ final TextView mModelsHeader;
-    /* package */ final List<View> mButtons;
+    /* package */ final List<View> mAttachmentButtons;
+    /* package */ final Set<View> mDynamicThemedButtons = new HashSet<>();
     /* package */ final List<View> mDividers;
     /* package */ final List<TextView> mHeaders;
-    /* package */ final List<View> mAttachmentButtons;
 
     private final DynamicRectProvider mDynamicRectProvider;
 
@@ -81,10 +79,6 @@ class FuseboxPopup {
 
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);
         mToolsHeader = contentView.findViewById(R.id.fusebox_tools_header);
-        mAiModeButton = contentView.findViewById(R.id.fusebox_ai_mode_button);
-        mCreateImageButton = contentView.findViewById(R.id.fusebox_create_image_button);
-        mDeepSearchButton = contentView.findViewById(R.id.fusebox_deep_search_button);
-        mCanvasButton = contentView.findViewById(R.id.fusebox_canvas_button);
 
         initializeItem(mAddCurrentTab, R.string.fusebox_add_current_tab, 0, 0);
         initializeItem(
@@ -113,39 +107,9 @@ class FuseboxPopup {
                 R.string.omnibox_navattach_files,
                 R.drawable.ic_attach_file_24dp,
                 R.string.accessibility_omnibox_add_files);
-        initializeItem(
-                mAiModeButton,
-                R.string.ai_mode_entrypoint_label,
-                R.drawable.search_spark_black_24dp,
-                R.string.accessibility_omnibox_enable_ai_mode);
-        initializeItem(
-                mCreateImageButton,
-                R.string.omnibox_create_image,
-                R.drawable.create_image_24dp,
-                R.string.accessibility_omnibox_create_image);
-        initializeItem(
-                mDeepSearchButton,
-                R.string.ntp_compose_deep_search,
-                R.drawable.travel_explore_24dp,
-                0);
-        initializeItem(mCanvasButton, R.string.ntp_compose_canvas, R.drawable.draft_spark_24dp, 0);
 
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
-
-        mButtons =
-                new ArrayList<>(
-                        List.of(
-                                mAddCurrentTab,
-                                mClipboardButton,
-                                mTabButton,
-                                mCameraButton,
-                                mGalleryButton,
-                                mFileButton,
-                                mAiModeButton,
-                                mCreateImageButton,
-                                mDeepSearchButton,
-                                mCanvasButton));
         mAttachmentButtons =
                 List.of(
                         mAddCurrentTab,

@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButton
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -105,17 +104,13 @@ public class FuseboxMetrics {
                     notifyAttachmentButtonShown(buttonType);
                 }
             }
-            if (model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_VISIBLE)) {
-                notifyToolButtonShown(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-            }
-            if (model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE)) {
-                notifyToolButtonShown(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-            }
-            if (model.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE)) {
-                notifyToolButtonShown(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
-            }
-            if (model.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE)) {
-                notifyToolButtonShown(ToolMode.TOOL_MODE_CANVAS_VALUE);
+            List<PopupButtonData> toolButtons =
+                    model.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+            if (toolButtons != null) {
+                for (PopupButtonData buttonData : toolButtons) {
+                    assert buttonData.type == PopupButtonType.TOOL;
+                    notifyToolButtonShown(buttonData.protoId);
+                }
             }
             List<PopupButtonData> popupButtons =
                     model.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);

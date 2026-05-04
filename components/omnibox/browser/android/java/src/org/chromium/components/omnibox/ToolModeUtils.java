@@ -43,4 +43,18 @@ public class ToolModeUtils {
             default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
         };
     }
+
+    /**
+     * @param toolMode The ToolMode value.
+     * @return The AutocompleteRequestType for the given ToolMode.
+     */
+    public static @AutocompleteRequestType int getRequestTypeForToolMode(int toolMode) {
+        return switch (toolMode) {
+            case ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE ->
+                    AutocompleteRequestType.IMAGE_GENERATION;
+            case ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE -> AutocompleteRequestType.DEEP_SEARCH;
+            case ToolMode.TOOL_MODE_CANVAS_VALUE -> AutocompleteRequestType.CANVAS;
+            default -> AutocompleteRequestType.AI_MODE;
+        };
+    }
 }
