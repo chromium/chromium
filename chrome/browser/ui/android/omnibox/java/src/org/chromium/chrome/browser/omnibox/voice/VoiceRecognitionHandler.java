@@ -29,6 +29,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.R;
@@ -38,7 +39,9 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -301,13 +304,16 @@ public class VoiceRecognitionHandler {
             recordVoiceSearchResult(true);
             recordVoiceSearchConfidenceValue(topResult.getConfidence());
 
-            if (topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
-                AutocompleteInput input =
-                        new AutocompleteInput()
-                                .setUserText(topResultQuery)
-                                .setSelection(0, topResultQuery.length())
-                                .setFocusReason(OmniboxFocusReason.SEARCH_QUERY);
-                mOmniboxStub.beginInput(input);
+            FuseboxSessionState sessionState = mLocationBarDataProvider.getFuseboxSessionState();
+            @AutocompleteRequestType
+            int requestType =
+                    sessionState != null
+                            ? sessionState.getAutocompleteInput().getRequestType()
+                            : AutocompleteRequestType.SEARCH;
+
+            if (ToolModeUtils.isAimRequest(requestType)
+                    || topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
+                beginInputWithVerbatimText(topResultQuery, requestType);
                 return;
             }
 
@@ -341,6 +347,17 @@ public class VoiceRecognitionHandler {
 
             mOmniboxStub.loadUrlFromVoice(url);
         }
+    }
+
+    private void beginInputWithVerbatimText(
+            String query, @AutocompleteRequestType int requestType) {
+        AutocompleteInput input =
+                new AutocompleteInput()
+                        .setUserText(query)
+                        .setSelection(0, query.length())
+                        .setRequestType(requestType)
+                        .setFocusReason(OmniboxFocusReason.SEARCH_QUERY);
+        mOmniboxStub.beginInput(input);
     }
 
     /** Convert the android voice intent bundle to a list of result objects. */

@@ -2239,6 +2239,200 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_SearchMode_noQuery_showMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_SearchMode_withQuery_hideMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_AimMode_noQuery_showMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_AimMode_withQuery_hideMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_ImageGenMode_noQuery_showMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState
+                .getAutocompleteInput()
+                .setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_ImageGenMode_withQuery_hideMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState
+                .getAutocompleteInput()
+                .setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_DeepSearchMode_noQuery_showMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_DeepSearchMode_withQuery_hideMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_CanvasMode_noQuery_showMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.CANVAS);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_CanvasMode_withQuery_hideMic() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
+        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.CANVAS);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testLensButtonToolbarWidthConsumer() {
         int buttonWidth =

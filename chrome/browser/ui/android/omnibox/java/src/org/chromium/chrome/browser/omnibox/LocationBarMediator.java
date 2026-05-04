@@ -1946,8 +1946,6 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowMicButton() {
-        if (mCurrentInput != null && !mCurrentInput.isConventionalRequestType()) return false;
-
         if (isUrlBarFocusedWithUserInput()) return false;
 
         if (isUrlBarFocusedOnDesktop()) return false;
