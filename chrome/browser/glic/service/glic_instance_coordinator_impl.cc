@@ -252,7 +252,6 @@ void GlicInstanceCoordinatorImpl::Toggle(
     bool prevent_close,
     mojom::InvocationSource source,
     std::optional<std::string> deprecated_prompt_suggestion,
-    bool deprecated_auto_send,
     std::optional<std::string> deprecated_conversation_id) {
   if (!browser) {
     if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
@@ -272,7 +271,7 @@ void GlicInstanceCoordinatorImpl::Toggle(
   }
 
   ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion,
-                  deprecated_auto_send, deprecated_conversation_id);
+                  deprecated_conversation_id);
 }
 
 void GlicInstanceCoordinatorImpl::EnsurePreload() {
@@ -653,15 +652,14 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
   CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
   GetOrCreateInstanceImplForFloaty()->Toggle(
       ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
-      prevent_close, source, prompt_suggestion, /*auto_send=*/false);
+      prevent_close, source, prompt_suggestion);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     BrowserWindowInterface* browser,
     bool prevent_close,
-    glic::mojom::InvocationSource source,
+    mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion,
-    bool auto_send,
     std::optional<std::string> conversation_id) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
@@ -696,8 +694,8 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   ShowOptions options = ShowOptions::ForSidePanel(
       *tab, GlicPinTrigger::kInstanceCreation, source);
 
-  instance->Toggle(std::move(options), prevent_close, source, prompt_suggestion,
-                   auto_send);
+  instance->Toggle(std::move(options), prevent_close, source,
+                   prompt_suggestion);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {

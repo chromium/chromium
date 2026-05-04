@@ -80,7 +80,6 @@ class GlicInstanceCoordinator {
       bool prevent_close,
       mojom::InvocationSource source,
       std::optional<std::string> deprecated_prompt_suggestion,
-      bool deprecated_auto_send,
       std::optional<std::string> deprecated_conversation_id) = 0;
 
   // Readies glic to show.

@@ -472,7 +472,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInvocationSource) {
     coordinator().Toggle(GetBrowser(), /*prevent_close=*/false,
                          /*source=*/source,
                          /*deprecated_prompt_suggestion=*/std::nullopt,
-                         /*deprecated_auto_send=*/false,
                          /*deprecated_conversation_id=*/std::nullopt);
 
     ASSERT_OK(WaitForGlicOpen());

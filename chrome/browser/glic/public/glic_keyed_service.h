@@ -98,13 +98,14 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // prevent_close is false. If `bwi` is non-null, attach the panel to its
   // Browser.
   // TODO(b:448888544): remove `prevent_close` in favor of a Show method.
+
   virtual void ToggleUI(BrowserWindowInterface* bwi,
                         bool prevent_close,
                         mojom::InvocationSource source,
                         std::optional<std::string> prompt_suggestion);
-  void ToggleUI(BrowserWindowInterface* bwi,
-                bool prevent_close,
-                mojom::InvocationSource source);
+  virtual void ToggleUI(BrowserWindowInterface* bwi,
+                        bool prevent_close,
+                        mojom::InvocationSource source);
 
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
@@ -274,12 +275,11 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::vector<std::string> returned_suggestions);
 
-  // Shared implementation for ToggleUI and ShowUIWithAutoSend.
+  // Shared implementation for ToggleUI.
   void ToggleUIInternal(BrowserWindowInterface* bwi,
                         bool prevent_close,
                         mojom::InvocationSource source,
                         std::optional<std::string> prompt_suggestion,
-                        bool auto_send,
                         std::optional<std::string> conversation_id);
 
   bool MaybeInvoke(BrowserWindowInterface* bwi,

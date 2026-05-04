@@ -540,7 +540,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
                        /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_auto_send=*/false,
                        /*deprecated_conversation_id=*/std::nullopt);
   GlicInstanceImpl* floaty_instance =
       static_cast<GlicInstanceImpl*>(coordinator().GetActiveInstance());
@@ -561,7 +560,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
                        /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_auto_send=*/false,
                        /*deprecated_conversation_id=*/std::nullopt);
   ASSERT_OK_AND_ASSIGN(auto side_panel_instance, WaitForGlicOpen(tab2));
   ASSERT_EQ(side_panel_instance->GetPanelState().kind,
@@ -1088,8 +1086,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
   coordinator().Toggle(tab1->GetBrowserWindowInterface(),
                        /*prevent_close=*/false,
                        mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_auto_send=*/false, cid1);
+                       /*deprecated_prompt_suggestion=*/std::nullopt, cid1);
 
   ASSERT_OK_AND_ASSIGN(auto instance1, WaitForGlicOpen(tab1));
   EXPECT_EQ(instance1->conversation_id(), cid1);
@@ -1100,8 +1097,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
   coordinator().Toggle(tab2->GetBrowserWindowInterface(),
                        /*prevent_close=*/false,
                        mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_auto_send=*/false, cid1);
+                       /*deprecated_prompt_suggestion=*/std::nullopt, cid1);
 
   ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance1, tab2));
   EXPECT_EQ(coordinator().GetInstances().size(), 1u);
@@ -1111,8 +1107,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
   coordinator().Toggle(tab3->GetBrowserWindowInterface(),
                        /*prevent_close=*/false,
                        mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_auto_send=*/false, cid2);
+                       /*deprecated_prompt_suggestion=*/std::nullopt, cid2);
 
   ASSERT_OK_AND_ASSIGN(auto instance2, WaitForGlicInstanceBoundToTab(tab3));
   EXPECT_EQ(instance2->conversation_id(), cid2);

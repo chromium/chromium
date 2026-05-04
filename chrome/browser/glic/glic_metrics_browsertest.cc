@@ -302,7 +302,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   // First toggle the UI to create the floaty instance.
   glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
-      mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
+      mojom::InvocationSource::kOsHotkey,
+      /*deprecated_prompt_suggestion=*/std::nullopt,
+      /*deprecated_conversation_id=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
                                       mojom::InvocationSource::kOsHotkey, 1);
@@ -312,7 +314,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   // Close the floaty panel.
   glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
-      mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
+      mojom::InvocationSource::kOsHotkey,
+      /*deprecated_prompt_suggestion=*/std::nullopt,
+      /*deprecated_conversation_id=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
                                       mojom::InvocationSource::kOsHotkey, 2);

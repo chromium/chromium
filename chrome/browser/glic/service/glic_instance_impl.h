@@ -166,8 +166,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool Toggle(ShowOptions&& options,
               bool prevent_close,
               glic::mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion,
-              bool auto_send);
+              std::optional<std::string> prompt_suggestion);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
@@ -361,7 +360,6 @@ class GlicInstanceImpl : public GlicInstance,
       GlicUiEmbedder* embedder,
       mojom::InvocationSource source,
       std::optional<std::string> prompt_suggestion,
-      bool auto_send,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
@@ -389,7 +387,6 @@ class GlicInstanceImpl : public GlicInstance,
   void NotifyPanelWillOpen(
       mojom::InvocationSource invocation_source,
       std::optional<std::string> prompt_suggestion,
-      bool auto_send,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
 
 

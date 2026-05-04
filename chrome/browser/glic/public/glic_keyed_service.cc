@@ -246,13 +246,15 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 mojom::InvocationSource source,
                                 std::optional<std::string> prompt_suggestion) {
   ToggleUIInternal(bwi, prevent_close, source, std::move(prompt_suggestion),
-                   false, std::nullopt);
+                   /*conversation_id=*/std::nullopt);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source) {
-  ToggleUI(bwi, prevent_close, source, std::nullopt);
+  ToggleUIInternal(bwi, prevent_close, source,
+                   /*prompt_suggestion=*/std::nullopt,
+                   /*conversation_id=*/std::nullopt);
 }
 
 void GlicKeyedService::ToggleUIInternal(
@@ -260,7 +262,6 @@ void GlicKeyedService::ToggleUIInternal(
     bool prevent_close,
     mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion,
-    bool auto_send,
     std::optional<std::string> conversation_id) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
@@ -284,7 +285,7 @@ void GlicKeyedService::ToggleUIInternal(
 
   instance_coordinator().Toggle(
       bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), prevent_close, source,
-      prompt_suggestion, auto_send, conversation_id);
+      prompt_suggestion, conversation_id);
 }
 
 bool GlicKeyedService::MaybeInvoke(

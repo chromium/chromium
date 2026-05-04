@@ -36,10 +36,7 @@ class MockGlicKeyedService : public GlicKeyedService {
               (override));
   MOCK_METHOD(void,
               ToggleUI,
-              (BrowserWindowInterface*,
-               bool,
-               mojom::InvocationSource,
-               std::optional<std::string>),
+              (BrowserWindowInterface*, bool, mojom::InvocationSource),
               (override));
   MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,
