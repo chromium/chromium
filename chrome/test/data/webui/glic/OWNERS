@@ -3,3 +3,4 @@ file://chrome/browser/glic/host/OWNERS
 andreaxg@google.com
 cuianthony@chromium.org
 iwells@chromium.org
+per-file browser_tests/glic_experimental_triggering_message_handler_browsertest.ts=file://chrome/browser/sharing/glic_experimental_triggering/OWNERS

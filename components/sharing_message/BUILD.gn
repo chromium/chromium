@@ -89,11 +89,14 @@ source_set("sharing_message") {
 }
 
 source_set("test_support") {
+  testonly = true
   sources = [
     "fake_device_info.cc",
     "fake_device_info.h",
     "fake_sharing_handler_registry.cc",
     "fake_sharing_handler_registry.h",
+    "mock_sharing_message_sender.cc",
+    "mock_sharing_message_sender.h",
   ]
   deps = [
     ":sharing_message",
@@ -101,6 +104,7 @@ source_set("test_support") {
     "//components/sharing_message/proto",
     "//components/sync/protocol",
     "//components/sync_device_info",
+    "//testing/gmock",
   ]
 }
 
@@ -112,8 +116,6 @@ source_set("unit_tests") {
     "mock_sharing_device_source.h",
     "mock_sharing_message_handler.cc",
     "mock_sharing_message_handler.h",
-    "mock_sharing_message_sender.cc",
-    "mock_sharing_message_sender.h",
     "mock_sharing_service.cc",
     "mock_sharing_service.h",
     "sharing_device_source_sync_unittest.cc",
