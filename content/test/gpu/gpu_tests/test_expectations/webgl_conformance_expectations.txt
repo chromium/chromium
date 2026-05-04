@@ -501,12 +501,16 @@ crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-get-uniform-location-errors.html [ Failure ]
+crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-uniform-arrays.html [ Failure ]
+crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-uniform-bool.html [ Failure ]
+crbug.com/504989192 [ mac angle-swiftshader ] conformance/context/context-type-test.html [ Failure ]
 # These are failing less often
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/rendering/draw-arrays-out-of-bounds.html [ RetryOnFailure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/array-large-array-tests.html [ RetryOnFailure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/data-view-crash.html [ RetryOnFailure ]
 crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/data-view-test.html [ RetryOnFailure ]
+crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/typed-arrays-in-workers.html [ RetryOnFailure ]
 
 ## Mac AMD failures ##
 
