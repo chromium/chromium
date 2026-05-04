@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -74,7 +75,7 @@ class PasswordReuseDetector {
   PasswordReuseDetector& operator=(const PasswordReuseDetector&) = delete;
 
   virtual void OnGetPasswordStoreResults(
-      std::vector<PasswordForm> results) = 0;
+      std::vector<StoredCredential> results) = 0;
 
   virtual void OnLoginsChanged(
       const password_manager::PasswordStoreChangeList& changes) = 0;

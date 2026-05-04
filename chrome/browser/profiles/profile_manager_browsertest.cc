@@ -53,6 +53,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/policy/core/common/policy_map.h"
@@ -206,8 +207,9 @@ class PasswordStoreConsumerVerifier
       ADD_FAILURE() << "Error from password store";
       password_entries_ = std::vector<password_manager::PasswordForm>();
     } else {
-      password_entries_ =
-          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+      password_entries_ = password_manager::ToPasswordForms(
+          std::get<password_manager::LoginsResult>(
+              std::move(results_or_error)));
     }
     run_loop_.Quit();
   }

@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -373,26 +374,29 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
 
   LoginsResultOrError result;
   base::MockCallback<base::OnceCallback<void(LoginsResultOrError)>> mock_reply;
-  EXPECT_CALL(mock_reply, Run).WillOnce(testing::SaveArg<0>(&result));
-  match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
-                                                          mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run).WillOnce([&result](LoginsResultOrError res) {
+    result = std::move(res);
+  });
+  match_helper()->InjectAffiliationAndBrandingInformation(
+      FromPasswordForms(std::move(forms)), mock_reply.Get());
 
-  auto result_forms = std::move(std::get<std::vector<PasswordForm>>(result));
+  auto result_credentials = std::move(std::get<LoginsResult>(result));
 
-  ASSERT_EQ(expected_form_count, result_forms.size());
-  EXPECT_THAT(result_forms[0].affiliated_web_realm,
+  ASSERT_EQ(expected_form_count, result_credentials.size());
+  EXPECT_THAT(result_credentials[0].affiliated_web_realm,
               testing::AnyOf(kTestWebRealmAlpha1, kTestWebRealmAlpha2));
-  EXPECT_EQ(kTestAndroidFacetNameAlpha3, result_forms[0].app_display_name);
+  EXPECT_EQ(kTestAndroidFacetNameAlpha3,
+            result_credentials[0].app_display_name);
   EXPECT_EQ(kTestAndroidFacetIconURLAlpha3,
-            result_forms[0].app_icon_url.possibly_invalid_spec());
+            result_credentials[0].app_icon_url.possibly_invalid_spec());
 
-  EXPECT_THAT(result_forms[1].affiliated_web_realm,
+  EXPECT_THAT(result_credentials[1].affiliated_web_realm,
               testing::Eq(kTestWebRealmBeta1));
-  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_forms[1].app_display_name);
+  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_credentials[1].app_display_name);
   EXPECT_EQ(kTestAndroidFacetIconURLBeta2,
-            result_forms[1].app_icon_url.possibly_invalid_spec());
+            result_credentials[1].app_icon_url.possibly_invalid_spec());
 
-  EXPECT_THAT(result_forms[2].affiliated_web_realm, IsEmpty());
+  EXPECT_THAT(result_credentials[2].affiliated_web_realm, IsEmpty());
 }
 
 TEST_F(AffiliatedMatchHelperTest, GetPSLExtensions) {

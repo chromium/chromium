@@ -193,14 +193,22 @@ PasswordForm CreatePasswordForm(const char* origin_url,
 // Invokes the password store consumer with a single copy of `form`, coming from
 // `store`.
 ACTION_P2(InvokeConsumer, store, form) {
-  std::vector<PasswordForm> result;
-  result.push_back(form);
+  std::vector<password_manager::StoredCredential> result;
+  password_manager::StoredCredential cred;
+  cred.url = form.url;
+  cred.signon_realm = form.signon_realm;
+  cred.username_value = form.username_value;
+  cred.password_value = form.password_value;
+  cred.scheme = form.scheme;
+  cred.in_store = form.in_store;
+  cred.match_type = form.match_type;
+  result.push_back(std::move(cred));
   arg0->OnGetPasswordStoreResultsOrErrorFrom(store, std::move(result));
 }
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                             std::vector<PasswordForm>());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(
+      store, std::vector<password_manager::StoredCredential>());
 }
 
 struct TestPasswordFormData {

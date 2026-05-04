@@ -329,8 +329,7 @@ void PasswordStoreBuiltInBackend::GetGroupedMatchingLoginsAsync(
   DCHECK(helper_);
 
   GetLoginsWithAffiliationsRequestHandler(
-      form_digest, this, affiliated_match_helper_.get(),
-      AdaptLoginsResultCallback(std::move(callback)));
+      form_digest, this, affiliated_match_helper_.get(), std::move(callback));
 }
 
 void PasswordStoreBuiltInBackend::AddLoginAsync(
@@ -524,13 +523,8 @@ void PasswordStoreBuiltInBackend::InjectAffiliationAndBrandingInformation(
     return;
   }
 
-  LoginsResult forms =
-      ToPasswordForms(std::get<BackendLoginsResult>(std::move(result)));
-
-  auto adapter = AdaptLoginsResultCallback(std::move(callback));
-
   affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
-      std::move(forms), std::move(adapter));
+      std::get<BackendLoginsResult>(std::move(result)), std::move(callback));
 }
 
 void PasswordStoreBuiltInBackend::OnInitComplete(

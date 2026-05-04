@@ -14,6 +14,8 @@ class GURL;
 
 namespace password_manager {
 
+struct StoredCredential;
+
 enum class MatchResult {
   NO_MATCH,
   EXACT_MATCH,
@@ -41,6 +43,9 @@ bool IsFederatedRealm(const std::string& form_signon_realm, const GURL& origin);
 
 // Returns what type of match applies to |form| and |form_digest|.
 MatchResult GetMatchResult(const PasswordForm& form,
+                           const PasswordFormDigest& form_digest);
+
+MatchResult GetMatchResult(const StoredCredential& form,
                            const PasswordFormDigest& form_digest);
 
 // Two URLs are considered a Public Suffix Domain match if they have the same

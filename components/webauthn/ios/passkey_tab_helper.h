@@ -191,7 +191,7 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Whether automatic passkey upgrade is allowed.
   bool CanPerformAutomaticPasskeyUpgrade(
       const RegistrationRequestParams& params,
-      const std::vector<password_manager::PasswordForm>& logins) const;
+      const std::vector<password_manager::StoredCredential>& logins) const;
 
   // Handles passkey registration requests after it passes validation.
   void HandleRegistration(RegistrationRequestParams params);

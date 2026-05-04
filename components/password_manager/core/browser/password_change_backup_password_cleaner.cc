@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_change_backup_password_cleaner.h"
 
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -48,7 +49,8 @@ void PasswordChangeBackupPasswordCleaner::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   base::Time cleaning_time = base::Time::Now();
-  for (const PasswordForm& form : std::get<LoginsResult>(results_or_error)) {
+  for (const PasswordForm& form :
+       ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)))) {
     std::optional<base::Time> note_created_time =
         form.GetPasswordBackupDateCreated();
     if (note_created_time.has_value() &&

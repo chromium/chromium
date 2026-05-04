@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -51,7 +52,8 @@ void ExpectPasswordStoreReturns(const std::vector<PasswordForm>& forms,
             FROM_HERE,
             base::BindOnce(
                 &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
-                consumer, base::Unretained(store), std::move(forms)));
+                consumer, base::Unretained(store),
+                password_manager::FromPasswordForms(std::move(forms))));
       }));
 }
 

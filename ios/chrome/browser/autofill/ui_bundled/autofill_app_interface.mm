@@ -39,6 +39,7 @@
 #import "components/autofill/ios/browser/ios_test_event_waiter.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -86,8 +87,9 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
             results_or_error)) {
       obtained_ = std::vector<password_manager::PasswordForm>();
     } else {
-      obtained_ =
-          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+      obtained_ = password_manager::ToPasswordForms(
+          std::get<password_manager::LoginsResult>(
+              std::move(results_or_error)));
     }
   }
 

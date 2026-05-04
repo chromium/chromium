@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -195,7 +196,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
   // TODO(crbug.com/40269204): process conflicting passwords differently if
   // necessary.
   auto credential_with_same_username_it =
-      std::ranges::find_if(results, [this](const PasswordForm& result) {
+      std::ranges::find_if(results, [this](const StoredCredential& result) {
         return result.username_value == incoming_credentials_.username_value;
       });
   if (credential_with_same_username_it == results.end()) {
@@ -210,7 +211,8 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
 
   ProcessIncomingPasswordSharingInvitationResult processing_result =
       GetProcessSharingInvitationResultForIgnoredInvitations(
-          *credential_with_same_username_it, incoming_credentials_);
+          ToPasswordForm(*credential_with_same_username_it),
+          incoming_credentials_);
   metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
       processing_result);
 

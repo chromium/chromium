@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -55,7 +56,7 @@ class OldGoogleCredentialCleanerTest : public testing::Test {
             [password_forms, store = store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
               consumer->OnGetPasswordStoreResultsOrErrorFrom(
-                  store, std::move(password_forms));
+                  store, FromPasswordForms(std::move(password_forms)));
             }));
   }
 

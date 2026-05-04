@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -80,8 +81,8 @@ class PostSaveCompromisedHelperTest : public testing::Test {
         .WillOnce(testing::WithArg<0>(
             [password_forms, store = mock_profile_store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
-              consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                                             password_forms);
+              consumer->OnGetPasswordStoreResultsOrErrorFrom(
+                  store, password_manager::FromPasswordForms(password_forms));
             }));
   }
 
@@ -311,8 +312,8 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
             results.push_back(CreateForm(kSignonRealm, kUsername, kPassword));
             results.back().password_issues.insert(
                 {InsecureType::kLeaked, InsecurityMetadata()});
-            consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                                           std::move(results));
+            consumer->OnGetPasswordStoreResultsOrErrorFrom(
+                store, password_manager::FromPasswordForms(std::move(results)));
           }));
   EXPECT_CALL(*account_store(), GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>(
@@ -323,8 +324,8 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
                                          PasswordForm::Store::kAccountStore));
             results.back().password_issues.insert(
                 {InsecureType::kLeaked, InsecurityMetadata()});
-            consumer->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                                           std::move(results));
+            consumer->OnGetPasswordStoreResultsOrErrorFrom(
+                store, password_manager::FromPasswordForms(std::move(results)));
           }));
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));

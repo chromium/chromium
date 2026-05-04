@@ -354,11 +354,11 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
 // (hasMatchingPassword:).
 bool PasskeyTabHelper::CanPerformAutomaticPasskeyUpgrade(
     const RegistrationRequestParams& params,
-    const std::vector<password_manager::PasswordForm>& logins) const {
+    const std::vector<password_manager::StoredCredential>& logins) const {
   std::string username = params.UserEntity().name;
   std::string domain_rp_id = GetDomainAndRegistryOrHost(params.RpId());
 
-  for (const password_manager::PasswordForm& form : logins) {
+  for (const password_manager::StoredCredential& form : logins) {
     if (base::UTF16ToUTF8(form.username_value) == username &&
         GetDomainAndRegistryOrHost(form.url.host()) == domain_rp_id) {
       base::TimeDelta time_since_last_use =
@@ -878,7 +878,7 @@ void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     }
   }
 
-  const std::vector<password_manager::PasswordForm>* results = nullptr;
+  const std::vector<password_manager::StoredCredential>* results = nullptr;
   if (std::holds_alternative<password_manager::LoginsResult>(
           results_or_error)) {
     results = &std::get<password_manager::LoginsResult>(results_or_error);

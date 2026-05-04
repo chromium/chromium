@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -219,7 +220,8 @@ class LeakDetectionDelegateTest : public testing::Test {
               FROM_HERE,
               base::BindOnce(
                   &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
-                  consumer, base::Unretained(store), std::move(results)));
+                  consumer, base::Unretained(store),
+                  password_manager::FromPasswordForms(std::move(results))));
         }));
   }
 

@@ -25,10 +25,6 @@ bool IsAutofillableCredential(const StoredCredential& credential) {
          credential.scheme != PasswordForm::Scheme::kUsernameOnly;
 }
 
-bool IsAutofillableForm(const PasswordForm& form) {
-  return !form.blocked_by_user && !form.federation_origin.IsValid() &&
-         form.scheme != PasswordForm::Scheme::kUsernameOnly;
-}
 
 }  // namespace
 
@@ -62,7 +58,9 @@ void PasswordCounter::OnGetPasswordStoreResultsOrErrorFrom(
   }
   size_t counter = std::ranges::count_if(
       std::get<password_manager::LoginsResult>(results_or_error),
-      [](const PasswordForm& form) { return IsAutofillableForm(form); });
+      [](const StoredCredential& cred) {
+        return IsAutofillableCredential(cred);
+      });
   if (store == profile_store_) {
     profile_passwords_ = counter;
     profile_observer_.Observe(store);

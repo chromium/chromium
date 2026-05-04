@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -2397,7 +2398,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())
-      ->OnGetPasswordStoreResultsOrErrorFrom(profile_store(), std::move(forms));
+      ->OnGetPasswordStoreResultsOrErrorFrom(
+          profile_store(),
+          password_manager::FromPasswordForms(std::move(forms)));
   static_cast<PasswordStoreConsumer*>(&presenter())
       ->OnGetPasswordStoreResultsOrErrorFrom(account_store(), {});
   RunUntilIdle();
@@ -2429,12 +2432,14 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())
-      ->OnGetPasswordStoreResultsOrErrorFrom(profile_store(),
-                                             std::move(forms_from_profile));
+      ->OnGetPasswordStoreResultsOrErrorFrom(
+          profile_store(),
+          password_manager::FromPasswordForms(std::move(forms_from_profile)));
   RunUntilIdle();
   static_cast<PasswordStoreConsumer*>(&presenter())
-      ->OnGetPasswordStoreResultsOrErrorFrom(account_store(),
-                                             std::move(forms_from_account));
+      ->OnGetPasswordStoreResultsOrErrorFrom(
+          account_store(),
+          password_manager::FromPasswordForms(std::move(forms_from_account)));
   RunUntilIdle();
 
   EXPECT_CALL(*account_store(), AddLogin).Times(0);

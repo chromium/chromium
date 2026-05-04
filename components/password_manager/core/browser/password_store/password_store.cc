@@ -64,8 +64,7 @@ void ConsumerReplyConverter(base::WeakPtr<PasswordStoreConsumer> consumer,
   if (!consumer) {
     return;
   }
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(
-      store, ToLoginsResultOrError(std::move(result)));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store, std::move(result));
 }
 
 }  // namespace
@@ -297,8 +296,7 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
     return;
   }
 
-  auto adapter = base::BindOnce(&ToLoginsResultOrError)
-                     .Then(base::BindOnce(&GetLoginsOrEmptyListOnFailure))
+  auto adapter = base::BindOnce(&GetLoginsOrEmptyListOnFailure)
                      .Then(base::BindOnce(&PasswordStore::UnblocklistInternal,
                                           this, std::move(completion)));
 
@@ -565,14 +563,14 @@ void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
 }
 
 void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
-                                        std::vector<PasswordForm> forms) {
+                                        LoginsResult forms) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.
   }
   TRACE_EVENT0("passwords", "PasswordStore::UnblocklistInternal");
 
-  std::vector<PasswordForm> forms_to_remove;
+  std::vector<StoredCredential> forms_to_remove;
   for (auto& form : forms) {
     if (form.blocked_by_user) {
       forms_to_remove.push_back(std::move(form));
@@ -597,9 +595,8 @@ void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
       forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
                                   .Then(std::move(notify_callback)));
 
-  for (const auto& form : forms_to_remove) {
-    backend_->RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
-                               barrier_callback);
+  for (auto& form : forms_to_remove) {
+    backend_->RemoveLoginAsync(FROM_HERE, std::move(form), barrier_callback);
   }
 }
 

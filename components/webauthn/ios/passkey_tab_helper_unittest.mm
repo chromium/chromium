@@ -10,6 +10,7 @@
 #import "base/test/run_until.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -105,8 +106,8 @@ class PasskeyTabHelperTest : public PlatformTest {
   bool CanPerformAutomaticPasskeyUpgrade(
       const RegistrationRequestParams& params,
       const std::vector<password_manager::PasswordForm>& logins) {
-    return passkey_tab_helper()->CanPerformAutomaticPasskeyUpgrade(params,
-                                                                   logins);
+    return passkey_tab_helper()->CanPerformAutomaticPasskeyUpgrade(
+        params, password_manager::FromPasswordForms(logins));
   }
 
   // Returns the list of passkeys filtered by the allowed credentials list.

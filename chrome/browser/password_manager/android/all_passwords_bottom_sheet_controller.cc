@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
@@ -122,7 +123,8 @@ void AllPasswordsBottomSheetController::OnGetPasswordStoreResultsOrErrorFrom(
       std::get<password_manager::LoginsResult>(std::move(results_or_error));
   std::erase_if(results, [](const auto& form) { return form.blocked_by_user; });
 
-  on_password_forms_received_barrier_callback_.Run(std::move(results));
+  on_password_forms_received_barrier_callback_.Run(
+      password_manager::ToPasswordForms(std::move(results)));
 }
 
 Profile* AllPasswordsBottomSheetController::GetProfile() {

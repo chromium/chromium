@@ -109,7 +109,7 @@ class WebViewPasswordStoreConsumer
     NSMutableArray<CWVPassword*>* passwords = [NSMutableArray array];
     for (auto& form : results) {
       CWVPassword* password =
-          [[CWVPassword alloc] initWithPasswordForm:form
+          [[CWVPassword alloc] initWithPasswordForm:ToPasswordForm(form)
                                isAffiliationEnabled:isAffiliationsEnabled];
       [passwords addObject:password];
     }

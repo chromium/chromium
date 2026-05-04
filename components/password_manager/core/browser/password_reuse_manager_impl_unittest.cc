@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -118,7 +119,7 @@ class MockPasswordReuseDetector : public PasswordReuseDetector {
  public:
   MOCK_METHOD(void,
               OnGetPasswordStoreResults,
-              (std::vector<PasswordForm>),
+              (std::vector<StoredCredential>),
               (override));
   MOCK_METHOD(void,
               OnLoginsChanged,

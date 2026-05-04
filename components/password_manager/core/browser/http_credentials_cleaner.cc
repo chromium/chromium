@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -51,7 +52,8 @@ void HttpCredentialCleaner::OnGetPasswordStoreResultsOrErrorFrom(
 
   // Non HTTP or HTTPS credentials are ignored, in particular Android or
   // federated credentials.
-  for (auto& form : RemoveNonHTTPOrHTTPSForms(std::move(results))) {
+  for (auto& form : RemoveNonHTTPOrHTTPSForms(
+           password_manager::ToPasswordForms(std::move(results)))) {
     FormKey form_key(
         {std::string(
              password_manager_util::GetSignonRealmWithProtocolExcluded(form)),

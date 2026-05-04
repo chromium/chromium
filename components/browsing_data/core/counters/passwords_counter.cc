@@ -146,13 +146,14 @@ void PasswordStoreFetcher::OnGetPasswordStoreResultsOrErrorFrom(
   auto results =
       std::get<password_manager::LoginsResult>(std::move(results_or_error));
 
-  std::erase_if(results, [this](const password_manager::PasswordForm& form) {
-    return (form.date_created < start_ || form.date_created >= end_);
-  });
+  std::erase_if(
+      results, [this](const password_manager::StoredCredential& form) {
+        return (form.date_created < start_ || form.date_created >= end_);
+      });
   num_passwords_ = results.size();
   std::sort(results.begin(), results.end(),
-            [](const password_manager::PasswordForm& a,
-               const password_manager::PasswordForm& b) {
+            [](const password_manager::StoredCredential& a,
+               const password_manager::StoredCredential& b) {
               return a.times_used_in_html_form > b.times_used_in_html_form;
             });
 

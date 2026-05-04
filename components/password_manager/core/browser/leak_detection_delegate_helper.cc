@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 
@@ -54,7 +55,8 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
   auto results = std::get<LoginsResult>(std::move(results_or_error));
-  std::ranges::move(results, std::back_inserter(partial_results_));
+  std::ranges::move(ToPasswordForms(std::move(results)),
+                    std::back_inserter(partial_results_));
   barrier_closure_.Run();
 }
 

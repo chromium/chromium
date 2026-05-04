@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -82,7 +83,8 @@ void PostSaveCompromisedHelper::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
   auto results = std::get<LoginsResult>(std::move(results_or_error));
-  std::ranges::move(results, std::back_inserter(passwords_));
+  std::ranges::move(password_manager::ToPasswordForms(std::move(results)),
+                    std::back_inserter(passwords_));
   forms_received_.Run();
 }
 

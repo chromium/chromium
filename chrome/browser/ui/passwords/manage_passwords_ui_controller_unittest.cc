@@ -1852,7 +1852,8 @@ TEST_P(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   results.push_back(submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
-      client().GetProfilePasswordStore(), std::move(results));
+      client().GetProfilePasswordStore(),
+      password_manager::FromPasswordForms(std::move(results)));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1899,7 +1900,8 @@ TEST_P(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   controller()->OnBubbleHidden();
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
-      client().GetProfilePasswordStore(), expected_forms);
+      client().GetProfilePasswordStore(),
+      password_manager::FromPasswordForms(expected_forms));
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());

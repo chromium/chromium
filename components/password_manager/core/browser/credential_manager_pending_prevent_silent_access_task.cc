@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 
@@ -42,7 +43,7 @@ void CredentialManagerPendingPreventSilentAccessTask::
     }
     if (!form.skip_zero_click) {
       form.skip_zero_click = true;
-      store->UpdateLogin(form);
+      store->UpdateLogin(ToPasswordForm(form));
     }
   }
   pending_requests_--;

@@ -83,7 +83,7 @@ class AffiliatedMatchHelper {
   // and |app_icon_url| on |form| if |success| is true and |results| is
   // non-empty. Invokes |barrier_closure|.
   void CompleteInjectAffiliationAndBrandingInformation(
-      PasswordForm* form,
+      StoredCredential* form,
       base::OnceClosure barrier_closure,
       const affiliations::AffiliatedFacets& results,
       bool success);

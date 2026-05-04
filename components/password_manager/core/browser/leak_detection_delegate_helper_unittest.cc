@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,7 +119,7 @@ class LeakDetectionDelegateHelperTest
             [password_forms, store = store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
               consumer->OnGetPasswordStoreResultsOrErrorFrom(
-                  store, std::move(password_forms));
+                  store, FromPasswordForms(std::move(password_forms)));
             }));
   }
 

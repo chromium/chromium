@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +47,7 @@ void OldGoogleCredentialCleaner::OnGetPasswordStoreResultsOrErrorFrom(
       base::Time::FromUTCExploded(kExplodedCutoff, &cutoff);
   DCHECK(conversion_success);
 
-  auto IsOldGoogleForm = [&cutoff](const PasswordForm& form) {
+  auto IsOldGoogleForm = [&cutoff](const StoredCredential& form) {
     return (form.scheme == PasswordForm::Scheme::kHtml &&
             (form.signon_realm == "http://www.google.com" ||
              form.signon_realm == "http://www.google.com/" ||
@@ -57,7 +58,7 @@ void OldGoogleCredentialCleaner::OnGetPasswordStoreResultsOrErrorFrom(
 
   for (const auto& form : results) {
     if (IsOldGoogleForm(form)) {
-      store_->RemoveLogin(FROM_HERE, form);
+      store_->RemoveLogin(FROM_HERE, ToPasswordForm(form));
     }
   }
   prefs_->SetBoolean(prefs::kWereOldGoogleLoginsRemoved, true);

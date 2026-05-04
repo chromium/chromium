@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
@@ -31,8 +32,6 @@ class InsecureCredentialsHelper : public PasswordStoreConsumer {
   void RemovePhishedCredentials(const MatchingReusedCredential& credential);
 
  private:
-  using LoginsResult = std::vector<PasswordForm>;
-
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
@@ -101,7 +100,7 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
             {InsecureType::kPhished,
              InsecurityMetadata(base::Time::Now(), IsMuted(false),
                                 TriggerBackendNotification(false))});
-        store_->UpdateLogin(form);
+        store_->UpdateLogin(ToPasswordForm(form));
       }
     }
   }
@@ -116,7 +115,7 @@ void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
       if (form.password_issues.find(InsecureType::kPhished) !=
           form.password_issues.end()) {
         form.password_issues.erase(InsecureType::kPhished);
-        store_->UpdateLogin(form);
+        store_->UpdateLogin(ToPasswordForm(form));
       }
     }
   }

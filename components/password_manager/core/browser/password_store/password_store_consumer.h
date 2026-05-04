@@ -13,13 +13,14 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
 struct InteractionsStats;
 class PasswordStoreInterface;
 
-using LoginsResult = std::vector<PasswordForm>;
+using LoginsResult = std::vector<StoredCredential>;
 using LoginsResultOrError =
     std::variant<LoginsResult, PasswordStoreBackendError>;
 

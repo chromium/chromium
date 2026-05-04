@@ -90,10 +90,10 @@ PasswordReuseDetectorImpl::~PasswordReuseDetectorImpl() {
 }
 
 void PasswordReuseDetectorImpl::OnGetPasswordStoreResults(
-    std::vector<PasswordForm> results) {
+    std::vector<StoredCredential> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& form : results) {
-    AddPassword(FromPasswordForm(std::move(form)));
+  for (auto& cred : results) {
+    AddPassword(cred);
   }
 }
 

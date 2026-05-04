@@ -8,6 +8,7 @@
 
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -58,8 +59,9 @@ void OSCryptAsyncMigrator::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   store->UpdateLogins(
-      logins, base::BindOnce(&OSCryptAsyncMigrator::MarkMigrationComplete,
-                             weak_ptr_factory_.GetWeakPtr()));
+      ToPasswordForms(std::move(logins)),
+      base::BindOnce(&OSCryptAsyncMigrator::MarkMigrationComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OSCryptAsyncMigrator::MarkMigrationComplete() {

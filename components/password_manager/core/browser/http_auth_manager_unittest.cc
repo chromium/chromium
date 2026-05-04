@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -105,8 +106,7 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(store,
-                                             std::vector<PasswordForm>());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(store, LoginsResultOrError());
 }
 }  // namespace
 
@@ -198,8 +198,8 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthNotRequired) {
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                 std::move(result));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), password_manager::FromPasswordForms(std::move(result)));
   ASSERT_TRUE(future.Wait());
 
   testing::Mock::VerifyAndClearExpectations(&store_);
@@ -248,8 +248,8 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthSuccess) {
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                 std::move(result));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), password_manager::FromPasswordForms(std::move(result)));
   testing::Mock::VerifyAndClearExpectations(&store_);
 
   httpauth_manager()->DetachObserver(&observer);
@@ -298,8 +298,8 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                 std::move(result));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), password_manager::FromPasswordForms(std::move(result)));
   testing::Mock::VerifyAndClearExpectations(&store_);
 
   httpauth_manager()->DetachObserver(&observer);
@@ -352,8 +352,8 @@ TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthOriginMismatch) {
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                 std::move(result));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), password_manager::FromPasswordForms(std::move(result)));
   testing::Mock::VerifyAndClearExpectations(&store_);
 
   httpauth_manager()->DetachObserver(&observer);
@@ -412,7 +412,8 @@ TEST_P(HttpAuthManagerTest, CrossOriginLeakViaStaleBiometricObserver) {
   std::vector<PasswordForm> victim_result;
   victim_result.push_back(victim_creds);
   victim_consumer->OnGetPasswordStoreResultsOrErrorFrom(
-      store_.get(), std::move(victim_result));
+      store_.get(),
+      password_manager::FromPasswordForms(std::move(victim_result)));
   // Biometric prompt is now armed and pending.
   ASSERT_FALSE(pending_auth_cb.is_null());
 
@@ -507,8 +508,8 @@ TEST_P(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
-  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                 std::move(result));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      store_.get(), password_manager::FromPasswordForms(std::move(result)));
 
   // Emulate that http auth credentials submitted.
   httpauth_manager()->OnPasswordFormSubmitted(stored_form);

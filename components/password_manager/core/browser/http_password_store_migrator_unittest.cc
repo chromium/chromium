@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,8 +158,7 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
                                      &consumer());
 
   EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
-  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr,
-                                                std::vector<PasswordForm>());
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr, LoginsResultOrError());
 }
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
@@ -202,7 +202,8 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   results.push_back(form);
   results.push_back(android_form);
   results.push_back(federated_form);
-  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr, std::move(results));
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, password_manager::FromPasswordForms(std::move(results)));
 }
 
 // This test checks whether the migration successfully completes even if the
@@ -232,7 +233,7 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
       .WillOnce([&migrator](Unused) { migrator.reset(); });
 
   migrator->OnGetPasswordStoreResultsOrErrorFrom(nullptr,
-                                                 std::vector<PasswordForm>());
+                                                 LoginsResultOrError());
 }
 
 TEST_F(HttpPasswordStoreMigratorTest, EmptyStoreWithHSTS) {

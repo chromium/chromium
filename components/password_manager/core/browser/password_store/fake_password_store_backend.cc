@@ -38,22 +38,8 @@ void InjectAffiliationAndBrandingInformation(
     return;
   }
 
-  LoginsResult forms =
-      ToPasswordForms(std::get<BackendLoginsResult>(std::move(result)));
-
-  auto adapter = base::BindOnce(
-      [](BackendLoginsOrErrorReply callback, LoginsResultOrError result) {
-        if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-          std::move(callback).Run(std::get<PasswordStoreBackendError>(result));
-        } else {
-          std::move(callback).Run(
-              FromPasswordForms(std::get<LoginsResult>(std::move(result))));
-        }
-      },
-      std::move(callback));
-
-  match_helper->InjectAffiliationAndBrandingInformation(std::move(forms),
-                                                        std::move(adapter));
+  match_helper->InjectAffiliationAndBrandingInformation(
+      std::get<BackendLoginsResult>(std::move(result)), std::move(callback));
 }
 
 }  // namespace
@@ -211,10 +197,8 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
 void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     BackendLoginsOrErrorReply callback) {
-  auto adapter = AdaptLoginsResultCallback(std::move(callback));
-
   GetLoginsWithAffiliationsRequestHandler(form_digest, this, match_helper_,
-                                          std::move(adapter));
+                                          std::move(callback));
 }
 
 void FakePasswordStoreBackend::AddLoginAsync(

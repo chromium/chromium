@@ -15,6 +15,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -78,8 +79,9 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
             results_or_error)) {
       obtained_ = std::vector<PasswordForm>();
     } else {
-      obtained_ =
-          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+      obtained_ = password_manager::ToPasswordForms(
+          std::get<password_manager::LoginsResult>(
+              std::move(results_or_error)));
     }
   }
 

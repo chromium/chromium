@@ -36,39 +36,6 @@ std::vector<PasswordForm> ToPasswordForms(
 std::vector<StoredCredential> FromPasswordForms(
     std::vector<PasswordForm> forms);
 
-// Converts BackendLoginsResultOrError to LoginsResultOrError.
-LoginsResultOrError ToLoginsResultOrError(BackendLoginsResultOrError result);
-
-// Helper to adapt LoginsResultOrError to BackendLoginsOrErrorReply.
-inline base::OnceCallback<void(LoginsResultOrError)> AdaptLoginsResultCallback(
-    BackendLoginsOrErrorReply callback) {
-  return base::BindOnce(
-      [](BackendLoginsOrErrorReply callback, LoginsResultOrError result) {
-        if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-          std::move(callback).Run(std::get<PasswordStoreBackendError>(result));
-        } else {
-          std::move(callback).Run(
-              FromPasswordForms(std::get<LoginsResult>(std::move(result))));
-        }
-      },
-      std::move(callback));
-}
-
-// Helper to adapt BackendLoginsResultOrError to LoginsOrErrorReply.
-inline BackendLoginsOrErrorReply AdaptBackendLoginsResultCallback(
-    base::OnceCallback<void(LoginsResultOrError)> callback) {
-  return base::BindOnce(
-      [](base::OnceCallback<void(LoginsResultOrError)> callback,
-         BackendLoginsResultOrError result) {
-        if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-          std::move(callback).Run(std::get<PasswordStoreBackendError>(result));
-        } else {
-          std::move(callback).Run(ToPasswordForms(
-              std::get<BackendLoginsResult>(std::move(result))));
-        }
-      },
-      std::move(callback));
-}
 
 }  // namespace password_manager
 

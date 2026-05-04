@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -797,8 +798,9 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
   const bool has_error =
       std::holds_alternative<PasswordStoreBackendError>(results_or_error);
   PasswordStoreResults password_store_results{
-      password_manager::GetLoginsOrEmptyListOnFailure(
-          std::move(results_or_error)),
+      password_manager::ToPasswordForms(
+          password_manager::GetLoginsOrEmptyListOnFailure(
+              std::move(results_or_error))),
       has_error};
 
   ProcessPasswordResults(store, std::move(password_store_results));

@@ -148,22 +148,23 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
   password_manager::LoginsResult result =
-      password_manager::GetLoginsOrEmptyListOnFailure(results_or_error);
+      password_manager::GetLoginsOrEmptyListOnFailure(
+          std::move(results_or_error));
   bool upgrade_eligible = false;
   bool match_not_recent = false;
   // A password with a matching username must have been used within the last 5
   // minutes in order for the automatic passkey upgrade to succeed.
   base::TimeDelta kLastUsedThreshold = base::Minutes(5);
   const auto min_last_used = base::Time::Now() - kLastUsedThreshold;
-  for (const password_manager::PasswordForm& password_form : result) {
-    if (password_form.username_value != username_) {
+  for (const password_manager::StoredCredential& credential : result) {
+    if (credential.username_value != username_) {
       continue;
     }
     // Consider multiple last use attributes for robustness. N.B.
     // `date_last_used` is updated after successful form submission on
     // Desktop, while `date_last_filled` is updated during form filling.
-    if (std::max({password_form.date_created, password_form.date_last_filled,
-                  password_form.date_last_used}) < min_last_used) {
+    if (std::max({credential.date_created, credential.date_last_filled,
+                  credential.date_last_used}) < min_last_used) {
       match_not_recent = true;
       continue;
     }

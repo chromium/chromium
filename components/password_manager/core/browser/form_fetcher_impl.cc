@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -369,8 +370,8 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     }
   }
 
-  std::vector<PasswordForm> results =
-      GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
+  std::vector<PasswordForm> results = ToPasswordForms(
+      GetLoginsOrEmptyListOnFailure(std::move(results_or_error)));
   if (filter_grouped_credentials_) {
     std::erase_if(results, [this](const auto& form) {
       if (form.match_type == PasswordForm::MatchType::kGrouped) {

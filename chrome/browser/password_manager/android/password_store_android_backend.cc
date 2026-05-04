@@ -146,7 +146,7 @@ void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
   std::erase_if(std::get<LoginsResult>(logins_or_error),
                 [&form_digest_to_match, include_psl](const auto& form) {
                   return !MatchesIncludedPSLAndFederation(
-                      form, form_digest_to_match, include_psl);
+                      ToPasswordForm(form), form_digest_to_match, include_psl);
                 });
   std::move(callback).Run(std::move(logins_or_error));
 }
@@ -777,15 +777,9 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   reply->RecordMetrics(/*error=*/std::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
 
-  std::vector<PasswordForm> forms;
-  forms.reserve(passwords.size());
-  for (auto& cred : passwords) {
-    forms.push_back(ToPasswordForm(std::move(cred)));
-  }
-
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
-                                std::move(forms)));
+                                std::move(passwords)));
 }
 
 void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
@@ -902,7 +896,7 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
   for (auto& login : logins) {
     if (login.date_created >= delete_begin && login.date_created < delete_end &&
         url_filter.Run(login.url)) {
-      logins_to_remove.push_back(std::move(login));
+      logins_to_remove.push_back(ToPasswordForm(std::move(login)));
     }
   }
 
@@ -940,7 +934,7 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
   for (auto& login : logins) {
     // Update login if it matches |origin_filer| and has autosignin enabled.
     if (origin_filter.Run(login.url) && !login.skip_zero_click) {
-      logins_to_update.push_back(std::move(login));
+      logins_to_update.push_back(ToPasswordForm(std::move(login)));
       logins_to_update.back().skip_zero_click = true;
     }
   }

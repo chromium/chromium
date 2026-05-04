@@ -13,7 +13,6 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
-#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -108,8 +107,7 @@ void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
     ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
     return;
   }
-  GetAllLoginsInternal(GetSyncingAccount(sync_service_),
-                       AdaptLoginsResultCallback(std::move(callback)));
+  GetAllLoginsInternal(GetSyncingAccount(sync_service_), std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::
@@ -120,8 +118,7 @@ void PasswordStoreAndroidAccountBackend::
     return;
   }
   GetAllLoginsWithAffiliationAndBrandingInternal(
-      GetSyncingAccount(sync_service_),
-      AdaptLoginsResultCallback(std::move(callback)));
+      GetSyncingAccount(sync_service_), std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::GetAutofillableLoginsAsync(
@@ -131,7 +128,7 @@ void PasswordStoreAndroidAccountBackend::GetAutofillableLoginsAsync(
     return;
   }
   GetAutofillableLoginsInternal(GetSyncingAccount(sync_service_),
-                                AdaptLoginsResultCallback(std::move(callback)));
+                                std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::FillMatchingLoginsAsync(
@@ -143,8 +140,7 @@ void PasswordStoreAndroidAccountBackend::FillMatchingLoginsAsync(
     return;
   }
   FillMatchingLoginsInternal(GetSyncingAccount(sync_service_),
-                             AdaptLoginsResultCallback(std::move(callback)),
-                             include_psl, forms);
+                             std::move(callback), include_psl, forms);
 }
 
 void PasswordStoreAndroidAccountBackend::GetGroupedMatchingLoginsAsync(
@@ -154,9 +150,8 @@ void PasswordStoreAndroidAccountBackend::GetGroupedMatchingLoginsAsync(
     ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
     return;
   }
-  GetGroupedMatchingLoginsInternal(
-      GetSyncingAccount(sync_service_), form_digest,
-      AdaptLoginsResultCallback(std::move(callback)));
+  GetGroupedMatchingLoginsInternal(GetSyncingAccount(sync_service_),
+                                   form_digest, std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::AddLoginAsync(

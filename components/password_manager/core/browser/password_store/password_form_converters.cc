@@ -17,6 +17,7 @@ PasswordForm ToPasswordForm(const StoredCredential& cred) {
   form.url = cred.url;
   form.action = cred.action;
   form.federation_origin = cred.federation_origin;
+  form.change_password_url = cred.change_password_url;
 
   form.submit_element = cred.submit_element;
   form.username_element = cred.username_element;
@@ -65,6 +66,7 @@ PasswordForm ToPasswordForm(StoredCredential&& cred) {
   form.url = std::move(cred.url);
   form.action = std::move(cred.action);
   form.federation_origin = std::move(cred.federation_origin);
+  form.change_password_url = std::move(cred.change_password_url);
 
   form.submit_element = std::move(cred.submit_element);
   form.username_element = std::move(cred.username_element);
@@ -113,6 +115,7 @@ StoredCredential FromPasswordForm(PasswordForm form) {
   cred.url = std::move(form.url);
   cred.action = std::move(form.action);
   cred.federation_origin = std::move(form.federation_origin);
+  cred.change_password_url = std::move(form.change_password_url);
 
   cred.submit_element = std::move(form.submit_element);
   cred.username_element = std::move(form.username_element);
@@ -184,13 +187,6 @@ std::vector<StoredCredential> FromPasswordForms(
     credentials.push_back(FromPasswordForm(std::move(form)));
   }
   return credentials;
-}
-
-LoginsResultOrError ToLoginsResultOrError(BackendLoginsResultOrError result) {
-  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-    return std::get<PasswordStoreBackendError>(result);
-  }
-  return ToPasswordForms(std::get<BackendLoginsResult>(std::move(result)));
 }
 
 }  // namespace password_manager

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -133,7 +134,7 @@ TEST_P(OSCryptAsyncMigratorTest, StartCleaningHasPasswords) {
               UpdateLogins(testing::ElementsAreArray(forms), testing::_))
       .WillOnce(MoveArg<1>(&completion_callback));
   static_cast<PasswordStoreConsumer*>(migrator())
-      ->OnGetPasswordStoreResultsOrErrorFrom(store(), forms);
+      ->OnGetPasswordStoreResultsOrErrorFrom(store(), FromPasswordForms(forms));
 
   EXPECT_CALL(observer, CleaningCompleted);
   std::move(completion_callback).Run();

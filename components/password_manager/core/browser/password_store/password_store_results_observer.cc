@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 
 namespace password_manager {
 
@@ -19,7 +20,8 @@ void PasswordStoreResultsObserver::OnGetPasswordStoreResultsOrErrorFrom(
   if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
     results_ = std::vector<PasswordForm>();
   } else {
-    results_ = std::get<LoginsResult>(std::move(results_or_error));
+    results_ =
+        ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)));
   }
   run_loop_.Quit();
 }

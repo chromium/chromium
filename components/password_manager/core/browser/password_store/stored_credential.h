@@ -38,6 +38,7 @@ struct StoredCredential {
   GURL url;
   GURL action;
   url::SchemeHostPort federation_origin;
+  GURL change_password_url;
 
   // Elements
   std::u16string submit_element;

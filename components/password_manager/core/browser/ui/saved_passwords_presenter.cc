@@ -649,11 +649,12 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
   auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<PasswordForm> forms = ToPasswordForms(std::move(results));
 
-  AddForms(results,
+  AddForms(forms,
            base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                           weak_ptr_factory_.GetWeakPtr(),
-                          GetChangesForAddedForms(results)));
+                          GetChangesForAddedForms(forms)));
 }
 
 PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(

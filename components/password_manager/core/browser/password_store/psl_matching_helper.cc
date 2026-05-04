@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -61,6 +62,38 @@ bool IsFederatedPSLMatch(const std::string& form_signon_realm,
 }
 
 MatchResult GetMatchResult(const PasswordForm& form,
+                           const PasswordFormDigest& form_digest) {
+  if (form.signon_realm == form_digest.signon_realm) {
+    return MatchResult::EXACT_MATCH;
+  }
+
+  // PSL and federated matches only apply to HTML forms.
+  if (form_digest.scheme != PasswordForm::Scheme::kHtml ||
+      form.scheme != PasswordForm::Scheme::kHtml) {
+    return MatchResult::NO_MATCH;
+  }
+
+  if (IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm)) {
+    return MatchResult::PSL_MATCH;
+  }
+
+  const bool allow_federated_match = form.federation_origin.IsValid();
+  if (allow_federated_match &&
+      IsFederatedRealm(form.signon_realm, form_digest.url) &&
+      form.url.DeprecatedGetOriginAsURL() ==
+          form_digest.url.DeprecatedGetOriginAsURL()) {
+    return MatchResult::FEDERATED_MATCH;
+  }
+
+  if (allow_federated_match &&
+      IsFederatedPSLMatch(form.signon_realm, form.url, form_digest.url)) {
+    return MatchResult::FEDERATED_PSL_MATCH;
+  }
+
+  return MatchResult::NO_MATCH;
+}
+
+MatchResult GetMatchResult(const StoredCredential& form,
                            const PasswordFormDigest& form_digest) {
   if (form.signon_realm == form_digest.signon_realm) {
     return MatchResult::EXACT_MATCH;

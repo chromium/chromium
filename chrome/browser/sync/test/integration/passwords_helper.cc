@@ -60,8 +60,9 @@ class PasswordStoreConsumerHelper
             results_or_error)) {
       result_ = std::vector<PasswordForm>();
     } else {
-      result_ =
-          std::get<password_manager::LoginsResult>(std::move(results_or_error));
+      result_ = password_manager::ToPasswordForms(
+          std::get<password_manager::LoginsResult>(
+              std::move(results_or_error)));
     }
     run_loop_.Quit();
   }

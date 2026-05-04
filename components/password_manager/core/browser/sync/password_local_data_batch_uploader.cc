@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/sync/service/local_data_description.h"
@@ -89,7 +90,8 @@ class PasswordLocalDataBatchUploader::PasswordFetchRequest
     if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       results_ = std::vector<PasswordForm>();
     } else {
-      results_ = std::get<LoginsResult>(std::move(results_or_error));
+      results_ =
+          ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)));
     }
     std::move(done_callback_).Run();
     // `this` might be deleted now, do not do anything else.

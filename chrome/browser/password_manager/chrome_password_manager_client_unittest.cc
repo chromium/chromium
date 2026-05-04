@@ -1742,11 +1742,11 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   std::vector<PasswordForm> account_store_forms = {MakePasswordForm()};
   store_consumer->OnGetPasswordStoreResultsOrErrorFrom(
-      mock_account_store, std::move(account_store_forms));
+      mock_account_store, FromPasswordForms(std::move(account_store_forms)));
 
   std::vector<PasswordForm> profile_store_forms = {MakePasswordForm()};
   store_consumer->OnGetPasswordStoreResultsOrErrorFrom(
-      mock_profile_store, std::move(profile_store_forms));
+      mock_profile_store, FromPasswordForms(std::move(profile_store_forms)));
 
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       SetUpMockPwdAccessoryForClientUse(driver.get());
@@ -1782,8 +1782,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
                                                       {observed_form_data});
 
   std::vector<PasswordForm> forms = {MakePasswordForm()};
-  store_consumer->OnGetPasswordStoreResultsOrErrorFrom(mock_profile_store,
-                                                       std::move(forms));
+  store_consumer->OnGetPasswordStoreResultsOrErrorFrom(
+      mock_profile_store, FromPasswordForms(std::move(forms)));
 
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
       SetUpMockPwdAccessoryForClientUse(driver.get());

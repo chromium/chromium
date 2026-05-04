@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "content/public/common/content_features.h"
 
 using password_manager::PasswordForm;
@@ -125,7 +126,7 @@ void ActorLoginDuplicatePermissionCleaner::OnGetPasswordStoreResultsOrErrorFrom(
     const auto& results =
         std::get<password_manager::LoginsResult>(results_or_error);
     for (const auto& match : results) {
-      pending_matches_.push_back(match);
+      pending_matches_.push_back(password_manager::ToPasswordForm(match));
     }
   }
 

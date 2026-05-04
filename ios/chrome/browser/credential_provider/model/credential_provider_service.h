@@ -29,6 +29,7 @@ class AffiliationService;
 
 namespace password_manager {
 class AffiliatedMatchHelper;
+struct StoredCredential;
 }  // namespace password_manager
 
 namespace syncer {
@@ -104,17 +105,18 @@ class CredentialProviderService
   // Add credentials from `forms`. Currently simply calls either the legacy or
   // refactored version of this function.
   void AddCredentials(MemoryCredentialStore* store,
-                      std::vector<password_manager::PasswordForm> forms);
+                      std::vector<password_manager::StoredCredential> forms);
 
   // Add credentials from `forms`. This is the original legacy version.
-  void AddCredentialsLegacy(MemoryCredentialStore* store,
-                            std::vector<password_manager::PasswordForm> forms);
+  void AddCredentialsLegacy(
+      MemoryCredentialStore* store,
+      std::vector<password_manager::StoredCredential> forms);
 
   // Add credentials from `forms`. This is the refactored version for better
   // performance.
   void AddCredentialsRefactored(
       MemoryCredentialStore* store,
-      std::vector<password_manager::PasswordForm> forms);
+      std::vector<password_manager::StoredCredential> forms);
 
   // Add credentials from passkeys.
   void AddCredentials(
@@ -123,7 +125,7 @@ class CredentialProviderService
 
   // Removes credentials from `forms`.
   void RemoveCredentials(MemoryCredentialStore* store,
-                         std::vector<password_manager::PasswordForm> forms);
+                         std::vector<password_manager::StoredCredential> forms);
 
   // Removes credentials from `passkeys`.
   void RemoveCredentials(
