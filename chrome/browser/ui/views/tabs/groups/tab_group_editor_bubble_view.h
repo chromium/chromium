@@ -60,6 +60,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   static constexpr int TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK = 11;
   static constexpr int TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP = 12;
 
+  friend class TabGroupEditorBubbleInteractiveUiTest;
+
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
 

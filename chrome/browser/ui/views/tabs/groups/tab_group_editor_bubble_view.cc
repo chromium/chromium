@@ -379,8 +379,20 @@ TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
 
 // TabStripModelObserver:
 void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
-  if (change.group != group_ ||
-      change.type != TabGroupChange::kVisualsChanged ||
+  if (change.group != group_) {
+    return;
+  }
+
+  // The widget close must be handled here to prevent crashes due to the async
+  // nature of the vertical tab group close animation. The animation delays
+  // the destruction of the tracker, which can leave the bubble interactive
+  // after the group has been deleted from the model.
+  if (change.type == TabGroupChange::kClosed) {
+    GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
+
+  if (change.type != TabGroupChange::kVisualsChanged ||
       !change.GetVisualsChange()->new_visuals) {
     return;
   }
