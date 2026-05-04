@@ -12,16 +12,13 @@ export function getHtml(this: SignInPromoRefreshElement) {
   // pause/stop them.
   return html`<!--_html_template_start_-->
 <cr-lottie id="left-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('left')}"
-    ?autoplay=false>
+    animation-url="${this.getAnimationUrl_('left')}">
 </cr-lottie>
 <cr-lottie id="right-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('right')}"
-    ?autoplay=false>
+    animation-url="${this.getAnimationUrl_('right')}">
 </cr-lottie>
 <cr-lottie id="bottom-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('bottom')}"
-    ?autoplay=false>
+    animation-url="${this.getAnimationUrl_('bottom')}">
 </cr-lottie>
 
 ${this.isTopRightCornerVariation_() ? html`
