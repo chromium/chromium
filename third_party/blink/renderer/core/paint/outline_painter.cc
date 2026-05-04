@@ -862,7 +862,9 @@ void PaintFocusRing(GraphicsContext& context,
                     const Vector<gfx::Rect>& rects,
                     const ComputedStyle& style,
                     const FloatRoundedRect::Radii& corner_radii,
-                    const LayoutObject::OutlineInfo& info) {
+                    const LayoutObject::OutlineInfo& info,
+                    const LayoutObject* layout_object,
+                    const PhysicalRect& border_rect) {
   Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
 #if !BUILDFLAG(IS_MAC)
   if (style.DarkColorScheme()) {
@@ -873,6 +875,35 @@ void PaintFocusRing(GraphicsContext& context,
   const float outer_ring_width = FocusRingOuterStrokeWidth(style);
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);
   const int offset = FocusRingOffset(style, info);
+
+  Color outer_color =
+      style.DarkColorScheme() ? Color(0x10, 0x10, 0x10) : Color::kWhite;
+
+  if (style.HasBorderShape() && layout_object) {
+    // TODO(crbug.com/505631141): Border-shape focus ring painting currently
+    // doesn't handle fragmented boxes.
+    std::optional<BorderShapeReferenceRects> shape_ref_rects =
+        ComputeBorderShapeReferenceRects(border_rect, style, *layout_object);
+    PhysicalRect outer_reference_rect =
+        shape_ref_rects ? shape_ref_rects->outer : border_rect;
+
+    // Paint outer ring. We use OuterPathWithOffset to get the path
+    // expanded by the offset, and then DrawFocusRingPath strokes it.
+    float outer_offset = offset + std::ceil(inner_ring_width);
+    Path outer_path = BorderShapePainter::OuterPathWithOffset(
+        style, outer_reference_rect, outer_offset);
+
+    context.DrawFocusRingPath(outer_path.GetSkPath(), outer_color,
+                              outer_ring_width, 0, AutoDarkMode::Disabled());
+
+    // Paint inner ring.
+    Path inner_path = BorderShapePainter::OuterPathWithOffset(
+        style, outer_reference_rect, offset);
+
+    context.DrawFocusRingPath(inner_path.GetSkPath(), inner_color,
+                              outer_ring_width, 0, AutoDarkMode::Disabled());
+    return;
+  }
 
   const ContouredRect::CornerCurvature corner_curvature(
       corner_radii.TopLeft().IsEmpty() ? ContouredRect::CornerCurvature::kRound
@@ -887,8 +918,6 @@ void PaintFocusRing(GraphicsContext& context,
           ? ContouredRect::CornerCurvature::kRound
           : style.CornerBottomLeftShape().Exponent());
 
-  Color outer_color =
-      style.DarkColorScheme() ? Color(0x10, 0x10, 0x10) : Color::kWhite;
   PaintSingleFocusRing(context, rects, outer_ring_width,
                        offset + std::ceil(inner_ring_width), corner_radii,
                        corner_curvature, outer_color, AutoDarkMode::Disabled());
@@ -899,7 +928,6 @@ void PaintFocusRing(GraphicsContext& context,
   PaintSingleFocusRing(context, rects, outer_ring_width, offset, corner_radii,
                        corner_curvature, inner_color, AutoDarkMode::Disabled());
 }
-
 }  // anonymous namespace
 
 void OutlinePainter::PaintOutlineRects(
@@ -968,7 +996,7 @@ void OutlinePainter::PaintOutlineRects(
   if (style.OutlineStyleIsAuto()) {
     auto corner_radii = GetFocusRingCornerRadii(style, outline_rects[0], info);
     PaintFocusRing(paint_info.context, pixel_snapped_outline_rects, style,
-                   corner_radii, info);
+                   corner_radii, info, layout_object, outline_rects[0]);
     return;
   }
 
