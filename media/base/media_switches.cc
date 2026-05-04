@@ -1708,7 +1708,7 @@ bool IsChromeWideEchoCancellationEnabled() {
 #endif
 }
 
-BASE_FEATURE(kMP4TimedMetadataTrack, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMP4TimedMetadataTrack, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation,
              base::FEATURE_DISABLED_BY_DEFAULT);
