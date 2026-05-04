@@ -9,6 +9,7 @@
 
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace {
 
@@ -103,6 +105,14 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                 sessionHandle:_sessionHandle.get()
                    entrypoint:_entrypoint
                   isIncognito:profile->IsOffTheRecord()];
+
+    if (aimEligibilityService) {
+      const omnibox::SearchboxConfig* config =
+          aimEligibilityService->GetSearchboxConfig();
+      if (config) {
+        [_stateManager setSearchboxConfig:*config];
+      }
+    }
 
     std::set<web::WebStateID> emptySet;
     ComposeboxUIInputState* inputState =

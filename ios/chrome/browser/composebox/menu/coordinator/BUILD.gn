@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/contextual_search:public",
+    "//components/omnibox/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/composebox/coordinator:input_state_manager",
