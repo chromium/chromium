@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 // https://html.spec.whatwg.org/multipage/dom.html#htmlorsvgelement
-// TODO(rwlbuis): update link after HTMLOrSVGElement to HTMLOrForeignElement renaming:
-// https://github.com/whatwg/html/issues/4702
-interface mixin HTMLOrForeignElement {
+interface mixin HTMLOrSVGOrMathMLElement {
   [SameObject, PerWorldBindings] readonly attribute DOMStringMap dataset;
   [CEReactions] attribute DOMString nonce;
 

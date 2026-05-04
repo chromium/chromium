@@ -473,7 +473,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/html/html_mod_element.idl",
   "//third_party/blink/renderer/core/html/html_object_element.idl",
   "//third_party/blink/renderer/core/html/html_olist_element.idl",
-  "//third_party/blink/renderer/core/html/html_or_foreign_element.idl",
+  "//third_party/blink/renderer/core/html/html_or_svg_or_mathml_element.idl",
   "//third_party/blink/renderer/core/html/html_paragraph_element.idl",
   "//third_party/blink/renderer/core/html/html_param_element.idl",
   "//third_party/blink/renderer/core/html/html_picture_element.idl",
