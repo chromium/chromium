@@ -35,6 +35,8 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/feedback/feedback_uploader_chrome.h"
+#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
@@ -141,8 +143,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/feedback/feedback_uploader_chrome.h"
-#include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
@@ -528,8 +528,6 @@ class JournalHandler {
 
  private:
   void SendResponseFeedback(const std::string& reason) {
-// NEEDS_ANDROID_IMPL: FeedbackUploaderFactoryChrome
-#if !BUILDFLAG(IS_ANDROID)
     base::WeakPtr<feedback::FeedbackUploader> uploader =
         feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
             actor_keyed_service_->GetProfile())
@@ -559,6 +557,11 @@ class JournalHandler {
               .email);
     }
 
+// NEEDS_ANDROID_IMPL: ChromeSystemLogsFetcher
+#if BUILDFLAG(IS_ANDROID)
+    feedback_data->CompressSystemInfo();
+    feedback_data->OnFeedbackPageDataComplete();
+#else
     system_logs::BuildChromeSystemLogsFetcher(
         actor_keyed_service_->GetProfile(), /*scrub_data=*/false)
         ->Fetch(base::BindOnce(

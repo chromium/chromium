@@ -11,9 +11,20 @@ source_set("feedback_enum") {
 }
 
 source_set("feedback") {
-  sources = []
-  public_deps = []
-  deps = []
+  sources = [
+    "feedback_uploader_chrome.h",
+    "feedback_uploader_factory_chrome.h",
+  ]
+  public_deps = [
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//components/feedback",
+    "//components/feedback/content:factory",
+    "//components/signin/public/identity_manager",
+  ]
+  deps = [
+    "//chrome/browser/signin",
+    "//google_apis",
+  ]
   if (is_android) {
     sources += [
       "android/family_info_feedback_source.cc",
@@ -28,10 +39,8 @@ source_set("feedback") {
       "//base",
       "//chrome/browser/feedback/android:jni_headers",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/signin",
       "//chrome/browser/supervised_user",
       "//content/public/browser",
-      "//google_apis",
       "//services/network/public/cpp",
     ]
   } else {
@@ -42,32 +51,33 @@ source_set("feedback") {
     # fetching data from many different components (the implementation).
     sources += [
       "feedback_dialog_utils.h",
-      "feedback_uploader_chrome.h",
-      "feedback_uploader_factory_chrome.h",
       "show_feedback_page.h",
       "system_logs/chrome_system_logs_fetcher.h",
     ]
     public_deps += [
       "//base",
-      "//build/config/chromebox_for_meetings:buildflags",
       "//chrome/browser/device_identity",
       "//chrome/browser/feedback:feedback_enum",
-      "//components/feedback",
-      "//components/feedback/content:factory",
       "//components/sessions:session_id",
-      "//components/signin/public/identity_manager",
     ]
   }
 }
 
 source_set("feedback_impl") {
-  sources = [ "report_unsafe_site_dialog.h" ]
+  sources = [
+    "feedback_uploader_chrome.cc",
+    "feedback_uploader_factory_chrome.cc",
+    "report_unsafe_site_dialog.h",
+  ]
   deps = [
     ":feedback",
     "//chrome/browser:browser_features",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/common:constants",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//content/public/browser",
   ]
   public_deps = [ "//components/feedback" ]
   if (is_android) {
@@ -75,8 +85,6 @@ source_set("feedback_impl") {
   } else {
     sources += [
       "feedback_dialog_utils.cc",
-      "feedback_uploader_chrome.cc",
-      "feedback_uploader_factory_chrome.cc",
       "report_unsafe_site/screenshot_taker.cc",
       "report_unsafe_site/screenshot_taker.h",
       "report_unsafe_site_dialog_views.cc",
@@ -111,7 +119,6 @@ source_set("feedback_impl") {
     ]
     deps += [
       "//base",
-      "//chrome/browser:browser_process",
       "//chrome/browser/crash_upload_list",
       "//chrome/browser/device_identity",
       "//chrome/browser/devtools",
@@ -121,7 +128,6 @@ source_set("feedback_impl") {
       "//chrome/browser/metrics",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/profiles:profile_manager",
-      "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:ui_features",
@@ -137,7 +143,6 @@ source_set("feedback_impl") {
       "//components/performance_manager",
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/supervised_user/core/browser",
-      "//content/public/browser",
       "//extensions/browser",
       "//extensions/browser/api/feedback_private",
       "//extensions/browser/api/power",
