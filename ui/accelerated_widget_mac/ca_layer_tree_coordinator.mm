@@ -50,22 +50,6 @@ CALayerTreeCoordinator::CALayerTreeCoordinator(
     root_ca_layer_.geometryFlipped = YES;
 #endif
     root_ca_layer_.opaque = YES;
-
-    // Create the CAContext to send this to the GPU process, and the layer for
-    // the context.
-#if BUILDFLAG(IS_MAC)
-    CGSConnectionID connection_id = CGSMainConnectionID();
-    ca_context_ = [CAContext contextWithCGSConnection:connection_id
-                                              options:@{}];
-#else
-    // Use a very large display ID to ensure that the context is never put
-    // on-screen without being explicitly parented.
-    ca_context_ = [CAContext remoteContextWithOptions:@{
-      kCAContextIgnoresHitTest : @YES,
-      kCAContextDisplayId : @10000
-    }];
-#endif
-    ca_context_.layer = root_ca_layer_;
   }
 }
 
@@ -73,6 +57,10 @@ CALayerTreeCoordinator::~CALayerTreeCoordinator() = default;
 
 void CALayerTreeCoordinator::Resize(const gfx::Size& pixel_size,
                                     float scale_factor) {
+#if BUILDFLAG(IS_MAC)
+  has_resized_since_last_swap_ |=
+      pixel_size != pixel_size_ || scale_factor_ != scale_factor;
+#endif
   pixel_size_ = pixel_size;
   scale_factor_ = scale_factor;
 }
@@ -191,6 +179,22 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     return;
   }
 
+  gfx::CALayerParams params;
+  if (has_resized_since_last_swap_) {
+#if BUILDFLAG(IS_MAC)
+    // Create a new CAContext at the new size. This allows new frame update at
+    // the new size to be atomic with things like resizing the NSWindow.
+    if (allow_remote_layers_) {
+      params.ca_context_fence_mach_port.reset([ca_context_ createFencePort]);
+      [ca_context_ setFencePort:params.ca_context_fence_mach_port.get()];
+      ca_context_.layer = nil;
+      ca_context_ = nil;
+      current_tree = nullptr;
+    }
+#endif
+    has_resized_since_last_swap_ = false;
+  }
+
   // Get the frame to be committed.
   auto& frame = presented_frames_.front();
 
@@ -205,11 +209,28 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   // Populate the CA layer parameters to send to the browser.
   // Send the swap parameters to the browser.
   if (frame.completion_callback) {
-    gfx::CALayerParams params;
     TRACE_EVENT_INSTANT("test_gpu", "SwapBuffers", "GLImpl",
                         static_cast<int>(gl::GetGLImplementation()), "width",
                         pixel_size_.width());
+
     if (allow_remote_layers_) {
+      if (!ca_context_) {
+        // Create the CAContext to send this to the GPU process, and the layer
+        // for the context.
+#if BUILDFLAG(IS_MAC)
+        CGSConnectionID connection_id = CGSMainConnectionID();
+        ca_context_ = [CAContext contextWithCGSConnection:connection_id
+                                                  options:@{}];
+#else
+        // Use a very large display ID to ensure that the context is never put
+        // on-screen without being explicitly parented.
+        ca_context_ = [CAContext remoteContextWithOptions:@{
+          kCAContextIgnoresHitTest : @YES,
+          kCAContextDisplayId : @10000
+        }];
+#endif
+        ca_context_.layer = root_ca_layer_;
+      }
       params.ca_context_id = [ca_context_ contextId];
     } else {
       IOSurfaceRef io_surface = frame.layer_tree->GetContentIOSurface();

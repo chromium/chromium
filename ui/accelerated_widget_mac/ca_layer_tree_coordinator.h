@@ -114,6 +114,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   const bool allow_av_sample_buffer_display_layer_ = true;
   gfx::Size pixel_size_;
   float scale_factor_ = 1;
+#if BUILDFLAG(IS_MAC)
+  bool has_resized_since_last_swap_ = false;
+#endif  // BUILDFLAG(IS_MAC)
+
   gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
 
   // The max number of CARendererLayerTree allowed at the same time. It includes

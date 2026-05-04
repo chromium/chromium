@@ -81,6 +81,21 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
 
   // Remote layers are the most common case.
   if (ca_layer_params.ca_context_id) {
+    if (ca_layer_params.ca_context_fence_mach_port.is_valid()) {
+      ca_context_fence_mach_ports_.push_back(
+          std::move(ca_layer_params.ca_context_fence_mach_port));
+      // If the ca_context_fence_mach_ports_ is freed here, then the screen
+      // flickers (even if in a ScopedCAActionDisabler). Holding on to just one
+      // port is sufficient to remove the flickering, but hold on to 4 just to
+      // be safe. This appears to consume no resources beyond the mach ports
+      // themselves (the IOSurfaces referenced by the CAContext kept alive by
+      // a port are unreferenced, even if the port is never freed), so this does
+      // not have memory usage implications.
+      constexpr size_t kMaxFencePorts = 4u;
+      if (ca_context_fence_mach_ports_.size() > kMaxFencePorts) {
+        ca_context_fence_mach_ports_.pop_front();
+      }
+    }
     GotCALayerFrame(ca_layer_params.ca_context_id);
     return;
   }
