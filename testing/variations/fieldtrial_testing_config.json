@@ -10443,6 +10443,21 @@
             ]
         }
     ],
+    "EstimateNewSignInUsersWithFinchAvailablePopulation": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EstimateNewSignInUsersWithFinchAvailablePopulation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource": [
         {
             "platforms": [
