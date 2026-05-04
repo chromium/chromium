@@ -8,6 +8,7 @@
 #import <CoreGraphics/CGGeometry.h>
 
 #import "base/scoped_observation.h"
+#import "base/time/time.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -24,10 +25,13 @@ class LastTapLocationTabHelper
 
   // Returns the last tap point in the web view coordinate system.
   CGPoint GetLastTapPoint() const;
+  // Returns the time at which the last tap occurred.
+  base::TimeTicks GetLastTapTime() const;
 
  private:
   explicit LastTapLocationTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<LastTapLocationTabHelper>;
+  friend class ChooseFileTabHelperTest;
 
   // web::WebStateObserver implementation.
   void WasShown(web::WebState* web_state) override;
@@ -35,6 +39,8 @@ class LastTapLocationTabHelper
 
   // Called when the user taps on the web view.
   void HandleTap(UITapGestureRecognizer* sender);
+  // Set the last tap point and time for testing.
+  void SetLastTapForTesting(CGPoint point, base::TimeTicks time);
 
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
       this};
@@ -45,6 +51,8 @@ class LastTapLocationTabHelper
   LastTapLocationController* tap_gesture_target_ = nil;
   // Last tap point in the web view.
   CGPoint last_tap_point_ = CGPointZero;
+  // Last tap time.
+  base::TimeTicks last_tap_time_ = base::TimeTicks();
 
   base::WeakPtrFactory<LastTapLocationTabHelper> weak_ptr_factory_{this};
 };

@@ -59,8 +59,8 @@ CGPoint LastTapLocationTabHelper::GetLastTapPoint() const {
   return last_tap_point_;
 }
 
-void LastTapLocationTabHelper::HandleTap(UITapGestureRecognizer* sender) {
-  last_tap_point_ = [sender locationInView:sender.view];
+base::TimeTicks LastTapLocationTabHelper::GetLastTapTime() const {
+  return last_tap_time_;
 }
 
 #pragma mark - web::WebStateObserver
@@ -87,4 +87,17 @@ void LastTapLocationTabHelper::WasHidden(web::WebState* web_state) {
     tap_gesture_recognizer_ = nil;
     tap_gesture_target_ = nil;
   }
+}
+
+#pragma mark - Private
+
+void LastTapLocationTabHelper::HandleTap(UITapGestureRecognizer* sender) {
+  last_tap_point_ = [sender locationInView:sender.view];
+  last_tap_time_ = base::TimeTicks::Now();
+}
+
+void LastTapLocationTabHelper::SetLastTapForTesting(CGPoint point,
+                                                    base::TimeTicks time) {
+  last_tap_point_ = point;
+  last_tap_time_ = time;
 }
