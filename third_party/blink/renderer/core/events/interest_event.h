@@ -39,6 +39,7 @@ class InterestEvent final : public Event {
   void Trace(Visitor*) const override;
 
   Element* source() const;
+  Element* SourceElement() const override { return source_.Get(); }
   void SetSource(Element* source) { source_ = source; }
 
  private:
