@@ -7130,6 +7130,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="50" label="ConfigNotMatchingType"/>
   <int value="51" label="LoginPopupClosedWithoutSignin"/>
   <int value="52" label="SuppressedBySegmentationPlatform"/>
+  <int value="53" label="SuccessUsingRedirectTo"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequestIdTokenStatus) -->

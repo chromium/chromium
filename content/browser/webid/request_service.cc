@@ -1902,10 +1902,8 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
   }
   web_contents->GetController().LoadURLWithParams(params);
 
-  // TODO(crbug.com/474120843): Introduce a more specific success enum value
-  // rather than kSuccessUsingTokenInHttpResponse.
   CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                  TokenStatus::kSuccessUsingTokenInHttpResponse,
+                  TokenStatus::kSuccessUsingRedirectTo,
                   /*token_error=*/std::nullopt, idp_config_url,
                   /*token_data=*/base::Value(),
                   /*should_delay_callback=*/false);

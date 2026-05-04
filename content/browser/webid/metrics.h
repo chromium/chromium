@@ -86,7 +86,8 @@ enum class RequestIdTokenStatus {
   kConfigNotMatchingType = 50,
   kLoginPopupClosedWithoutSignin = 51,
   kSuppressedBySegmentationPlatform = 52,
-  kMaxValue = kSuppressedBySegmentationPlatform
+  kSuccessUsingRedirectTo = 53,
+  kMaxValue = kSuccessUsingRedirectTo
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRequestIdTokenStatus)

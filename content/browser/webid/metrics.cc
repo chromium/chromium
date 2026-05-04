@@ -366,7 +366,8 @@ void Metrics::RecordRequestTokenStatus(
 
   bool is_token_request_successful =
       status == RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
-      status == RequestIdTokenStatus::kSuccessUsingIdentityProviderResolve;
+      status == RequestIdTokenStatus::kSuccessUsingIdentityProviderResolve ||
+      status == RequestIdTokenStatus::kSuccessUsingRedirectTo;
 
   for (const auto& provider : requested_providers) {
     ukm::builders::Blink_FedCmIdp* fedcm_idp_builder =
