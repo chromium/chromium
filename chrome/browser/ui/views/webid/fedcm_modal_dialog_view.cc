@@ -63,9 +63,21 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
     return nullptr;
   }
 
-  content::OpenURLParams params(
-      url, content::Referrer(), WindowOpenDisposition::NEW_POPUP,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
+  // We use `GetDisplayMode` instead of `source_window_->IsFullscreen()` because
+  // the latter only tracks tab fullscreen (e.g., a video playing in
+  // fullscreen), not browser fullscreen (e.g., pressing F11). `GetDisplayMode`
+  // returns `kFullscreen` in both cases.
+  bool is_fullscreen =
+      source_window_->GetDelegate() &&
+      source_window_->GetDelegate()->GetDisplayMode(source_window_) ==
+          blink::mojom::DisplayMode::kFullscreen;
+  WindowOpenDisposition disposition =
+      is_fullscreen ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                    : WindowOpenDisposition::NEW_POPUP;
+
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                /*is_renderer_initiated=*/false);
   popup_window_ = source_window_->GetDelegate()->OpenURLFromTab(
       source_window_, params, /*navigation_handle_callback=*/{});
 
@@ -77,7 +89,11 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
     return nullptr;
   }
 
-  ResizeAndFocusPopupWindow();
+  // When `is_fullscreen` is true, the content will be automatically activated
+  // because we requested a `NEW_FOREGROUND_TAB` disposition.
+  if (!is_fullscreen) {
+    ResizeAndFocusPopupWindow();
+  }
   Observe(popup_window_);
 
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult",
