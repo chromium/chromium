@@ -796,20 +796,26 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
        OnCardDataAvailable_CachesVirtualCard) {
   // Create a virtual card
   autofill::CreditCard card = autofill::test::GetVirtualCard();
+  card.set_server_id("test_server_id");
+  card.set_record_type(autofill::CreditCard::RecordType::kVirtualCard);
 
   autofill::FilledCardInformationBubbleOptions options;
   options.filled_card = card;
   options.cvc = u"123";
 
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
+  ManualFillVirtualCardCache::CreateForWebState(web_state_.get());
+  ManualFillVirtualCardCache::FromWebState(web_state_.get())
+      ->SetUnmaskingOrigin(test_origin);
+
   payments_client()->OnCardDataAvailable(options);
 
-  // Verify that the card is in the cache
   ManualFillVirtualCardCache* cache =
       ManualFillVirtualCardCache::FromWebState(web_state_.get());
   ASSERT_TRUE(cache);
 
   const autofill::CreditCard* cached_card =
-      cache->GetUnmaskedCard(card.server_id());
+      cache->GetUnmaskedCard(card.server_id(), test_origin);
   ASSERT_TRUE(cached_card);
   EXPECT_EQ(cached_card->cvc(), u"123");
 }

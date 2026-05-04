@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_observer_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
@@ -257,12 +258,25 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   return observedForm != nullptr;
 }
 
+- (url::Origin)activeWebFrameOrigin {
+  if (!_webStateList) {
+    return url::Origin();
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  web::WebFrame* frame = activeWebState
+                             ? [self activeWebFrameFromWebState:activeWebState]
+                             : nullptr;
+  return frame ? frame->GetSecurityOrigin() : url::Origin();
+}
+
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
-  if (params.type != "focus") {
+  // Ignore non-user triggered events so page JS can't control which fields
+  // receive data.
+  if (params.type != "focus" || !params.has_user_gesture) {
     return;
   }
   _lastFocusedElementParams = params;

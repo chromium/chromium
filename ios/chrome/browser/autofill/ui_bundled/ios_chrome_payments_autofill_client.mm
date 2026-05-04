@@ -274,8 +274,10 @@ void IOSChromePaymentsAutofillClient::OnCardDataAvailable(
     card.set_cvc(options.cvc);
 
     ManualFillVirtualCardCache::CreateForWebState(web_state_);
+    url::Origin origin = ManualFillVirtualCardCache::FromWebState(web_state_)
+                             ->GetUnmaskingOrigin();
     ManualFillVirtualCardCache::FromWebState(web_state_)
-        ->CacheUnmaskedCard(card);
+        ->CacheUnmaskedCard(card, origin);
   }
 }
 

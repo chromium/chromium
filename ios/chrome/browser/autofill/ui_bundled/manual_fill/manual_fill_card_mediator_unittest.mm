@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell+Testing.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -65,6 +66,34 @@ class TestChromeAutofillClient : public autofill::ChromeAutofillClientIOS {
 
 }  // namespace
 
+// A fake implementation of ManualFillContentInjector for testing.
+@interface FakeContentInjector : NSObject <ManualFillContentInjector>
+@property(nonatomic, assign) url::Origin activeOrigin;
+@end
+
+@implementation FakeContentInjector
+- (url::Origin)activeWebFrameOrigin {
+  return self.activeOrigin;
+}
+- (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
+                       requiresHTTPS:(BOOL)requiresHTTPS {
+  return YES;
+}
+- (void)userDidPickContent:(NSString*)content
+             passwordField:(BOOL)passwordField
+             requiresHTTPS:(BOOL)requiresHTTPS {
+}
+- (void)autofillFormWithCredential:(ManualFillCredential*)credential
+                      shouldReauth:(BOOL)shouldReauth {
+}
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
+}
+- (BOOL)isActiveFormAPasswordForm {
+  return NO;
+}
+@end
+
 // Test fixture for testing the ManualFillCardMediator class.
 class ManualFillCardMediatorTest : public PlatformTest {
  protected:
@@ -97,6 +126,7 @@ class ManualFillCardMediatorTest : public PlatformTest {
                                       autofill::test::NextMonth().c_str(),
                                       autofill::test::NextYear().c_str(), "1");
     card.set_guid(guid);
+    card.set_server_id(guid);
     card.set_instrument_id(0);
     card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
     if (enrolled_for_virtual_card) {
@@ -186,6 +216,12 @@ TEST_F(ManualFillCardMediatorTest,
   card.set_server_id("test_server_id");
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
 
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
+  // Set the origin in the cache before triggering the success callback.
+  ManualFillVirtualCardCache::CreateForWebState(web_state.get());
+  ManualFillVirtualCardCache::FromWebState(web_state.get())
+      ->SetUnmaskingOrigin(test_origin);
+
   // Simulate the request.
   [mediator()
       onFullCardRequestSucceeded:card
@@ -197,7 +233,8 @@ TEST_F(ManualFillCardMediatorTest,
       ManualFillVirtualCardCache::FromWebState(web_state.get());
   ASSERT_TRUE(cache);
 
-  const CreditCard* cached_card = cache->GetUnmaskedCard(card.server_id());
+  const CreditCard* cached_card =
+      cache->GetUnmaskedCard(card.server_id(), test_origin);
   ASSERT_TRUE(cached_card);
   EXPECT_EQ(cached_card->number(), card.number());
 }
@@ -232,7 +269,7 @@ TEST_F(ManualFillCardMediatorTest,
       ManualFillVirtualCardCache::FromWebState(web_state.get());
 
   if (cache) {
-    EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.server_id()));
+    EXPECT_EQ(nullptr, cache->GetUnmaskedCard(card.server_id(), url::Origin()));
   }
 }
 
@@ -310,9 +347,15 @@ TEST_F(ManualFillCardMediatorTest,
   unmaskedCard.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"4234567890123456");
   unmaskedCard.set_cvc(u"123");
 
+  // Use FakeContentInjector to return a specific origin.
+  FakeContentInjector* fake_injector = [[FakeContentInjector alloc] init];
+  url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
+  fake_injector.activeOrigin = test_origin;
+  mediator_.contentInjector = fake_injector;
+
   ManualFillVirtualCardCache::CreateForWebState(web_state.get());
   ManualFillVirtualCardCache::FromWebState(web_state.get())
-      ->CacheUnmaskedCard(unmaskedCard);
+      ->CacheUnmaskedCard(unmaskedCard, test_origin);
 
   auto captured_card_items =
       std::make_shared<NSArray<ManualFillCardItem*>*>(nil);

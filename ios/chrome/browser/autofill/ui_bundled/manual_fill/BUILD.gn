@@ -41,8 +41,6 @@ source_set("manual_fill") {
     "manual_fill_password_coordinator.mm",
     "manual_fill_plus_address_mediator.h",
     "manual_fill_plus_address_mediator.mm",
-    "manual_fill_virtual_card_cache.h",
-    "manual_fill_virtual_card_cache.mm",
     "plus_address_coordinator_delegate.h",
   ]
   deps = [
@@ -290,6 +288,8 @@ source_set("requesters") {
     "full_card_request_result_delegate_bridge.h",
     "manual_fill_full_card_requester.h",
     "manual_fill_full_card_requester.mm",
+    "manual_fill_virtual_card_cache.h",
+    "manual_fill_virtual_card_cache.mm",
   ]
   deps = [
     ":manual_fill_constants",

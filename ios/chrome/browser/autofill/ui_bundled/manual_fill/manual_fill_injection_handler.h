@@ -10,6 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/web/public/web_state.h"
+#include "url/origin.h"
 
 @class ReauthenticationModule;
 @protocol FormSuggestionClient;
@@ -37,6 +38,9 @@ using AutofillProviderGetter =
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
       formSuggestionClient:(id<FormSuggestionClient>)formSuggestionClient
     autofillProviderGetter:(AutofillProviderGetter)autofillProviderGetter;
+
+// Returns the origin of the active web frame.
+- (url::Origin)activeWebFrameOrigin;
 
 @end
 

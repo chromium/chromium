@@ -200,7 +200,8 @@
         ManualFillVirtualCardCache::FromWebState(activeWebState);
     if (cache) {
       const autofill::CreditCard* cachedCard =
-          cache->GetUnmaskedCard(autofillCreditCard->guid());
+          cache->GetUnmaskedCard(autofillCreditCard->guid(),
+                                 [self.injectionHandler activeWebFrameOrigin]);
 
       if (cachedCard) {
         // Cache Hit: Skip network request and fill directly.
@@ -211,6 +212,10 @@
       }
     }
   }
+
+  ManualFillVirtualCardCache::FromWebState(
+      self.browser->GetWebStateList()->GetActiveWebState())
+      ->SetUnmaskingOrigin([self.injectionHandler activeWebFrameOrigin]);
 
   [self.cardRequester requestFullCreditCard:*autofillCreditCard
                      withBaseViewController:self.baseViewController

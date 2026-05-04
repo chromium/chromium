@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_full_card_requester.h"
 
+#import <memory>
 #import <vector>
 
+#import "base/functional/callback_helpers.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -13,6 +15,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/full_card_request_result_delegate_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -79,21 +82,42 @@ class CreditCard;
       autofillManager.GetCreditCardAccessManager();
   __weak __typeof(self) weakSelf = self;
 
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   BOOL isVirtualCard = (recordType == kVirtualCard);
   creditCardAccessManager->FetchCreditCard(
       (isVirtualCard ? &virtualCard : &card),
-      base::BindOnce(^(const autofill::CreditCard& fetchedCard) {
-        autofill::CreditCard resultCard = fetchedCard;
-        // The `CreditCardAccessManager` returns a card with record type
-        // `kFullServerCard` for unmasked cards. We need to force it back to
-        // `kVirtualCard` so that the iOS manual fill flow can recognize it
-        // correctly.
-        if (isVirtualCard) {
-          resultCard.set_record_type(
-              autofill::CreditCard::RecordType::kVirtualCard);
-        }
-        [weakSelf onCreditCardFetched:resultCard fieldType:fieldType];
-      }));
+      base::BindOnce(
+          [](base::ScopedClosureRunner runner,
+             __weak ManualFillFullCardRequester* weakSelf,
+             manual_fill::PaymentFieldType fieldType, BOOL isVirtualCard,
+             const autofill::CreditCard& fetchedCard) {
+            autofill::CreditCard resultCard = fetchedCard;
+            // The `CreditCardAccessManager` returns a card with record type
+            // `kFullServerCard` for unmasked cards. We need to force it back to
+            // `kVirtualCard` so that the iOS manual fill flow can recognize it
+            // correctly.
+            if (isVirtualCard) {
+              resultCard.set_record_type(
+                  autofill::CreditCard::RecordType::kVirtualCard);
+            }
+            [weakSelf onCreditCardFetched:resultCard fieldType:fieldType];
+          },
+          // Capture the scoped runner to ensure `GetUnmaskingOrigin` is ALWAYS
+          // called upon completion or destruction of the request. If the user
+          // cancels the request, this callback is deleted without running, and
+          // the RAII task's destructor runs and guarantees the transient origin
+          // is cleared from the cache safely.
+          base::ScopedClosureRunner(base::BindOnce(
+              [](base::WeakPtr<web::WebState> weakWebStatePtr) {
+                if (weakWebStatePtr) {
+                  if (auto* cache = ManualFillVirtualCardCache::FromWebState(
+                          weakWebStatePtr.get())) {
+                    cache->GetUnmaskingOrigin();
+                  }
+                }
+              },
+              weakWebState)),
+          weakSelf, fieldType, isVirtualCard));
 
   // TODO(crbug.com/40577448): closing CVC requester doesn't restore icon bar
   // above keyboard.

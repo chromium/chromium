@@ -5,11 +5,13 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_VIRTUAL_CARD_CACHE_H_
 
 #import <map>
+#import <optional>
 #import <string>
 
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "url/origin.h"
 
 // A tab-scoped cache for unmasked virtual cards.
 class ManualFillVirtualCardCache
@@ -18,9 +20,21 @@ class ManualFillVirtualCardCache
  public:
   ~ManualFillVirtualCardCache() override;
 
-  void CacheUnmaskedCard(const autofill::CreditCard& card);
+  // Caches the unmasked card, associated with the origin where it was unmasked.
+  void CacheUnmaskedCard(const autofill::CreditCard& card,
+                         const url::Origin& origin);
+
+  // Sets the origin of the frame that initiated the active unmasking request.
+  void SetUnmaskingOrigin(const url::Origin& origin);
+
+  // Returns the stored unmasking origin, and clears it.
+  url::Origin GetUnmaskingOrigin();
+
+  // Returns the cached card only if the server_id matches and the current
+  // origin matches the origin where the card was unmasked.
   const autofill::CreditCard* GetUnmaskedCard(
-      const std::string& server_id) const;
+      const std::string& server_id,
+      const url::Origin& current_origin) const;
 
  private:
   friend class web::WebStateUserData<ManualFillVirtualCardCache>;
@@ -31,7 +45,15 @@ class ManualFillVirtualCardCache
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  std::map<std::string, autofill::CreditCard> server_id_to_unmasked_card_map_;
+  struct CachedCard {
+    autofill::CreditCard card;
+    url::Origin origin;
+  };
+
+  std::map<std::string, CachedCard> server_id_to_unmasked_card_map_;
+
+  // The origin of the frame that initiated the active unmasking request.
+  std::optional<url::Origin> unmasking_origin_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_VIRTUAL_CARD_CACHE_H_

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -184,8 +185,12 @@ std::vector<CreditCard> FetchCards(
         ManualFillVirtualCardCache* cache =
             ManualFillVirtualCardCache::FromWebState(_webState.get());
         if (cache) {
-          if (const CreditCard* cachedCard =
-                  cache->GetUnmaskedCard(virtualCard.server_id())) {
+          if (const CreditCard* cachedCard = cache->GetUnmaskedCard(
+                  virtualCard.server_id(),
+                  [self.contentInjector
+                      respondsToSelector:@selector(activeWebFrameOrigin)]
+                      ? [(id)self.contentInjector activeWebFrameOrigin]
+                      : url::Origin())) {
             virtualCard = *cachedCard;
           }
         }
@@ -341,7 +346,10 @@ std::vector<CreditCard> FetchCards(
   if (webState && card.record_type() == CreditCard::RecordType::kVirtualCard) {
     // CreateForWebState ensures the cache exists (lazy initialization).
     ManualFillVirtualCardCache::CreateForWebState(webState);
-    ManualFillVirtualCardCache::FromWebState(webState)->CacheUnmaskedCard(card);
+    url::Origin origin = ManualFillVirtualCardCache::FromWebState(webState)
+                             ->GetUnmaskingOrigin();
+    ManualFillVirtualCardCache::FromWebState(webState)->CacheUnmaskedCard(
+        card, origin);
   }
   // Credit card are not shown as 'Secure'.
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
