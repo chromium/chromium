@@ -619,10 +619,7 @@ void GCMStoreImpl::Backend::RemoveOutgoingMessages(
     // Skip the initial tag byte and parse the rest to extract the message.
     if (data_message.ParseFromString(outgoing_message.substr(1))) {
       DCHECK(!data_message.category().empty());
-      if (removed_message_counts.count(data_message.category()) != 0)
-        removed_message_counts[data_message.category()]++;
-      else
-        removed_message_counts[data_message.category()] = 1;
+      ++removed_message_counts[data_message.category()];
     }
     DVLOG(1) << "Removing outgoing message with id " << *iter;
     s = db_->Delete(write_options, MakeSlice(key));
@@ -1291,10 +1288,9 @@ bool GCMStoreImpl::AddOutgoingMessage(const std::string& persistent_id,
   std::string app_id = reinterpret_cast<const mcs_proto::DataMessageStanza*>(
                            &message.GetProtobuf())->category();
   DCHECK(!app_id.empty());
-  if (app_message_counts_.count(app_id) == 0)
-    app_message_counts_[app_id] = 0;
-  if (app_message_counts_[app_id] < kMessagesPerAppLimit) {
-    app_message_counts_[app_id]++;
+  auto [it, inserted] = app_message_counts_.try_emplace(app_id, 0);
+  if (it->second < kMessagesPerAppLimit) {
+    it->second++;
 
     blocking_task_runner_->PostTask(
         FROM_HERE,
@@ -1425,10 +1421,7 @@ void GCMStoreImpl::LoadContinuation(LoadCallback callback,
     const mcs_proto::DataMessageStanza* data_message =
         reinterpret_cast<mcs_proto::DataMessageStanza*>(iter->second.get());
     DCHECK(!data_message->category().empty());
-    if (app_message_counts_.count(data_message->category()) == 0)
-      app_message_counts_[data_message->category()] = 1;
-    else
-      app_message_counts_[data_message->category()]++;
+    ++app_message_counts_[data_message->category()];
   }
   std::move(callback).Run(std::move(result));
 }
