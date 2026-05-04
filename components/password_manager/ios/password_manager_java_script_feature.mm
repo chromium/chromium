@@ -4,6 +4,8 @@
 
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 
+#import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -24,7 +26,7 @@ constexpr char kScriptName[] = "password_controller";
 constexpr char FormSubmittedHandlerName[] = "PasswordFormSubmitButtonClick";
 
 // The timeout for any JavaScript call in this file.
-constexpr int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+constexpr base::TimeDelta kJavaScriptExecutionTimeout = base::Seconds(5);
 
 // Converts FormRendererId to int value that can be used in Javascript methods.
 int FormRendererIdToJsParameter(autofill::FormRendererId form_id) {
@@ -103,7 +105,7 @@ void PasswordManagerJavaScriptFeature::FindPasswordFormsInFrame(
   DCHECK(!callback.is_null());
   CallJavaScriptFunction(frame, "passwords.findPasswordForms", {},
                          CreateStringCallback(std::move(callback)),
-                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+                         kJavaScriptExecutionTimeout);
 }
 
 void PasswordManagerJavaScriptFeature::ExtractForm(
@@ -114,8 +116,7 @@ void PasswordManagerJavaScriptFeature::ExtractForm(
   CallJavaScriptFunction(
       frame, "passwords.getPasswordFormDataAsString",
       base::ListValue().Append(FormRendererIdToJsParameter(form_identifier)),
-      CreateStringCallback(std::move(callback)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      CreateStringCallback(std::move(callback)), kJavaScriptExecutionTimeout);
 }
 
 void PasswordManagerJavaScriptFeature::FillPasswordForm(
@@ -124,17 +125,22 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     BOOL fill_username,
     const std::string& username,
     const std::string& password,
-    base::OnceCallback<void(const base::Value*)> callback) {
+    base::OnceCallback<void(const base::Value*)> callback,
+    BOOL trigger_submission,
+    bool fallback_to_keystroke) {
   DCHECK(!callback.is_null());
 
   base::DictValue form_value = SerializeFillData(fill_data, fill_username);
-  CallJavaScriptFunction(frame, "passwords.fillPasswordForm",
+  CallJavaScriptFunction(frame,
+                         trigger_submission
+                             ? "passwords.fillPasswordFormAndSubmit"
+                             : "passwords.fillPasswordForm",
                          base::ListValue()
                              .Append(std::move(form_value))
                              .Append(username)
-                             .Append(password),
-                         std::move(callback),
-                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+                             .Append(password)
+                             .Append(fallback_to_keystroke),
+                         std::move(callback), kJavaScriptExecutionTimeout);
 }
 
 std::optional<std::string>
@@ -164,8 +170,78 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
           .Append(FieldRendererIdToJsParameter(new_password_identifier))
           .Append(FieldRendererIdToJsParameter(confirm_password_identifier))
           .Append(base::SysNSStringToUTF8(generated_password)),
-      CreateBoolCallback(std::move(callback)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      CreateBoolCallback(std::move(callback)), kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::SubmitForm(
+    web::WebFrame* frame,
+    autofill::FormRendererId form_identifier,
+    autofill::FieldRendererId password_identifier,
+    bool fallback_to_keystroke) {
+  CallJavaScriptFunction(
+      frame, "passwords.submitPasswordForm",
+      base::ListValue()
+          .Append(FormRendererIdToJsParameter(form_identifier))
+          .Append(FieldRendererIdToJsParameter(password_identifier))
+          .Append(fallback_to_keystroke));
+}
+
+void PasswordManagerJavaScriptFeature::PreventKeyboardOnElement(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    base::OnceCallback<void(BOOL)> callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.preventKeyboardOnElement",
+      base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      autofill::CreateBoolCallback(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::RestoreKeyboardOnElement(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    base::OnceClosure callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.restoreKeyboardOnElement",
+      base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      base::IgnoreArgs<const base::Value*>(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::FocusElement(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    base::OnceCallback<void(BOOL)> callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.focusElement",
+      base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      autofill::CreateBoolCallback(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::SetUpRendererKeystrokeShield(
+    web::WebFrame* frame,
+    autofill::FieldRendererId field_identifier,
+    base::OnceClosure callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.setUpRendererKeystrokeShield",
+      base::ListValue().Append(FieldRendererIdToJsParameter(field_identifier)),
+      base::IgnoreArgs<const base::Value*>(std::move(callback)),
+      kJavaScriptExecutionTimeout);
+}
+
+void PasswordManagerJavaScriptFeature::RemoveRendererKeystrokeShield(
+    web::WebFrame* frame,
+    base::OnceClosure callback) {
+  CHECK(callback);
+  CallJavaScriptFunction(
+      frame, "passwords.removeRendererKeystrokeShield", base::ListValue(),
+      base::IgnoreArgs<const base::Value*>(std::move(callback)),
+      kJavaScriptExecutionTimeout);
 }
 
 }  // namespace password_manager

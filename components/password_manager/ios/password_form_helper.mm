@@ -293,6 +293,7 @@ const char kHostFrameKey[] = "host_frame";
 - (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
                              inFrame:(web::WebFrame*)frame
                     triggeredOnField:(FieldRendererId)fieldRendererID
+                   triggerSubmission:(BOOL)triggerSubmission
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
@@ -306,21 +307,23 @@ const char kHostFrameKey[] = "host_frame";
       fieldRendererID == fillData.username_element_id ||
       !fieldDataManager->DidUserType(fillData.username_element_id);
   __weak PasswordFormHelper* weakSelf = self;
+
+  auto callback = base::BindOnce(^(const base::Value* result) {
+    const BOOL success = [weakSelf handleFillResult:result
+                                       fromFillData:fillData
+                               withFieldDataManager:fieldDataManager.get()
+                                             driver:driver.get()];
+
+    if (completionHandler) {
+      completionHandler(success);
+    }
+  });
+
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->FillPasswordForm(frame, fillData, fillUsername,
                          UTF16ToUTF8(fillData.username_value),
                          UTF16ToUTF8(fillData.password_value),
-                         base::BindOnce(^(const base::Value* result) {
-                           const BOOL success =
-                               [weakSelf handleFillResult:result
-                                             fromFillData:fillData
-                                     withFieldDataManager:fieldDataManager.get()
-                                                   driver:driver.get()];
-
-                           if (completionHandler) {
-                             completionHandler(success);
-                           }
-                         }));
+                         std::move(callback), triggerSubmission);
 }
 
 // Finds the password form named |formName| and calls

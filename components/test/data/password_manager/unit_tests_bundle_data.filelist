@@ -10,6 +10,12 @@
 //components/test/data/password_manager/affiliation_db_v4.sql
 //components/test/data/password_manager/affiliation_db_v5.sql
 //components/test/data/password_manager/affiliation_db_v7.sql
+//components/test/data/password_manager/auto_submit_disabled_field_after.html
+//components/test/data/password_manager/auto_submit_disabled_field_between.html
+//components/test/data/password_manager/auto_submit_disabled_radio_button.html
+//components/test/data/password_manager/auto_submit_synthetic_form.html
+//components/test/data/password_manager/auto_submit_test.html
+//components/test/data/password_manager/auto_submit_with_preceding_field.html
 //components/test/data/password_manager/form_annotation_extension/README
 //components/test/data/password_manager/form_annotation_extension/background.js
 //components/test/data/password_manager/form_annotation_extension/content.js

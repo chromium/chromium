@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Auto-Submit Test (Standard)</title>
+  <script>
+    function logSubmission(source) {
+      document.getElementById('result').innerText = 'Form Submitted! (' + source + ')';
+      document.getElementById('result').style.color = 'green';
+      console.log('Form Submitted via ' + source);
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      logSubmission('onsubmit event');
+      event.target.reset();
+    }
+
+    // Intercept programmatic form.submit() calls (which don't fire onsubmit)
+    (function () {
+      var originalSubmit = HTMLFormElement.prototype.submit;
+      HTMLFormElement.prototype.submit = function () {
+        logSubmission('form.submit()');
+      };
+    })();
+  </script>
+</head>
+
+<body>
+  <h1>Auto-Submit Test Page (Standard)</h1>
+  <p>This form meets the criteria for Password Manager auto-submission:</p>
+  <ul>
+    <li>Has username and password fields.</li>
+    <li>No focusable text inputs between them (checkbox is ignored).</li>
+    <li>No focusable text inputs after the password.</li>
+  </ul>
+  <form action="destination.html" method="get" onsubmit="handleSubmit(event)">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" autocomplete="username">
+    </div>
+    <!-- A checkbox between fields should be ignored and allow auto-submit -->
+    <div>
+      <input type="checkbox" id="remember_me" name="remember_me">
+      <label for="remember_me">Remember me (Ignored by heuristic)</label>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" autocomplete="current-password">
+    </div>
+    <div>
+      <input type="submit" value="Login" id="submit_button">
+    </div>
+  </form>
+  <div id="result" style="font-weight: bold; margin-top: 20px; font-size: 24px;">Waiting...</div>
+</body>
+
+</html>

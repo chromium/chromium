@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
+
+#include "url/origin.h"
+
 namespace autofill {
 struct PasswordFormFillData;
 struct PasswordFormGenerationData;

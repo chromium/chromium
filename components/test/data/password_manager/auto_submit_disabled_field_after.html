@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Auto-Submit Test (Disabled - Field After)</title>
+  <script>
+    function logSubmission(source) {
+      document.getElementById('result').innerText = 'Form Submitted! (' + source + ')';
+      document.getElementById('result').style.color = 'green';
+      console.log('Form Submitted via ' + source);
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      logSubmission('onsubmit event');
+      event.target.reset();
+    }
+
+    (function () {
+      var originalSubmit = HTMLFormElement.prototype.submit;
+      HTMLFormElement.prototype.submit = function () {
+        logSubmission('form.submit()');
+        originalSubmit.apply(this);
+      };
+    })();
+  </script>
+</head>
+
+<body>
+  <h1>Auto-Submit Test (Disabled)</h1>
+  <p style="color: red; font-weight: bold;">Expected Result: NO Auto-Submit</p>
+  <p>This form should NOT auto-submit because there is a focusable text field AFTER the password.</p>
+
+  <form action="destination.html" method="get" onsubmit="handleSubmit(event)">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" autocomplete="username">
+    </div>
+
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" autocomplete="current-password">
+    </div>
+
+    <!-- This field should block auto-submission -->
+    <div style="background-color: #ffcccc; padding: 10px; margin: 10px 0;">
+      <label for="extra_field">Extra Field / PIN (Blocks Auto-Submit):</label>
+      <input type="text" id="extra_field" name="extra_field">
+    </div>
+
+    <div>
+      <input type="submit" value="Login" id="submit_button">
+    </div>
+  </form>
+  <div id="result" style="font-weight: bold; margin-top: 20px; font-size: 24px;">Waiting...</div>
+</body>
+
+</html>

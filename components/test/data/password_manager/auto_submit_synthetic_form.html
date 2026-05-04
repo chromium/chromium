@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto-Submit Synthetic Query</title>
+  <script>
+    function onPasswordKeyDown(event) {
+      if (event.key === 'Enter' || event.keyCode === 13) {
+        document.body.innerText = 'Form Submitted!';
+        console.log('Form Submitted via KeyDown');
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Synthetic Form (No &lt;form&gt; tag)</h1>
+  <div>
+    Username: <input type="text" id="username" name="username" autocomplete="username"><br>
+    Password: <input type="password" id="password" name="password" autocomplete="current-password" onkeydown="onPasswordKeyDown(event)"><br>
+    <button onclick="document.body.innerText = 'Form Submitted!'">Login</button>
+  </div>
+</body>
+</html>

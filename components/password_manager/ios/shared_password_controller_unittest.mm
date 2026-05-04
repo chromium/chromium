@@ -48,6 +48,7 @@
 #import "components/password_manager/core/browser/stub_password_manager_driver.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/constants.h"
+#import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
@@ -73,6 +74,38 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@interface FakePasswordFormHelper : PasswordFormHelper
+@property(nonatomic, assign) BOOL triggerSubmissionPassed;
+@end
+
+@implementation FakePasswordFormHelper
+- (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
+                             inFrame:(web::WebFrame*)frame
+                    triggeredOnField:(autofill::FieldRendererId)fieldRendererID
+                   triggerSubmission:(BOOL)triggerSubmission
+                   completionHandler:
+                       (nullable void (^)(BOOL))completionHandler {
+  self.triggerSubmissionPassed = triggerSubmission;
+  if (completionHandler) {
+    completionHandler(YES);
+  }
+}
+@end
+
+@interface FakePasswordSuggestionHelper : PasswordSuggestionHelper
+@end
+
+@implementation FakePasswordSuggestionHelper
+- (password_manager::FillDataRetrievalResult)
+    passwordFillDataForUsername:(NSString*)username
+             isBackupCredential:(BOOL)isBackupCredential
+                     forFrameId:(const std::string&)frameId {
+  auto fill_data = std::make_unique<password_manager::FillData>();
+  password_manager::FillDataRetrievalResult result(std::move(fill_data));
+  return result;
+}
+@end
 
 namespace password_manager {
 
@@ -1040,6 +1073,60 @@ TEST_F(SharedPasswordControllerTest, SelectPasskeySuggestion) {
                            frameID:kTestFrameID
                  completionHandler:^{
                  }];
+}
+
+// Tests that selecting a password suggestion with auto submission set to true
+// passes that setting to the form helper.
+TEST_F(SharedPasswordControllerTest,
+       SelectPasswordSuggestionWithAutoSubmission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kIOSPasswordAutoSubmission,
+      {{"auto-submission-type", "ScriptSubmit"}});
+
+  base::HistogramTester histogram_tester;
+
+  // Set up the frame.
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  AddWebFrame(std::move(web_frame));
+
+  autofill::FormRendererId form_id(1);
+  autofill::FieldRendererId field_id(2);
+
+  FakePasswordSuggestionHelper* fake_suggestion_helper =
+      [[FakePasswordSuggestionHelper alloc]
+          initWithWebState:&web_state_
+           passwordManager:&password_manager_];
+  [controller_ setValue:fake_suggestion_helper forKey:@"suggestionHelper"];
+
+  FakePasswordFormHelper* fake_form_helper =
+      [[FakePasswordFormHelper alloc] initWithWebState:&web_state_];
+  [controller_ setValue:fake_form_helper forKey:@"formHelper"];
+
+  FormSuggestion* suggestion = [FormSuggestion
+             suggestionWithValue:@"username"
+              displayDescription:@"password"
+                            icon:nil
+                            type:autofill::SuggestionType::kPasswordEntry
+                         payload:autofill::Suggestion::Payload()
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:nil
+                        metadata:{.should_trigger_submission = YES,
+                                  .accepts_auto_submit = YES}];
+
+  [controller_ didSelectSuggestion:suggestion
+                           atIndex:0
+                              form:@"form-name"
+                    formRendererID:form_id
+                   fieldIdentifier:@"field-id"
+                   fieldRendererID:field_id
+                           frameID:kTestFrameID
+                 completionHandler:^{
+                 }];
+
+  EXPECT_TRUE(fake_form_helper.triggerSubmissionPassed);
 }
 
 // Tests that generated passwords that are empty aren't presaved.

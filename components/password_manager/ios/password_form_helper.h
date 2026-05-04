@@ -97,6 +97,7 @@ enum class HandleSubmittedFormStatus {
 - (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
                              inFrame:(web::WebFrame*)frame
                     triggeredOnField:(autofill::FieldRendererId)fieldRendererID
+                   triggerSubmission:(BOOL)triggerSubmission
                    completionHandler:(nullable void (^)(BOOL))completionHandler;
 
 // Finds the password form with unique ID |formIdentifier| and calls

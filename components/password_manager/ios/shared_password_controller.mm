@@ -776,9 +776,16 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
           kFillDataRetrievalStatusHistogram,
           password_manager::FillDataRetrievalStatus::kSuccess);
 
+      BOOL triggerSubmission =
+          suggestion.metadata.should_trigger_submission &&
+          suggestion.metadata.accepts_auto_submit &&
+          password_manager::features::kAutoSubmissionTypeParam.Get() ==
+              password_manager::features::AutoSubmissionType::kScriptSubmit;
+
       [self.formHelper fillPasswordFormWithFillData:*fill_data_result.value()
                                             inFrame:frame
                                    triggeredOnField:fieldRendererID
+                                  triggerSubmission:triggerSubmission
                                   completionHandler:^(BOOL success) {
                                     completion();
                                   }];

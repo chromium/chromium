@@ -47,6 +47,7 @@ using autofill::test::MakeFieldRendererId;
 using autofill::test::MakeFormRendererId;
 using base::SysUTF8ToNSString;
 using base::UTF8ToUTF16;
+using ::testing::_;
 using ::testing::Return;
 
 namespace {
@@ -1063,4 +1064,55 @@ TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   EXPECT_EQ(NO, completion_called);
 
   EXPECT_OCMOCK_VERIFY(delegate_);
+}
+
+// Tests retrieving suggestions when submission should be triggered.
+TEST_F(PasswordSuggestionHelperTest,
+       RetrieveSuggestions_ShouldTriggerSubmission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordAutoSubmission);
+
+  FormSuggestionProviderQuery* query =
+      BuildQuery(@"password1", kObfuscatedFieldType, NSFrameId(main_frame_));
+  FormRendererId form1_renderer_id = query.formRendererID;
+  FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
+  FieldRendererId password1_renderer_id = query.fieldRendererID;
+
+  PasswordFormFillData form_fill_data = CreatePasswordFillData(
+      form1_renderer_id, username1_renderer_id, password1_renderer_id);
+  [helper_ processWithPasswordFormFillData:form_fill_data
+                                forFrameId:main_frame_->GetFrameId()
+                               isMainFrame:main_frame_->IsMainFrame()
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  // Mock the password form cache to return a form that is ready for submission.
+  password_manager::PasswordForm form;
+  form.form_data.set_renderer_id(form1_renderer_id);
+  form.username_element_renderer_id = username1_renderer_id;
+  form.password_element_renderer_id = password1_renderer_id;
+
+  autofill::FormFieldData username_field;
+  username_field.set_renderer_id(username1_renderer_id);
+  username_field.set_value(UTF8ToUTF16(std::string(kFillDataUsername)));
+
+  autofill::FormFieldData password_field;
+  password_field.set_renderer_id(password1_renderer_id);
+  password_field.set_value(UTF8ToUTF16(std::string(kFillDataPassword)));
+
+  form.form_data.set_fields({username_field, password_field});
+
+  EXPECT_CALL(password_form_cache_, GetPasswordForm(_, form1_renderer_id))
+      .WillRepeatedly(Return(&form));
+
+  NSArray<FormSuggestion*>* suggestions =
+      [helper_ retrieveSuggestionsWithForm:query];
+
+  ASSERT_EQ(1ul, [suggestions count]);
+
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
+  EXPECT_TRUE(suggestionToEvaluate.metadata.should_trigger_submission);
 }

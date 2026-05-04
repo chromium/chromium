@@ -410,6 +410,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   [formHelper fillPasswordFormWithFillData:fillData
                                    inFrame:activeWebFrame
                           triggeredOnField:[self lastFocusedElementUniqueID]
+                         triggerSubmission:NO
                          completionHandler:^(BOOL success) {
                            if (success) {
                              [weakSelf announceFormWasFilled];
