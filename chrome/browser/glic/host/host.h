@@ -92,7 +92,7 @@ class Host : public GlicSharingManagerProvider {
   class InstanceDelegate {
    public:
     virtual ~InstanceDelegate() = default;
-    virtual tabs::TabInterface* CreateTab(
+    virtual void CreateTab(
         const ::GURL& url,
         bool open_in_background,
         const std::optional<int32_t>& window_id,
@@ -458,7 +458,6 @@ class Host : public GlicSharingManagerProvider {
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
  private:
-
   void InvokeInternal(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
 

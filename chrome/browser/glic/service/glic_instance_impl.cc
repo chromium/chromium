@@ -630,7 +630,7 @@ void GlicInstanceImpl::RegisterConversation(
   std::move(callback).Run(std::nullopt);
 }
 
-tabs::TabInterface* GlicInstanceImpl::CreateTab(
+void GlicInstanceImpl::CreateTab(
     const ::GURL& url,
     bool open_in_background,
     const std::optional<int32_t>& window_id,
@@ -657,7 +657,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   // Prevent links clicked inside the side panel during the onboarding from
   // being daisy chained.
   if (is_onboarding) {
-    return nullptr;
+    return;
   }
 
   // TODO(b/501276046): Figure out how to ensure that instance helper is
@@ -665,7 +665,7 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   if (!created_tab || !GlicInstanceHelper::From(created_tab)) {
     instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                    /*success=*/false, nullptr, source_tab);
-    return nullptr;
+    return;
   }
 
   // If the floating UI is active and the feature flag is enabled, we only bind
@@ -686,7 +686,6 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                  /*success=*/true, created_tab, source_tab);
-  return nullptr;
 }
 
 void GlicInstanceImpl::CreateTask(
