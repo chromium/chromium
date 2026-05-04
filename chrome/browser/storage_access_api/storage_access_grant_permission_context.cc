@@ -190,19 +190,6 @@ content_settings::ContentSettingConstraints ComputeConstraints(
   }
 }
 
-bool ShouldPersistSetting(bool permission_allowed, RequestOutcome outcome) {
-  // User responses to a prompt should be persisted to avoid user annoyance or
-  // prompt spam.
-  if (IsUserDecidedPersistableOutcome(outcome)) {
-    return true;
-  }
-  // UA-generated denials are not persisted, since they can be re-derived easily
-  // and don't have any user-facing concerns, so persistence just adds
-  // complexity. UA-generated grants, however, should be persisted to ensure the
-  // associated behavioral changes stick.
-  return permission_allowed;
-}
-
 FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
@@ -595,6 +582,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     const permissions::PermissionPromptDecision& decision) {
   CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
   CHECK(decision.is_final);
+  CHECK(!persist || (decision.overall_decision != PermissionDecision::kNone));
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   RequestOutcome outcome =
       RequestOutcomeFromPrompt(decision.overall_decision, persist);
@@ -620,12 +608,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
       }
     }
   }
-  NotifyPermissionSetInternal(
-      request_data, std::move(callback),
-      persist &&
-          ShouldPersistSetting(
-              decision.overall_decision == PermissionDecision::kAllow, outcome),
-      decision.overall_decision, outcome);
+  NotifyPermissionSetInternal(request_data, std::move(callback), persist,
+                              decision.overall_decision, outcome);
 }
 
 void StorageAccessGrantPermissionContext::ReportRelatedWebsiteSetsDeprecation(
