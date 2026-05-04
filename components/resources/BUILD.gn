@@ -17,6 +17,10 @@ declare_args() {
   # Generating the credits page requires a filesystem traversal for licenses
   # that is slow in some environments.
   generate_about_credits = is_official_build
+
+  # Target for which to generate the credits page. If empty, the script will
+  # scan the entire source tree.
+  about_credits_gn_target = ""
 }
 
 buildflag_header("generate_about_credits_header") {
@@ -171,6 +175,15 @@ if (generate_about_credits) {
       rebase_path(depfile, root_build_dir),
       rebase_path(about_credits_file, root_build_dir),
     ]
+
+    if (about_credits_gn_target != "") {
+      args += [
+        "--gn-target",
+        about_credits_gn_target,
+        "--gn-out-dir",
+        rebase_path(root_build_dir, root_build_dir),
+      ]
+    }
 
     # Defined by downstream projects.
     if (defined(extra_third_party_notice_dirs)) {
