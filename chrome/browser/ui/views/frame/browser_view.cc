@@ -884,19 +884,16 @@ BrowserView::BrowserView(Browser* browser)
   top_container_insertion_index_ = GetIndexOf(top_container_.get());
 
   auto contents_container = std::make_unique<views::View>();
-
-  views::View* contents_view;
   auto multi_contents_view = std::make_unique<MultiContentsView>(
       this, std::make_unique<MultiContentsViewDelegateImpl>(*browser_));
   multi_contents_view_ =
       contents_container->AddChildView(std::move(multi_contents_view));
-  contents_view = multi_contents_view_;
 
   // Create the view that will house the Lens overlay. This view is visible but
   // transparent view that is used as a container for the Lens overlay WebView.
-  // It must have a higher index than contents_view so that it is drawn on top
-  // of it. Uses a fill layout so that the overlay WebView can fill the entire
-  // container.
+  // It must have a higher index than multi_contents_view so that it is drawn on
+  // top of it. Uses a fill layout so that the overlay WebView can fill the
+  // entire container.
   auto lens_overlay_view = std::make_unique<views::View>();
   lens_overlay_view->SetID(VIEW_ID_LENS_OVERLAY);
   lens_overlay_view->SetProperty(views::kElementIdentifierKey,
@@ -918,7 +915,7 @@ BrowserView::BrowserView(Browser* browser)
       contents_container->AddChildView(std::move(context_highlight_view));
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      contents_view, lens_overlay_view_, context_highlight_view_));
+      multi_contents_view_, lens_overlay_view_, context_highlight_view_));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
