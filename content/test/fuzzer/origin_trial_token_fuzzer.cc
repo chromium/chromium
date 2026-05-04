@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "url/gurl.h"
 
 struct TestCase {
@@ -20,10 +21,9 @@ struct TestCase {
   base::AtExitManager at_exit_manager;
 };
 
-TestCase* test_case = new TestCase();
-
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<TestCase> test_case;
   std::string str = std::string(reinterpret_cast<const char*>(data), size);
   // Generates version 0,1,2,3 or 255.
   uint8_t version = (std::hash<std::string>()(str) % 5) - 1;

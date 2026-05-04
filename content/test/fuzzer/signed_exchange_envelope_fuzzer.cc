@@ -10,6 +10,7 @@
 #include "base/at_exit.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "content/browser/web_package/signed_exchange_prologue.h"  // nogncheck
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
@@ -23,14 +24,13 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 std::vector<uint8_t> CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
     base::span<const uint8_t> data) {
   return std::vector<uint8_t>(std::from_range, data);
 }
 
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  static const base::NoDestructor<IcuEnvironment> env;
   if (data.size() < BeforeFallbackUrl::kEncodedSizeInBytes) {
     return 0;
   }

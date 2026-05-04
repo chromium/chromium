@@ -64,6 +64,9 @@ fuzzer_test("origin_trial_token_fuzzer") {
 fuzzer_test("renderer_tree_fuzzer") {
   sources = [ "renderer_tree_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 fuzzer_test("renderer_proto_tree_fuzzer") {
@@ -137,6 +140,9 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
     "//net:net_fuzzer_test_support",
     "//net:test_support",
   ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
   dict = "//content/test/data/fuzzer_dictionaries/merkle_integrity_source_stream_fuzzer.dict"
 }
 
@@ -388,6 +394,9 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
 }
 
 if (use_fuzzing_engine_with_lpm) {
@@ -398,6 +407,9 @@ if (use_fuzzing_engine_with_lpm) {
       ":related_website_sets_proto",
       "//third_party/libprotobuf-mutator",
     ]
+    if (is_android) {
+      deps += [ "//third_party/icu:icu_assets" ]
+    }
   }
 
   fuzzable_proto_library("related_website_sets_proto") {
