@@ -490,9 +490,11 @@ void SkiaOutputSurfaceImpl::SetUpdateVSyncParametersCallback(
   update_vsync_parameters_callback_ = std::move(callback);
 }
 
-void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id) {
+void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id,
+                                              bool force_update) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID,
-                             base::Unretained(impl_on_gpu_.get()), display_id);
+                             base::Unretained(impl_on_gpu_.get()), display_id,
+                             force_update);
   gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
 }
 

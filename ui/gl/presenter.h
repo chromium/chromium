@@ -83,7 +83,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual bool SupportsViewporter() const;
   virtual bool SupportsPlaneGpuFences() const;
 
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
   virtual void RefreshRateChangedOnSameDisplay() {}
 
   // Resizes the presenter, returning success.

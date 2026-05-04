@@ -241,7 +241,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) = 0;
 
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
   virtual void RefreshRateChangedOnSameDisplay() {}
 
   // When the device is rotated, the scene prepared by the UI is in the logical

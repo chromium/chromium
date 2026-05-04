@@ -1889,8 +1889,9 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   overlays_ = std::move(overlays);
 }
 
-void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
-  output_device_->SetVSyncDisplayID(display_id);
+void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id,
+                                                   bool force_update) {
+  output_device_->SetVSyncDisplayID(display_id, force_update);
 }
 
 void SkiaOutputSurfaceImplOnGpu::RefreshRateChangedOnSameDisplay() {
@@ -1996,7 +1997,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     }
 
 #if BUILDFLAG(IS_MAC)
-    presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    presenter_->SetVSyncDisplayID(renderer_settings_.display_id,
+                                  /*force_update=*/false);
 #endif
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
@@ -2201,7 +2203,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
     return !!output_device_;
   }
 #elif BUILDFLAG(IS_MAC)
-  presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+  presenter_->SetVSyncDisplayID(renderer_settings_.display_id,
+                                /*force_update=*/false);
 #elif BUILDFLAG(IS_CHROMEOS)
   if (!presenter_) {
     return false;

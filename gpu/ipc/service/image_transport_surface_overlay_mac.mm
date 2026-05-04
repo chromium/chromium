@@ -324,19 +324,23 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 }
 
 #if BUILDFLAG(IS_MAC)
-void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!display_link_mac_ || display_id != display_id_) {
-    vsync_callback_mac_ = nullptr;
-
-    // Commit all pending frames before switching to the new monitor.
-    while (ca_layer_tree_coordinator_->NumPendingSwaps()) {
-      vsync_callback_mac_keep_alive_counter_ =
-          std::max(vsync_callback_mac_keep_alive_counter_, 1);
-      OnVSyncPresentation(ui::VSyncParamsMac());
-    }
-
-    display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
+void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id,
+                                                           bool force_update) {
+  if (display_id_ == display_id && !force_update) {
+    return;
   }
+
+  vsync_callback_mac_ = nullptr;
+
+  // Commit all pending frames before switching to the new monitor.
+  while (ca_layer_tree_coordinator_->NumPendingSwaps()) {
+    vsync_callback_mac_keep_alive_counter_ =
+        std::max(vsync_callback_mac_keep_alive_counter_, 1);
+    OnVSyncPresentation(ui::VSyncParamsMac());
+  }
+
+  display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
+
   display_id_ = display_id;
 }
 

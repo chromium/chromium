@@ -150,7 +150,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
                        BufferPresentedCallback feedback,
                        OutputSurfaceFrame frame) = 0;
 
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
   virtual void RefreshRateChangedOnSameDisplay() {}
 
   // Schedule overlays which will be on screen when SwapBuffers() or

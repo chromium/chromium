@@ -127,12 +127,6 @@ void ExternalBeginFrameSourceMac::UpdateVSyncDisplay() {
     return;
   }
 
-  // Invalidate the display id first to force an update later in
-  // ImageTransportSurfaceOverlayMacEGL of this output surface.
-  // ImageTransportSurfaceOverlayMacEGL does not output an displaylink
-  // error or record the displaylink histogram.
-  output_surface_->SetVSyncDisplayID(display::kInvalidDisplayId);
-
   SetVSyncDisplayID(display_id_, /*force_update=*/true);
 }
 
@@ -146,7 +140,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   }
 
   // Forward the |display_id| to output surface for frame presentation.
-  output_surface_->SetVSyncDisplayID(display_id);
+  output_surface_->SetVSyncDisplayID(display_id, force_update);
 
   // Remove the current callback from display_link_mac_ or from the timer.
   if (needs_begin_frames_) {

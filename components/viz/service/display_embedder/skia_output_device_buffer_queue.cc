@@ -538,8 +538,9 @@ bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
   return lhs == rhs.mailbox();
 }
 
-void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {
-  presenter_->SetVSyncDisplayID(display_id);
+void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id,
+                                                    bool force_update) {
+  presenter_->SetVSyncDisplayID(display_id, force_update);
 }
 
 void SkiaOutputDeviceBufferQueue::RefreshRateChangedOnSameDisplay() {

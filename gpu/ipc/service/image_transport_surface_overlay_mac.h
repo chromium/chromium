@@ -72,7 +72,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
 
 #if BUILDFLAG(IS_MAC)
   // gl::Presenter
-  void SetVSyncDisplayID(int64_t display_id) override;
+  void SetVSyncDisplayID(int64_t display_id, bool force_update) override;
   void RefreshRateChangedOnSameDisplay() override;
 
   void OnVSyncPresentation(ui::VSyncParamsMac params);

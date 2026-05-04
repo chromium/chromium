@@ -199,8 +199,9 @@ void OutputPresenterGL::ScheduleOverlayPlane(
 #endif
 }
 
-void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id) {
-  presenter_->SetVSyncDisplayID(display_id);
+void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id,
+                                          bool force_update) {
+  presenter_->SetVSyncDisplayID(display_id, force_update);
 }
 
 void OutputPresenterGL::RefreshRateChangedOnSameDisplay() {

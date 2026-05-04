@@ -41,7 +41,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       const OverlayPlaneCandidate& overlay_plane_candidate,
       ScopedOverlayAccess* access) = 0;
 
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
+  virtual void SetVSyncDisplayID(int64_t display_id, bool force_update) {}
   virtual void RefreshRateChangedOnSameDisplay() {}
 
 #if BUILDFLAG(IS_APPLE)
