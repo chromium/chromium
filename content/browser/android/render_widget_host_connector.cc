@@ -80,7 +80,7 @@ void RenderWidgetHostConnector::Observer::RenderFrameHostChanged(
   auto* new_view = new_host ? static_cast<RenderWidgetHostViewBase*>(
                                   new_host->GetRenderWidgetHost()->GetView())
                             : nullptr;
-  DCHECK(!new_view || !new_view->IsRenderWidgetHostViewChildFrame());
+  CHECK(!new_view || !new_view->IsRenderWidgetHostViewChildFrame());
   auto* new_view_android = static_cast<RenderWidgetHostViewAndroid*>(new_view);
   UpdateRenderWidgetHostView(new_view_android);
 }
@@ -127,8 +127,8 @@ void RenderWidgetHostConnector::Observer::UpdateRenderWidgetHostView(
 RenderWidgetHostViewAndroid*
 RenderWidgetHostConnector::Observer::GetRenderWidgetHostViewAndroid() const {
   RenderWidgetHostView* rwhv = web_contents()->GetRenderWidgetHostView();
-  DCHECK(!rwhv || !static_cast<RenderWidgetHostViewBase*>(rwhv)
-                       ->IsRenderWidgetHostViewChildFrame());
+  CHECK(!rwhv || !static_cast<RenderWidgetHostViewBase*>(rwhv)
+                      ->IsRenderWidgetHostViewChildFrame());
   return static_cast<RenderWidgetHostViewAndroid*>(rwhv);
 }
 
