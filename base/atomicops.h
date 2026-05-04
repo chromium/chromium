@@ -130,7 +130,6 @@ Atomic64 Release_CompareAndSwap(volatile Atomic64* ptr,
                                 Atomic64 new_value);
 void Release_Store(volatile Atomic64* ptr, Atomic64 value);
 Atomic64 NoBarrier_Load(volatile const Atomic64* ptr);
-Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 #endif  // ARCH_CPU_64_BITS
 
 // Copies non-overlapping spans of the same size. Writes are done using C++

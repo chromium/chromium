@@ -235,7 +235,6 @@ TEST(AtomicOpsTest, Store) {
 
 TEST(AtomicOpsTest, Load) {
   TestLoad<base::subtle::Atomic32>();
-  TestLoad<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, RelaxedAtomicWriteMemcpy) {
