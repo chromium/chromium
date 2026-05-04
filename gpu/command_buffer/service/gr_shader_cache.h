@@ -9,8 +9,10 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
@@ -26,7 +28,7 @@ namespace raster {
 class RASTER_EXPORT GrShaderCache
     : public GrContextOptions::PersistentCache,
       public base::trace_event::MemoryDumpProvider,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
  public:
   class RASTER_EXPORT Client {
    public:
@@ -63,9 +65,9 @@ class RASTER_EXPORT GrShaderCache
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  // base::MemoryPressureListener implementation.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer implementation.
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   size_t num_cache_entries() const;
   size_t curr_size_bytes_for_testing() const;
@@ -133,6 +135,9 @@ class RASTER_EXPORT GrShaderCache
   mutable base::Lock lock_;
   const size_t cache_size_limit_;
   size_t curr_size_bytes_ GUARDED_BY(lock_) = 0u;
+  // The current enforced memory limit capacity. Updated dynamically based on
+  // the active memory policy constraints.
+  size_t current_max_size_bytes_ GUARDED_BY(lock_) = 0u;
   Store store_ GUARDED_BY(lock_);
   raw_ptr<Client> const client_ GUARDED_BY(lock_);
   base::flat_set<int32_t> client_ids_to_cache_on_disk_ GUARDED_BY(lock_);
@@ -143,14 +148,7 @@ class RASTER_EXPORT GrShaderCache
       GUARDED_BY(lock_);
   bool need_store_pipeline_cache_ GUARDED_BY(lock_) = false;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
-
-  // The current memory pressure level.
-  // MemoryPressureListener::memory_pressure_level() can't be used because it is
-  // not thread-safe.
-  base::MemoryPressureLevel memory_pressure_level_ GUARDED_BY(lock_) =
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 
   // Bound to the thread on which GrShaderCache is created. Some methods can
   // only be called on this thread. GrShaderCache is created on gpu main thread.

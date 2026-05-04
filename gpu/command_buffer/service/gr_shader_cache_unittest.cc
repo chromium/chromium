@@ -7,8 +7,10 @@
 #include <thread>
 
 #include "base/base64.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -34,7 +36,7 @@ class GrShaderCacheTest : public GrShaderCache::Client, public testing::Test {
     disk_cache_[key] = shader;
   }
 
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -231,9 +233,16 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   EXPECT_EQ(cache_.num_cache_entries(), 4u);
   EXPECT_EQ(cache_.curr_size_bytes_for_testing(), kCacheLimit);
 
-  // Trigger moderate memory pressure.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  // Trigger moderate memory pressure (50% limit).
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      50, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // Verify that UpdateMemoryLimit does not release memory.
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
+
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // Moderate memory pressure reduces limit by 4x.
@@ -250,10 +259,15 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   }
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
-  // Trigger critical memory pressure.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
+  // Trigger critical memory pressure (0% limit).
+  {
+    base::RunLoop run_loop;
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        0, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // Critical memory pressure sets limit to 0.
   EXPECT_EQ(cache_.num_cache_entries(), 0u);
@@ -267,10 +281,15 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   }
   EXPECT_EQ(cache_.num_cache_entries(), 0u);
 
-  // Restore memory pressure to none.
-  base::MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_NONE, task_environment_.QuitClosure());
-  task_environment_.RunUntilQuit();
+  // Restore memory pressure to none (100% limit).
+  {
+    base::RunLoop run_loop;
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        100, base::DoNothing());
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // Limit should be restored to kCacheLimit.
   // We can now store more entries.
@@ -284,6 +303,95 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   }
   EXPECT_EQ(cache_.num_cache_entries(), 4u);
   EXPECT_EQ(cache_.curr_size_bytes_for_testing(), kCacheLimit);
+}
+
+TEST_F(GrShaderCacheTest, StatefulMemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  int32_t regular_client_id = 3;
+  cache_.CacheClientIdOnDisk(regular_client_id);
+
+  // Fill the cache to its limit.
+  const size_t entry_size = kCacheLimit / 4;
+  auto shader = SkData::MakeUninitialized(entry_size);
+  {
+    GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);
+    for (int i = 0; i < 4; ++i) {
+      auto key =
+          SkData::MakeWithCString(base::StringPrintf("key%d", i).c_str());
+      cache_.store(*key, *shader);
+    }
+  }
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
+  EXPECT_EQ(cache_.curr_size_bytes_for_testing(), kCacheLimit);
+
+  // Trigger moderate memory pressure (50% limit).
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      50, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // Stateful behavior: limit should not decrease below current usage.
+  // So size should still be 4.
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
+
+  // Try to store a new entry. It should evict one entry to make room,
+  // but not trim to 1 entry (which would happen if limit was 256).
+  {
+    GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);
+    auto key = SkData::MakeWithCString("new_key");
+    cache_.store(*key, *shader);
+  }
+  // We expect 4 entries (3 old + 1 new) because limit was kept at current
+  // usage.
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
+
+  // Now trigger release memory.
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // Now it should trim to target size (1 entry).
+  EXPECT_EQ(cache_.num_cache_entries(), 1u);
+}
+
+TEST_F(GrShaderCacheTest, ClampMemoryLimitAbove100Percent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  int32_t regular_client_id = 3;
+  cache_.CacheClientIdOnDisk(regular_client_id);
+
+  // Fill the cache to its limit.
+  const size_t entry_size = kCacheLimit / 4;
+  auto shader = SkData::MakeUninitialized(entry_size);
+  {
+    GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);
+    for (int i = 0; i < 4; ++i) {
+      auto key =
+          SkData::MakeWithCString(base::StringPrintf("key%d", i).c_str());
+      cache_.store(*key, *shader);
+    }
+  }
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
+  EXPECT_EQ(cache_.curr_size_bytes_for_testing(), kCacheLimit);
+
+  // Trigger a memory limit increase (150% limit).
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      150, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // Attempting to store a 5th entry should still trigger eviction because
+  // the capacity is clamped at 100% (kCacheLimit).
+  {
+    GrShaderCache::ScopedCacheUse cache_use(&cache_, regular_client_id);
+    auto key = SkData::MakeWithCString("new_key");
+    cache_.store(*key, *shader);
+  }
+
+  // 1 entry should be evicted to make room for the new one, keeping total count
+  // at 4. If it wasn't clamped, we would have 5 entries.
+  EXPECT_EQ(cache_.num_cache_entries(), 4u);
 }
 
 }  // namespace raster
