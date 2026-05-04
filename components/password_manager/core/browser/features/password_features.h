@@ -35,10 +35,6 @@ BASE_DECLARE_FEATURE(kActorLoginNoPermanentPermissionsAndroid);
 BASE_DECLARE_FEATURE(kActorLoginPermissionsUi);
 #endif
 
-#if !BUILDFLAG(IS_IOS)
-BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
-#endif  // !BUILDFLAG(IS_IOS)
-
 // Enables syncing password permissions.
 BASE_DECLARE_FEATURE(kActorLoginSyncsPasswordPermissions);
 

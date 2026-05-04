@@ -608,9 +608,7 @@ TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
 TEST_F(ActorLoginDelegateImplTest, FillingReauthRequiredWindowNotActive) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(/*enabled_features=*/
-                                {password_manager::features::kActorLogin,
-                                 password_manager::features::
-                                     kActorLoginReauthTaskRefocus},
+                                {password_manager::features::kActorLogin},
                                 /*disabled_features=*/{});
   const url::Origin origin = url::Origin::Create(GURL(kTestUrl));
   const Credential credential =

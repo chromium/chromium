@@ -297,9 +297,7 @@ void ActorLoginCredentialFiller::AttemptReauth(base::OnceClosure on_reauth_cb) {
       GetLogger(client_);
   LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginReauthTaskRefocus) &&
-      !is_task_in_focus_.Run()) {
+  if (!is_task_in_focus_.Run()) {
     BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kReauthRequired);
     std::move(callback_).Run(LoginStatusResult::kErrorDeviceReauthRequired);
     return;

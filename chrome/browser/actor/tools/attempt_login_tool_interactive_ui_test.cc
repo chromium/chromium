@@ -174,8 +174,7 @@ class AttemptLoginToolInteractiveUiTest
 
   AttemptLoginToolInteractiveUiTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        password_manager::features::kActorLogin,
-        password_manager::features::kActorLoginReauthTaskRefocus};
+        password_manager::features::kActorLogin};
     std::vector<base::test::FeatureRef> disabled_features;
     if (federation_enabled()) {
       enabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);

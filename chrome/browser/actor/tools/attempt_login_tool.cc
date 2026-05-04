@@ -454,10 +454,8 @@ void AttemptLoginTool::OnAttemptLogin(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginReauthTaskRefocus) &&
-      login_status.value() ==
-          actor_login::LoginStatusResult::kErrorDeviceReauthRequired) {
+  if (login_status.value() ==
+      actor_login::LoginStatusResult::kErrorDeviceReauthRequired) {
     if (!tab_handle_.Get()) {
       PostResponseTask(std::move(invoke_callback_),
                        MakeResult(mojom::ActionResultCode::kTabWentAway));
