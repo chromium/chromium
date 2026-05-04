@@ -29,6 +29,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       @composebox-submit="${this.onComposeboxSubmit_}"
       .showMenuOnClick="${false}"
       .shouldShowGhostFiles="${true}"
+      .showVoiceSearch="${true}"
       entrypoint-name="Omnibox">
   </cr-composebox>`}
 </div>

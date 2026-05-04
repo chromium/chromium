@@ -508,7 +508,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
 
   dict.Set("composeboxContextDragAndDropEnabled",
            options.session_allows_drag_and_drop);
-  dict.Set("composeboxShowVoiceSearch", options.enable_voice_search);
 
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
   dict.Set("searchboxShowComposeAnimation",

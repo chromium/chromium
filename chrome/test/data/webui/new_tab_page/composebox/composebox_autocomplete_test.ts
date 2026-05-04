@@ -1278,10 +1278,9 @@ suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
       async () => {
         // Set loadTimeData so that voice search does auto submit.
         loadTimeData.overrideValues({
-          composeboxShowVoiceSearch: true,
           composeboxShowZps: true,  // For predictable queryAutocomplete count.
         });
-        createComposeboxElement(testProxy);
+        createComposeboxElement(testProxy, {showVoiceSearch: true});
         await microtasksFinished();
         testProxy.searchboxHandler.reset();
 

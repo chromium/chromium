@@ -121,6 +121,7 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             showTypedSuggestWithContext: {type: Boolean},
+            showVoiceSearch: {type: Boolean},
             usePecApi: {
               type: Boolean,
               reflect: true,
@@ -207,8 +208,7 @@ export const ComposeboxEmbedderMixin =
             'contextualMenuUsePecApi', /*defaultValue=*/ false);
         searchboxListenerIds: number[] = [];
         showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
-        showVoiceSearch: boolean = getLoadTimeBoolean(
-            'composeboxShowVoiceSearch', /*defaultValue=*/ false);
+        accessor showVoiceSearch: boolean = false;
         accessor smartComposeInlineHint: string = '';
         accessor state: ComposeboxState|null = null;
         accessor submitEnabled: boolean = false;

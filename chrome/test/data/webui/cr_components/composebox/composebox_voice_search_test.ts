@@ -113,7 +113,6 @@ suite('ComposeboxVoiceSearch', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      composeboxShowVoiceSearch: true,
       composeboxShowZps: true,
       composeboxShowTypedSuggest: true,
       composeboxSmartTabSharingVisible: false,
@@ -162,6 +161,7 @@ suite('ComposeboxVoiceSearch', () => {
     windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
 
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
     document.body.appendChild(composeboxElement);
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;
@@ -169,6 +169,7 @@ suite('ComposeboxVoiceSearch', () => {
 
   async function createComposeboxElement() {
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
     document.body.appendChild(composeboxElement);
     await microtasksFinished();
   }
@@ -206,6 +207,7 @@ suite('ComposeboxVoiceSearch', () => {
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
     document.body.appendChild(composeboxElement);
     await microtasksFinished();
 
@@ -368,21 +370,13 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test('voice search button does not show when disabled', async () => {
-    loadTimeData.overrideValues({
-      composeboxShowVoiceSearch: false,
-    });
-    // Create element again with new loadTimeData values.
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = false;
     document.body.appendChild(composeboxElement);
     await microtasksFinished();
 
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     assertFalse(!!voiceSearchButton);
-
-    // Restore.
-    loadTimeData.overrideValues({
-      composeboxShowVoiceSearch: true,
-    });
   });
 
   test('voice search button shows when enabled', () => {
@@ -399,6 +393,7 @@ suite('ComposeboxVoiceSearch', () => {
         });
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
         document.body.appendChild(composeboxElement);
         await microtasksFinished();
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);
@@ -430,6 +425,7 @@ suite('ComposeboxVoiceSearch', () => {
         });
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
         document.body.appendChild(composeboxElement);
         await microtasksFinished();
 
@@ -457,6 +453,7 @@ suite('ComposeboxVoiceSearch', () => {
 
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
         document.body.appendChild(composeboxElement);
         await microtasksFinished();
 
@@ -516,6 +513,7 @@ suite('ComposeboxVoiceSearch', () => {
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
     document.body.appendChild(composeboxElement);
     await microtasksFinished();
 
@@ -632,6 +630,7 @@ suite('ComposeboxVoiceSearch', () => {
 
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
         document.body.appendChild(composeboxElement);
         await microtasksFinished();
 
@@ -830,6 +829,7 @@ suite('ComposeboxVoiceSearch', () => {
     loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
     document.body.appendChild(composeboxElement);
 
     const hidePromise =
@@ -1101,6 +1101,7 @@ suite('ComposeboxVoiceSearch', () => {
         await microtasksFinished();
 
         composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
         document.body.appendChild(composeboxElement);
         await microtasksFinished();
 
