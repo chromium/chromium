@@ -1624,6 +1624,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Desktop.Promo.TotalImpressionsLimitHit" enum="Boolean"
+    expires_after="2026-11-01">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records whether the total impressions limit across all Desktop to iOS promos
+    was hit. Recorded when checking if a promo is allowed to be shown.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Desktop.{PromoType}.Shown"
     enum="DesktopIOSPromoImpression" expires_after="2026-10-25">
   <owner>nicolasmacbeth@google.com</owner>

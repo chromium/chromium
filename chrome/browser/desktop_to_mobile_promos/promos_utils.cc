@@ -436,9 +436,15 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
 }
 
 bool IsIOSDesktopPromoAllowedByGlobalImpressions(Profile* profile) {
-  return VerifyMostRecentPromoTimestamp(profile) &&
-         VerifyIOSDesktopPromoTotalImpressions(profile) &&
-         VerifyIOSDesktopPromoTotalOptOuts(profile);
+  if (!VerifyMostRecentPromoTimestamp(profile) ||
+      !VerifyIOSDesktopPromoTotalOptOuts(profile)) {
+    return false;
+  }
+
+  bool allowed_by_impressions = VerifyIOSDesktopPromoTotalImpressions(profile);
+  base::UmaHistogramBoolean("IOS.Desktop.Promo.TotalImpressionsLimitHit",
+                            !allowed_by_impressions);
+  return allowed_by_impressions;
 }
 
 bool ShouldShowIOSDesktopPromo(Profile* profile,
