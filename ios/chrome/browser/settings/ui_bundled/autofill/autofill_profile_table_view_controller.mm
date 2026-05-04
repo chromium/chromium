@@ -137,6 +137,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePlusAddress,
   ItemTypePlusAddressFooter,
   ItemTypeEnhancedAutofill,
+  ItemTypeEnhancedAutofillManaged,
   ItemTypeVerificationSwitch,
   ItemTypeVerificationFooter,
   ItemTypeWalletPromoInfo,
@@ -375,8 +376,14 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       autofill::features::kAutofillAiWithDataSchema);
   if (isEnhancedAutofillEnabled) {
     [model addSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
-    [model addItem:[self enhancedAutofillItem]
-        toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
+    if (_browser->GetProfile()->GetPrefs()->IsManagedPreference(
+            autofill::prefs::kAutofillProfileEnabled)) {
+      [model addItem:[self managedEnhancedAutofillItem]
+          toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
+    } else {
+      [model addItem:[self enhancedAutofillItem]
+          toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
+    }
 
     [self populateVerificationAndWalletSections];
   }
@@ -527,6 +534,22 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   managedAddressItem.selector = @selector(didTapManagedUIInfoButton:);
   managedAddressItem.accessibilityIdentifier = kAutofillAddressManagedViewId;
   return managedAddressItem;
+}
+
+- (TableViewInfoButtonItem*)managedEnhancedAutofillItem {
+  TableViewInfoButtonItem* managedEnhancedAutofillItem =
+      [[TableViewInfoButtonItem alloc]
+          initWithType:ItemTypeEnhancedAutofillManaged];
+  managedEnhancedAutofillItem.text =
+      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
+  // The status could only be off when the pref is managed.
+  managedEnhancedAutofillItem.statusText =
+      l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedEnhancedAutofillItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  managedEnhancedAutofillItem.target = self;
+  managedEnhancedAutofillItem.selector = @selector(didTapManagedUIInfoButton:);
+  return managedEnhancedAutofillItem;
 }
 
 - (TableViewHeaderFooterItem*)addressSwitchFooter {
