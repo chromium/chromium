@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,16 +31,20 @@
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
 using ::testing::ElementsAre;
@@ -2741,9 +2746,23 @@ TEST_F(AutocompleteControllerTest, ContextualQueryAppendsSearchboxStats) {
   turl_data.SetShortName(u"Contextual");
   turl_data.SetKeyword(u"contextual");
   turl_data.SetURL(
-      "https://google.com/search?q={searchTerms}/{google:assistedQueryStats}");
+      "https://google.com/search?q={searchTerms}&{google:assistedQueryStats}");
   controller_.template_url_service_->Add(
       std::make_unique<TemplateURL>(turl_data));
+
+  // Inject zero suggest provider to supply fake experiment stats.
+  scoped_refptr<ZeroSuggestProvider> zero_suggest_provider =
+      base::MakeRefCounted<ZeroSuggestProvider>(provider_client(),
+                                                &controller_);
+  controller_.providers_.push_back(zero_suggest_provider);
+  controller_.zero_suggest_provider_ = zero_suggest_provider.get();
+
+  omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2 stat;
+  stat.set_type_int(12345);
+  stat.set_string_value("dummy:stat");
+  const_cast<SearchSuggestionParser::ExperimentStatsV2s&>(
+      zero_suggest_provider->experiment_stats_v2s())
+      .push_back(stat);
 
   // Create input with lens searchbox page classification.
   controller_.input_ = AutocompleteInput(u"", metrics::OmniboxEventProto::OTHER,
@@ -2765,18 +2784,30 @@ TEST_F(AutocompleteControllerTest, ContextualQueryAppendsSearchboxStats) {
           controller_.internal_result_.match_at(0)->takeover_action.get());
   EXPECT_EQ(OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
             contextual_takover_action_0->ActionId());
-  EXPECT_TRUE(contextual_takover_action_0->get_fulfillment_url_for_testing()
-                  .spec()
-                  .contains("gs_lcrp="));
-  ASSERT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
-  auto* contextual_takover_action_1 =
-      ContextualSearchFulfillmentAction::FromAction(
-          controller_.internal_result_.match_at(1)->takeover_action.get());
-  EXPECT_EQ(OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
-            contextual_takover_action_1->ActionId());
-  EXPECT_TRUE(contextual_takover_action_1->get_fulfillment_url_for_testing()
-                  .spec()
-                  .contains("gs_lcrp="));
+
+  const GURL fulfillment_url =
+      contextual_takover_action_0->get_fulfillment_url_for_testing();
+  EXPECT_TRUE(fulfillment_url.spec().contains("gs_lcrp="));
+
+  // Manually decode and verify the proto contains our specific
+  // ExperimentStatsV2.
+  std::string encoded_proto;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(fulfillment_url, "gs_lcrp", &encoded_proto));
+
+  std::string serialized_proto;
+  EXPECT_TRUE(base::Base64UrlDecode(
+      encoded_proto, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+      &serialized_proto));
+
+  omnibox::metrics::ChromeSearchboxStats stats;
+  EXPECT_TRUE(stats.ParseFromString(serialized_proto));
+
+  // Confirm experiment stats were included properly into the encoded proto URL.
+  ASSERT_EQ(1, stats.experiment_stats_v2_size());
+  EXPECT_EQ(12345, stats.experiment_stats_v2(0).type_int());
+  // Verify that the ':' colon replacement was enforced logic side.
+  EXPECT_EQ("dummy,stat", stats.experiment_stats_v2(0).string_value());
 }
 
 TEST_F(AutocompleteControllerTest,
