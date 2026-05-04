@@ -1101,6 +1101,66 @@ INSTANTIATE_TEST_SUITE_P(
            info) {
       return info.param ? "RetainedWebContents" : "UnretainedWebContents";
     });
+// Data race on Linux. http://crbug.com/41357022
+// Flaky on Mac and Windows: https://crbug.com/41477172
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define MAYBE_DiscardTabWithNonVisibleTabs DISABLED_DiscardTabWithNonVisibleTabs
+#else
+#define MAYBE_DiscardTabWithNonVisibleTabs DiscardTabWithNonVisibleTabs
+#endif
+
+// Verify that:
+// - On ChromeOS, DiscardTab can discard every non-visible tab, but cannot
+//   discard a visible tab.
+// - On other platforms, DiscardTab can discard every tab that is not active in
+//   its tab strip.
+IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
+  // Create 2 windows. Simulate the second window being hidden/not active.
+  Browser* browser1 = browser();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser1, GURL("https://www.example.com")));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser1, GURL("https://www.example.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  Browser* browser2 = CreateBrowser(browser1->profile());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL("https://www.example.com")));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser2, GURL("https://www.example.com"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  TabStripModel* tab_strip1 = browser1->tab_strip_model();
+  TabStripModel* tab_strip2 = browser2->tab_strip_model();
+
+  ASSERT_EQ(2, tab_strip1->count());
+  ASSERT_EQ(2, tab_strip2->count());
+
+  for (int i = 0; i < 4; ++i) {
+    tab_manager()->DiscardTabByExtension(nullptr);
+  }
+
+  // Active tab in a visible window should not be discarded.
+  EXPECT_FALSE(IsTabDiscarded(tab_strip1->GetWebContentsAt(0)));
+
+  // Non-active tabs should be discarded.
+  EXPECT_TRUE(IsTabDiscarded(tab_strip1->GetWebContentsAt(1)));
+  EXPECT_TRUE(IsTabDiscarded(tab_strip2->GetWebContentsAt(1)));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, a non-visible tab should be discarded even if it's active in
+  // its tab strip.
+  EXPECT_TRUE(IsTabDiscarded(tab_strip2->GetWebContentsAt(0)));
+#else
+  // On other platforms, an active tab is never discarded, even if it's not
+  // visible.
+  EXPECT_FALSE(IsTabDiscarded(tab_strip2->GetWebContentsAt(0)));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 }  // namespace resource_coordinator
 
