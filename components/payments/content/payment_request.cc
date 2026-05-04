@@ -17,6 +17,7 @@
 #include "components/payments/content/has_enrolled_instrument_query_factory.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_details_converter.h"
+#include "components/payments/content/payment_event_response_util.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
@@ -821,18 +822,8 @@ void PaymentRequest::OnPaymentResponseError(
 
   if (base::FeatureList::IsEnabled(
           features::kPaymentRequestSupportReportingAppError)) {
-    switch (error) {
-      case mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT:
-        reject_show_error_reason_ = mojom::PaymentErrorReason::USER_CANCEL;
-        break;
-      case mojom::PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR:
-        reject_show_error_reason_ =
-            mojom::PaymentErrorReason::PAYMENT_APP_ERROR;
-        break;
-      default:
-        reject_show_error_reason_ = mojom::PaymentErrorReason::UNKNOWN;
-        break;
-    }
+    reject_show_error_reason_ =
+        ConvertPaymentEventResponseTypeToErrorReason(error);
   }
 
   ShowErrorMessageAndAbortPayment();

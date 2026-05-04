@@ -900,4 +900,67 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 CanMakePaymentQueryResult.CAN_MAKE_PAYMENT,
                 mSentCanMakePayment);
     }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.PAYMENT_REQUEST_SUPPORT_REPORTING_APP_ERROR})
+    public void testOnInstrumentDetailsError_userCancel() {
+        int[] userCancelResponses = {
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_REJECT,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING
+        };
+        for (int error : userCancelResponses) {
+            PaymentRequestService service = defaultBuilder().build();
+            Mockito.doReturn(true).when(mBrowserPaymentRequest).hasSkippedAppSelector();
+            service.onInstrumentDetailsError(error, "User cancel");
+            assertErrorAndReason("User cancel", PaymentErrorReason.USER_CANCEL);
+            resetErrorMessageAndCloseState();
+        }
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.PAYMENT_REQUEST_SUPPORT_REPORTING_APP_ERROR})
+    public void testOnInstrumentDetailsError_appError() {
+        int[] appErrorResponses = {
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_BROWSER_ERROR,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_NO_RESPONSE,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_SERVICE_WORKER_ERROR,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_TIMEOUT,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_HANDLER_ACTIVITY_DIED,
+            org.chromium.payments.mojom.PaymentEventResponseType
+                    .PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_HANDLER_INSTALL_FAILED,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYER_NAME_EMPTY,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYER_EMAIL_EMPTY,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYER_PHONE_EMPTY,
+            org.chromium.payments.mojom.PaymentEventResponseType.SHIPPING_ADDRESS_INVALID,
+            org.chromium.payments.mojom.PaymentEventResponseType.SHIPPING_OPTION_EMPTY,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_DETAILS_ABSENT,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_DETAILS_NOT_OBJECT,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_DETAILS_STRINGIFY_ERROR,
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_METHOD_NAME_EMPTY
+        };
+        for (int error : appErrorResponses) {
+            PaymentRequestService service = defaultBuilder().build();
+            Mockito.doReturn(true).when(mBrowserPaymentRequest).hasSkippedAppSelector();
+            service.onInstrumentDetailsError(error, "App error");
+            assertErrorAndReason("App error", PaymentErrorReason.PAYMENT_APP_ERROR);
+            resetErrorMessageAndCloseState();
+        }
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.PAYMENT_REQUEST_SUPPORT_REPORTING_APP_ERROR})
+    public void testOnInstrumentDetailsError_notAllowed() {
+        PaymentRequestService service = defaultBuilder().build();
+        Mockito.doReturn(true).when(mBrowserPaymentRequest).hasSkippedAppSelector();
+
+        service.onInstrumentDetailsError(
+                org.chromium.payments.mojom.PaymentEventResponseType
+                        .PAYMENT_HANDLER_INSECURE_NAVIGATION,
+                "Insecure");
+        assertErrorAndReason("Insecure", PaymentErrorReason.NOT_ALLOWED_ERROR);
+    }
 }

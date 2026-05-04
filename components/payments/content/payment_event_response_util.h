@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "third_party/blink/public/mojom/payments/payment_app_events.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace payments {
 
@@ -20,6 +21,11 @@ std::string_view ConvertCanMakePaymentEventResponseTypeToErrorString(
 // developer-facing error string. PAYMENT_EVENT_SUCCESS is converted into an
 // empty string.
 std::string_view ConvertPaymentEventResponseTypeToErrorString(
+    mojom::PaymentEventResponseType response_type);
+
+// Converts the given 'paymentrequest' event |response_type| into a
+// PaymentErrorReason.
+mojom::PaymentErrorReason ConvertPaymentEventResponseTypeToErrorReason(
     mojom::PaymentEventResponseType response_type);
 
 }  // namespace payments

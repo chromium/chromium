@@ -88,4 +88,44 @@ std::string_view ConvertPaymentEventResponseTypeToErrorString(
   }
 }
 
+mojom::PaymentErrorReason ConvertPaymentEventResponseTypeToErrorReason(
+    mojom::PaymentEventResponseType response_type) {
+  // LINT.IfChange(PaymentEventResponseTypeToErrorReason)
+  switch (response_type) {
+    // User cancel Action
+    case mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT:
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_WINDOW_CLOSING:
+      return mojom::PaymentErrorReason::USER_CANCEL;
+
+    // App failures
+    case mojom::PaymentEventResponseType::PAYMENT_EVENT_INTERNAL_ERROR:
+    case mojom::PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR:
+    case mojom::PaymentEventResponseType::PAYMENT_EVENT_SERVICE_WORKER_ERROR:
+    case mojom::PaymentEventResponseType::PAYMENT_EVENT_TIMEOUT:
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_ACTIVITY_DIED:
+    case mojom::PaymentEventResponseType::
+        PAYMENT_HANDLER_FAIL_TO_LOAD_MAIN_FRAME:
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED:
+    // User data validation failures
+    case mojom::PaymentEventResponseType::PAYER_NAME_EMPTY:
+    case mojom::PaymentEventResponseType::PAYER_EMAIL_EMPTY:
+    case mojom::PaymentEventResponseType::PAYER_PHONE_EMPTY:
+    case mojom::PaymentEventResponseType::SHIPPING_ADDRESS_INVALID:
+    case mojom::PaymentEventResponseType::SHIPPING_OPTION_EMPTY:
+    case mojom::PaymentEventResponseType::PAYMENT_DETAILS_ABSENT:
+    case mojom::PaymentEventResponseType::PAYMENT_DETAILS_NOT_OBJECT:
+    case mojom::PaymentEventResponseType::PAYMENT_DETAILS_STRINGIFY_ERROR:
+    case mojom::PaymentEventResponseType::PAYMENT_METHOD_NAME_EMPTY:
+      return mojom::PaymentErrorReason::PAYMENT_APP_ERROR;
+
+    // Violations
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSECURE_NAVIGATION:
+      return mojom::PaymentErrorReason::NOT_ALLOWED_ERROR;
+
+    default:
+      return mojom::PaymentErrorReason::UNKNOWN;
+  }
+  // LINT.ThenChange(//components/payments/content/android/java/src/org/chromium/components/payments/PaymentRequestService.java:PaymentEventResponseTypeToErrorReason)
+}
+
 }  // namespace payments
