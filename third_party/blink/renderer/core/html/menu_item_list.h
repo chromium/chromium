@@ -64,15 +64,23 @@ class MenuItemList final {
   bool Empty();
   unsigned size() const;
   HTMLMenuItemElement& at(unsigned index);
+  // The inclusive parameter make the provided menuitem get considered as a
+  // possible return value. The wrap parameter makes the every menuitem in the
+  // list get considered as a possible return value by moving to the end of the
+  // list when reaching the beginning, or moving to the beginning of the list
+  // when reaching the end.
   HTMLMenuItemElement* NextFocusableMenuItem(HTMLMenuItemElement& menuitem,
-                                             bool inclusive = false);
+                                             bool inclusive = false,
+                                             bool wrap = true);
   HTMLMenuItemElement* PreviousFocusableMenuItem(HTMLMenuItemElement& menuitem,
-                                                 bool inclusive = false);
+                                                 bool inclusive = false,
+                                                 bool wrap = true);
 
  private:
   HTMLMenuItemElement* FindFocusableMenuItem(HTMLMenuItemElement& menuitem,
                                              bool forward,
-                                             bool inclusive);
+                                             bool inclusive,
+                                             bool wrap);
 
   const HTMLMenuOwnerElement& owner_menu_;
 };

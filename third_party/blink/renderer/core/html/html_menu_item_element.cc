@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -348,9 +349,70 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         event.SetDefaultHandled();
         return;
       }
+    } else if (key == keywords::kPageUp) {
+      // TODO(crbug.com/422940462): Deduplicate this PageUp/PageDown handling
+      // code with the same code in HTMLOptionElement by moving to a shared
+      // class.
+      if (!IsVisibleInViewport()) {
+        // If the menuitem isn't visible at all right now, *only* scroll it into
+        // view.
+        scrollIntoViewIfNeeded(/*center_if_needed=*/false);
+      } else {
+        auto* previous_menuitem = menuitems.PreviousFocusableMenuItem(
+            *this, /*inclusive=*/false, /*wrap=*/false);
+        if (previous_menuitem && !previous_menuitem->IsVisibleInViewport()) {
+          // The previous menuitem isn't visible, which means we were at the
+          // very top. Scroll the current menuitem to the bottom, and then focus
+          // the top one.
+          ScrollIntoViewOptions* scroll_into_view_options =
+              ScrollIntoViewOptions::Create();
+          scroll_into_view_options->setBlock(
+              V8ScrollLogicalPosition::Enum::kEnd);
+          scroll_into_view_options->setInlinePosition(
+              V8ScrollLogicalPosition::Enum::kNearest);
+          scrollIntoViewWithOptions(scroll_into_view_options);
+        }
+        // Then find the first menuitem that is in the view.
+        HTMLMenuItemElement* next_focus = this;
+        for (auto* current = this; current && current->IsVisibleInViewport();
+             current = menuitems.PreviousFocusableMenuItem(
+                 *current, /*inclusive=*/false, /*wrap=*/false)) {
+          next_focus = current;
+        }
+        next_focus->Focus(focus_params);
+      }
+      event.SetDefaultHandled();
+    } else if (key == keywords::kPageDown) {
+      if (!IsVisibleInViewport()) {
+        // If the menuitem isn't visible at all right now, *only* scroll it into
+        // view.
+        scrollIntoViewIfNeeded(/*center_if_needed=*/false);
+      } else {
+        auto* next_menuitem = menuitems.NextFocusableMenuItem(
+            *this, /*inclusive=*/false, /*wrap=*/false);
+        if (next_menuitem && !next_menuitem->IsVisibleInViewport()) {
+          // The next menuitem isn't visible, which means we were at the very
+          // bottom. Scroll the current menuitem to the top, and then focus the
+          // bottom one.
+          ScrollIntoViewOptions* scroll_into_view_options =
+              ScrollIntoViewOptions::Create();
+          scroll_into_view_options->setBlock(
+              V8ScrollLogicalPosition::Enum::kStart);
+          scroll_into_view_options->setInlinePosition(
+              V8ScrollLogicalPosition::Enum::kNearest);
+          scrollIntoViewWithOptions(scroll_into_view_options);
+        }
+        // Then find the last menuitem that is still in the view.
+        HTMLMenuItemElement* next_focus = this;
+        for (auto* current = this; current && current->IsVisibleInViewport();
+             current = menuitems.NextFocusableMenuItem(
+                 *current, /*inclusive=*/false, /*wrap=*/false)) {
+          next_focus = current;
+        }
+        next_focus->Focus(focus_params);
+      }
+      event.SetDefaultHandled();
     }
-    // TODO(crbug.com/425682464): implement scrolling to visible menuitem,
-    // for kPageDown/kPageUp.
   } else {
     CHECK(IsA<HTMLMenuBarElement>(*owning_menu_element_));
     if (key == keywords::kArrowLeft) {
@@ -552,6 +614,18 @@ void HTMLMenuItemElement::RemovedFrom(ContainerNode& insertion_point) {
 
 bool HTMLMenuItemElement::ShouldHaveExpandIcon() const {
   return HasOwnerMenuList() && GetInvokedSubmenu();
+}
+
+bool HTMLMenuItemElement::IsVisibleInViewport() {
+  if (!owning_menu_element_) {
+    return false;
+  }
+  PhysicalRect owner_rect = owning_menu_element_->BoundingBox();
+  PhysicalRect menuitem_rect = BoundingBox();
+  LayoutUnit owner_top = owner_rect.Y();
+  LayoutUnit menuitem_top = menuitem_rect.Y();
+  return menuitem_top >= owner_top && menuitem_top + menuitem_rect.Height() <=
+                                          owner_top + owner_rect.Height();
 }
 
 }  // namespace blink

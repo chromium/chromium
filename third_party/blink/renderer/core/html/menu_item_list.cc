@@ -145,14 +145,16 @@ HTMLMenuItemElement& MenuItemList::at(unsigned index) {
 
 HTMLMenuItemElement* MenuItemList::NextFocusableMenuItem(
     HTMLMenuItemElement& menuitem,
-    bool inclusive) {
-  return FindFocusableMenuItem(menuitem, /*forward*/ true, inclusive);
+    bool inclusive,
+    bool wrap) {
+  return FindFocusableMenuItem(menuitem, /*forward*/ true, inclusive, wrap);
 }
 
 HTMLMenuItemElement* MenuItemList::PreviousFocusableMenuItem(
     HTMLMenuItemElement& menuitem,
-    bool inclusive) {
-  return FindFocusableMenuItem(menuitem, /*forward*/ false, inclusive);
+    bool inclusive,
+    bool wrap) {
+  return FindFocusableMenuItem(menuitem, /*forward*/ false, inclusive, wrap);
 }
 
 unsigned MenuItemList::size() const {
@@ -169,7 +171,8 @@ unsigned MenuItemList::size() const {
 HTMLMenuItemElement* MenuItemList::FindFocusableMenuItem(
     HTMLMenuItemElement& menuitem,
     bool forward,
-    bool inclusive) {
+    bool inclusive,
+    bool wrap) {
   DCHECK_EQ(menuitem.OwningMenuElement(), owner_menu_);
   DCHECK(!Empty());
   MenuItemListIterator menu_item_list_iterator = begin();
@@ -186,9 +189,10 @@ HTMLMenuItemElement* MenuItemList::FindFocusableMenuItem(
         --menu_item_list_iterator;
       }
     }
-    // Directional focus in menu item lists always loops, whether in a menubar
-    // or a menulist.
     if (!menu_item_list_iterator) {
+      if (!wrap) {
+        return nullptr;
+      }
       menu_item_list_iterator = forward ? begin() : last();
     }
     inclusive = false;

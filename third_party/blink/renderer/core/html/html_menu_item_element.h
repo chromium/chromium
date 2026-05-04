@@ -84,6 +84,10 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // and cache them.
   void ResetAncestorElementCache();
 
+  // Returns true if this menuitem is visible within the owner menu element's
+  // scroller.
+  bool IsVisibleInViewport();
+
   Member<HTMLMenuOwnerElement> owning_menu_element_;
   // Could be null: only used to allow `this` to be checkable, if
   // `this` is immediately nested inside a `<fieldset checkable>`.
