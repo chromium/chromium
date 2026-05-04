@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "composebox_menu_attachment_cell.h",
+    "composebox_menu_attachment_cell.mm",
     "composebox_menu_attachment_view.h",
     "composebox_menu_attachment_view.mm",
     "composebox_menu_consumer.h",

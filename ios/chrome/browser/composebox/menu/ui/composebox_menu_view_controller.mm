@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_cell.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_section.h"
@@ -25,8 +26,8 @@ namespace {
 // The estimated height of the attachments group.
 const CGFloat kAttachmentGroupEstimatedHeight = 80.0f;
 
-// Insets for the safe area (top, left, bottom, right).
-const UIEdgeInsets kSafeAreaInsets = {20.0, 16.0, 20.0, 16.0};
+// The top padding for the collection view.
+const CGFloat kCollectionViewTopPadding = 20.0f;
 
 // Spacing between attachment items.
 const CGFloat kAttachmentItemSpacing = 6.0f;
@@ -35,7 +36,8 @@ const CGFloat kAttachmentItemSpacing = 6.0f;
 const NSDirectionalEdgeInsets kListSectionInsets = {0, 16.0, 20.0, 16.0};
 
 // Insets for the attachments section.
-const NSDirectionalEdgeInsets kAttachmentSectionInsets = {16.0, 0, 8.0, 0};
+const NSDirectionalEdgeInsets kAttachmentSectionInsets = {16.0, 16.0, 8.0,
+                                                          16.0};
 
 // Leading constant for the header label.
 const CGFloat kHeaderLabelLeadingPadding = 15.0f;
@@ -179,7 +181,6 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  [self setAdditionalSafeAreaInsets:kSafeAreaInsets];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   [self setUpCollectionView];
@@ -190,9 +191,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 - (CGSize)preferredContentSize {
   CGSize size = super.preferredContentSize;
   [self.view layoutIfNeeded];
-  size.height = _collectionView.contentSize.height +
-                _collectionView.contentInset.top +
-                _collectionView.contentInset.bottom;
+  size.height =
+      _collectionView.contentSize.height + _collectionView.contentInset.top;
   return size;
 }
 
@@ -291,6 +291,10 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [UIColor colorNamed:kPrimaryBackgroundColor];
   _collectionView.showsVerticalScrollIndicator = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
+  _collectionView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
+  _collectionView.contentInset =
+      UIEdgeInsetsMake(kCollectionViewTopPadding, 0, 0, 0);
 
   [self.view addSubview:_collectionView];
   AddSameConstraints(_collectionView, self.view);
@@ -325,11 +329,16 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     if (sectionIndex < (NSInteger)_sections.count) {
       itemsCount = MAX(1.0, (CGFloat)_sections[sectionIndex].items.count);
     }
-    CGFloat fractionalWidth = 1.0 / itemsCount;
+
+    CGFloat containerWidth = layoutEnvironment.container.contentSize.width;
+    CGFloat availableWidth = containerWidth - kAttachmentSectionInsets.leading -
+                             kAttachmentSectionInsets.trailing;
+    CGFloat totalSpacing = (itemsCount - 1) * kAttachmentItemSpacing;
+    CGFloat itemWidth = (availableWidth - totalSpacing) / itemsCount;
 
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:fractionalWidth]
+                                   absoluteDimension:itemWidth]
                heightDimension:[NSCollectionLayoutDimension
                                    fractionalHeightDimension:1.0]];
 
@@ -338,21 +347,20 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
     NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
-                                   fractionalWidthDimension:1.0]
+                                   absoluteDimension:itemWidth]
                heightDimension:
                    [NSCollectionLayoutDimension
                        estimatedDimension:kAttachmentGroupEstimatedHeight]];
     NSCollectionLayoutGroup* group =
         [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
                                                       subitems:@[ item ]];
-    group.interItemSpacing =
-        [NSCollectionLayoutSpacing fixedSpacing:kAttachmentItemSpacing];
 
     NSCollectionLayoutSection* section =
         [NSCollectionLayoutSection sectionWithGroup:group];
     section.contentInsets = kAttachmentSectionInsets;
     section.orthogonalScrollingBehavior =
         UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
+    section.interGroupSpacing = kAttachmentItemSpacing;
 
     if (_sections.count > 1) {
       NSCollectionLayoutSize* footerSize = [NSCollectionLayoutSize
@@ -454,13 +462,11 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
   UICollectionViewCellRegistration* attachmentCellRegistration =
       [UICollectionViewCellRegistration
-          registrationWithCellClass:[UICollectionViewCell class]
-               configurationHandler:^(UICollectionViewCell* cell,
+          registrationWithCellClass:[ComposeboxMenuAttachmentCell class]
+               configurationHandler:^(ComposeboxMenuAttachmentCell* cell,
                                       NSIndexPath* indexPath,
                                       ComposeboxMenuItem* item) {
-                 [weakSelf configureAttachmentCell:cell
-                                       atIndexPath:indexPath
-                                          withItem:item];
+                 [cell configureWithItem:item];
                }];
 
   UICollectionViewSupplementaryRegistration* headerRegistration =
@@ -601,31 +607,6 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   }
 }
 
-- (void)configureAttachmentCell:(UICollectionViewCell*)cell
-                    atIndexPath:(NSIndexPath*)indexPath
-                       withItem:(ComposeboxMenuItem*)item {
-  ComposeboxMenuAttachmentView* attachmentView =
-      [[ComposeboxMenuAttachmentView alloc] init];
-  attachmentView.translatesAutoresizingMaskIntoConstraints = NO;
-  attachmentView.title = item.title;
-  if (item.disabled) {
-    attachmentView.image = SymbolWithPalette(
-        item.image, @[ [UIColor colorNamed:kTextSecondaryColor] ]);
-    attachmentView.alpha = 0.5;
-    cell.userInteractionEnabled = NO;
-  } else {
-    attachmentView.image = SymbolWithPalette(
-        item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
-    attachmentView.alpha = 1.0;
-    cell.userInteractionEnabled = YES;
-  }
-
-  attachmentView.userInteractionEnabled = NO;
-  attachmentView.accessibilityLabel = item.title;
-
-  [cell.contentView addSubview:attachmentView];
-  AddSameConstraints(attachmentView, cell.contentView);
-}
 
 - (void)configureHeaderView:(UICollectionReusableView*)view
                 atIndexPath:(NSIndexPath*)indexPath {
