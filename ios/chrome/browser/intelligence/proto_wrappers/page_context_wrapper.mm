@@ -1451,6 +1451,10 @@ result.links = linksArray;
 
 // Stop the highlighting of text.
 - (void)stopTextHighlighting {
+  if (!_textToHighlight) {
+    return;
+  }
+
   web::WebState* webState = _webState.get();
   if (!webState) {
     return;

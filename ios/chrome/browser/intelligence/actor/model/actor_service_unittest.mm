@@ -4,25 +4,41 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
+#import <UIKit/UIKit.h>
+
 #import <set>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gtest_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/values_test_util.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -49,13 +65,23 @@ class TestTool : public ActorTool {
 
 class ActorServiceTest : public PlatformTest {
  public:
-  ActorServiceTest() {
+  ActorServiceTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
     ActorServiceFactory::GetInstance();
     profile_ = TestProfileIOS::Builder().Build();
   }
 
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    static_cast<web::FakeWebClient*>(web_client_.Get())
+        ->SetJavaScriptFeatures({
+            PageContextExtractorJavaScriptFeature::GetInstance(),
+        });
+  }
+
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
@@ -122,8 +148,7 @@ TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
   EXPECT_TRUE(callback_called);
 }
 
-// Tests that requesting tab observation with a valid WebState triggers the
-// callback.
+// Tests that requesting tab observation with a valid WebState extracts APC.
 TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kActorTools);
@@ -135,29 +160,55 @@ TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
       service->CreateTask("Test Task",
                           /*allow_incognito_web_states=*/false);
 
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
-  fake_web_state->SetWebFramesManager(
-      web::ContentWorld::kPageContentWorld,
-      std::make_unique<web::FakeWebFramesManager>());
-  fake_web_state->SetWebFramesManager(
-      web::ContentWorld::kIsolatedWorld,
-      std::make_unique<web::FakeWebFramesManager>());
+  web::WebState::CreateParams params(profile_.get());
+  auto web_state = web::WebState::Create(params);
+
+  web_state->GetView().frame = CGRectMake(0, 0, 100, 100);
+  UIViewController* root_view_controller = [[UIViewController alloc] init];
+  root_view_controller.view = web_state->GetView();
+
+  ScopedKeyWindow scoped_window;
+  scoped_window.Get().rootViewController = root_view_controller;
+
+  web_state->WasShown();
+
+  SnapshotTabHelper::CreateForWebState(web_state.get());
+  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
+
+  SnapshotTabHelper* snapshot_tab_helper =
+      SnapshotTabHelper::FromWebState(web_state.get());
+  FakeSnapshotGeneratorDelegate* snapshot_delegate =
+      [[FakeSnapshotGeneratorDelegate alloc] init];
+  snapshot_delegate.view = web_state->GetView();
+  snapshot_tab_helper->SetDelegate(snapshot_delegate);
+
+  web::test::LoadHtml(@"<html><body>Most basic APC content</body></html>",
+                      GURL("http://dummy.url"), web_state.get());
 
   base::RunLoop run_loop;
   bool callback_called = false;
+  bool apc_extracted = false;
+
   service->RequestTabObservation(
-      task_id, fake_web_state.get(),
+      task_id, web_state.get(),
       base::BindOnce(
-          [](bool* called, base::OnceClosure quit_closure,
+          [](bool* called, bool* apc_ok, base::OnceClosure quit_closure,
              PageContextWrapperCallbackResponse response) {
+            base::ScopedClosureRunner quit_runner(std::move(quit_closure));
             *called = true;
-            std::move(quit_closure).Run();
+            ASSERT_TRUE(response.has_value());
+            const auto& page_context = response.value();
+            ASSERT_TRUE(page_context->has_annotated_page_content());
+            const auto& apc = page_context->annotated_page_content();
+            ASSERT_TRUE(apc.has_root_node());
+            *apc_ok = true;
           },
-          &callback_called, run_loop.QuitClosure()));
+          &callback_called, &apc_extracted, run_loop.QuitClosure()));
 
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(apc_extracted);
 }
 
 // Tests that GetWebStateForID returns nullptr for a tab that is not controlled

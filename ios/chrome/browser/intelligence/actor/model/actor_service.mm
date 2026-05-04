@@ -178,6 +178,9 @@ void ActorService::RequestTabObservation(ActorTaskId task_id,
 
   pending_observations_[web_state_id] = page_context_wrapper;
 
+  [page_context_wrapper setShouldGetAnnotatedPageContent:YES];
+  [page_context_wrapper setShouldGetSnapshot:YES];
+  [page_context_wrapper setShouldForceUpdateMissingSnapshots:YES];
   [page_context_wrapper populatePageContextFieldsAsync];
 }
 
