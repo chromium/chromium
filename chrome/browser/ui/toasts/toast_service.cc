@@ -515,4 +515,11 @@ void ToastService::RegisterToasts(
           .AddGlobalScoped()
           .AddCloseButton()
           .Build());
+
+  // Report a scam confirmation toast.
+  toast_registry_->RegisterToast(
+      ToastId::kReportUnsafeSiteConfirmation,
+      ToastSpecification::Builder(kCheckIcon,
+                                  IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST)
+          .Build());
 }  // RegisterToasts() end.

@@ -36,12 +36,14 @@ ReportUnsafeSitePageHandler::ReportUnsafeSitePageHandler(
     base::WeakPtr<content::WebContents> triggering_web_contents,
     base::WeakPtr<views::Widget> dialog,
     std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker,
+    base::OnceClosure show_toast_callback,
     mojo::PendingReceiver<feedback::report_unsafe_site::mojom::PageHandler>
         receiver)
     : embedder_(embedder),
       triggering_web_contents_(triggering_web_contents),
       dialog_(dialog),
       screenshot_taker_(std::move(screenshot_taker)),
+      show_toast_callback_(std::move(show_toast_callback)),
       receiver_(this, std::move(receiver)) {}
 
 ReportUnsafeSitePageHandler::~ReportUnsafeSitePageHandler() = default;
@@ -98,6 +100,11 @@ void ReportUnsafeSitePageHandler::CloseDialog() {
   if (!dialog_) {
     return;
   }
+
+  if (was_report_button_clicked_ && show_toast_callback_) {
+    std::move(show_toast_callback_).Run();
+  }
+
   dialog_->CloseWithReason(
       was_report_button_clicked_
           ? views::Widget::ClosedReason::kAcceptButtonClicked

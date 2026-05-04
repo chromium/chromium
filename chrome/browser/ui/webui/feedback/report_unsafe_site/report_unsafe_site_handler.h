@@ -31,6 +31,7 @@ class ReportUnsafeSitePageHandler
       base::WeakPtr<content::WebContents> triggering_web_contents,
       base::WeakPtr<views::Widget> dialog,
       std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker,
+      base::OnceClosure show_toast_callback,
       mojo::PendingReceiver<feedback::report_unsafe_site::mojom::PageHandler>
           receiver);
 
@@ -52,12 +53,12 @@ class ReportUnsafeSitePageHandler
       base::OnceCallback<void(const std::string&, const GURL&)> callback,
       const SkBitmap& screenshot);
 
-
   bool was_report_button_clicked_ = false;
   const base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   const base::WeakPtr<content::WebContents> triggering_web_contents_;
   const base::WeakPtr<views::Widget> dialog_;
   std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
+  base::OnceClosure show_toast_callback_;
   const mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandler>
       receiver_;
 

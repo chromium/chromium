@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -122,9 +128,25 @@ void FeedbackUI::BindInterface(
 
 void FeedbackUI::CreatePageHandler(
     mojo::PendingReceiver<feedback_mojom::PageHandler> handler) {
+  auto show_toast_callback = base::BindOnce(
+      [](base::WeakPtr<content::WebContents> web_contents) {
+        if (!web_contents) {
+          return;
+        }
+        BrowserWindowInterface* browser =
+            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents.get());
+        if (browser && browser->GetFeatures().toast_controller()) {
+          browser->GetFeatures().toast_controller()->MaybeShowToast(
+              ToastParams(ToastId::kReportUnsafeSiteConfirmation));
+        }
+      },
+      triggering_web_contents_);
+
   report_unsafe_site_page_handler_ =
-      std::make_unique<ReportUnsafeSitePageHandler>(embedder_,
-          triggering_web_contents_, dialog_, std::move(screenshot_taker_),
+      std::make_unique<ReportUnsafeSitePageHandler>(
+          embedder_, triggering_web_contents_, dialog_,
+          std::move(screenshot_taker_), std::move(show_toast_callback),
           std::move(handler));
 }
 

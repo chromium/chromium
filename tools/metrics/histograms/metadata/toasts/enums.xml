@@ -95,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Send Tab To Self tab opened immediately"/>
   <int value="35" label="Send Tab To Self tabs opened in background"/>
   <int value="36" label="Send Tab To Self successfully sent"/>
+  <int value="37" label="Unsafe site report successfully sent"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

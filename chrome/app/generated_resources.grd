@@ -20191,6 +20191,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_REPORT_UNSAFE_SITE_DIALOG_SENDING_BUTTON_LABEL" desc="Dialog button label while unsafe-site-report is sending to Google">
       Sending...
     </message>
+    <message name="IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST" desc="Message confirmation after unsafe-site-report sends to Google">
+      Report sent
+    </message>
+
 
     <!-- Indigo -->
     <if expr="not is_android">
