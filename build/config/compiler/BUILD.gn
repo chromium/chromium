@@ -3227,7 +3227,7 @@ config("symbols") {
       cflags += [ "-g2" ]
     }
 
-    if (is_clang && !is_tsan && !is_asan) {
+    if (is_clang && !is_tsan && !is_asan && !use_dwarf5) {
       # gcc generates dwarf-aranges by default on -g1 and -g2. On clang it has
       # to be manually enabled.
       #
@@ -3366,7 +3366,8 @@ config("minimal_symbols") {
 
     cflags += [ "-g1" ]
 
-    if (is_clang && !is_tsan && !is_asan && current_os != "zos") {
+    if (is_clang && !is_tsan && !is_asan && current_os != "zos" &&
+        !use_dwarf5) {
       # See comment for -gdwarf-aranges in config("symbols").
       cflags += [ "-gdwarf-aranges" ]
     }
