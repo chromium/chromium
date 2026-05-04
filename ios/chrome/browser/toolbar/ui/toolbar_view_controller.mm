@@ -118,6 +118,10 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   // keyboard).
   BOOL _locationIndicatorActive;
 
+  // The centerX constraint used to center the location bar container on the
+  // screen/window when the keyboard is visible.
+  NSLayoutConstraint* _locationBarKeyboardCenterXConstraint;
+
   // Closure to cancel hiding the progress bar when a new page load starts.
   base::CancelableOnceClosure _hideProgressBarClosure;
 
@@ -489,11 +493,24 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     _locationBarBottomPaddingConstraint.active = NO;
     _locationBarTopConstraint.active = YES;
     [self.toolbarHeightDelegate secondaryToolbarMovedAboveKeyboard];
+
+    [NSLayoutConstraint deactivateConstraints:_portraitOrientationConstraints];
+    [NSLayoutConstraint deactivateConstraints:_landscapeOrientationConstraints];
+    [NSLayoutConstraint deactivateConstraints:_regularRegularConstraints];
+    if (!_locationBarKeyboardCenterXConstraint) {
+      _locationBarKeyboardCenterXConstraint =
+          [_locationBarContainer.centerXAnchor
+              constraintEqualToAnchor:self.view.window.centerXAnchor];
+    }
+    _locationBarKeyboardCenterXConstraint.active = YES;
   } else {
     _locationBarTopConstraint.active = NO;
     _locationBarBottomPaddingConstraint.active = YES;
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
     [GetFirstResponder() resignFirstResponder];
+
+    _locationBarKeyboardCenterXConstraint.active = NO;
+    [self updateLayoutConstraints];
   }
   [self updateSeparatorVisibility];
 
