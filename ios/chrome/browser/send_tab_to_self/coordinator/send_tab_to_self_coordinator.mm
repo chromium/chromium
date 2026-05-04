@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
@@ -26,6 +27,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_send_tab.h"
@@ -67,27 +69,74 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-void DisplaySendToSelfSnackbar(base::WeakPtr<Browser> weak_browser,
+void DisplaySendToSelfSnackbar(id<SnackbarCommands> snackbar_handler,
                                NSString* device_name) {
-  Browser* browser = weak_browser.get();
-  if (!browser) {
+  CHECK(!base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfPostSendToast));
+  // `snackbar_handler` can be nil if the command dispatcher was already
+  // destroyed or if no handler was registered for SnackbarCommands.
+  if (!snackbar_handler) {
     return;
   }
 
-  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* text =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
                               base::SysNSStringToUTF16(device_name));
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
-  id<SnackbarCommands> handler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [handler showSnackbarMessage:message];
+  [snackbar_handler showSnackbarMessage:message];
+}
+
+void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler) {
+  CHECK(
+      base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfPostSendToast));
+  // `snackbar_handler` can be nil if the command dispatcher was already
+  // destroyed or if no handler was registered for SnackbarCommands.
+  if (!snackbar_handler) {
+    return;
+  }
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  NSString* text =
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+  [snackbar_handler showSnackbarMessage:message];
+}
+
+void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
+                             send_tab_to_self::SendTabToSelfResult result) {
+  if (!base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPostSendToast)) {
+    return;
+  }
+
+  switch (result) {
+    case send_tab_to_self::SendTabToSelfResult::kSuccess:
+    case send_tab_to_self::SendTabToSelfResult::kSuccessThrottled: {
+      // Post to the main thread to safely present the snackbar and allow the
+      // current call stack to unwind.
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            DisplaySendToSelfSuccessSnackbar(snackbar_handler);
+          }));
+      break;
+    }
+    case send_tab_to_self::SendTabToSelfResult::kFailureNotTrackingMetadata:
+    case send_tab_to_self::SendTabToSelfResult::kFailureInvalidUrl:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptFailed:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
+    case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
+    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved:
+    case send_tab_to_self::SendTabToSelfResult::kFailureCommitTimeout:
+      break;
+  }
 }
 
 class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
@@ -392,20 +441,22 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     }
   }
 
+  __weak id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
       ->SendEntry(
           self.url, base::SysNSStringToUTF8(self.title),
           base::SysNSStringToUTF8(cacheGUID), pageContext,
           send_tab_to_self::NavigationHistory(),
-          base::BindOnce([](send_tab_to_self::SendTabToSelfResult result) {
-            // TODO(crbug.com/492072882): Add logic to surface a toast
-            // and required strings.
-          }));
+          base::BindOnce(&SendTabToDeviceComplete, snackbarHandler));
 
-  // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
-  self.dismissedCompletion = base::CallbackToBlock(base::BindRepeating(
-      &DisplaySendToSelfSnackbar, self.browser->AsWeakPtr(), deviceName));
+  if (!base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPostSendToast)) {
+    // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
+    self.dismissedCompletion = base::CallbackToBlock(base::BindRepeating(
+        &DisplaySendToSelfSnackbar, snackbarHandler, deviceName));
+  }
   [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
 }
 

@@ -17,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -72,6 +73,11 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfPropagateScrollPosition);
+  if ([self
+          isRunningTest:@selector(testSendTabToSelfAndVerifySuccessSnackbar)]) {
+    config.features_enabled.push_back(
+        send_tab_to_self::kSendTabToSelfPostSendToast);
+  }
   return config;
 }
 
@@ -220,6 +226,41 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       @"Text fragment should be captured. Expected '%s' (case-insensitive) but "
       @"got %@",
       kPageText, textFragment);
+}
+
+- (void)testSendTabToSelfAndVerifySuccessSnackbar {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+
+  // Tap the device in the device picker.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
+      performAction:grey_tap()];
+
+  // Tap "Send".
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"kSendTabToSelfModalSendButton")]
+      performAction:grey_tap()];
+
+  // Wait for and verify the success snackbar message.
+  NSString* successMessage =
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST);
+  id<GREYMatcher> snackbarMatcher =
+      grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                 grey_descendant(grey_accessibilityLabel(successMessage)), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
 // Tests that a text fragment is correctly consumed and scrolls the page

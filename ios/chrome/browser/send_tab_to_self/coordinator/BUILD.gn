@@ -16,6 +16,7 @@ source_set("coordinator") {
     "//components/send_tab_to_self",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
