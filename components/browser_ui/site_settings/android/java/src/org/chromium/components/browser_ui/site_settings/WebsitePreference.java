@@ -241,7 +241,10 @@ class WebsitePreference extends ChromeImageViewPreference {
 
         setImageView(
                 R.drawable.ic_more_vert_24dp,
-                null,
+                getContext()
+                        .getString(
+                                R.string.website_settings_site_more_options_a11y_label,
+                                buildTitle()),
                 (OnClickListener)
                         view -> {
                             performClick(view);
