@@ -68,6 +68,7 @@ enum IconType {
   kFormatQuoteFilled = 79,
   kImage = 84,
   kDrivePdf = 101,
+  kInvertedFormatQuoteFilled = 186,
 };
 
 // Browser-side handler for requests from the WebUI page.

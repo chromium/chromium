@@ -37,6 +37,7 @@ const ICON_TYPE_TO_NAME: {[id: number]: string} = {
   [IconType.kImage]: 'image',
   [IconType.kDrivePdf]: 'drivePdf',
   [IconType.kCheck]: 'check',
+  [IconType.kInvertedFormatQuoteFilled]: 'invertedQuoteFilled',
 };
 
 function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {

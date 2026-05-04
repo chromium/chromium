@@ -123,6 +123,8 @@ contextual_tasks::mojom::IconType IconTypeToMojom(lens::AimIconType icon_id) {
       return contextual_tasks::mojom::IconType::kCheck;
     case lens::AimIconType::ICON_TYPE_FORMAT_QUOTE_FILLED:
       return contextual_tasks::mojom::IconType::kFormatQuoteFilled;
+    case lens::AimIconType::ICON_TYPE_INVERTED_FORMAT_QUOTE_FILLED:
+      return contextual_tasks::mojom::IconType::kInvertedFormatQuoteFilled;
     case lens::AimIconType::ICON_TYPE_IMAGE:
       return contextual_tasks::mojom::IconType::kImage;
     case lens::AimIconType::ICON_TYPE_DRIVE_PDF:
