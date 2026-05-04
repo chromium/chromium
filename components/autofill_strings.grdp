@@ -898,6 +898,15 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_LIVETABS" desc="Data source name for Live Tabs in source attribution." translateable="false">
     Live Tabs
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in @memory search." translateable="false">
+    Couldn't find this in your info
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE" desc="Title for the suggestion shown when the query is unsupported by @memory." translateable="false">
+    Couldn't find this info
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION" desc="Description for the suggestion shown when the query is unsupported by @memory." translateable="false">
+    Try asking Gemini
+  </message>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->

@@ -190,8 +190,11 @@ enum class SuggestionType {
   // Static button in Autocomplete menu prompting use of AtMemory.
   kAutocompleteAtMemoryButton = 81,
 
-  // Next ID: 82
-  kMaxValue = kAutocompleteAtMemoryButton
+  // Suggestion to open Gemini in the sidebar.
+  kOpenGemini = 82,
+
+  // Next ID: 83
+  kMaxValue = kOpenGemini
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

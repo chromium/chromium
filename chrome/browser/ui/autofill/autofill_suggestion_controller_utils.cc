@@ -100,6 +100,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kOpenGemini:
       return false;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       // The hybrid item is reintroduced as a footer.

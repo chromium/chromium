@@ -298,6 +298,18 @@ Suggestion::AtMemoryPayload& Suggestion::AtMemoryPayload::operator=(
 
 Suggestion::AtMemoryPayload::~AtMemoryPayload() = default;
 
+Suggestion::OpenGeminiPayload::OpenGeminiPayload() = default;
+Suggestion::OpenGeminiPayload::OpenGeminiPayload(std::u16string prompt)
+    : prompt(std::move(prompt)) {}
+Suggestion::OpenGeminiPayload::OpenGeminiPayload(const OpenGeminiPayload&) =
+    default;
+Suggestion::OpenGeminiPayload::OpenGeminiPayload(OpenGeminiPayload&&) = default;
+Suggestion::OpenGeminiPayload& Suggestion::OpenGeminiPayload::operator=(
+    const OpenGeminiPayload&) = default;
+Suggestion::OpenGeminiPayload& Suggestion::OpenGeminiPayload::operator=(
+    OpenGeminiPayload&&) = default;
+Suggestion::OpenGeminiPayload::~OpenGeminiPayload() = default;
+
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(

@@ -612,6 +612,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kOpenGemini:
       return false;
   }
 }

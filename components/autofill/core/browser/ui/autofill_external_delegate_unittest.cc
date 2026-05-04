@@ -24,6 +24,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/accessibility_query_service.h"
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
@@ -264,6 +265,7 @@ class MockAutofillClient : public TestAutofillClient {
               HideAutofillSuggestions,
               (SuggestionHidingReason),
               (override));
+  MOCK_METHOD(void, OpenGeminiInSidebar, (const std::u16string&), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(IdentityCredentialDelegate*,
@@ -476,6 +478,50 @@ class AutofillExternalDelegateTest : public testing::Test,
   void AddOrUpdateEntityInstance(const EntityInstance& entity) {
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
     webdata_helper().WaitUntilIdle();
+  }
+
+  Matcher<const Suggestion&> HasMainText(const std::u16string& text) {
+    return testing::Field(&Suggestion::main_text,
+                          testing::Field(&Suggestion::Text::value, text));
+  }
+
+  Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
+    return testing::Field(
+        &Suggestion::labels,
+        testing::ElementsAre(testing::ElementsAre(
+            testing::Field(&Suggestion::Text::value, label))));
+  }
+
+  // Set up the mock AccessibilityQueryService to return the provided results
+  // for a specific query.
+  void SetupMockAccessibilityQueryService(
+      const std::u16string& query,
+      accessibility_annotator::MemorySearchResults results,
+      std::optional<bool> full_search) {
+    auto mock_service = std::make_unique<testing::NiceMock<
+        accessibility_annotator::MockAccessibilityQueryService>>();
+    // Configure the matcher based on whether full or incremental search is
+    // required.
+    Matcher<bool> full_search_matcher = _;
+    if (full_search.has_value()) {
+      full_search_matcher = Eq(*full_search);
+    }
+    EXPECT_CALL(*mock_service, Query(Eq(query), full_search_matcher, _))
+        .WillOnce(base::test::RunOnceCallback<2>(std::move(results)));
+    // Inject the mock service into the client.
+    autofill_client().set_accessibility_query_service(std::move(mock_service));
+  }
+
+  void StartAtMemorySession(AutofillSuggestionTriggerSource trigger_source =
+                                AutofillSuggestionTriggerSource::kAtMemory) {
+    // Initialize the delegate's query form and field state.
+    IssueOnQuery(trigger_source);
+    // Assign a valid session ID to enable suggestion update callbacks.
+    autofill_client().set_suggestion_ui_session_id(
+        AutofillClient::SuggestionUiSessionId(1));
+    // Simulate that the popup is displayed to set up the session and its
+    // callbacks.
+    external_delegate().OnSuggestionsShown({});
   }
 
   Matcher<const FormData&> HasQueriedFormId() {
@@ -743,9 +789,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_TypedTrigger) {
   base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemory);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.PopupDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
@@ -753,9 +797,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_TypedTrigger) {
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_ContextMenu) {
   base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.PopupDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
@@ -763,8 +805,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_ContextMenu) {
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_QuerySubmitted) {
   base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession();
 
   external_delegate().OnSearchSubmitted(u"some query");
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
@@ -775,8 +816,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_QuerySubmitted) {
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_NoQuerySubmitted) {
   base::HistogramTester histogram_tester;
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession();
 
   external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
 
@@ -787,11 +827,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFunnelMetrics_NoQuerySubmitted) {
 // Tests that @memory search results from first-party sources include metadata
 // as child suggestions with source attribution in the flyout menu.
 TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession();
 
   std::vector<accessibility_annotator::MemorySearchResult> entries;
   accessibility_annotator::MemorySearchResult entry(
@@ -809,42 +845,24 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       std::move(entries));
 
-  auto mock_service = std::make_unique<testing::NiceMock<
-      accessibility_annotator::MockAccessibilityQueryService>>();
-  accessibility_annotator::MockAccessibilityQueryService* mock_service_ptr =
-      mock_service.get();
-  autofill_client().set_accessibility_query_service(std::move(mock_service));
-
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"shoe size"), _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(std::move(search_results)));
-
-  auto has_main_text = [](const std::u16string& text) {
-    return testing::Field(&Suggestion::main_text,
-                          testing::Field(&Suggestion::Text::value, text));
-  };
-  auto has_label = [](const std::u16string& label) {
-    return testing::Field(
-        &Suggestion::labels,
-        testing::ElementsAre(testing::ElementsAre(
-            testing::Field(&Suggestion::Text::value, label))));
-  };
+  SetupMockAccessibilityQueryService(u"shoe size", std::move(search_results),
+                                     /*full_search=*/true);
 
   std::u16string expected_label = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_SOURCE_GMAIL));
 
   auto matcher = testing::ElementsAre(testing::AllOf(
-      has_main_text(u"42"),
+      HasMainText(u"42"),
       testing::Field(
           &Suggestion::children,
           testing::ElementsAre(
-              testing::AllOf(has_main_text(u"example.com"),
-                             has_label(u"Store")),
-              testing::AllOf(has_main_text(u"Marian Paździoch"),
-                             has_label(u"Name")),
+              testing::AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
+              testing::AllOf(HasMainText(u"Marian Paździoch"),
+                             HasLabel(u"Name")),
               testing::Field(&Suggestion::type, SuggestionType::kSeparator),
-              testing::AllOf(has_main_text(u"About"),
-                             has_label(expected_label))))));
+              testing::AllOf(HasMainText(u"About"),
+                             HasLabel(expected_label))))));
 
   // The first call notifies the UI that search has started (showing the
   // throbber). The second call provides the actual results.
@@ -852,17 +870,13 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions(matcher, _, _, _));
 
-  external_delegate().OnFilterChanged(u"shoe size");
+  external_delegate().OnSearchSubmitted(u"shoe size");
 }
 
 // Tests that @memory search results from the Autofill source show a management
 // option in the flyout menu.
 TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
-
-  autofill_client().set_suggestion_ui_session_id(
-      AutofillClient::SuggestionUiSessionId(1));
-  external_delegate().OnSuggestionsShown({});
+  StartAtMemorySession();
 
   std::vector<accessibility_annotator::MemorySearchResult> entries;
   accessibility_annotator::MemorySearchResult entry(
@@ -881,37 +895,19 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       std::move(entries));
 
-  auto mock_service = std::make_unique<testing::NiceMock<
-      accessibility_annotator::MockAccessibilityQueryService>>();
-  accessibility_annotator::MockAccessibilityQueryService* mock_service_ptr =
-      mock_service.get();
-  autofill_client().set_accessibility_query_service(std::move(mock_service));
-
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(std::move(search_results)));
-
-  auto has_main_text = [](const std::u16string& text) {
-    return testing::Field(&Suggestion::main_text,
-                          testing::Field(&Suggestion::Text::value, text));
-  };
-  auto has_label = [](const std::u16string& label) {
-    return testing::Field(
-        &Suggestion::labels,
-        testing::ElementsAre(testing::ElementsAre(
-            testing::Field(&Suggestion::Text::value, label))));
-  };
+  SetupMockAccessibilityQueryService(u"addr", std::move(search_results),
+                                     /*full_search=*/std::nullopt);
 
   auto matcher = testing::ElementsAre(testing::AllOf(
-      has_main_text(u"1600 Amphitheatre Pkwy"),
+      HasMainText(u"1600 Amphitheatre Pkwy"),
       testing::Field(
           &Suggestion::children,
           testing::ElementsAre(
-              testing::AllOf(has_main_text(u"Mountain View"),
-                             has_label(u"City")),
-              testing::AllOf(has_main_text(u"CA"), has_label(u"State")),
+              testing::AllOf(HasMainText(u"Mountain View"), HasLabel(u"City")),
+              testing::AllOf(HasMainText(u"CA"), HasLabel(u"State")),
               testing::Field(&Suggestion::type, SuggestionType::kSeparator),
               testing::AllOf(
-                  has_main_text(u"Manage information"),
+                  HasMainText(u"Manage information"),
                   testing::Field(&Suggestion::type,
                                  SuggestionType::kManageAddress))))));
 
@@ -1240,6 +1236,89 @@ TEST_P(AutofillExternalDelegateAutoSuggestInactivityTest,
       Suggestion(SuggestionType::kAtMemoryInactivityNudge),
       SuggestionPosition{.row = 0});
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Tests that when a remote query returns kUnsupportedQuery, the delegate shows
+// a specific suggestion offering to open Gemini.
+TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_UnsupportedQuery) {
+  StartAtMemorySession();
+
+  SetupMockAccessibilityQueryService(
+      u"shoe size",
+      {accessibility_annotator::MemorySearchStatus::kUnsupportedQuery, {}},
+      /*full_search=*/true);
+
+  EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
+      .WillOnce(testing::Return())
+      .WillOnce([this](const std::vector<Suggestion>& suggestions,
+                       FillingProduct product,
+                       AutofillSuggestionTriggerSource source,
+                       AutofillSuggestionsIgnoreFocusLoss ignore) {
+        EXPECT_THAT(
+            suggestions,
+            testing::ElementsAre(testing::AllOf(
+                HasMainText(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE)),
+                HasLabel(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION)),
+                testing::Field(&Suggestion::type,
+                               SuggestionType::kOpenGemini))));
+      });
+
+  external_delegate().OnSearchSubmitted(u"shoe size");
+}
+#endif
+
+// Tests that when a remote query returns no entries and status
+// kFinalResponseSuccess, the delegate shows a "No data" suggestion.
+TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoData) {
+  StartAtMemorySession();
+
+  SetupMockAccessibilityQueryService(
+      u"shoe size",
+      {accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess, {}},
+      /*full_search=*/true);
+
+  EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
+      .WillOnce(testing::Return())
+      .WillOnce([this](const std::vector<Suggestion>& suggestions,
+                       FillingProduct product,
+                       AutofillSuggestionTriggerSource source,
+                       AutofillSuggestionsIgnoreFocusLoss ignore) {
+        EXPECT_THAT(
+            suggestions,
+            testing::ElementsAre(testing::AllOf(
+                HasMainText(
+                    l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA)),
+                testing::Field(&Suggestion::type,
+                               SuggestionType::kAtMemorySearchResult),
+                testing::Field(&Suggestion::acceptability,
+                               Suggestion::Acceptability::
+                                   kUnacceptableWithDeactivatedStyle))));
+      });
+
+  external_delegate().OnSearchSubmitted(u"shoe size");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Tests that when the "Open Gemini" suggestion is accepted, it triggers
+// opening Gemini in the sidebar.
+TEST_F(AutofillExternalDelegateTest, AtMemoryAcceptOpenGeminiSuggestion) {
+  IssueOnQuery();
+
+  Suggestion suggestion(SuggestionType::kOpenGemini);
+  suggestion.payload = Suggestion::OpenGeminiPayload(u"test prompt");
+
+  EXPECT_CALL(autofill_client(),
+              OpenGeminiInSidebar(std::u16string(u"test prompt")));
+  EXPECT_CALL(
+      autofill_client(),
+      HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
+
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+#endif
 
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
@@ -3671,7 +3750,7 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
 
 // Tests that @memory search results use the kReplaceAtMemoryTrigger action.
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  StartAtMemorySession();
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
   suggestion.payload = Suggestion::AtMemoryPayload(
       u"pasted text", accessibility_annotator::EntryType::kUnknown);

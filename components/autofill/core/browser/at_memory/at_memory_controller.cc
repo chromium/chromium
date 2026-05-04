@@ -288,6 +288,18 @@ Suggestion TransformResultIntoSuggestion(
   return suggestion;
 }
 
+// Creates a suggestion to display when the query is supported, but yields no
+// results.
+Suggestion CreateNoDataSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA),
+      SuggestionType::kAtMemorySearchResult);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
+}
+
 }  // namespace
 
 AtMemoryController::AtMemoryController(BrowserAutofillManager& manager)
@@ -411,10 +423,28 @@ void AtMemoryController::ExecuteQuery(const std::u16string& filter,
   query_service->Query(
       filter, full_search,
       base::BindRepeating(&AtMemoryController::OnSearchResultsReceived,
-                          query_weak_ptr_factory_.GetWeakPtr()));
+                          query_weak_ptr_factory_.GetWeakPtr(), filter,
+                          full_search));
+}
+
+// Creates a suggestion to offer to open Gemini in the sidebar when the query is
+// unsupported.
+Suggestion AtMemoryController::CreateUnsupportedQuerySuggestion(
+    const std::u16string& query) {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE),
+      SuggestionType::kOpenGemini);
+  suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION))}};
+  suggestion.acceptability = Suggestion::Acceptability::kAcceptable;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.payload = Suggestion::OpenGeminiPayload(query);
+  return suggestion;
 }
 
 void AtMemoryController::OnSearchResultsReceived(
+    const std::u16string& query,
+    bool full_search,
     accessibility_annotator::MemorySearchResults result) {
   if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_ ||
       !is_searching_) {
@@ -428,9 +458,32 @@ void AtMemoryController::OnSearchResultsReceived(
     is_searching_ = false;
   }
 
-  update_callback_.Run(
-      base::ToVector(result.entries, TransformResultIntoSuggestion),
-      trigger_source_);
+  // For incremental search or if there are results, just return the results
+  // as-is.
+  if (!full_search || !result.entries.empty()) {
+    update_callback_.Run(
+        base::ToVector(result.entries, TransformResultIntoSuggestion),
+        trigger_source_);
+    return;
+  }
+
+  // When full search returns no entries, show the appropriate special
+  // suggestion based on the status.
+  std::vector<Suggestion> suggestions;
+  switch (result.status) {
+    case accessibility_annotator::MemorySearchStatus::kUnsupportedQuery:
+      suggestions.push_back(CreateUnsupportedQuerySuggestion(query));
+      break;
+    case accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess:
+      suggestions.push_back(CreateNoDataSuggestion());
+      break;
+    case accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess:
+    case accessibility_annotator::MemorySearchStatus::kInferenceFailure:
+    case accessibility_annotator::MemorySearchStatus::kDataFetchFailure:
+    case accessibility_annotator::MemorySearchStatus::kInternalFailure:
+      break;
+  }
+  update_callback_.Run(std::move(suggestions), trigger_source_);
 }
 
 void AtMemoryController::FillIban(

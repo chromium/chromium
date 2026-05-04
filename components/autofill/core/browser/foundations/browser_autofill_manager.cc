@@ -343,6 +343,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kOpenGemini:
       NOTREACHED();
   }
   NOTREACHED();
@@ -705,6 +706,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kOpenGemini:
       return true;
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAddressEntry:

@@ -69,11 +69,21 @@ class AtMemoryController {
   bool IsSearching() const;
 
  private:
+  // Executes the search query. `full_search` is true if the search was
+  // explicitly submitted by the user, and false for incremental search.
   void ExecuteQuery(const std::u16string& filter, bool full_search);
 
-  // Callback handler for the search query.
+  // Callback handler for the search query. `query` is the original search
+  // string. `full_search` is true if the search was explicitly submitted by
+  // the user (e.g. pressing Enter), and false if it was an incremental search
+  // as the user types. `result` contains the search results.
   void OnSearchResultsReceived(
+      const std::u16string& query,
+      bool full_search,
       accessibility_annotator::MemorySearchResults result);
+
+  // Creates a suggestion to display when the query is not supported.
+  Suggestion CreateUnsupportedQuerySuggestion(const std::u16string& query);
 
   // Fills the unmasked IBAN value after fetching it.
   void FillIban(const Suggestion::AtMemoryPayload::Identifier& identifier,

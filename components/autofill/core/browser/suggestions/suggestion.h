@@ -216,6 +216,22 @@ struct Suggestion {
         accessibility_annotator::EntryType::kUnknown;
   };
 
+  struct OpenGeminiPayload final {
+    OpenGeminiPayload();
+    explicit OpenGeminiPayload(std::u16string prompt);
+    OpenGeminiPayload(const OpenGeminiPayload&);
+    OpenGeminiPayload(OpenGeminiPayload&&);
+    OpenGeminiPayload& operator=(const OpenGeminiPayload&);
+    OpenGeminiPayload& operator=(OpenGeminiPayload&&);
+    ~OpenGeminiPayload();
+
+    friend bool operator==(const OpenGeminiPayload&,
+                           const OpenGeminiPayload&) = default;
+
+    // The prompt to pass to Gemini when opening it.
+    std::u16string prompt;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   // TODO(crbug.com/477689220): Directly use BnplIssuer and remove the alias.
@@ -230,7 +246,8 @@ struct Suggestion {
                                IdentityCredentialPayload,
                                AutocompleteEntry,
                                BnplIssuer,
-                               AtMemoryPayload>;
+                               AtMemoryPayload,
+                               OpenGeminiPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -484,6 +501,8 @@ struct Suggestion {
         return std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kAtMemorySearchResult:
         return std::holds_alternative<AtMemoryPayload>(payload);
+      case SuggestionType::kOpenGemini:
+        return std::holds_alternative<OpenGeminiPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
         return std::holds_alternative<Guid>(payload) ||

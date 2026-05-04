@@ -125,6 +125,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kBnplFootnote";
     case SuggestionType::kAutocompleteAtMemoryButton:
       return "kAutocompleteAtMemoryButton";
+    case SuggestionType::kOpenGemini:
+      return "kOpenGemini";
   }
   NOTREACHED();
 }

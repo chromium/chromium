@@ -381,4 +381,9 @@ OtpPhishGuardDelegate* AutofillClient::GetOtpPhishGuardDelegate() {
   return nullptr;
 }
 
+void AutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
+  // TODO(crbug.com/493824736): Implement opening Gemini in the sidebar.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace autofill
