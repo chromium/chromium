@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -66,7 +67,6 @@ public class StripLayoutTrailingButtonsCoordinator {
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.30f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.20f;
     private static final float GLIC_BUTTON_UNFOCUSED_OPACITY = 0.65f;
-    private static final float GLIC_BUTTON_CLICK_SLOP_DP = 8.f;
     // Total vertical margin (Tab Strip Height(40dp) - Glic Background Height(32dp) = 8dp).
     public static final float GLIC_BUTTON_MARGIN_HEIGHT_DP = 8.f;
     public static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
@@ -82,6 +82,28 @@ public class StripLayoutTrailingButtonsCoordinator {
     public static final float GLIC_BUTTON_CORNER_RADIUS = 10.f;
     public static final float GLIC_BUTTON_INNER_CORNER_RADIUS = 2.f;
     private static final float GLIC_ACTOR_BUTTON_GAP_DP = 2.f;
+
+    // Default horizontal slop for Glic buttons. This value is used as a baseline and is manually
+    // adjusted in #updateTouchTargetInsets to ensure a 48dp touch target for the collapsed Glic and
+    // Glic Actor buttons without causing overlap in the 2dp gap between them.
+    private static final float GLIC_BUTTON_CLICK_SLOP_DP = 8.f;
+
+    // Touch target horizontal slop adjustments for the collapsed Glic and Glic Actor buttons.
+    // The base horizontal click slop is 8dp (GLIC_BUTTON_CLICK_SLOP_DP).
+    //
+    // To achieve the desired 48dp touch target for each 42dp wide button without causing an
+    // overlap in the 2dp gap between them, the slop values are distributed non-uniformly:
+    // The 2dp gap is completely allocated to the Glic button's right slop (8 - 6 = 2dp).
+    // The Glic Actor button has 0dp left slop (8 - 8 = 0dp).
+    // The remaining width requirements are met by the Glic button's left slop (8 - 4 = 4dp)
+    // and the Glic Actor button's right slop (8 - 2 = 6dp).
+    //
+    // Glic button target: 4dp left slop + 42dp width + 2dp right slop = 48dp.
+    // Glic Actor button target: 0dp left slop + 42dp width + 6dp right slop = 48dp.
+    private static final float GLIC_COLLAPSED_LEFT_SLOP_ADJUSTMENT_DP = 4.f;
+    private static final float GLIC_COLLAPSED_RIGHT_SLOP_ADJUSTMENT_DP = 6.f;
+    private static final float GLIC_ACTOR_LEFT_SLOP_ADJUSTMENT_DP = 8.f;
+    private static final float GLIC_ACTOR_RIGHT_SLOP_ADJUSTMENT_DP = 2.f;
 
     private static final int ANIM_BUTTONS_FADE_MS = 150;
 
@@ -523,13 +545,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             return;
         }
 
-        mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
-        mGlicButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
-        mGlicDismissNudgeButton.setDrawY(GLIC_DISMISS_BUTTON_Y_OFFSET_DP);
-        mGlicDismissNudgeButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
-        mGlicActorButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
-        mGlicActorButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
-
+        // 1. X Positions
         if (!LocalizationUtils.isLayoutRtl()) {
             float rightSideAnchor = mWidth - mRightPadding - mStripEndPadding;
             if (mIsMsbVisible) {
@@ -561,6 +577,35 @@ public class StripLayoutTrailingButtonsCoordinator {
                         leftSideAnchor + GLIC_BUTTON_SHORTENED_END_PADDING_DP);
             }
         }
+
+        // 2. Y Positions
+        mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mGlicDismissNudgeButton.setDrawY(GLIC_DISMISS_BUTTON_Y_OFFSET_DP);
+        mGlicActorButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
+
+        // 3. Touch Targets
+        updateTouchTargetInsets();
+    }
+
+    @RequiresNonNull({"mGlicButton", "mGlicDismissNudgeButton", "mGlicActorButton"})
+    private void updateTouchTargetInsets() {
+        // TODO(crbug.com/509585777): Implement RTL support
+        if (isGlicButtonVisible()) {
+            mGlicButton.setTouchTargetInsets(
+                    GLIC_COLLAPSED_LEFT_SLOP_ADJUSTMENT_DP,
+                    mTopPadding,
+                    GLIC_COLLAPSED_RIGHT_SLOP_ADJUSTMENT_DP,
+                    -mTopPadding);
+        } else {
+            // Revert to default uniform 8dp slop horizontally.
+            mGlicButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
+        }
+        mGlicActorButton.setTouchTargetInsets(
+                GLIC_ACTOR_LEFT_SLOP_ADJUSTMENT_DP,
+                mTopPadding,
+                GLIC_ACTOR_RIGHT_SLOP_ADJUSTMENT_DP,
+                -mTopPadding);
+        mGlicDismissNudgeButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
     }
 
     /**
