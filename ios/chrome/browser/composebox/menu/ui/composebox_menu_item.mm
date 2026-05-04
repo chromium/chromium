@@ -26,4 +26,11 @@
   return [self initWithTitle:title image:image type:type disabled:NO];
 }
 
+- (BOOL)isAttachmentType {
+  return self.type == ComposeboxMenuItemType::kAttachmentTabs ||
+         self.type == ComposeboxMenuItemType::kAttachmentCamera ||
+         self.type == ComposeboxMenuItemType::kAttachmentGallery ||
+         self.type == ComposeboxMenuItemType::kAttachmentFiles;
+}
+
 @end

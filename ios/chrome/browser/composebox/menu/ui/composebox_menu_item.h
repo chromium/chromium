@@ -30,6 +30,9 @@
                         image:(UIImage*)image
                          type:(ComposeboxMenuItemType)type;
 
+// Returns YES if the item is an attachment type.
+- (BOOL)isAttachmentType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_H_

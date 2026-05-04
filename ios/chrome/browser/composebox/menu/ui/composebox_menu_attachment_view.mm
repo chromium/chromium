@@ -18,6 +18,9 @@ const CGFloat kTitleMargin = 4.0f;
 // The size of the icon.
 const CGFloat kIconSize = 24.0f;
 
+// The height of the image background view.
+const CGFloat kImageBackgroundHeight = 60.0f;
+
 }  // namespace
 
 @implementation ComposeboxMenuAttachmentView {
@@ -101,6 +104,8 @@ const CGFloat kIconSize = 24.0f;
     [_imageBackgroundView.bottomAnchor
         constraintEqualToAnchor:_titleLabel.topAnchor
                        constant:-kTitleMargin],
+    [_imageBackgroundView.heightAnchor
+        constraintEqualToConstant:kImageBackgroundHeight],
   ]];
 }
 

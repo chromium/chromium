@@ -9,11 +9,13 @@
 @implementation ComposeboxMenuSection
 
 - (instancetype)initWithTitle:(NSString*)title
-                        items:(NSArray<ComposeboxMenuItem*>*)items {
+                        items:(NSArray<ComposeboxMenuItem*>*)items
+                   identifier:(ComposeboxMenuSectionIdentifier)identifier {
   self = [super init];
   if (self) {
     _title = [title copy];
     _items = [items copy];
+    _identifier = identifier;
   }
   return self;
 }

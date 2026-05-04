@@ -9,6 +9,12 @@
 
 @class ComposeboxMenuItem;
 
+enum class ComposeboxMenuSectionIdentifier {
+  kAttachments = 0,
+  kTools,
+  kModels,
+};
+
 // Represents a section in the Composebox menu.
 @interface ComposeboxMenuSection : NSObject
 
@@ -16,9 +22,13 @@
 @property(nonatomic, copy, readonly) NSString* title;
 // The list of items in the section.
 @property(nonatomic, copy, readonly) NSArray<ComposeboxMenuItem*>* items;
+// The section identifier.
+@property(nonatomic, assign, readonly)
+    ComposeboxMenuSectionIdentifier identifier;
 
 - (instancetype)initWithTitle:(NSString*)title
-                        items:(NSArray<ComposeboxMenuItem*>*)items;
+                        items:(NSArray<ComposeboxMenuItem*>*)items
+                   identifier:(ComposeboxMenuSectionIdentifier)identifier;
 
 @end
 
