@@ -16,7 +16,8 @@ class ProfileIOS;
 
 namespace web {
 class WebState;
-}
+class WebFrame;
+}  // namespace web
 
 namespace actor {
 
@@ -45,6 +46,9 @@ class ActorTool {
 
   // Returns the target WebState for this tool, if any.
   virtual base::WeakPtr<web::WebState> GetTargetWebState() const = 0;
+
+  // Returns the target WebFrame for this tool, if any.
+  virtual base::WeakPtr<web::WebFrame> GetTargetWebFrame() const;
 
  protected:
   // Resolves the given `tab_id` to its associated objects in regular Browsers.

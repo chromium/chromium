@@ -29,6 +29,12 @@ namespace actor {
 // Handles common logic for tab resolution, validation, and processing JS
 // results.
 class WebActorTool : public ActorTool {
+ public:
+  WebActorTool();
+  ~WebActorTool() override;
+
+  base::WeakPtr<web::WebFrame> GetTargetWebFrame() const override;
+
  protected:
   // Finds the target WebFrame for the `target` and returns it via `callback`.
   void ResolveTargetFrame(
@@ -36,6 +42,8 @@ class WebActorTool : public ActorTool {
       base::WeakPtr<web::WebFrame> web_frame,
       const optimization_guide::proto::ActionTarget& target,
       ActionTargetJavaScriptFeature::TargetFrameCallback callback);
+
+  base::WeakPtr<web::WebFrame> target_frame_;
 };
 
 }  // namespace actor

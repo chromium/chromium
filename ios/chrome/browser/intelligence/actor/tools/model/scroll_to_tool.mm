@@ -113,6 +113,8 @@ void ScrollToTool::OnTargetFrameResolved(
     return;
   }
 
+  target_frame_ = target_web_frame->AsWeakPtr();
+
   // Update the target with the potentially translated coordinates relative
   // to the target frame.
   *action.mutable_target() = target_frame.target;

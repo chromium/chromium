@@ -25,6 +25,10 @@ ActorTool::TabResolutionResult& ActorTool::TabResolutionResult::operator=(
 
 ActorTool::TabResolutionResult::~TabResolutionResult() = default;
 
+base::WeakPtr<web::WebFrame> ActorTool::GetTargetWebFrame() const {
+  return nullptr;
+}
+
 // static
 base::expected<ActorTool::TabResolutionResult, ToolExecutionResult>
 ActorTool::ResolveTab(int32_t tab_id, ProfileIOS* profile) {

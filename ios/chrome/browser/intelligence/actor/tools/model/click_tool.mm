@@ -106,6 +106,8 @@ void ClickTool::OnTargetFrameResolved(
     return;
   }
 
+  target_frame_ = target_web_frame->AsWeakPtr();
+
   // Update the target with the potentially translated coordinates relative
   // to the target frame.
   optimization_guide::proto::ClickAction new_action = action;

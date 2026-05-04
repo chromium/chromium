@@ -11,6 +11,13 @@
 
 namespace actor {
 
+WebActorTool::WebActorTool() = default;
+WebActorTool::~WebActorTool() = default;
+
+base::WeakPtr<web::WebFrame> WebActorTool::GetTargetWebFrame() const {
+  return target_frame_;
+}
+
 void WebActorTool::ResolveTargetFrame(
     base::WeakPtr<web::WebState> web_state,
     base::WeakPtr<web::WebFrame> web_frame,
