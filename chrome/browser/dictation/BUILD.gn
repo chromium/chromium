@@ -2,31 +2,76 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("dictation") {
-  sources = [
-    "session_controller.cc",
+source_set("dictation") {
+  public = [
+    "dictation_keyed_service.h",
+    "dictation_keyed_service_factory.h",
     "session_controller.h",
     "session_controller_delegate.h",
     "stream_provider.h",
     "target.h",
     "ui.h",
   ]
-
-  deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
 }
 
-source_set("unit_tests") {
-  testonly = true
+source_set("impl") {
   sources = [
-    "session_controller_unittest.cc",
-    "test_util.cc",
-    "test_util.h",
+    "dictation_keyed_service.cc",
+    "dictation_keyed_service_factory.cc",
+    "features.cc",
+    "features.h",
+    "session_controller.cc",
   ]
 
   deps = [
     ":dictation",
     "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  public_deps = [
+    ":dictation",
+    "//base",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "dictation_keyed_service_unittest.cc",
+    "session_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":test_support",
+    "//base/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "dictation_keyed_service_browsertest.cc" ]
+  deps = [
+    ":impl",
+    ":test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
   ]
 }

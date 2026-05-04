@@ -13,12 +13,14 @@ namespace dictation {
 
 SessionController::SessionController(SessionControllerDelegate& delegate)
     : delegate_(delegate),
-      mode_change_subscription_(delegate_->RegisterModeChangeCallback(
-          base::BindRepeating(&SessionController::ModeDidChange,
-                              base::Unretained(this)))),
       ui_(delegate_->CreateUi(*this)) {}
 
-SessionController::~SessionController() = default;
+SessionController::~SessionController() {
+  CHECK(state_ != State::kInactive || !attached_stream_provider_);
+  if (state_ != State::kInactive) {
+    EndDictationStream();
+  }
+}
 
 void SessionController::StartDictationStream(Target& target) {
   CHECK_EQ(state_, State::kInactive);
@@ -41,18 +43,6 @@ void SessionController::EndDictationStream() {
 void SessionController::MoveToState(State new_state) {
   // TODO(bokan): use base::StateTransitions
   state_ = new_state;
-}
-
-void SessionController::ModeDidChange(Mode new_mode) {
-  switch (new_mode) {
-    case Mode::kDisabled:
-      if (state_ != State::kInactive) {
-        EndDictationStream();
-      }
-      break;
-    case Mode::kEnabled:
-      break;
-  }
 }
 
 }  // namespace dictation

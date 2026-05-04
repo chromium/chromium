@@ -2457,6 +2457,8 @@ static_library("browser") {
     #!is_android
     deps += [
       "//chrome/browser/accessibility/live_caption:impl",
+      "//chrome/browser/dictation",
+      "//chrome/browser/dictation:impl",
       "//chrome/browser/payments:impl",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",

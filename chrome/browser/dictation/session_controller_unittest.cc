@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dictation/session_controller.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,11 +20,13 @@ namespace {
 class DictationSessionControllerTest : public testing::Test {
  public:
   DictationSessionControllerTest() {
+    scoped_feature_list_.InitAndEnableFeature(kDictation);
     controller_ = std::make_unique<SessionController>(mock_delegate_);
   }
   ~DictationSessionControllerTest() override = default;
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSessionControllerDelegate> mock_delegate_;
   std::unique_ptr<SessionController> controller_;
 };
@@ -73,26 +77,6 @@ TEST_F(DictationSessionControllerTest, EndStream) {
 
   EXPECT_CALL(*stream_provider_ptr, Stop());
   controller_->EndDictationStream();
-}
-
-// Test that the controller resets and the stream provider is stopped when the
-// service is disabled mid-stream.
-TEST_F(DictationSessionControllerTest, DisableDuringStream) {
-  MockTarget target;
-  auto mock_stream_provider =
-      std::make_unique<testing::NiceMock<MockStreamProvider>>();
-  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
-
-  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
-      .WillOnce(Return(std::move(mock_stream_provider)));
-
-  controller_->StartDictationStream(target);
-  EXPECT_EQ(controller_->state(), SessionController::State::kInitializing);
-
-  EXPECT_CALL(*stream_provider_ptr, Stop());
-  mock_delegate_.SendModeChange(Mode::kDisabled);
-
-  EXPECT_EQ(controller_->state(), SessionController::State::kInactive);
 }
 
 }  // namespace

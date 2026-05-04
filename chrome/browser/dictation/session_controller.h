@@ -61,11 +61,8 @@ class SessionController {
 
  private:
   void MoveToState(State new_state);
-  void ModeDidChange(Mode new_mode);
 
   const base::raw_ref<SessionControllerDelegate> delegate_;
-
-  base::CallbackListSubscription mode_change_subscription_;
 
   State state_ = State::kInactive;
 

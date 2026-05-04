@@ -36,10 +36,6 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
   MockSessionControllerDelegate();
   ~MockSessionControllerDelegate() override;
 
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterModeChangeCallback,
-              (ModeChangeCallbackList::CallbackType cb),
-              (override));
   MOCK_METHOD(std::unique_ptr<StreamProvider>,
               CreateStreamProvider,
               (SessionController & controller),
@@ -48,15 +44,6 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
               CreateUi,
               (SessionController & controller),
               (const, override));
-
-  void SendModeChange(Mode mode) {
-    current_mode_ = mode;
-    mode_change_callbacks_.Notify(mode);
-  }
-
- private:
-  Mode current_mode_ = Mode::kEnabled;
-  ModeChangeCallbackList mode_change_callbacks_;
 };
 
 class MockTarget : public Target {

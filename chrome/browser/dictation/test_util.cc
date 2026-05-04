@@ -17,11 +17,6 @@ MockUi::MockUi() = default;
 MockUi::~MockUi() = default;
 
 MockSessionControllerDelegate::MockSessionControllerDelegate() {
-  ON_CALL(*this, RegisterModeChangeCallback)
-      .WillByDefault([this](ModeChangeCallbackList::CallbackType cb) {
-        cb.Run(current_mode_);
-        return mode_change_callbacks_.Add(std::move(cb));
-      });
   ON_CALL(*this, CreateUi(_)).WillByDefault([]() {
     return std::make_unique<testing::NiceMock<MockUi>>();
   });

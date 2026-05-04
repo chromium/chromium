@@ -790,6 +790,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/badging",
       "//chrome/browser/device_api",
       "//chrome/browser/devtools",
+      "//chrome/browser/dictation",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",
       "//chrome/browser/indigo",
