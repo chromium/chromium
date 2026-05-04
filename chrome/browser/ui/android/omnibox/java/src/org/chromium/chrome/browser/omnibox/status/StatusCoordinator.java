@@ -25,6 +25,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
@@ -163,11 +163,17 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     }
 
     /**
-     * @param urlHasFocus Whether the url currently has focus.
+     * Signals that the Omnibox input session has begun.
+     *
+     * @param sessionState The state of the current input session.
      */
-    public void onUrlFocusChange(boolean urlHasFocus) {
-        mMediator.setUrlHasFocus(urlHasFocus);
-        updateVerboseStatusVisibility();
+    public void beginInput(FuseboxSessionState sessionState) {
+        mMediator.beginInput(sessionState);
+    }
+
+    /** Signals that the Omnibox input session has ended. */
+    public void endInput() {
+        mMediator.endInput();
     }
 
     /**
@@ -319,11 +325,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      *
      * @param supplier the supplier.
      */
-    public void setSiteSearchDataSupplier(
-            @Nullable NullableObservableSupplier<SiteSearchData> supplier) {
-        mMediator.setSiteSearchDataSupplier(supplier);
-    }
-
     @SuppressWarnings("NullAway")
     public StatusMediator getMediatorForTesting() {
         return mMediator;

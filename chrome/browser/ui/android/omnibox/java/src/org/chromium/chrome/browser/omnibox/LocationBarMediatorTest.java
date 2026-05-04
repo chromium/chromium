@@ -1277,6 +1277,7 @@ public class LocationBarMediatorTest {
         ArgumentCaptor<FuseboxSessionState> captor =
                 ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mFuseboxCoordinator).beginInput(captor.capture());
+        verify(mStatusCoordinator).beginInput(captor.getValue());
 
         assertEquals(
                 OmniboxFocusReason.NTP_AI_MODE,
@@ -1338,7 +1339,6 @@ public class LocationBarMediatorTest {
                         any(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
                         eq(expectDesktopMode ? UrlBarData.SELECT_ALL : UrlBarData.SELECT_END));
-        verify(mStatusCoordinator).onUrlFocusChange(true);
         verify(mUrlCoordinator).onUrlFocusChange(true);
 
         mMediator.finishUrlFocusChange(true, true);
@@ -1421,7 +1421,7 @@ public class LocationBarMediatorTest {
 
         assertFalse(mTabletMediator.isUrlBarFocused());
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
-        verify(mStatusCoordinator).onUrlFocusChange(false);
+        verify(mStatusCoordinator).endInput();
         verify(mUrlCoordinator).onUrlFocusChange(false);
         verify(mUrlCoordinator, atLeastOnce())
                 .setUrlBarData(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);

@@ -457,8 +457,6 @@ class LocationBarMediator
             mUrlFocusedWithoutAnimations = false;
         }
 
-        mStatusCoordinator.onUrlFocusChange(hasFocus);
-
         if (!mUrlFocusedWithoutAnimations) handleUrlFocusAnimation(hasFocus);
 
         if (hasFocus
@@ -1194,6 +1192,7 @@ class LocationBarMediator
                     }
                     mAutocompleteCoordinator.beginInput(session);
                     mFuseboxCoordinator.beginInput(session);
+                    mStatusCoordinator.beginInput(session);
                     // Trigger animation now that we have an up-to-date value for the fusebox state.
                     setupSuggestionsListShowAnimation();
                     setAttachmentModelList(session.getFuseboxAttachmentModelList());
@@ -1202,7 +1201,6 @@ class LocationBarMediator
         mCurrentInput
                 .getRequestTypeSupplier()
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
-        mStatusCoordinator.setSiteSearchDataSupplier(mCurrentInput.getSiteSearchDataSupplier());
 
         UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
         mUrlCoordinator.setUrlBarData(
@@ -1256,9 +1254,9 @@ class LocationBarMediator
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
+        mStatusCoordinator.endInput();
         if (mScrimHandler != null) mScrimHandler.setVisibility(false);
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        mStatusCoordinator.setSiteSearchDataSupplier(null);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null) state.deactivate();
 

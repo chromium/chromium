@@ -28,6 +28,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
@@ -309,25 +310,35 @@ public class StatusMediator
         }
     }
 
-    /** Report URL focus change. */
-    void setUrlHasFocus(boolean urlHasFocus) {
-        if (mUrlHasFocus == urlHasFocus) return;
+    void beginInput(FuseboxSessionState sessionState) {
+        if (mUrlHasFocus) return;
 
-        mUrlHasFocus = urlHasFocus;
+        mUrlHasFocus = true;
+        setSiteSearchDataSupplier(sessionState.getAutocompleteInput().getSiteSearchDataSupplier());
         updateVerboseStatusTextVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
         updateStatusViewVisibility();
         updateStatusViewMinWidth();
 
-        // When not focused, it is important to have a smaller corner radius to ensure the circular
-        // look is maintained. when focused, there is more space, and we can expand to allow
-        // matching with the suggestions for favicon rounding. This doesn't actually affect most
-        // things that show.
         @DimenRes
         int cornerRes =
-                mUrlHasFocus && OmniboxFeatures.sExactMatchFavicons.isEnabled()
+                OmniboxFeatures.sExactMatchFavicons.isEnabled()
                         ? R.dimen.omnibox_small_icon_rounding_radius
                         : R.dimen.omnibox_search_engine_logo_composed_half_size;
+        mModel.set(StatusProperties.STATUS_ICON_CORNER_RADIUS, cornerRes);
+    }
+
+    void endInput() {
+        if (!mUrlHasFocus) return;
+
+        mUrlHasFocus = false;
+        setSiteSearchDataSupplier(null);
+        updateVerboseStatusTextVisibility();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
+        updateStatusViewVisibility();
+        updateStatusViewMinWidth();
+
+        @DimenRes int cornerRes = R.dimen.omnibox_search_engine_logo_composed_half_size;
         mModel.set(StatusProperties.STATUS_ICON_CORNER_RADIUS, cornerRes);
     }
 

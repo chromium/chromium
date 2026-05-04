@@ -36,11 +36,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -265,22 +265,23 @@ public class LocationBarLayoutTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testPhoneUrlBarAndStatusViewTranslation() {
+        Activity activity = mActivityTestRule.getActivity();
+        LocationBarLayout locationBar = getLocationBar();
+        View urlBar = getUrlBar();
+        View statusView = locationBar.findViewById(R.id.location_bar_status);
+
+        // "Reference is ambiguous" -> Runnalbe vs Callable<boolean>
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = mActivityTestRule.getActivity();
-                    int statusIconAndUrlBarOffset =
-                            OmniboxResourceProvider.getToolbarSidePaddingForNtp(activity)
-                                    - OmniboxResourceProvider.getToolbarSidePadding(activity);
-                    LocationBarLayout locationBar = getLocationBar();
-                    View urlBar = getUrlBar();
-                    View statusView = locationBar.findViewById(R.id.location_bar_status);
-
                     urlBar.requestFocus();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
                     locationBar.setUrlFocusChangePercent(
                             /* ntpSearchBoxScrollFraction= */ 1,
                             /* urlFocusChangeFraction= */ MathUtils.EPSILON,
                             /* isUrlFocusChangeInProgress= */ true);
-
                     assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
                     assertEquals(0f, statusView.getTranslationX(), MathUtils.EPSILON);
 
@@ -300,7 +301,7 @@ public class LocationBarLayoutTest {
 
                     int focusedWidth =
                             activity.getResources()
-                                    .getDimensionPixelSize(R.dimen.fusebox_button_size);
+                                    .getDimensionPixelSize(R.dimen.status_view_width_wide);
                     assertEquals(focusedWidth, statusView.getMinimumWidth());
                 });
     }
