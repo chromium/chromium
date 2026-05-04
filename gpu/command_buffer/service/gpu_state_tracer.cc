@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "context_state.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -103,13 +104,15 @@ std::unique_ptr<GPUStateTracer> GPUStateTracer::Create(
 }
 
 GPUStateTracer::GPUStateTracer(const ContextState* state) : state_(state) {
-  TRACE_EVENT_OBJECT_CREATED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("gpu.debug"), "gpu::State", state_);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
+                      "gpu::State:created",
+                      perfetto::Flow::FromPointer(state_, "GPUStateTracer"));
 }
 
 GPUStateTracer::~GPUStateTracer() {
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("gpu.debug"), "gpu::State", state_);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("gpu.debug"), "gpu::State:deleted",
+      perfetto::TerminatingFlow::FromPointer(state_, "GPUStateTracer"));
 }
 
 void GPUStateTracer::TakeSnapshotWithCurrentFramebuffer(const gfx::Size& size) {
@@ -122,9 +125,10 @@ void GPUStateTracer::TakeSnapshotWithCurrentFramebuffer(const gfx::Size& size) {
   if (!snapshot->SaveScreenshot(size))
     return;
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
-                                      "gpu::State", state_,
-                                      std::move(snapshot));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
+                      "gpu::State:screenshot",
+                      perfetto::Flow::FromPointer(state_, "GPUStateTracer"),
+                      "snapshot", std::move(snapshot));
 }
 
 }  // namespace gles2
