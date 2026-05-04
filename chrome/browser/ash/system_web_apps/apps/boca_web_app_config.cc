@@ -80,6 +80,14 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
                        features::IsBocaScreenSharingTeacherEnabled());
     source->AddBoolean("screenSharingStudent",
                        features::IsBocaScreenSharingStudentEnabled());
+
+    source->AddBoolean("geminiIntegration",
+                       features::IsBocaGeminiIntegrationEnabled());
+    if (features::IsBocaGeminiIntegrationEnabled()) {
+      source->AddString("geminiUrl", features::kBocaGeminiUrl.Get());
+      source->AddString("geminiGuidedLearningUrl",
+                        features::kBocaGeminiGuidedLearningUrl.Get());
+    }
   }
 
  private:

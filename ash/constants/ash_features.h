@@ -93,6 +93,12 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaSpotlight);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<std::string> kBocaSpotlightUrlTemplate;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kBocaGeminiIntegration);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<std::string> kBocaGeminiUrl;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<std::string> kBocaGeminiGuidedLearningUrl;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaNetworkRestriction);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaSequentialSessionLoad);
@@ -1017,6 +1023,7 @@ bool IsBocaStudentHeartbeatEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaStudentHeartbeatCustomIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaSpotlightEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaGeminiIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaNetworkRestrictionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaClientTypeForSpeechRecognitionEnabled();
