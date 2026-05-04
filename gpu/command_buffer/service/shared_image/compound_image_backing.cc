@@ -691,6 +691,29 @@ bool CompoundImageBacking::IsValidSharedMemoryFormat(
 }
 
 // static
+bool CompoundImageBacking::ComputeIsThreadSafe(
+    SharedImageFactoryRef* factory_ref,
+    SharedImageUsageSet usage) {
+  bool is_thread_safe = false;
+  if (factory_ref) {
+    factory_ref->Execute([&](SharedImageFactory* factory) {
+      is_thread_safe = factory->IsSharedBetweenThreads(usage);
+
+      // If dynamic backing allocation is enabled, the backing must also be
+      // thread-safe if the environment is multi-threaded (e.g., DrDC or
+      // WebView), as we can't predict all future sharing needs from the
+      // initial usage.
+      if (!is_thread_safe && base::FeatureList::IsEnabled(
+                                 features::kUseDynamicBackingAllocations)) {
+        is_thread_safe =
+            factory->shared_image_manager_->display_context_on_another_thread();
+      }
+    });
+  }
+  return is_thread_safe;
+}
+
+// static
 SharedImageUsageSet CompoundImageBacking::GetGpuSharedImageUsage(
     SharedImageUsageSet usage) {
   // Add allow copying from the shmem backing to the gpu backing.
@@ -812,12 +835,10 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::WrapExternalBacking(
 
   backing->SetNotRefCounted();
 
-  auto si_usage =
-      shared_image_factory->IsSharedBetweenThreads(backing->usage());
   auto buffer_usage = backing->buffer_usage();
   return base::WrapUnique(new CompoundImageBacking(
-      std::move(si_usage), std::move(buffer_usage), std::move(backing),
-      std::move(copy_manager), shared_image_factory->GetFactoryRef()));
+      std::move(buffer_usage), std::move(backing), std::move(copy_manager),
+      shared_image_factory->GetFactoryRef()));
 }
 
 // static
@@ -898,19 +919,22 @@ CompoundImageBacking::CompoundImageBacking(
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
     scoped_refptr<SharedImageCopyManager> copy_manager,
     std::optional<gfx::BufferUsage> buffer_usage)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      debug_label,
-                                      shm_backing->GetEstimatedSize(),
-                                      /*is_thread_safe=*/false,
-                                      std::move(buffer_usage)),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          debug_label,
+          shm_backing->GetEstimatedSize(),
+          ComputeIsThreadSafe(shared_image_factory.get(), usage),
+          std::move(buffer_usage)),
       shared_image_factory_(std::move(shared_image_factory)),
       copy_manager_(std::move(copy_manager)) {
+  // If the backing is thread-safe, the base class enables an internal lock that
+  // protects the |elements_| vector and other metadata from concurrent access.
   DCHECK(shm_backing);
   DCHECK_EQ(size, shm_backing->size());
 
@@ -945,22 +969,22 @@ CompoundImageBacking::CompoundImageBacking(
 }
 
 CompoundImageBacking::CompoundImageBacking(
-    bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage,
     std::unique_ptr<SharedImageBacking> backing,
     scoped_refptr<SharedImageCopyManager> copy_manager,
     scoped_refptr<SharedImageFactoryRef> shared_image_factory)
-    : ClearTrackingSharedImageBacking(backing->mailbox(),
-                                      backing->format(),
-                                      backing->size(),
-                                      backing->color_space(),
-                                      backing->surface_origin(),
-                                      backing->alpha_type(),
-                                      backing->usage(),
-                                      backing->debug_label(),
-                                      backing->GetEstimatedSize(),
-                                      is_thread_safe,
-                                      std::move(buffer_usage)),
+    : ClearTrackingSharedImageBacking(
+          backing->mailbox(),
+          backing->format(),
+          backing->size(),
+          backing->color_space(),
+          backing->surface_origin(),
+          backing->alpha_type(),
+          backing->usage(),
+          backing->debug_label(),
+          backing->GetEstimatedSize(),
+          ComputeIsThreadSafe(shared_image_factory.get(), backing->usage()),
+          std::move(buffer_usage)),
       shared_image_factory_(std::move(shared_image_factory)),
       copy_manager_(std::move(copy_manager)) {
   // Create the element from the backing.
