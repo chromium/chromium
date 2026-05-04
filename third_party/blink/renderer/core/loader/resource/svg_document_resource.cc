@@ -93,8 +93,11 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
   const bool enforce_integrity =
       RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled();
+
   if (enforce_integrity) {
-    CheckResourceIntegrity();
+    // TextResource::Finish() runs CheckResourceIntegrity() before notifying
+    // observers, so we can act on the result afterwards.
+    TextResource::Finish(load_finish_time, task_runner);
   }
 
   bool notify_observers = true;
@@ -114,7 +117,11 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
     ClearData();
     content_->UpdateStatus(GetStatus());
   }
-  TextResource::Finish(load_finish_time, task_runner);
+
+  if (!enforce_integrity) {
+    TextResource::Finish(load_finish_time, task_runner);
+  }
+
   if (notify_observers) {
     content_->NotifyObservers();
   }

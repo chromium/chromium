@@ -558,8 +558,15 @@ void ImageResource::Finish(base::TimeTicks load_finish_time,
                            base::SingleThreadTaskRunner* task_runner) {
   const bool enforce_integrity =
       RuntimeEnabledFeatures::CSSResourceIntegrityEnforcementEnabled();
+
+  if (multipart_parser_ && !ErrorOccurred()) {
+    multipart_parser_->Finish();
+  }
+
   if (enforce_integrity) {
-    CheckResourceIntegrity();
+    // Resource::Finish() runs CheckResourceIntegrity() before notifying
+    // observers, so we can act on the result afterwards.
+    Resource::Finish(load_finish_time, task_runner);
   }
 
   if (enforce_integrity && !PassedIntegrityChecks()) {
@@ -567,8 +574,6 @@ void ImageResource::Finish(base::TimeTicks load_finish_time,
     // devtools console.
     IntegrityFailure();
   } else if (multipart_parser_) {
-    if (!ErrorOccurred())
-      multipart_parser_->Finish();
     if (Data())
       UpdateImageAndClearBuffer();
   } else {
@@ -580,7 +585,10 @@ void ImageResource::Finish(base::TimeTicks load_finish_time,
     // https://docs.google.com/document/d/1v0yTAZ6wkqX2U_M6BNIGUJpM1s0TIw1VsqpxoL7aciY/edit?usp=sharing
     ClearData();
   }
-  Resource::Finish(load_finish_time, task_runner);
+
+  if (!enforce_integrity) {
+    Resource::Finish(load_finish_time, task_runner);
+  }
 }
 
 void ImageResource::FinishAsError(const ResourceError& error,
