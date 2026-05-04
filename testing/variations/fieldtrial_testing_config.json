@@ -301,21 +301,6 @@
             ]
         }
     ],
-    "AccessibilityDeprecateTypeAnnounce": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityDeprecateTypeAnnounce"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityExtendedSelection": [
         {
             "platforms": [
@@ -349,39 +334,6 @@
                     "name": "Control",
                     "disable_features": [
                         "AccessibilityHandleOccludingViews"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilityImproveLiveRegionsOnAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "OnlyNonAtomicEnabled",
-                    "enable_features": [
-                        "AccessibilityImproveLiveRegionAnnounce"
-                    ],
-                    "disable_features": [
-                        "AccessibilityAtomicLiveRegions"
-                    ]
-                },
-                {
-                    "name": "BothAtomicAndNonAtomicEnabled",
-                    "enable_features": [
-                        "AccessibilityAtomicLiveRegions",
-                        "AccessibilityImproveLiveRegionAnnounce"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "AccessibilityAtomicLiveRegions",
-                        "AccessibilityImproveLiveRegionAnnounce"
                     ]
                 }
             ]

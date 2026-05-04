@@ -450,10 +450,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
           wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
         }
       }
-      // TODO(crbug.com/470048610): When the Finch experiment for
-      // kAccessibilityAtomicLiveRegions is complete, we should convert these
-      // two if-statements into an if-else statement. However, for the
-      // experiment, we need both code paths to be preserved.
+      // TODO(crbug.com/507858294): Remove TYPE_ANNOUNCE and new live region
+      // behavior flags once stability has been reached in several stable
+      // releases.
       if (!base::FeatureList::IsEnabled(
               features::kAccessibilityDeprecateTypeAnnounce)) {
         // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet

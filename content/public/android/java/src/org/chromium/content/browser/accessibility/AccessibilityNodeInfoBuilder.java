@@ -429,13 +429,14 @@ public class AccessibilityNodeInfoBuilder {
         node.setTooltipText(tooltipText);
         node.setExpandedState(expandedState);
 
-        // If we have deprecated TYPE_ANNOUNCEMENT, we should properly mark live region root nodes.
+        // If we have deprecated TYPE_ANNOUNCEMENT or enabled the new live region behavior, we
+        // should properly mark live region root nodes.
         // Otherwise, we choose to use AnnounceLiveRegionText() to make this announcement for us.
-        // TODO(crbug.com/470048610): Once the Finch experiment for
-        // ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE is complete, we should add the flag to the
-        // if-statement below. However, until TalkBack 17.0 is released, we cannot send
-        // WINDOW_CONTENT_CHANGED events with a valid LiveRegion without altering user experience.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
+        // TODO(crbug.com/507858294): Remove the following flags after a period of stability in
+        // several stable releases.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+                || ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)) {
             node.setLiveRegion(liveRegion);
         }
 

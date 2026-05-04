@@ -1287,7 +1287,7 @@ const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
 // When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
 // the web contents.
 BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, extended selections are sent to Android through setSelection
 // API.
@@ -1305,7 +1305,7 @@ BASE_FEATURE(kAccessibilityImeGetFormattedText,
 // flag does not. This flag focuses solely on the LIVE_REGION_NODE_CHANGED
 // generated events.
 BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, allows Android to fire WINDOW_CONTENT_CHANGED events for value
 // changes made to ARIA meter controls.
@@ -1341,8 +1341,7 @@ const base::FeatureParam<bool>
 // When enabled, supports atomic announcements, meaning that when
 // aria-atomic=true, the entire live region will be announced not just the node
 // that changed.
-BASE_FEATURE(kAccessibilityAtomicLiveRegions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityAtomicLiveRegions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
