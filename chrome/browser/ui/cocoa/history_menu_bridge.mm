@@ -540,14 +540,16 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
     AddItemToMenu(std::move(item), HistoryMenu(), kVisited, top_item + i);
   }
 
-  // We are already invalid by the time we finished, darn.
+  create_in_progress_ = false;
   if (need_recreate_) {
+    // We are already invalid by the time we finished, darn.
     CreateMenu();
   } else {
     history_service_keep_alive_.reset();
   }
-
-  create_in_progress_ = false;
+  // `this` may be deleted because it is tied to the current profile through
+  // `AppController`, and the profile may have been deleted when the keep alive
+  // was released.
 }
 
 std::unique_ptr<HistoryMenuBridge::HistoryItem>
