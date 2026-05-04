@@ -391,6 +391,10 @@ DocumentProvider::DocumentProvider() {
                          &omnibox::kDocumentProvider,
                          "DocumentProviderBackoffDuration", base::TimeDelta())
                          .Get();
+  backoff_on_429 =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderBackoffOn429", false)
+          .Get();
 }
 
 DocumentProvider::DocumentProvider(const DocumentProvider&) = default;
