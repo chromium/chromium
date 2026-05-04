@@ -30,11 +30,11 @@
 namespace remoting {
 
 namespace {
-// TODO: crbug.com/502327751 - Check to make sure these are valid. If they don't
-// match the values from the AudioPacket then we may need to change it using
-// pw_stream_update_params().
+// The official specification for Opus in WebRTC (RFC 7587) mandates that the
+// signaling must declare a clock rate of 48000 and 2 channels, even if the
+// source is a 1-channel microphone.
 constexpr uint32_t kAudioRate = 48000;
-constexpr uint32_t kAudioChannels = 1;
+constexpr uint32_t kAudioChannels = 2;
 constexpr size_t kBytesPerFrame = kAudioChannels * sizeof(int16_t);
 }  // namespace
 
@@ -207,9 +207,17 @@ void PipewireAudioInjector::Core::InjectAudioPacket(
     return;
   }
 
-  // TODO: crbug.com/502327751 - see what to do if these don't match.
-  CHECK_EQ(static_cast<uint32_t>(packet->sampling_rate()), kAudioRate);
-  CHECK_EQ(static_cast<uint32_t>(packet->channels()), kAudioChannels);
+  if (packet->sampling_rate() != kAudioRate) {
+    NOTIMPLEMENTED_LOG_ONCE()
+        << "Unsupported audio sampling rate: " << packet->sampling_rate();
+    return;
+  }
+
+  if (packet->channels() != kAudioChannels) {
+    NOTIMPLEMENTED_LOG_ONCE()
+        << "Unsupported audio channels: " << packet->channels();
+    return;
+  }
 
   ScopedThreadLoopLock lock(pw_main_loop_.get());
   for (std::string& data : *packet->mutable_data()) {

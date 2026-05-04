@@ -1197,7 +1197,9 @@ void WebrtcTransport::SendOffer() {
 
   webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options;
   options.offer_to_receive_video = false;
-  options.offer_to_receive_audio = false;
+  // The host always offers `sendrecv` but the client will downgrade it to
+  // `recvonly` if microphone remoting is not enabled.
+  options.offer_to_receive_audio = true;
   options.ice_restart = want_ice_restart_;
   peer_connection()->CreateOffer(
       CreateSessionDescriptionObserver::Create(

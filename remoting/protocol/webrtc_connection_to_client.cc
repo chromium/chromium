@@ -27,6 +27,7 @@
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/protocol/webrtc_audio_module.h"
 #include "remoting/protocol/webrtc_audio_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
 #include "remoting/protocol/webrtc_transport.h"
@@ -63,6 +64,9 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
   transport_ = std::make_unique<WebrtcTransport>(
       webrtc::ThreadWrapper::current(), transport_context,
       std::move(video_encoder_factory), this);
+  if (audio_task_runner_) {
+    transport_->audio_module()->SetAudioTaskRunner(audio_task_runner_);
+  }
   session_->SetEventHandler(this);
   session_->SetTransport(transport_.get());
 }
