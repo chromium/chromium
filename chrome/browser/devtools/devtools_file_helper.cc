@@ -177,7 +177,7 @@ void DevToolsFileHelper::Save(const std::string& url,
     }
     // TODO(crbug.com/40839171): Truncate a UTF8 string in a better way
     if (suggested_file_name.length() > 64) {
-      suggested_file_name = suggested_file_name.substr(0, 64);
+      suggested_file_name.erase(64);
     }
     // TODO(crbug.com/40839171): Ensure suggested_file_name is an ASCII string
     if (!GetLastSavePath().empty()) {
