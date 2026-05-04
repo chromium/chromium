@@ -654,16 +654,19 @@ public class SelectableListLayout<E> extends FrameLayout
                     int height = bottom - top;
                     int oldHeight = oldBottom - oldTop;
                     if (height != oldHeight) {
+                        FrameLayout.LayoutParams containerParams =
+                                (FrameLayout.LayoutParams) searchBoxContainer.getLayoutParams();
+                        int totalHeight = height + containerParams.bottomMargin;
                         View listContent = findViewById(R.id.list_content);
                         FrameLayout.LayoutParams listParams =
                                 (FrameLayout.LayoutParams) listContent.getLayoutParams();
-                        listParams.topMargin = toolbarHeight + height;
+                        listParams.topMargin = toolbarHeight + totalHeight;
                         listContent.setLayoutParams(listParams);
 
                         if (mToolbarShadow != null) {
                             FrameLayout.LayoutParams shadowParams =
                                     (FrameLayout.LayoutParams) mToolbarShadow.getLayoutParams();
-                            shadowParams.topMargin = toolbarHeight + height;
+                            shadowParams.topMargin = toolbarHeight + totalHeight;
                             mToolbarShadow.setLayoutParams(shadowParams);
                         }
                     }
