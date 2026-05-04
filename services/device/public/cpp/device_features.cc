@@ -62,6 +62,11 @@ BASE_FEATURE(kHidGetFeatureReportFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // handle is closed.
 BASE_FEATURE(kSafeUsbDeviceHandleWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, HidConnectionWin will ensure that pending OVERLAPPED requests
+// are not deleted until the kernel has signaled completion, even if the
+// connection is closed.
+BASE_FEATURE(kSafeHidConnectionWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Defines a feature parameter for the `kWinSystemLocationPermission` feature.
 // This parameter controls the polling interval (in milliseconds) for checking
 // the permission status. The default polling interval is set to 500
