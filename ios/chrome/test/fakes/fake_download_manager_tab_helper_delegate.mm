@@ -81,4 +81,9 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
   _shouldObserveFullscreen = adaptToFullscreen;
 }
 
+- (void)downloadManagerTabHelperDidChangeState:
+    (DownloadManagerTabHelper*)tabHelper {
+  _updateCallCount++;
+}
+
 @end

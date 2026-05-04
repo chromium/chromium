@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
@@ -497,4 +498,43 @@ TEST_F(DownloadManagerTabHelperTest, EnterpriseMetadataCleanup) {
   tab_helper()->SetCurrentDownload(std::move(task2));
   EXPECT_FALSE(has_files_request_handler());
   EXPECT_FALSE(has_content_analysis_info());
+}
+
+// Tests that when a download task is complete, the tab helper notifies the
+// delegate about state updates and correctly reports `IsScannerProcessing()`.
+TEST_F(DownloadManagerTabHelperTest, DownloadCompleteNotifiesDelegate) {
+  scoped_feature_list_.InitAndDisableFeature(
+      enterprise_connectors::kEnableFileDownloadConnectorIOS);
+
+  web_state_->WasShown();
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(GURL(kUrl), kMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  task_ptr->SetIdentifier(@"test_id");
+  task_ptr->SetGeneratedFileName(base::FilePath("test.txt"));
+
+  // Create a dummy source file and start the task to set the response path.
+  base::FilePath source_path = temp_dir_.GetPath().Append("source.txt");
+  ASSERT_TRUE(base::WriteFile(source_path, "test"));
+  task_ptr->Start(source_path);
+
+  tab_helper()->SetCurrentDownload(std::move(task));
+
+  NSInteger initial_update_call_count = delegate_.updateCallCount;
+
+  task_ptr->SetDone(true);
+
+  // IsScannerProcessing should be true while scanning (or moving).
+  // Note: Since scanning is disabled, it might be very fast.
+  // But MaybeMoveDownloadToDownloadsDirectory is called.
+
+  // Wait for the task to finish (moving the file).
+  // Delegate should be notified at least twice:
+  // 1. After scan finishes (MaybeMoveDownloadToDownloadsDirectory).
+  // 2. After move finishes (MoveComplete).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return delegate_.updateCallCount >= initial_update_call_count + 2;
+  }));
+
+  EXPECT_FALSE(tab_helper()->IsScannerProcessing());
 }

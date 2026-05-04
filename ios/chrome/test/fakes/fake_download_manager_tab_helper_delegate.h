@@ -29,6 +29,9 @@
 // Whether the delegate was asked to observe fullscreen.
 @property(nonatomic, readonly) BOOL shouldObserveFullscreen;
 
+// Number of times `downloadManagerTabHelperDidChangeState:` was called.
+@property(nonatomic, readonly) NSInteger updateCallCount;
+
 // Calls `downloadManagerTabHelper:decidePolicyForDownload:completionHandler:`
 // completion handler. Returns YES if the method was called.
 // Nulls out `decidingPolicyForDownload`.

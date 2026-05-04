@@ -60,6 +60,11 @@ typedef NS_ENUM(NSInteger, NewDownloadPolicy) {
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
                adaptToFullscreen:(bool)adaptToFullscreen;
 
+// Informs the delegate that the download manager tab helper's internal state
+// (e.g. scanning or moving) has changed and the UI should be updated.
+- (void)downloadManagerTabHelperDidChangeState:
+    (DownloadManagerTabHelper*)tabHelper;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_MANAGER_TAB_HELPER_DELEGATE_H_

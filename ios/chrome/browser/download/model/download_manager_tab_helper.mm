@@ -187,6 +187,18 @@ void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
   }
 }
 
+bool DownloadManagerTabHelper::IsScannerProcessing() const {
+  if (is_processing_for_testing_) {
+    return true;
+  }
+  return files_request_handler_ != nullptr;
+}
+
+void DownloadManagerTabHelper::SetIsScannerProcessingForTesting(  // IN-TEST
+    bool processing) {
+  is_processing_for_testing_ = processing;
+}
+
 bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
   DriveTabHelper* drive_tab_helper =
       DriveTabHelper::FromWebState(task_->GetWebState());
@@ -328,6 +340,7 @@ void DownloadManagerTabHelper::MoveComplete(bool move_completed,
                                             const base::FilePath& final_path) {
   DCHECK(move_completed);
   MaybeSetDownloadPathForAutoDeletion();
+  [delegate_ downloadManagerTabHelperDidChangeState:this];
 }
 
 void DownloadManagerTabHelper::MaybeEnrollFileForAutoDeletion(
@@ -380,6 +393,7 @@ void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
   files_request_handler_->ReportWarningBypass(
       /* user_justification */ std::nullopt);
 
+  [delegate_ downloadManagerTabHelperDidChangeState:this];
   base::FilePath user_download_path;
   GetDownloadsDirectory(&user_download_path);
   base::FilePath base_file_name = task_->GenerateFileName();
@@ -418,8 +432,8 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
   content_analysis_info_ =
       std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
           url,
-          settings.has_value() ? std::move(settings.value())
-                               : enterprise_connectors::AnalysisSettings(),
+          std::move(settings).value_or(
+              enterprise_connectors::AnalysisSettings()),
           enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
           *web_state_);
   auto files_request_handler_delegate = std::make_unique<

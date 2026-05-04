@@ -334,6 +334,11 @@
   [self tryDownload];
 }
 
+- (void)downloadManagerTabHelperDidChangeState:
+    (DownloadManagerTabHelper*)tabHelper {
+  _mediator.UpdateConsumer();
+}
+
 #pragma mark - ContainedPresenterDelegate
 
 - (void)containedPresenterWillPresent:(id<ContainedPresenter>)presenter {
@@ -584,7 +589,6 @@
       DownloadFileUIGoogleDrive::GoogleDriveInstalledAfterDisplay,
       DownloadFileUIGoogleDrive::Count);
   _mediator.SetGoogleDriveAppInstalled(true);
-  _mediator.UpdateConsumer();
 }
 
 // Presents StoreKit dialog for Google Drive application.

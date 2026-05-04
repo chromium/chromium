@@ -79,7 +79,6 @@ void DownloadManagerMediator::SetConsumer(
     id<DownloadManagerConsumer> consumer) {
   consumer_ = consumer;
   SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
-  UpdateConsumer();
 }
 
 void DownloadManagerMediator::SetDownloadTask(web::DownloadTask* task) {
@@ -146,6 +145,14 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
       return DownloadManagerState::kInProgress;
     case web::DownloadTask::State::kComplete:
       if (!upload_task_) {
+        DownloadManagerTabHelper* tab_helper =
+            DownloadManagerTabHelper::FromWebState(
+                download_task_->GetWebState());
+        if (tab_helper) {
+          if (tab_helper->IsScannerProcessing()) {
+            return DownloadManagerState::kInProgress;
+          }
+        }
         return DownloadManagerState::kSucceeded;
       }
       switch (upload_task_->GetState()) {
@@ -271,6 +278,7 @@ void DownloadManagerMediator::UpdateConsumer() {
 
 void DownloadManagerMediator::SetGoogleDriveAppInstalled(bool installed) {
   is_google_drive_app_installed_ = installed;
+  UpdateConsumer();
 }
 
 int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
@@ -334,7 +342,6 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
 void DownloadManagerMediator::AppWillEnterForeground() {
   CHECK(base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground));
   SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
-  UpdateConsumer();
 }
 
 #pragma mark - web::WebStateObserver overrides

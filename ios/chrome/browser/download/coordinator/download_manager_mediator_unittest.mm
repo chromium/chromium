@@ -8,9 +8,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -75,6 +77,17 @@ class DownloadManagerMediatorTest : public PlatformTest {
     task_ = task.get();
     DownloadManagerTabHelper::FromWebState(web_state_.get())
         ->SetCurrentDownload(std::move(task));
+
+    delegate_ = OCMProtocolMock(@protocol(DownloadManagerTabHelperDelegate));
+    DownloadManagerTabHelper::FromWebState(web_state_.get())
+        ->SetDelegate(delegate_);
+    OCMStub(
+        [delegate_
+            downloadManagerTabHelperDidChangeState:(DownloadManagerTabHelper*)
+                                                       [OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
+          mediator_.UpdateConsumer();
+        });
   }
   ~DownloadManagerMediatorTest() override {
     // Ensure all background tasks complete before destroying test fixtures.
@@ -97,9 +110,9 @@ class DownloadManagerMediatorTest : public PlatformTest {
   DownloadManagerMediator mediator_;
   FakeDownloadManagerConsumer* consumer_;
   id application_;
+  id delegate_;
   raw_ptr<web::FakeDownloadTask> task_;
 };
-
 // Tests starting the download and immediately destroying the task.
 // DownloadManagerMediator should not crash.
 TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
@@ -134,9 +147,11 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
 
   // Once downloaded, the file should be located in download directory.
   task()->SetDone(true);
+  mediator_.UpdateConsumer();
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForDownloadTimeout, true, ^{
         return !mediator_.GetDownloadPath().empty();
@@ -161,7 +176,9 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  mediator_.UpdateConsumer();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   // Download file should be located in download directory.
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
@@ -199,7 +216,8 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(base::FilePath(kTestSuggestedFileName),
             base::apple::NSStringToFilePath(consumer_.fileName));
@@ -237,7 +255,9 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  mediator_.UpdateConsumer();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }
 
@@ -260,7 +280,9 @@ TEST_F(DownloadManagerMediatorTest,
       }));
 
   task()->SetDone(true);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  mediator_.UpdateConsumer();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   EXPECT_TRUE(consumer_.installDriveButtonVisible);
 }
 
@@ -273,6 +295,26 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
   task()->Start(base::FilePath());
   EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
   EXPECT_EQ(0.0, consumer_.progress);
+}
+
+// Tests that consumer stays in DownloadManagerState::kInProgress if the task is
+// complete but the scanner is still processing.
+TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateWhileScanning) {
+  mediator_.SetDownloadTask(task());
+  mediator_.SetConsumer(consumer_);
+
+  task()->SetDone(true);
+  DownloadManagerTabHelper::FromWebState(web_state_.get())
+      ->SetIsScannerProcessingForTesting(true);
+
+  mediator_.UpdateConsumer();
+  EXPECT_EQ(DownloadManagerState::kInProgress, consumer_.state);
+
+  DownloadManagerTabHelper::FromWebState(web_state_.get())
+      ->SetIsScannerProcessingForTesting(false);
+  mediator_.UpdateConsumer();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
 }
 
 // Tests that setting the consumer twice when the download is complete will only
@@ -297,9 +339,11 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 
   // Once downloaded, the file should be located in download directory.
   task()->SetDone(true);
+  mediator_.UpdateConsumer();
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForDownloadTimeout, true, ^{
         return !mediator_.GetDownloadPath().empty();
@@ -309,7 +353,8 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 
   // Set the consumer a second time.
   mediator_.SetConsumer(consumer_);
-  EXPECT_EQ(DownloadManagerState::kSucceeded, consumer_.state);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return consumer_.state == DownloadManagerState::kSucceeded; }));
   EXPECT_TRUE(download_dir.IsParent(file_path));
   EXPECT_EQ(file_path, mediator_.GetDownloadPath());
 }

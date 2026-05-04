@@ -77,6 +77,13 @@ class DownloadManagerTabHelper
   // Sets whether the Download toolbar should adapt to the fullscreen state.
   virtual void AdaptToFullscreen(bool adapt_to_fullscreen);
 
+  // Returns whether `files_request_handler_` is currently processing the
+  // download.
+  bool IsScannerProcessing() const;
+
+  // Set the scanner processing state for testing purposes.
+  void SetIsScannerProcessingForTesting(bool processing);  // IN-TEST
+
   // Returns whether `task_` still needs to be saved to Drive.
   bool WillDownloadTaskBeSavedToDrive() const;
 
@@ -150,6 +157,7 @@ class DownloadManagerTabHelper
       files_request_handler_;
   base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
+  bool is_processing_for_testing_ = false;
 
   base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
 };
