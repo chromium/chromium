@@ -54,37 +54,53 @@ class BubbleDelegateImpl
   BubbleDelegateImpl& operator=(const BubbleDelegateImpl&) = delete;
   ~BubbleDelegateImpl() override = default;
 
-  bool HasBubble() override { return GetBubbleCoordinator().GetBubble(); }
+  bool HasBubble() override {
+    auto* coordinator = GetBubbleCoordinator();
+    return coordinator && coordinator->GetBubble();
+  }
 
   void ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
                   content::WebContents* web_contents) override {
-    return GetBubbleCoordinator().ShowBubble(
+    auto* coordinator = GetBubbleCoordinator();
+    if (!coordinator) {
+      return;
+    }
+    auto* bwi = tab_interface_->GetBrowserWindowInterface();
+    if (!bwi) {
+      return;
+    }
+    return coordinator->ShowBubble(
         toolbar_button_provider, web_contents,
-        tab_interface_->GetBrowserWindowInterface()
-            ->GetFeatures()
-            .cookie_controls_controller());
+        bwi->GetFeatures().cookie_controls_controller());
   }
 
   base::CallbackListSubscription RegisterBubbleClosingCallback(
       base::RepeatingClosure callback) override {
-    return GetBubbleCoordinator().RegisterBubbleClosingCallback(
-        std::move(callback));
+    auto* coordinator = GetBubbleCoordinator();
+    if (!coordinator) {
+      return base::CallbackListSubscription();
+    }
+    return coordinator->RegisterBubbleClosingCallback(std::move(callback));
   }
 
   content_settings::CookieControlsController* GetController() override {
-    return tab_interface_->GetBrowserWindowInterface()
-        ->GetFeatures()
-        .cookie_controls_controller();
+    auto* bwi = tab_interface_->GetBrowserWindowInterface();
+    if (!bwi) {
+      return nullptr;
+    }
+    return bwi->GetFeatures().cookie_controls_controller();
   }
 
  private:
-  CookieControlsBubbleCoordinator& GetBubbleCoordinator() {
+  CookieControlsBubbleCoordinator* GetBubbleCoordinator() {
     auto* const bwi = tab_interface_->GetBrowserWindowInterface();
-    CHECK(bwi);
+    if (!bwi) {
+      return nullptr;
+    }
     CookieControlsBubbleCoordinator* const coordinator =
         CookieControlsBubbleCoordinator::From(bwi);
     CHECK(coordinator);
-    return *coordinator;
+    return coordinator;
   }
 
   const raw_ref<tabs::TabInterface> tab_interface_;
@@ -170,6 +186,9 @@ void CookieControlsPageActionController::OnDidActivate(
     tabs::TabInterface* tab) {
   content_settings::CookieControlsController* controller =
       bubble_delegate_->GetController();
+  if (!controller) {
+    return;
+  }
   if (!controller_observation_.IsObserving()) {
     controller_observation_.Observe(controller);
   }
@@ -180,7 +199,9 @@ void CookieControlsPageActionController::OnWillDeactivate(
     tabs::TabInterface* tab) {
   content_settings::CookieControlsController* controller =
       bubble_delegate_->GetController();
-  controller->OnBubbleCloseTriggered();
+  if (controller) {
+    controller->OnBubbleCloseTriggered();
+  }
   controller_observation_.Reset();
   iph_activity_.reset();
 }
@@ -190,7 +211,11 @@ void CookieControlsPageActionController::OnWillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   if (tab->IsActivated()) {
-    bubble_delegate_->GetController()->Update(new_contents);
+    content_settings::CookieControlsController* controller =
+        bubble_delegate_->GetController();
+    if (controller) {
+      controller->Update(new_contents);
+    }
   }
 }
 
