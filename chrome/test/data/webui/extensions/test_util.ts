@@ -21,8 +21,8 @@ export class ClickMock {
    * @param returnValue The value to return from the function call.
    */
   async testClickingCalls(
-      element: HTMLElement, callName: string, expectedArgs: any[],
-      returnValue?: any) {
+      element: HTMLElement, callName: string, expectedArgs: unknown[],
+      returnValue?: unknown) {
     const mock = new MockController();
     const mockMethod = mock.createFunctionMock(this, callName);
     mockMethod.returnValue = returnValue;
@@ -39,7 +39,7 @@ export class ClickMock {
 
 interface ListenerInfo {
   satisfied: boolean;
-  args: any;
+  args: unknown;
 }
 
 /**
@@ -67,7 +67,7 @@ export class ListenerMock {
    * @param eventArgs If omitted, will check that the details
    *     are empty (i.e., {}).
    */
-  addListener(target: EventTarget, eventName: string, eventArgs: any) {
+  addListener(target: EventTarget, eventName: string, eventArgs: unknown) {
     assertTrue(!this.listeners_.hasOwnProperty(eventName));
     this.listeners_[eventName] = {args: eventArgs || {}, satisfied: false};
     target.addEventListener(eventName, this.onEvent_.bind(this, eventName));

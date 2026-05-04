@@ -256,8 +256,8 @@ suite('bookmarks extension API clipboard test', function() {
     try {
       await bookmarkManager.cut([result[0]!.id]);
       assertNotReached();
-    } catch (e: any) {
-      assertEquals(e.message, error);
+    } catch (e: unknown) {
+      assertEquals((e as Error).message, error);
     }
 
     // Copying is fine.
@@ -272,8 +272,8 @@ suite('bookmarks extension API clipboard test', function() {
     try {
       await bookmarkManager.paste(result[1]!.id, undefined);
       assertNotReached();
-    } catch (e: any) {
-      assertEquals(e.message, error);
+    } catch (e: unknown) {
+      assertEquals((e as Error).message, error);
     }
   });
 });

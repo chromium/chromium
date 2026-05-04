@@ -9,7 +9,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
-import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
 import {FilterCategory} from 'chrome://updater/event_list/filter_bar.js';
 import {HistoryFilter, PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -235,8 +234,7 @@ suite('EventListElement', () => {
 
     const items = element.shadowRoot.querySelectorAll('event-list-item');
     assertEquals(1, items.length);
-    assertEquals(
-        'INSTALL', ((items[0] as EventListItemElement).event as any).eventType);
+    assertEquals('INSTALL', items[0]!.event!.eventType);
   });
 
   test('expands and collapses all', async () => {

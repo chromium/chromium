@@ -464,11 +464,11 @@ suite('bluetooth_internals', function() {
   });
 
   /* AdapterPage Tests */
-  function checkAdapterFieldSet(adapterInfo: Record<string, any>) {
+  function checkAdapterFieldSet(adapterInfo: AdapterInfo) {
     for (const propName in adapterInfo) {
       const valueCell = adapterFieldSet.shadowRoot!.querySelector(
           `fieldset [data-field="${propName}"]`)!;
-      const value = adapterInfo[propName];
+      const value = adapterInfo[propName as keyof AdapterInfo];
 
       if (typeof (value) === 'boolean') {
         assertEquals(value, valueCell.classList.contains('checked'));
@@ -483,7 +483,7 @@ suite('bluetooth_internals', function() {
 
   test('AdapterPage_DefaultState', function() {
     assertTrue(!!adapterFieldSet.value);
-    checkAdapterFieldSet(adapterFieldSet.value);
+    checkAdapterFieldSet(adapterFieldSet.value as unknown as AdapterInfo);
   });
 
   test('AdapterPage_AdapterChanged', function() {
@@ -537,19 +537,19 @@ suite('bluetooth_internals', function() {
               .querySelector(`fieldset [data-field="${propName}"]`)!;
 
       const parts = propName.split('.');
-      let value: any = deviceInfo;
+      let value: unknown = deviceInfo;
 
       while (value != null && parts.length > 0) {
         const part = parts.shift()!;
-        value = value[part];
+        value = (value as Record<string, unknown>)[part];
       }
 
       if (propName === 'isGattConnected') {
         value = value ? 'Connected' : 'Not Connected';
       } else if (propName === 'serviceUuids') {
-        value = formatServiceUuids(value);
+        value = formatServiceUuids(value as UUID[]);
       } else if (propName === 'manufacturerDataMap') {
-        value = formatManufacturerDataMap(value);
+        value = formatManufacturerDataMap(value as {[key: number]: number[]});
       }
 
       if (typeof (value) === 'boolean') {

@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 declare const chrome: {
-  send(message: string, args: any): void,
+  send(message: string, args?: unknown[]): void,
   getVariableValue(variable: string): string,
 };
 
@@ -26,7 +26,7 @@ suite('BrowserProxyTest', () => {
     let receivedMessage = 'none';
 
     // chrome.send is used for test implementation, so we retain its function
-    const mockChromeSend = (message: string, args: any) => {
+    const mockChromeSend = (message: string, args?: unknown[]) => {
       receivedMessage = message;
       chromeSend(message, args);
     };
@@ -189,8 +189,8 @@ suite('BrowserProxyTest', () => {
   test('metrics are properly recorded', () => {
     const realChromeSend = chrome.send;
     let receivedMessage: string;
-    let receivedParams: any[]|undefined;
-    const mockChromeSend = (message: string, params?: any[]) => {
+    let receivedParams: unknown[]|undefined;
+    const mockChromeSend = (message: string, params?: unknown[]) => {
       receivedMessage = message;
       receivedParams = params;
     };

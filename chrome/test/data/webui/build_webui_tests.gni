@@ -182,23 +182,17 @@ template("build_webui_tests") {
         # Note: DO NOT add new entries to the list below.
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
-        "//chrome/test/data/webui/access_code_cast",
-        "//chrome/test/data/webui/bluetooth_internals",
-        "//chrome/test/data/webui/bookmarks",
         "//chrome/test/data/webui/compose",
         "//chrome/test/data/webui/contextual_tasks",
-        "//chrome/test/data/webui/cr_components/composebox",
         "//chrome/test/data/webui/cr_components",
+        "//chrome/test/data/webui/cr_components/composebox",
         "//chrome/test/data/webui/cr_components/searchbox",
         "//chrome/test/data/webui/cr_elements",
-        "//chrome/test/data/webui/extensions",
         "//chrome/test/data/webui/glic",
         "//chrome/test/data/webui/guest_view_shared",
-        "//chrome/test/data/webui/inspect",
         "//chrome/test/data/webui/intro",
         "//chrome/test/data/webui/js",
         "//chrome/test/data/webui/lens",
-        "//chrome/test/data/webui/new_tab_footer",
         "//chrome/test/data/webui/new_tab_page",
         "//chrome/test/data/webui/print_preview",
         "//chrome/test/data/webui/settings",
@@ -206,8 +200,6 @@ template("build_webui_tests") {
         "//chrome/test/data/webui/side_panel/read_anything",
         "//chrome/test/data/webui/tab_search",
         "//chrome/test/data/webui/unexportable_keys_internals",
-        "//chrome/test/data/webui/updater",
-        "//chrome/test/data/webui/usb_internals",
         "//chrome/test/data/webui/webui_toolbar",
         "//chrome/test/data/webui/webview",
       ]

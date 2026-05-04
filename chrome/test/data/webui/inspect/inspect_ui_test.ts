@@ -126,7 +126,7 @@ suite('InspectUITest', function() {
       assertTrue(!!original);
       windowObj['updateRemoteDebuggingEnabled'] = function() {
         windowObj['updateRemoteDebuggingEnabled'] = original;
-        original.apply(window, arguments as any);
+        original.apply(window, arguments);
         setTimeout(resolve, 0);
       };
     });

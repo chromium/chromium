@@ -28,6 +28,8 @@ suite('<bookmarks-router>', function() {
       selectedFolder: '1',
       search: {
         term: '',
+        inProgress: false,
+        results: [],
       },
     });
     store.replaceSingleton();
@@ -111,6 +113,8 @@ suite('<bookmarks-router-account-and-local>', function() {
       selectedFolder: 'account_heading',
       search: {
         term: '',
+        inProgress: false,
+        results: [],
       },
     });
     store.replaceSingleton();

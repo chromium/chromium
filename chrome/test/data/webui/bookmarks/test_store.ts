@@ -7,8 +7,8 @@ import {createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmark
 import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestStore extends CrUiTestStore<BookmarksPageState> {
-  constructor(data: any) {
-    super(data as BookmarksPageState, createEmptyState(), reduceAction);
+  constructor(data: Partial<BookmarksPageState>) {
+    super(data, createEmptyState(), reduceAction);
   }
 
   replaceSingleton() {
