@@ -13128,6 +13128,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettingsAskBeforeHttp)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-share-full-link", flag_descriptions::kAndroidShareFullLinkName,
+     flag_descriptions::kAndroidShareFullLinkDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidShareFullLink)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

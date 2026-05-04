@@ -5221,6 +5221,11 @@ inline constexpr char kAndroidPkAutocorrectUnderlineV2Description[] =
     "disappears as typing resumes. V2 simplifies V1 implementation, while "
     "improving the input app-compatibility.";
 
+inline constexpr char kAndroidShareFullLinkName[] =
+    "Share Full Link on Android";
+inline constexpr char kAndroidShareFullLinkDescription[] =
+    "Enables sharing the full link instead of the canonical URL on Android.";
+
 inline constexpr char kAndroidSpellcheckFullApiBlinkName[] =
     "Enable full Android Spellchecker API support for Blink";
 inline constexpr char kAndroidSpellcheckFullApiBlinkDescription[] =

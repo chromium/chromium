@@ -376,6 +376,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-share-full-link",
+    "owners": ["jhimawan@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-sms-otp-filling",
     "owners": ["koerber@google.com", "lottermann@google.com", "chrome-otp-team@google.com"],
     "expiry_milestone": 150

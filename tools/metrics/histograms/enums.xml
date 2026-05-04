@@ -12129,6 +12129,7 @@ from previous Chrome versions.
   <int value="-668254324" label="EnableNtpBrowserPromos:enabled"/>
   <int value="-668250016" label="HttpsFirstDialogUi:enabled"/>
   <int value="-668114930" label="WindowsFollowCursor:disabled"/>
+  <int value="-668060549" label="AndroidShareFullLink:disabled"/>
   <int value="-667952041" label="CCTRealTimeEngagementSignals:enabled"/>
   <int value="-667517406" label="overscroll-history-navigation"/>
   <int value="-667213800" label="PinnedTabToastOnClose:disabled"/>
@@ -14108,6 +14109,7 @@ from previous Chrome versions.
   <int value="-8405936" label="IsolatedWebAppUnmanagedInstall:disabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
+  <int value="-7807372" label="AndroidShareFullLink:enabled"/>
   <int value="-7297564" label="AutofillCaretExtraction:disabled"/>
   <int value="-7008077" label="MediaPickerAdoption:enabled"/>
   <int value="-6927869" label="webxr-hand-anonymization-strategy"/>
