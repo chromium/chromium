@@ -12,7 +12,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 
 namespace network {
 
@@ -174,6 +176,12 @@ void ChunkedDataPipeUploadDataStream::OnSizeReceived(int32_t status,
                                                      uint64_t size) {
   DCHECK(!size_);
   DCHECK_EQ(net::OK, status_);
+
+  // `status` must be a final net error.
+  if (status > 0 || status == net::ERR_IO_PENDING) {
+    mojo::ReportBadMessage("Only net::Errors allowed.");
+    status = net::ERR_INVALID_ARGUMENT;
+  }
 
   status_ = status;
   if (status == net::OK) {

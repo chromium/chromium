@@ -18,11 +18,14 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_with_source.h"
+#include "net/test/gtest_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/test_chunked_data_pipe_getter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Most tests of this class are at the URLLoader layer. These tests focus on
@@ -462,6 +465,31 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeFailsAfterReset) {
   ASSERT_EQ(net::ERR_ACCESS_DENIED,
             chunked_upload_stream_->Init(callback.callback(),
                                          net::NetLogWithSource()));
+}
+
+// Test the case where GetSize() is passed an invalid error code. Tests both the
+// case of a positive value, and ERR_IO_PENDING.
+TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizePassedInvalidErrorCode) {
+  const std::string kData = "1234567890";
+
+  const int kTestCases[] = {net::ERR_IO_PENDING, 1};
+
+  for (int test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    // Initialization succeeds.
+    CreateAndInitChunkedUploadStream();
+
+    // Pass in bad data.
+    std::move(get_size_callback_).Run(test_case, 0);
+
+    net::TestCompletionCallback read_callback;
+    auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
+    // Reading fails.
+    EXPECT_THAT(read_callback.GetResult(chunked_upload_stream_->Read(
+                    io_buffer.get(), 1, read_callback.callback())),
+                net::test::IsError(net::ERR_INVALID_ARGUMENT));
+  }
 }
 
 // Three variations on when the stream can be closed before a request succeeds.
