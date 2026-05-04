@@ -38,9 +38,6 @@ const mockCoords = {accuracy: 100,
 
     const timestamp = position.timestamp;
     const expectedPosition = {timestamp, coords: mockCoords};
-    if (internals.runtimeFlags.approximateGeolocationWebVisibleAPIEnabled) {
-      expectedPosition.accuracyMode = precise ? 'precise' : 'approximate';
-    }
     assert_object_equals(position.toJSON(), expectedPosition);
   }, `Tests toJSON() on GeolocationPosition and GeolocationCoordinates with precise: ${precise}, approximate: ${approximate}.`);
 });

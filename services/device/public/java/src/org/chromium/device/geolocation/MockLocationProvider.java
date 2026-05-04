@@ -85,7 +85,12 @@ public class MockLocationProvider implements LocationProvider {
     private void newLocation() {
         Location location = new Location("MockLocationProvider");
         location.setTime(System.currentTimeMillis());
-        location.setAccuracy(0.5f);
+        if (mEnableHighAccuracy) {
+            location.setAccuracy(0.5f);
+        } else {
+            // A large accuracy value to simulate an approximate location.
+            location.setAccuracy(2000.0f);
+        }
         LocationProviderAdapter.onNewLocationAvailable(location, mEnableHighAccuracy);
     }
 }

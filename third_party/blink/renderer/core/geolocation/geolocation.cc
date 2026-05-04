@@ -80,14 +80,8 @@ Geoposition* CreateGeoposition(
           ? std::make_optional(position.heading)
           : std::nullopt,
       position.speed >= 0. ? std::optional(position.speed) : std::nullopt);
-  AccuracyMode accuracy_mode = AccuracyMode::kPrecise;
-  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
-    accuracy_mode = position.is_precise ? AccuracyMode::kPrecise
-                                        : AccuracyMode::kApproximate;
-  }
   return MakeGarbageCollected<Geoposition>(
-      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp),
-      V8AccuracyMode(accuracy_mode));
+      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp));
 }
 
 GeolocationPositionError* CreatePositionError(

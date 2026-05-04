@@ -12,7 +12,11 @@
           let resolveLocation;
 
           async function getAccuracyModeResult() {
-            return (await result).accuracyMode;
+            const pos = await result;
+            if (pos.coords.accuracy >= 2000) {
+              return "approximate";
+            }
+            return "precise";
           }
 
           // This function needs to be called before the <geolocation> element
