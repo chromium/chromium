@@ -262,6 +262,10 @@ class WizardContext {
   std::optional<ash::quick_start::mojom::WifiCredentials>
       quick_start_wifi_credentials;
 
+  // Whether we are showing the sign-in fatal error screen due to a SAML
+  // password verification failure.
+  std::optional<bool> is_scraped_password_verification_failure;
+
   // If this is a first login after update from CloudReady to a new version.
   // During such an update show users license agreement and data collection
   // consent.

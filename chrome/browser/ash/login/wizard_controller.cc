@@ -406,6 +406,18 @@ std::string SetupTypeToString(WizardContext::AuthChangeFlow flow_type) {
       return "Recovery";
   }
 }
+bool IsInitialSetup(const WizardContext& wizard_context) {
+  return wizard_context.knowledge_factor_setup.auth_setup_flow ==
+         WizardContext::AuthChangeFlow::kInitialSetup;
+}
+
+void InvalidateTokenAndRequestSignout(const WizardContext& wizard_context) {
+  CHECK(wizard_context.extra_factors_token.has_value());
+  ash::AuthSessionStorage::Get()->Invalidate(
+      wizard_context.extra_factors_token.value(),
+      base::BindOnce(&session_manager::SessionManager::RequestSignOut,
+                     base::Unretained(session_manager::SessionManager::Get())));
+}
 
 }  // namespace
 
@@ -1155,6 +1167,21 @@ void WizardController::ShowSignInFatalErrorScreen(
 
 void WizardController::OnSignInFatalErrorScreenExit() {
   OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
+
+  const bool is_scraped_password_verification_failure =
+      wizard_context_->is_scraped_password_verification_failure.value_or(false);
+  wizard_context_->is_scraped_password_verification_failure.reset();
+
+  // Saml confirm password screen's `kScrapedPasswordVerificationFailure` in the
+  // initial setup happens after cryptohome mount, so to properly handle errors
+  // we have to make sure we invalidate the token and sign out.
+  if (features::IsManagedLocalPinAndPasswordEnabled() &&
+      IsInitialSetup(*wizard_context_) &&
+      is_scraped_password_verification_failure) {
+    InvalidateTokenAndRequestSignout(*wizard_context_);
+    return;
+  }
+
   if (previous_screens_.contains(current_screen_) &&
       IsContextNeededForScreen(
           previous_screens_[current_screen_]->screen_id())) {
@@ -1746,9 +1773,18 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
       }
       break;
     case SamlConfirmPasswordScreen::Result::kCancel:
-      LoginDisplayHost::default_host()->StartSignInScreen();
+      if (features::IsManagedLocalPinAndPasswordEnabled() &&
+          IsInitialSetup(*wizard_context_)) {
+        // In case of an InitialSetup and user clicking cancel we should
+        // invalidate the token and logout out to the main screen, to make sure
+        // that there is no left over user state.
+        InvalidateTokenAndRequestSignout(*wizard_context_);
+      } else {
+        LoginDisplayHost::default_host()->StartSignInScreen();
+      }
       return;
     case SamlConfirmPasswordScreen::Result::kTooManyAttempts:
+      wizard_context_->is_scraped_password_verification_failure = true;
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kScrapedPasswordVerificationFailure,
           base::DictValue());
