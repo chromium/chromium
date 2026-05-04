@@ -24,6 +24,26 @@ interface PasswordTrackedElement extends HTMLInputElement {
   [HAS_BEEN_PASSWORD_SYMBOL]?: boolean;
 }
 
+// Cache that stores computed style for the latest walked element to avoid
+// repeated computations during the extraction.
+interface StyleCache {
+  // Element node scope.
+
+  // The latest element node that had computed style retrieved.
+  lastStyledNode: Element|null;
+
+  // The computed style for lastStyledNode.
+  lastComputedStyle: CSSStyleDeclaration|undefined;
+
+  // Document scope.
+
+  // The font size of the document.
+  docFontSize?: number;
+
+  // The window object.
+  window?: Window;
+}
+
 // The last known pointer position.
 // Tags that we fundamentally do not support or that contain non-content data.
 const TAG_STYLE = 'STYLE';
@@ -431,23 +451,40 @@ const HEADING_6_FONT_SIZE_MULTIPLIER = 0.67;
  *
  * @param fontSize The font size string (e.g., "16px").
  * @param doc The document to use for root font size reference.
+ * @param styleCache The style cache to use for computing styles.
  * @return The corresponding PageContentTextSize category.
  */
 function getTextSizeCategory(
-    fontSize: string, doc: Document): PageContentTextSize {
+    fontSize: string, doc: Document,
+    styleCache?: StyleCache): PageContentTextSize {
   const size = parseFloat(fontSize);
   if (isNaN(size)) {
     return PageContentTextSize.M;
   }
 
-  const rootStyle = getComputedStyleForElement(doc.documentElement);
-  if (!rootStyle) {
+  // If the cache exists, the font size should have already been computed
+  // pre-walk. Fallback to PageContentTextSize.M if it was not determined.
+  if (styleCache && styleCache.docFontSize === undefined) {
     return PageContentTextSize.M;
   }
 
-  const docFontSize = parseFloat(rootStyle.fontSize);
-  if (isNaN(docFontSize) || docFontSize <= 0) {
-    return PageContentTextSize.M;
+  let docFontSize = styleCache?.docFontSize;
+
+  // TODO(crbug.com/480945289): Remove this fallback when optimizations are
+  // enabled by default. It is evaluated at the beginning of the extraction.
+  // Fallback for cacheless path.
+  if (docFontSize === undefined) {
+    // Avoid caching the style as this would cause cache thrashing, erasing the
+    // latest walked element style.
+    const rootStyle =
+        getComputedStyleForElement(doc.documentElement, undefined);
+    if (!rootStyle) {
+      return PageContentTextSize.M;
+    }
+    docFontSize = parseFloat(rootStyle.fontSize);
+    if (isNaN(docFontSize) || docFontSize <= 0) {
+      return PageContentTextSize.M;
+    }
   }
 
   const multiplier = size / docFontSize;
@@ -660,26 +697,44 @@ function isClippedStyle(overflow: string): boolean {
  * Properly handles elements in cross-origin frames or same-origin iframes
  * by looking up the element's owner document's window object.
  *
+ * This method uses a cache to store the computed style for the latest walked
+ * node. This is done to avoid the performance hit of calling computedStyle
+ * multiple times for the same element during a walk. If an element is not the
+ * same as the latest walked node, the style is recomputed and cached.
+ *
  * @param element The DOM element to get the style for.
+ * @param styleCache The style cache to use for computing styles.
  * @return The CSSStyleDeclaration for the element, or undefined if no valid
  *     window exists.
  */
-function getComputedStyleForElement(element: Element): CSSStyleDeclaration|
-    undefined {
-  const elementWindow = element.ownerDocument?.defaultView;
-  if (elementWindow) {
-    return elementWindow.getComputedStyle(element);
+function getComputedStyleForElement(
+    element: Element, styleCache?: StyleCache): CSSStyleDeclaration|undefined {
+  // Use the cached style if available.
+  if (styleCache && element === styleCache.lastStyledNode) {
+    return styleCache.lastComputedStyle;
   }
+
+  // Find the element window to compute the style for the element.
+  let elementWindow = styleCache?.window ?? element.ownerDocument?.defaultView;
 
   // Fallback to the global window only if the element belongs to the same
   // document that the script is currently executing in. This prevents
   // erroneously computing styles using the parent frame's window for elements
   // inside a same-origin iframe that might have lost their defaultView.
-  if (element.ownerDocument === document) {
-    return window.getComputedStyle(element);
+  if (!elementWindow && element.ownerDocument === document) {
+    elementWindow = window;
   }
 
-  return undefined;
+  let style: CSSStyleDeclaration|undefined = undefined;
+  if (elementWindow) {
+    style = elementWindow.getComputedStyle(element);
+  }
+
+  if (styleCache) {
+    styleCache.lastStyledNode = element;
+    styleCache.lastComputedStyle = style;
+  }
+  return style;
 }
 
 /**
@@ -706,13 +761,15 @@ function getViewportRect(doc: Document): Rect {
  * @param interactiveNodeIds The set of interactive node IDs.
  * @param interactionInfo The pre-calculated interaction info for the element.
  * @param annotatedRoles The annotated roles for the element.
+ * @param labelForDOMNodeID The DOM node ID of the associated control.
+ * @param styleCache The style cache to use for computing styles.
  * @return True if the element is a generic container, false otherwise.
  */
 function isGenericContainer(
     element: HTMLElement, interactiveNodeIds: InteractiveNodeIds,
     interactionInfo: PageContentNodeInteractionInfo|undefined,
     annotatedRoles: PageContentAnnotatedRole[],
-    labelForDOMNodeID?: number): boolean {
+    labelForDOMNodeID: number|undefined, styleCache?: StyleCache): boolean {
   // If the element is a label with a valid associated node ID, it is
   // considered a generic container.
   if (labelForDOMNodeID !== undefined) {
@@ -749,7 +806,7 @@ function isGenericContainer(
     return true;
   }
 
-  const style = getComputedStyleForElement(element);
+  const style = getComputedStyleForElement(element, styleCache);
   const position = style?.position;
   if (position === ATTR_POSITION_FIXED || position === ATTR_POSITION_STICKY) {
     return true;
@@ -869,11 +926,12 @@ function getScrollerInfo(
  * @param element The element to process.
  * @param actionableMode Whether to extract actionable interaction info.
  * @param hasCanvas Whether there is a canvas element on the page.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentNodeInteractionInfo or undefined if none.
  */
 function getNodeInteractionInfo(
-    element: HTMLElement, actionableMode: boolean,
-    hasCanvas: boolean): PageContentNodeInteractionInfo|undefined {
+    element: HTMLElement, actionableMode: boolean, hasCanvas: boolean,
+    styleCache?: StyleCache): PageContentNodeInteractionInfo|undefined {
   const interactionInfo: PageContentNodeInteractionInfo = {
     clickabilityReasons: [],
     isDisabled: false,
@@ -888,9 +946,9 @@ function getNodeInteractionInfo(
     return undefined;
   }
 
-  const style = getComputedStyleForElement(element);
+  const style = getComputedStyleForElement(element, styleCache);
 
-  // Scroller Info
+  // Scroller Info.
   const scrollerInfo = getScrollerInfo(element, style);
   if (scrollerInfo) {
     interactionInfo.scrollerInfo = scrollerInfo;
@@ -1449,9 +1507,11 @@ function applyTextTransformAndMasking(
  * Generates attributes for a text node.
  *
  * @param domNode The text node to process.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentAttributes or null if content is empty.
  */
-function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
+function getAttributesForTextNode(
+    domNode: Node, styleCache?: StyleCache): PageContentAttributes|null {
   const textContent = domNode.textContent;
   if (!textContent) {
     return null;
@@ -1464,7 +1524,12 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
     return null;
   }
 
-  const style = getComputedStyleForElement(parentElement);
+  // TODO(crbug.com/507100154): Avoid cache thrashing when accessing
+  // the parent element style.
+  // The parent element must match the latest walked node for the
+  // style cache to work. The parent and latest walked node can
+  // differ when text nodes have siblings.
+  const style = getComputedStyleForElement(parentElement, styleCache);
   if (!style) {
     return null;
   }
@@ -1485,8 +1550,8 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
   const hasEmphasis = weight === 'bold' || weight === '700' ||
       parseInt(weight) >= 700 || style.fontStyle === 'italic';
   const textSize = domNode.ownerDocument ?
-    getTextSizeCategory(style.fontSize, domNode.ownerDocument) :
-    PageContentTextSize.M;
+      getTextSizeCategory(style.fontSize, domNode.ownerDocument, styleCache) :
+      PageContentTextSize.M;
   const color = parseCssColor(style.color)?.toString();
 
   return {
@@ -1766,7 +1831,7 @@ function isLikelyJSCustomPasswordField(fieldValue: string): boolean {
  * Checks if the element is a custom password field (e.g. using CSS
  * text-security or JS masking).
  */
-function isCustomPassword(element: Element): boolean {
+function isCustomPassword(element: Element, styleCache?: StyleCache): boolean {
   if (element.tagName === TAG_INPUT || element.tagName === TAG_TEXTAREA) {
     const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
     if (value && isLikelyJSCustomPasswordField(value)) {
@@ -1774,21 +1839,21 @@ function isCustomPassword(element: Element): boolean {
     }
   }
 
-  const style = getComputedStyleForElement(element);
+  const style = getComputedStyleForElement(element, styleCache);
   const textSecurity = style?.getPropertyValue('-webkit-text-security');
   return !!textSecurity && textSecurity !== 'none';
 }
-
-
 
 /**
  * Checks if the element is a password field (standard or custom).
  *
  * @param domNode The DOM element to process.
  * @param tagName The tag name of the element.
+ * @param styleCache The style cache to use for computing styles.
  * @return True if the element is a password field.
  */
-function isPasswordField(domNode: HTMLElement, tagName: string): boolean {
+function isPasswordField(
+    domNode: HTMLElement, tagName: string, styleCache?: StyleCache): boolean {
   if (tagName === TAG_INPUT &&
       ((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] ||
        (domNode as HTMLInputElement).type === PASSWORD_TYPE)) {
@@ -1798,7 +1863,7 @@ function isPasswordField(domNode: HTMLElement, tagName: string): boolean {
 
   if (tagName === TAG_INPUT || tagName === TAG_TEXTAREA) {
     // Check for custom password fields (CSS or JS masked).
-    return isCustomPassword(domNode);
+    return isCustomPassword(domNode, styleCache);
   }
   return false;
 }
@@ -1809,10 +1874,12 @@ function isPasswordField(domNode: HTMLElement, tagName: string): boolean {
  *
  * @param domNode The element to process.
  * @param tagName The tag name of the element.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentFormControlData.
  */
 function getFormControlData(
-    domNode: HTMLElement, tagName: string): PageContentFormControlData {
+    domNode: HTMLElement, tagName: string,
+    styleCache?: StyleCache): PageContentFormControlData {
   // There must be a type returned, throw an exception if not.
   const formControlType = getFormControlType(domNode)!;
   const formControlData: PageContentFormControlData = {
@@ -1831,7 +1898,7 @@ function getFormControlData(
   const value = (domNode as HTMLInputElement).value;
   if (value !== undefined) {
     let needRedaction = false;
-    if (isPasswordField(domNode, tagName)) {
+    if (isPasswordField(domNode, tagName, styleCache)) {
       needRedaction = !!value;
       // Exclude password field value mirroring Blink's logic.
       formControlData.redactionDecision = needRedaction ?
@@ -1924,12 +1991,16 @@ function getTableNameForTableNode(domNode: HTMLElement): PageContentTableData {
  * @param domNode The element to process.
  * @param nonce Unique identifier for the extraction run.
  * @param depth Current recursion depth.
+ * @param maxDepth Maximum depth for the extraction.
+ * @param actionableMode Whether to extract actionable information.
+ * @param paidContentContext Context regarding paid content.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentNode or null if no basic match found.
  */
 function getBasicContentForNonGenericElement(
     domNode: HTMLElement, nonce: string, depth: number, maxDepth: number,
-    actionableMode: boolean,
-    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
+    actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
+    styleCache?: StyleCache): PageContentNode|null {
   const tagName = getStandardTagName(domNode);
 
   switch (tagName) {
@@ -2070,7 +2141,7 @@ function getBasicContentForNonGenericElement(
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.FORM_CONTROL,
-          formControlData: getFormControlData(domNode, tagName),
+          formControlData: getFormControlData(domNode, tagName, styleCache),
         },
       };
     }
@@ -2144,6 +2215,10 @@ function getBasicContentForNonGenericElement(
  *     into the content attributes of the generated node.
  * @param interactionInfo The pre-calculated interaction info which will be
  *     merged into the content attributes of the generated node.
+ * @param actionableMode Whether to extract actionable information.
+ * @param interactiveNodeIds The set of interactive node IDs.
+ * @param paidContentContext Context regarding paid content.
+ * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentNode or null if element should be skipped.
  */
 function getContentForElementNode(
@@ -2151,8 +2226,8 @@ function getContentForElementNode(
     annotatedRoles: PageContentAnnotatedRole[],
     interactionInfo: PageContentNodeInteractionInfo|undefined,
     actionableMode: boolean, interactiveNodeIds: InteractiveNodeIds,
-    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
-
+    paidContentContext: PaidContentExtractionContext,
+    styleCache?: StyleCache): PageContentNode|null {
   let labelForDOMNodeID: number | undefined = undefined;
   if (actionableMode && getStandardTagName(domNode) === TAG_LABEL) {
     labelForDOMNodeID = getAssociatedControlDOMNodeID(
@@ -2163,12 +2238,14 @@ function getContentForElementNode(
 
   // 1. Try to get basic content for non-generic elements.
   contentNode = getBasicContentForNonGenericElement(
-      domNode, nonce, depth, maxDepth, actionableMode, paidContentContext);
+      domNode, nonce, depth, maxDepth, actionableMode, paidContentContext,
+      styleCache);
 
   // 2. Fallback: Generic Container.
   if (!contentNode &&
-      isGenericContainer(domNode, interactiveNodeIds, interactionInfo,
-                         annotatedRoles, labelForDOMNodeID)) {
+      isGenericContainer(
+          domNode, interactiveNodeIds, interactionInfo, annotatedRoles,
+          labelForDOMNodeID, styleCache)) {
     contentNode = {
       childrenNodes: [],
       contentAttributes: {
@@ -2212,12 +2289,13 @@ function getContentForElementNode(
  * @param domNode The element to check.
  * @param annotatedRoles The array to populate with roles.
  * @param paidContentContext Context regarding paid content.
+ * @param styleCache The style cache to use for computing styles.
  */
 function addAnnotatedRoles(
-    domNode: HTMLElement,
-    annotatedRoles: PageContentAnnotatedRole[],
-    paidContentContext: PaidContentExtractionContext): void {
-  const style = getComputedStyleForElement(domNode);
+    domNode: HTMLElement, annotatedRoles: PageContentAnnotatedRole[],
+    paidContentContext: PaidContentExtractionContext,
+    styleCache?: StyleCache): void {
+  const style = getComputedStyleForElement(domNode, styleCache);
   if (style?.contentVisibility === STYLE_VALUE_HIDDEN) {
     annotatedRoles.push(PageContentAnnotatedRole.CONTENT_HIDDEN);
   }
@@ -2316,19 +2394,22 @@ function toEnclosingRect(rect: Rect): Rect {
  * @param element The HTML element to calculate geometry for.
  * @param attributes The attributes object where geometry will be stored.
  * @param context The clipping context inherited from parent elements.
+ * @param actionableMode Whether to extract actionable information.
+ * @param styleCache The style cache to use for computing styles.
  * @return The new ClippingContext for this element's children, based on
  *     positioning styles.
  */
 function addNodeGeometry(
     element: HTMLElement, attributes: PageContentAttributes,
-    context: ClippingContext, actionableMode: boolean): ClippingContext {
+    context: ClippingContext, actionableMode: boolean,
+    styleCache?: StyleCache): ClippingContext {
   // Only process element nodes when in actionable mode and return incoming
   // context in that case since the resulting rectangle isn't needed.
   if (!actionableMode) {
     return context;
   }
 
-  const style = getComputedStyleForElement(element);
+  const style = getComputedStyleForElement(element, styleCache);
   const position = style?.position;
 
   // Select the appropriate clip rect based on position.
@@ -2443,19 +2524,20 @@ function addNodeGeometry(
  * @param paidContentContext Context regarding paid content.
  * @param hasCanvas Whether there is a canvas element on the page.
  * @param parentClipRect The clipping rectangle of the parent.
+ * @param styleCache The style cache to use for computing styles.
  * @return A new PageContentNode if valid content was found, null otherwise.
  */
 function maybeGenerateContentNode(
     domNode: Node, nonce: string, depth: number, maxDepth: number,
     interactiveNodeIds: InteractiveNodeIds, actionableMode: boolean,
     paidContentContext: PaidContentExtractionContext, hasCanvas: boolean,
-    parentContext: ClippingContext): {
+    parentContext: ClippingContext, styleCache?: StyleCache): {
   node: PageContentNode|null,
   nextClippingContext: ClippingContext,
 } {
   let contentAttributes: PageContentAttributes|null = null;
   if (domNode.nodeType === Node.TEXT_NODE) {
-    contentAttributes = getAttributesForTextNode(domNode);
+    contentAttributes = getAttributesForTextNode(domNode, styleCache);
     if (contentAttributes) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
@@ -2474,13 +2556,13 @@ function maybeGenerateContentNode(
   } else if (domNode.nodeType === Node.ELEMENT_NODE) {
     const element = domNode as HTMLElement;
     const annotatedRoles: PageContentAnnotatedRole[] = [];
-    addAnnotatedRoles(element, annotatedRoles, paidContentContext);
+    addAnnotatedRoles(element, annotatedRoles, paidContentContext, styleCache);
     const interactionInfo =
-        getNodeInteractionInfo(element, actionableMode, hasCanvas);
+        getNodeInteractionInfo(element, actionableMode, hasCanvas, styleCache);
 
     const contentNode = getContentForElementNode(
         element, nonce, depth, maxDepth, annotatedRoles, interactionInfo,
-        actionableMode, interactiveNodeIds, paidContentContext);
+        actionableMode, interactiveNodeIds, paidContentContext, styleCache);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
@@ -2494,8 +2576,8 @@ function maybeGenerateContentNode(
       }
 
       const nextClippingContext = addNodeGeometry(
-          element, contentNode.contentAttributes, parentContext,
-          actionableMode);
+          element, contentNode.contentAttributes, parentContext, actionableMode,
+          styleCache);
       return {node: contentNode, nextClippingContext};
     }
   }
@@ -2505,8 +2587,11 @@ function maybeGenerateContentNode(
 
 /**
  * Checks if a node should be accepted for extraction.
+ * @param node The node to check.
+ * @param styleCache The style cache to use for computing styles.
+ * @return Indicates whether the node should be accepted for extraction.
  */
-function shouldAcceptNode(node: Node): number {
+function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
   const parent = node.parentElement;
   if (parent && TAGS_TO_SKIP_SUBTREE.includes(getStandardTagName(parent))) {
     return NodeFilter.FILTER_REJECT;
@@ -2518,11 +2603,10 @@ function shouldAcceptNode(node: Node): number {
     if (TAGS_TO_REJECT.includes(tagName)) {
       return NodeFilter.FILTER_REJECT;
     }
-    const windowObj = element.ownerDocument?.defaultView;
-    if (!windowObj) {
+    const style = getComputedStyleForElement(element, styleCache);
+    if (!style) {
       return NodeFilter.FILTER_REJECT;
     }
-    const style = windowObj.getComputedStyle(element);
     if (style.display === ATTR_DISPLAY_NONE) {
       // Ignore the nodes and all their descendants that do not have
       // any display style which means that they would not have a
@@ -2543,12 +2627,11 @@ function shouldAcceptNode(node: Node): number {
     // this is the best proxy we have for that due to the lack of
     // `getComputedStyle()` for text element nodes as opposed to the
     // LayoutObject in blink.
-    const windowObj = parent?.ownerDocument?.defaultView;
-    if (!windowObj) {
+    if (!parent) {
       return NodeFilter.FILTER_REJECT;
     }
-    const style = windowObj.getComputedStyle(parent);
-    if (style.display === ATTR_DISPLAY_NONE ||
+    const style = getComputedStyleForElement(parent, styleCache);
+    if (!style || style.display === ATTR_DISPLAY_NONE ||
         style.visibility === ATTR_VISIBILITY_HIDDEN) {
       return NodeFilter.FILTER_REJECT;
     }
@@ -2595,12 +2678,13 @@ interface AncestorStackItem {
  * @param actionableMode Whether to extract actionable interaction info.
  * @param paidContentContext Context regarding paid content.
  * @param hasCanvas Whether there is a canvas element on the page.
+ * @param styleCache The style cache to use for computing styles.
  */
 function generateAndPushContentNode(
     node: Node, nonce: string, maxDepth: number,
     ancestorStack: AncestorStackItem[], interactiveNodeIds: InteractiveNodeIds,
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
-    hasCanvas: boolean) {
+    hasCanvas: boolean, styleCache?: StyleCache) {
   const parentStackItem = ancestorStack[ancestorStack.length - 1]!;
 
   // 2. Generate Content Node. Skip nodes that are too deep while keep
@@ -2615,7 +2699,7 @@ function generateAndPushContentNode(
 
   const result = maybeGenerateContentNode(
       node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
-      paidContentContext, hasCanvas, parentContext);
+      paidContentContext, hasCanvas, parentContext, styleCache);
   if (!result.node) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -2634,7 +2718,7 @@ function generateAndPushContentNode(
 
   // Re-check visibility for stack logic.
   const element = node as Element;
-  const style = getComputedStyleForElement(element);
+  const style = getComputedStyleForElement(element, styleCache);
   const isVisible = style?.visibility === ATTR_VISIBILITY_VISIBLE;
 
   ancestorStack.push({
@@ -2745,6 +2829,11 @@ function getAssociatedControlDOMNodeID(
  *     processed iframes.
  * @param depth The current depth of the recursion. Will stop extraction if the
  *     depth limit is reached.
+ * @param maxDepth Maximum depth for the extraction.
+ * @param actionableMode Whether to extract actionable information.
+ * @param extractPaidContent Whether to extract paid content information.
+ * @param attemptPaidContentJsonFixing Whether to attempt fixing JSON data for
+ *     paid content.
  * @return The extracted annotated page content, or null if the depth limit is
  *     reached or body is missing.
  */
@@ -2762,6 +2851,24 @@ export function extractAnnotatedPageContent(
     return null;
   }
 
+  const styleCache = !isPageContextIPCOptimizationEnabled() ? undefined : {
+    lastStyledNode: null,
+    lastComputedStyle: undefined,
+    window: documentWindow,
+  } as StyleCache;
+
+  // Pre-calculate root font size if optimization is enabled.
+  if (styleCache) {
+    let fontSize: number|undefined = undefined;
+    const rootStyle = documentWindow.getComputedStyle(document.documentElement);
+    if (rootStyle) {
+      const parsedSize = parseFloat(rootStyle.fontSize);
+      if (!isNaN(parsedSize) && parsedSize > 0) {
+        fontSize = parsedSize;
+      }
+    }
+    styleCache.docFontSize = fontSize;
+  }
 
   const root = document.body;
   if (!root) {
@@ -2816,7 +2923,7 @@ export function extractAnnotatedPageContent(
           normalClip: getViewportRect(document),
           absoluteClip: getViewportRect(document),
         },
-        actionableMode),
+        actionableMode, styleCache),
   }];
 
   // Collect interactive nodes (focused element, selection start/end).
@@ -2833,7 +2940,7 @@ export function extractAnnotatedPageContent(
           root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, undefined) :
       document.createTreeWalker(
           root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, (node) => {
-            return shouldAcceptNode(node);
+            return shouldAcceptNode(node, styleCache);
           });
 
   // Helper to find the next sibling after the current node's subtree.
@@ -2861,7 +2968,7 @@ export function extractAnnotatedPageContent(
   let currentNode = walker.nextNode();
   while (currentNode) {
     if (isPageContextIPCOptimizationEnabled()) {
-      const filterResult = shouldAcceptNode(currentNode);
+      const filterResult = shouldAcceptNode(currentNode, styleCache);
       if (filterResult === NodeFilter.FILTER_REJECT) {
         currentNode = jumpSubtree(walker);
         continue;
@@ -2917,7 +3024,7 @@ export function extractAnnotatedPageContent(
     // walking the tree since future nodes might be shallow enough.
     generateAndPushContentNode(
         currentNode, nonce, maxDepth, ancestorStack, interactiveNodeIds,
-        actionableMode, paidContentContext, hasCanvas);
+        actionableMode, paidContentContext, hasCanvas, styleCache);
 
     currentNode = walker.nextNode();
   }
