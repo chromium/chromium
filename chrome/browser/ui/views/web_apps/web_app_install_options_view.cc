@@ -49,6 +49,9 @@ namespace {
 
 constexpr int kIconArrowSize = 24;
 constexpr int kIllustrationCornerRadius = 8;
+constexpr int kMacArrowWidth = 64;
+constexpr int kMacArrowHeight = 94;
+constexpr int kMacArrowBottomPadding = 20;
 
 // A simple implementation of rounded shadows around the icon. The vector
 // dimensions correspond to the x and y offset of the shadow. The shadow will
@@ -224,14 +227,42 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
       break;
     }
     case InstallOsType::kMac: {
-      AddChildView(views::Builder<views::Label>()
-                       // TODO(crbug.com/503767931): Localize this string.
-                       .SetText(u"Installer options Mac view")
-                       .SetTextContext(views::style::CONTEXT_LABEL)
-                       .SetTextStyle(views::style::STYLE_PRIMARY)
-                       .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
-                       .Build());
-      // TODO(b/473615915): Implement MacOS installation options.
+      gfx::ImageSkia displayed_image = ApplyShadowToIcon(large_icon_image);
+
+      AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetMainAxisAlignment(
+                  views::BoxLayout::MainAxisAlignment::kCenter)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kCenter)
+              .SetBetweenChildSpacing(
+                  views::LayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
+              .AddChildren(
+                  CreateIconWithLabelView(
+                      ui::ImageModel::FromImageSkia(displayed_image),
+                      url_formatter::FormatOriginForSecurityDisplay(
+                          url::Origin::Create(start_url),
+                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
+                      displayed_image.size(),
+                      /*corner_radius=*/0, &icon_view_),
+                  views::Builder<views::ImageView>()
+                      .SetImage(ui::ImageModel::FromVectorIcon(
+                          kPwaInstallArrowCustomIcon, ui::kColorIcon,
+                          kMacArrowWidth))
+                      .SetPreferredSize(
+                          gfx::Size(kMacArrowWidth, kMacArrowHeight))
+                      .SetBorder(views::CreateEmptyBorder(
+                          gfx::Insets::TLBR(0, 0, kMacArrowBottomPadding, 0))),
+                  views::Builder<views::Label>()
+                      // TODO(crbug.com/507108235): Replace with
+                      // Mac Apps Folder.
+                      .SetText(u"[Apps Folder]")
+                      .SetTooltipText(u"Apps Folder Placeholder"))
+              .Build());
+
+      MaybeApplyOsIconMasking(large_icon_image, is_maskable);
       break;
     }
     case InstallOsType::kOther:
