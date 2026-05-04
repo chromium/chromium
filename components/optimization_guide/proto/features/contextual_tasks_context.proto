@@ -47,6 +47,9 @@ message ContextualTasksContextQuality {
   // Cosine similarity scores between the query embedding and embeddings of
   // up to N (currently 10) passages from the active tab.
   repeated float query_active_tab_passage_similarities = 7;
+
+  // The version of the model tab relevance tflite model.
+  int64 tab_selection_model_version = 8 [features = { field_presence: EXPLICIT }];
 }
 
 // Next ID: 10

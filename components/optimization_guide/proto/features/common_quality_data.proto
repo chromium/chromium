@@ -970,7 +970,7 @@ message TableRowData {
 // there can only be one unique value.
 // Currently this is only tracked for the main frame. The IDs correspond to the
 // DOM node IDs of the content nodes in the main frame.
-// Next ID: 5
+// Next ID: 6
 message PageInteractionInfo {
   // The content node ID of the content node that is currently focused.
   // TODO(linnan): Deprecate this field in favor of
@@ -988,6 +988,11 @@ message PageInteractionInfo {
 
   // The identifier of the frame that currently has focus.
   DocumentIdentifier focused_frame = 4 [features = { field_presence: EXPLICIT }];
+
+  // The identifier of the frame that currently has accessibility focus. If the
+  // field is present but the identifier is empty, it means no frame has
+  // accessibility focus.
+  DocumentIdentifier accessibility_focused_frame = 5 [features = { field_presence: EXPLICIT }];
 }
 
 message Point {
@@ -1272,6 +1277,112 @@ message DocumentSelection {
 
   // The selection in the document.
   Selection selection = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Next ID: 2
+message AgentContainerConfig {
+  // If the same location is provided multiple times with different metadata,
+  // it is undefined which one is actually used.
+  //
+  // Note: a global blocklist may be written by keeping this field empty.
+  //
+  // Any attempt to navigate/actuate on a location that has no matching
+  // LocationRule will be disallowed.
+  //
+  // Note: location_rules may include a wildcard Location, to allow the agent
+  // to visit any site (with a given set of resources and actuation level).
+  repeated LocationRule location_rules = 1;
+}
+
+// A rule governing how a web location may or may not be used.
+// Next ID: 4
+message LocationRule {
+  // The location (origin, site, etc.).
+  Location location = 1 [features = { field_presence: EXPLICIT }];
+
+  // Metadata/controls associated with this rule.
+  RuleMetadata metadata = 2 [features = { field_presence: EXPLICIT }];
+
+  // Navigations to this location must have one of these sources to match this
+  // rule. If no sources are provided, then all navigations to this location
+  // match this rule.
+  repeated NavigationSource navigation_sources = 3;
+}
+
+// Locations that the agent may visit and/or actuate.
+// May be scoped to an origin, site, or a wildcard token that matches any URL.
+// Next ID: 4
+message Location {
+  oneof identifier_oneof {
+    Origin origin = 1;
+
+    Site site = 2;
+
+    // Wildcard that matches any URL.
+    AnySite wildcard = 3;
+  }
+}
+
+// Next ID: 4
+message Origin {
+  Protocol protocol = 1 [features = { field_presence: EXPLICIT }];
+
+  string host = 2 [features = { field_presence: EXPLICIT }];
+
+  // Assumes the default port for the protocol, if absent.
+  int32 port = 3 [features = { field_presence: EXPLICIT }];
+}
+
+// Next ID: 3
+message Site {
+  Protocol protocol = 1 [features = { field_presence: EXPLICIT }];
+
+  string domain = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// This empty struct represents a wildcard token that matches any URL.
+// Next ID: 1
+message AnySite {
+}
+
+// Next ID: 3
+message RuleMetadata {
+  // The set of resources that the agent may access when visiting/actuating
+  // according to this rule. May be empty if no resources are accessible.
+  repeated AgentResource accessible_resources = 1;
+
+  // How the agent may interact with the page.
+  // The field is repeated to allow for multiple capabilities to be specified.
+  // Empty list means no capabilities are allowed and the model is blocked
+  // from interacting with this location.
+  repeated ActuationCapability capabilities = 2;
+
+  // Resources that may be accessible to the agent.
+  // RESOURCE_UNKNOWN is ignored, RESOURCE_SESSION is the only meaningful value
+  // right now.
+  // Next ID: 2
+  enum AgentResource {
+    RESOURCE_UNKNOWN = 0;
+
+    // The agent may use the user's existing session.
+    RESOURCE_SESSION = 1;
+  }
+
+  // What capabilities the agent has permission for when visiting/actuating on
+  // a location.
+  // Next ID: 2
+  enum ActuationCapability {
+    CAPABILITY_UNKNOWN = 0;
+
+    // The agent may navigate to and interact with the page. The agent may also
+    // execute any tool.
+    CAPABILITY_ALL = 1;
+  }
+}
+
+// Next ID: 2
+message NavigationSource {
+  Location source = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Selection text affinity, part of the a11y snapshot.
@@ -2500,6 +2611,19 @@ enum AnnotatedRole {
   ANNOTATED_ROLE_PAID_CONTENT = 14;
 
   reserved 1 to 4;
+}
+
+// Next ID: 5
+enum Protocol {
+  PROTOCOL_UNKNOWN = 0;
+
+  PROTOCOL_HTTP = 1;
+
+  PROTOCOL_HTTPS = 2;
+
+  PROTOCOL_WS = 3;
+
+  PROTOCOL_WSS = 4;
 }
 
 // Whether or not status of the model's output is a success (i.e "is good") or

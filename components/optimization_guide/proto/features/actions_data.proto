@@ -504,7 +504,7 @@ message TaskMetadata {
 }
 
 // Metadata related to action security.
-// Next ID: 2
+// Next ID: 3
 message SecurityMetadata {
   // If the server predicted that new mainframe origins may be navigated to as a
   // result of the current task turn, those are given here.
@@ -512,6 +512,12 @@ message SecurityMetadata {
   // These origins, if any, are added to the set of all writeable origins kept
   // by the Chrome browser process.
   repeated string added_writable_mainframe_origins = 1;
+
+  // If set, this config will be used to determine which locations the agent
+  // may visit and what resources and capabilities are available.
+  // This field is only respected the first turn if it is received; any
+  // subsequent turns' values are ignored.
+  AgentContainerConfig agent_container_config = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Options for screenshot collection.
@@ -750,8 +756,7 @@ message ActionsResult {
 }
 
 // A request to start a task.
-// Next ID: 1
-
+// Next ID: 2
 message BrowserStartTask {
   // The id of the tab the task should be started in. If not set, the task
   // will be started in a new tab.
