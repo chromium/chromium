@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -35,12 +36,14 @@ inline constexpr char kNSSCertsMigratedToServerCertDb[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(SERVER_CERTIFICATE_DATABASE)
 BASE_DECLARE_FEATURE(kEnableNSSCertMigration);
 #endif
 
 // KeyedService that loads and provides policies around usage of Certificates
 // for TLS.
-class ServerCertificateDatabaseService : public KeyedService {
+class COMPONENT_EXPORT(SERVER_CERTIFICATE_DATABASE)
+    ServerCertificateDatabaseService : public KeyedService {
  public:
 #if BUILDFLAG(IS_CHROMEOS)
   // These values are persisted to logs. Entries should not be renumbered and

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 #define COMPONENTS_SERVER_CERTIFICATE_DATABASE_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -19,7 +20,8 @@ class ServerCertificateDatabaseService;
 // ServerCertificateDatabase.
 // Does not migrate client certificates as those are handled by Kcer and a
 // separate migration process handles those.
-class ServerCertificateDatabaseNSSMigrator {
+class COMPONENT_EXPORT(SERVER_CERTIFICATE_DATABASE)
+    ServerCertificateDatabaseNSSMigrator {
  public:
   struct MigrationResult {
     // The number of certs that were read from the user's NSS database.

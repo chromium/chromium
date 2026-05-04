@@ -6,9 +6,15 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [ "server_certificate_database.proto" ]
+  cc_generator_options =
+      "dllexport_decl=COMPONENT_EXPORT(SERVER_CERTIFICATE_DATABASE):"
+  cc_include = "base/component_export.h"
+  component_build_force_source_set = true
+  defines = [ "IS_SERVER_CERTIFICATE_DATABASE_IMPL" ]
 }
 
-static_library("server_certificate_database") {
+component("server_certificate_database") {
+  defines = [ "IS_SERVER_CERTIFICATE_DATABASE_IMPL" ]
   sources = [
     "server_certificate_database.cc",
     "server_certificate_database.h",
