@@ -108,9 +108,6 @@ using UIPresentation =
   AUTHENTICATOR_REQUEST_EVENT_0(OnChromeProfileCreatePasskeyAccepted)         \
   /* Called when the user accepts passkey creation dialog. */                 \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreationConfirmed)                       \
-  /* Called when the user accepts the warning dialog for creating a GPM */    \
-  /* passkey in incognito mode.*/                                             \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMForgotPinPressed)                        \
   /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
@@ -276,7 +273,6 @@ struct AuthenticatorRequestDialogModel
     kGPMTouchID,
     // GPM passkey creation.
     kGPMCreatePasskey,
-    kGPMConfirmOffTheRecordCreate,
     kChromeProfileCreatePasskey,
     kGPMError,
     kGPMConnecting,

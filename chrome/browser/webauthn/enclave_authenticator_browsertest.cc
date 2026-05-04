@@ -3099,16 +3099,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   delegate_observer()->WaitForUI();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
   model_observer()->WaitForStep();
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
-  dialog_model()->OnGPMConfirmOffTheRecordCreate();
-  model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
@@ -3132,11 +3128,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   delegate_observer()->WaitForUI();
 
   model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
-  model_observer()->WaitForStep();
-  model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
-  dialog_model()->OnGPMConfirmOffTheRecordCreate();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -3712,12 +3704,6 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorIncognitoBrowserTest,
   // Finally, if the user manually chooses the enclave, it should be the default
   // again. Attempting to bootstrap should be enough.
   dialog_model()->OnGPMCreationSelected();
-  if (GetParam()) {
-    EXPECT_EQ(
-        dialog_model()->step(),
-        AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
-    dialog_model()->OnGPMConfirmOffTheRecordCreate();
-  }
   EXPECT_EQ(
       dialog_model()->step(),
       AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);

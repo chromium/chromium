@@ -812,26 +812,6 @@ class AuthenticatorCreateGpmPasskeySheetModel
   void OnCancel() override;
 };
 
-// The sheet shown for warning a user about creating a Google Password Manager
-// passkey in incognito mode.
-class AuthenticatorGpmIncognitoCreateSheetModel
-    : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorGpmIncognitoCreateSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-
-  ~AuthenticatorGpmIncognitoCreateSheetModel() override;
-
- private:
-  // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-  bool IsCancelButtonVisible() const override;
-  std::u16string GetCancelButtonLabel() const override;
-  AcceptButtonState GetAcceptButtonState() const override;
-  std::u16string GetAcceptButtonLabel() const override;
-  void OnAccept() override;
-};
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during
 // passkey creation.

@@ -1052,11 +1052,6 @@ void GPMEnclaveController::OnGPMCreationSelected() {
   // Reset after each GPM selection to ensure correct metric emission.
   model_->in_onboarding_flow = false;
 
-  if (model_->is_off_the_record && !off_the_record_confirmed_) {
-    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
-    return;
-  }
-
   if (account_state_ != AccountState::kLoading) {
     // `kLoading` will call `OnGPMCreationSelected` again, therefore we don't
     // emit in these states.
@@ -1280,12 +1275,6 @@ void GPMEnclaveController::OnGPMCreationConfirmed() {
         NOTREACHED();
     }
   }
-}
-
-void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
-  CHECK_EQ(model_->step(), Step::kGPMConfirmOffTheRecordCreate);
-  off_the_record_confirmed_ = true;
-  OnGPMCreationSelected();
 }
 
 void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {

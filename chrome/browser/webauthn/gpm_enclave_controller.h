@@ -300,7 +300,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   void OnGPMTrustThisComputer() override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
   void OnGPMCreationConfirmed() override;
-  void OnGPMConfirmOffTheRecordCreate() override;
   void OnGPMPinEntered(const std::u16string& pin) override;
   void OnGPMTouchIDComplete(bool success) override;
   void OnGPMForgotPinPressed() override;
@@ -420,10 +419,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // Set to true when the a new PIN is being set up to satisfy a UV requirement.
   bool setting_new_pin_for_uv_ = false;
-
-  // Records when the user has confirmed credential creation in an Incognito
-  // context.
-  bool off_the_record_confirmed_ = false;
 
   // Whether the user confirmed GPM PIN creation in the flow.
   bool gpm_pin_creation_confirmed_ = false;

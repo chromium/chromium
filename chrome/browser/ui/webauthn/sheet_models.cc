@@ -1977,52 +1977,6 @@ void AuthenticatorCreateGpmPasskeySheetModel::OnBack() {
   AuthenticatorSheetModelBase::OnBack();
 }
 
-// AuthenticatorGpmIncognitoCreateSheetModel ---------------------------------
-AuthenticatorGpmIncognitoCreateSheetModel::
-    AuthenticatorGpmIncognitoCreateSheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kHidden) {
-  // Incognito always has a dark color scheme and so the two illustrations are
-  // the same.
-  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_INCOGNITO,
-                                IDR_WEBAUTHN_GPM_INCOGNITO);
-}
-
-AuthenticatorGpmIncognitoCreateSheetModel::
-    ~AuthenticatorGpmIncognitoCreateSheetModel() = default;
-
-std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_INCOGNITO_CREATE_TITLE);
-}
-
-std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetStepDescription()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_INCOGNITO_CREATE_DESC);
-}
-
-bool AuthenticatorGpmIncognitoCreateSheetModel::IsCancelButtonVisible() const {
-  return true;
-}
-
-std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetCancelButtonLabel()
-    const {
-  return l10n_util::GetStringUTF16(IDS_CANCEL);
-}
-
-AuthenticatorRequestSheetModel::AcceptButtonState
-AuthenticatorGpmIncognitoCreateSheetModel::GetAcceptButtonState() const {
-  return AcceptButtonState::kEnabled;
-}
-
-std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetAcceptButtonLabel()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
-}
-void AuthenticatorGpmIncognitoCreateSheetModel::OnAccept() {
-  dialog_model()->OnGPMConfirmOffTheRecordCreate();
-}
-
 // AuthenticatorTrustThisComputerCreationSheetModel ---------------------
 
 AuthenticatorTrustThisComputerCreationSheetModel::

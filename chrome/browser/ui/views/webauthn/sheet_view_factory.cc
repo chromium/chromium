@@ -369,11 +369,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorCreateGpmPasskeySheetModel>(
               dialog_model));
       break;
-    case Step::kGPMConfirmOffTheRecordCreate:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorGpmIncognitoCreateSheetModel>(
-              dialog_model));
-      break;
     case Step::kGPMTouchID:
 #if BUILDFLAG(IS_MAC)
       sheet_view = std::make_unique<AuthenticatorTouchIdView>(
