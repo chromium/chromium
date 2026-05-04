@@ -127,7 +127,12 @@ back to the native application.
 #### FeatureScript::ReinjectionBehavior
 
 To prevent lost event listeners, they must be setup in a `FeatureScript` which
-specifies `kReinjectOnDocumentRecreation`.
+specifies `kReinjectOnDocumentRecreation`. However, a `CrWebApi` must not be
+added to the `CrWeb` object in a script which is injected with this option. To
+register APIs used to expose functions to native code, you must use
+`kInjectOncePerWindow`. `kReinjectOnDocumentRecreation` should generally only be
+used to inject scripts which register event listeners that would otherwise be
+lost on document recreation.
 
 If a feature also stores global state at the window object level, splitting the
 event listener JavaScript into its own file is a good approach.
