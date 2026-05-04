@@ -393,22 +393,6 @@ GlicSharingManager& GlicKeyedService::active_instance_sharing_manager() {
   return *sharing_manager_.get();
 }
 
-bool GlicKeyedService::IsTabPinnedToAnyInstance(
-    const tabs::TabHandle& tab_handle) const {
-  auto instances = instance_coordinator().GetInstances();
-  return std::ranges::any_of(instances, [&](GlicInstance* instance) {
-    return instance->host().sharing_manager().IsTabPinned(tab_handle);
-  });
-}
-
-void GlicKeyedService::UnpinTabsFromAllInstances(
-    base::span<const tabs::TabHandle> tab_handles,
-    GlicUnpinTrigger trigger) {
-  for (GlicInstance* instance : instance_coordinator().GetInstances()) {
-    instance->host().sharing_manager().UnpinTabs(tab_handles, trigger);
-  }
-}
-
 bool GlicKeyedService::IsWindowShowing() const {
   for (const auto* instance : instance_coordinator().GetInstances()) {
     if (instance && instance->IsShowing()) {

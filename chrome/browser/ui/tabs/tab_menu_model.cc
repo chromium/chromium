@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -319,7 +320,7 @@ void TabMenuModel::Build(int index) {
         tab_strip_->profile());
     CHECK(service);
     if (std::ranges::any_of(indices, [&](int index) {
-          return service->IsTabPinnedToAnyInstance(
+          return service->instance_coordinator().IsTabPinnedToAnyInstance(
               tab_strip_->GetTabAtIndex(index)->GetHandle());
         })) {
       AddItem(TabStripModel::CommandGlicUnshare,

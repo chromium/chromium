@@ -116,6 +116,12 @@ class GlicInstanceCoordinatorImpl
   std::vector<ConversationInfo> GetRecentlyActiveInstances(
       size_t limit) override;
 
+  bool IsTabPinnedToAnyInstance(
+      const tabs::TabHandle& tab_handle) const override;
+
+  void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
+                                 GlicUnpinTrigger trigger) override;
+
   // Creates a new conversation and pins the given tabs.
   // This overrides any conversation that was already associated with any
   // of the given tabs.

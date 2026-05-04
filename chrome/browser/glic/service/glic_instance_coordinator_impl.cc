@@ -782,6 +782,21 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveInstances(size_t limit) {
   return result;
 }
 
+bool GlicInstanceCoordinatorImpl::IsTabPinnedToAnyInstance(
+    const tabs::TabHandle& tab_handle) const {
+  return std::ranges::any_of(instances_, [&](const auto& entry) {
+    return entry.second->sharing_manager().IsTabPinned(tab_handle);
+  });
+}
+
+void GlicInstanceCoordinatorImpl::UnpinTabsFromAllInstances(
+    base::span<const tabs::TabHandle> tab_handles,
+    GlicUnpinTrigger trigger) {
+  for (auto& entry : instances_) {
+    entry.second->sharing_manager().UnpinTabs(tab_handles, trigger);
+  }
+}
+
 std::vector<GlicInstanceImpl*>
 GlicInstanceCoordinatorImpl::GetSortedRecentInstances(size_t limit) const {
   // This will only cover recently active conversations that still have living

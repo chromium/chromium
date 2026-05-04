@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
@@ -101,8 +102,8 @@ void BrowserTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
     base::span<const tabs::TabHandle> tab_handles) {
   auto* service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile());
-  service->UnpinTabsFromAllInstances(tab_handles,
-                                     glic::GlicUnpinTrigger::kContextMenu);
+  service->instance_coordinator().UnpinTabsFromAllInstances(
+      tab_handles, glic::GlicUnpinTrigger::kContextMenu);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -145,12 +145,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // active instance.
   GlicSharingManager& active_instance_sharing_manager();
 
-  bool IsTabPinnedToAnyInstance(const tabs::TabHandle& tab_handle) const;
-
-  // Unpins the specified tabs from all instances.
-  void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
-                                 GlicUnpinTrigger trigger);
-
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
 

@@ -85,6 +85,14 @@ class MockGlicInstanceCoordinator
               GetRecentlyActiveInstances,
               (size_t),
               (override));
+  MOCK_METHOD(bool,
+              IsTabPinnedToAnyInstance,
+              (const tabs::TabHandle&),
+              (const, override));
+  MOCK_METHOD(void,
+              UnpinTabsFromAllInstances,
+              (base::span<const tabs::TabHandle>, GlicUnpinTrigger),
+              (override));
   MOCK_METHOD(void,
               ArchiveInstanceWithFrame,
               (content::RenderFrameHost*),
