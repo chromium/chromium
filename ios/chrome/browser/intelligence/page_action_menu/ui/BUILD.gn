@@ -43,6 +43,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "page_action_menu_content_entry_point_unittest.mm",
+    "page_action_menu_entrypoint_view_unittest.mm",
     "page_action_menu_feature_unittest.mm",
     "page_action_menu_view_controller_unittest.mm",
   ]
@@ -52,11 +53,14 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
