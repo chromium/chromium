@@ -1104,6 +1104,10 @@ bool IsFullscreenNextIAEnabled() {
     return;
   }
   CHECK(_fullscreenBrowserAgent);
+  // Reset the keyboard inset to 0 during rotation to avoid using a stale
+  // portrait height on the smaller landscape frame, which might be larger
+  // than the new viewport height.
+  _fullscreenBrowserAgent->SetKeyboardObscuredInset(0);
   _fullscreenBrowserAgent->InvalidateInsetRange();
 }
 

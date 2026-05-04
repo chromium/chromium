@@ -54,6 +54,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // during WillUpdateState().
   void AddObscuredInset(UIRectEdge edge, CGFloat amount);
 
+  // Sets the obscured inset for the keyboard when it is visible.
+  void SetKeyboardObscuredInset(CGFloat inset);
+
   // Accessors for the insets.
   UIEdgeInsets insets() const { return insets_; }
   UIEdgeInsets min_insets() const { return min_insets_; }
@@ -152,6 +155,9 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // The animation duration for the current transition.
   base::TimeDelta animation_duration_ = base::TimeDelta();
+
+  // The obscured inset for the keyboard when visible.
+  CGFloat keyboard_obscured_inset_ = 0.0;
 
   base::WeakPtrFactory<FullscreenBrowserAgent> weak_ptr_factory_{this};
 };

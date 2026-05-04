@@ -241,7 +241,7 @@
       visibleKeyboardHeight = [self inputAccessoryHeightInWindow];
     } else {
       visibleKeyboardHeight =
-          [self keyboardHeightInWindowFromNotification:notification];
+          VisibleKeyboardHeightFromNotification(notification, self.view.window);
       // If the Find navigator is visible and the toolbar is constrained to the
       // keyboard, then add room for the collapsed toolbar to be visible above
       // the keyboard.
@@ -272,22 +272,6 @@
       [inputAccessory convertRect:inputAccessory.layer.presentationLayer.frame
                            toView:self.view.window];
   return self.view.window.frame.size.height - rectInWindowIA.origin.y;
-}
-
-// Returns the user visible height of the keyboard.
-- (CGFloat)keyboardHeightInWindowFromNotification:
-    (NSNotification*)notification {
-  NSDictionary* userInfo = notification.userInfo;
-  // Part of the keyboard might be hidden. Keep only the visible area.
-  CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  id<UICoordinateSpace> fromCoordinateSpace =
-      ((UIScreen*)notification.object).coordinateSpace;
-  id<UICoordinateSpace> toCoordinateSpace = self.view.window;
-  CGRect keyboardFrameInWindow =
-      [fromCoordinateSpace convertRect:keyboardFrame
-                     toCoordinateSpace:toCoordinateSpace];
-  return CGRectIntersection(keyboardFrameInWindow, self.view.window.bounds)
-      .size.height;
 }
 
 // The minimum height of this toolbar.

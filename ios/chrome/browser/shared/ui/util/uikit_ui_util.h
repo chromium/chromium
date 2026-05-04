@@ -119,6 +119,11 @@ UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
 // Returns the height of the keyboard in the current orientation.
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue);
 
+// Returns the visible height of the keyboard in the given window based on the
+// notification.
+CGFloat VisibleKeyboardHeightFromNotification(NSNotification* notification,
+                                              UIWindow* window);
+
 // Create 1x1px image from `color`.
 UIImage* ImageWithColor(UIColor* color);
 

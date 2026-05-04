@@ -144,6 +144,51 @@ TEST_F(FullscreenBrowserAgentTest, InvalidateInsetRange) {
   agent->RemoveObserver(&observer3);
 }
 
+// Tests that SetKeyboardObscuredInset correctly overrides bottom insets.
+TEST_F(FullscreenBrowserAgentTest, SetKeyboardObscuredInset) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  TestFullscreenBrowserAgentObserver base_observer;
+  RangeTestFullscreenBrowserAgentObserver observer1(UIRectEdgeBottom, 20.0,
+                                                    80.0);
+
+  agent->AddObserver(&base_observer);
+  agent->AddObserver(&observer1);
+
+  // Initialize ranges.
+  agent->InvalidateInsetRange();
+
+  EXPECT_EQ(20.0, agent->min_insets().bottom);
+  EXPECT_EQ(80.0, agent->max_insets().bottom);
+  EXPECT_EQ(80.0, agent->insets().bottom);
+
+  // Set keyboard inset larger than max.
+  agent->SetKeyboardObscuredInset(100.0);
+
+  EXPECT_EQ(100.0, agent->min_insets().bottom);
+  EXPECT_EQ(100.0, agent->max_insets().bottom);
+  EXPECT_EQ(100.0, agent->insets().bottom);
+
+  // Set keyboard inset between min and max.
+  agent->SetKeyboardObscuredInset(50.0);
+
+  EXPECT_EQ(50.0, agent->min_insets().bottom);
+  EXPECT_EQ(80.0, agent->max_insets().bottom);
+  EXPECT_EQ(80.0, agent->insets().bottom);
+
+  // Set keyboard inset to 0.
+  agent->SetKeyboardObscuredInset(0.0);
+
+  EXPECT_EQ(20.0, agent->min_insets().bottom);
+  EXPECT_EQ(80.0, agent->max_insets().bottom);
+  EXPECT_EQ(80.0, agent->insets().bottom);
+
+  agent->RemoveObserver(&base_observer);
+  agent->RemoveObserver(&observer1);
+}
+
 // Tests that IncrementalScroll calculates progress correctly and clamps values.
 TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   FullscreenBrowserAgent::CreateForBrowser(browser_.get());

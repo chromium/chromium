@@ -493,7 +493,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       visibleKeyboardHeight = [self inputAccessoryHeightInWindow];
     } else {
       visibleKeyboardHeight =
-          [self keyboardHeightInWindowFromNotification:notification];
+          VisibleKeyboardHeightFromNotification(notification, self.view.window);
     }
   }
 
@@ -809,22 +809,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       [inputAccessory convertRect:inputAccessory.layer.presentationLayer.frame
                            toView:self.view.window];
   return self.view.window.frame.size.height - rectInWindow.origin.y;
-}
-
-// Returns the user visible height of the keyboard.
-- (CGFloat)keyboardHeightInWindowFromNotification:
-    (NSNotification*)notification {
-  NSDictionary* userInfo = notification.userInfo;
-  // Part of the keyboard might be hidden. Keep only the visible area.
-  CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  id<UICoordinateSpace> fromCoordinateSpace =
-      ((UIScreen*)notification.object).coordinateSpace;
-  id<UICoordinateSpace> toCoordinateSpace = self.view.window;
-  CGRect keyboardFrameInWindow =
-      [fromCoordinateSpace convertRect:keyboardFrame
-                     toCoordinateSpace:toCoordinateSpace];
-  return CGRectIntersection(keyboardFrameInWindow, self.view.window.bounds)
-      .size.height;
 }
 
 // Returns a new background for the location bar.

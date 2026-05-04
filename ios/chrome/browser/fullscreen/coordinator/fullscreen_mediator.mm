@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observing.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -120,6 +121,18 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
     [defaultCenter addObserver:self
                       selector:@selector(applicationWillEnterForeground)
                           name:UIApplicationWillEnterForegroundNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardWillShow:)
+                          name:UIKeyboardWillShowNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardWillChangeFrame:)
+                          name:UIKeyboardWillChangeFrameNotification
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(keyboardWillHide:)
+                          name:UIKeyboardWillHideNotification
                         object:nil];
   }
   return self;
@@ -353,6 +366,34 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
 - (void)applicationWillEnterForeground {
   [self exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
                          animated:NO];
+}
+
+- (void)keyboardWillShow:(NSNotification*)notification {
+  [self updateKeyboardHeightFromNotification:notification];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification*)notification {
+  [self updateKeyboardHeightFromNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification {
+  if (_browserAgent) {
+    _browserAgent->SetKeyboardObscuredInset(0);
+  }
+}
+
+- (void)updateKeyboardHeightFromNotification:(NSNotification*)notification {
+  if (!_browserAgent || !self.webState) {
+    return;
+  }
+
+  UIView* view = self.webState->GetView();
+  if (!view.window) {
+    return;
+  }
+
+  _browserAgent->SetKeyboardObscuredInset(
+      VisibleKeyboardHeightFromNotification(notification, view.window));
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
