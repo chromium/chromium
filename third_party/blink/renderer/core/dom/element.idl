@@ -144,6 +144,8 @@ dictionary SetHTMLUnsafeOptions {
     [Measure] DOMRectList getClientRects();
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
+    [RuntimeEnabled=ElementMatchContainer, NewObject] ContainerQueryList matchContainer(DOMString query);
+
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
     [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 

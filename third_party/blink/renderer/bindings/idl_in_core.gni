@@ -126,6 +126,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/css/font_face_source.idl",
   "//third_party/blink/renderer/core/css/media_list.idl",
   "//third_party/blink/renderer/core/css/media_query_list.idl",
+  "//third_party/blink/renderer/core/css/container_query_list.idl",
   "//third_party/blink/renderer/core/css/media_query_list_event.idl",
   "//third_party/blink/renderer/core/css/media_query_list_event_init.idl",
   "//third_party/blink/renderer/core/css/property_definition.idl",

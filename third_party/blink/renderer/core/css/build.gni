@@ -59,6 +59,8 @@ blink_core_sources_css = [
   "container_query_data.h",
   "container_query_evaluator.cc",
   "container_query_evaluator.h",
+  "container_query_list.cc",
+  "container_query_list.h",
   "container_selector.cc",
   "container_selector.h",
   "container_query_set.cc",

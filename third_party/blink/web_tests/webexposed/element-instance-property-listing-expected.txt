@@ -176,6 +176,7 @@ namespace http://www.w3.org/1999/xhtml
     property localName
     property lookupNamespaceURI
     property lookupPrefix
+    property matchContainer
     property matches
     property moveBefore
     property namespaceURI
@@ -1541,6 +1542,7 @@ namespace http://www.w3.org/2000/svg
     property localName
     property lookupNamespaceURI
     property lookupPrefix
+    property matchContainer
     property matches
     property moveBefore
     property namespaceURI

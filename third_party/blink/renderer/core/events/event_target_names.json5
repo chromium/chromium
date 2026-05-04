@@ -13,6 +13,7 @@
     "EditContext",
     "FontFaceSet",
     "MediaQueryList",
+    "ContainerQueryList",
     "BroadcastChannel",
     "MessagePort",
     "Navigation",

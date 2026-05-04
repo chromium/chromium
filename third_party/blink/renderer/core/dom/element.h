@@ -96,6 +96,7 @@ class ColumnPseudoElement;
 class ComputedStyleBuilder;
 class ContainerQueryData;
 class ContainerQueryEvaluator;
+class ContainerQueryList;
 class ContentData;
 class CSSPropertyName;
 class CSSPropertyValueSet;
@@ -628,6 +629,8 @@ class CORE_EXPORT Element : public ContainerNode {
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* GetBoundingClientRect();
   DOMRect* GetBoundingClientRectForBinding();
+
+  ContainerQueryList* matchContainer(const String& query);
 
   // Call the NoLifecycleUpdate variants if you are sure that the lifcycle is
   // already updated to at least pre-paint clean.

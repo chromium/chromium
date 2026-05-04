@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/container_query_list.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -88,6 +89,7 @@
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
+#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -3486,6 +3488,17 @@ DOMRect* Element::GetBoundingClientRectForBinding() {
   // impact is understood.
   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   return GetBoundingClientRect();
+}
+
+ContainerQueryList* Element::matchContainer(const String& query) {
+  CSSParserContext* context =
+      MakeGarbageCollected<CSSParserContext>(GetDocument());
+  ContainerQueryParser parser(*context);
+  auto* conditional = parser.ParseCondition(query);
+  auto* container_query = MakeGarbageCollected<ContainerQuery>(
+      ContainerSelector(AtomicString(), conditional), conditional);
+  return MakeGarbageCollected<ContainerQueryList>(
+      GetDocument().GetExecutionContext(), container_query, this);
 }
 
 const AtomicString& Element::computedRole() {
