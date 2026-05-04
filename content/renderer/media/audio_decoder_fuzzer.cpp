@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "content/public/test/blink_test_environment.h"
 #include "media/base/media.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
@@ -28,9 +29,8 @@ struct Environment {
   base::AtExitManager at_exit;
 };
 
-Environment* env = new Environment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<Environment> env;
   // Larger inputs are likely to trigger timeouts and OOMs which would not be
   // considered as valid bugs.
   if (size > 8 * 1024) {
