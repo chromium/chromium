@@ -76,9 +76,9 @@ const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[] =
     "The 'system' role message must be the first message of a session.";
 const char kExceptionMessageUnsupportedLanguages[] =
     "The specified languages are not supported.";
-// TODO(crbug.com/488092645): Update the message once speed is supported.
-const char kExceptionMessageUnsupportedPerformancePreference[] =
-    "The 'speed' preference is not supported yet.";
+const char kExceptionMessageUnsupportedOptionsForPerformancePreference[] =
+    "The specified options are not supported with the 'speed' performance "
+    "preference.";
 const char kExceptionMessageInvalidRequest[] =
     "The request is invalid - the input or options could not be processed.";
 const char kExceptionMessageInvalidResponseJsonSchema[] =
@@ -357,9 +357,10 @@ String ConvertModelAvailabilityCheckResultToDebugString(
         kUnavailableEnterprisePolicyDisabled:
       return "The on-device model is not available because the enterprise "
              "policy disables the feature.";
+
     case mojom::blink::ModelAvailabilityCheckResult::
-        kUnavailableUnsupportedPerformancePreference:
-      return "The specified performance preference is not supported yet.";
+        kUnavailableUnsupportedOptionsForPerformancePreference:
+      return kExceptionMessageUnsupportedOptionsForPerformancePreference;
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:

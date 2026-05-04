@@ -5002,7 +5002,10 @@ inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
 inline constexpr char kSummarizerAPIWithPerformancePreferenceDescription[] =
     "Adds the \"preference\" create option to the Summarizer API. Allows the "
     "developer to choose between \"capability\", \"speed\", and \"auto\" to "
-    "hint at the desired balance between performance and capability.";
+    "hint at the desired balance between performance and capability. "
+    "We're rapidly iterating on the training set for the smaller expert "
+    "model used with the 'speed' preference, and welcome your feedback "
+    "here: https://issues.chromium.org/issues/new?component=1617227";
 inline constexpr const char* kSummarizerAPIWithPerformancePreferenceLink[1] = {
     "https://chromestatus.com/feature/6309243756085248"};
 

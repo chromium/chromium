@@ -56,6 +56,7 @@ class AISummarizer : public AIContextBoundObject,
   static std::optional<base::flat_set<std::string>>
   GetEnabledLanguageBaseCodes();
   static base::flat_set<std::string> GetDefaultSupportedLanguageBaseCodes();
+  static base::flat_set<std::string> GetSupportedLanguagesForSpeedPreference();
 
  private:
   friend class AITestUtils;

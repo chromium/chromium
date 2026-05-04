@@ -16,11 +16,15 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -29,6 +33,7 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
@@ -262,17 +267,6 @@ TEST_F(AISummarizerTest, CanCreateUnIsLanguagesSupported) {
                                                callback.Get());
 }
 
-// TODO(https://crbug.com/488092645): Remove once we support speed.
-TEST_F(AISummarizerTest, CanCreateUnsupportedPreference) {
-  auto options = GetDefaultOptions();
-  options->preference = blink::mojom::PerformancePreference::kSpeed;
-  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableUnsupportedPerformancePreference));
-  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
-                                               callback.Get());
-}
-
 TEST_F(AISummarizerTest, ToProtoOptionsLanguagesSupported) {
   // Summarizer proto expects a limited set of BCP 47 base language codes.
   std::vector<std::pair<std::string, std::string>> languages = {
@@ -299,21 +293,6 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-}
-
-// TODO(https://crbug.com/488092645): Remove once we support speed.
-TEST_F(AISummarizerTest, CreateUnsupportedPreference) {
-  auto options = GetDefaultOptions();
-  options->preference = blink::mojom::PerformancePreference::kSpeed;
-
-  TestCreateSummarizerClient create_summarizer_client;
-  GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
-
-  CreateSummarizerResult result = create_summarizer_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error, blink::mojom::AIManagerCreateClientError::
-                                      kUnsupportedPerformancePreference);
 }
 
 TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
@@ -838,6 +817,348 @@ TEST_F(AISummarizerTest, NoMetadata) {
 
   EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
               ElementsAreArray({"Result text"}));
+}
+
+class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
+ public:
+  AISummarizerManifestTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kAISummarizationPerformancePreference, {}},
+         {optimization_guide::kOptimizationGuideManifestBroker, {}},
+         {on_device_model::features::kOnDeviceModelLitertLmBackend, {}}},
+        {});
+  }
+
+ protected:
+  void SetupManifest() override {
+    optimization_guide::proto::SummarizerFeatureConfig summarizer_cfg;
+    summarizer_cfg.set_default_use_case("summarizer_api");
+    (*summarizer_cfg.mutable_preference_use_cases())["speed"] =
+        "summarizer_small_expert_model";
+    (*summarizer_cfg.mutable_preference_use_cases())["capability"] =
+        "summarizer_api";
+
+    optimization_guide::proto::Any any_cfg;
+    any_cfg.set_type_url(
+        "type.googleapis.com/"
+        "optimization_guide.proto.SummarizerFeatureConfig");
+    any_cfg.set_value(summarizer_cfg.SerializeAsString());
+
+    constexpr uint32_t kTestMaxTokens = 100u;
+
+    optimization_guide::proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = CreateConfig();
+    solution_config.mutable_safety()->set_feature(
+        optimization_guide::proto::ModelExecutionFeature::
+            MODEL_EXECUTION_FEATURE_SUMMARIZE);
+
+    optimization_guide::ScenarioBuilder(
+        fake_manifest_broker_->component_state())
+        .AddBaseModel(
+            "summarizer_api_solution",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kTestMaxTokens))
+        .AddBaseModel(
+            "summarizer_small_expert_model_solution",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_CPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_UNSPECIFIED,
+                {}, kTestMaxTokens))
+        .AddSafetyModel("safety")
+        .AddSafeSolution("summarizer_api", "summarizer_api_solution", "safety",
+                         solution_config)
+        .AddSafeSolution("summarizer_small_expert_model",
+                         "summarizer_small_expert_model_solution", "safety",
+                         solution_config)
+        .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
+                          "summarizer_api", any_cfg)
+        .Finish();
+
+    fake_manifest_broker_->settings().performance_class =
+        on_device_model::mojom::PerformanceClass::kHigh;
+  }
+
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_SUMMARIZE);
+    return config;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateAndCreateWithManifestSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->shared_context = "";
+  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  fake_manifest_broker_->client().RequestAssetsFor(
+      "summarizer_small_expert_model");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                               future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  TestCreateSummarizerClient summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = summarizer_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AISummarizerManifestTest, CanCreateSummarizerDownloadable) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->shared_context = "";
+  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                               future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+}
+
+TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+
+  auto options = GetDefaultOptions();
+  options->shared_context = "";
+  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                               future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  TestCreateSummarizerClient summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = summarizer_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateAndCreateWithManifestCapabilityPreference) {
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kCapability;
+  options->shared_context = "";
+  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                               future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  TestCreateSummarizerClient summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = summarizer_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleOptionsForSpeedPreference) {
+  // Incompatible because speed preference requires kShort or kMedium length,
+  // but we use kLong.
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->length = blink::mojom::AISummarizerLength::kLong;
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleFormatForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->format = blink::mojom::AISummarizerFormat::kMarkDown;
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest, CanCreateIncompatibleTypeForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->type = blink::mojom::AISummarizerType::kTeaser;
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleOutputLanguageForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->output_language = blink::mojom::AILanguageCode::New("fr");
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleInputLanguageForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->expected_input_languages = AITestUtils::ToMojoLanguageCodes({"fr"});
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleContextLanguageForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"fr"});
+  options->shared_context = "";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateIncompatibleSharedContextForSpeedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->shared_context = "non-empty context";
+
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::
+                      kUnavailableUnsupportedOptionsForPerformancePreference));
+
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateSummarizerSpeedPreferenceFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {blink::features::kAISummarizationPerformancePreference});
+
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->shared_context = "";
+
+  mojo::test::BadMessageObserver observer;
+  GetAIManagerRemote()->CanCreateSummarizer(std::move(options),
+                                            base::DoNothing());
+  EXPECT_EQ(observer.WaitForBadMessage(),
+            "Speed preference requested but feature disabled");
+}
+
+TEST_F(AISummarizerManifestTest,
+       CanCreateSummarizerNoServiceWithManifestBroker) {
+  SetupNullOptimizationGuideKeyedService();
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateSummarizer(GetDefaultOptions(),
+                                               future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableFeatureExecutionNotEnabled);
+}
+
+TEST_F(AISummarizerManifestTest, CreateIncompatibleOptionsForSpeedPreference) {
+  // Incompatible because speed preference requires kShort or kMedium length,
+  // but we use kLong.
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->length = blink::mojom::AISummarizerLength::kLong;
+  options->shared_context = "";
+
+  TestCreateSummarizerClient create_summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  CreateSummarizerResult result = create_summarizer_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error,
+            blink::mojom::AIManagerCreateClientError::
+                kUnsupportedOptionsForPerformancePreference);
+}
+
+TEST_F(AISummarizerManifestTest, SummarizeWithSpeedPreferenceAndContextFails) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->shared_context = "";
+  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  fake_manifest_broker_->client().RequestAssetsFor(
+      "summarizer_small_expert_model");
+
+  TestCreateSummarizerClient summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  auto result = summarizer_client.result().Take();
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote(
+      std::move(result.value()));
+
+  AITestUtils::TestStreamingResponder responder;
+  summarizer_remote->Summarize("input", "non-empty context",
+                               responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
 }
 
 }  // namespace

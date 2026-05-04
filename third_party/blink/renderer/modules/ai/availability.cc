@@ -47,7 +47,7 @@ Availability ConvertModelAvailabilityCheckResult(
     case ModelAvailabilityCheckResult::kUnavailableTranslationNotEligible:
     case ModelAvailabilityCheckResult::kUnavailableEnterprisePolicyDisabled:
     case ModelAvailabilityCheckResult::
-        kUnavailableUnsupportedPerformancePreference:
+        kUnavailableUnsupportedOptionsForPerformancePreference:
       return Availability::kUnavailable;
   }
 }

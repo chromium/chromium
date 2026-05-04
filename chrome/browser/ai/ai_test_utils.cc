@@ -130,6 +130,42 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
       std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 }
 
+AITestUtils::AITestManifestBase::AITestManifestBase() = default;
+AITestUtils::AITestManifestBase::~AITestManifestBase() = default;
+
+void AITestUtils::AITestManifestBase::SetupManifest() {}
+
+void AITestUtils::AITestManifestBase::SetupMockOptimizationGuideKeyedService() {
+  mock_optimization_guide_keyed_service_ =
+      static_cast<MockOptimizationGuideKeyedService*>(
+          OptimizationGuideKeyedServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        testing::NiceMock<MockOptimizationGuideKeyedService>>();
+                  })));
+  ON_CALL(*mock_optimization_guide_keyed_service_, CreateModelBrokerClient())
+      .WillByDefault([&]() {
+        if (!fake_manifest_broker_) {
+          fake_manifest_broker_ =
+              std::make_unique<optimization_guide::FakeManifestBroker>();
+
+          SetupManifest();
+
+          fake_manifest_broker_->Startup();
+        }
+        return std::make_unique<optimization_guide::ModelBrokerClient>(
+            fake_manifest_broker_->state().BindAndPassRemoteBroker(), nullptr);
+      });
+}
+
+void AITestUtils::AITestManifestBase::TearDown() {
+  fake_manifest_broker_.reset();
+  AITestBase::TearDown();
+}
+
 blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
   return ai_manager_.get();
 }

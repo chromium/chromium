@@ -168,11 +168,27 @@ AISummarizer::GetDefaultSupportedLanguageBaseCodes() {
                                      kSupportedBaseLanguages.end());
 }
 
+// static
+base::flat_set<std::string>
+AISummarizer::GetSupportedLanguagesForSpeedPreference() {
+  return base::flat_set<std::string>({"en"});
+}
+
 void AISummarizer::Summarize(
     const std::string& input,
     const std::string& context,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
+  if (options_->preference == blink::mojom::PerformancePreference::kSpeed &&
+      !context.empty()) {
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    on_device_ai::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+    return;
+  }
+
   auto* session = session_wrapper_.session();
   if (!session) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(

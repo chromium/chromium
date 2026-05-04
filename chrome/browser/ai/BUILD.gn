@@ -113,6 +113,7 @@ source_set("test_support") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core:manifest_broker_test_support",
     "//components/optimization_guide/core:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -137,6 +138,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//components/on_device_ai",
+    "//components/optimization_guide/core:manifest_broker_test_support",
     "//components/optimization_guide/core:test_support",
   ]
 }
