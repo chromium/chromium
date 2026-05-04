@@ -43,6 +43,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "page_action_menu_content_entry_point_unittest.mm",
+    "page_action_menu_feature_unittest.mm",
     "page_action_menu_view_controller_unittest.mm",
   ]
   deps = [
