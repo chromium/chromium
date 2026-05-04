@@ -2,31 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl_win.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/uia_client_info_source_win.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 
@@ -38,6 +45,12 @@ const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
 const wchar_t kWinMagnifierRegistryKey[] =
     L"Software\\Microsoft\\ScreenMagnifier";
 const wchar_t kWinATRunningStateValueName[] = L"RunningState";
+constexpr std::string_view kUiaClientProcessNativeApisHistogram =
+    "Accessibility.WinUIA.ClientProcess.NativeAPIs";
+constexpr std::string_view kUiaClientProcessWebContentsHistogram =
+    "Accessibility.WinUIA.ClientProcess.WebContents";
+constexpr std::string_view kUiaClientDisconnectedHistogram =
+    "Accessibility.WinUIA.ClientDisconnected";
 
 enum class AccessibilityTarget {
   kStickyKeys,
@@ -50,6 +63,80 @@ enum class AccessibilityTarget {
   kZoomText,
   kZdsr,
 };
+
+void RecordUiaClientProcesses(
+    std::string_view histogram_name,
+    const base::flat_set<std::string>& process_names) {
+  for (const std::string& process_name : process_names) {
+    base::UmaHistogramSparse(histogram_name,
+                             internal::HashUiaClientProcessName(process_name));
+  }
+}
+
+void QueryAndRecordUiaClientProcessHistogramsForModeChange(
+    ui::AXMode old_mode,
+    ui::AXMode new_mode) {
+  std::optional<ui::UiaClientInfoSource> client_info_source =
+      ui::UiaClientInfoSource::Create();
+  if (!client_info_source) {
+    return;
+  }
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      old_mode, new_mode, client_info_source->GetConnectedClientProcessNames());
+}
+
+void RecordUiaClientConnection(
+    const std::string& process_name,
+    ui::UiaClientInfoSource::ConnectionState connection_state) {
+  if (connection_state ==
+      ui::UiaClientInfoSource::ConnectionState::kDisconnected) {
+    internal::RecordUiaClientDisconnectedHistogram(process_name);
+  }
+}
+
+}  // namespace
+
+namespace internal {
+
+int HashUiaClientProcessName(std::string_view process_name) {
+  return static_cast<int>(base::PersistentHash(process_name));
+}
+
+void RecordUiaClientDisconnectedHistogram(std::string_view process_name) {
+  base::UmaHistogramSparse(kUiaClientDisconnectedHistogram,
+                           HashUiaClientProcessName(process_name));
+}
+
+void RecordUiaClientProcessHistogramsForModeChange(
+    ui::AXMode old_mode,
+    ui::AXMode new_mode,
+    std::vector<std::string> process_names) {
+  ui::AXMode newly_enabled_mode = new_mode & ~old_mode;
+  constexpr ui::AXMode kTrackedUiaClientProcessModes(ui::AXMode::kNativeAPIs |
+                                                     ui::AXMode::kWebContents);
+  if ((newly_enabled_mode & kTrackedUiaClientProcessModes).is_mode_off()) {
+    return;
+  }
+
+  base::flat_set<std::string> unique_process_names(std::move(process_names));
+  if (unique_process_names.empty()) {
+    return;
+  }
+
+  if (newly_enabled_mode.has_mode(ui::AXMode::kNativeAPIs)) {
+    RecordUiaClientProcesses(kUiaClientProcessNativeApisHistogram,
+                             unique_process_names);
+  }
+  if (newly_enabled_mode.has_mode(ui::AXMode::kWebContents)) {
+    RecordUiaClientProcesses(kUiaClientProcessWebContentsHistogram,
+                             unique_process_names);
+  }
+}
+
+}  // namespace internal
+
+namespace {
 
 struct ModuleVersion {
   uint16_t major = 0, minor = 0, build = 0, revision = 0;
@@ -314,6 +401,8 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   BrowserAccessibilityStateImplWin();
 
  protected:
+  void RecordPlatformClientHistograms(ui::AXMode old_mode,
+                                      ui::AXMode new_mode) override;
   void RefreshAssistiveTech() override;
   void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
@@ -331,13 +420,27 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverAssistiveTech().
   bool awaiting_known_assistive_tech_computation_ = false;
+
+  std::optional<ui::UiaClientInfoSource> uia_client_info_source_;
 };
 
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&OnWndProc));
+
+    uia_client_info_source_ = ui::UiaClientInfoSource::Create(
+        base::BindRepeating(&RecordUiaClientConnection));
   }
+}
+
+void BrowserAccessibilityStateImplWin::RecordPlatformClientHistograms(
+    ui::AXMode old_mode,
+    ui::AXMode new_mode) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&QueryAndRecordUiaClientProcessHistogramsForModeChange,
+                     old_mode, new_mode));
 }
 
 void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {

@@ -4121,6 +4121,44 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WinUIA.ClientDisconnected" units="hash"
+    expires_after="2027-04-28">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the base::PersistentHash of the lowercased process name of a UIA
+    client when it disconnects from Chrome's UI Automation provider. Helps
+    measure how often Chrome receives disconnect signals. This exploratory
+    metric may be replaced by richer disconnect telemetry. Common client hash
+    values are listed in
+    docs/accessibility/browser/uia_client_process_hashes.md. Only available on
+    Windows build 26100 (24H2) or later.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WinUIA.ClientProcess.{AXModeFlag}" units="hash"
+    expires_after="2027-04-28">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>benjamin.beaudry@microsoft.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the base::PersistentHash of each distinct lowercased UIA client
+    process basename connected when the existing AXMode metrics record
+    {AXModeFlag}. Use the corresponding Accessibility.ModeFlag count as the
+    denominator. Multiple different clients can be recorded for the same AXMode
+    snapshot, but duplicate process basenames are recorded once. Common client
+    hash values are listed in
+    docs/accessibility/browser/uia_client_process_hashes.md. Only available on
+    Windows build 26100 (24H2) or later.
+  </summary>
+  <token key="AXModeFlag">
+    <variant name="NativeAPIs"
+        summary="kNativeAPIs flag (platform APIs enabled)"/>
+    <variant name="WebContents" summary="kWebContents flag (web content tree)"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.WinZoomText" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

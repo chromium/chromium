@@ -7,6 +7,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/accessibility/browser_accessibility_state_impl_win.h"
+#endif
+
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
@@ -185,6 +191,146 @@ TEST_F(BrowserAccessibilityStateImplTest, PlatformActivationFiltering) {
     state_->SetActivationFromPlatformEnabled(false);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+
+namespace {
+
+constexpr char kClientProcessNativeApisHistogram[] =
+    "Accessibility.WinUIA.ClientProcess.NativeAPIs";
+constexpr char kClientProcessWebContentsHistogram[] =
+    "Accessibility.WinUIA.ClientProcess.WebContents";
+constexpr char kClientDisconnectedHistogram[] =
+    "Accessibility.WinUIA.ClientDisconnected";
+
+void ExpectNoUiaClientProcessHistograms(
+    base::HistogramTester& histogram_tester) {
+  histogram_tester.ExpectTotalCount(kClientProcessNativeApisHistogram, 0);
+  histogram_tester.ExpectTotalCount(kClientProcessWebContentsHistogram, 0);
+}
+
+void ExpectNarratorAndNvdaSamples(base::HistogramTester& histogram_tester,
+                                  const char* histogram_name) {
+  histogram_tester.ExpectBucketCount(
+      histogram_name, internal::HashUiaClientProcessName("narrator.exe"), 1);
+  histogram_tester.ExpectBucketCount(
+      histogram_name, internal::HashUiaClientProcessName("nvda.exe"), 1);
+  histogram_tester.ExpectTotalCount(histogram_name, 2);
+}
+
+}  // namespace
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     RecordsNativeApisClientProcessHistogramForNewNativeApisMode) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(), ui::AXMode(ui::AXMode::kNativeAPIs),
+      {"narrator.exe", "nvda.exe"});
+
+  ExpectNarratorAndNvdaSamples(histogram_tester,
+                               kClientProcessNativeApisHistogram);
+  histogram_tester.ExpectTotalCount(kClientProcessWebContentsHistogram, 0);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     RecordsWebContentsClientProcessHistogramForNewWebContentsMode) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(), ui::AXMode(ui::AXMode::kWebContents),
+      {"narrator.exe", "nvda.exe"});
+
+  ExpectNarratorAndNvdaSamples(histogram_tester,
+                               kClientProcessWebContentsHistogram);
+  histogram_tester.ExpectTotalCount(kClientProcessNativeApisHistogram, 0);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     RecordsBothClientProcessHistogramsForNewNativeApisAndWebContentsModes) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(),
+      ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents),
+      {"narrator.exe", "nvda.exe"});
+
+  ExpectNarratorAndNvdaSamples(histogram_tester,
+                               kClientProcessNativeApisHistogram);
+  ExpectNarratorAndNvdaSamples(histogram_tester,
+                               kClientProcessWebContentsHistogram);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DoesNotRecordClientProcessHistogramsForNoMode) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(), ui::AXMode(), {"narrator.exe"});
+
+  ExpectNoUiaClientProcessHistograms(histogram_tester);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DoesNotRecordClientProcessHistogramsForUntrackedMode) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(), ui::AXMode(ui::AXMode::kExtendedProperties),
+      {"narrator.exe"});
+
+  ExpectNoUiaClientProcessHistograms(histogram_tester);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DoesNotRecordClientProcessHistogramsForAlreadyEnabledTrackedMode) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(ui::AXMode::kNativeAPIs),
+      ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kExtendedProperties),
+      {"narrator.exe"});
+
+  ExpectNoUiaClientProcessHistograms(histogram_tester);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DoesNotRecordClientProcessHistogramsWithoutConnectedClients) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(),
+      ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents), {});
+
+  ExpectNoUiaClientProcessHistograms(histogram_tester);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest,
+     DeduplicatesClientProcessHistograms) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientProcessHistogramsForModeChange(
+      ui::AXMode(), ui::AXMode(ui::AXMode::kNativeAPIs),
+      {"narrator.exe", "narrator.exe"});
+
+  histogram_tester.ExpectBucketCount(
+      kClientProcessNativeApisHistogram,
+      internal::HashUiaClientProcessName("narrator.exe"), 1);
+  histogram_tester.ExpectTotalCount(kClientProcessNativeApisHistogram, 1);
+  histogram_tester.ExpectTotalCount(kClientProcessWebContentsHistogram, 0);
+}
+
+TEST(BrowserAccessibilityStateImplWinTest, RecordsDisconnectHistogram) {
+  base::HistogramTester histogram_tester;
+
+  internal::RecordUiaClientDisconnectedHistogram("narrator.exe");
+
+  histogram_tester.ExpectUniqueSample(
+      kClientDisconnectedHistogram,
+      internal::HashUiaClientProcessName("narrator.exe"), 1);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 

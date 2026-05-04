@@ -169,6 +169,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // current known screen reader state.
   virtual void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode);
 
+  // Records platform-specific client metrics at the AXMode histogram cadence.
+  virtual void RecordPlatformClientHistograms(ui::AXMode old_mode,
+                                              ui::AXMode new_mode);
+
   ui::AXPlatform& ax_platform() { return ax_platform_; }
 
  private:

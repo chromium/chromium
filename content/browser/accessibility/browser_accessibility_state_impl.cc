@@ -484,6 +484,10 @@ void BrowserAccessibilityStateImpl::RefreshAssistiveTechIfNecessary(
   }
 }
 
+void BrowserAccessibilityStateImpl::RecordPlatformClientHistograms(
+    ui::AXMode old_mode,
+    ui::AXMode new_mode) {}
+
 ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
   return ax_platform_.active_assistive_tech();
 }
@@ -909,6 +913,7 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone, new_mode,
                                         old_mode);
+  RecordPlatformClientHistograms(old_mode, new_mode);
 
   // Track the time since start-up before the kWebContents mode was enabled,
   // ensuring we record this value only one time.

@@ -8,8 +8,10 @@
 #include <stdint.h>
 #include <string.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -24,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
@@ -32,6 +35,7 @@
 #include "content/browser/accessibility/accessibility_browsertest.h"
 #include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl_win.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -74,6 +78,34 @@ using ui::IAccessibleRoleToString;
 using ui::IAccessibleStateToString;
 
 namespace {
+
+class FakeUIAutomationClientInfo final
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUIAutomationClientInfo> {
+ public:
+  explicit FakeUIAutomationClientInfo(std::wstring process_name)
+      : process_name_(std::move(process_name)) {}
+
+  IFACEMETHODIMP get_ProcessId(DWORD* process_id) override {
+    if (!process_id) {
+      return E_POINTER;
+    }
+    *process_id = 1234;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP get_ProcessName(BSTR* process_name) override {
+    if (!process_name) {
+      return E_POINTER;
+    }
+    *process_name = ::SysAllocString(process_name_.c_str());
+    return *process_name ? S_OK : E_OUTOFMEMORY;
+  }
+
+ private:
+  std::wstring process_name_;
+};
 
 // AccessibilityWinBrowserTest ------------------------------------------------
 
@@ -2295,9 +2327,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
   SetUpSampleParagraph(&paragraph_text);
 
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(),
-      ax::mojom::Event::kLoadComplete);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ax::mojom::Event::kLoadComplete);
   ScopedAccessibilityModeOverride complete(ui::kAXModeComplete);
 
   // Calling `get_characterExtents` will enable `ui::AXMode::kInlineTextBoxes`
@@ -5624,6 +5655,21 @@ class AccessibilityWinUIABrowserTest : public AccessibilityWinBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
+                       UIAClientDisconnectedHistogram) {
+  base::HistogramTester histogram_tester;
+  const int narrator_hash = internal::HashUiaClientProcessName("narrator.exe");
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.WinUIA.ClientProcess.NativeAPIs", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.WinUIA.ClientProcess.WebContents", 0);
+
+  internal::RecordUiaClientDisconnectedHistogram("narrator.exe");
+  histogram_tester.ExpectUniqueSample("Accessibility.WinUIA.ClientDisconnected",
+                                      narrator_hash, 1);
+}
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, TestIScrollProvider) {
   LoadInitialAccessibilityTreeFromHtml(
