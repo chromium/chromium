@@ -557,13 +557,12 @@ public class NativePageFactory {
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
             Activity activity) {
-        if (sTestPage != null) {
+        if (sTestPage instanceof PdfPage) {
             return sTestPage;
         }
         return new PdfPage(
                 new TabShim(tab, browserControlsManager, tabModelSelector, null),
                 tab.getProfile(),
-                tab.getProfile().isOffTheRecord(),
                 activity,
                 url,
                 pdfInfo,
@@ -644,7 +643,7 @@ public class NativePageFactory {
         if (mNewTabPageCreationTracker != null) mNewTabPageCreationTracker.destroy();
     }
 
-    public static void setPdfPageForTesting(NativePage pdfPage) {
+    public static void setPdfPageForTesting(PdfPage pdfPage) {
         sTestPage = pdfPage;
     }
 }

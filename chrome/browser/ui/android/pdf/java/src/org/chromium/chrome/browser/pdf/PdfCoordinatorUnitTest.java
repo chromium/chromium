@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.FragmentActivity;
@@ -171,6 +173,38 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testZoomButtons() {
+        createPdfCoordinator();
+
+        View zoomInButton = mPdfCoordinator.getView().findViewById(R.id.zoom_increase_button);
+        View zoomOutButton = mPdfCoordinator.getView().findViewById(R.id.zoom_decrease_button);
+
+        // Initial state at normal zoom
+        mPdfCoordinator.onViewportChanged(0, 1.0f);
+        assertTrue("Zoom in button should be enabled at 1.0f zoom", zoomInButton.isEnabled());
+        assertTrue("Zoom out button should be enabled at 1.0f zoom", zoomOutButton.isEnabled());
+
+        // Click zoom in
+        zoomInButton.performClick();
+
+        // Assert zoom level increased
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertEquals(1.1f, shadowPdfView.mZoom, 0.001f);
+
+        // Simulate minimum zoom level (0.25f)
+        mPdfCoordinator.onViewportChanged(0, 0.25f);
+        assertTrue("Zoom in button should be enabled at min zoom", zoomInButton.isEnabled());
+        assertFalse("Zoom out button should be disabled at min zoom", zoomOutButton.isEnabled());
+
+        // Simulate maximum zoom level (5.0f)
+        mPdfCoordinator.onViewportChanged(0, 5.0f);
+        assertFalse("Zoom in button should be disabled at max zoom", zoomInButton.isEnabled());
+        assertTrue("Zoom out button should be enabled at max zoom", zoomOutButton.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOnLinkClicked_RejectsDangerousSchemes() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         createPdfCoordinator();
@@ -237,7 +271,7 @@ public class PdfCoordinatorUnitTest {
         createPdfCoordinator();
         Uri linkUri = Uri.parse(LINK_URL);
         boolean result = mPdfCoordinator.onLinkClicked(linkUri);
-        assertTrue("name should verify true", result);
+        assertTrue("onLinkClicked should return true.", result);
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mNativePageHost).loadUrl(captor.capture(), eq(isIncognito));
         LoadUrlParams params = captor.getValue();
@@ -251,7 +285,19 @@ public class PdfCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testFragmentCanBeInstantiated() {
+        // This test verifies that the fragment can be instantiated by the FragmentManager.
+        // The FragmentManager requires a public no-argument constructor.
+        try {
+            PdfCoordinator.ChromePdfViewerFragment fragment =
+                    new PdfCoordinator.ChromePdfViewerFragment();
+            assertNotNull("Fragment should be created successfully.", fragment);
+        } catch (Exception e) {
+            fail("Fragment instantiation should not throw an exception: " + e.getMessage());
+        }
+    }
+
+    @Test
     public void testGetFileUri() {
         createPdfCoordinator();
 
@@ -263,14 +309,17 @@ public class PdfCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testGetFileUri_NullUri() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        // Signature: NativePageHost, Profile, Activity, @Nullable String filepath, String title,
-        // int tabId, String url
         mPdfCoordinator =
                 new PdfCoordinator(
-                        mNativePageHost, mProfile, mActivity, null, PDF_TITLE, TAB_ID, PDF_URL);
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        null,
+                        PDF_TITLE,
+                        TAB_ID,
+                        PDF_URL);
 
         Uri uri =
                 mPdfCoordinator.getFileUri(
@@ -296,6 +345,8 @@ public class PdfCoordinatorUnitTest {
         }
 
         @Implementation
-        public void testGetZoom() {}
+        public float getZoom() {
+            return mZoom;
+        }
     }
 }

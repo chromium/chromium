@@ -6,7 +6,6 @@ package org.chromium.chrome.modules.on_demand;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.pdf.PdfEntryPoint;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /**
@@ -20,7 +19,4 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 public interface OnDemandModuleEntryPoints {
     /** Used by internal Chrome builds. */
     @Nullable Object getInternalEntryPoints();
-
-    /** Returns the PDF entry point. */
-    PdfEntryPoint getPdfEntryPoint();
 }
