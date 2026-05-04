@@ -16,6 +16,9 @@
 // Shows a snackbar with a generic error message if a tab can't be reloaded.
 - (void)showCannotReloadTabError;
 
+// Shows a snackbar indicating that the selected tab cannot be attached.
+- (void)showCannotAttachTabError;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_PICKER_COORDINATOR_TAB_PICKER_SNACKBAR_PRESENTER_H_

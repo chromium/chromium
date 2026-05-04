@@ -14,7 +14,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/persist_tab_context/model",
-    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/intelligence/proto_wrappers:utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

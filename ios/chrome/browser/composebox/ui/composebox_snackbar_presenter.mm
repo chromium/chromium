@@ -88,6 +88,14 @@
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
+- (void)showCannotAttachTabError {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_UNABLE_TO_ADD_ATTACHMENT);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
+}
+
 #pragma mark - Private
 
 // Returns the snackbar handler if it exist.

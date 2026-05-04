@@ -8,7 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -121,6 +121,8 @@
     return;
   }
 
+  [super userTappedOnItemID:itemID];
+
   web::WebState* webState = GetWebState(
       self.webStateList,
       WebStateSearchCriteria{
@@ -154,12 +156,20 @@
                           [weakSelf handleFailedTabLoad:itemID];
                           return;
                         }
+                        if (!CanExtractPageContextForWebState(webState)) {
+                          [weakSelf handleAttemptToAttachInvalidTab:itemID];
+                          return;
+                        }
                         [weakSelf
                             updateSnapshotForWebState:webState->GetWeakPtr()
                                                itemID:itemID];
                       }];
+    return;
   }
-  [super userTappedOnItemID:itemID];
+
+  if (!CanExtractPageContextForWebState(webState)) {
+    [self handleAttemptToAttachInvalidTab:itemID];
+  }
 }
 
 - (GridItemIdentifier*)activeIdentifier {
@@ -211,7 +221,11 @@
   NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < self.webStateList->count(); i++) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    if (IsVisibleURLNewTabPage(webState)) {
+    if (!webState) {
+      continue;
+    }
+    const GURL& url = webState->GetVisibleURL();
+    if (!url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
     GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
@@ -341,6 +355,13 @@
 - (void)handleFailedTabLoad:(GridItemIdentifier*)itemID {
   [self.snackbarPresenter showCannotReloadTabError];
   [_failedLoadedItemIDs addObject:itemID];
+  [self removeFromSelectionItemID:itemID];
+  [self reconfigureGridItem:itemID];
+}
+
+/// Handles the scenario where a user attempts to attach an invalid tab.
+- (void)handleAttemptToAttachInvalidTab:(GridItemIdentifier*)itemID {
+  [self.snackbarPresenter showCannotAttachTabError];
   [self removeFromSelectionItemID:itemID];
   [self reconfigureGridItem:itemID];
 }

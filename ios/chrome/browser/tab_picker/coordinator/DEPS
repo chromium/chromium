@@ -1,7 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/intelligence/persist_tab_context/model",
-  "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/intelligence/proto_wrappers",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/tab_switcher",
   "+ios/chrome/browser/web/model",
