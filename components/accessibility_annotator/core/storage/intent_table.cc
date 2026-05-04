@@ -8,41 +8,28 @@
 #include "components/accessibility_annotator/core/data_models/intent.h"
 #include "components/history/core/browser/history_types.h"
 #include "sql/database.h"
+#include "sql/table_management_helpers.h"
+
+namespace accessibility_annotator {
 
 namespace {
 
-// TABLE CREATION STATEMENTS
-// -----------------------------------------------------------------------------
-// Table creation should be pegged to a specific version number, enforcing
-// linear migration-only updates.
+constexpr char kTaskIntentProvenanceTableName[] = "task_intent_provenance";
+constexpr char kIdColumn[] = "id";
+constexpr char kTaskIntentIdColumn[] = "task_intent_id";
+constexpr char kVisitIdColumn[] = "visit_id";
+constexpr char kUrlIdColumn[] = "url_id";
 
-// TODO(crbug.com/491051120): Update table creation statements with common SQL
-// utilities.
-
-constexpr char kTaskIntentProvenanceTableVersion1CreationSql[] = R"SQL(
-  CREATE TABLE task_intent_provenance (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    task_intent_id INTEGER NOT NULL,
-    visit_id INTEGER NOT NULL,
-    url_id INTEGER NOT NULL
-  )
-)SQL";
-
-constexpr char kTaskIntentTableVersion1CreationSql[] = R"SQL(
-  CREATE TABLE task_intent (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    cluster_most_recent_visit_time INTEGER NOT NULL,
-    needs_regeneration INTEGER NOT NULL,
-    task_intent_type INTEGER NOT NULL,
-    task_intent TEXT,
-    task_intent_status_type INTEGER NOT NULL,
-    task_intent_status TEXT
-  )
-)SQL";
+constexpr char kTaskIntentTableName[] = "task_intent";
+constexpr char kClusterMostRecentVisitTimeColumn[] =
+    "cluster_most_recent_visit_time";
+constexpr char kNeedsRegenerationColumn[] = "needs_regeneration";
+constexpr char kTaskIntentTypeColumn[] = "task_intent_type";
+constexpr char kTaskIntentColumn[] = "task_intent";
+constexpr char kTaskIntentStatusTypeColumn[] = "task_intent_status_type";
+constexpr char kTaskIntentStatusColumn[] = "task_intent_status";
 
 }  // namespace
-
-namespace accessibility_annotator {
 
 IntentTable::IntentTable() = default;
 IntentTable::~IntentTable() = default;
@@ -83,15 +70,23 @@ bool IntentTable::MigrateFromCleanStateToVersion1() {
     return false;
   }
 
-  if (!database_->Execute(kTaskIntentProvenanceTableVersion1CreationSql)) {
-    return false;
-  }
-
-  if (!database_->Execute(kTaskIntentTableVersion1CreationSql)) {
-    return false;
-  }
-
-  return true;
+  return sql::CreateTable(
+             *database_, kTaskIntentProvenanceTableName,
+             /*column_names_and_types=*/
+             {{kIdColumn, "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL"},
+              {kTaskIntentIdColumn, "INTEGER NOT NULL"},
+              {kVisitIdColumn, "INTEGER NOT NULL"},
+              {kUrlIdColumn, "INTEGER NOT NULL"}}) &&
+         sql::CreateTable(
+             *database_, kTaskIntentTableName,
+             /*column_names_and_types=*/
+             {{kIdColumn, "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL"},
+              {kClusterMostRecentVisitTimeColumn, "INTEGER NOT NULL"},
+              {kNeedsRegenerationColumn, "INTEGER NOT NULL"},
+              {kTaskIntentTypeColumn, "INTEGER NOT NULL"},
+              {kTaskIntentColumn, "TEXT"},
+              {kTaskIntentStatusTypeColumn, "INTEGER NOT NULL"},
+              {kTaskIntentStatusColumn, "TEXT"}});
 }
 
 }  // namespace accessibility_annotator
