@@ -929,7 +929,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mEdgeToEdgeChangeObserver =
                     (int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) -> {
                         var window = mWindowAndroid.getWindow();
-                        assert window != null;
+                        if (window == null) return;
                         var systemBarColorHelper =
                                 mEdgeToEdgeManager != null
                                         ? mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper()
