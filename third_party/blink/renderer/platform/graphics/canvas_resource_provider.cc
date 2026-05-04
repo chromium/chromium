@@ -2174,7 +2174,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
 
       gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
                                 color_space, kTopLeft_GrSurfaceOrigin,
-                                alpha_type, buffer_usage, is_software_);
+                                alpha_type, buffer_usage,
+                                /*is_software=*/false);
 
       std::optional<base::TimeDelta> expiration_time =
           (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
@@ -2219,7 +2220,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       gpu::ImageInfo image_info(
           size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
           kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          is_software_);
+          /*is_software=*/true);
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
           image_info, sii, "CanvasResourceSharedImage",
           kMaxRecycledCanvasResources);
@@ -2317,7 +2318,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
 
       gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
                                 color_space, kTopLeft_GrSurfaceOrigin,
-                                alpha_type, buffer_usage, is_software_);
+                                alpha_type, buffer_usage,
+                                /*is_software=*/false);
 
       std::optional<base::TimeDelta> expiration_time =
           (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
@@ -2363,7 +2365,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
       gpu::ImageInfo image_info(
           size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
           kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          is_software_);
+          /*is_software=*/true);
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
           image_info, sii, "CanvasResourceSharedImage",
           kMaxRecycledCanvasResources);
