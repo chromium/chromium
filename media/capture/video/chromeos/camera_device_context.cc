@@ -194,7 +194,7 @@ void CameraDeviceContext::OnGotHardwareInfo(
     base::SysInfo::HardwareInfo hardware_info) {
   base::AutoLock lock(client_lock_);
   if (hardware_info.model.starts_with("screebo")) {
-    color_space_override_ = gfx::ColorSpace::CreateSRGB();
+    color_space_override_ = gfx::ColorSpace::CreateJpeg();
   }
 }
 
