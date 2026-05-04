@@ -23262,6 +23262,26 @@
             ]
         }
     ],
+    "TcpSocketPoolLimitRandomizationForProxy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TcpSocketPoolLimitRandomizationForProxy"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextInputHostMojoCapabilityControlWorkaround": [
         {
             "platforms": [

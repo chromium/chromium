@@ -1894,6 +1894,8 @@ class NetworkContextConfigurationProxySettingsBrowserTest
     // `kDefaultMaxConnectionsPerProxy` to prevent changes via field trials.
     // Disable `kPermitTcpSocketPoolConnectBackupJobs`, as backup jobs
     // cause extra connections without opening new WebSockets, breaking tests.
+    // Disable `kTcpSocketPoolLimitRandomization`, as randomization makes size
+    // expectations impossible to test.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
@@ -1907,6 +1909,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
         },
         /*disabled_features=*/{
             net::features::kPermitTcpSocketPoolConnectBackupJobs,
+            net::features::kTcpSocketPoolLimitRandomization,
         });
   }
 

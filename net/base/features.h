@@ -693,11 +693,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTlsMldsaSignatures);
 NET_EXPORT BASE_DECLARE_FEATURE(kVerifyMTCs);
 #endif
 
-// Indicates if the client is participating in the TCP socket pool limit
-// randomization trial. The params below define the bounds for the probability.
+// Indicates if the client is participating in TCP socket pool limit
+// randomization. The params below define the bounds for the probability.
 // function we use when calculating the chance the state should flip between
-// capped and uncapped.
-// See crbug.com/415691664 for more details.
+// capped and uncapped. See crbug.com/415691664 for more details.
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolLimitRandomization);
 // The base of an exponent when calculating the probability.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
@@ -708,6 +707,9 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
 // The percentage of noise to add/subtract from the probability.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
                                       kTcpSocketPoolLimitRandomizationNoise);
+// Whether or not the randomization is enabled for proxy socket pools. This has
+// no impact if `kTcpSocketPoolLimitRandomization` is disabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolLimitRandomizationForProxy);
 
 // These parameters control whether the Network Service Task Scheduler is used
 // for specific classes.

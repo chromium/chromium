@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -77,6 +79,11 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
     sockets_per_proxy_chain = max_sockets_per_proxy_chain(pool_type_);
     sockets_per_group =
         std::min(sockets_per_proxy_chain, max_sockets_per_group(pool_type_));
+    if (base::FeatureList::IsEnabled(
+            features::kTcpSocketPoolLimitRandomizationForProxy)) {
+      additional_capacity = SocketPoolAdditionalCapacity::Create(
+          max_sockets_per_proxy_chain(pool_type_));
+    }
   }
 
   std::unique_ptr<ClientSocketPool> new_pool;
