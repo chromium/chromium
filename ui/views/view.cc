@@ -3079,13 +3079,13 @@ void View::UnlockPaint() {
 }
 
 void View::SchedulePaintInRectImpl(const gfx::Rect& rect) {
-  OnDidSchedulePaint(rect);
-  if (!visible_) {
+  if (IsPaintLocked()) {
+    paint_pending_while_locked_ = true;
     return;
   }
 
-  if (IsPaintLocked()) {
-    paint_pending_while_locked_ = true;
+  OnDidSchedulePaint(rect);
+  if (!visible_) {
     return;
   }
 

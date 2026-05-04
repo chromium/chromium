@@ -183,4 +183,21 @@ TEST_F(ScopedPaintLockTest, OnPaintNotCalledWhileLocked) {
   EXPECT_EQ(1, view.painted_count());
 }
 
+TEST_F(ScopedPaintLockTest, OnDidSchedulePaintNotCalledWhileLocked) {
+  TestView view;
+
+  auto lock = std::make_unique<ScopedPaintLock>(&view);
+
+  view.SchedulePaint();
+  EXPECT_TRUE(ViewTestApi(&view).paint_pending_while_locked());
+
+  // The locked view itself should not receive OnDidSchedulePaint while locked.
+  EXPECT_EQ(0, view.paint_scheduled_count());
+
+  // Removing the lock should trigger the deferred paint.
+  lock.reset();
+  EXPECT_FALSE(ViewTestApi(&view).paint_pending_while_locked());
+  EXPECT_EQ(1, view.paint_scheduled_count());
+}
+
 }  // namespace views
