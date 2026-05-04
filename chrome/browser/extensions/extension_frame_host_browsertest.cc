@@ -22,11 +22,14 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extensions_browser_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
