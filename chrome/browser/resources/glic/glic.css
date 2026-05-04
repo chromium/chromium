@@ -2,6 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+/* TODO(b/508659341): Use chrome color mixer for colors in glic css */
 :root {
   color-scheme: light dark;
   --color--secondary-container: light-dark(#C2E7FF, #004A77);
@@ -9,7 +10,7 @@
   --color--on-secondary-container: light-dark(#004A77, #C2E7FF);
   --color--error: light-dark(#B3261E, #F2B8B5);
   --color--primary: light-dark(#0B57D0, #A8C7FA);
-  --color--surface: light-dark(#FFF, #1B1C1D);
+  --color--surface: light-dark(#FFF, #131314);
   --color--on-surface-variant: light-dark(#575B5F, #A2A9B0);
   --color--surface-container: light-dark(#F0F4F9, #282A2C);
 }
@@ -41,6 +42,10 @@ body {
 webview:not([hidden]) {
   display: block;
   height: 100%;
+}
+
+webview {
+  background-color: var(--color--surface);
 }
 
 .dialog {

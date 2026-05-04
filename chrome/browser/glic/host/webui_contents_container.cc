@@ -22,11 +22,13 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -63,7 +65,8 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
                       perfetto::Flow::FromPointer(this));
   CHECK(web_contents_);
   Observe(web_contents_.get());
-  web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_contents_->SetPageBaseBackgroundColor(
+      web_contents_->GetColorProvider().GetColor(kColorGlicBackground));
   web_contents_->SetSupportsDraggableRegions(true);
 
 #if !BUILDFLAG(IS_ANDROID)

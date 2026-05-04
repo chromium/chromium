@@ -338,6 +338,7 @@ source_set("impl") {
     "//chrome/browser/ui:tab_search_feature",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/profiles",

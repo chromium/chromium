@@ -430,7 +430,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFrameCaptionInactive] =
       ui::GetColorWithMaxContrast({ui::kColorFrameInactive});
 
-  mixer[kColorGlicBackground] = {ui::kColorBubbleBackground};
+  mixer[kColorGlicBackground] = {dark_mode ? SkColorSetRGB(0x13, 0x13, 0x14)
+                                           : ui::kColorBubbleBackground};
   // Invert modal colors w.r.t. Chrome dark mode.
   mixer[kColorGlicModalBackground] = {dark_mode
                                           ? SkColorSetRGB(0xE3, 0xE3, 0xE3)
