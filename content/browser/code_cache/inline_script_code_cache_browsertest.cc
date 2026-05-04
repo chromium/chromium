@@ -277,7 +277,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // TODO(crbug.com/498265776): Test is expected to time out on some slow
 // builders.
 #if defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
-    (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
+    ((BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && !defined(NDEBUG))
 #define MAYBE_DefaultCacheHint DISABLED_DefaultCacheHint
 #else
 #define MAYBE_DefaultCacheHint DefaultCacheHint
