@@ -4,13 +4,35 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
 namespace {
 
-using CredentialProviderUtilTest = PlatformTest;
+NSString* const kTestFaviconKey = @"TEST";
+
+class CredentialProviderUtilTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+    SetFaviconsFolderURLForTesting(
+        base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath()));
+  }
+
+  void TearDown() override {
+    SetFaviconsFolderURLForTesting(nil);
+    PlatformTest::TearDown();
+  }
+
+  base::ScopedTempDir scoped_temp_dir_;
+};
 
 // Test that the expected hash stays the same for the same URL.
 TEST_F(CredentialProviderUtilTest, GetFaviconFileKey) {
@@ -44,13 +66,66 @@ TEST_F(CredentialProviderUtilTest, ShouldFetchFavicon) {
                                                      toDate:today
                                                     options:0];
 
-  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{}));
+  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, @{}));
 
-  EXPECT_FALSE(ShouldFetchFavicon(@"TEST", @{@"TEST" : today}));
-  EXPECT_FALSE(ShouldFetchFavicon(@"TEST", @{@"TEST" : thirteenDaysAgo}));
-  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{@"TEST" : fifteenDaysAgo}));
+  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : today}));
+  EXPECT_FALSE(ShouldFetchFavicon(kTestFaviconKey,
+                                  @{kTestFaviconKey : thirteenDaysAgo}));
+  EXPECT_TRUE(
+      ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : fifteenDaysAgo}));
 
-  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{@"OtherFavicon" : today}));
+  EXPECT_TRUE(ShouldFetchFavicon(kTestFaviconKey, @{@"OtherFavicon" : today}));
+
+  // Edge cases around the 14-day boundary.
+  base::Time now = base::Time::Now();
+  NSDate* slightlyLessThanFourteenDaysAgo =
+      (now - base::Days(14) + base::Seconds(5)).ToNSDate();
+  NSDate* slightlyMoreThanFourteenDaysAgo =
+      (now - base::Days(14) - base::Seconds(5)).ToNSDate();
+
+  EXPECT_FALSE(ShouldFetchFavicon(
+      kTestFaviconKey, @{kTestFaviconKey : slightlyLessThanFourteenDaysAgo}));
+  EXPECT_TRUE(ShouldFetchFavicon(
+      kTestFaviconKey, @{kTestFaviconKey : slightlyMoreThanFourteenDaysAgo}));
+
+  // Date in the future should not trigger a fetch.
+  NSDate* futureDate = (now + base::Days(1)).ToNSDate();
+  EXPECT_FALSE(
+      ShouldFetchFavicon(kTestFaviconKey, @{kTestFaviconKey : futureDate}));
+}
+
+TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_NilFolder) {
+  SetFaviconsFolderURLForTesting(nil);
+  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+}
+
+TEST_F(CredentialProviderUtilTest,
+       GetFaviconsListAndFreshness_NonExistentFolder) {
+  NSURL* folder_url = [base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath())
+      URLByAppendingPathComponent:@"NonExistent"];
+  SetFaviconsFolderURLForTesting(folder_url);
+  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+}
+
+TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_EmptyFolder) {
+  EXPECT_NSEQ(nil, GetFaviconsListAndFreshness());
+}
+
+TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_WithFiles) {
+  NSURL* folder_url = base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath());
+  NSURL* file_url = [folder_url URLByAppendingPathComponent:@"file1"];
+
+  NSError* error = nil;
+  BOOL success = [@"dummy" writeToURL:file_url
+                           atomically:YES
+                             encoding:NSUTF8StringEncoding
+                                error:&error];
+  ASSERT_TRUE(success) << base::SysNSStringToUTF8([error description]);
+
+  NSDictionary<NSString*, NSDate*>* dict = GetFaviconsListAndFreshness();
+  ASSERT_NSNE(nil, dict);
+  EXPECT_EQ(1u, dict.count);
+  EXPECT_NSNE(nil, dict[@"file1"]);
 }
 
 }  // namespace

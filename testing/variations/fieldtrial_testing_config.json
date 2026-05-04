@@ -7777,6 +7777,21 @@
             ]
         }
     ],
+    "CredentialProviderRefactoredAddCredentials": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CredentialProviderRefactoredAddCredentials"
+                    ]
+                }
+            ]
+        }
+    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [

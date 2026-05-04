@@ -7,11 +7,16 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/check_is_test.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/no_destructor.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/synchronization/lock.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -33,8 +38,25 @@ extern const char kSyncStoreHistogramName[] =
 
 namespace {
 
-// Max number of stored favicons.
-int const kMaxNumberOfFavicons = 2000;
+// Default max number of stored favicons.
+constexpr NSUInteger kDefaultMaxNumberOfFavicons = 2000;
+
+bool g_has_max_favicons_override = false;
+NSUInteger g_max_favicons_override = 0;
+
+// Returns the lock used to synchronize access to the test override folder URL
+// and the max favicons override.
+base::Lock& GetFaviconLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+// Returns the maximum number of stored favicons.
+NSUInteger GetMaxNumberOfFavicons() {
+  base::AutoLock lock(GetFaviconLock());
+  return g_has_max_favicons_override ? g_max_favicons_override
+                                     : kDefaultMaxNumberOfFavicons;
+}
 
 // Key used to store the favicons last sync date in the user preferences.
 NSString* const kFaviconsLastSyncDatePrefKey = @"FaviconsLastSyncDatePrefKey";
@@ -47,7 +69,39 @@ constexpr base::TimeDelta kResyncInterval = base::Days(7);
 // favicons relatively quickly.
 constexpr base::TimeDelta kFaviconRefreshInterval = base::Days(14);
 
+NSURL* g_favicon_folder_url_for_testing = nil;
+
+// Returns the folder URL for favicons, respecting the test override if set.
+NSURL* GetFaviconsFolderURL() {
+  {
+    base::AutoLock lock(GetFaviconLock());
+    if (g_favicon_folder_url_for_testing) {
+      return g_favicon_folder_url_for_testing;
+    }
+  }
+  return app_group::SharedFaviconAttributesFolder();
+}
+
 }  // namespace
+
+void SetFaviconsFolderURLForTesting(NSURL* url) {
+  CHECK_IS_TEST();
+  base::AutoLock lock(GetFaviconLock());
+  g_favicon_folder_url_for_testing = url;
+}
+
+void SetMaxNumberOfFaviconsForTesting(NSUInteger max_favicons) {
+  CHECK_IS_TEST();
+  base::AutoLock lock(GetFaviconLock());
+  g_has_max_favicons_override = true;
+  g_max_favicons_override = max_favicons;
+}
+
+void ResetMaxNumberOfFaviconsForTesting() {
+  CHECK_IS_TEST();
+  base::AutoLock lock(GetFaviconLock());
+  g_has_max_favicons_override = false;
+}
 
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form) {
@@ -81,8 +135,10 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
 
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
-    NSURL* shared_favicon_attributes_folder_url =
-        app_group::SharedFaviconAttributesFolder();
+    NSURL* shared_favicon_attributes_folder_url = GetFaviconsFolderURL();
+    if (!shared_favicon_attributes_folder_url) {
+      return;
+    }
     NSURL* file_url = [shared_favicon_attributes_folder_url
         URLByAppendingPathComponent:filename
                         isDirectory:NO];
@@ -112,14 +168,16 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
 // Returns true to continue fetching favicon if the app group storage does not
 // contain more than the max number of favicons or if the verification is
 // skipped.
-bool ShouldContinueFetchingFavicon() {
+bool ShouldContinueFetchingFavicon(NSUInteger max_favicons) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  return
-      [[[NSFileManager defaultManager]
-          contentsOfDirectoryAtPath:app_group::SharedFaviconAttributesFolder()
-                                        .path
-                              error:nil] count] < kMaxNumberOfFavicons;
+  NSURL* folder_url = GetFaviconsFolderURL();
+  if (!folder_url) {
+    return false;
+  }
+  return [[[NSFileManager defaultManager]
+             contentsOfDirectoryAtPath:folder_url.path
+                                 error:nil] count] < max_favicons;
 }
 
 // Fetches favicon from site URL and saves it to `filename`.
@@ -153,11 +211,12 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                             fallback_to_google_server,
                             /* continue_fetching */ YES);
   } else {
+    NSUInteger max_favicons = GetMaxNumberOfFavicons();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
          base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ShouldContinueFetchingFavicon),
+        base::BindOnce(&ShouldContinueFetchingFavicon, max_favicons),
         base::BindOnce(&ContinueFetchingFavicon, favicon_loader->AsWeakPtr(),
                        site_url, filename, fallback_to_google_server));
   }
@@ -188,7 +247,11 @@ void CleanUpFavicons(NSSet* excess_favicons_filenames) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* path = app_group::SharedFaviconAttributesFolder().path;
+  NSURL* folder_url = GetFaviconsFolderURL();
+  if (!folder_url) {
+    return;
+  }
+  NSString* path = folder_url.path;
   NSArray* filename_list = [file_manager contentsOfDirectoryAtPath:path
                                                              error:nil];
   if (!filename_list || [filename_list count] == 0) {
@@ -213,9 +276,8 @@ void CleanUpFavicons(NSSet* excess_favicons_filenames) {
     NSString* filename = [filename_list objectAtIndex:i];
     if (![credential_favicon_filename_set containsObject:filename]) {
       // Remove from storage.
-      NSURL* url = [app_group::SharedFaviconAttributesFolder()
-          URLByAppendingPathComponent:filename
-                          isDirectory:NO];
+      NSURL* url = [folder_url URLByAppendingPathComponent:filename
+                                               isDirectory:NO];
       if ([file_manager fileExistsAtPath:[url path]]) {
         [file_manager removeItemAtURL:url error:nil];
       }
@@ -253,16 +315,16 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
   // Truncate array if it is larger than the maximum and add the favicons
   // file name to be removed in a set.
   NSMutableSet* excess_favicons_filenames = [[NSMutableSet alloc] init];
-  if ([all_credentials_rank count] > kMaxNumberOfFavicons) {
-    for (NSUInteger i = kMaxNumberOfFavicons; i < all_credentials_rank.count;
-         i++) {
+  NSUInteger max_favicons = GetMaxNumberOfFavicons();
+  if ([all_credentials_rank count] > max_favicons) {
+    for (NSUInteger i = max_favicons; i < all_credentials_rank.count; i++) {
       if ([all_credentials_rank objectAtIndex:i].favicon) {
         [excess_favicons_filenames
             addObject:[all_credentials_rank objectAtIndex:i].favicon];
       }
     }
-    all_credentials_rank = [all_credentials_rank
-        subarrayWithRange:NSMakeRange(0, kMaxNumberOfFavicons)];
+    all_credentials_rank =
+        [all_credentials_rank subarrayWithRange:NSMakeRange(0, max_favicons)];
   }
 
   for (id<Credential> credential : all_credentials_rank) {
@@ -292,8 +354,8 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
                                /*skip_max_verification=*/YES,
                                fallback_to_google_server);
 
-      // Remove file name duplicate because it is part of the top
-      // `kMaxNumberOfFavicons` credentials used by the user.
+      // Remove file name duplicate because it is part of the top credentials
+      // used by the user.
       if ([excess_favicons_filenames containsObject:filename]) {
         [excess_favicons_filenames removeObject:filename];
       }
@@ -320,13 +382,15 @@ void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
 }
 
 NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
-  NSURL* shared_favicon_attributes_folder_url =
-      app_group::SharedFaviconAttributesFolder();
+  NSURL* folder_url = GetFaviconsFolderURL();
+  if (!folder_url) {
+    return nil;
+  }
 
   NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* path = shared_favicon_attributes_folder_url.path;
+  NSString* path = folder_url.path;
 
-  // If the favicon folder doesn't exist, there are not favicons stored.
+  // If the favicon folder doesn't exist, there are no favicons stored.
   if (![file_manager fileExistsAtPath:path]) {
     return nil;
   }
@@ -340,9 +404,8 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
   NSMutableDictionary<NSString*, NSDate*>* favicon_info_dict =
       [[NSMutableDictionary alloc] init];
   for (NSString* fileName in fileNames) {
-    NSURL* filePath = [shared_favicon_attributes_folder_url
-        URLByAppendingPathComponent:fileName
-                        isDirectory:NO];
+    NSURL* filePath = [folder_url URLByAppendingPathComponent:fileName
+                                                  isDirectory:NO];
     NSDictionary* fileAttribs =
         [file_manager attributesOfItemAtPath:filePath.path error:nil];
     if (fileAttribs) {
@@ -355,12 +418,11 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
       // the dictionary. The favicon will either be refetched and overwritten,
       // or deleted in cleanup if there are no credentials using it anymore.
       if (date) {
-        [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
-                              forKey:fileName];
+        favicon_info_dict[fileName] = date;
       }
     }
   }
-  return favicon_info_dict;
+  return [favicon_info_dict copy];
 }
 
 bool ShouldFetchFavicon(NSString* favicon_key,
@@ -371,7 +433,7 @@ bool ShouldFetchFavicon(NSString* favicon_key,
 
   // If there is not previous fetch date, it means there is no favicon for that
   // key. Fetch it.
-  NSDate* favicon_fetch_date = [favicon_dict valueForKey:favicon_key];
+  NSDate* favicon_fetch_date = favicon_dict[favicon_key];
   if (!favicon_fetch_date) {
     return true;
   }
@@ -382,8 +444,10 @@ bool ShouldFetchFavicon(NSString* favicon_key,
 }
 
 bool DeleteFaviconsFolder() {
-  NSURL* shared_favicon_attributes_folder_url =
-      app_group::SharedFaviconAttributesFolder();
+  NSURL* shared_favicon_attributes_folder_url = GetFaviconsFolderURL();
+  if (!shared_favicon_attributes_folder_url) {
+    return true;
+  }
 
   NSFileManager* file_manager = [NSFileManager defaultManager];
   NSString* path = shared_favicon_attributes_folder_url.path;
@@ -394,4 +458,8 @@ bool DeleteFaviconsFolder() {
   }
 
   return [file_manager removeItemAtPath:path error:nil];
+}
+
+bool IsFaviconFolderAvailable() {
+  return GetFaviconsFolderURL() != nil;
 }

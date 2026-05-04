@@ -17,6 +17,9 @@ BASE_DECLARE_FEATURE(kCredentialProviderPasskeyLargeBlob);
 // Feature flag to enable signal API in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderSignalAPI);
 
+// Feature flag to enable refactored AddCredentials in the credential provider.
+BASE_DECLARE_FEATURE(kCredentialProviderRefactoredAddCredentials);
+
 // Credential exchange feature is controlled by a build-time flag, because
 // it is defined in capabilities that are linked to the Credential Provider
 // Extension and it must be declared in its Info.plist (manifest).

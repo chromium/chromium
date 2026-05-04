@@ -7,7 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/password_manager/core/browser/password_form.h"
+#import "base/memory/weak_ptr.h"
+#import "url/gurl.h"
+
+namespace password_manager {
+struct PasswordForm;
+}
 
 class FaviconLoader;
 class ProfileIOS;
@@ -34,7 +39,8 @@ void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
                                      bool fallback_to_google_server);
 
 // Returns a dictionary where the keys are favicon file names (they are hashes
-// of the associated URL) and their creation date.
+// of the associated URL) and their modification date (or creation date if
+// modification date is missing).
 NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness();
 
 // Returns whether a favicon for 'favicon_key' should be fetched.
@@ -44,5 +50,8 @@ bool ShouldFetchFavicon(NSString* favicon_key,
 // Deletes the folder containing the favicons. Returns whether the deletion was
 // successful.
 bool DeleteFaviconsFolder();
+
+// Returns whether the favicon folder is available.
+bool IsFaviconFolderAvailable();
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_UTIL_H_
