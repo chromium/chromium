@@ -122,6 +122,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleNTPTilesRequest(
 
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithConfiguration:self.appConfigurationForTestCase];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TileWithText(@"title1")];
   [[EarlGrey selectElementWithMatcher:TileWithText(@"title1")]
       assertWithMatcher:grey_notNil()];
 }
