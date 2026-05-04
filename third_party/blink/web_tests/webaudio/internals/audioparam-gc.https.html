@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<title>Test GC of AudioParam with connected node</title>
+<script src="../../resources/gc.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async (t) => {
+  // Ensure clean GC state.
+  await asyncGC();
+
+  const context = new AudioContext();
+  let osc1 = new OscillatorNode(context);
+  let osc2 = new OscillatorNode(context);
+
+  osc1.connect(osc2.frequency);
+  osc1.start();
+  osc2.start();
+
+  // Yield to allow processing to happen.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  // Drop references to nodes.
+  osc1 = null;
+  osc2 = null;
+
+  // Force GC. Without the fix, this randomly crashes if OscillatorNode is
+  // destroyed before AudioParam and the CI is enabled for dangliing pointer
+  // detection.
+  await asyncGC();
+
+  // If we reach here without crashing, it's a success.
+  assert_true(true, "Did not crash during GC");
+
+  context.close();
+}, 'Test GC of AudioParam with connected node');
+</script>
+</body>
+</html>

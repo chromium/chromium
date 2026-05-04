@@ -36,8 +36,9 @@ namespace blink {
 // dies.
 //
 // Connected to AudioNodeOutput using AudioNodeWiring.
-class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
-                                public AudioSummingJunction {
+class MODULES_EXPORT AudioParamHandler final
+    : public ThreadSafeRefCounted<AudioParamHandler>,
+      public AudioSummingJunction {
  public:
   // Each AudioParam gets an identifier here.  This is mostly for instrospection
   // if warnings or other messages need to be printed. It's useful to know what

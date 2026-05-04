@@ -402,6 +402,10 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     }
 
     vector_math::Vclip(values, 1, &min_value, &max_value, values, 1);
+
+    // Clear the channel memory to avoid holding a reference to the external
+    // `values` buffer, which may be garbage collected.
+    summing_bus_->SetChannelMemory(0, nullptr, 0);
   }
 }
 

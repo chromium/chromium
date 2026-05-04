@@ -47,7 +47,8 @@ namespace blink {
 class V8AutomationRate;
 
 // AudioParam class represents web-exposed AudioParam interface.
-class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
+class MODULES_EXPORT AudioParam final : public ScriptWrappable,
+                                        public InspectorHelperMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
