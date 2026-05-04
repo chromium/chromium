@@ -1179,8 +1179,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     is_expanded_on_hover_ = false;
     return;
   }
-  // If expand on hover is locked (e.g. omnibox popup is open), then we
-  // should not enter the expand on hover state or exit it if already expanded.
+  // If the force collapse lock is held, collapse the tab strip.
   if (force_collapse_lock_count_ > 0) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
@@ -1188,15 +1187,13 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     return;
   }
 
-  // If a bubble or menu is open, then we don't want to change the state. If
-  // expanded, stay expanded. If collapsed, stay collapsed.
+  // If the current state lock is held, reset the timers and wait.
   if (keep_current_state_lock_count_ > 0) {
     ResetExpandOnHoverTimers();
     return;
   }
 
-  // If a tab is being dragged, then we should enter the expand on hover state
-  // and stay there.
+  // If the keep expanded lock is held, expand the tab strip.
   if (keep_expanded_lock_count_ > 0) {
     if (!is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/true);

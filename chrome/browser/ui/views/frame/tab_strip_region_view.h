@@ -27,17 +27,18 @@ class ExpandOnHoverLock {
   virtual ~ExpandOnHoverLock() = default;
 };
 
-// `kForceCollapse` should be used when there is some other UI element that will
-// overlay over the tab strip, so we want to make sure that takes priority in
-// visibility.
-// `kKeepCurrentState` should be used when the user is interacting with a bubble
-// or context menu so that their interaction with the tab strip is not
-// interrupted.
-// `kKeepExpanded` should be used when the tab strip should be forced to be
-// expanded and not allowed to collapse.
 enum class ExpandOnHoverLockType {
+  // This forces the tab strip to collapse and prevents expansion. This should
+  // be used when there is some other high priority UI element (e.g. omnibox)
+  // that will overlay over the tab strip.
   kForceCollapse,
+  // This forces the current state to persist. It should be used when the user
+  // is interacting with a bubble or context menu so that their interaction with
+  // the tab strip is not interrupted.
   kKeepCurrentState,
+  // This forces the tab strip to be expanded and prevents collapse. This is
+  // used during tab dragging so it is clear to the user which tab is being
+  // dragged.
   kKeepExpanded
 };
 
