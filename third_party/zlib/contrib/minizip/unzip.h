@@ -42,6 +42,8 @@
 #ifndef _unz64_H
 #define _unz64_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -128,6 +130,10 @@ typedef struct unz_file_info64_s
     uLong external_fa;          /* external file attributes        4 bytes */
 
     tm_unz tmu_date;
+
+    /* Info-ZIP Unicode Path Extra Field */
+    char utf8_filename[UINT16_MAX + 1]; /* UTF-8 Filename, null terminated */
+    uLong size_utf8_filename;           /* Length, excluding null terminator */
 } unz_file_info64;
 
 typedef struct unz_file_info_s
@@ -149,6 +155,10 @@ typedef struct unz_file_info_s
     uLong external_fa;          /* external file attributes        4 bytes */
 
     tm_unz tmu_date;
+
+    /* Info-ZIP Unicode Path Extra Field */
+    char utf8_filename[UINT16_MAX + 1]; /* UTF-8 Filename, null terminated */
+    uLong size_utf8_filename;           /* Length, excluding null terminator */
 } unz_file_info;
 
 extern int ZEXPORT unzStringFileNameCompare(const char* fileName1,

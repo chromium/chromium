@@ -859,6 +859,9 @@ local int unz64local_GetCurrentFileInfoInternal(unzFile file,
     uLong uL;
     uLong uFileNameCrc;
 
+    file_info.size_utf8_filename = 0;
+    file_info.utf8_filename[0] = '\0';
+
     if (file==NULL)
         return UNZ_PARAMERROR;
     s=(unz64_s*)file;
@@ -1067,48 +1070,34 @@ local int unz64local_GetCurrentFileInfoInternal(unzFile file,
                 }
                 else
                 {
-                    uLong uCrc, fileNameSize;
+                    uLong uCrc, utf8FileNameSize;
 
                     if (unz64local_getLong(&s->z_filefunc, s->filestream, &uCrc) != UNZ_OK)
                     {
                         err = UNZ_ERRNO;
                     }
-                    fileNameSize = dataSize - (1 + 4);  /* 1 for version, 4 for uCrc */
+                    utf8FileNameSize = dataSize - (1 + 4);  /* 1 for version, 4 for uCrc */
 
                     /* Check CRC against file name in the header. */
                     if (uCrc != uFileNameCrc)
                     {
-                        if (ZSEEK64(s->z_filefunc, s->filestream, fileNameSize, ZLIB_FILEFUNC_SEEK_CUR) != 0)
+                        if (ZSEEK64(s->z_filefunc, s->filestream, utf8FileNameSize, ZLIB_FILEFUNC_SEEK_CUR) != 0)
                         {
                             err = UNZ_ERRNO;
                         }
                     }
                     else
                     {
-                        file_info.size_filename = fileNameSize;
+                        file_info.size_utf8_filename = utf8FileNameSize;
 
-                        char szCurrentFileName[UINT16_MAX] = {0};
-
-                        if (file_info.size_filename > 0)
+                        if (file_info.size_utf8_filename > 0)
                         {
-                            if (ZREAD64(s->z_filefunc, s->filestream, szCurrentFileName, file_info.size_filename) != file_info.size_filename)
+                            if (ZREAD64(s->z_filefunc, s->filestream, file_info.utf8_filename, file_info.size_utf8_filename) != file_info.size_utf8_filename)
                             {
                                 err = UNZ_ERRNO;
                             }
                         }
-
-                        if (szFileName != NULL)
-                        {
-                            if (fileNameBufferSize <= file_info.size_filename)
-                            {
-                                memcpy(szFileName, szCurrentFileName, fileNameBufferSize);
-                            }
-                            else
-                            {
-                                memcpy(szFileName, szCurrentFileName, file_info.size_filename);
-                                szFileName[file_info.size_filename] = '\0';
-                            }
-                        }
+                        file_info.utf8_filename[file_info.size_utf8_filename] = '\0';
                     }
                 }
             }
@@ -1210,6 +1199,9 @@ extern int ZEXPORT unzGetCurrentFileInfo(unzFile file,
 
         pfile_info->compressed_size = (uLong)file_info64.compressed_size;
         pfile_info->uncompressed_size = (uLong)file_info64.uncompressed_size;
+
+        pfile_info->size_utf8_filename = file_info64.size_utf8_filename;
+        memcpy(pfile_info->utf8_filename, file_info64.utf8_filename, file_info64.size_utf8_filename + 1);
 
     }
     return err;

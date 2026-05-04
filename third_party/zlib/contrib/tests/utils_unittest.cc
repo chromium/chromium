@@ -1397,8 +1397,9 @@ TEST(ZlibTest, ZipUnicodePathExtra) {
   ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
   ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, long_buf, sizeof(long_buf),
                                   nullptr, 0, nullptr, 0), UNZ_OK);
-  ASSERT_EQ(file_info.size_filename, 14);
-  ASSERT_EQ(std::string(long_buf), "\xec\x83\x88 \xeb\xac\xb8\xec\x84\x9c.txt");
+  ASSERT_EQ(file_info.size_filename, 11);
+  ASSERT_EQ(file_info.size_utf8_filename, 14);
+  ASSERT_EQ(std::string(file_info.utf8_filename), "\xec\x83\x88 \xeb\xac\xb8\xec\x84\x9c.txt");
 
   // Even if the file name buffer is too short to hold the whole filename, the
   // unicode path extra field should get parsed correctly, size_filename set,
@@ -1406,16 +1407,48 @@ TEST(ZlibTest, ZipUnicodePathExtra) {
   ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
   ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, short_buf, sizeof(short_buf),
                                   nullptr, 0, nullptr, 0), UNZ_OK);
-  ASSERT_EQ(file_info.size_filename, 14);
-  ASSERT_EQ(std::string(short_buf, sizeof(short_buf)), "\xec\x83\x88");
+  ASSERT_EQ(file_info.size_filename, 11);
+  ASSERT_EQ(std::string(short_buf, sizeof(short_buf)), "\xc8\xfe\x20");
+  ASSERT_EQ(file_info.size_utf8_filename, 14);
+  ASSERT_EQ(std::string(file_info.utf8_filename), "\xec\x83\x88 \xeb\xac\xb8\xec\x84\x9c.txt");
 
   // Also with a null filename buffer, the unicode path extra field should get
   // parsed and size_filename set correctly.
   ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
   ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, nullptr, 0, nullptr, 0,
                                   nullptr, 0), UNZ_OK);
-  ASSERT_EQ(file_info.size_filename, 14);
+  ASSERT_EQ(file_info.size_filename, 11);
+  ASSERT_EQ(file_info.size_utf8_filename, 14);
+  ASSERT_EQ(std::string(file_info.utf8_filename), "\xec\x83\x88 \xeb\xac\xb8\xec\x84\x9c.txt");
 
+  EXPECT_EQ(unzClose(uzf), UNZ_OK);
+}
+
+TEST(ZlibTest, Crbug500521311) {
+  base::FilePath zip_file = TestDataDir().AppendASCII("bug500521311.zip");
+  unzFile uzf = unzOpen(zip_file.AsUTF8Unsafe().c_str());
+  ASSERT_NE(uzf, nullptr);
+
+  char buf[256];
+  unz_file_info file_info;
+
+  // aaaaaa...
+  ASSERT_EQ(unzGoToFirstFile(uzf), UNZ_OK);
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, buf, sizeof(buf),
+                                  nullptr, 0, nullptr, 0), UNZ_OK);
+  EXPECT_EQ(std::string(file_info.utf8_filename),
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+  // The Unicode Path Extra Field in the first Local File Header could
+  // previously cause unzGoToNextFile() to advance the wrong amount,
+  // potentially skipping a central directory entry.
+  ASSERT_EQ(unzGoToNextFile(uzf), UNZ_OK);
+
+  // evil.exe
+  ASSERT_EQ(unzGetCurrentFileInfo(uzf, &file_info, buf, sizeof(buf),
+                                  nullptr, 0, nullptr, 0), UNZ_OK);
+  EXPECT_EQ(std::string(buf), "evil.exe");
+  EXPECT_EQ(unzGoToNextFile(uzf), UNZ_END_OF_LIST_OF_FILE);
   EXPECT_EQ(unzClose(uzf), UNZ_OK);
 }
 
