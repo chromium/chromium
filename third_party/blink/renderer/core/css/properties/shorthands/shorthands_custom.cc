@@ -4597,24 +4597,27 @@ static CSSValue* CSSValueForTimelineShorthand(
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
-  if (name_vector.size() != axis_vector.size()) {
-    return list;
-  }
-  if (inset_vector && name_vector.size() != inset_vector->size()) {
-    return list;
-  }
   if (name_vector.empty()) {
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
         /*name=*/g_null_atom, TimelineAxis::kBlock, /*inset=*/std::nullopt,
         style));
     return list;
   }
+
+  // Per https://drafts.csswg.org/css-values-4/#linked-properties,
+  // the *-name property is the coordinating list base property, which
+  // determines the length of the coordinated value list. Other properties
+  // cycle if shorter or are truncated if longer.
   for (wtf_size_t i = 0; i < name_vector.size(); ++i) {
+    TimelineAxis axis = axis_vector.empty()
+                            ? TimelineAxis::kBlock
+                            : axis_vector[i % axis_vector.size()];
+    std::optional<TimelineInset> inset = std::nullopt;
+    if (inset_vector && !inset_vector->empty()) {
+      inset = (*inset_vector)[i % inset_vector->size()];
+    }
     list->Append(*ComputedStyleUtils::SingleValueForTimelineShorthand(
-        name_vector[i], axis_vector[i],
-        inset_vector ? std::optional<TimelineInset>((*inset_vector)[i])
-                     : std::optional<TimelineInset>(),
-        style));
+        name_vector[i], axis, inset, style));
   }
 
   return list;

@@ -1017,18 +1017,9 @@ bool IsIdentifierPair(const CSSValue& value, CSSValueID ident) {
          IsIdentifier(pair_value->Second(), ident);
 }
 
-CSSValue* TimelineValueItem(wtf_size_t index,
-                            const CSSValueList& name_list,
-                            const CSSValueList& axis_list,
-                            const CSSValueList* inset_list) {
-  DCHECK_LT(index, name_list.length());
-  DCHECK_LT(index, axis_list.length());
-  DCHECK(!inset_list || index < inset_list->length());
-
-  const CSSValue& name = name_list.Item(index);
-  const CSSValue& axis = axis_list.Item(index);
-  const CSSValue* inset = inset_list ? &inset_list->Item(index) : nullptr;
-
+CSSValue* TimelineValueItem(const CSSValue& name,
+                            const CSSValue& axis,
+                            const CSSValue* inset) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
   // Note that the name part can never be omitted, since e.g. serializing
@@ -1062,21 +1053,22 @@ String StylePropertySerializer::TimelineValue(
           ? To<CSSValueList>(
                 property_set_.GetPropertyCSSValue(*shorthand.properties()[2]))
           : nullptr;
-
-  // The scroll/view-timeline shorthand can not expand to longhands of two
-  // different lengths, so we can also not contract two different-longhands
-  // into a single shorthand.
-  if (name_list.length() != axis_list.length()) {
-    return "";
-  }
-  if (inset_list && name_list.length() != inset_list->length()) {
-    return "";
+  CHECK_NE(axis_list.length(), 0u);
+  if (inset_list) {
+    CHECK_NE(inset_list->length(), 0u);
   }
 
+  // Per https://drafts.csswg.org/css-values-4/#linked-properties,
+  // the *-name property is the coordinating list base property, which
+  // determines the length of the coordinated value list. Other properties
+  // cycle if shorter or are truncated if longer.
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < name_list.length(); ++i) {
-    list->Append(*TimelineValueItem(i, name_list, axis_list, inset_list));
+    const CSSValue& axis = axis_list.Item(i % axis_list.length());
+    const CSSValue* inset =
+        inset_list ? &inset_list->Item(i % inset_list->length()) : nullptr;
+    list->Append(*TimelineValueItem(name_list.Item(i), axis, inset));
   }
 
   return list->CssText();
