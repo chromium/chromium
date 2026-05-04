@@ -757,6 +757,7 @@ static_library("test_support") {
       "../browser/webauth/authenticator_test_base.h",
     ]
     deps += [
+      "//components/webauthn/core/browser:test_support",
       "//device/base",
       "//device/fido",
       "//device/fido:cablev2_authenticator",

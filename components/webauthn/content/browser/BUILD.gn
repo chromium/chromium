@@ -32,6 +32,7 @@ source_set("unit_tests") {
       "//base/test:test_support",
       "//components/keyed_service/core",
       "//components/webauthn/core/browser",
+      "//components/webauthn/core/browser:test_support",
       "//content/public/browser",
       "//content/test:test_support",
       "//device/fido:test_support",

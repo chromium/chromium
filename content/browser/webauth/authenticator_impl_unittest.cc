@@ -722,8 +722,10 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 // Verify behavior for various combinations of origins and RP IDs.
 TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
   std::vector<OriginClaimedAuthorityPair> tests;
-  std::ranges::copy(kValidRpTestCases, std::back_inserter(tests));
-  std::ranges::copy(kInvalidRpTestCases, std::back_inserter(tests));
+  std::ranges::copy(webauthn::test::GetValidRpTestCases(),
+                    std::back_inserter(tests));
+  std::ranges::copy(webauthn::test::GetInvalidRpTestCases(),
+                    std::back_inserter(tests));
 
   int test_case_count = 0;
   for (const auto& test_case : tests) {
@@ -948,7 +950,8 @@ TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
 TEST_F(AuthenticatorImplTest, GetAssertionOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+  for (const OriginClaimedAuthorityPair& test_case :
+       webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
@@ -967,7 +970,8 @@ TEST_F(AuthenticatorImplTest, GetAssertionOriginAndRpIds) {
 TEST_F(AuthenticatorImplTest, ReportOriginAndRpIds) {
   // These instances should return security errors (for circumstances
   // that would normally crash the renderer).
-  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+  for (const OriginClaimedAuthorityPair& test_case :
+       webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
@@ -1022,7 +1026,7 @@ TEST_F(AuthenticatorImplTest, AppIdExtensionValues) {
   }
 
   // All the invalid relying party test cases should also be invalid as AppIDs.
-  for (const auto& test_case : kInvalidRpTestCases) {
+  for (const auto& test_case : webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
@@ -10354,7 +10358,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
   request_proxy().config().make_credential_response->info =
       CommonCredentialInfo::New();
 
-  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+  for (const OriginClaimedAuthorityPair& test_case :
+       webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
@@ -10421,7 +10426,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
 
   // Test invalid cases that should be rejected. `kInvalidRpTestCases`
   // contains a mix of RP ID an App ID cases, but they should all be rejected.
-  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+  for (const OriginClaimedAuthorityPair& test_case :
+       webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 
@@ -10533,7 +10539,8 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionOriginAndRpIds) {
   request_proxy().config().get_assertion_response->info =
       CommonCredentialInfo::New();
 
-  for (const OriginClaimedAuthorityPair& test_case : kInvalidRpTestCases) {
+  for (const OriginClaimedAuthorityPair& test_case :
+       webauthn::test::GetInvalidRpTestCases()) {
     SCOPED_TRACE(
         base::StrCat({test_case.claimed_authority, " ", test_case.origin}));
 

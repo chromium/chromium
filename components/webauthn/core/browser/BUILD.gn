@@ -156,6 +156,8 @@ static_library("test_support") {
     sources += [
       "mock_internal_authenticator.cc",
       "mock_internal_authenticator.h",
+      "webauthn_test_utils.cc",
+      "webauthn_test_utils.h",
     ]
     deps += [
       ":browser",
