@@ -17,7 +17,7 @@
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/task_runner_provider.h"
@@ -38,7 +38,7 @@ class LayerTreeHostSingleThreadClient;
 class RenderFrameMetadataObserver;
 
 class CC_EXPORT SingleThreadProxy : public Proxy,
-                                    LayerTreeHostImplClient,
+                                    LayerTreeHostImplDelegate,
                                     public SchedulerClient {
  public:
   static std::unique_ptr<Proxy> Create(
@@ -121,7 +121,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void FrameIntervalUpdated(base::TimeDelta interval) override;
   void OnBeginImplFrameDeadline() override;
 
-  // LayerTreeHostImplClient implementation
+  // LayerTreeHostImplDelegate implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
   void DidReceiveCompositorFrameAckOnImplThread() override;

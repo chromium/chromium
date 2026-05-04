@@ -312,7 +312,7 @@ TEST_F(VizLayerContextTest, RecoveryFromMojoConnectionError) {
   // host_impl_->DidLoseLayerTreeFrameSink() should have been called, which
   // in turn calls the client method.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return host_impl_->client()
+    return host_impl_->delegate()
         ->did_lose_layer_tree_frame_sink_on_impl_thread();
   }));
 }
@@ -326,7 +326,7 @@ TEST_F(VizLayerContextTest, NoRecoveryFromNormalMojoDisconnect) {
 
   // host_impl_->DidLoseLayerTreeFrameSink() should NOT have been called.
   EXPECT_FALSE(
-      host_impl_->client()->did_lose_layer_tree_frame_sink_on_impl_thread());
+      host_impl_->delegate()->did_lose_layer_tree_frame_sink_on_impl_thread());
 }
 
 }  // namespace viz

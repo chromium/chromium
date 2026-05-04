@@ -123,7 +123,7 @@ class TreeSynchronizerTest : public testing::Test {
     // on animation_host_ that was installed by the newly created
     // LayerTreeHost.
     host_.reset();
-    host_ = FakeLayerTreeHost::Create(&client_, &task_graph_runner_,
+    host_ = FakeLayerTreeHost::Create(&delegate_, &task_graph_runner_,
                                       animation_host_.get(), settings);
     host_->InitializeSingleThreaded(
         &single_thread_client_,
@@ -168,7 +168,7 @@ class TreeSynchronizerTest : public testing::Test {
 
   const FakeLayerTreeHost* const_host() const { return host_.get(); }
 
-  FakeLayerTreeHostDelegate client_;
+  FakeLayerTreeHostDelegate delegate_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;
@@ -607,7 +607,7 @@ TEST_F(TreeSynchronizerTest, SyncMaskLayer) {
 
 TEST_F(TreeSynchronizerTest, SynchronizeCurrentlyScrollingNode) {
   LayerTreeSettings settings;
-  FakeLayerTreeHostImplClient client;
+  FakeLayerTreeHostImplDelegate delegate;
   FakeImplTaskRunnerProvider task_runner_provider;
   FakeRenderingStatsInstrumentation stats_instrumentation;
   TestTaskGraphRunner task_graph_runner;
@@ -651,7 +651,7 @@ TEST_F(TreeSynchronizerTest, SynchronizeCurrentlyScrollingNode) {
 
 TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
   LayerTreeSettings settings;
-  FakeLayerTreeHostImplClient client;
+  FakeLayerTreeHostImplDelegate delegate;
   FakeImplTaskRunnerProvider task_runner_provider;
   FakeRenderingStatsInstrumentation stats_instrumentation;
   TestTaskGraphRunner task_graph_runner;
@@ -766,7 +766,7 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
 
 TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {
   LayerTreeSettings settings;
-  FakeLayerTreeHostImplClient client;
+  FakeLayerTreeHostImplDelegate delegate;
   FakeImplTaskRunnerProvider task_runner_provider;
   FakeRenderingStatsInstrumentation stats_instrumentation;
   TestTaskGraphRunner task_graph_runner;

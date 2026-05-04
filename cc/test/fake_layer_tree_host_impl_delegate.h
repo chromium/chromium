@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
-#define CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
+#ifndef CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_DELEGATE_H_
+#define CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_DELEGATE_H_
 
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
@@ -14,7 +14,7 @@ class FrameTimingDetails;
 
 namespace cc {
 
-class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
+class FakeLayerTreeHostImplDelegate : public LayerTreeHostImplDelegate {
  public:
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override {}
@@ -101,4 +101,4 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
 
 }  // namespace cc
 
-#endif  // CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_CLIENT_H_
+#endif  // CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_DELEGATE_H_

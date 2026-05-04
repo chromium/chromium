@@ -16,7 +16,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/viz_service_export.h"
@@ -38,9 +38,10 @@ class VizLayerTreeHostImpl;
 
 // Implements the Viz LayerContext API backed by a LayerTreeHostImpl. This
 // provides the service backend for a client-side VizLayerContext.
-class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
-                                            public cc::LayerTreeFrameSink,
-                                            public mojom::LayerContext {
+class VIZ_SERVICE_EXPORT LayerContextImpl
+    : public cc::LayerTreeHostImplDelegate,
+      public cc::LayerTreeFrameSink,
+      public mojom::LayerContext {
  public:
   // Constructs a new LayerContextImpl which submits frames to the local
   // `compositor_sink` with client connection details given by `context`.
@@ -82,7 +83,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
       mojo::PendingAssociatedReceiver<mojom::LayerContext> receiver_pipe,
       mojo::PendingAssociatedRemote<mojom::LayerContextClient> client_pipe);
 
-  // cc::LayerTreeHostImplClient:
+  // cc::LayerTreeHostImplDelegate:
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(BeginFrameSource* source) override;
   void DidReceiveCompositorFrameAckOnImplThread() override;

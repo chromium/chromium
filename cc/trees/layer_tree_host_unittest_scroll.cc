@@ -3243,7 +3243,7 @@ class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
     int frame_number = host_impl->active_tree()->source_frame_number();
     InputHandler& input_handler = host_impl->GetInputHandler();
     auto* proxy_impl =
-        static_cast<const ProxyImpl*>(host_impl->client_for_testing());
+        static_cast<const ProxyImpl*>(host_impl->delegate_for_testing());
 
     if (frame_number == 0) {
       EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());

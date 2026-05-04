@@ -76,7 +76,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/frame_data.h"
 #include "cc/trees/latency_info_swap_promise.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "cc/trees/layer_tree_host_impl_test_base.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/mutator_host.h"
@@ -4800,13 +4800,13 @@ class LayerTreeHostImplOverridePhysicalTime : public LayerTreeHostImpl {
  public:
   LayerTreeHostImplOverridePhysicalTime(
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* client,
+      LayerTreeHostImplDelegate* delegate,
       TaskRunnerProvider* task_runner_provider,
       TaskGraphRunner* task_graph_runner,
       RenderingStatsInstrumentation* rendering_stats_instrumentation)
       : LayerTreeHostImpl(
             settings,
-            client,
+            delegate,
             task_runner_provider,
             rendering_stats_instrumentation,
             task_graph_runner,

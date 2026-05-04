@@ -39,7 +39,7 @@ FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner)
     : ClientLayerTreeHostImpl(
           settings,
-          &client_,
+          &delegate_,
           task_runner_provider,
           &stats_instrumentation_,
           task_graph_runner,

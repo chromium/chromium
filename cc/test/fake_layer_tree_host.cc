@@ -80,7 +80,7 @@ void FakeLayerTreeHost::SetNeedsCommit() { needs_commit_ = true; }
 
 std::unique_ptr<ClientLayerTreeHostImpl>
 FakeLayerTreeHost::CreateLayerTreeHostImplInternal(
-    LayerTreeHostImplClient*,
+    LayerTreeHostImplDelegate*,
     MutatorHost*,
     const LayerTreeSettings& settings,
     TaskRunnerProvider* task_runner_provider,

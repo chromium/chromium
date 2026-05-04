@@ -665,7 +665,7 @@ void LayerTreeHost::DidFailToInitializeLayerTreeFrameSink() {
 }
 
 std::unique_ptr<ClientLayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
-    LayerTreeHostImplClient* client) {
+    LayerTreeHostImplDelegate* delegate) {
   // This method is special: it should be the only LayerTreeHost method that
   // runs on the impl thread. As such, it cannot use LayerTreeHost getter
   // methods that enforce DCHECK(IsMainThread()). Because it only ever runs when
@@ -673,7 +673,7 @@ std::unique_ptr<ClientLayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
   DCHECK(IsImplThread());
   DCHECK(task_runner_provider_->IsMainThreadBlocked());
   return CreateLayerTreeHostImplInternal(
-      client, thread_unsafe_commit_state_.mutator_host, settings_,
+      delegate, thread_unsafe_commit_state_.mutator_host, settings_,
       task_runner_provider_.get(), dark_mode_filter_, id_, task_graph_runner_,
       image_worker_task_runner_, scheduling_client_,
       rendering_stats_instrumentation_.get(), compositor_delegate_weak_ptr_);
@@ -681,7 +681,7 @@ std::unique_ptr<ClientLayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
 
 std::unique_ptr<ClientLayerTreeHostImpl>
 LayerTreeHost::CreateLayerTreeHostImplInternal(
-    LayerTreeHostImplClient* client,
+    LayerTreeHostImplDelegate* delegate,
     MutatorHost* mutator_host,
     const LayerTreeSettings& settings,
     TaskRunnerProvider* task_runner_provider,
@@ -702,7 +702,7 @@ LayerTreeHost::CreateLayerTreeHostImplInternal(
 
   std::unique_ptr<ClientLayerTreeHostImpl> host_impl =
       ClientLayerTreeHostImpl::Create(
-          settings, client, task_runner_provider,
+          settings, delegate, task_runner_provider,
           rendering_stats_instrumentation, task_graph_runner,
           std::move(mutator_host_impl), dark_mode_filter, id,
           std::move(image_worker_task_runner), scheduling_client);

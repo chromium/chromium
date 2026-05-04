@@ -11,7 +11,7 @@ namespace viz {
 
 std::unique_ptr<VizLayerTreeHostImpl> VizLayerTreeHostImpl::Create(
     const cc::LayerTreeSettings& settings,
-    cc::LayerTreeHostImplClient* client,
+    cc::LayerTreeHostImplDelegate* delegate,
     cc::TaskRunnerProvider* task_runner_provider,
     cc::RenderingStatsInstrumentation* rendering_stats_instrumentation,
     cc::TaskGraphRunner* task_graph_runner,
@@ -22,7 +22,7 @@ std::unique_ptr<VizLayerTreeHostImpl> VizLayerTreeHostImpl::Create(
     cc::LayerTreeHostSchedulingClient* scheduling_client) {
   CHECK(settings.trees_in_viz_in_viz_process);
   return base::WrapUnique(new VizLayerTreeHostImpl(
-      settings, client, task_runner_provider, rendering_stats_instrumentation,
+      settings, delegate, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
       std::move(image_worker_task_runner), scheduling_client));
 }

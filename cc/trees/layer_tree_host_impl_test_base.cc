@@ -26,7 +26,7 @@ using ScrollThread = InputHandler::ScrollThread;
 
 std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
     const LayerTreeSettings& settings,
-    LayerTreeHostImplClient* client,
+    LayerTreeHostImplDelegate* delegate,
     TaskRunnerProvider* task_runner_provider,
     RenderingStatsInstrumentation* rendering_stats_instrumentation,
     TaskGraphRunner* task_graph_runner,
@@ -37,12 +37,13 @@ std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
     LayerTreeHostSchedulingClient* scheduling_client) {
   if (settings.trees_in_viz_in_viz_process) {
     return TestVizLayerTreeHostImpl::Create(
-        settings, client, task_runner_provider, rendering_stats_instrumentation,
-        task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
+        settings, delegate, task_runner_provider,
+        rendering_stats_instrumentation, task_graph_runner,
+        std::move(mutator_host), dark_mode_filter, id,
         std::move(image_worker_task_runner), scheduling_client);
   }
   return ClientLayerTreeHostImpl::Create(
-      settings, client, task_runner_provider, rendering_stats_instrumentation,
+      settings, delegate, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
       std::move(image_worker_task_runner), scheduling_client);
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_LAYER_TREE_HOST_IMPL_CLIENT_H_
-#define CC_TREES_LAYER_TREE_HOST_IMPL_CLIENT_H_
+#ifndef CC_TREES_LAYER_TREE_HOST_IMPL_DELEGATE_H_
+#define CC_TREES_LAYER_TREE_HOST_IMPL_DELEGATE_H_
 
 #include <stdint.h>
 
@@ -28,7 +28,7 @@ enum class AnimationWorkletMutationState;
 enum class ElementListType;
 
 // LayerTreeHost->Proxy callback interface.
-class LayerTreeHostImplClient {
+class LayerTreeHostImplDelegate {
  public:
   virtual void DidLoseLayerTreeFrameSinkOnImplThread() = 0;
   virtual void SetBeginFrameSource(viz::BeginFrameSource* source) = 0;
@@ -111,9 +111,9 @@ class LayerTreeHostImplClient {
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 
  protected:
-  virtual ~LayerTreeHostImplClient() = default;
+  virtual ~LayerTreeHostImplDelegate() = default;
 };
 
 }  // namespace cc
 
-#endif  // CC_TREES_LAYER_TREE_HOST_IMPL_CLIENT_H_
+#endif  // CC_TREES_LAYER_TREE_HOST_IMPL_DELEGATE_H_

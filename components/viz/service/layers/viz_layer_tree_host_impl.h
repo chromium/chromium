@@ -23,7 +23,7 @@ class VIZ_SERVICE_EXPORT VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
  public:
   static std::unique_ptr<VizLayerTreeHostImpl> Create(
       const cc::LayerTreeSettings& settings,
-      cc::LayerTreeHostImplClient* client,
+      cc::LayerTreeHostImplDelegate* delegate,
       cc::TaskRunnerProvider* task_runner_provider,
       cc::RenderingStatsInstrumentation* rendering_stats_instrumentation,
       cc::TaskGraphRunner* task_graph_runner,

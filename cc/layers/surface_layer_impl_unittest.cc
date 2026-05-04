@@ -332,7 +332,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
   // Note that this has to be created after the callback so that the layer is
   // destroyed first (it will call the callback in the dtor).
   LayerTreeImplTestBase impl;
-  impl.host_impl()->client()->set_is_synchronous_composite(true);
+  impl.host_impl()->delegate()->set_is_synchronous_composite(true);
 
   SurfaceLayerImpl* surface_layer_impl =
       impl.AddLayerInActiveTree<SurfaceLayerImpl>(std::move(callback));
@@ -370,7 +370,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
   // Note that this has to be created after the callback so that the layer is
   // destroyed first (it will call the callback in the dtor).
   LayerTreeImplTestBase impl;
-  impl.host_impl()->client()->set_is_synchronous_composite(false);
+  impl.host_impl()->delegate()->set_is_synchronous_composite(false);
 
   SurfaceLayerImpl* surface_layer_impl =
       impl.AddLayerInActiveTree<SurfaceLayerImpl>(std::move(callback));

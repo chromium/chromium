@@ -16,7 +16,7 @@ class CC_EXPORT ClientLayerTreeHostImpl : public LayerTreeHostImpl {
  public:
   static std::unique_ptr<ClientLayerTreeHostImpl> Create(
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* client,
+      LayerTreeHostImplDelegate* delegate,
       TaskRunnerProvider* task_runner_provider,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       TaskGraphRunner* task_graph_runner,

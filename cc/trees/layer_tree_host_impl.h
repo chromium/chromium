@@ -103,7 +103,7 @@ class LatencyInfoSwapPromiseMonitor;
 class LayerContext;
 class LayerImpl;
 class LayerTreeFrameSink;
-class LayerTreeHostImplClient;
+class LayerTreeHostImplDelegate;
 class LayerTreeImpl;
 class PaintWorkletLayerPainter;
 class MemoryHistory;
@@ -425,16 +425,16 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Evict all textures by enforcing a memory policy with an allocation of 0.
   void EvictTexturesForTesting();
 
-  // When blocking, this prevents client_->NotifyReadyToActivate() from being
-  // called. When disabled, it calls client_->NotifyReadyToActivate()
+  // When blocking, this prevents delegate_->NotifyReadyToActivate() from being
+  // called. When disabled, it calls delegate_->NotifyReadyToActivate()
   // immediately if any notifications had been blocked while blocking and
   // notify_if_blocked is true.
   virtual void BlockNotifyReadyToActivateForTesting(
       bool block,
       bool notify_if_blocked = true);
 
-  // Prevents notifying the |client_| when an impl side invalidation request is
-  // made. When unblocked, the disabled request will immediately be called.
+  // Prevents notifying the |delegate_| when an impl side invalidation request
+  // is made. When unblocked, the disabled request will immediately be called.
   virtual void BlockImplSideInvalidationRequestsForTesting(bool block);
 
   // Resets all of the trees to an empty state.
@@ -847,7 +847,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetDownsampleMetricsForTesting(bool value) {
     downsample_metrics_ = value;
   }
-  const LayerTreeHostImplClient* client_for_testing() const { return client_; }
+  const LayerTreeHostImplDelegate* delegate_for_testing() const {
+    return delegate_;
+  }
 
   void SetViewTransitionContentRect(
       uint32_t sequence_id,
@@ -869,7 +871,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* client,
+      LayerTreeHostImplDelegate* delegate,
       TaskRunnerProvider* task_runner_provider,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       TaskGraphRunner* task_graph_runner,
@@ -894,7 +896,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Removes empty or orphan RenderPasses from the frame.
   static void RemoveRenderPasses(FrameData* frame);
 
-  const raw_ptr<LayerTreeHostImplClient> client_;
+  const raw_ptr<LayerTreeHostImplDelegate> delegate_;
   const raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
   const raw_ptr<TaskRunnerProvider> task_runner_provider_;
 

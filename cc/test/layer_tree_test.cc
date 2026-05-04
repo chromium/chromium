@@ -170,14 +170,14 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
   static std::unique_ptr<LayerTreeHostImplForTesting> Create(
       TestHooks* test_hooks,
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* host_impl_client,
+      LayerTreeHostImplDelegate* host_impl_delegate,
       LayerTreeHostSchedulingClient* scheduling_client,
       TaskRunnerProvider* task_runner_provider,
       TaskGraphRunner* task_graph_runner,
       RenderingStatsInstrumentation* stats_instrumentation,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner) {
     return base::WrapUnique(new LayerTreeHostImplForTesting(
-        test_hooks, settings, host_impl_client, scheduling_client,
+        test_hooks, settings, host_impl_delegate, scheduling_client,
         task_runner_provider, task_graph_runner, stats_instrumentation,
         std::move(image_worker_task_runner)));
   }
@@ -186,7 +186,7 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
   LayerTreeHostImplForTesting(
       TestHooks* test_hooks,
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* host_impl_client,
+      LayerTreeHostImplDelegate* host_impl_delegate,
       LayerTreeHostSchedulingClient* scheduling_client,
       TaskRunnerProvider* task_runner_provider,
       TaskGraphRunner* task_graph_runner,
@@ -194,7 +194,7 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner)
       : ClientLayerTreeHostImpl(
             settings,
-            host_impl_client,
+            host_impl_delegate,
             task_runner_provider,
             stats_instrumentation,
             task_graph_runner,
@@ -577,7 +577,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
   }
 
   std::unique_ptr<ClientLayerTreeHostImpl> CreateLayerTreeHostImplInternal(
-      LayerTreeHostImplClient* host_impl_client,
+      LayerTreeHostImplDelegate* host_impl_delegate,
       MutatorHost*,
       const LayerTreeSettings& settings,
       TaskRunnerProvider* task_runner_provider,
@@ -591,7 +591,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
       override {
     std::unique_ptr<ClientLayerTreeHostImpl> host_impl =
         LayerTreeHostImplForTesting::Create(
-            test_hooks_, settings, host_impl_client, scheduling_client,
+            test_hooks_, settings, host_impl_delegate, scheduling_client,
             task_runner_provider, task_graph_runner,
             rendering_stats_instrumentation, image_worker_task_runner);
 

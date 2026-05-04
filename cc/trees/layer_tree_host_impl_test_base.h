@@ -25,7 +25,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/frame_data.h"
 #include "cc/trees/layer_tree_host_impl.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +39,7 @@ constexpr gfx::Size kDefaultLayerSize(100, 100);
 
 std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
     const LayerTreeSettings& settings,
-    LayerTreeHostImplClient* client,
+    LayerTreeHostImplDelegate* delegate,
     TaskRunnerProvider* task_runner_provider,
     RenderingStatsInstrumentation* rendering_stats_instrumentation,
     TaskGraphRunner* task_graph_runner,
@@ -90,7 +90,7 @@ class TestVizLayerTreeHostImpl : public LayerTreeHostImpl {
  public:
   static std::unique_ptr<LayerTreeHostImpl> Create(
       const LayerTreeSettings& settings,
-      LayerTreeHostImplClient* client,
+      LayerTreeHostImplDelegate* delegate,
       TaskRunnerProvider* task_runner_provider,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       TaskGraphRunner* task_graph_runner,
@@ -101,8 +101,9 @@ class TestVizLayerTreeHostImpl : public LayerTreeHostImpl {
       LayerTreeHostSchedulingClient* scheduling_client) {
     CHECK(settings.trees_in_viz_in_viz_process);
     return base::WrapUnique(new TestVizLayerTreeHostImpl(
-        settings, client, task_runner_provider, rendering_stats_instrumentation,
-        task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
+        settings, delegate, task_runner_provider,
+        rendering_stats_instrumentation, task_graph_runner,
+        std::move(mutator_host), dark_mode_filter, id,
         std::move(image_worker_task_runner), scheduling_client));
   }
   using LayerTreeHostImpl::LayerTreeHostImpl;
@@ -150,7 +151,7 @@ class TestVizLayerTreeHostImpl : public LayerTreeHostImpl {
 };
 
 class LayerTreeHostImplTestBase : public testing::Test,
-                                  public LayerTreeHostImplClient {
+                                  public LayerTreeHostImplDelegate {
  public:
   LayerTreeHostImplTestBase();
   ~LayerTreeHostImplTestBase() override;
@@ -164,7 +165,7 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void EnsureSyncTree();
   void CreatePendingTree();
 
-  // LayerTreeHostImplClient implementation.
+  // LayerTreeHostImplDelegate implementation.
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
   void DidReceiveCompositorFrameAckOnImplThread() override;

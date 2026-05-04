@@ -16,7 +16,7 @@
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/trace_utils.h"
@@ -42,7 +42,7 @@ const char* ClientNameForVerboseLog() {
 
 std::unique_ptr<ClientLayerTreeHostImpl> ClientLayerTreeHostImpl::Create(
     const LayerTreeSettings& settings,
-    LayerTreeHostImplClient* client,
+    LayerTreeHostImplDelegate* delegate,
     TaskRunnerProvider* task_runner_provider,
     RenderingStatsInstrumentation* rendering_stats_instrumentation,
     TaskGraphRunner* task_graph_runner,
@@ -53,7 +53,7 @@ std::unique_ptr<ClientLayerTreeHostImpl> ClientLayerTreeHostImpl::Create(
     LayerTreeHostSchedulingClient* scheduling_client) {
   CHECK(!settings.trees_in_viz_in_viz_process);
   return base::WrapUnique(new ClientLayerTreeHostImpl(
-      settings, client, task_runner_provider, rendering_stats_instrumentation,
+      settings, delegate, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
       std::move(image_worker_task_runner), scheduling_client));
 }
@@ -354,7 +354,7 @@ void ClientLayerTreeHostImpl::CreatePendingTree() {
   }
   pending_tree_fully_painted_ = false;
 
-  client_->OnCanDrawStateChanged(CanDraw());
+  delegate_->OnCanDrawStateChanged(CanDraw());
   TRACE_EVENT_BEGIN("cc", "PendingTree:waiting",
                     perfetto::Track::FromPointer(pending_tree_.get()),
                     "active_lsid",
@@ -402,7 +402,7 @@ void ClientLayerTreeHostImpl::
   }
 
   if (worklets_invalidated) {
-    client_->SetNeedsImplSideInvalidation(
+    delegate_->SetNeedsImplSideInvalidation(
         true /* needs_first_draw_on_activation */);
     if (sync_tree()->property_change_forces_commit_criteria() ==
         PropertyChangeForcesCommitCriteria::kAny) {
@@ -454,7 +454,7 @@ void ClientLayerTreeHostImpl::
     return;
   }
 
-  client_->NotifyPaintWorkletStateChange(
+  delegate_->NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState::PROCESSING);
   auto done_callback =
       base::BindOnce(&ClientLayerTreeHostImpl::OnPaintWorkletResultsReady,
@@ -496,7 +496,7 @@ void ClientLayerTreeHostImpl::OnPaintWorkletResultsReady(
   // Set the painted state before calling the scheduler, to ensure any callback
   // running as a result sees the correct painted state.
   pending_tree_fully_painted_ = true;
-  client_->NotifyPaintWorkletStateChange(Scheduler::PaintWorkletState::IDLE);
+  delegate_->NotifyPaintWorkletStateChange(Scheduler::PaintWorkletState::IDLE);
 
   // The pending tree may have been force activated from the signal to the
   // scheduler above, in which case there is no longer a tree to paint.

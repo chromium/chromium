@@ -76,7 +76,7 @@ class HeadsUpDisplayLayer;
 class PropertyTreeDelegate;
 class LayerTreeHostImpl;
 class ClientLayerTreeHostImpl;
-class LayerTreeHostImplClient;
+class LayerTreeHostImplDelegate;
 class LayerTreeHostSingleThreadClient;
 class LayerTreeMutator;
 class MutatorEvents;
@@ -810,7 +810,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void DidInitializeLayerTreeFrameSink();
   void DidFailToInitializeLayerTreeFrameSink();
   std::unique_ptr<ClientLayerTreeHostImpl> CreateLayerTreeHostImpl(
-      LayerTreeHostImplClient* client);
+      LayerTreeHostImplDelegate* delegate);
   void DidLoseLayerTreeFrameSink();
   void DidCommitAndDrawFrame(int source_frame_number) {
     DCHECK(IsMainThread());
@@ -1041,7 +1041,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   virtual std::unique_ptr<ClientLayerTreeHostImpl>
   CreateLayerTreeHostImplInternal(
-      LayerTreeHostImplClient* client,
+      LayerTreeHostImplDelegate* delegate,
       MutatorHost* mutator_host,
       const LayerTreeSettings& settings,
       TaskRunnerProvider* task_runner_provider,

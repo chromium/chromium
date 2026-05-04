@@ -19,7 +19,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "cc/paint/draw_image.h"
 #include "cc/scheduler/scheduler.h"
-#include "cc/trees/layer_tree_host_impl_client.h"
+#include "cc/trees/layer_tree_host_impl_delegate.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -50,7 +50,7 @@ struct ThreadUnsafeCommitState;
 // This class aggregates all the interactions that the main side of the
 // compositor needs to have with the impl side.
 // The class is created and lives on the impl thread.
-class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
+class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
                             public SchedulerClient {
  public:
   ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
@@ -122,7 +122,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
  private:
-  // LayerTreeHostImplClient implementation
+  // LayerTreeHostImplDelegate implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
   void DidReceiveCompositorFrameAckOnImplThread() override;
