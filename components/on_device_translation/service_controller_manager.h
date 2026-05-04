@@ -10,6 +10,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -75,6 +76,9 @@ class ServiceControllerManager : public KeyedService {
   void SetServiceIdleTimeoutForTesting(const url::Origin& origin,
                                        base::TimeDelta service_idle_timeout);
 
+  // Sets the installer for testing.
+  void SetInstallerForTesting(OnDeviceTranslationInstaller* installer);
+
  private:
   // It can also return a nullptr in case we cannot add a new controller.
   OnDeviceTranslationController* GetOrCreateController(
@@ -90,6 +94,7 @@ class ServiceControllerManager : public KeyedService {
   LauncherFactory launcher_factory_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;
+  raw_ptr<OnDeviceTranslationInstaller> installer_for_test_ = nullptr;
   base::WeakPtrFactory<ServiceControllerManager> weak_ptr_factory_{this};
 };
 

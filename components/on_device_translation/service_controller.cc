@@ -172,15 +172,18 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
     std::unique_ptr<OnDeviceTranslationServiceLauncher> launcher,
-    std::string service_display_name_suffix)
+    std::string service_display_name_suffix,
+    OnDeviceTranslationInstaller* installer)
     : launcher_(std::move(launcher)),
       service_display_name_suffix_(service_display_name_suffix),
-      service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()) {
-  OnDeviceTranslationInstaller::GetInstance()->AddObserver(this);
+      service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
+      installer_(installer) {
+  CHECK(installer_);
+  installer_->AddObserver(this);
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
-  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(this);
+  installer_->RemoveObserver(this);
 }
 
 void OnDeviceTranslationServiceController::CreateTranslator(
@@ -232,7 +235,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   // If there is no TranslateKit or there are required language packs that are
   // not installed, we will wait until they are installed to create the
   // translator.
-  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit() ||
+  if (!installer_->IsInit() ||
       !language_pack_requirements.required_not_installed_packs.empty()) {
     // When the size of pending tasks is too large, we will not queue the new
     // task and handle the request as failure to avoid OOM of the browser
@@ -264,8 +267,8 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
   if (!MaybeStartService()) {
-    // If the service can't be started, returns `kExceedsServiceCountLimitation`
-    // error.
+    // If the service can't be started, returns
+    // `kExceedsServiceCountLimitation` error.
     std::move(callback).Run(base::unexpected(
         CreateTranslatorError::kExceedsServiceCountLimitation));
     return;
@@ -338,7 +341,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
 
   if (language_pack_requirements.required_not_installed_packs.empty()) {
     // All required language packages are installed.
-    if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
+    if (!installer_->IsInit()) {
       // The TranslateKit library is not ready.
       return CanTranslateResult::kAfterDownloadLibraryNotReady;
     }
@@ -346,7 +349,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
     return CanTranslateResult::kReadily;
   }
 
-  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
+  if (!installer_->IsInit()) {
     // Both the TranslateKit library and the language packs are not ready.
     return CanTranslateResult::kAfterDownloadLibraryAndLanguagePackNotReady;
   }
@@ -372,7 +375,7 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   if (pending_tasks_.empty()) {
     return;
   }
-  if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
+  if (!installer_->IsInit()) {
     return;
   }
   const auto installed_packs = ComponentManager::GetInstalledLanguagePacks();
@@ -399,7 +402,8 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
     return true;
   }
 
-  service_remote_.Bind(launcher_->Launch(service_display_name_suffix_));
+  service_remote_.Bind(
+      launcher_->Launch(service_display_name_suffix_, installer_));
   service_remote_.reset_on_disconnect();
   service_remote_.set_idle_handler(
       service_idle_timeout_,

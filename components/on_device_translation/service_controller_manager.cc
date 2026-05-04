@@ -51,7 +51,9 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
 
   auto service_controller =
       std::make_unique<OnDeviceTranslationServiceController>(
-          launcher_factory_.Run(), origin.Serialize());
+          launcher_factory_.Run(), origin.Serialize(),
+          installer_for_test_ ? installer_for_test_.get()
+                              : OnDeviceTranslationInstaller::GetInstance());
   auto it_inserted =
       service_controllers_.Put(origin, std::move(service_controller));
   return it_inserted->second.get();
@@ -111,6 +113,12 @@ void ServiceControllerManager::SetServiceIdleTimeoutForTesting(
   static_cast<OnDeviceTranslationServiceController*>(
       GetOrCreateController(origin))
       ->SetServiceIdleTimeoutForTesting(service_idle_timeout);
+}
+
+void ServiceControllerManager::SetInstallerForTesting(  // IN-TEST
+    OnDeviceTranslationInstaller* installer) {
+  CHECK_IS_TEST();
+  installer_for_test_ = installer;
 }
 
 }  // namespace on_device_translation

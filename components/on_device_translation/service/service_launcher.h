@@ -13,6 +13,8 @@
 
 namespace on_device_translation {
 
+class OnDeviceTranslationInstaller;
+
 // Interface for launching the on-device translation service.
 class OnDeviceTranslationServiceLauncher {
  public:
@@ -20,7 +22,8 @@ class OnDeviceTranslationServiceLauncher {
 
   // Launches the on-device translation service.
   virtual mojo::PendingRemote<mojom::OnDeviceTranslationService> Launch(
-      std::string_view service_display_name_suffix) = 0;
+      std::string_view service_display_name_suffix,
+      OnDeviceTranslationInstaller* installer) = 0;
 };
 
 // Creates a new instance of OnDeviceTranslationServiceLauncher.

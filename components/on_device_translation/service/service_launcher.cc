@@ -74,12 +74,13 @@ class OnDeviceTranslationServiceLauncherImpl
       const OnDeviceTranslationServiceLauncherImpl&) = delete;
 
   mojo::PendingRemote<mojom::OnDeviceTranslationService> Launch(
-      std::string_view service_display_name_suffix) override {
+      std::string_view service_display_name_suffix,
+      OnDeviceTranslationInstaller* installer) override {
     mojo::PendingRemote<mojom::OnDeviceTranslationService> remote;
     auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
-    const base::FilePath binary_path =
-        OnDeviceTranslationInstaller::GetInstance()->GetLibraryPath();
+    CHECK(installer);
+    const base::FilePath binary_path = installer->GetLibraryPath();
     CHECK(!binary_path.empty())
         << "Got an empty path to TranslateKit binary on the device.";
 
