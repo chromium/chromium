@@ -807,8 +807,8 @@ ci.thin_tester(
             "browser_tests": targets.mixin(
                 ci_only = True,
                 swarming = targets.swarming(
-                    # crbug.com/1361887
-                    shards = 20,
+                    # crbug.com/1361887, crbug.com/509389281
+                    shards = 30,
                 ),
             ),
             "content_browsertests": targets.mixin(
