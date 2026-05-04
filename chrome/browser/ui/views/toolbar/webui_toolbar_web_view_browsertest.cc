@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/command_line.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -70,6 +71,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -91,6 +93,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -99,6 +102,8 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/styled_label.h"
@@ -181,6 +186,68 @@ bool WaitForButtonEnabled(content::WebContents* web_contents,
         .ExtractBool();
   });
 }
+
+// Observes accessibility events to capture announcement text.
+class AXAnnouncementObserver : public views::AXUpdateObserver {
+ public:
+  explicit AXAnnouncementObserver(views::AXUpdateNotifier* notifier) {
+    observation_.Observe(notifier);
+#if BUILDFLAG(IS_MAC)
+    recorder_ = content::AXInspectFactory::CreateRecorder(
+        content::AXInspectFactory::DefaultPlatformRecorderType(),
+        /*manager=*/nullptr, base::GetCurrentProcId());
+    recorder_->ListenToEvents(base::BindRepeating(
+        &AXAnnouncementObserver::OnMacEvent, base::Unretained(this)));
+#endif
+  }
+
+  // Waits for the expected announcement to be received. Returns true on
+  // success, false on timeout.
+  // On macOS, this will only wait for any announcement to be received.
+  bool verify_last_announcement(int message_id) {
+    bool result = base::test::RunUntil([&]() {
+#if BUILDFLAG(IS_MAC)
+      return mac_announcement_received_;
+#else
+      return last_announcement_ == l10n_util::GetStringUTF16(message_id);
+#endif
+    });
+    // Reset after each verification to allow subsequent announcements to be
+    // verified correctly.
+    last_announcement_.clear();
+#if BUILDFLAG(IS_MAC)
+    mac_announcement_received_ = false;
+#endif
+
+    return result;
+  }
+
+ private:
+  // views::AXUpdateObserver:
+  void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
+    if (event_type == ax::mojom::Event::kAlert) {
+      ui::AXNodeData node_data;
+      view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+      last_announcement_ =
+          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+    }
+  }
+
+#if BUILDFLAG(IS_MAC)
+  void OnMacEvent(const std::string& event) {
+    if (event.find("AXAnnouncementRequested") != std::string::npos) {
+      mac_announcement_received_ = true;
+    }
+  }
+
+  std::unique_ptr<ui::AXEventRecorder> recorder_;
+  bool mac_announcement_received_ = false;
+#endif
+
+  std::u16string last_announcement_;
+  base::ScopedObservation<views::AXUpdateNotifier, views::AXUpdateObserver>
+      observation_{this};
+};
 
 constexpr char kGetCoordinatesJS[] =
     "const rect = target.getBoundingClientRect(); "
@@ -3405,6 +3472,41 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
   webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
       action2, false);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       A11yAnnouncements) {
+  AXAnnouncementObserver announcement_observer(views::AXUpdateNotifier::Get());
+
+  actions::ActionId action_id = kActionSendSharedTabGroupFeedback;
+
+  // Initial State: Unpinned.
+  ASSERT_FALSE(model_->Contains(action_id));
+
+  auto invoke_pin_unpin = [&](actions::ActionId pin_unpin_action) {
+    actions::ActionManager::Get()
+        .FindAction(pin_unpin_action,
+                    browser()->GetActions()->root_action_item())
+        ->InvokeAction(actions::ActionInvocationContext::Builder()
+                           .SetProperty(kActionIdKey, action_id)
+                           .Build());
+  };
+
+  // Pin via Action Invocation.
+  invoke_pin_unpin(kActionPinActionToToolbar);
+
+  // Expect an announcement that the action was pinned.
+  EXPECT_TRUE(announcement_observer.verify_last_announcement(
+      IDS_TOOLBAR_BUTTON_PINNED));
+  ASSERT_TRUE(model_->Contains(action_id));
+
+  // Unpin via Action Invocation.
+  invoke_pin_unpin(kActionUnpinActionFromToolbar);
+
+  // Expect an announcement that the action was unpinned.
+  EXPECT_TRUE(announcement_observer.verify_last_announcement(
+      IDS_TOOLBAR_BUTTON_UNPINNED));
+  ASSERT_FALSE(model_->Contains(action_id));
 }
 
 struct DragTestParam {
