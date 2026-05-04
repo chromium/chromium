@@ -304,7 +304,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecentTabChip) {
   RunTest("cr_components/composebox/recent_tab_chip_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxVoiceSearch) {
+// TODO(crbug.com/508867284): Flaky on Win/Linux/Chrome OS.
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest,
+                       DISABLED_ComposeboxVoiceSearch) {
   RunTest("cr_components/composebox/composebox_voice_search_test.js",
           "mocha.run()");
 }
