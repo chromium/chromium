@@ -24,4 +24,9 @@ VirtualWallet::GetCredential() {
   return stored_credential_->Clone();
 }
 
+void VirtualWallet::Clear() {
+  stored_credential_.reset();
+  mode_.reset();
+}
+
 }  // namespace content

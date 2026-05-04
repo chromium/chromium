@@ -34,6 +34,9 @@ class CONTENT_EXPORT VirtualWallet {
   // Returns a copy of the currently stored credential (if any).
   std::optional<DigitalIdentityProvider::DigitalCredential> GetCredential();
 
+  // Clears the stored credential and mode.
+  void Clear();
+
   // Sets the wallet mode.
   void set_mode(Mode mode) { mode_ = mode; }
 

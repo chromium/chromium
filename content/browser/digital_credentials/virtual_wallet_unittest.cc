@@ -100,5 +100,16 @@ TEST_F(VirtualWalletTest, Overwrite) {
   EXPECT_FALSE(claims->FindBool("age_over_18").has_value());
 }
 
+// Clear() wipes both the stored credential and the mode.
+TEST_F(VirtualWalletTest, ClearWipesCredentialAndMode) {
+  wallet()->SetCredential(GenerateTestCredential());
+  wallet()->set_mode(VirtualWallet::Mode::kRespond);
+
+  wallet()->Clear();
+
+  EXPECT_FALSE(wallet()->mode().has_value());
+  EXPECT_FALSE(wallet()->GetCredential().has_value());
+}
+
 }  // namespace
 }  // namespace content
