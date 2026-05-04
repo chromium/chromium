@@ -96,6 +96,7 @@ constexpr char kIsFocusableKey[] = "isFocusable";
 constexpr char kClickabilityReasonsKey[] = "clickabilityReasons";
 constexpr char kInteractionDisabledReasonsKey[] = "interactionDisabledReasons";
 constexpr char kIsDisabledInteractionKey[] = "isDisabled";
+constexpr char kDocumentScopedZOrderKey[] = "documentScopedZOrder";
 constexpr char kMediaDataKey[] = "mediaData";
 constexpr char kMediaDataTypeKey[] = "mediaDataType";
 constexpr char kDurationMillisecondsKey[] = "durationMilliseconds";
@@ -571,6 +572,12 @@ void PopulateNodeInteractionInfo(
         }
       }
     }
+  }
+
+  // Document Scoped Z-Order.
+  if (std::optional<int> z_order =
+          ReadJsNumber(node_interaction_data, kDocumentScopedZOrderKey)) {
+    info_proto->set_document_scoped_z_order(*z_order);
   }
 }
 

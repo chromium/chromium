@@ -6239,6 +6239,117 @@ TEST_P(PageContextWrapperTest,
             "Accept 2");
 }
 
+// Tests extraction of document scoped z-order for actionable elements.
+TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_ZOrder) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Layout and Expected Z-Order (Painting Order):
+  //
+  // +-----------------------------------+ (0. Background)     Y-axis
+  // |                                   |                       | 0px
+  // |  [=========] (1. Button 1)        |                       | 10px
+  // |                                   |                       |
+  // |                                   |                       |
+  // | +-----------------------+ - - - - |                       | 90px
+  // | |///////////////////////|         |                       |
+  // | |//[=========]//////////|         |                       | 100px
+  // | |//(2. Button 2)////////|         |                       |
+  // | |///////////////////////|         |                       |
+  // | +-----------------------+         |                       | 190px
+  // | (3. Red Overlay - z-index: 999)   |                       |
+  // |                                   |                       v
+  // +-----------------------------------+
+  //
+  // Legend:
+  // - "/": Area covered by the "opaque" overlay where the elements
+  //        underneath are not reachable.
+  //
+  // Expectations:
+  // - Background and Overlay are generic containers/divs and are thus not
+  //   considered "actionable". They will not receive a Z-order in the output.
+  // - Button 1 and Button 2 are actionable elements.
+  // - In Z-order mode, because both buttons possess valid
+  //   geometry and interaction info, they will both be processed and sorted
+  //   relative to each other based on their visual stacking. Button 1 receives
+  //   Z-order 1, and Button 2 receives Z-order 2.
+  auto page_structure = HtmlPage(
+      "Z-Order Test",
+      RawHtml(
+          "<style>body { margin: 0; padding: 0; }</style>"
+          "<div style='width: 100vw; height: 100vh; position: absolute; top: "
+          "0; left: 0; background: white;'></div>"
+          "<input type='button' id='btn1' value='Click Me' style='position: "
+          "absolute; top: 10px; left: 10px; width: 100px; height: 50px;'/>"
+          "<input type='button' id='btn2' value='Hidden' style='position: "
+          "absolute; top: 100px; left: 10px; width: 100px; height: 50px;'/>"
+          "<div id='overlay' style='position: absolute; top: 90px; left: 0; "
+          "width: 200px; height: 100px; background: red; z-index: "
+          "999;'>Overlay</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 3);
+  const auto& btn1 = root.children_nodes(0);
+  const auto& btn2 = root.children_nodes(1);
+
+  EXPECT_EQ(btn1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_EQ(btn1.content_attributes().form_control_data().field_value(),
+            "Click Me");
+
+  EXPECT_EQ(btn2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_EQ(btn2.content_attributes().form_control_data().field_value(),
+            "Hidden");
+
+  // Button 1 is visible and actionable.
+  EXPECT_TRUE(btn1.content_attributes()
+                  .interaction_info()
+                  .has_document_scoped_z_order());
+  EXPECT_EQ(
+      btn1.content_attributes().interaction_info().document_scoped_z_order(),
+      1);
+
+  // Button 2 is obscured by the overlay, but in accurate Z-order mode it
+  // receives a Z-order based on its visual stacking relative to other
+  // actionable nodes.
+  EXPECT_TRUE(btn2.content_attributes()
+                  .interaction_info()
+                  .has_document_scoped_z_order());
+  EXPECT_EQ(
+      btn2.content_attributes().interaction_info().document_scoped_z_order(),
+      2);
+
+  // The overlay is non-actionable. It should not receive a Z-order.
+  const auto& overlay = root.children_nodes(2);
+  EXPECT_FALSE(overlay.content_attributes()
+                   .interaction_info()
+                   .has_document_scoped_z_order());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),

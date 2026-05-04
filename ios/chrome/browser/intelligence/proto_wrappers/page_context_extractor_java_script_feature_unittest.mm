@@ -139,6 +139,9 @@ class PageContextExtractorJavaScriptFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/504266564): Make sure all the test pages are formatted nicely
+// for human readers.
+
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContextWithCrossOriginFrames) {
   const std::string main_html =
@@ -1426,6 +1429,332 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
     EXPECT_TRUE(raw_result.is_dict())
         << "Expected a dictionary payload when native extraction is used.";
   }
+}
+
+// Test the extraction of Z-order in a standard scenario where the actionable
+// element is fully visible and reachable.
+//
+// Layout and Expected Z-Order (Painting Order):
+//
+// +-----------------------------------+
+// |                                   |
+// |  [=========] (1. Button)          |
+// |                                   |
+// +-----------------------------------+
+//
+// Expectations:
+// - A single actionable button is on the screen.
+// - It should receive a documentScopedZOrder of 1.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_Generic) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: absolute; top: 10px; left: 10px; width: 100px; height: 50px;">
+          Click me
+        </button>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      button_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  EXPECT_EQ(interaction_info->FindDouble("documentScopedZOrder"), 1.0);
+}
+
+// Test the extraction of Z-order when an actionable element is physically
+// covered by another element, but the covering element has
+// pointer-events: none, making the actionable element underneath reachable.
+//
+// Layout and Expected Z-Order (Painting Order):
+//
+// +-----------------------------------+
+// |                                   |
+// | +-----------------------+         |
+// | |///////////////////////|         |
+// | |//[=========]//////////|         |
+// | |//(1. Button)//////////|         |
+// | |///////////////////////|         |
+// | +-----------------------+         |
+// | (2. Overlay - pointer-events:none)|
+// |                                   |
+// +-----------------------------------+
+//
+// Legend:
+// - "/": Area covered by the "transparent" overlay where the elements
+//        underneath are reachable.
+//
+// Expectations:
+// - The overlay covers the button but has pointer-events: none, making the
+// button reachable via raycasts.
+// - The overlay is a generic container and not actionable.
+// - The button should successfully receive a
+// documentScopedZOrder of 1.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_PointerEventsNone) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: absolute; top: 10px; left: 10px; width: 100px; height: 50px;">
+          Click me
+        </button>
+        <div style="position: absolute; top: 0; left: 0; width: 200px; height: 100px; background: red; pointer-events: none;">
+          Overlay
+        </div>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 2u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      button_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  EXPECT_EQ(interaction_info->FindDouble("documentScopedZOrder"), 1.0);
+
+  const base::DictValue& div_node = (*children)[1].GetDict();
+  EXPECT_FALSE(
+      div_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo"));
+}
+
+// Test the extraction of Z-order when the topmost element at the hit test
+// coordinate is a child/descendant of the actionable element (e.g., a span
+// inside a button). The parent element should still receive a Z-order.
+//
+// Layout and Expected Z-Order (Painting Order):
+//
+// +-----------------------------------+
+// |                                   |
+// |  [=========]                      |
+// |  [ (Span)  ] (1. Button)          |
+// |  [=========]                      |
+// |                                   |
+// +-----------------------------------+
+//
+// Expectations:
+// - The span completely covers the button, but it is a child of the button.
+// - Hit tests on the button will hit the span, which is a descendant, meaning
+// the button is still considered reachable.
+// - The button should receive a documentScopedZOrder of 1.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_ChildElementTopMost) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: absolute; top: 10px; left: 10px; width: 100px; height: 50px;">
+          <span style="display: block; width: 100%; height: 100%;">
+            Click me
+          </span>
+        </button>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      button_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  EXPECT_EQ(interaction_info->FindDouble("documentScopedZOrder"), 1.0);
+}
+
+// Test the extraction of Z-order when an actionable element is completely
+// outside the visible viewport. It should not receive a Z-order.
+//
+// Layout and Expected Z-Order (Painting Order):
+//
+// +-----------------------------------+ (Visible Viewport)
+// |                                   |
+// |                                   |
+// +-----------------------------------+
+//  . . . . . . . . . . . . . . . . . .
+//  .                                 .
+//  . [=========] (Button)            .
+//  .                                 .
+//  . . . . . . . . . . . . . . . . . .
+//
+// Expectations:
+// - The button is rendered completely outside the visible viewport.
+// - elementsFromPoint at an offscreen coordinate returns null/empty.
+// - It should not receive a Z-order.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_OffScreen) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <button style="position: absolute; top: 2000px; left: 10px; width: 100px; height: 50px;">
+          Click me
+        </button>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      button_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  EXPECT_FALSE(interaction_info->FindDouble("documentScopedZOrder"));
+}
+
+// Tests extraction of Z-order for overlapping actionable elements.
+//
+// Layout and Expected Z-Order (Painting Order):
+//
+// +-----------------------------------+ (0. Background)     Y-axis
+// |                                   |                       | 0px
+// |  [=========] (1. Button 1)        |                       | 10px
+// |                                   |                       |
+// |                                   |                       |
+// | +-----------------------+ - - - - |                       | 90px
+// | |///////////////////////|         |                       |
+// | |//[=========]//////////|         |                       | 100px
+// | |//(2. Button 2)////////|         |                       |
+// | |///////////////////////|         |                       |
+// | +-----------------------+         |                       | 190px
+// | (3. Red Overlay - z-index: 999)   |                       |
+// |                                   |                       v
+// +-----------------------------------+
+//
+// Legend:
+// - "/": Area covered by the "opaque" overlay where the elements
+//        underneath are not reachable.
+//
+// Expectations:
+// - Background and Overlay are generic containers/divs and are thus not
+//   considered "actionable". They will not receive a Z-order in the output.
+// - Button 1 and Button 2 are actionable elements.
+// - Because both buttons possess valid geometry and interaction info, they will
+//   both be processed and sorted relative to each other based on their visual
+//   stacking. Button 1 receives Z-order 1, and Button 2 receives Z-order 2.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ZOrder_Overlap) {
+  const std::string html = R"(
+    <html>
+      <body style="margin: 0; padding: 0;">
+        <div style="width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; background: white;"></div>
+        <input type="button" id="btn1" value="Click Me" style="position: absolute; top: 10px; left: 10px; width: 100px; height: 50px;"/>
+        <input type="button" id="btn2" value="Hidden" style="position: absolute; top: 100px; left: 10px; width: 100px; height: 50px;"/>
+        <div id="overlay" style="position: absolute; top: 90px; left: 0; width: 200px; height: 100px; background: red; z-index: 999;">
+          Overlay
+        </div>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 3u);
+
+  const base::DictValue* btn1_node = &(*children)[0].GetDict();
+  const base::DictValue* btn2_node = &(*children)[1].GetDict();
+
+  const base::DictValue* interaction_info1 =
+      btn1_node->FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info1);
+  EXPECT_EQ(interaction_info1->FindDouble("documentScopedZOrder"), 1.0);
+
+  const base::DictValue* interaction_info2 =
+      btn2_node->FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info2);
+  EXPECT_EQ(interaction_info2->FindDouble("documentScopedZOrder"), 2.0);
+
+  // Validate the overlay does not receive a Z-Order.
+  const base::DictValue* overlay_node = &(*children)[2].GetDict();
+  const base::DictValue* interaction_info3 = overlay_node->FindDictByDottedPath(
+      "contentAttributes.nodeInteractionInfo");
+  EXPECT_FALSE(interaction_info3 &&
+               interaction_info3->FindDouble("documentScopedZOrder"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

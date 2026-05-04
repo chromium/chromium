@@ -6,7 +6,10 @@ import {HAS_BEEN_PASSWORD_SYMBOL} from '//components/autofill/ios/form_util/reso
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect as BasicRect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+
+// TODO(crbug.com/504261632): Report metrics from here down to the the native
+// browser side so they can be uma-reported.
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
 // start/end). These nodes should be included in the APC tree even if they are
@@ -2371,6 +2374,16 @@ function createRect(x: number, y: number, width: number, height: number): Rect {
 }
 
 /**
+ * Calculates the center point of a given rectangle.
+ */
+function getCenterPoint(rect: BasicRect): Point {
+  return {
+    x: rect.x + (rect.width / 2),
+    y: rect.y + (rect.height / 2),
+  };
+}
+
+/**
  * Converts a floating-point Rect into an integer-based enclosing Rect.
  * This snaps the rectangle outward to the nearest integer boundaries to ensure
  * no content is lost, mirroring Blink's gfx::ToEnclosingRect().
@@ -2815,6 +2828,346 @@ function getAssociatedControlDOMNodeID(
   return undefined;
 }
 
+const SWEEP_POINT_START = 'start';
+const SWEEP_POINT_END = 'end';
+
+/**
+ * Helper to determine if a node is actionable.
+ * Actionable nodes must possess a DOM node ID, valid geometry with a visible
+ * bounding box, and an interaction info object.
+ */
+function isActionableNode(node: PageContentNode): boolean {
+  const attrs = node.contentAttributes;
+  const geometry = attrs.geometry;
+  return attrs.domNodeId !== undefined && geometry !== undefined &&
+      geometry.visibleBoundingBox !== undefined &&
+      attrs.nodeInteractionInfo !== undefined;
+}
+
+// TODO(crbug.com/504262467): Record performance metrics for the steps here.
+/**
+ * Calculates a Z-Order for actionable nodes based on their visual stacking.
+ *
+ * It uses a Sweep-and-Prune algorithm on the Y-axis to find overlapping
+ * bounding boxes, and fires hit tests at their intersections.
+ *
+ * The resulting stacking order rules are fed into a topological sort to
+ * generate a globally incrementing Z-order sequence.
+ *
+ * @param rootNode The root PageContentNode of the extracted tree.
+ * @param rootDoc The Document object to run hit tests against.
+ */
+function computeZOrder(rootNode: PageContentNode, rootDoc: Document) {
+  // Collect Target Nodes.
+  // We only care about nodes that have a DOM node ID, a visible bounding box,
+  // and interaction info.
+  interface ActionableNode {
+    apcNode: PageContentNode;
+    visibleBox: Rect;
+    // The initial sequence number based on depth-first DOM traversal.
+    baselineZ: number;
+    // The final computed Z-order after resolving all visual stacking
+    // constraints.
+    finalZ: number;
+    domNodeId: number;
+  }
+  const actionableNodes: ActionableNode[] = [];
+
+  let nodeCounter = 1;
+
+  // First, we perform a pre-order traversal to collect all actionable nodes
+  // and assign them a "baseline" Z-order based on their natural DOM position.
+  //
+  // [Performance Optimization Note]
+  // Blink uses an internal rendering engine API (`GetLayoutView()->HitTest`)
+  // to retrieve all viewport nodes sorted perfectly in paint order.
+  // We lack this native API on iOS. Simulating it by calling JavaScript's
+  // `document.elementsFromPoint()` on every single node would be too slow.
+  //
+  // To keep extraction fast, we restrict our Z-order calculations exclusively
+  // to actionable nodes. We use their structural DOM order as a baseline, and
+  // only fire targeted hit-tests where their bounding boxes physically overlap
+  // to resolve their final visual stacking.
+  //
+  // TODO(crbug.com/509564175): Benchmark if collecting actionable nodes in a
+  // single pass during the initial DOM walk offers any real-world performance
+  // gains over this two-pass approach, considering the complex bookkeeping
+  // required to un-collect nodes that get retroactively pruned.
+  function traverse(node: PageContentNode) {
+    if (isActionableNode(node)) {
+      const attrs = node.contentAttributes;
+      const vBox = attrs.geometry!.visibleBoundingBox!;
+      actionableNodes.push({
+        apcNode: node,
+        visibleBox: createRect(vBox.x, vBox.y, vBox.width, vBox.height),
+        baselineZ: nodeCounter,
+        finalZ: nodeCounter,
+        domNodeId: attrs.domNodeId!,
+      });
+      nodeCounter++;
+    }
+    for (const child of node.childrenNodes) {
+      traverse(child);
+    }
+  }
+  traverse(rootNode);
+
+  if (actionableNodes.length === 0) {
+    return;
+  }
+
+  // TODO(crbug.com/509145295): Experiment with a hybrid hit-testing approach.
+  // Instead of only hit-testing overlapping actionable nodes, we could hit-test
+  // all actionable nodes and promote non-actionable overlays that occlude them
+  // to receive a Z-Order.
+  // Stage 1: Sweep-and-Prune (Intersection Detection)
+  // Sweeping on the Y-axis is optimal for mobile pages, which are typically
+  // vertically long with elements naturally separated by their Y coordinates.
+  //
+  // Example scenario: (A, B overlap) and (C, D overlap) but groups are
+  // separate.
+  //
+  //      A/B overlap       C/D overlap
+  // y1:  +-----+
+  //      |  A  |
+  // y2:  |   +-+---+
+  //      |   | B   |
+  // y3:  +---+ |   |
+  //          |     |
+  // y4:      +-----+
+  //
+  // y5:                    +-----+
+  //                        |  C  |
+  // y6:                    |   +-+---+
+  //                        |   | D   |
+  // y7:                    +---+ |   |
+  //                            |     |
+  // y8:                        +-----+
+  //
+  // activeSet:
+  // y1: {A}
+  // y2: {A, B} -> Overlap check A vs B
+  // y3: {B}
+  // y4: {}     -> Group 1 done
+  // y5: {C}
+  // y6: {C, D} -> Overlap check C vs D
+  // y7: {D}
+  // y8: {}     -> Group 2 done
+  //
+  // Output:
+  // intersectionPoints: Map {
+  //   "x,y (center of A/B overlap)" => Point,
+  //   "x,y (center of C/D overlap)" => Point
+  // }
+
+  interface SweepPoint {
+    // The coordinate value on the sweep axis (Y-axis).
+    top: number;
+    // Indicates whether this coordinate marks the beginning or end of the
+    // node's bounding box.
+    pointType: typeof SWEEP_POINT_START|typeof SWEEP_POINT_END;
+    // The actionable node associated with this sweep point.
+    node: ActionableNode;
+  }
+
+  const sweepPoints: SweepPoint[] = [];
+  for (const node of actionableNodes) {
+    const box = node.visibleBox;
+    sweepPoints.push({top: box.y, pointType: SWEEP_POINT_START, node});
+    sweepPoints.push({top: box.bottom, pointType: SWEEP_POINT_END, node});
+  }
+
+  // Sort sweep points from lowest to highest Y.
+  sweepPoints.sort((a, b) => {
+    if (a.top !== b.top) {
+      return a.top - b.top;
+    }
+    // Process 'start' before 'end' if they have the same Y.
+    return a.pointType === SWEEP_POINT_START ? -1 : 1;
+  });
+
+  // We use a plain Set (unordered) for the active set instead of a sorted
+  // array or interval tree. In a sweep-and-prune pass, every element is
+  // inserted once and deleted once (2 writes) but only checked for overlap
+  // once upon insertion (1 read). Because writes dominate reads and the
+  // active set size is typically very small on mobile layouts, O(1)
+  // insertions/ deletions with an O(K) linear scan for overlaps is
+  // significantly faster than maintaining a sorted structure.
+  const activeSet = new Set<ActionableNode>();
+  const hitTestPoints: Point[] = [];
+
+  for (const pt of sweepPoints) {
+    if (pt.pointType === SWEEP_POINT_START) {
+      const newNodeBox = pt.node.visibleBox;
+      // Check for X-axis overlap with all active members
+      for (const activeNode of activeSet) {
+        const activeNodeBox = activeNode.visibleBox;
+        // X-overlap check
+        if (newNodeBox.x < activeNodeBox.right &&
+            newNodeBox.right > activeNodeBox.x) {
+          // True 2D overlap occurs. Calculate intersection rectangle.
+          const intersectionRect = intersection(newNodeBox, activeNodeBox);
+
+          if (intersectionRect.width > 0 && intersectionRect.height > 0) {
+            hitTestPoints.push(getCenterPoint(intersectionRect));
+          }
+        }
+      }
+      activeSet.add(pt.node);
+    } else {
+      activeSet.delete(pt.node);
+    }
+  }
+
+  // Stage 2: Targeted Hit Tests (Constraint Generation)
+  //
+  // A "hit test" is the act of utilizing `document.elementsFromPoint(x, y)` to
+  // pierce through the visual layers of the document at a specific pixel
+  // coordinate. This is a standard approach for dealing with rectangle
+  // intersections. The API returns an array of elements strictly ordered from
+  // front-to-back (topmost visible element at index 0).
+  //
+  // By executing this at known overlap intersections, we can empirically
+  // determine the final CSS stacking context without manually calculating
+  // complex properties like `z-index`, `position`, or `transform`. From these
+  // results, we build a directed graph representing the visual stacking
+  // constraints between elements where the "from" node is stacked over the "to"
+  // node.
+  //
+  // Example scenario: A overlaps B, and B overlaps C.
+  //
+  //   [=== A ===]
+  //         | pt1 (A is top-most)
+  //       [=== B ===]
+  //             | pt2 (B is top-most)
+  //           [=== C ===]
+  //
+  // elementsFromPoint(pt1) -> [A, B] generates rule: A > B
+  // elementsFromPoint(pt2) -> [B, C] generates rule: B > C
+  //
+  // Graph / Adjacency List:
+  // node(A) => Set { node(B) }
+  // node(B) => Set { node(C) }
+
+  // Map domNodeId directly to the ActionableNode object.
+  const domNodeIdToNode = new Map<number, ActionableNode>();
+  // An Adjacency List representing the directed graph of visual stacking rules
+  // (constraints). The key is the node (the 'from' node), and the Set contains
+  // all nodes that are visually behind it (the 'to' nodes).
+  const graph = new Map<ActionableNode, Set<ActionableNode>>();
+
+  for (const node of actionableNodes) {
+    domNodeIdToNode.set(node.domNodeId, node);
+    graph.set(node, new Set<ActionableNode>());
+  }
+
+  // Hit test coordinate cache to prevent redundant native explorations.
+  const hitTestCache = new Map<string, Element[]>();
+
+  for (const point of hitTestPoints) {
+    // Make a cache key for caching the results from hit testing this (x,y)
+    // coordinate.
+    const cacheKey = `${point.x},${point.y}`;
+    let stackedElements = hitTestCache.get(cacheKey);
+    if (!stackedElements) {
+      stackedElements = rootDoc.elementsFromPoint(point.x, point.y);
+      hitTestCache.set(cacheKey, stackedElements);
+    }
+
+    // Filter to only those elements that correspond to an actionable node
+    const foundNodes: ActionableNode[] = [];
+    for (const el of stackedElements) {
+      const id = getNodeId(el);
+      if (id !== null && domNodeIdToNode.has(id)) {
+        foundNodes.push(domNodeIdToNode.get(id)!);
+      }
+    }
+
+    // Generate directed rules: element at i is in front of element at i+1
+    for (let i = 0; i < foundNodes.length - 1; i++) {
+      graph.get(foundNodes[i]!)!.add(foundNodes[i + 1]!);
+    }
+  }
+
+  // Stage 3: Topological Sort / Constraint Relaxation.
+  //
+  // We have a set of directed rules representing visual stacking constraints
+  // (e.g., Node A must be rendered in front of Node B, so Z(A) > Z(B)).
+  // We initialized every node with a baseline Z-order (1, 2, 3...) based on its
+  // position in the DOM tree.
+  //
+  // To resolve these constraints and generate the final document-scoped
+  // Z-order, we perform a Depth-First Search (DFS) topological sort of the
+  // graph.
+  //
+  // For each node, we recursively traverse all nodes that are visually behind
+  // it (its 'to' counterparts). The final Z-order of a node is calculated as
+  // exactly one higher than the maximum Z-order of all nodes behind it.
+  //
+  // This guarantees a strict topological ordering: Z(A) > Z(B) for all rules
+  // A > B in O(V + E) time. If a circular constraint (a cycle) is detected due
+  // to contradictory CSS (e.g., A > B > A), the cycle is broken by gracefully
+  // returning the original baseline value for the back-edge, ensuring the
+  // engine never enters an infinite loop.
+
+  // Tracks nodes currently in the active recursive path for cycle detection.
+  const visiting = new Set<ActionableNode>();
+  // Tracks fully processed nodes for memoization to guarantee O(V + E)
+  // performance to not DFS the same node more than once.
+  const processed = new Set<ActionableNode>();
+
+  function dfs(node: ActionableNode): number {
+    if (processed.has(node)) {
+      // Node has already been fully processed in another DFS branch.
+      // Return its memoized Z-order to ensure O(V + E) performance.
+      return node.finalZ;
+    }
+    if (visiting.has(node)) {
+      // Cycle detected, break the back-edge by returning the baseline value
+      // to maintain the DOM traversal order locally and avoid infinite loops.
+      return node.baselineZ;
+    }
+
+    visiting.add(node);
+
+    let maxZ = node.baselineZ;
+    for (const childNode of graph.get(node)!) {
+      const childZ = dfs(childNode);
+      if (childZ >= maxZ) {
+        maxZ = childZ + 1;
+      }
+    }
+
+    visiting.delete(node);
+    processed.add(node);
+    node.finalZ = maxZ;
+    return maxZ;
+  }
+
+  for (const node of actionableNodes) {
+    if (!processed.has(node)) {
+      dfs(node);
+    }
+  }
+
+  // Sort nodes by their final computed Z-values (and baselineZ to break ties
+  // stably)
+  actionableNodes.sort((a, b) => {
+    if (a.finalZ !== b.finalZ) {
+      return a.finalZ - b.finalZ;
+    }
+    return a.baselineZ - b.baselineZ;
+  });
+
+  // Assign strictly incrementing integers
+  let currentZ = 1;
+  for (const node of actionableNodes) {
+    node.apcNode.contentAttributes.nodeInteractionInfo!.documentScopedZOrder =
+        currentZ++;
+  }
+}
+
+
 // TODO(crbug.com/485796293): Wrap this in a class.
 /**
  * Extracts the annotated page content of the document starting from the body
@@ -3048,6 +3401,10 @@ export function extractAnnotatedPageContent(
   // to maintain parity with Blink's ConvertViewportGeometry in
   // components/optimization_guide/content/browser/page_content_proto_provider.cc.
   const viewportGeometry = toEnclosingRect(getViewportRect(document));
+
+  if (actionableMode) {
+    computeZOrder(rootNode, document);
+  }
 
   return {
     rootNode,
