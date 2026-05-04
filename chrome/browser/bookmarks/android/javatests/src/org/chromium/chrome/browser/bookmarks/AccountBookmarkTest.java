@@ -106,7 +106,7 @@ public class AccountBookmarkTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testDefaultFolders() {
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         runOnUiThreadBlocking(

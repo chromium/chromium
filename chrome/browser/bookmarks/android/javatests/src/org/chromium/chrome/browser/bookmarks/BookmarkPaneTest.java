@@ -46,6 +46,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Public transit tests for the Hub's history pane. */
@@ -76,7 +77,7 @@ public class BookmarkPaneTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBookmarkIsDisplayed() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =
@@ -122,7 +123,7 @@ public class BookmarkPaneTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBookmarkClickOpens() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         String urlOne =

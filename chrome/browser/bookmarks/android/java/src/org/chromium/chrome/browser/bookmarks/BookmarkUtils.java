@@ -105,10 +105,7 @@ public class BookmarkUtils {
             // back to the local-or-syncable mobile folder, e.g. for users that have
             // sync-the-feature enabled.
 
-            parent =
-                    bookmarkModel.areAccountBookmarkFoldersActive()
-                            ? bookmarkModel.getAccountMobileFolderId()
-                            : bookmarkModel.getMobileFolderId();
+            parent = bookmarkModel.getDefaultBookmarkFolder();
         }
 
         BookmarkId newBookmarkId =
@@ -449,10 +446,7 @@ public class BookmarkUtils {
      */
     public static @Nullable BookmarkId addBookmarkWithoutShowingSaveFlow(
             Context context, Tab tab, BookmarkModel bookmarkModel) {
-        BookmarkId parent =
-                bookmarkModel.areAccountBookmarkFoldersActive()
-                        ? bookmarkModel.getAccountMobileFolderId()
-                        : bookmarkModel.getMobileFolderId();
+        BookmarkId parent = bookmarkModel.getDefaultBookmarkFolder();
         return addBookmarkInternal(
                 context,
                 tab.getProfile(),

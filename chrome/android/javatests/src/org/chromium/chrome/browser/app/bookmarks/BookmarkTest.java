@@ -323,6 +323,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOpenBookmark() throws InterruptedException, ExecutionException {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         openBookmarkManager();
@@ -434,6 +435,7 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOpenBookmarkManagerFolder() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
@@ -495,6 +497,7 @@ public class BookmarkTest {
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
     @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testEmptyBookmarkFolder() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
@@ -515,7 +518,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testEmptySearch() throws InterruptedException {
         openBookmarkManager();
@@ -946,6 +949,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testEndIconVisibilityInSelectionMode() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -983,6 +987,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://issues.chromium.org/331232180")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testEndIconVisibilityInSearchMode() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         addFolder(TEST_TITLE_A);
@@ -1020,6 +1025,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/344981899, this test needs to be fixed post-UNO")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSmallDrag_Up_BookmarksOnly() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -1100,6 +1106,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/344981899, this test needs to be fixed post-UNO")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSmallDrag_Down_FoldersOnly() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -1171,6 +1178,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSmallDrag_Down_MixedFoldersAndBookmarks() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -1238,6 +1246,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testPromoDraggability() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
 
@@ -1260,6 +1269,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testItemDraggability() throws Exception {
         addBookmark("a", mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1295,6 +1305,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1319,6 +1330,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMoveDownMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1341,6 +1353,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMoveDownGoneForBottomElement() throws Exception {
         addBookmarkWithPartner(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolderWithPartner(TEST_FOLDER_TITLE);
@@ -1359,6 +1372,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMoveUpGoneForTopElement() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1397,6 +1411,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testMoveButtonsGoneWithOneBookmark() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
@@ -1480,6 +1495,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky, see crbug.com/335891831")
+    @Restriction(DeviceFormFactor.PHONE)
     public void testShowInFolder_NoScroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
@@ -1752,6 +1768,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBookmarksDoesNotRecordLaunchMetrics() throws Throwable {
         assertEquals(
                 1,
