@@ -48,8 +48,10 @@
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -426,6 +428,35 @@ bool IsValidRasterShapeSize(const gfx::Size& size) {
 
 }  // namespace
 
+namespace {
+
+// Returns the affine transform that maps a point in physical reference-box
+// coordinates to Shape's line-left logical coordinate space. This intentionally
+// matches the LTR WritingModeConverter used by CreateShape(); shape exclusion
+// intervals are stored in line-left coordinates, and RTL positioning is applied
+// when those intervals are consumed.
+AffineTransform PhysicalToLogicalTransform(WritingMode writing_mode,
+                                           float box_width,
+                                           float box_height) {
+  switch (writing_mode) {
+    case WritingMode::kHorizontalTb:
+      return AffineTransform();
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      // (x, y) -> (y, box_width - x)
+      return AffineTransform(0, -1, 1, 0, 0, box_width);
+    case WritingMode::kVerticalLr:
+      // (x, y) -> (y, x)
+      return AffineTransform(0, 1, 1, 0, 0, 0);
+    case WritingMode::kSidewaysLr:
+      // (x, y) -> (box_height - y, x)
+      return AffineTransform(0, 1, -1, 0, box_height, 0);
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 std::unique_ptr<Shape> Shape::CreateRasterShapeFromPath(
     const BasicShape& basic_shape,
     float box_width,
@@ -450,8 +481,15 @@ std::unique_ptr<Shape> Shape::CreateRasterShapeFromPath(
                                     raster_size.height(), raster_size,
                                     gfx::Rect(raster_size),
                                     gfx::Rect(raster_size), writing_mode);
-  std::unique_ptr<RasterShape> shape =
-      std::make_unique<RasterShape>(std::move(intervals), raster_size);
+  // Retain the analytical path in logical coordinates so that DevTools
+  // inspectors can render the actual shape boundary instead of the
+  // pixel-snapped rasterization.
+  Path logical_shape_path = PathBuilder(physical_path)
+                                .Transform(PhysicalToLogicalTransform(
+                                    writing_mode, box_width, box_height))
+                                .Finalize();
+  std::unique_ptr<RasterShape> shape = std::make_unique<RasterShape>(
+      std::move(intervals), raster_size, std::move(logical_shape_path));
   shape->margin_ = margin;
   return shape;
 }

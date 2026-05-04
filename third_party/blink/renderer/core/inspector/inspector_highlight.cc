@@ -139,10 +139,12 @@ class ShapePathBuilder : public HighlightPathBuilder {
  public:
   ShapePathBuilder(LocalFrameView& view,
                    LayoutObject& layout_object,
-                   const ShapeOutsideInfo& shape_outside_info)
+                   const ShapeOutsideInfo& shape_outside_info,
+                   float scale)
       : view_(&view),
         layout_object_(&layout_object),
-        shape_outside_info_(shape_outside_info) {}
+        shape_outside_info_(shape_outside_info),
+        scale_(scale) {}
 
   static std::unique_ptr<protocol::ListValue> BuildPath(
       LocalFrameView& view,
@@ -150,8 +152,8 @@ class ShapePathBuilder : public HighlightPathBuilder {
       const ShapeOutsideInfo& shape_outside_info,
       const Path& path,
       float scale) {
-    ShapePathBuilder builder(view, layout_object, shape_outside_info);
-    builder.AppendPath(path, scale);
+    ShapePathBuilder builder(view, layout_object, shape_outside_info, scale);
+    builder.AppendPath(path, 1.f);
     return builder.Release();
   }
 
@@ -160,15 +162,18 @@ class ShapePathBuilder : public HighlightPathBuilder {
     PhysicalOffset layout_object_point = PhysicalOffset::FromPointFRound(
         shape_outside_info_.ShapeToLayoutObjectPoint(point));
     // TODO(pfeldman): Is this kIgnoreTransforms correct?
-    return gfx::PointF(view_->FrameToViewport(
+    gfx::PointF viewport_point(view_->FrameToViewport(
         ToRoundedPoint(layout_object_->LocalToAbsolutePoint(
             layout_object_point, kIgnoreTransforms))));
+    viewport_point.Scale(scale_);
+    return viewport_point;
   }
 
  private:
   LocalFrameView* view_;
   LayoutObject* const layout_object_;
   const ShapeOutsideInfo& shape_outside_info_;
+  float scale_;
 };
 
 std::unique_ptr<protocol::Array<double>> BuildArrayForQuad(

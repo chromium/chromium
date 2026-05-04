@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
@@ -35,6 +37,28 @@ void AssertValueEqualsJSON(const std::unique_ptr<protocol::Value>& actual_value,
   base::Value parsed_json_expected = ParseJson(json_expected);
   EXPECT_THAT(parsed_json_actual, Eq(ByRef(parsed_json_expected)));
 }
+
+std::string SerializeToJson(const protocol::Serializable& value) {
+  std::string json;
+  auto status_to_json =
+      crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(value.Serialize()), &json);
+  EXPECT_TRUE(status_to_json.ok());
+  return json;
+}
+
+class ScaledChromeClient final : public EmptyChromeClient {
+ public:
+  explicit ScaledChromeClient(float window_to_viewport_scale)
+      : window_to_viewport_scale_(window_to_viewport_scale) {}
+
+  float WindowToViewportScalar(LocalFrame*,
+                               const float scalar_value) const override {
+    return scalar_value * window_to_viewport_scale_;
+  }
+
+ private:
+  const float window_to_viewport_scale_;
+};
 
 }  // namespace
 
@@ -573,6 +597,116 @@ TEST_F(InspectorHighlightTest, OffsetPathHighlight) {
   EXPECT_NEAR(175, content_quad[5], 0.1);
   EXPECT_NEAR(225, content_quad[6], 0.1);
   EXPECT_NEAR(175, content_quad[7], 0.1);
+}
+
+TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightUsesPath) {
+  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      #target {
+        float: left;
+        width: 100px;
+        height: 100px;
+        shape-outside: path("M 0 0 C 20 40 80 40 100 0 L 100 100 L 0 100 Z");
+      }
+    </style>
+    <div id="target"></div>
+    <p>text</p>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_TRUE(target);
+
+  std::unique_ptr<protocol::DOM::BoxModel> model;
+  ASSERT_TRUE(InspectorHighlight::GetBoxModel(target, &model, false));
+
+  const std::string json = SerializeToJson(*model);
+  EXPECT_THAT(json, testing::HasSubstr("\"shapeOutside\""));
+  EXPECT_THAT(json, testing::HasSubstr("\"C\""));
+  EXPECT_THAT(
+      json, testing::HasSubstr("\"shape\":[\"M\",0,0,\"C\",20,40,80,40,100,0"));
+}
+
+TEST_F(InspectorHighlightTest, ShapeOutsidePathHighlightIsNotMirroredInRtl) {
+  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      #container {
+        direction: rtl;
+        width: 300px;
+      }
+      #target {
+        float: right;
+        width: 100px;
+        height: 100px;
+        shape-outside: path("M 0 0 L 100 0 L 100 100 Z");
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+      <p>text</p>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_TRUE(target);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(target, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+
+  const std::string json = SerializeToJson(*highlight.AsProtocolValue());
+  EXPECT_THAT(json, testing::HasSubstr(
+                        "\"path\":[\"M\",200,0,\"L\",300,0,\"L\",300,100"));
+}
+
+TEST_F(InspectorHighlightTest, ShapeOutsideHighlightScalesAfterTranslation) {
+  ScopedCSSShapeOutsidePathAndShapeSupportForTest enable_path_and_shape(true);
+
+  auto* chrome_client = MakeGarbageCollected<ScaledChromeClient>(2.f);
+  auto page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600), chrome_client);
+  Document& document = page_holder->GetDocument();
+
+  document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      body {
+        margin: 10px;
+      }
+      #target {
+        float: left;
+        width: 100px;
+        height: 100px;
+        shape-outside: path("M 0 0 L 100 0 L 100 100 Z");
+      }
+    </style>
+    <div id="target"></div>
+    <p>text</p>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = document.getElementById(AtomicString("target"));
+  EXPECT_TRUE(target);
+
+  InspectorHighlightConfig config = InspectorHighlight::DefaultConfig();
+  InspectorHighlightContrastInfo contrast_info;
+  InspectorHighlight highlight(target, config, contrast_info,
+                               /*append_element_info=*/false,
+                               /*append_distance_info=*/false,
+                               NodeContentVisibilityState::kNone);
+
+  const std::string json = SerializeToJson(*highlight.AsProtocolValue());
+  EXPECT_THAT(json, testing::HasSubstr("\"path\":[\"M\",5,5"));
 }
 
 }  // namespace blink
