@@ -41,7 +41,7 @@ that Chromium depends on are described by two files:
 * `//third_party/rust/chromium_crates_io/gnrt_config.toml`.
   This file defines Chromium-specific, `cargo`-agnostic metadata like:
       - Configuring certain aspects of Chromium build (e.g. `allow_unsafe`,
-        `allow_unstable_features`, `extra_src_roots`, `group = "test"`, etc.)
+        `allow_unstable_features`, `extra_input_roots`, `group = "test"`, etc.)
       - Specifying licensing information when it can't be automatically inferred
         (e.g. pointing out `license_files` with non-standard filenames).
 

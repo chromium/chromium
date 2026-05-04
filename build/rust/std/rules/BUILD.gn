@@ -4,6 +4,7 @@
 
 # @generated from build/rust/std/BUILD.gn.hbs by tools/crates/gnrt. Do not edit!
 
+import("//build/config/rust.gni")
 import("//build/rust/cargo_crate.gni")
 
 config("max_codegen_units") {

@@ -368,15 +368,13 @@ pub fn collect_crate_files(
                     .map(|path| RootDir { path: lib_root.join(path), collect: collect_kind }),
             );
         };
-        extend_root_dirs(&|cfg| &cfg.extra_src_roots, CollectCrateFiles::ExternalSourcesAndInputs);
-        extend_root_dirs(&|cfg| &cfg.extra_input_roots, CollectCrateFiles::ExternalInputsOnly);
         extend_root_dirs(
-            &|cfg| &cfg.extra_build_script_src_roots,
-            CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
+            &|cfg| &cfg.extra_input_roots,
+            CollectCrateFiles::ExternalSourcesAndInputs,
         );
         extend_root_dirs(
             &|cfg| &cfg.extra_build_script_input_roots,
-            CollectCrateFiles::BuildScriptExternalInputsOnly,
+            CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
         );
         extend_root_dirs(&|cfg| &cfg.native_libs_roots, CollectCrateFiles::LibsOnly);
     }
@@ -447,12 +445,8 @@ enum CollectCrateFiles {
     /// include!()'d into the crate, and store them as `inputs`. These are not
     /// directly part of the crate.
     ExternalSourcesAndInputs,
-    /// Like ExternalSourcesAndInputs but excludes .rs files.
-    ExternalInputsOnly,
     /// Like `ExternalSourcesAndInputs` but for build scripts.
     BuildScriptExternalSourcesAndInputs,
-    /// Like `ExternalInputsOnly` but for build scripts.
-    BuildScriptExternalInputsOnly,
     /// Collect .lib files and store them as `native_libs`. These can be
     /// depended on by the crate through `#[link]` directives.
     LibsOnly,
@@ -463,12 +457,8 @@ impl CollectCrateFiles {
         use CollectCrateFiles::*;
         match self {
             Internal => "crate metadata and sources",
-            ExternalSourcesAndInputs => "`extra_src_roots` entry in `gnrt_config.toml`",
-            ExternalInputsOnly => "`extra_input_roots` entry in `gnrt_config.toml`",
+            ExternalSourcesAndInputs => "`extra_input_roots` entry in `gnrt_config.toml`",
             BuildScriptExternalSourcesAndInputs => {
-                "`extra_build_script_src_roots` entry in `gnrt_config.toml`"
-            }
-            BuildScriptExternalInputsOnly => {
                 "`extra_build_script_input_roots` entry in `gnrt_config.toml`"
             }
             LibsOnly => "`native_libs_roots` entry in `gnrt_config.toml`",
@@ -484,11 +474,9 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
         Some("rs") => match mode {
             Internal => files.sources.push(filepath.to_owned()),
             ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
-            ExternalInputsOnly => (),
             BuildScriptExternalSourcesAndInputs => {
                 files.build_script_inputs.push(filepath.to_owned())
             }
-            BuildScriptExternalInputsOnly => (),
             LibsOnly => (),
         },
         // md: Markdown files are commonly include!()'d into source code as docs.
@@ -499,10 +487,8 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
         // res: zoneinfo64.res from zoneinfo64
         Some("md") | Some("h") | Some("json") | Some("data") | Some("dat") | Some("res") => {
             match mode {
-                Internal | ExternalSourcesAndInputs | ExternalInputsOnly => {
-                    files.inputs.push(filepath.to_owned())
-                }
-                BuildScriptExternalSourcesAndInputs | BuildScriptExternalInputsOnly => {
+                Internal | ExternalSourcesAndInputs => files.inputs.push(filepath.to_owned()),
+                BuildScriptExternalSourcesAndInputs => {
                     files.build_script_inputs.push(filepath.to_owned())
                 }
                 LibsOnly => (),
@@ -638,5 +624,127 @@ mod tests {
         assert_eq!(Epoch::from_version_req_str("0.1.0"), new_minor(1));
         assert_eq!(Epoch::from_version_req_str("1.0.0"), new_major(1));
         assert_eq!(Epoch::from_version_req_str("2.3.0"), new_major(2));
+    }
+
+    struct CollectCrateFilesTestCaseBuilder {
+        temp_dir: tempfile::TempDir,
+        package: deps::Package,
+        config: BuildConfig,
+    }
+
+    impl CollectCrateFilesTestCaseBuilder {
+        /// Creates new test case builder.  Initially the crate directory only
+        /// contains `src/lib.rs` and the test uses the default, empty
+        /// `gnrt_config.toml`.
+        fn new() -> Self {
+            let temp_dir = tempfile::tempdir().unwrap();
+            let src_dir = temp_dir.path().join("src");
+            fs::create_dir(&src_dir).unwrap();
+            let lib_file = src_dir.join("lib.rs");
+            fs::write(&lib_file, "").unwrap();
+
+            let package = deps::Package {
+                package_name: "test_crate".to_string(),
+                version: semver::Version::new(1, 2, 3),
+                description: None,
+                authors: vec![],
+                edition: "2021".to_string(),
+                repository: None,
+                dependencies: vec![],
+                build_dependencies: vec![],
+                dependency_kinds: std::collections::HashMap::new(),
+                lib_target: Some(deps::LibTarget { root: lib_file, lib_type: deps::LibType::Rlib }),
+                bin_targets: vec![],
+                build_script: None,
+                group: crate::group::Group::Safe,
+                is_local: true,
+                is_toplevel_dep: false,
+            };
+
+            Self { temp_dir, package, config: BuildConfig::default() }
+        }
+
+        fn add_file(&self, path: &str) {
+            let full_path = self.temp_dir.path().join(path);
+            fs::write(full_path, "").unwrap();
+        }
+
+        fn add_dir(&self, path: &str) {
+            let full_path = self.temp_dir.path().join(path);
+            fs::create_dir_all(full_path).unwrap();
+        }
+
+        fn set_config(&mut self, gnrt_config: &str) {
+            self.config = toml::de::from_str(gnrt_config).unwrap();
+        }
+
+        fn build_and_run_test(self) -> (Vec<String>, Vec<String>) {
+            let (_crate_id, crate_files) =
+                collect_crate_files(&self.package, &self.config, IncludeCrateTargets::LibOnly)
+                    .unwrap();
+
+            let root = self.temp_dir.path().canonicalize().unwrap();
+            let make_relative = |path: &Path| -> String {
+                let canon_path = path.canonicalize().unwrap();
+                canon_path.strip_prefix(&root).unwrap().to_str().unwrap().to_string()
+            };
+
+            let sources = crate_files.sources.iter().map(|p| make_relative(p)).collect();
+            let inputs = crate_files.inputs.iter().map(|p| make_relative(p)).collect();
+
+            (sources, inputs)
+        }
+    }
+
+    #[test]
+    fn test_collect_crate_files_without_gnrt() {
+        let builder = CollectCrateFilesTestCaseBuilder::new();
+        builder.add_file("src/submodule.rs");
+        builder.add_file("src/submodule.md");
+        builder.add_file("src/submodule.dat");
+        builder.add_file("README.md");
+
+        let (sources, inputs) = builder.build_and_run_test();
+
+        assert_eq!(&sources, &["src/lib.rs", "src/submodule.rs"]);
+        assert_eq!(&inputs, &["src/submodule.dat", "src/submodule.md"]);
+    }
+
+    #[test]
+    fn test_collect_crate_files_with_extra_inputs_specifying_md_file() {
+        let mut builder = CollectCrateFilesTestCaseBuilder::new();
+        builder.add_file("README.md");
+        builder.set_config(
+            r#"
+            [crate.test_crate]
+            extra_input_roots = ['../README.md']
+            "#,
+        );
+
+        let (sources, inputs) = builder.build_and_run_test();
+
+        assert_eq!(&sources, &["src/lib.rs"]);
+        assert_eq!(&inputs, &["README.md"]);
+    }
+
+    #[test]
+    fn test_collect_crate_files_with_extra_inputs_specifying_dir() {
+        let mut builder = CollectCrateFilesTestCaseBuilder::new();
+        builder.add_dir("dir");
+        builder.add_file("dir/a.md");
+        builder.add_file("dir/b.md");
+        builder.add_file("dir/l.lib"); // Should be skipped.
+        builder.add_file("dir/x.rs");
+        builder.set_config(
+            r#"
+            [crate.test_crate]
+            extra_input_roots = ['../dir']
+            "#,
+        );
+
+        let (sources, inputs) = builder.build_and_run_test();
+
+        assert_eq!(&sources, &["src/lib.rs"]);
+        assert_eq!(&inputs, &["dir/a.md", "dir/b.md", "dir/x.rs"]);
     }
 }

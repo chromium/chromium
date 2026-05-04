@@ -107,10 +107,10 @@ as the ones actually used in `.rs` source code:
 * In `gnrt`-generated `BUILD.gn` files, `gnrt` typically can discover all
   `.rs` files on its own, but sometimes `gnrt` may need extra crate metadata
   that you can provide via `gnrt_config.toml` - for example:
-    - `extra_src_roots` (or `extra_input_roots`) can list source files
-      to append to `sources` (or `inputs`) for the main Rust target
-    - `extra_build_script_src_roots` (or `extra_build_script_input_roots`)
-      can list sources files to append to `sources` (or `inputs`)
+    - `extra_input_roots` can list source files
+      to append to `sources` / `inputs` for the main Rust target
+    - `extra_build_script_input_roots`
+      can list sources files to append to `sources` / `inputs`
       for the `build.rs` script
     - See a comment at the top of `gnrt_config.toml` for more information
     - After editing `gnrt_config.toml` run

@@ -50,15 +50,15 @@ cpp_api_from_rust = { deps = [] }
 # compiler_builtins should build with one codegen unit per builtin. See
 # https://github.com/rust-lang/rust/blob/1.93.0/library/Cargo.toml#L19-L23
 extra_kv = { include_coverage = false, max_codegen_units = true }
-extra_build_script_src_roots = [
+extra_build_script_input_roots = [
   '../configure.rs',
 ]
-extra_src_roots = [
+extra_input_roots = [
   '../../libm/src',
 ]
 
 [crate.core]
-extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
+extra_input_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
 
 [crate.core.extra_kv]
 # Dependencies of profiler_builtins must have instrumentation disabled
@@ -96,8 +96,39 @@ extra_kv = { include_coverage = false }
 extra_kv = { include_coverage = false }
 
 [crate.std]
-extra_src_roots = ['../../backtrace/src', '../../portable-simd/crates/std_float/src', '../../core/src/primitive_docs.rs']
-extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch/crates/core_arch/src', '../../core/src']
+extra_input_roots = [
+  '../../backtrace/src',
+  '../../core/src/autodiff.md',
+  '../../core/src/error.md',
+  '../../core/src/ffi/c_char.md',
+  '../../core/src/ffi/c_double.md',
+  '../../core/src/ffi/c_float.md',
+  '../../core/src/ffi/c_int.md',
+  '../../core/src/ffi/c_long.md',
+  '../../core/src/ffi/c_longlong.md',
+  '../../core/src/ffi/c_schar.md',
+  '../../core/src/ffi/c_short.md',
+  '../../core/src/ffi/c_uchar.md',
+  '../../core/src/ffi/c_uint.md',
+  '../../core/src/ffi/c_ulong.md',
+  '../../core/src/ffi/c_ulonglong.md',
+  '../../core/src/ffi/c_ushort.md',
+  '../../core/src/ffi/c_void.md',
+  '../../core/src/fmt/fmt_trait_method_doc.md',
+  '../../core/src/macros/panic.md',
+  '../../core/src/primitive_docs.rs',
+  '../../core/src/ptr/docs/INFO.md',
+  '../../core/src/ptr/docs/add.md',
+  '../../core/src/ptr/docs/addr.md',
+  '../../core/src/ptr/docs/as_ref.md',
+  '../../core/src/ptr/docs/as_uninit_ref.md',
+  '../../core/src/ptr/docs/as_uninit_slice.md',
+  '../../core/src/ptr/docs/is_null.md',
+  '../../core/src/ptr/docs/offset.md',
+  '../../portable-simd/crates/core_simd/src/core_simd_docs.md',
+  '../../portable-simd/crates/std_float/src',
+  '../../stdarch/crates/core_arch/src/core_arch_docs.md',
+]
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']

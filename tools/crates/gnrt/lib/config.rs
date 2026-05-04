@@ -207,21 +207,11 @@ pub struct CrateConfig {
     /// Files or directories to remove from the vendored crate.
     #[serde(default)]
     pub remove_vendored_files: Vec<std::path::PathBuf>,
-    /// Include rs and input files under these paths relative to the crate's
-    /// root source file as part of the crate. The roots may each be a single
-    /// file or a directory.
-    #[serde(default)]
-    pub extra_src_roots: Vec<std::path::PathBuf>,
     /// Include input files under these paths relative to the crate's root
     /// source file as part of the crate. The roots may each be a single file or
     /// a directory.
     #[serde(default)]
     pub extra_input_roots: Vec<std::path::PathBuf>,
-    /// Include rs and input files under these relative paths as part of the
-    /// crate's build script. The roots may each be a single file or a
-    /// directory.
-    #[serde(default)]
-    pub extra_build_script_src_roots: Vec<std::path::PathBuf>,
     /// Include input files under these relative paths as part of the crate's
     /// build script. The roots may each be a single file or a directory.
     #[serde(default)]
@@ -255,7 +245,7 @@ pub struct CrateConfig {
     /// directory.
     ///
     /// These paths are the only ones searched for lib files, unlike
-    /// `extra_src_roots`. Nothing is searched if this is empty.
+    /// `extra_input_roots`. Nothing is searched if this is empty.
     #[serde(default)]
     pub native_libs_roots: Vec<std::path::PathBuf>,
     /// Whether the crate is permitted to have no license files.
