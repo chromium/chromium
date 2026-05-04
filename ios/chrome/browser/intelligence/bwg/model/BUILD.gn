@@ -274,6 +274,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/metrics:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
+    "//ios/chrome/browser/intelligence/bwg/utils:unit_tests",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:page_context_extractor_feature",
