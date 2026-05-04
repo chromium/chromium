@@ -1,6 +1,41 @@
-file://components/omnibox/OWNERS
-file://components/search/OWNERS
+# Owners of composebox must ensure no embedder specific references and
+# branching logic are added to the shareable composebox logic.
+# See: go/chrome-search-componentization
+bofengchen@google.com
+hannahrogers@google.com
 jamesleung@google.com
+jdonnelly@chromium.org
+jilinyang@google.com
+jonnalad@google.com
+mahmadi@chromium.org
+mfacey@chromium.org
+pauladedeji@google.com
+rtatum@google.com
+ryanakiyama@chromium.org
+shomizoe@google.com
+tiborg@chromium.org
+
+# TODO(crbug.com/493909140): Remove these per-file entries and the
+# EXTENDED_OWNERS file.
+per-file *.css=file:EXTENDED_OWNERS
+per-file composebox_context_menu*=file:EXTENDED_OWNERS
+per-file composebox_dropdown*=file:EXTENDED_OWNERS
+per-file composebox_file_inputs*=file:EXTENDED_OWNERS
+per-file composebox_lens_search*=file:EXTENDED_OWNERS
+per-file composebox_match*=file:EXTENDED_OWNERS
+per-file composebox_submit*=file:EXTENDED_OWNERS
+per-file composebox_tab_favicon*=file:EXTENDED_OWNERS
+per-file composebox_tool_chip*=file:EXTENDED_OWNERS
+per-file composebox_voice_search*=file:EXTENDED_OWNERS
+per-file contextual_action_menu*=file:EXTENDED_OWNERS
+per-file contextual_entrypoint_and_menu*=file:EXTENDED_OWNERS
+per-file contextual_entrypoint_button*=file:EXTENDED_OWNERS
+per-file error_scrim*=file:EXTENDED_OWNERS
+per-file file_carousel*=file:EXTENDED_OWNERS
+per-file file_thumbnail*=file:EXTENDED_OWNERS
+per-file icons.html.ts=file:EXTENDED_OWNERS
+per-file recent_tab_chip*=file:EXTENDED_OWNERS
+per-file threads_rail*=file:EXTENDED_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
