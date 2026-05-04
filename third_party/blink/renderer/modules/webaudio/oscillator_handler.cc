@@ -159,8 +159,6 @@ float DoInterpolation(double virtual_read_index,
 
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
-                                     const String& oscillator_type,
-                                     PeriodicWaveImpl* wave_table,
                                      AudioParamHandler& frequency,
                                      AudioParamHandler& detune)
     : AudioScheduledSourceHandler(NodeType::kNodeTypeOscillator,
@@ -170,38 +168,37 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
       detune_(&detune),
       phase_increments_(GetDeferredTaskHandler().RenderQuantumFrames()),
       detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
-  if (wave_table) {
-    // A PeriodicWave overrides any value for the oscillator type,
-    // forcing the type to be "custom".
-    SetPeriodicWave(wave_table);
-  } else {
-    if (oscillator_type == "sine") {
-      SetType(SINE);
-    } else if (oscillator_type == "square") {
-      SetType(SQUARE);
-    } else if (oscillator_type == "sawtooth") {
-      SetType(SAWTOOTH);
-    } else if (oscillator_type == "triangle") {
-      SetType(TRIANGLE);
-    } else {
-      NOTREACHED();
-    }
-  }
-
   AddOutput(kNumberOfOutputChannels);
-
   Initialize();
+}
+
+bool OscillatorHandler::SetInitialType(const String& oscillator_type) {
+  if (oscillator_type == "sine") {
+    return SetType(SINE);
+  } else if (oscillator_type == "square") {
+    return SetType(SQUARE);
+  } else if (oscillator_type == "sawtooth") {
+    return SetType(SAWTOOTH);
+  } else if (oscillator_type == "triangle") {
+    return SetType(TRIANGLE);
+  } else {
+    NOTREACHED();
+  }
+}
+
+void OscillatorHandler::SetInitialPeriodicWave(
+    PeriodicWaveImpl* periodic_wave_impl) {
+  DCHECK(periodic_wave_impl);
+  SetPeriodicWave(periodic_wave_impl);
 }
 
 scoped_refptr<OscillatorHandler> OscillatorHandler::Create(
     AudioNode& node,
     float sample_rate,
-    const String& oscillator_type,
-    PeriodicWaveImpl* wave_table,
     AudioParamHandler& frequency,
     AudioParamHandler& detune) {
   return base::AdoptRef(new OscillatorHandler(
-      node, sample_rate, oscillator_type, wave_table, frequency, detune));
+      node, sample_rate, frequency, detune));
 }
 
 OscillatorHandler::~OscillatorHandler() {
@@ -271,6 +268,13 @@ bool OscillatorHandler::SetType(uint8_t type) {
       // Return false for invalid types, including CUSTOM since
       // setPeriodicWave() method must be called explicitly.
       NOTREACHED();
+  }
+
+  // Returns false if GetPeriodicWave failed to return a valid one, which
+  // can happen when memory allocation fails during the generation of
+  // the default band-limited tables.
+  if (!periodic_wave) {
+    return false;
   }
 
   SetPeriodicWave(periodic_wave->impl());

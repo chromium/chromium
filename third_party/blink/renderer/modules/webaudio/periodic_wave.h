@@ -127,7 +127,9 @@ class MODULES_EXPORT PeriodicWaveImpl final
   unsigned NumberOfRanges() const { return number_of_ranges_; }
 
  private:
-  void GenerateBasicWaveform(int);
+  // Generates basic waveforms (sine, square, etc.) and creates band-limited
+  // tables. Returns false if allocation fails.
+  bool GenerateBasicWaveform(int);
 
   float sample_rate_;
   unsigned number_of_ranges_;
@@ -145,10 +147,14 @@ class MODULES_EXPORT PeriodicWaveImpl final
 
   unsigned NumberOfPartialsForRange(unsigned range_index) const;
 
-  // Creates tables based on numberOfComponents Fourier coefficients.
-  void CreateBandLimitedTables(base::span<const float> real,
+  // Converts Fourier coefficients into time-domain wave buffers. One table is
+  // created for each pitch range to prevent aliasing during playback at
+  // different rates. Higher ranges have more high-frequency partials culled
+  // out. Returns false if allocation fails.
+  bool CreateBandLimitedTables(base::span<const float> real,
                                base::span<const float> imag,
                                bool disable_normalization);
+
   Vector<std::unique_ptr<AudioFloatArray>> band_limited_tables_;
 
   friend class PeriodicWave;

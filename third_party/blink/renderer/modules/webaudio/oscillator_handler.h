@@ -43,10 +43,11 @@ class MODULES_EXPORT OscillatorHandler final
   static constexpr float kInterpolate2Point = 0.3f;
   static constexpr float kInterpolate3Point = 0.16f;
 
+  // Note: After calling Create, you must call SetInitialType() or
+  // SetInitialPeriodicWave() to complete initialization and handle potential
+  // allocation failures.
   static scoped_refptr<OscillatorHandler> Create(AudioNode&,
                                                  float sample_rate,
-                                                 const String& oscillator_type,
-                                                 PeriodicWaveImpl* wave_table,
                                                  AudioParamHandler& frequency,
                                                  AudioParamHandler& detune);
   ~OscillatorHandler() override;
@@ -61,15 +62,20 @@ class MODULES_EXPORT OscillatorHandler final
 
   void HandleStoppableSourceNode() override;
 
+  // Sets the initial type. Returns false if table allocation fails.
+  bool SetInitialType(const String& oscillator_type);
+
+  // Sets the initial periodic wave.
+  void SetInitialPeriodicWave(PeriodicWaveImpl*);
+
  private:
   OscillatorHandler(AudioNode&,
                     float sample_rate,
-                    const String& oscillator_type,
-                    PeriodicWaveImpl* wave_table,
                     AudioParamHandler& frequency,
                     AudioParamHandler& detune);
 
-  bool SetType(uint8_t);  // Returns true on success.
+  // Returns true on success.
+  bool SetType(uint8_t);
 
   // Returns true if there are sample-accurate timeline parameter changes.
   bool CalculateSampleAccuratePhaseIncrements(uint32_t frames_to_process);

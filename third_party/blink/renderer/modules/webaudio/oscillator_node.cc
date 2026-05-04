@@ -75,8 +75,7 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
           /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
           /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {
   SetHandler(
-      OscillatorHandler::Create(*this, context.sampleRate(), oscillator_type,
-                                wave_table ? wave_table->impl() : nullptr,
+      OscillatorHandler::Create(*this, context.sampleRate(),
                                 frequency_->Handler(), detune_->Handler()));
 }
 
@@ -86,8 +85,20 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext& context,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  return MakeGarbageCollected<OscillatorNode>(context, oscillator_type,
-                                              wave_table);
+  auto* node = MakeGarbageCollected<OscillatorNode>(context,
+                                                    oscillator_type,
+                                                    wave_table);
+  if (wave_table) {
+    node->GetOscillatorHandler().SetInitialPeriodicWave(wave_table->impl());
+  } else {
+    if (!node->GetOscillatorHandler().SetInitialType(oscillator_type)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Failed to initialize oscillator due to insufficient memory.");
+      return nullptr;
+    }
+  }
+  return node;
 }
 
 OscillatorNode* OscillatorNode::Create(BaseAudioContext* context,
