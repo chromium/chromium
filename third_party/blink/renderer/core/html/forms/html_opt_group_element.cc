@@ -87,8 +87,27 @@ FocusableState HTMLOptGroupElement::SupportsFocus(
   return HTMLElement::SupportsFocus(update_behavior);
 }
 
+// The :enabled and :disabled selectors have special behavior for option
+// elements which is separate from their normal disabledness state. The
+// selectors depend on whether the ancestor select is disabled, but the internal
+// state does not. See https://github.com/w3c/csswg-drafts/issues/13383
 bool HTMLOptGroupElement::MatchesEnabledPseudoClass() const {
-  return !IsDisabledFormControl();
+  if (!RuntimeEnabledFeatures::OptionDisablednessCheckAncestorsEnabled()) {
+    return !IsDisabledFormControl();
+  }
+  return !MatchesDisabledPseudoClass();
+}
+bool HTMLOptGroupElement::MatchesDisabledPseudoClass() const {
+  if (IsDisabledFormControl()) {
+    return true;
+  }
+  if (!RuntimeEnabledFeatures::OptionDisablednessCheckAncestorsEnabled()) {
+    return false;
+  }
+  if (owner_select_ && owner_select_->IsDisabledFormControl()) {
+    return true;
+  }
+  return false;
 }
 
 void HTMLOptGroupElement::ChildrenChanged(const ChildrenChange& change) {

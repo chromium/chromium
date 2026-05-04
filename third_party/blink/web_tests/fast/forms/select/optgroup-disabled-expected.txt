@@ -25,21 +25,21 @@ PASS $("listbox_optgroup_disabled").disabled is true
 PASS $("listbox_optgroup_enabled").disabled is false
 PASS $("menulist_optgroup_disabled").disabled is true
 PASS $("menulist_optgroup_enabled").disabled is false
-select.disabled doesn't affect pseudo-class :disabled
+select.disabled affects pseudo-class :disabled
 PASS disabledSet["listbox_optgroup_disabled"] is true
 PASS disabledSet["menulist_optgroup_disabled"] is true
-PASS disabledSet["listbox_optgroup_enabled"] is undefined.
-PASS disabledSet["menulist_optgroup_enabled"] is undefined.
+PASS disabledSet["listbox_optgroup_enabled"] is true
+PASS disabledSet["menulist_optgroup_enabled"] is true
 form.disabled doesn't affect optgroup.disabled
 PASS $("listbox_optgroup_disabled").disabled is true
 PASS $("listbox_optgroup_enabled").disabled is false
 PASS $("menulist_optgroup_disabled").disabled is true
 PASS $("menulist_optgroup_enabled").disabled is false
-form.disabled doesn't affect pseudo-class :disabled
+form.disabled affects pseudo-class :disabled
 PASS disabledSet["listbox_optgroup_disabled"] is true
 PASS disabledSet["menulist_optgroup_disabled"] is true
-PASS disabledSet["listbox_optgroup_enabled"] is undefined.
-PASS disabledSet["menulist_optgroup_enabled"] is undefined.
+PASS disabledSet["listbox_optgroup_enabled"] is true
+PASS disabledSet["menulist_optgroup_enabled"] is true
 Check IDL [Reflect]
 PASS $("listbox_optgroup_disabled").disabled is false
 PASS $("menulist_optgroup_disabled").disabled is false

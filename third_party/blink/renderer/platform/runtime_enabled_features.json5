@@ -4102,6 +4102,14 @@
       status: "stable",
     },
     {
+      // Makes option elements match :enabled or :disabled based on whether
+      // their ancestor select element is disabled.
+      // https://github.com/w3c/csswg-drafts/issues/13383
+      // https://issues.chromium.org/issues/490082172
+      name: "OptionDisablednessCheckAncestors",
+      status: "stable",
+    },
+    {
       name: "OrientationEvent",
       status: {"Android": "stable"},
     },

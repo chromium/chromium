@@ -85,12 +85,12 @@ shouldBeFalse('$("listbox_optgroup_enabled").disabled');
 shouldBeTrue('$("menulist_optgroup_disabled").disabled');
 shouldBeFalse('$("menulist_optgroup_enabled").disabled');
 
-debug("select.disabled doesn't affect pseudo-class :disabled");
+debug("select.disabled affects pseudo-class :disabled");
 disabledSet = querySelectorAll(':disabled');
 shouldBeTrue('disabledSet["listbox_optgroup_disabled"]');
 shouldBeTrue('disabledSet["menulist_optgroup_disabled"]');
-shouldBeUndefined('disabledSet["listbox_optgroup_enabled"]');
-shouldBeUndefined('disabledSet["menulist_optgroup_enabled"]');
+shouldBeTrue('disabledSet["listbox_optgroup_enabled"]');
+shouldBeTrue('disabledSet["menulist_optgroup_enabled"]');
 
 debug("form.disabled doesn't affect optgroup.disabled");
 $("form").disabled = true;
@@ -100,12 +100,12 @@ shouldBeTrue('$("menulist_optgroup_disabled").disabled');
 shouldBeFalse('$("menulist_optgroup_enabled").disabled');
 $("form").disabled = false;
 
-debug("form.disabled doesn't affect pseudo-class :disabled");
+debug("form.disabled affects pseudo-class :disabled");
 disabledSet = querySelectorAll(':disabled');
 shouldBeTrue('disabledSet["listbox_optgroup_disabled"]');
 shouldBeTrue('disabledSet["menulist_optgroup_disabled"]');
-shouldBeUndefined('disabledSet["listbox_optgroup_enabled"]');
-shouldBeUndefined('disabledSet["menulist_optgroup_enabled"]');
+shouldBeTrue('disabledSet["listbox_optgroup_enabled"]');
+shouldBeTrue('disabledSet["menulist_optgroup_enabled"]');
 
 debug("Check IDL [Reflect]");
 $("listbox_optgroup_disabled").removeAttribute("disabled");

@@ -63,6 +63,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool MatchesEnabledPseudoClass() const override;
+  bool MatchesDisabledPseudoClass() const override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 

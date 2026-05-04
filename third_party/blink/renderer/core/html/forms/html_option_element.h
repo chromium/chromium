@@ -174,6 +174,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
+  bool MatchesDisabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
   void AccessKeyAction(SimulatedClickCreationScope) override;
   void ChildrenChanged(const ChildrenChange&) override;

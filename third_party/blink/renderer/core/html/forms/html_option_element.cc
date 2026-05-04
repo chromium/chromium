@@ -216,8 +216,28 @@ bool HTMLOptionElement::MatchesDefaultPseudoClass() const {
   return FastHasAttribute(html_names::kSelectedAttr);
 }
 
+// The :enabled and :disabled selectors have special behavior for option
+// elements which is separate from their normal disabledness state. The
+// selectors depend on whether the ancestor select is disabled, but the internal
+// state does not. See https://github.com/w3c/csswg-drafts/issues/13383
 bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
-  return !IsDisabledFormControl();
+  if (!RuntimeEnabledFeatures::OptionDisablednessCheckAncestorsEnabled()) {
+    return !IsDisabledFormControl();
+  }
+  return !MatchesDisabledPseudoClass();
+}
+bool HTMLOptionElement::MatchesDisabledPseudoClass() const {
+  if (!RuntimeEnabledFeatures::OptionDisablednessCheckAncestorsEnabled()) {
+    return IsDisabledFormControl();
+  }
+  if (IsDisabledFormControl()) {
+    return true;
+  }
+  if (nearest_ancestor_select_ &&
+      nearest_ancestor_select_->IsDisabledFormControl()) {
+    return true;
+  }
+  return false;
 }
 
 // The logic in this method to choose rendering the label attribute or the text
