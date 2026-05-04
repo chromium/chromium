@@ -146,11 +146,11 @@ std::optional<bool> OmniboxTabHelper::IsPagePaywalled() {
 void OmniboxTabHelper::OnPageContentExtracted(
     content::Page& page,
     page_content_annotations::PageContent page_content) {
-  page_content_annotations::RefCountedAnnotatedPageContentPtr*
-      annotated_page_content_ptr = std::get_if<
-          page_content_annotations::RefCountedAnnotatedPageContentPtr>(
-          &page_content);
-  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+  page_content_annotations::RefCountedAnnotatedPageContentPtr
+      annotated_page_content_ptr =
+          page_content_annotations::GetAnnotatedPageContentPtrFromPageContent(
+              page_content);
+  if (!annotated_page_content_ptr) {
     return;
   }
 
@@ -160,12 +160,10 @@ void OmniboxTabHelper::OnPageContentExtracted(
     return;
   }
   page_has_apc_paywall_signal_ =
-      (*annotated_page_content_ptr)->data.has_main_frame_data() &&
-      (*annotated_page_content_ptr)
-          ->data.main_frame_data()
+      annotated_page_content_ptr->data.has_main_frame_data() &&
+      annotated_page_content_ptr->data.main_frame_data()
           .has_paid_content_metadata() &&
-      (*annotated_page_content_ptr)
-          ->data.main_frame_data()
+      annotated_page_content_ptr->data.main_frame_data()
           .paid_content_metadata()
           .contains_paid_content();
 }

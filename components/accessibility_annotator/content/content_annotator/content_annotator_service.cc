@@ -166,11 +166,11 @@ void ContentAnnotatorService::OnPageContentExtracted(
     page_content_annotations::PageContent page_content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  page_content_annotations::RefCountedAnnotatedPageContentPtr*
-      annotated_page_content_ptr = std::get_if<
-          page_content_annotations::RefCountedAnnotatedPageContentPtr>(
-          &page_content);
-  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+  page_content_annotations::RefCountedAnnotatedPageContentPtr
+      annotated_page_content_ptr =
+          page_content_annotations::GetAnnotatedPageContentPtrFromPageContent(
+              page_content);
+  if (!annotated_page_content_ptr) {
     return;
   }
 
@@ -186,12 +186,12 @@ void ContentAnnotatorService::OnPageContentExtracted(
 
   CacheIterator it =
       GetOrCreateJoinEntry(page.GetMainDocument().GetLastCommittedURL());
-  if ((*annotated_page_content_ptr)->data.has_main_frame_data()) {
+  if (annotated_page_content_ptr->data.has_main_frame_data()) {
     it->second.page_title =
-        (*annotated_page_content_ptr)->data.main_frame_data().title();
+        annotated_page_content_ptr->data.main_frame_data().title();
   }
 
-  it->second.annotated_page_content = std::move(*annotated_page_content_ptr);
+  it->second.annotated_page_content = std::move(annotated_page_content_ptr);
   it->second.ukm_source_id = page.GetMainDocument().GetPageUkmSourceId();
   it->second.tab_id = tab_id;
   MaybeAnnotate(it);

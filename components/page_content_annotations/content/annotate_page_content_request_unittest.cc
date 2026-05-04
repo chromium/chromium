@@ -58,12 +58,12 @@ class TestPageContentExtractionService : public PageContentExtractionService {
                               const std::vector<uint8_t>& screenshot_data,
                               std::optional<int> tab_id) override {
     extraction_count_++;
-    if (std::holds_alternative<RefCountedPDFTextPtr>(page_content)) {
-      last_extracted_pdf_text_ =
-          std::get<RefCountedPDFTextPtr>(std::move(page_content))->data;
+    if (RefCountedPDFTextPtr pdf_text_ptr =
+            GetPDFTextPtrFromPageContent(page_content)) {
+      last_extracted_pdf_text_ = pdf_text_ptr->data;
     } else {
       last_extracted_content_ = ExtractedPageContentResult(
-          std::get<RefCountedAnnotatedPageContentPtr>(std::move(page_content)),
+          GetAnnotatedPageContentPtrFromPageContent(std::move(page_content)),
           base::Time::Now(), false, screenshot_data);
     }
 

@@ -492,7 +492,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
       web_contents()->GetPrimaryPage(), page_content.value(), screenshot_data,
       get_tab_id_callback_.Run(web_contents()));
 
-  if (std::holds_alternative<RefCountedPDFTextPtr>(page_content.value())) {
+  if (IsPDFTextPtr(page_content.value())) {
     // Note: Unlike APC result, PDF text result is not stored to the
     // `cached_content_` below, which is used for supporting on-demand APC
     // fetching.
@@ -504,7 +504,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
 
   // Move APC into the cache.
   cached_content_ =
-      ExtractedPageContentResult(std::get<RefCountedAnnotatedPageContentPtr>(
+      ExtractedPageContentResult(GetAnnotatedPageContentPtrFromPageContent(
                                      std::move(page_content.value())),
                                  extraction_time, is_eligible_for_server_upload,
                                  std::move(screenshot_data));

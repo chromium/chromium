@@ -1667,11 +1667,10 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.Wait();
   const PageContent& page_content = observer.page_content_future_.Get();
-  auto* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
   ASSERT_TRUE(annotated_page_content_ptr);
-  ASSERT_TRUE(*annotated_page_content_ptr);
-  EXPECT_TRUE((*annotated_page_content_ptr)->data.IsInitialized());
+  EXPECT_TRUE(annotated_page_content_ptr->data.IsInitialized());
 
   // Should have cached data for page since there was an observer registered.
   ASSERT_TRUE(service->GetExtractedPageContentAndEligibilityForPage(
@@ -1804,12 +1803,11 @@ IN_PROC_BROWSER_TEST_F(
 
   observer.Wait();
   const PageContent& page_content = observer.page_content_future_.Get();
-  auto* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
   ASSERT_TRUE(annotated_page_content_ptr);
-  ASSERT_TRUE(*annotated_page_content_ptr);
-  EXPECT_TRUE((*annotated_page_content_ptr)->data.IsInitialized());
-  EXPECT_EQ((*annotated_page_content_ptr)->data.mode(),
+  EXPECT_TRUE(annotated_page_content_ptr->data.IsInitialized());
+  EXPECT_EQ(annotated_page_content_ptr->data.mode(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
 }
@@ -1829,12 +1827,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
 
   observer.Wait();
   const PageContent& page_content = observer.page_content_future_.Get();
-  auto* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
   ASSERT_TRUE(annotated_page_content_ptr);
-  ASSERT_TRUE(*annotated_page_content_ptr);
   const optimization_guide::proto::AnnotatedPageContent&
-      annotated_page_content = (*annotated_page_content_ptr)->data;
+      annotated_page_content = annotated_page_content_ptr->data;
 
   EXPECT_TRUE(annotated_page_content.IsInitialized());
   EXPECT_TRUE(annotated_page_content.has_main_frame_data());
@@ -1987,11 +1984,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
   EXPECT_TRUE(result.has_value());
   EXPECT_TRUE(result->page_content->data.has_main_frame_data());
   const PageContent& page_content = observer.page_content_future_.Get();
-  auto* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
   ASSERT_TRUE(annotated_page_content_ptr);
-  ASSERT_TRUE(*annotated_page_content_ptr);
-  EXPECT_EQ((*annotated_page_content_ptr)->data.main_frame_data().title(),
+  EXPECT_EQ(annotated_page_content_ptr->data.main_frame_data().title(),
             result->page_content->data.main_frame_data().title());
 }
 

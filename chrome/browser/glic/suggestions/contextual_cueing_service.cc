@@ -499,10 +499,11 @@ void ContextualCueingService::OnPageContentExtracted(
     page_content_annotations::PageContent page_content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* annotated_page_content_ptr =
-      std::get_if<page_content_annotations::RefCountedAnnotatedPageContentPtr>(
-          &page_content);
-  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+  page_content_annotations::RefCountedAnnotatedPageContentPtr
+      annotated_page_content_ptr =
+          page_content_annotations::GetAnnotatedPageContentPtrFromPageContent(
+              page_content);
+  if (!annotated_page_content_ptr) {
     return;
   }
 
@@ -510,7 +511,7 @@ void ContextualCueingService::OnPageContentExtracted(
   if (!cueing_page_data) {
     return;
   }
-  cueing_page_data->OnPageContentExtracted((*annotated_page_content_ptr)->data);
+  cueing_page_data->OnPageContentExtracted(annotated_page_content_ptr->data);
 }
 
 }  // namespace glic

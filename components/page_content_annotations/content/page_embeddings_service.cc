@@ -265,15 +265,15 @@ PageEmbeddingsService::GetEmbedderMetadataProvider() {
 
 void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
                                                    PageContent page_content) {
-  if (std::holds_alternative<RefCountedPDFTextPtr>(page_content)) {
+  if (IsPDFTextPtr(page_content)) {
     // TODO(b/487632737): Support embeddings generation from PDF text.
     NOTIMPLEMENTED();
     return;
   }
 
-  RefCountedAnnotatedPageContentPtr* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
-  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
+  if (!annotated_page_content_ptr) {
     return;
   }
 
@@ -295,7 +295,7 @@ void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
   state.page = page.GetWeakPtr();
 
   std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages =
-      candidates_generator_.Run((*annotated_page_content_ptr)->data,
+      candidates_generator_.Run(annotated_page_content_ptr->data,
                                 passage_embeddings::kMaxPassagesPerPage.Get());
 
   if (!pending_passages.empty()) {

@@ -95,6 +95,45 @@ std::unique_ptr<PageContentCacheHandler> CreatePageContentCacheHandler(
 
 }  // namespace
 
+bool IsAnnotatedPageContentPtr(const PageContent& content) {
+  return std::holds_alternative<RefCountedAnnotatedPageContentPtr>(content);
+}
+
+bool IsPDFTextPtr(const PageContent& content) {
+  return std::holds_alternative<RefCountedPDFTextPtr>(content);
+}
+
+RefCountedAnnotatedPageContentPtr GetAnnotatedPageContentPtrFromPageContent(
+    const PageContent& content) {
+  if (const auto* ptr =
+          std::get_if<RefCountedAnnotatedPageContentPtr>(&content)) {
+    return *ptr;
+  }
+  return nullptr;
+}
+
+RefCountedAnnotatedPageContentPtr GetAnnotatedPageContentPtrFromPageContent(
+    PageContent&& content) {
+  if (auto* ptr = std::get_if<RefCountedAnnotatedPageContentPtr>(&content)) {
+    return std::move(*ptr);
+  }
+  return nullptr;
+}
+
+RefCountedPDFTextPtr GetPDFTextPtrFromPageContent(const PageContent& content) {
+  if (const auto* ptr = std::get_if<RefCountedPDFTextPtr>(&content)) {
+    return *ptr;
+  }
+  return nullptr;
+}
+
+RefCountedPDFTextPtr GetPDFTextPtrFromPageContent(PageContent&& content) {
+  if (auto* ptr = std::get_if<RefCountedPDFTextPtr>(&content)) {
+    return std::move(*ptr);
+  }
+  return nullptr;
+}
+
 PageContentExtractionService::PageContentExtractionService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
     const base::FilePath& profile_path,
@@ -143,9 +182,9 @@ void PageContentExtractionService::OnPageContentExtracted(
   // TODO(b/487632737): Investigate the support for on-demand PDF text
   // extraction, which may require `page_content_cache_handler_` to interact
   // with the PDF text result.
-  RefCountedAnnotatedPageContentPtr* annotated_page_content_ptr =
-      std::get_if<RefCountedAnnotatedPageContentPtr>(&page_content);
-  if (!annotated_page_content_ptr || !(*annotated_page_content_ptr)) {
+  RefCountedAnnotatedPageContentPtr annotated_page_content_ptr =
+      GetAnnotatedPageContentPtrFromPageContent(page_content);
+  if (!annotated_page_content_ptr) {
     return;
   }
 
@@ -157,7 +196,7 @@ void PageContentExtractionService::OnPageContentExtracted(
 
   page_content_cache_handler_->ProcessPageContentExtraction(
       tab_id, ToWebStateWrapper(web_contents),
-      ToPageContext((*annotated_page_content_ptr)->data, web_contents,
+      ToPageContext(annotated_page_content_ptr->data, web_contents,
                     screenshot_data),
       base::Time::Now());
 }
