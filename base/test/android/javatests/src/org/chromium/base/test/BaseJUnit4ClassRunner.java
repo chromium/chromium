@@ -41,6 +41,7 @@ import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
+import org.chromium.base.test.util.MockitoResetter;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
@@ -585,6 +586,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         // assertions, and to match the semantics of Robolectric's runners.
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
+        MockitoResetter.clearOngoingStubbing();
         boolean finishSuccess = ActivityFinisher.finishAll();
         JniTestInstancesSnapshot.clearAllForTesting();
         for (ClassCleanupHook hook : getClassCleanupHooks()) {
