@@ -9,6 +9,7 @@
 #import <memory>
 #import <optional>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_deref.h"
 #import "base/check_op.h"
@@ -323,6 +324,8 @@
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
@@ -479,6 +482,7 @@ const char kChromeAppStoreUrl[] =
     SearchEngineChoiceCoordinatorDelegate,
     SigninPresenter,
     SnapshotGeneratorDelegate,
+    SnackbarCoordinatorDelegate,
     StoreKitCoordinatorDelegate,
     SyncPresenterCommands,
     TextZoomCommands,
@@ -685,6 +689,9 @@ const char kChromeAppStoreUrl[] =
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
+// Coordinator for snackbar presentation.
+@property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
+
 // The coordinator used for Spotlight Debugger.
 @property(nonatomic, strong)
     SpotlightDebuggerCoordinator* spotlightDebuggerCoordinator;
@@ -850,6 +857,70 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for Cobalt popups.
   ChromeCoordinator* _cobaltPopupCoordinator;
+}
+
+#pragma mark - SnackbarCoordinatorDelegate
+
+- (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
+               (SnackbarCoordinator*)snackbarCoordinator
+                                                forceBrowserToolbar:
+                                                    (BOOL)forceBrowserToolbar {
+  UIWindow* window = self.browser->GetSceneState().window;
+  CGFloat windowHeight = window.bounds.size.height;
+  if (windowHeight == 0) {
+    return 0;
+  }
+
+  if (self.sceneState.controller.isTabGridVisible) {
+    // The tab grid is being shown so use the tab grid bottom bar.
+    // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
+    UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kTabGridBottomToolbarGuide];
+    if (IsChromeNextIaEnabled()) {
+      CGPoint originOfBottomToolbar =
+          [tabGridBottomToolbarView convertPoint:CGPointZero toView:nil];
+      return windowHeight - originOfBottomToolbar.y;
+    } else {
+      return CGRectGetHeight(tabGridBottomToolbarView.bounds);
+    }
+  }
+
+  if (!forceBrowserToolbar && self.viewController.presentedViewController) {
+    UIViewController* presentedViewController =
+        self.viewController.presentedViewController;
+
+    // When the presented view is a navigation controller, return the navigation
+    // controller's toolbar height.
+    if ([presentedViewController isKindOfClass:UINavigationController.class]) {
+      UINavigationController* navigationController =
+          base::apple::ObjCCastStrict<UINavigationController>(
+              presentedViewController);
+
+      if (navigationController.toolbar &&
+          !navigationController.isToolbarHidden) {
+        if (@available(iOS 26, *)) {
+          return navigationController.topViewController.view.safeAreaInsets
+              .bottom;
+        } else {
+          return CGRectGetHeight(presentedViewController.view.frame) -
+                 CGRectGetMinY(navigationController.toolbar.frame);
+        }
+      } else {
+        return 0.0;
+      }
+    }
+  }
+
+  // Use the BVC bottom bar as the offset.
+  UIView* bottomToolbar = [LayoutGuideCenterForBrowser(self.browser)
+      referencedViewUnderName:kSecondaryToolbarGuide];
+  if (IsChromeNextIaEnabled()) {
+    CGPoint originOfBottomToolbar = [bottomToolbar convertPoint:CGPointZero
+                                                         toView:nil];
+    return windowHeight - originOfBottomToolbar.y;
+  } else {
+    return CGRectGetHeight(bottomToolbar.bounds);
+  }
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -1577,6 +1648,9 @@ const char kChromeAppStoreUrl[] =
   [_NTPCoordinator stop];
   _NTPCoordinator = nil;
 
+  [self.snackbarCoordinator stop];
+  self.snackbarCoordinator = nil;
+
   _keyCommandsProvider = nil;
   _dispatcher = nil;
   _layoutGuideCenter = nil;
@@ -1590,6 +1664,12 @@ const char kChromeAppStoreUrl[] =
   // Dispatcher should be instantiated so that it can be passed to child
   // coordinators.
   DCHECK(self.dispatcher);
+
+  self.snackbarCoordinator = [[SnackbarCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                        delegate:self];
+  [self.snackbarCoordinator start];
 
   self.ARQuickLookCoordinator = [[ARQuickLookCoordinator alloc]
       initWithBaseViewController:self.viewController

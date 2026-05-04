@@ -96,7 +96,6 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
@@ -182,7 +181,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   InactiveTabsCoordinatorDelegate,
                                   LegacyGridTransitionAnimationLayoutProviding,
                                   SceneStateObserver,
-                                  SnackbarCoordinatorDelegate,
                                   TabContextMenuDelegate,
                                   TabGridCommands,
                                   TabGridTransitionLayoutProviding,
@@ -265,10 +263,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // The coordinator for the page action menu.
 @property(nonatomic, strong)
     PageActionMenuCoordinator* pageActionMenuCoordinator;
-// Coordinator for snackbar presentation on `_regularBrowser`.
-@property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
-// Coordinator for snackbar presentation on `_incognitoBrowser`.
-@property(nonatomic, strong) SnackbarCoordinator* incognitoSnackbarCoordinator;
 // Coordinator for inactive tabs.
 @property(nonatomic, strong) InactiveTabsCoordinator* inactiveTabsCoordinator;
 // The timestamp of the user entering the tab grid.
@@ -352,18 +346,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
   [_incognitoGridCoordinator setIncognitoBrowser:incognitoBrowser];
 
-  if (self.incognitoSnackbarCoordinator) {
-    [self.incognitoSnackbarCoordinator stop];
-    self.incognitoSnackbarCoordinator = nil;
-  }
-
   if (incognitoBrowser) {
-    self.incognitoSnackbarCoordinator =
-        [[SnackbarCoordinator alloc] initWithBaseViewController:_viewController
-                                                        browser:incognitoBrowser
-                                                       delegate:self];
-    [self.incognitoSnackbarCoordinator start];
-
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:[self bookmarksCoordinator]
                      forProtocol:@protocol(BookmarksCommands)];
@@ -1199,17 +1182,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.incognitoTabsMediator.tabGridIdleStatusHandler = _viewController;
   self.regularTabsMediator.tabGridIdleStatusHandler = _viewController;
 
-  self.snackbarCoordinator =
-      [[SnackbarCoordinator alloc] initWithBaseViewController:_viewController
-                                                      browser:_regularBrowser
-                                                     delegate:self];
-  [self.snackbarCoordinator start];
-  self.incognitoSnackbarCoordinator =
-      [[SnackbarCoordinator alloc] initWithBaseViewController:_viewController
-                                                      browser:_incognitoBrowser
-                                                     delegate:self];
-  [self.incognitoSnackbarCoordinator start];
-
   [_regularBrowser->GetCommandDispatcher()
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
@@ -1259,11 +1231,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _tabGroupsPanelCoordinator = nil;
 
   [self dismissActionSheetCoordinator];
-
-  [self.snackbarCoordinator stop];
-  self.snackbarCoordinator = nil;
-  [self.incognitoSnackbarCoordinator stop];
-  self.incognitoSnackbarCoordinator = nil;
 
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
@@ -1927,79 +1894,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
   _guidedTourCompletionBlock();
-}
-
-#pragma mark - SnackbarCoordinatorDelegate
-
-- (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
-               (SnackbarCoordinator*)snackbarCoordinator
-                                                forceBrowserToolbar:
-                                                    (BOOL)forceBrowserToolbar {
-  CGFloat windowHeight = self.viewController.view.window.bounds.size.height;
-  if (windowHeight == 0) {
-    return 0;
-  }
-  if (!self.browserLayoutViewController.browserViewController) {
-    // The tab grid is being show so use tab grid bottom bar.
-    // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
-    UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
-        referencedViewUnderName:kTabGridBottomToolbarGuide];
-    if (IsChromeNextIaEnabled()) {
-      CGPoint originOfBottomToolbar =
-          [tabGridBottomToolbarView convertPoint:CGPointZero toView:nil];
-      return windowHeight - originOfBottomToolbar.y;
-    } else {
-      return CGRectGetHeight(tabGridBottomToolbarView.bounds);
-    }
-  }
-
-  if (!forceBrowserToolbar &&
-      self.browserLayoutViewController.browserViewController
-          .presentedViewController) {
-    UIViewController* presentedViewController =
-        self.browserLayoutViewController.browserViewController
-            .presentedViewController;
-
-    // When the presented view is a navigation controller, return the navigation
-    // controller's toolbar height.
-    if ([presentedViewController isKindOfClass:UINavigationController.class]) {
-      UINavigationController* navigationController =
-          base::apple::ObjCCastStrict<UINavigationController>(
-              presentedViewController);
-
-      if (navigationController.toolbar &&
-          !navigationController.isToolbarHidden) {
-        if (@available(iOS 26, *)) {
-          return navigationController.topViewController.view.safeAreaInsets
-              .bottom;
-        } else {
-          return CGRectGetHeight(presentedViewController.view.frame) -
-                 CGRectGetMinY(navigationController.toolbar.frame);
-        }
-      } else {
-        return 0.0;
-      }
-    }
-  }
-
-  // Use the BVC bottom bar as the offset.
-  Browser* browser = nil;
-  if (snackbarCoordinator == self.snackbarCoordinator) {
-    browser = self.regularBrowser;
-  } else if (snackbarCoordinator == self.incognitoSnackbarCoordinator) {
-    browser = self.incognitoBrowser;
-  }
-  CHECK(browser);
-
-  UIView* bottomToolbar = [LayoutGuideCenterForBrowser(browser)
-      referencedViewUnderName:kSecondaryToolbarGuide];
-  if (IsChromeNextIaEnabled()) {
-    CGPoint originOfBottomToolbar = [bottomToolbar convertPoint:CGPointZero
-                                                         toView:nil];
-    return windowHeight - originOfBottomToolbar.y;
-  } else {
-    return CGRectGetHeight(bottomToolbar.bounds);
-  }
 }
 
 #pragma mark - TabGroupPositioner
