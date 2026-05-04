@@ -28,6 +28,7 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
@@ -53,6 +54,7 @@
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_info_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/begin_frame_args.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame.mojom.h"
 #include "services/viz/public/mojom/compositing/filter_operation.mojom.h"
@@ -1770,9 +1772,8 @@ auto AnyPoint() {
 auto AnyRect() {
   return fuzztest::ConstructorOf<gfx::Rect>(
       fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<int>(),
-      fuzztest::Arbitrary<int>(), fuzztest::Arbitrary<int>());
+      fuzztest::InRange(0, 10000), fuzztest::InRange(0, 10000));
 }
-
 auto AnySkColor4f() {
   return fuzztest::Map(
       [](float r, float g, float b, float a) { return SkColor4f{r, g, b, a}; },
@@ -1940,6 +1941,253 @@ void CompositorFrameFuzz(const CompositorFrame& input) {
 }
 FUZZ_TEST(StructTraitsTest, CompositorFrameFuzz)
     .WithDomains(AnyCompositorFrame());
+
+auto AnyViewTransitionElementResourceId() {
+  return fuzztest::Map(
+      [](uint64_t high, uint64_t low, uint32_t local_id,
+         bool for_scope_snapshot) {
+        return ViewTransitionElementResourceId(
+            blink::ViewTransitionToken(
+                base::UnguessableToken::Deserialize(high, low).value_or(
+                    base::UnguessableToken::Create())),
+            local_id, for_scope_snapshot);
+      },
+      fuzztest::Arbitrary<uint64_t>(), fuzztest::Arbitrary<uint64_t>(),
+      fuzztest::InRange<uint32_t>(1, std::numeric_limits<uint32_t>::max()),
+      fuzztest::Arbitrary<bool>());
+}
+void ViewTransitionElementResourceIdFuzz(
+    const ViewTransitionElementResourceId& input) {
+  ViewTransitionElementResourceId output;
+  mojo::test::SerializeAndDeserialize<mojom::ViewTransitionElementResourceId>(
+      input, output);
+}
+FUZZ_TEST(StructTraitsTest, ViewTransitionElementResourceIdFuzz)
+    .WithDomains(AnyViewTransitionElementResourceId());
+
+auto AnySurfaceInfo() {
+  return fuzztest::Map(
+      [](const SurfaceId& id, float device_scale_factor, int w, int h) {
+        return SurfaceInfo(id, device_scale_factor, gfx::Size(w, h));
+      },
+      AnySurfaceId(), fuzztest::Positive<float>(), fuzztest::InRange(1, 10000),
+      fuzztest::InRange(1, 10000));
+}
+void SurfaceInfoFuzz(const SurfaceInfo& input) {
+  SurfaceInfo output;
+  mojo::test::SerializeAndDeserialize<mojom::SurfaceInfo>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SurfaceInfoFuzz)
+    .WithDomains(fuzztest::Filter(
+        [](const SurfaceInfo& info) { return info.is_valid(); },
+        AnySurfaceInfo()));
+
+auto AnyReturnedResource() {
+  return fuzztest::Map(
+      [](uint32_t id, int count, bool lost) {
+        ReturnedResource res;
+        res.id = ResourceId(id);
+        res.count = count;
+        res.lost = lost;
+        return res;
+      },
+      fuzztest::InRange<uint32_t>(1, 1000000), fuzztest::Arbitrary<int>(),
+      fuzztest::Arbitrary<bool>());
+}
+void ReturnedResourceFuzz(const ReturnedResource& input) {
+  ReturnedResource output;
+  mojo::test::SerializeAndDeserialize<mojom::ReturnedResource>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, ReturnedResourceFuzz)
+    .WithDomains(AnyReturnedResource());
+
+auto AnyCompositorFrameMetadata() {
+  return fuzztest::Map(
+      [](float device_scale_factor, const gfx::PointF& root_scroll_offset,
+         float page_scale_factor, uint32_t frame_token) {
+        CompositorFrameMetadata metadata;
+        metadata.device_scale_factor = device_scale_factor;
+        metadata.root_scroll_offset = root_scroll_offset;
+        metadata.page_scale_factor = page_scale_factor;
+        metadata.frame_token = frame_token;
+        return metadata;
+      },
+      fuzztest::Positive<float>(), AnyPointF(), fuzztest::Arbitrary<float>(),
+      fuzztest::InRange<uint32_t>(1, std::numeric_limits<uint32_t>::max()));
+}
+void CompositorFrameMetadataFuzz(const CompositorFrameMetadata& input) {
+  CompositorFrameMetadata output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(input,
+                                                                      output);
+}
+FUZZ_TEST(StructTraitsTest, CompositorFrameMetadataFuzz)
+    .WithDomains(AnyCompositorFrameMetadata());
+
+auto AnyCompositorRenderPass() {
+  return fuzztest::Map(
+      [](uint64_t id, const gfx::Rect& output_rect) {
+        auto pass = CompositorRenderPass::Create();
+        pass->SetNew(CompositorRenderPassId(id), output_rect, output_rect,
+                     gfx::Transform());
+        return pass;
+      },
+      fuzztest::InRange<uint64_t>(1, std::numeric_limits<uint64_t>::max()),
+      AnyRect());
+}
+void CompositorRenderPassFuzz(
+    const std::unique_ptr<CompositorRenderPass>& input) {
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(input,
+                                                                   output);
+}
+FUZZ_TEST(StructTraitsTest, CompositorRenderPassFuzz)
+    .WithDomains(AnyCompositorRenderPass());
+
+auto AnyOffsetTag() {
+  return fuzztest::Map(
+      [](uint64_t high, uint64_t low) {
+        return OffsetTag(base::Token(high, low));
+      },
+      fuzztest::Arbitrary<uint64_t>(), fuzztest::Arbitrary<uint64_t>());
+}
+
+void OffsetTagFuzz(const OffsetTag& input) {
+  OffsetTag output;
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTag>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, OffsetTagFuzz).WithDomains(AnyOffsetTag());
+
+auto AnyVector2dF() {
+  return fuzztest::ConstructorOf<gfx::Vector2dF>(fuzztest::Arbitrary<float>(),
+                                                 fuzztest::Arbitrary<float>());
+}
+
+auto AnyOffsetTagValue() {
+  return fuzztest::Map(
+      [](const OffsetTag& tag, const gfx::Vector2dF& offset) {
+        return OffsetTagValue{tag, offset};
+      },
+      AnyOffsetTag(), AnyVector2dF());
+}
+
+void OffsetTagValueFuzz(const OffsetTagValue& input) {
+  OffsetTagValue output;
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTagValue>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, OffsetTagValueFuzz)
+    .WithDomains(fuzztest::Filter(
+        [](const OffsetTagValue& value) { return value.IsValid(); },
+        AnyOffsetTagValue()));
+
+auto AnyOffsetTagConstraints() {
+  return fuzztest::Map(
+      [](float min_x, float max_x, float min_y, float max_y) {
+        return OffsetTagConstraints(min_x, max_x, min_y, max_y);
+      },
+      fuzztest::NonPositive<float>(), fuzztest::NonNegative<float>(),
+      fuzztest::NonPositive<float>(), fuzztest::NonNegative<float>());
+}
+auto AnyOffsetTagDefinition() {
+  return fuzztest::Map(
+      [](const OffsetTag& tag, const SurfaceRange& provider,
+         const OffsetTagConstraints& constraints) {
+        return OffsetTagDefinition(tag, provider, constraints);
+      },
+      AnyOffsetTag(), AnySurfaceRange(), AnyOffsetTagConstraints());
+}
+
+void OffsetTagDefinitionFuzz(const OffsetTagDefinition& input) {
+  OffsetTagDefinition output;
+  mojo::test::SerializeAndDeserialize<mojom::OffsetTagDefinition>(input,
+                                                                  output);
+}
+FUZZ_TEST(StructTraitsTest, OffsetTagDefinitionFuzz)
+    .WithDomains(fuzztest::Filter(
+        [](const OffsetTagDefinition& def) { return def.IsValid(); },
+        AnyOffsetTagDefinition()));
+
+auto AnySharedImageFormat() {
+  return fuzztest::Map(
+      [](bool is_single, uint8_t pc, uint8_t sub, uint8_t cf) {
+        if (is_single) {
+          return SharedImageFormat(SinglePlaneFormat::kRGBA_8888);
+        } else {
+          return SharedImageFormat::MultiPlane(
+              static_cast<SharedImageFormat::PlaneConfig>(pc % 5),
+              static_cast<SharedImageFormat::Subsampling>(sub % 3),
+              static_cast<SharedImageFormat::ChannelFormat>(cf % 4));
+        }
+      },
+      fuzztest::Arbitrary<bool>(), fuzztest::Arbitrary<uint8_t>(),
+      fuzztest::Arbitrary<uint8_t>(), fuzztest::Arbitrary<uint8_t>());
+}
+
+void SharedImageFormatFuzz(const SharedImageFormat& input) {
+  SharedImageFormat output;
+  mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, SharedImageFormatFuzz)
+    .WithDomains(AnySharedImageFormat());
+
+auto AnyTransferableResource() {
+  return fuzztest::Map(
+      [](uint32_t id) {
+        TransferableResource res;
+        res.id = ResourceId(id);
+        res.set_shared_image(gpu::ClientSharedImage::CreateForTesting());
+        return res;
+      },
+      fuzztest::InRange<uint32_t>(1, 1000000));
+}
+void TransferableResourceFuzz(const TransferableResource& input) {
+  TransferableResource output;
+  mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(input,
+                                                                   output);
+}
+FUZZ_TEST(StructTraitsTest, TransferableResourceFuzz)
+    .WithDomains(AnyTransferableResource());
+
+auto AnyCopyOutputResult() {
+  return fuzztest::Map(
+      [](CopyOutputResult::Destination destination,
+         CopyOutputResult::Error error) {
+        return std::make_unique<CopyOutputResult>(
+            CopyOutputResult::Format::RGBA, destination, error);
+      },
+      fuzztest::ElementOf({CopyOutputResult::Destination::kSystemMemory,
+                           CopyOutputResult::Destination::kSharedImage}),
+      fuzztest::ElementOf({CopyOutputResult::Error::kUnknown,
+                           CopyOutputResult::Error::kTimeout,
+                           CopyOutputResult::Error::kNone}));
+}
+
+void CopyOutputResultFuzz(const std::unique_ptr<CopyOutputResult>& input) {
+  std::unique_ptr<CopyOutputResult> output;
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, CopyOutputResultFuzz)
+    .WithDomains(AnyCopyOutputResult());
+
+auto AnyTreesInVizTiming() {
+  return fuzztest::Map(
+      [](const base::TimeTicks t1, const base::TimeTicks t2,
+         const base::TimeTicks t3, const base::TimeTicks t4) {
+        TreesInVizTiming timing;
+        timing.start_update_display_tree = t1;
+        timing.start_prepare_to_draw = t2;
+        timing.start_draw_layers = t3;
+        timing.submit_compositor_frame = t4;
+        return timing;
+      },
+      AnyTimeTicks(), AnyTimeTicks(), AnyTimeTicks(), AnyTimeTicks());
+}
+
+void TreesInVizTimingFuzz(const TreesInVizTiming& input) {
+  TreesInVizTiming output;
+  mojo::test::SerializeAndDeserialize<mojom::TreesInVizTiming>(input, output);
+}
+FUZZ_TEST(StructTraitsTest, TreesInVizTimingFuzz)
+    .WithDomains(AnyTreesInVizTiming());
 
 }  // namespace
 

@@ -56,6 +56,18 @@ test("services_unittests") {
     "StructTraitsTest.LocalSurfaceIdFuzz",
     "StructTraitsTest.SurfaceRangeFuzz",
     "StructTraitsTest.SelectionFuzz",
+    "StructTraitsTest.ViewTransitionElementResourceIdFuzz",
+    "StructTraitsTest.SurfaceInfoFuzz",
+    "StructTraitsTest.ReturnedResourceFuzz",
+    "StructTraitsTest.CompositorFrameMetadataFuzz",
+    "StructTraitsTest.CompositorRenderPassFuzz",
+    "StructTraitsTest.OffsetTagFuzz",
+    "StructTraitsTest.OffsetTagValueFuzz",
+    "StructTraitsTest.OffsetTagDefinitionFuzz",
+    "StructTraitsTest.TransferableResourceFuzz",
+    "StructTraitsTest.SharedImageFormatFuzz",
+    "StructTraitsTest.CopyOutputResultFuzz",
+    "StructTraitsTest.TreesInVizTimingFuzz",
   ]
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
