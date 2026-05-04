@@ -628,6 +628,8 @@ public abstract class ChromeFeatureList {
             "SegmentationPlatformAndroidHomeModuleRankerV2";
     public static final String SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER =
             "SegmentationPlatformEphemeralCardRanker";
+    public static final String SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS =
+            "SendTabToSelfExtraEntryPoints";
     public static final String SEND_TAB_TO_SELF_POST_SEND_TOAST = "SendTabToSelfPostSendToast";
     public static final String SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION =
             "SendTabToSelfPropagateScrollPosition";
@@ -1121,6 +1123,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSearchInSettings =
             newCachedFlag(
                     SEARCH_IN_SETTINGS, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sSendTabToSelfExtraEntryPoints =
+            newCachedFlag(SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS, /* defaultValue= */ false);
     public static final CachedFlag sSessionRestoreAfterCrash =
             newCachedFlag(SESSION_RESTORE_AFTER_CRASH, false);
     public static final CachedFlag sSettingsMultiColumn =
@@ -1372,6 +1376,7 @@ public abstract class ChromeFeatureList {
                     sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
                     sSearchInCCTIfEnabledByEmbedder,
                     sSearchInSettings,
+                    sSendTabToSelfExtraEntryPoints,
                     sSessionRestoreAfterCrash,
                     sSettingsMultiColumn,
                     sSettingsSingleActivity,

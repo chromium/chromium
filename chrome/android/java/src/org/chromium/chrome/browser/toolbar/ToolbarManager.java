@@ -135,6 +135,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -219,8 +220,10 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -327,6 +330,8 @@ public class ToolbarManager
     private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final SnackbarManager mSnackbarManager;
     private final LocationBarModel mLocationBarModel;
     private NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ValueChangedCallback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
@@ -977,6 +982,8 @@ public class ToolbarManager
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
 
         mActivityTabProvider = tabProvider;
+        mActivityResultTracker = activityResultTracker;
+        mSnackbarManager = snackbarManager;
 
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
@@ -1175,7 +1182,8 @@ public class ToolbarManager
                         mActivityLifecycleDispatcher,
                         mWindowAndroid,
                         () -> mLocationBarModel.getUrlBarData().url,
-                        () -> getUrlBarViewRectProvider());
+                        () -> getUrlBarViewRectProvider(),
+                        this::onSendTabToSelfClicked);
         OnLongClickListener onLongClickListener =
                 mToolbarLongPressMenuHandler.getOnLongClickListener();
 
@@ -2105,8 +2113,9 @@ public class ToolbarManager
     }
 
     /**
-     * Menu click handler on home button and records if user long presses on home button to
-     * edit homepage on the new tab page.
+     * Menu click handler on home button and records if user long presses on home button to edit
+     * homepage on the new tab page.
+     *
      * @param context {@link Context} used for launching a settings activity.
      */
     private void onHomeButtonMenuClick(Context context) {
@@ -2713,8 +2722,9 @@ public class ToolbarManager
 
     /**
      * TODO(twellington): Try to remove this method. It's only used to return an in-product help
-     *                    bubble anchor view... which should be moved out of tab and perhaps into
-     *                    the status bar icon component.
+     * bubble anchor view... which should be moved out of tab and perhaps into the status bar icon
+     * component.
+     *
      * @return The view containing the security icon.
      */
     public View getSecurityIconView() {
@@ -2736,8 +2746,9 @@ public class ToolbarManager
     }
 
     /**
-     * Updates the visual appearance of a custom action button in the {@link Toolbar},
-     * if it is supported.
+     * Updates the visual appearance of a custom action button in the {@link Toolbar}, if it is
+     * supported.
+     *
      * @param index The index of the button to update.
      * @param drawable The {@link Drawable} to use as the background for the button.
      * @param description The content description for the custom action button.
@@ -3076,6 +3087,7 @@ public class ToolbarManager
 
     /**
      * Updates the primary color used by the model to the given color.
+     *
      * @param color The primary color for the current tab.
      * @param shouldAnimate Whether the change of color should be animated.
      */
@@ -3110,7 +3122,7 @@ public class ToolbarManager
 
     /**
      * @param shouldUpdate Whether we should be updating the toolbar primary color based on updates
-     *                     from the Tab.
+     *     from the Tab.
      */
     public void setShouldUpdateToolbarPrimaryColor(boolean shouldUpdate) {
         mShouldUpdateToolbarPrimaryColor = shouldUpdate;
@@ -3212,7 +3224,7 @@ public class ToolbarManager
     /**
      * Focuses or unfocuses the URL bar.
      *
-     * If you request focus and the UrlBar was already focused, this will select all of the text.
+     * <p>If you request focus and the UrlBar was already focused, this will select all of the text.
      *
      * @param focused Whether URL bar should be focused.
      * @param reason The given reason.
@@ -3285,7 +3297,7 @@ public class ToolbarManager
     }
 
     /**
-     * Reverts any pending edits of the location bar and reset to the page state.  This does not
+     * Reverts any pending edits of the location bar and reset to the page state. This does not
      * change the focus state of the location bar.
      */
     public void revertLocationBarChanges() {
@@ -3294,6 +3306,7 @@ public class ToolbarManager
 
     /**
      * Handle all necessary tasks that can be delayed until initialization completes.
+     *
      * @param activityCreationTimeMs The time of creation for the activity this toolbar belongs to.
      * @param activityName Simple class name for the activity this toolbar belongs to.
      */
@@ -3540,6 +3553,29 @@ public class ToolbarManager
 
         layoutParams.topMargin = margin;
         mControlContainer.setLayoutParams(layoutParams);
+    }
+
+    private void onSendTabToSelfClicked() {
+        GURL url = mLocationBarModel.getUrlBarData().url;
+        if (url == null || url.isEmpty()) return;
+        Tab tab = mActivityTabProvider.get();
+        String title = tab != null ? tab.getTitle() : "";
+        SendTabToSelfCoordinator sttsCoordinator =
+                new SendTabToSelfCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        url.getSpec(),
+                        title,
+                        BottomSheetControllerProvider.from(mWindowAndroid),
+                        mProfileSupplier.get(),
+                        DeviceLockActivityLauncherSupplier.get(mWindowAndroid),
+                        mActivityTabProvider,
+                        mActivity,
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        mActivityResultTracker,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager);
+        sttsCoordinator.show();
     }
 
     private void onBackPressStateChanged() {

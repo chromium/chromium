@@ -26,6 +26,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,10 +55,15 @@ import java.util.function.Supplier;
 @NullMarked
 public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MenuItemType.MOVE_ADDRESS_BAR_TO, MenuItemType.COPY_LINK})
+    @IntDef({
+        MenuItemType.MOVE_ADDRESS_BAR_TO,
+        MenuItemType.COPY_LINK,
+        MenuItemType.SEND_TAB_TO_SELF
+    })
     public @interface MenuItemType {
         int MOVE_ADDRESS_BAR_TO = 0;
         int COPY_LINK = 1;
+        int SEND_TAB_TO_SELF = 2;
     }
 
     private @Nullable PopupWindow mPopupMenu;
@@ -75,6 +81,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final @Nullable OnLongClickListener mOnLongClickListener;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Runnable mOnSendTabToSelfClicked;
 
     /**
      * Creates a new {@link ToolbarLongPressMenuHandler}.
@@ -87,6 +94,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
      * @param windowAndroid window for the activity.
      * @param urlSupplier supplier of the current URL, can be null.
      * @param urlBarViewRectProviderSupplier supplier of the URL bar view rect provider.
+     * @param onSendTabToSelfClicked callback for when Send Tab To Self is clicked.
      */
     public ToolbarLongPressMenuHandler(
             Context context,
@@ -96,7 +104,8 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WindowAndroid windowAndroid,
             Supplier<@Nullable GURL> urlSupplier,
-            Supplier<ViewRectProvider> urlBarViewRectProviderSupplier) {
+            Supplier<ViewRectProvider> urlBarViewRectProviderSupplier,
+            Runnable onSendTabToSelfClicked) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mSuppressLongPressSupplier = suppressLongPressSupplier;
@@ -105,10 +114,15 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         mWindowAndroid = windowAndroid;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mOnSendTabToSelfClicked = onSendTabToSelfClicked;
 
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
 
-        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(context, isCustomTab)) {
+        boolean isBottomToolbarEnabled =
+                ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                        context, isCustomTab);
+        boolean isSttsEnabled = ChromeFeatureList.sSendTabToSelfExtraEntryPoints.isEnabled();
+        if (isBottomToolbarEnabled || isSttsEnabled) {
             mOnLongClickListener =
                     (view) -> {
                         if (mSuppressLongPressSupplier.getAsBoolean()) {
@@ -233,6 +247,16 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
                         .withTitleRes(R.string.toolbar_copy_link)
                         .withMenuId(MenuItemType.COPY_LINK)
                         .build());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
+            GURL url = mUrlSupplier.get();
+            if (url != null && url.isValid() && !url.isEmpty()) {
+                itemList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.sharing_send_tab_to_self)
+                                .withMenuId(MenuItemType.SEND_TAB_TO_SELF)
+                                .build());
+            }
+        }
         return itemList;
     }
 
@@ -243,6 +267,9 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             return;
         } else if (id == MenuItemType.COPY_LINK) {
             handleCopyLink();
+            return;
+        } else if (id == MenuItemType.SEND_TAB_TO_SELF) {
+            handleSendTabToSelf();
             return;
         }
     }
@@ -262,6 +289,12 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private void handleCopyLink() {
         GURL url = mUrlSupplier.get() == null ? GURL.emptyGURL() : mUrlSupplier.get();
         Clipboard.getInstance().copyUrlToClipboard(url);
+    }
+
+    private void handleSendTabToSelf() {
+        if (mOnSendTabToSelfClicked != null) {
+            mOnSendTabToSelfClicked.run();
+        }
     }
 
     @VisibleForTesting

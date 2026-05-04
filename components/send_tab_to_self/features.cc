@@ -43,6 +43,8 @@ BASE_FEATURE(kSendTabToSelfShowTargetsInContextMenus,
 
 BASE_FEATURE(kSendTabToSelfPostSendToast, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendTabToSelfExtraEntryPoints, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kIOSTabReminders, base::FEATURE_DISABLED_BY_DEFAULT);
