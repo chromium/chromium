@@ -14,12 +14,14 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -49,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -1535,6 +1538,45 @@ public class LocationBarMediatorTest {
         // bar mic.
         mIsToolbarMicEnabled = true;
         verifyPhoneMicButtonVisibility();
+    }
+
+    @Test
+    public void testOnUrlFocusChange_setEmptyUrl_deleteButtonNotVisible() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(false);
+        mMediator.onUrlFocusChange(false);
+
+        InOrder inOrder = inOrder(mUrlCoordinator, mLocationBarLayout);
+
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        inOrder.verify(mUrlCoordinator)
+                .setUrlBarData(argThat(data -> data.displayText.isEmpty()), anyInt(), any());
+        inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(false);
+        inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+    }
+
+    @Test
+    public void testOnUrlFocusChange_setNonEmptyUrl_deleteButtonVisible() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(false);
+        mMediator.onUrlFocusChange(false);
+
+        /* Simulate desktop-like behaviour, where the userText is filled in. */
+        mSessionState.getAutocompleteInput().setUserText("google.com");
+        doReturn("google.com").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        InOrder inOrder = inOrder(mUrlCoordinator, mLocationBarLayout);
+
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        inOrder.verify(mUrlCoordinator)
+                .setUrlBarData(
+                        argThat(data -> "google.com".equals(data.displayText)), anyInt(), any());
+        inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(true);
+        inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(false);
     }
 
     private void verifyPhoneMicButtonVisibility() {

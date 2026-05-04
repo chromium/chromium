@@ -1207,6 +1207,7 @@ class LocationBarMediator
         UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
         mUrlCoordinator.setUrlBarData(
                 data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
+        updateButtonVisibility();
 
         // Serve the cached suggestions while we wait for Profile.
         if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
