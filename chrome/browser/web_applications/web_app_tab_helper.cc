@@ -139,6 +139,12 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
   return audio_focus_group_id_;
 }
 
+base::CallbackListSubscription
+WebAppTabHelper::AddOnManifestProcessedCallbackForTesting(
+    OnManifestProcessedCallbackList::CallbackType callback) {
+  return manifest_processed_callbacks_.Add(std::move(callback));
+}
+
 webapps::LaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   if (!launch_queue_) {
     std::unique_ptr<webapps::LaunchQueueDelegate> delegate =
@@ -235,6 +241,7 @@ void WebAppTabHelper::ReadyToCommitNavigation(
 }
 
 void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
+  last_processed_manifest_id_for_current_page_ = std::nullopt;
   get_all_specified_manifests_subscription_ =
       provider_->web_contents_manager().GetPrimaryPageAllSpecifiedManifests(
           *web_contents(),
@@ -483,11 +490,13 @@ void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {
 
 void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
     const content::PageManifestManager::ManifestResult& result) {
-  if (!result.has_value()) {
-    return;
+  if (result.has_value()) {
+    provider_->manifest_update_manager().OnManifestSeenOnPrimaryPage(
+        *web_contents(), result.value(), base::PassKey<WebAppTabHelper>());
+    webapps::ManifestId manifest_id = webapps::ManifestId(result.value()->id);
+    last_processed_manifest_id_for_current_page_ = manifest_id;
+    manifest_processed_callbacks_.Notify(manifest_id);
   }
-  provider_->manifest_update_manager().OnManifestSeenOnPrimaryPage(
-      *web_contents(), result.value(), base::PassKey<WebAppTabHelper>());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);
