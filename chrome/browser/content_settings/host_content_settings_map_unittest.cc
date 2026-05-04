@@ -3149,9 +3149,6 @@ TEST_F(HostContentSettingsMapTest, ExtensionPermissionsProvider) {
       extensions::ExtensionBuilder("Test Extension 1").Build();
   scoped_refptr<const extensions::Extension> ext2 =
       extensions::ExtensionBuilder("Test Extension 2").Build();
-  auto* registry = extensions::ExtensionRegistry::Get(&profile);
-  registry->AddEnabled(ext1);
-  registry->AddEnabled(ext2);
 
   // Add api permission geolocation for ext1.
   extensions::APIPermissionSet apis;
@@ -3161,6 +3158,12 @@ TEST_F(HostContentSettingsMapTest, ExtensionPermissionsProvider) {
           std::move(apis), extensions::ManifestPermissionSet(),
           extensions::URLPatternSet(), extensions::URLPatternSet()),
       std::make_unique<extensions::PermissionSet>());
+
+  auto* registry = extensions::ExtensionRegistry::Get(&profile);
+  registry->AddEnabled(ext1);
+  registry->AddEnabled(ext2);
+  registry->TriggerOnLoaded(ext1.get());
+  registry->TriggerOnLoaded(ext2.get());
 
   // Validate ext1 is allowed, ext2 is ask.
   HostContentSettingsMap* map =
