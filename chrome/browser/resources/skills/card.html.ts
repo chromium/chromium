@@ -15,7 +15,8 @@ export function getHtml(this: SkillCardElement) {
   ${this.skill.imageUrl ? html`
     <div id="illustrationContainer">
       <img is="cr-auto-img" id="illustrationImage"
-          auto-src="${this.skill.imageUrl}">
+          auto-src="${this.skill.imageUrl}"
+          static-encode encode-type="webp">
       </img>
     </div>` : html``
   }
