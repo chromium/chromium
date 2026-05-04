@@ -92,6 +92,8 @@ class SurfaceEmbedTestContentBrowserClient
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+    content::ContentBrowserTestContentBrowserClient::
+        RegisterBrowserInterfaceBindersForFrame(render_frame_host, map);
     map->Add<mojom::SurfaceEmbedHost>(base::BindRepeating(
         [](SurfaceEmbedHostTracker* tracker,
            content::RenderFrameHost* render_frame_host,
