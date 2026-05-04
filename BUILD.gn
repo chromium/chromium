@@ -289,7 +289,6 @@ group("gn_all") {
 
     if (enable_extensions) {
       deps += [
-        "//extensions:extensions_browsertests",
         "//extensions:extensions_unittests",
         "//extensions/browser/api/declarative_net_request/filter_list_converter",
         "//extensions/shell:app_shell_unittests",

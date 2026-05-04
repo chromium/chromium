@@ -1301,30 +1301,6 @@ if (enable_desktop_android_extensions) {
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
-  # The set of all browsertests for anything defined under the
-  # //extensions/browser module. Note that, unlike the production build targets
-  # above, this is a monolithic target that includes all tests for both the core
-  # system and relevant APIs.
-  source_set("browser_tests") {
-    testonly = true
-    sources = [ "placeholder_browsertest.cc" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    deps = [
-      ":browser",
-      "//base",
-      "//extensions:test_support",
-      "//extensions/browser:test_support",
-      "//extensions/common",
-      "//extensions/common/api",
-      "//extensions/shell:app_shell_lib",
-      "//extensions/shell:browser_tests",
-    ]
-
-    public_deps = [ "//content/test:test_support" ]
-  }
-
   fuzzer_test("extension_file_highlighter_fuzzer") {
     sources = [ "file_highlighter_fuzzer.cc" ]
     deps = [

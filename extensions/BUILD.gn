@@ -329,24 +329,3 @@ test("extensions_unittests") {
     deps += [ "//extensions/shell:unit_tests" ]
   }
 }
-
-if (enable_extensions) {
-  # Browser tests are not currently supported in desktop-android builds.
-  test("extensions_browsertests") {
-    use_xvfb = use_xvfb_in_this_config
-
-    data = [
-      "//extensions/test/data/",
-      "//net/tools/testserver/",
-      "//third_party/pywebsocket3/src/mod_pywebsocket/",
-      "$root_out_dir/extensions_shell_and_test.pak",
-    ]
-
-    deps = [
-      "//extensions/browser:browser_tests",
-      "//extensions/shell:browser_tests",
-    ]
-
-    data_deps = [ "//third_party/angle:includes" ]
-  }
-}

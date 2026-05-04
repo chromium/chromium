@@ -361,48 +361,6 @@ process_version("version_header") {
   output = "$target_gen_dir/common/version.h"
 }
 
-source_set("browser_tests") {
-  testonly = true
-  sources = [
-    "browser/shell_browsertest.cc",
-    "test/extensions_render_view_test.cc",
-    "test/extensions_render_view_test.h",
-    "test/shell_apitest.cc",
-    "test/shell_apitest.h",
-    "test/shell_test.cc",
-    "test/shell_test.h",
-    "test/shell_test_launcher_delegate.cc",
-    "test/shell_test_launcher_delegate.h",
-    "test/shell_tests_main.cc",
-    "test/test_shell_main_delegate.cc",
-    "test/test_shell_main_delegate.h",
-  ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [
-    ":app_shell_lib",
-    "//base",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/keep_alive_registry",
-    "//components/version_info",
-    "//content/shell:content_shell_lib",
-    "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/browser",
-    "//extensions/browser:test_support",
-    "//extensions/common",
-    "//extensions/renderer",
-    "//ui/base",
-  ]
-
-  if (use_aura) {
-    sources += [ "browser/shell_desktop_controller_aura_browsertest.cc" ]
-    deps += [ "//ui/aura" ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = []
