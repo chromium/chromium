@@ -12,6 +12,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.text.BidiFormatter;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -39,21 +41,25 @@ class ContextMenuHeaderViewBinder {
             }
         } else if (propertyKey == ContextMenuHeaderProperties.URL) {
             TextView urlText = view.findViewById(R.id.menu_header_url);
-            urlText.setText(model.get(ContextMenuHeaderProperties.URL));
-            urlText.setVisibility(
-                    TextUtils.isEmpty(model.get(ContextMenuHeaderProperties.URL))
-                            ? View.GONE
-                            : View.VISIBLE);
+            CharSequence url = model.get(ContextMenuHeaderProperties.URL);
+            urlText.setText(url == null ? null : BidiFormatter.getInstance().unicodeWrap(url));
+            urlText.setVisibility(TextUtils.isEmpty(url) ? View.GONE : View.VISIBLE);
         } else if (propertyKey == ContextMenuHeaderProperties.SECONDARY_URL) {
             TextView secondaryUrlText = view.findViewById(R.id.menu_header_secondary_url);
             CharSequence secondaryUrl = model.get(ContextMenuHeaderProperties.SECONDARY_URL);
-            secondaryUrlText.setText(secondaryUrl);
+            secondaryUrlText.setText(
+                    secondaryUrl == null
+                            ? null
+                            : BidiFormatter.getInstance().unicodeWrap(secondaryUrl));
             secondaryUrlText.setVisibility(
                     TextUtils.isEmpty(secondaryUrl) ? View.GONE : View.VISIBLE);
         } else if (propertyKey == ContextMenuHeaderProperties.TERTIARY_URL) {
             TextView tertiaryUrlText = view.findViewById(R.id.menu_header_tertiary_url);
             CharSequence tertiaryUrl = model.get(ContextMenuHeaderProperties.TERTIARY_URL);
-            tertiaryUrlText.setText(tertiaryUrl);
+            tertiaryUrlText.setText(
+                    tertiaryUrl == null
+                            ? null
+                            : BidiFormatter.getInstance().unicodeWrap(tertiaryUrl));
             tertiaryUrlText.setVisibility(
                     TextUtils.isEmpty(tertiaryUrl) ? View.GONE : View.VISIBLE);
         } else if (propertyKey == ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER) {

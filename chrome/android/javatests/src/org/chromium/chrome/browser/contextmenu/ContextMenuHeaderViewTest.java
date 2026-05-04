@@ -24,6 +24,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.text.BidiFormatter;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -155,7 +156,10 @@ public class ContextMenuHeaderViewTest {
                 });
 
         assertThat("Incorrect URL visibility.", mUrl.getVisibility(), equalTo(View.VISIBLE));
-        assertThat("Incorrect URL string.", mUrl.getText(), equalTo(SHORT_URL_STRING));
+        assertThat(
+                "Incorrect URL string.",
+                mUrl.getText().toString(),
+                equalTo(BidiFormatter.getInstance().unicodeWrap(SHORT_URL_STRING)));
         assertThat("Incorrect max line count for URL.", mUrl.getMaxLines(), equalTo(1));
         assertThat(
                 "Incorrect URL ellipsize mode.",
@@ -192,8 +196,8 @@ public class ContextMenuHeaderViewTest {
                 equalTo(View.VISIBLE));
         assertThat(
                 "Incorrect secondary URL string.",
-                mSecondaryUrl.getText(),
-                equalTo(SECONDARY_URL_STRING));
+                mSecondaryUrl.getText().toString(),
+                equalTo(BidiFormatter.getInstance().unicodeWrap(SECONDARY_URL_STRING)));
         assertThat(
                 "Incorrect max line count for secondary URL.",
                 mSecondaryUrl.getMaxLines(),
@@ -246,8 +250,8 @@ public class ContextMenuHeaderViewTest {
                 equalTo(View.VISIBLE));
         assertThat(
                 "Incorrect tertiary URL string.",
-                mTertiaryUrl.getText(),
-                equalTo(TERTIARY_URL_STRING));
+                mTertiaryUrl.getText().toString(),
+                equalTo(BidiFormatter.getInstance().unicodeWrap(TERTIARY_URL_STRING)));
         assertThat(
                 "Incorrect max line count for tertiary URL.",
                 mTertiaryUrl.getMaxLines(),
