@@ -23,8 +23,8 @@ BASE_FEATURE_PARAM(int,
 
 bool IsWelcomeBackEnabled() {
   return base::FeatureList::IsEnabled(kWelcomeBack) &&
-         !base::FeatureList::IsEnabled(
-             first_run::kBestFeaturesScreenInFirstRun);
+         (first_run::GetBestFeaturesScreenVariationType() ==
+          first_run::BestFeaturesScreenVariationType::kDisabled);
 }
 
 void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type) {

@@ -140,10 +140,36 @@
 
 - (void)didTapBestFeaturesItem:(BestFeaturesItem*)item {
   _itemTapped = YES;
-  _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
-      initWithBaseNavigationViewController:_baseNavigationController
-                                   browser:self.browser
-                          bestFeaturesItem:item];
+
+  if (first_run::GetBestFeaturesScreenVariationType() ==
+      first_run::BestFeaturesScreenVariationType::kBestOfApp) {
+    // Retrieve the Best Features item that should be presented first and the
+    // items users can swipe between.
+    using enum first_run::BestFeaturesScreenVariationType;
+    NSArray<BestFeaturesItem*>* bestFeaturesItems =
+        [_mediator bestFeatureItems];
+    int startIndex = startIndex =
+        [bestFeaturesItems indexOfObjectPassingTest:^BOOL(
+                               BestFeaturesItem* obj, NSUInteger idx, BOOL*) {
+          return obj.type == item.type;
+        }];
+
+    _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
+        initWithBaseNavigationViewController:_baseNavigationController
+                                     browser:self.browser
+                           bestFeaturesItems:bestFeaturesItems
+                                  startIndex:startIndex
+                                      source:DetailScreenPresentationSource::
+                                                 kBestOfAppFRE];
+  } else {
+    _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
+        initWithBaseNavigationViewController:_baseNavigationController
+                                     browser:self.browser
+                            bestFeaturesItem:item
+                                      source:DetailScreenPresentationSource::
+                                                 kBestFeaturesFRE];
+  }
+
   [self logItemSelection:item.type];
   _detailScreenCoordinator.delegate = _delegate;
   [_detailScreenCoordinator start];

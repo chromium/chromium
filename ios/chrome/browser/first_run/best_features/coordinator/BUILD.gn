@@ -33,6 +33,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/browser/welcome_back/ui",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
   ]

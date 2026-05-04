@@ -30,7 +30,6 @@ NSString* ConfigureSecondaryActionString() {
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
-    case kBestOfApp:
       // Best Features screen is last in the FRE sequence
       return l10n_util::GetNSString(
           IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
@@ -38,6 +37,9 @@ NSString* ConfigureSecondaryActionString() {
       // Best Features screen is not last in the FRE sequence
       return l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
+    case kBestOfApp:
+      // kBestOfApp does not have a secondary action string. It will be
+      // presented from the `FeatureHighlightAnimatedViewController`.
     case kDisabled:
       NOTREACHED();
   }

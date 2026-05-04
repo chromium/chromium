@@ -134,7 +134,9 @@
   _detailScreenCoordinator = [[BestFeaturesScreenDetailCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
                                    browser:self.browser
-                          bestFeaturesItem:item];
+                          bestFeaturesItem:item
+                                    source:DetailScreenPresentationSource::
+                                               kWelcomeBack];
   _detailScreenCoordinator.delegate = self;
   ++_featureClickedCount;
   base::UmaHistogramEnumeration("IOS.WelcomeBack.DetailScreen.Impression",

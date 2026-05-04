@@ -17,6 +17,8 @@ namespace segmentation_platform {
 class SegmentationPlatformService;
 }
 
+@class BestFeaturesItem;
+
 @protocol BestFeaturesScreenConsumer;
 
 // Mediator for the Best Feature's Screen.
@@ -40,6 +42,9 @@ class SegmentationPlatformService;
 
 // Disconnects the mediator.
 - (void)disconnect;
+
+// Returns the list of BestFeaturesItems to be shown.
+- (NSArray<BestFeaturesItem*>*)bestFeatureItems;
 
 @end
 

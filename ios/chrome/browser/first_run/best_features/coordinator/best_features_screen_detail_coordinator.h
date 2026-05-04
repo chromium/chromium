@@ -13,6 +13,13 @@
 
 @class BestFeaturesItem;
 
+// An enum representing the source that started this coordinator.
+enum class DetailScreenPresentationSource {
+  kBestOfAppFRE,
+  kBestFeaturesFRE,
+  kWelcomeBack,
+};
+
 // Coordinator to present the feature specific Best Features Detail Screen.
 @interface BestFeaturesScreenDetailCoordinator : ChromeCoordinator
 
@@ -21,11 +28,24 @@
 
 // Initializes a BestFeaturesScreenDetailCoordinator with
 // `navigationController`, `browser`, and `BestFeaturesItem`.
-- (instancetype)initWithBaseNavigationViewController:
-                    (UINavigationController*)navigationController
-                                             browser:(Browser*)browser
-                                    bestFeaturesItem:
-                                        (BestFeaturesItem*)bestFeaturesItem
+- (instancetype)
+    initWithBaseNavigationViewController:
+        (UINavigationController*)navigationController
+                                 browser:(Browser*)browser
+                        bestFeaturesItem:(BestFeaturesItem*)bestFeaturesItem
+                                  source:(DetailScreenPresentationSource)source;
+
+// Initializes a BestFeaturesScreenDetailCoordinator with
+// `navigationController`, `browser`, `BestFeaturesItems`, and `startIndex`.
+// This is used to create the animated feature carousel.
+- (instancetype)
+    initWithBaseNavigationViewController:
+        (UINavigationController*)navigationController
+                                 browser:(Browser*)browser
+                       bestFeaturesItems:
+                           (NSArray<BestFeaturesItem*>*)bestFeaturesItems
+                              startIndex:(int)startIndex
+                                  source:(DetailScreenPresentationSource)source
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
