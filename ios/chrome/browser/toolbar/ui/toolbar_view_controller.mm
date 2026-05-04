@@ -852,11 +852,17 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       l10n_util::GetNSString(IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON);
   collapsedToolbarButton.hidden = YES;
 
-  UITapGestureRecognizer* tapRecognizer =
-      [[UITapGestureRecognizer alloc] initWithTarget:self.mutator
-                                              action:@selector(exitFullscreen)];
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(collapsedToolbarButtonTapped)];
   [collapsedToolbarButton addGestureRecognizer:tapRecognizer];
   return collapsedToolbarButton;
+}
+
+// Called when the collapsed toolbar button is tapped.
+- (void)collapsedToolbarButtonTapped {
+  [self.mutator exitFullscreen];
+  [GetFirstResponder() resignFirstResponder];
 }
 
 // Creates a loading progress bar.
