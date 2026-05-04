@@ -41,9 +41,10 @@ code or summarize state itself. It delegates to several auxiliary personas:
 6.  **The Release Engineer:** A terminal agent invoked with a clean context to
     handle workspace hygiene, formatting, and the final staging/upload of CLs.
 
-**MANDATE:** Every sub-agent invoked in the MAGI protocol MUST call the
-`update_topic` tool as its first action to identify its role in the UI (e.g.,
-`title="MAGI Persona: Engineering Manager"`).
+**MANDATE:** The Orchestrator MUST call the `update_topic` tool prior to invoking
+any sub-agents to clearly identify the current phase of the MAGI protocol in
+the UI (e.g., `title="MAGI Phase 1: Engineering Manager"`). Sub-agents do not
+have access to this tool.
 
 ## Workflow
 
@@ -81,12 +82,11 @@ code or summarize state itself. It delegates to several auxiliary personas:
 ### 3. Parallel Compute (Ideation)
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
-**File I/O:** Each sub-agent MUST save their draft to disk using the versioned
-naming convention `[filename].[persona].magi.[iteration]` (e.g.,
-`host.cc.security.magi.1`).
+**File I/O:** Each sub-agent MUST use the `write_file` tool to save their draft
+to disk using the versioned naming convention
+`[filename].[persona].magi.[iteration]` (e.g., `host.cc.security.magi.1`).
 *Note: Sub-agents are permitted to change scaffolded signatures if their
-priority requires it. Their first action must be to call `update_topic` to
-identify their specific persona.*
+priority requires it.*
 
 ### 4. The Synthesis Phase
 Once the ideation agents finish:
@@ -100,21 +100,19 @@ Once the ideation agents finish:
     *   **Stall Count:** [Count of non-productive iterations]
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
     drafts and synthesize them into "Draft A" in the original file.
-
 ### 5. The Consensus Loop (Expanded Review)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
-    **File I/O:** All reviewers MUST append their feedback to
-    `reviews.magi.[iteration].md`. Do NOT return feedback as text to the
+    **File I/O:** Each reviewer MUST use the `write_file` tool to save their
+    feedback to a unique file: `review.[persona].magi.[iteration].md`. Do NOT
+    return feedback as text to the Orchestrator.
     **Prompt Template:**
-    > "**IMPORTANT:** Your very first action MUST be to call the `update_topic`
-    > tool with the `title` set to your assigned MAGI Persona name.
     > Role Details: Read your mandate from `[persona_file_path]`.
     > Priority: [Priority].
-    > Task: Review Draft [filename]. Append `Verdict: [ACCEPT/REJECT]` and
-    > `Reasoning: [Bullet points]` to `reviews.magi.[iteration].md`."
-2.  **The Review Analyst:** If any agent rejects, this agent reads
-    `reviews.magi.[iteration].md` and writes a strict list of 3-5 Actionable
-    Constraints to `constraints.magi.[iteration].md`.
+    > Task: Review Draft [filename]. Save `Verdict: [ACCEPT/REJECT]` and
+    > `Reasoning: [Bullet points]` to `review.[persona].magi.[iteration].md`.
+2.  **The Review Analyst:** If any agent rejects, this agent reads all
+    `review.*.magi.[iteration].md` files and uses `write_file` to save a strict
+    list of 3-5 Actionable Constraints to `constraints.magi.[iteration].md`.
 3.  **The Continuity Analyst:** Reads `constraints.magi.[iteration].md` and
     updates `state_block.magi.md`. Checks for "flip-flopping" (e.g., Constraint
     1 violates a constraint from Round 1).
