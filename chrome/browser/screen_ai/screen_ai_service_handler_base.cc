@@ -63,14 +63,14 @@ ComponentFiles::ComponentFiles(
     VLOG(0) << "Could not read list of files for " << files_list_file_name;
     return;
   }
-  std::vector<std::string> files_list = base::SplitString(
+  std::vector<std::string_view> files_list = base::SplitStringPiece(
       file_content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (files_list.empty()) {
     VLOG(0) << "Could not parse files list for " << files_list_file_name;
     return;
   }
 
-  for (auto& relative_file_path : files_list) {
+  for (std::string_view relative_file_path : files_list) {
     // Ignore comment lines.
     if (relative_file_path.empty() || relative_file_path[0] == '#') {
       continue;
