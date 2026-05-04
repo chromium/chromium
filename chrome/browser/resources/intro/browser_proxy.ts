@@ -18,6 +18,8 @@ export interface IntroBrowserProxy {
 
   // Initializes the FRE intro main view.
   initializeMainView(): void;
+
+  matchMedia(query: string): MediaQueryList;
 }
 
 export class IntroBrowserProxyImpl implements IntroBrowserProxy {
@@ -33,6 +35,10 @@ export class IntroBrowserProxyImpl implements IntroBrowserProxy {
 
   initializeMainView() {
     chrome.send('initializeMainView');
+  }
+
+  matchMedia(query: string): MediaQueryList {
+    return window.matchMedia(query);
   }
 
   static getInstance(): IntroBrowserProxy {

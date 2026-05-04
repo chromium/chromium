@@ -48,12 +48,9 @@ suite('SignInPromoRefreshTest', function() {
   let testBrowserProxy: TestIntroBrowserProxy;
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestIntroBrowserProxy();
     IntroBrowserProxyImpl.setInstance(testBrowserProxy);
-  });
-
-  teardown(function() {
-    signInPromoElement.remove();
   });
 
   [Variation.DEFAULT, Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER,
@@ -65,12 +62,13 @@ suite('SignInPromoRefreshTest', function() {
         suite(
             'NonManagedDevice' + variationToTestSuffix(variation), function() {
               setup(function() {
+                document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
                 loadTimeData.overrideValues({
                   isDeviceManaged: false,
                   signInPromoVariation: variation,
                 });
 
-                document.body.innerHTML = window.trustedTypes!.emptyHTML;
                 signInPromoElement =
                     document.createElement('sign-in-promo-refresh');
                 document.body.appendChild(signInPromoElement);
@@ -129,12 +127,13 @@ suite('SignInPromoRefreshTest', function() {
 
         suite('ManagedDevice' + variationToTestSuffix(variation), function() {
           setup(function() {
+            document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
             loadTimeData.overrideValues({
               isDeviceManaged: true,
               signInPromoVariation: variation,
             });
 
-            document.body.innerHTML = window.trustedTypes!.emptyHTML;
             signInPromoElement =
                 document.createElement('sign-in-promo-refresh');
             document.body.appendChild(signInPromoElement);
@@ -233,33 +232,13 @@ suite('SignInPromoRefreshTest', function() {
   });
 
   test('change animation file depending on the theme', async function() {
-    let mediaQueryChangeListener: (e: MediaQueryListEvent) => void;
-    let currentMatches = false;
-
-    const originalMatchMedia = window.matchMedia;
-    window.matchMedia = function(_query) {
-      return {
-        get matches() {
-          return currentMatches;
-        },
-        addEventListener: function(event: string, listener: any) {
-          if (event === 'change') {
-            mediaQueryChangeListener = listener;
-          }
-        },
-        removeEventListener: function(event: string, listener: any) {
-          if (event === 'change' && mediaQueryChangeListener === listener) {
-            mediaQueryChangeListener = undefined as any;
-          }
-        },
-      } as any;
-    };
-
     loadTimeData.overrideValues({
       isDeviceManaged: false,
       signInPromoVariation: Variation.DEFAULT,
     });
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testBrowserProxy.setMatchMediaMatches(false);
+
     signInPromoElement = document.createElement('sign-in-promo-refresh');
     document.body.appendChild(signInPromoElement);
     await microtasksFinished();
@@ -282,14 +261,11 @@ suite('SignInPromoRefreshTest', function() {
     assertTrue(
         bottomAnimation.getAttribute('animation-url')!.includes('light'));
 
-    currentMatches = true;
-    mediaQueryChangeListener!({matches: true} as MediaQueryListEvent);
+    testBrowserProxy.setMatchMediaMatches(true);
     await microtasksFinished();
 
     assertTrue(leftAnimation.getAttribute('animation-url')!.includes('dark'));
     assertTrue(rightAnimation.getAttribute('animation-url')!.includes('dark'));
     assertTrue(bottomAnimation.getAttribute('animation-url')!.includes('dark'));
-
-    window.matchMedia = originalMatchMedia;
   });
 });

@@ -190,7 +190,6 @@ template("build_webui_tests") {
         "//chrome/test/data/webui/cr_elements",
         "//chrome/test/data/webui/glic",
         "//chrome/test/data/webui/guest_view_shared",
-        "//chrome/test/data/webui/intro",
         "//chrome/test/data/webui/js",
         "//chrome/test/data/webui/lens",
         "//chrome/test/data/webui/new_tab_page",

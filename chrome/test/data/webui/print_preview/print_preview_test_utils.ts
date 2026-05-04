@@ -7,7 +7,6 @@ import {createDocumentSettings as createDefaultDocumentSettings, DEFAULT_MAX_COP
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 export function getDefaultInitialSettings(isPdf: boolean = false):
@@ -381,45 +380,3 @@ export function selectOption(
   return eventToPromise('process-select-change', section);
 }
 
-// Fake MediaQueryList used in mocking response of |window.matchMedia|.
-export class FakeMediaQueryList extends EventTarget implements MediaQueryList {
-  private listener_: ((e: MediaQueryListEvent) => any)|null = null;
-  private matches_: boolean = false;
-  private media_: string;
-
-  constructor(media: string) {
-    super();
-    this.media_ = media;
-  }
-
-  addListener(listener: (e: MediaQueryListEvent) => any) {
-    this.listener_ = listener;
-  }
-
-  removeListener(listener: (e: MediaQueryListEvent) => any) {
-    assertEquals(listener, this.listener_);
-    this.listener_ = null;
-  }
-
-  onchange() {
-    if (this.listener_) {
-      this.listener_(new MediaQueryListEvent(
-          'change', {media: this.media_, matches: this.matches_}));
-    }
-  }
-
-  get media(): string {
-    return this.media_;
-  }
-
-  get matches(): boolean {
-    return this.matches_;
-  }
-
-  set matches(matches: boolean) {
-    if (this.matches_ !== matches) {
-      this.matches_ = matches;
-      this.onchange();
-    }
-  }
-}

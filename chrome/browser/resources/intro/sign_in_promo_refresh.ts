@@ -94,7 +94,8 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
 
   constructor() {
     super();
-    this.matchMedia_ = window.matchMedia('(prefers-color-scheme: dark)');
+    this.matchMedia_ =
+        this.browserProxy_.matchMedia('(prefers-color-scheme: dark)');
     this.isDarkMode_ = this.matchMedia_.matches;
     this.darkModeListener_ = (e) => {
       this.isDarkMode_ = e.matches;

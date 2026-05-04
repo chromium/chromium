@@ -5,6 +5,8 @@
 import type {IntroBrowserProxy} from 'chrome://intro/browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+import {FakeMediaQueryList} from './fake_media_query_list.js';
+
 export class TestIntroBrowserProxy extends TestBrowserProxy implements
     IntroBrowserProxy {
   constructor() {
@@ -14,6 +16,8 @@ export class TestIntroBrowserProxy extends TestBrowserProxy implements
       'initializeMainView',
     ]);
   }
+
+  private mediaQueryList_: FakeMediaQueryList = new FakeMediaQueryList('dummy');
 
   continueWithAccount() {
     this.methodCalled('continueWithAccount');
@@ -25,5 +29,13 @@ export class TestIntroBrowserProxy extends TestBrowserProxy implements
 
   initializeMainView() {
     this.methodCalled('initializeMainView');
+  }
+
+  matchMedia(_query: string): MediaQueryList {
+    return this.mediaQueryList_;
+  }
+
+  setMatchMediaMatches(matches: boolean): void {
+    this.mediaQueryList_.matches = matches;
   }
 }
