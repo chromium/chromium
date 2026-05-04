@@ -74,10 +74,10 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
   unsigned ClusterLengthStartingAt(unsigned offset) const {
     DCHECK(is_8bit_);
     // The only Latin-1 Extended Grapheme Cluster is CR LF
-    return IsCRBeforeLF(offset) ? 2 : 1;
+    return IsCrBeforeLf(offset) ? 2 : 1;
   }
 
-  bool IsCRBeforeLF(unsigned offset) const {
+  bool IsCrBeforeLf(unsigned offset) const {
     DCHECK(is_8bit_);
     // SAFTEY: second indexing is safe because of length check, but
     // the first is not. Could be made safe by re-ordering.
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
            UNSAFE_BUFFERS(charaters8_[offset + 1]) == '\n';
   }
 
-  bool IsLFAfterCR(unsigned offset) const {
+  bool IsLfAfterCr(unsigned offset) const {
     DCHECK(is_8bit_);
     return UNSAFE_TODO(charaters8_[offset]) == '\n' && offset >= 1 &&
            UNSAFE_TODO(charaters8_[offset - 1]) == '\r';

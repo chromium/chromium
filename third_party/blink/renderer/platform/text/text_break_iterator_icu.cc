@@ -913,7 +913,7 @@ bool CharacterBreakIterator::IsBreak(int offset) const {
   if (!is_8bit_) {
     return iterator_->isBoundary(offset);
   }
-  return !IsLFAfterCR(offset);
+  return !IsLfAfterCr(offset);
 }
 
 int CharacterBreakIterator::Preceding(int offset) const {
@@ -923,7 +923,7 @@ int CharacterBreakIterator::Preceding(int offset) const {
   if (offset <= 0) {
     return kTextBreakDone;
   }
-  if (IsLFAfterCR(offset)) {
+  if (IsLfAfterCr(offset)) {
     return offset - 2;
   }
   return offset - 1;
