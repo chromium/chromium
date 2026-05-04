@@ -841,14 +841,27 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Lay out the main area background.
   ProposedLayout* main_background_layout = nullptr;
   if (IsParentedTo(views().main_background_region, views().browser_view)) {
-    gfx::Rect main_background_bounds = params.visual_client_area;
+    gfx::Rect main_background_bounds;
+    if (window_state == WindowState::kFullscreenWithToolbar) {
+      // Put the main background behind the entire content area, since in this
+      // case the top row of pixels may be exposed when the separator isn't
+      // shown (typically when a side panel is open).
+      main_background_bounds = gfx::Rect(
+          browser_params.visual_client_area.x(), params.visual_client_area.y(),
+          browser_params.visual_client_area.width(),
+          params.visual_client_area.height());
+    } else {
+      main_background_bounds = params.visual_client_area;
+    }
     if (adjust_for_cracking &&
         main_background_bounds.y() > browser_params.visual_client_area.y()) {
       main_background_bounds.Outset(gfx::Outsets::TLBR(1, 0, 0, 0));
     }
-    main_background_layout = &layout.AddChild(
-        views().main_background_region, params.visual_client_area,
-        horizontal_layout.has_side_panel() || adjust_for_cracking);
+    const bool show_main_background =
+        horizontal_layout.has_side_panel() || adjust_for_cracking;
+    main_background_layout =
+        &layout.AddChild(views().main_background_region, main_background_bounds,
+                         show_main_background);
   }
 
   // Lay out toolbar-height side panel.
@@ -1199,12 +1212,18 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayoutImpl(
     const bool show_separator =
         !suppress_top_separator &&
         top_separator_type == TopSeparatorType::kTopContainer;
+    const int preferred_separator_height =
+        views().top_container_separator->GetPreferredSize().height();
     if (show_separator) {
       separator_bounds = gfx::Rect(
           params.visual_client_area.x(), params.visual_client_area.y(),
-          params.visual_client_area.width(),
-          views().top_container_separator->GetPreferredSize().height());
+          params.visual_client_area.width(), preferred_separator_height);
       params.SetTop(separator_bounds.bottom());
+    } else if (delegate().GetBrowserWindowState() ==
+               WindowState::kFullscreenWithToolbar) {
+      // Reserve space for the separator even when it's hidden, because this
+      // affects the y-coordinate of the top of the content area.
+      params.Inset(gfx::Insets::TLBR(preferred_separator_height, 0, 0, 0));
     }
     layout.AddChild(views().top_container_separator, separator_bounds,
                     show_separator);
@@ -1363,7 +1382,8 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     vertical_tabs_outline.trailing = true;
     // Top edge is drawn if the layout is below the top of the parent.
     if (animation.expand_on_hover ||
-        views().vertical_tab_strip_region_view->y() > 0) {
+        views().vertical_tab_strip_region_view->y() > 0 ||
+        animation.top_corner < 0.0) {
       vertical_tabs_outline.top = true;
     }
     if (animation.expand_on_hover) {
