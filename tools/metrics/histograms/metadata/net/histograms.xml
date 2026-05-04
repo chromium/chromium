@@ -8003,6 +8003,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SocketPosix.DoReadDuration" units="microseconds"
+    expires_after="2026-10-08">
+  <owner>pasko@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The time it takes to execute SocketPosix::DoRead. Emitted at the end of
+    DoRead. Subsampled to 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Net.SocketUnchangeableReceiveBuffer" units="Bytes"
     expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>

@@ -17,7 +17,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/rand_util.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -511,6 +513,9 @@ void SocketPosix::ConnectCompleted() {
 }
 
 int SocketPosix::DoRead(IOBuffer* buf, int buf_len) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(
+      "Net.SocketPosix.DoReadDuration",
+      base::ShouldRecordSubsampledMetric(0.001));
   int rv = HANDLE_EINTR(read(socket_fd_, buf->data(), buf_len));
   return rv >= 0 ? rv : MapSystemError(errno);
 }
