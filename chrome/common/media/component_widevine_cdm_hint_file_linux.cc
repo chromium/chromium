@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace {
@@ -68,6 +69,18 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path,
   base::FilePath hint_file_path;
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
                                &hint_file_path));
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Chrome for Testing may store components in a directory other than the user
+  // data directory. In this case, the WidevineCdm subdirectory will not be
+  // created in user data directory during components registration, causing the
+  // hint file write to fail.
+  if (!base::CreateDirectory(hint_file_path.DirName())) {
+    DLOG(ERROR) << "Could not create the directory for the CDM hint file: "
+                << hint_file_path.DirName();
+    return false;
+  }
+#endif
 
   base::DictValue dict;
   dict.Set(kPath, cdm_base_path.value());
