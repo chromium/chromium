@@ -13,6 +13,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
@@ -37,6 +38,7 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 
 MATCHER_P(MatchesPageContext, fields_matcher, "") {
   return testing::ExplainMatchResult(
@@ -261,6 +263,8 @@ TEST(SendTabToSelfEntry, PageContextRoundTrip) {
   PageContext::FormField field = MakeFormField(u"id1", u"value1");
   field.autofill_signature.form_signature = autofill::FormSignature(12345u);
   field.autofill_signature.field_signature = autofill::FieldSignature(6789u);
+  field.autofill_types = {sync_pb::FormField_AutofillFieldType_USERNAME,
+                          sync_pb::FormField_AutofillFieldType_EMAIL_ADDRESS};
 
   context.form_field_info.fields.push_back(std::move(field));
 
@@ -280,7 +284,10 @@ TEST(SendTabToSelfEntry, PageContextRoundTrip) {
           MatchesPageContext(ElementsAre(MatchesFormField(
               Eq(u"id1"), _, _, Eq(u"value1"),
               MatchesAutofillSignature(autofill::FormSignature(12345u),
-                                       autofill::FieldSignature(6789u))))),
+                                       autofill::FieldSignature(6789u)),
+              UnorderedElementsAre(
+                  sync_pb::FormField_AutofillFieldType_USERNAME,
+                  sync_pb::FormField_AutofillFieldType_EMAIL_ADDRESS)))),
           MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
 }
 

@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 
 namespace shared_highlighting {
 class TextFragment;
@@ -93,6 +95,7 @@ struct PageContext {
     std::string form_control_type;
     std::u16string value;
     FormFieldAutofillSignature autofill_signature;
+    base::flat_set<sync_pb::FormField_AutofillFieldType> autofill_types;
 
     bool operator==(const FormField& other) const;
   };

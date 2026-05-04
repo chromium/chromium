@@ -95,8 +95,8 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractFields) {
       ExtractOutgoingTabFormFields(autofill_manager(),
                                    url::Origin::Create(kUrl))
           .fields,
-      ElementsAre(MatchesFormField(Eq(u"id1"), _, _, Eq(u"value1"), _),
-                  MatchesFormField(Eq(u"id2"), _, _, Eq(u"value2"), _)));
+      ElementsAre(MatchesFormField(Eq(u"id1"), _, _, Eq(u"value1"), _, _),
+                  MatchesFormField(Eq(u"id2"), _, _, Eq(u"value2"), _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
@@ -120,7 +120,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _)));
+              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterEmptyFields) {
@@ -218,7 +218,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest,
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _)));
+              ElementsAre(MatchesFormField(Eq(u"id1"), _, _, _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {
@@ -253,10 +253,72 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractSignatures) {
       ElementsAre(
           MatchesFormField(_, _, _, _,
                            MatchesAutofillSignature(expected_form_signature,
-                                                    expected_field_sig1)),
+                                                    expected_field_sig1),
+                           _),
           MatchesFormField(_, _, _, _,
                            MatchesAutofillSignature(expected_form_signature,
-                                                    expected_field_sig2))));
+                                                    expected_field_sig2),
+                           _)));
+}
+
+// Tests that the extractor successfully extracts multiple classified Autofill
+// types for a single field.
+TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractMultipleAutofillTypes) {
+  const GURL kUrl("https://www.example.com");
+  auto form_structure =
+      std::make_unique<FormStructure>(autofill::test::GetFormData(
+          {.fields = {{.id_attribute = u"id1",
+                       .value = u"value1",
+                       .origin = url::Origin::Create(kUrl)}},
+           .url = kUrl.spec()}));
+
+  form_structure->field(0)->AddFieldModifier(autofill::FieldModifier::kUser);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(
+          {autofill::FieldType::USERNAME, autofill::FieldType::EMAIL_ADDRESS}),
+      std::nullopt);
+
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
+                                           url::Origin::Create(kUrl))
+                  .fields,
+              ElementsAre(MatchesFormField(
+                  Eq(u"id1"), _, _, _, _,
+                  testing::UnorderedElementsAre(
+                      sync_pb::FormField_AutofillFieldType_EMAIL_ADDRESS,
+                      sync_pb::FormField_AutofillFieldType_USERNAME))));
+}
+
+// Tests that the extractor filters out Autofill types that are not fillable,
+// ensuring only useful types are propagated.
+TEST_F(OutgoingTabFormFieldExtractorTest,
+       ShouldExtractOnlyFillableAutofillTypes) {
+  const GURL kUrl("https://www.example.com");
+  auto form_structure =
+      std::make_unique<FormStructure>(autofill::test::GetFormData(
+          {.fields = {{.id_attribute = u"id1",
+                       .value = u"value1",
+                       .origin = url::Origin::Create(kUrl)}},
+           .url = kUrl.spec()}));
+
+  form_structure->field(0)->AddFieldModifier(autofill::FieldModifier::kUser);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType({autofill::FieldType::USERNAME,
+                              autofill::FieldType::MERCHANT_EMAIL_SIGNUP}),
+      std::nullopt);
+
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
+                                           url::Origin::Create(kUrl))
+                  .fields,
+              ElementsAre(MatchesFormField(
+                  Eq(u"id1"), _, _, _, _,
+                  testing::UnorderedElementsAre(
+                      sync_pb::FormField_AutofillFieldType_USERNAME))));
 }
 
 }  // namespace

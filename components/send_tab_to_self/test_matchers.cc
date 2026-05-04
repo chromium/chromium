@@ -12,7 +12,9 @@ testing::Matcher<PageContext::FormField> MatchesFormField(
     testing::Matcher<std::string> form_control_type,
     testing::Matcher<std::u16string> value,
     testing::Matcher<PageContext::FormFieldAutofillSignature>
-        autofill_signature) {
+        autofill_signature,
+    testing::Matcher<base::flat_set<sync_pb::FormField_AutofillFieldType>>
+        autofill_types) {
   return testing::AllOf(
       testing::Field("id_attribute", &PageContext::FormField::id_attribute,
                      id_attribute),
@@ -24,7 +26,9 @@ testing::Matcher<PageContext::FormField> MatchesFormField(
       testing::Field("value", &PageContext::FormField::value, value),
       testing::Field("autofill_signature",
                      &PageContext::FormField::autofill_signature,
-                     autofill_signature));
+                     autofill_signature),
+      testing::Field("autofill_types", &PageContext::FormField::autofill_types,
+                     autofill_types));
 }
 
 testing::Matcher<PageContext::FormFieldAutofillSignature>

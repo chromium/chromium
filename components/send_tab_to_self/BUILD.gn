@@ -124,6 +124,7 @@ source_set("unit_tests") {
   sources = [
     "entry_point_display_reason_unittest.cc",
     "outgoing_tab_form_field_extractor_unittest.cc",
+    "proto_conversions_unittest.cc",
     "received_tab_forms_filler_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",

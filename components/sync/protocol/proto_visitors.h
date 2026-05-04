@@ -1408,6 +1408,9 @@ VISIT_PROTO_FIELDS(const sync_pb::FormField& proto) {
   VISIT(name_attribute);
   VISIT(form_control_type);
   VISIT(value);
+  VISIT(form_signature);
+  VISIT(field_signature);
+  VISIT_REP(autofill_types);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionHeader& proto) {

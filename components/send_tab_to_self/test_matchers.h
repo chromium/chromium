@@ -6,8 +6,8 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_TEST_MATCHERS_H_
 
 #include <string>
-#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +23,9 @@ testing::Matcher<PageContext::FormField> MatchesFormField(
     testing::Matcher<std::string> form_control_type,
     testing::Matcher<std::u16string> value,
     testing::Matcher<PageContext::FormFieldAutofillSignature>
-        autofill_signature);
+        autofill_signature,
+    testing::Matcher<base::flat_set<sync_pb::FormField_AutofillFieldType>>
+        autofill_types);
 
 // Helper to match `PageContext::FormFieldAutofillSignature`.
 testing::Matcher<PageContext::FormFieldAutofillSignature>

@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_PROTO_CONVERSIONS_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_PROTO_CONVERSIONS_H_
 
-namespace sync_pb {
-class PageContext;
-}  // namespace sync_pb
+#include <optional>
+
+#include "components/autofill/core/browser/field_types.h"
+#include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 
 namespace send_tab_to_self {
 
@@ -15,6 +16,9 @@ struct PageContext;
 
 sync_pb::PageContext PageContextToProto(const PageContext& context);
 PageContext PageContextFromProto(const sync_pb::PageContext& pb_page_context);
+
+std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
+    autofill::FieldType type);
 
 }  // namespace send_tab_to_self
 

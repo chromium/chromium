@@ -4,15 +4,310 @@
 
 #include "components/send_tab_to_self/proto_conversions.h"
 
+#include <optional>
+
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 
 namespace send_tab_to_self {
 
-namespace {
+std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
+    autofill::FieldType type) {
+  if (!autofill::IsFillableFieldType(type)) {
+    return std::nullopt;
+  }
+  switch (type) {
+    case autofill::NAME_HONORIFIC_PREFIX:
+      return sync_pb::FormField_AutofillFieldType_NAME_HONORIFIC_PREFIX;
+    case autofill::NAME_FIRST:
+      return sync_pb::FormField_AutofillFieldType_NAME_FIRST;
+    case autofill::NAME_MIDDLE:
+      return sync_pb::FormField_AutofillFieldType_NAME_MIDDLE;
+    case autofill::NAME_LAST:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST;
+    case autofill::NAME_LAST_CORE:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST_CORE;
+    case autofill::NAME_LAST_PREFIX:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST_PREFIX;
+    case autofill::NAME_LAST_FIRST:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST_FIRST;
+    case autofill::NAME_LAST_CONJUNCTION:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST_CONJUNCTION;
+    case autofill::NAME_LAST_SECOND:
+      return sync_pb::FormField_AutofillFieldType_NAME_LAST_SECOND;
+    case autofill::NAME_MIDDLE_INITIAL:
+      return sync_pb::FormField_AutofillFieldType_NAME_MIDDLE_INITIAL;
+    case autofill::NAME_FULL:
+      return sync_pb::FormField_AutofillFieldType_NAME_FULL;
+    case autofill::NAME_SUFFIX:
+      return sync_pb::FormField_AutofillFieldType_NAME_SUFFIX;
+    case autofill::ALTERNATIVE_FULL_NAME:
+      return sync_pb::FormField_AutofillFieldType_ALTERNATIVE_FULL_NAME;
+    case autofill::ALTERNATIVE_FAMILY_NAME:
+      return sync_pb::FormField_AutofillFieldType_ALTERNATIVE_FAMILY_NAME;
+    case autofill::ALTERNATIVE_GIVEN_NAME:
+      return sync_pb::FormField_AutofillFieldType_ALTERNATIVE_GIVEN_NAME;
+    case autofill::EMAIL_ADDRESS:
+      return sync_pb::FormField_AutofillFieldType_EMAIL_ADDRESS;
+    case autofill::USERNAME_AND_EMAIL_ADDRESS:
+      return sync_pb::FormField_AutofillFieldType_USERNAME_AND_EMAIL_ADDRESS;
+    case autofill::PHONE_HOME_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_NUMBER;
+    case autofill::PHONE_HOME_NUMBER_PREFIX:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_NUMBER_PREFIX;
+    case autofill::PHONE_HOME_NUMBER_SUFFIX:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_NUMBER_SUFFIX;
+    case autofill::PHONE_HOME_CITY_CODE:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_CITY_CODE;
+    case autofill::PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+      return sync_pb::
+          FormField_AutofillFieldType_PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX;
+    case autofill::PHONE_HOME_COUNTRY_CODE:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_COUNTRY_CODE;
+    case autofill::PHONE_HOME_CITY_AND_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_CITY_AND_NUMBER;
+    case autofill::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+      return sync_pb::
+          FormField_AutofillFieldType_PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX;
+    case autofill::PHONE_HOME_WHOLE_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_WHOLE_NUMBER;
+    case autofill::PHONE_HOME_EXTENSION:
+      return sync_pb::FormField_AutofillFieldType_PHONE_HOME_EXTENSION;
+    case autofill::ADDRESS_HOME_LINE1:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_LINE1;
+    case autofill::ADDRESS_HOME_LINE2:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_LINE2;
+    case autofill::ADDRESS_HOME_LINE3:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_LINE3;
+    case autofill::ADDRESS_HOME_APT:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_APT;
+    case autofill::ADDRESS_HOME_APT_NUM:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_APT_NUM;
+    case autofill::ADDRESS_HOME_APT_TYPE:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_APT_TYPE;
+    case autofill::ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_HOUSE_NUMBER_AND_APT;
+    case autofill::ADDRESS_HOME_CITY:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_CITY;
+    case autofill::ADDRESS_HOME_STATE:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_STATE;
+    case autofill::ADDRESS_HOME_ZIP:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ZIP;
+    case autofill::ADDRESS_HOME_ZIP_PREFIX:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ZIP_PREFIX;
+    case autofill::ADDRESS_HOME_ZIP_SUFFIX:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ZIP_SUFFIX;
+    case autofill::ADDRESS_HOME_ZIP_AND_CITY:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ZIP_AND_CITY;
+    case autofill::ADDRESS_HOME_COUNTRY:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_COUNTRY;
+    case autofill::ADDRESS_HOME_STREET_ADDRESS:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_STREET_ADDRESS;
+    case autofill::ADDRESS_HOME_SORTING_CODE:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_SORTING_CODE;
+    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_DEPENDENT_LOCALITY;
+    case autofill::ADDRESS_HOME_STREET_NAME:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_STREET_NAME;
+    case autofill::ADDRESS_HOME_HOUSE_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_HOUSE_NUMBER;
+    case autofill::ADDRESS_HOME_STREET_LOCATION:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_STREET_LOCATION;
+    case autofill::ADDRESS_HOME_SUBPREMISE:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_SUBPREMISE;
+    case autofill::ADDRESS_HOME_OTHER_SUBUNIT:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_OTHER_SUBUNIT;
+    case autofill::ADDRESS_HOME_ADDRESS:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ADDRESS;
+    case autofill::ADDRESS_HOME_ADDRESS_WITH_NAME:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_ADDRESS_WITH_NAME;
+    case autofill::ADDRESS_HOME_FLOOR:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_FLOOR;
+    case autofill::ADDRESS_HOME_LANDMARK:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_LANDMARK;
+    case autofill::ADDRESS_HOME_BETWEEN_STREETS:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_BETWEEN_STREETS;
+    case autofill::ADDRESS_HOME_BETWEEN_STREETS_1:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_BETWEEN_STREETS_1;
+    case autofill::ADDRESS_HOME_BETWEEN_STREETS_2:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_BETWEEN_STREETS_2;
+    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_ADMIN_LEVEL2;
+    case autofill::ADDRESS_HOME_OVERFLOW:
+      return sync_pb::FormField_AutofillFieldType_ADDRESS_HOME_OVERFLOW;
+    case autofill::ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK;
+    case autofill::ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_OVERFLOW_AND_LANDMARK;
+    case autofill::ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY;
+    case autofill::ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK;
+    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+      return sync_pb::
+          FormField_AutofillFieldType_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK;
+    case autofill::DELIVERY_INSTRUCTIONS:
+      return sync_pb::FormField_AutofillFieldType_DELIVERY_INSTRUCTIONS;
+    case autofill::LOYALTY_MEMBERSHIP_PROGRAM:
+      return sync_pb::FormField_AutofillFieldType_LOYALTY_MEMBERSHIP_PROGRAM;
+    case autofill::LOYALTY_MEMBERSHIP_PROVIDER:
+      return sync_pb::FormField_AutofillFieldType_LOYALTY_MEMBERSHIP_PROVIDER;
+    case autofill::LOYALTY_MEMBERSHIP_ID:
+      return sync_pb::FormField_AutofillFieldType_LOYALTY_MEMBERSHIP_ID;
+    case autofill::EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+      return sync_pb::
+          FormField_AutofillFieldType_EMAIL_OR_LOYALTY_MEMBERSHIP_ID;
+    case autofill::CREDIT_CARD_NAME_FULL:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_NAME_FULL;
+    case autofill::CREDIT_CARD_NAME_FIRST:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_NAME_FIRST;
+    case autofill::CREDIT_CARD_NAME_LAST:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_NAME_LAST;
+    case autofill::CREDIT_CARD_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_NUMBER;
+    case autofill::CREDIT_CARD_EXP_MONTH:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_EXP_MONTH;
+    case autofill::CREDIT_CARD_EXP_2_DIGIT_YEAR:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_EXP_2_DIGIT_YEAR;
+    case autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    case autofill::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+      return sync_pb::
+          FormField_AutofillFieldType_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
+    case autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return sync_pb::
+          FormField_AutofillFieldType_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+    case autofill::CREDIT_CARD_TYPE:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_TYPE;
+    case autofill::CREDIT_CARD_VERIFICATION_CODE:
+      return sync_pb::FormField_AutofillFieldType_CREDIT_CARD_VERIFICATION_CODE;
+    case autofill::CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+      return sync_pb::
+          FormField_AutofillFieldType_CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+    case autofill::IBAN_VALUE:
+      return sync_pb::FormField_AutofillFieldType_IBAN_VALUE;
+    case autofill::COMPANY_NAME:
+      return sync_pb::FormField_AutofillFieldType_COMPANY_NAME;
+    case autofill::MERCHANT_PROMO_CODE:
+      return sync_pb::FormField_AutofillFieldType_MERCHANT_PROMO_CODE;
+    case autofill::USERNAME:
+      return sync_pb::FormField_AutofillFieldType_USERNAME;
+    case autofill::PASSWORD:
+      return sync_pb::FormField_AutofillFieldType_PASSWORD;
+    case autofill::ACCOUNT_CREATION_PASSWORD:
+      return sync_pb::FormField_AutofillFieldType_ACCOUNT_CREATION_PASSWORD;
+    case autofill::CONFIRMATION_PASSWORD:
+      return sync_pb::FormField_AutofillFieldType_CONFIRMATION_PASSWORD;
+    case autofill::SINGLE_USERNAME:
+      return sync_pb::FormField_AutofillFieldType_SINGLE_USERNAME;
+    case autofill::SINGLE_USERNAME_FORGOT_PASSWORD:
+      return sync_pb::
+          FormField_AutofillFieldType_SINGLE_USERNAME_FORGOT_PASSWORD;
+    case autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+      return sync_pb::
+          FormField_AutofillFieldType_SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES;
+    case autofill::ONE_TIME_CODE:
+      return sync_pb::FormField_AutofillFieldType_ONE_TIME_CODE;
+    case autofill::DRIVERS_LICENSE_EXPIRATION_DATE:
+      return sync_pb::
+          FormField_AutofillFieldType_DRIVERS_LICENSE_EXPIRATION_DATE;
+    case autofill::DRIVERS_LICENSE_ISSUE_DATE:
+      return sync_pb::FormField_AutofillFieldType_DRIVERS_LICENSE_ISSUE_DATE;
+    case autofill::DRIVERS_LICENSE_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_DRIVERS_LICENSE_NUMBER;
+    case autofill::DRIVERS_LICENSE_REGION:
+      return sync_pb::FormField_AutofillFieldType_DRIVERS_LICENSE_REGION;
+    case autofill::PASSPORT_EXPIRATION_DATE:
+      return sync_pb::FormField_AutofillFieldType_PASSPORT_EXPIRATION_DATE;
+    case autofill::PASSPORT_ISSUE_DATE:
+      return sync_pb::FormField_AutofillFieldType_PASSPORT_ISSUE_DATE;
+    case autofill::PASSPORT_ISSUING_COUNTRY:
+      return sync_pb::FormField_AutofillFieldType_PASSPORT_ISSUING_COUNTRY;
+    case autofill::PASSPORT_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_PASSPORT_NUMBER;
+    case autofill::VEHICLE_LICENSE_PLATE:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_LICENSE_PLATE;
+    case autofill::VEHICLE_MAKE:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_MAKE;
+    case autofill::VEHICLE_MODEL:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_MODEL;
+    case autofill::VEHICLE_PLATE_STATE:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_PLATE_STATE;
+    case autofill::VEHICLE_VIN:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_VIN;
+    case autofill::VEHICLE_YEAR:
+      return sync_pb::FormField_AutofillFieldType_VEHICLE_YEAR;
+    case autofill::NATIONAL_ID_CARD_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_NATIONAL_ID_CARD_NUMBER;
+    case autofill::NATIONAL_ID_CARD_EXPIRATION_DATE:
+      return sync_pb::
+          FormField_AutofillFieldType_NATIONAL_ID_CARD_EXPIRATION_DATE;
+    case autofill::NATIONAL_ID_CARD_ISSUE_DATE:
+      return sync_pb::FormField_AutofillFieldType_NATIONAL_ID_CARD_ISSUE_DATE;
+    case autofill::NATIONAL_ID_CARD_ISSUING_COUNTRY:
+      return sync_pb::
+          FormField_AutofillFieldType_NATIONAL_ID_CARD_ISSUING_COUNTRY;
+    case autofill::REDRESS_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_REDRESS_NUMBER;
+    case autofill::KNOWN_TRAVELER_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_KNOWN_TRAVELER_NUMBER;
+    case autofill::KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+      return sync_pb::
+          FormField_AutofillFieldType_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE;
+    case autofill::FLIGHT_RESERVATION_FLIGHT_NUMBER:
+      return sync_pb::
+          FormField_AutofillFieldType_FLIGHT_RESERVATION_FLIGHT_NUMBER;
+    case autofill::FLIGHT_RESERVATION_TICKET_NUMBER:
+      return sync_pb::
+          FormField_AutofillFieldType_FLIGHT_RESERVATION_TICKET_NUMBER;
+    case autofill::FLIGHT_RESERVATION_CONFIRMATION_CODE:
+      return sync_pb::
+          FormField_AutofillFieldType_FLIGHT_RESERVATION_CONFIRMATION_CODE;
+    case autofill::ORDER_ID:
+      return sync_pb::FormField_AutofillFieldType_ORDER_ID;
+    case autofill::ORDER_DATE:
+      return sync_pb::FormField_AutofillFieldType_ORDER_DATE;
+    case autofill::ORDER_MERCHANT_NAME:
+      return sync_pb::FormField_AutofillFieldType_ORDER_MERCHANT_NAME;
+    case autofill::SHIPMENT_TRACKING_NUMBER:
+      return sync_pb::FormField_AutofillFieldType_SHIPMENT_TRACKING_NUMBER;
 
+    // Non-fillable types handled earlier.
+    case autofill::NO_SERVER_DATA:
+    case autofill::UNKNOWN_TYPE:
+    case autofill::EMPTY_TYPE:
+    case autofill::AMBIGUOUS_TYPE:
+    case autofill::MERCHANT_EMAIL_SIGNUP:
+    case autofill::PRICE:
+    case autofill::NUMERIC_QUANTITY:
+    case autofill::SEARCH_TERM:
+    case autofill::NOT_PASSWORD:
+    case autofill::NOT_USERNAME:
+    case autofill::NOT_ACCOUNT_CREATION_PASSWORD:
+    case autofill::NEW_PASSWORD:
+    case autofill::PROBABLY_NEW_PASSWORD:
+    case autofill::NOT_NEW_PASSWORD:
+    case autofill::FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case autofill::MAX_VALID_FIELD_TYPE:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+namespace {
 sync_pb::FormField FormFieldToProto(const PageContext::FormField& field) {
   sync_pb::FormField pb_field;
   pb_field.set_id_attribute(base::UTF16ToUTF8(field.id_attribute));
@@ -22,6 +317,9 @@ sync_pb::FormField FormFieldToProto(const PageContext::FormField& field) {
   pb_field.set_form_signature(field.autofill_signature.form_signature.value());
   pb_field.set_field_signature(
       field.autofill_signature.field_signature.value());
+  for (sync_pb::FormField_AutofillFieldType type : field.autofill_types) {
+    pb_field.add_autofill_types(type);
+  }
 
   return pb_field;
 }
@@ -36,6 +334,9 @@ PageContext::FormField FormFieldFromProto(const sync_pb::FormField& pb_field) {
       autofill::FormSignature(pb_field.form_signature());
   field.autofill_signature.field_signature =
       autofill::FieldSignature(pb_field.field_signature());
+  for (int i = 0; i < pb_field.autofill_types_size(); ++i) {
+    field.autofill_types.insert(pb_field.autofill_types(i));
+  }
 
   return field;
 }
