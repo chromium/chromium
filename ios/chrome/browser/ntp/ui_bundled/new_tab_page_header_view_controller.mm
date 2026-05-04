@@ -65,11 +65,6 @@ using base::UserMetricsAction;
 
 namespace {
 
-NSString* const kScribbleFakeboxElementId = @"fakebox";
-
-// Height margin of the fake location bar.
-const CGFloat kFakeLocationBarHeightMargin = 2;
-
 // Horizontal padding between the edge of the pill and its label.
 const CGFloat kPillHorizontalPadding = 13;
 
@@ -84,21 +79,14 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 }  // namespace
 
-@interface NewTabPageHeaderViewController () <
-    SearchEngineLogoConsumer,
-    UIIndirectScribbleInteractionDelegate,
-    UIPointerInteractionDelegate>
+@interface NewTabPageHeaderViewController () <SearchEngineLogoConsumer>
 
 // `YES` if this consumer is has voice search enabled.
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 
 @property(nonatomic, strong) NewTabPageHeaderView* headerView;
-@property(nonatomic, strong) UIView* fakeOmnibox;
-@property(nonatomic, strong) UIButton* accessibilityButton;
 @property(nonatomic, copy) NSString* identityDiscAccessibilityLabel;
-@property(nonatomic, strong, readwrite) UIButton* identityDiscButton;
 @property(nonatomic, strong) UIImage* identityDiscImage;
-@property(nonatomic, strong) UIButton* fakeTapButton;
 @property(nonatomic, strong) NSLayoutConstraint* doodleHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* doodleTopMarginConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxWidthConstraint;
@@ -187,13 +175,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (UIView*)fakeOmniboxView {
   if (IsComposeboxIOSEnabled()) {
-    return self.fakeOmnibox;
+    return self.headerView.fakeOmniboxContainer;
   }
   return self.headerView.omnibox;
-}
-
-- (void)dealloc {
-  [self.accessibilityButton removeObserver:self forKeyPath:@"highlighted"];
 }
 
 - (void)expandHeaderForFocus {
@@ -213,12 +197,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   if (!IsComposeboxIOSEnabled()) {
     UIView* topOmnibox =
         [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
-    CGRect omniboxFrameInFakebox = [topOmnibox convertRect:topOmnibox.bounds
-                                                    toView:self.fakeOmnibox];
+    CGRect omniboxFrameInFakebox =
+        [topOmnibox convertRect:topOmnibox.bounds
+                         toView:self.headerView.fakeOmniboxContainer];
     self.headerView.fakeLocationBarLeadingConstraint.constant =
         omniboxFrameInFakebox.origin.x;
     self.headerView.fakeLocationBarTrailingConstraint.constant =
-        -(self.fakeOmnibox.bounds.size.width -
+        -(self.headerView.fakeOmniboxContainer.bounds.size.width -
           (omniboxFrameInFakebox.origin.x + omniboxFrameInFakebox.size.width));
     self.headerView.voiceSearchButton.alpha = 0;
     self.headerView.cancelButton.alpha = 0.7;
@@ -330,6 +315,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return [self.headerView customizationMenuButton];
 }
 
+- (UIButton*)identityDiscButton {
+  return self.headerView.identityDiscButton;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -342,6 +331,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
+    self.headerView.commandHandler = self.commandHandler;
+    self.headerView.toolbarDelegate = self.toolbarDelegate;
     [self.headerView setAIMAllowed:_isAIMAllowed];
     [self.headerView setFuseboxEligible:_fuseboxEligible];
 
@@ -363,23 +354,54 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     bottomConstraint.priority = UILayoutPriorityRequired - 1;
     bottomConstraint.active = YES;
 
-    [self addFakeOmnibox];
+    [self.headerView setupSubviews];
+
+    if (_dseLogo) {
+      [self.headerView setDefaultSearchEngineLogo:_dseLogo];
+    }
+
+    if (self.headerView.lensButton) {
+      [self.layoutGuideCenter referenceView:self.headerView.lensButton
+                                  underName:kFakeboxLensIconGuide];
+    }
+
+    [self updateVoiceSearchDisplay];
+
+    _identityDiscWidthConstraint =
+        [self.headerView.identityDiscButton.widthAnchor
+            constraintEqualToConstant:0];
+    _identityDiscHeightConstraint =
+        [self.headerView.identityDiscButton.heightAnchor
+            constraintEqualToConstant:0];
+    _identityDiscTrailingConstraint =
+        [self.headerView.identityDiscButton.trailingAnchor
+            constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide
+                                        .trailingAnchor
+                           constant:0];
+    _identityDiscTrailingConstraint.active = YES;
+    _identityDiscCapsuleWidthConstraint = [self.headerView.identityDiscButton
+                                               .widthAnchor
+        constraintGreaterThanOrEqualToAnchor:self.headerView.identityDiscButton
+                                                 .heightAnchor
+                                  multiplier:2.0];
+
+    [self.layoutGuideCenter referenceView:self.headerView.identityDiscButton
+                                underName:kNTPIdentityDiscButtonGuide];
+
+    if (self.identityDiscImage) {
+      [self updateIdentityDiscState];
+    }
+    [self updateIdentityDiscConstraints];
+
+    if (_hasAccountError) {
+      [self.headerView setIdentityDiscErrorBadge];
+    }
 
     [self.headerView addSubview:_searchEngineLogoMediator.view];
-    // Fake Tap View has identity disc, which should render above the doodle.
-    [self addFakeTapView];
-    [self.headerView addSubview:self.fakeOmnibox];
     _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
         NO;
     _searchEngineLogoMediator.view.accessibilityIdentifier =
         ntp_home::NTPLogoAccessibilityID();
-    self.fakeOmnibox.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.headerView addSeparatorToSearchField:self.fakeOmnibox];
-
-    // Identity disc needs to be added after the Google logo/doodle since it
-    // needs to respond to user taps first.
-    [self addIdentityDisc];
 
     [self addCustomizationMenu];
 
@@ -392,11 +414,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     width = std::max<CGFloat>(
         0, width - safeAreaInsets.left - safeAreaInsets.right);
 
-    self.fakeOmniboxWidthConstraint = [self.fakeOmnibox.widthAnchor
-        constraintEqualToConstant:content_suggestions::SearchFieldWidth(
-                                      width, self.traitCollection)];
+    self.fakeOmniboxWidthConstraint =
+        [self.headerView.fakeOmniboxContainer.widthAnchor
+            constraintEqualToConstant:content_suggestions::SearchFieldWidth(
+                                          width, self.traitCollection)];
     [self addConstraintsForLogoView:_searchEngineLogoMediator.view
-                        fakeOmnibox:self.fakeOmnibox
+                        fakeOmnibox:self.headerView.fakeOmniboxContainer
                       andHeaderView:self.headerView];
 
     self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
@@ -471,93 +494,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
           // Fake Tap button only needs to work in portrait. Disable the button
           // in landscape because in landscape the button covers logoView (which
           // need to handle taps).
-          strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
+          strongSelf.headerView.fakeTapButton.userInteractionEnabled =
+              isSplitToolbarMode;
         }
       };
 
   [coordinator animateAlongsideTransition:transitionBlock completion:nil];
-}
-
-#pragma mark - UIIndirectScribbleInteractionDelegate
-
-- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-              requestElementsInRect:(CGRect)rect
-                         completion:
-                             (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion {
-  completion(@[ kScribbleFakeboxElementId ]);
-}
-
-- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                   isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-  return self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder;
-}
-
-- (CGRect)
-    indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-
-  // Imitate the entire location bar being scribblable.
-  return interaction.view.bounds;
-}
-
-- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-               focusElementIfNeeded:
-                   (UIScribbleElementIdentifier)elementIdentifier
-                     referencePoint:(CGPoint)focusReferencePoint
-                         completion:
-                             (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion {
-  if (!self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder) {
-    [self.toolbarDelegate.fakeboxScribbleForwardingTarget becomeFirstResponder];
-  }
-
-  completion(self.toolbarDelegate.fakeboxScribbleForwardingTarget);
-}
-
-- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-         shouldDelayFocusForElement:
-             (UIScribbleElementIdentifier)elementIdentifier {
-  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
-  return YES;
-}
-
-#pragma mark - UIPointerInteractionDelegate
-
-- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
-                      regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion {
-  return defaultRegion;
-}
-
-- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region {
-  // If the view is no longer in a window due to a race condition, no
-  // pointer style is needed.
-  if (!interaction.view.window) {
-    return nil;
-  }
-  // Without this, the hover effect looks slightly oversized.
-  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
-  UIBezierPath* path =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:rect.size.height];
-  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-  parameters.visiblePath = path;
-  UITargetedPreview* preview =
-      [[UITargetedPreview alloc] initWithView:interaction.view
-                                   parameters:parameters];
-  UIPointerHoverEffect* effect =
-      [UIPointerHoverEffect effectWithPreview:preview];
-  effect.prefersScaledContent = NO;
-  effect.prefersShadow = NO;
-  UIPointerShape* shape = [UIPointerShape
-      beamWithPreferredLength:interaction.view.bounds.size.height / 2
-                         axis:UIAxisVertical];
-  return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
 
 #pragma mark - FakeboxButtonsSnapshotProvider
@@ -686,179 +628,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 #pragma mark - Private
-
-// Initialize and add a search field tap target and a voice search button.
-- (void)addFakeOmnibox {
-  self.fakeOmnibox = [[UIView alloc] init];
-
-  // Set isAccessibilityElement to NO so that Voice Search button is accessible.
-  [self.fakeOmnibox setIsAccessibilityElement:NO];
-  self.fakeOmnibox.accessibilityIdentifier =
-      ntp_home::FakeOmniboxAccessibilityID();
-
-  // Set a button the same size as the fake omnibox as the accessibility
-  // element. If the hint is the only accessible element, when the fake omnibox
-  // is taking the full width, there are few points that are not accessible and
-  // allow to select the content below it.
-  self.accessibilityButton = [[UIButton alloc] init];
-  [self.accessibilityButton addTarget:self
-                               action:@selector(fakeboxTapped)
-                     forControlEvents:UIControlEventTouchUpInside];
-  // Because the visual fakebox background is implemented within
-  // NewTabPageHeaderView, KVO the highlight events of
-  // `accessibilityButton` and pass them along.
-  [self.accessibilityButton addObserver:self
-                             forKeyPath:@"highlighted"
-                                options:NSKeyValueObservingOptionNew
-                                context:NULL];
-
-  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
-  self.accessibilityButton.layer.cornerRadius =
-      (fakeOmniboxHeight - kFakeLocationBarHeightMargin) / 2;
-  self.accessibilityButton.clipsToBounds = YES;
-  self.accessibilityButton.isAccessibilityElement = YES;
-  self.accessibilityButton.accessibilityLabel = self.placeholderText;
-  self.accessibilityButton.accessibilityIdentifier =
-      kNTPFakeOmniboxAccessibilityButton;
-  [self.fakeOmnibox addSubview:self.accessibilityButton];
-  self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
-
-  NSMutableArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =
-      [[NSMutableArray alloc] init];
-  if (self.headerView.lensButton) {
-    [accessibilityCustomActions
-        addObject:[[UIAccessibilityCustomAction alloc]
-                      initWithName:l10n_util::GetNSString(
-                                       IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS)
-                             image:nil
-                            target:self
-                          selector:@selector(openLensViewFinder)]];
-  }
-
-  if (self.headerView.voiceSearchButton) {
-    [accessibilityCustomActions
-        addObject:
-            [[UIAccessibilityCustomAction alloc]
-                initWithName:l10n_util::GetNSString(
-                                 IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH)
-                       image:nil
-                      target:self
-                    selector:@selector(openVoiceSearch)]];
-  }
-
-  if ([self.headerView shouldShowPlusButton]) {
-    [accessibilityCustomActions
-        addObject:
-            [[UIAccessibilityCustomAction alloc]
-                initWithName:
-                    l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL)
-                       image:nil
-                      target:self
-                    selector:@selector(openMultimodalActionsMenu)]];
-  }
-
-  self.accessibilityButton.accessibilityCustomActions =
-      accessibilityCustomActions;
-
-  [self.fakeOmnibox
-      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-
-  [self.headerView addViewsToSearchField:self.fakeOmnibox];
-  if (_dseLogo) {
-    [self.headerView setDefaultSearchEngineLogo:_dseLogo];
-  }
-
-  UIIndirectScribbleInteraction* scribbleInteraction =
-      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
-  [self.fakeOmnibox addInteraction:scribbleInteraction];
-
-  if (self.headerView.lensButton) {
-    [self.layoutGuideCenter referenceView:self.headerView.lensButton
-                                underName:kFakeboxLensIconGuide];
-  }
-
-  [self updateVoiceSearchDisplay];
-}
-
-// On NTP in split toolbar mode the omnibox has different location (in the
-// middle of the screen), but the users have muscle memory and still tap on area
-// where omnibox is normally placed (the top area of NTP). Fake Tap Button is
-// located in the same position where omnibox is normally placed and focuses the
-// omnibox when tapped. Fake Tap Button user interactions are only enabled in
-// split toolbar mode.
-- (void)addFakeTapView {
-  UIView* toolbar = [[UIView alloc] init];
-  toolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  self.fakeTapButton = [[UIButton alloc] init];
-  if (!IsChromeNextIaEnabled()) {
-    self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
-  }
-  self.fakeTapButton.isAccessibilityElement = NO;
-  self.fakeTapButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [toolbar addSubview:self.fakeTapButton];
-  [self.headerView addToolbarView:toolbar];
-  [self.fakeTapButton addTarget:self
-                         action:@selector(fakeTapViewTapped)
-               forControlEvents:UIControlEventTouchUpInside];
-  AddSameConstraints(self.fakeTapButton, toolbar);
-}
-
-- (void)addIdentityDisc {
-  // Set up a button. Details for the button will be set through delegate
-  // implementation of UserAccountImageUpdateDelegate.
-  self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  self.identityDiscButton.accessibilityIdentifier = kNTPFeedHeaderIdentityDisc;
-  [self.identityDiscButton addTarget:self.commandHandler
-                              action:@selector(identityDiscWasTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  self.identityDiscButton.pointerInteractionEnabled = YES;
-  self.identityDiscButton.pointerStyleProvider =
-      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                       UIPointerShape* proposedShape) {
-        // The identity disc button is oversized to the avatar image to meet the
-        // minimum touch target dimensions. The hover pointer effect should
-        // match the avatar image dimensions, not the button dimensions.
-        CGFloat singleInset =
-            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:rect
-                                    cornerRadius:rect.size.width / 2];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-
-  // `self.identityDiscButton` should not be updated if `self.identityDiscImage`
-  // is not available yet.
-  if (self.identityDiscImage) {
-    [self updateIdentityDiscState];
-  }
-  [self.headerView setIdentityDiscView:self.identityDiscButton];
-
-  [self.layoutGuideCenter referenceView:self.identityDiscButton
-                              underName:kNTPIdentityDiscButtonGuide];
-
-  _identityDiscWidthConstraint =
-      [self.identityDiscButton.widthAnchor constraintEqualToConstant:0];
-  _identityDiscHeightConstraint =
-      [self.identityDiscButton.heightAnchor constraintEqualToConstant:0];
-  _identityDiscTrailingConstraint = [self.identityDiscButton.trailingAnchor
-      constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide.trailingAnchor
-                     constant:0];
-  _identityDiscTrailingConstraint.active = YES;
-  _identityDiscCapsuleWidthConstraint = [self.identityDiscButton.widthAnchor
-      constraintGreaterThanOrEqualToAnchor:self.identityDiscButton.heightAnchor
-                                multiplier:2.0];
-
-  // Initially set the constraints of the identity disc.
-  [self updateIdentityDiscConstraints];
-
-  if (_hasAccountError) {
-    // updateADPBadgeWithErrorFound was invoked before the view was created.
-    [self.headerView setIdentityDiscErrorBadge];
-  }
-}
 
 // Creates the Home customization menu and adds it to the header view.
 - (void)addCustomizationMenu {
@@ -1020,46 +789,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   button.configuration = buttonConfiguration;
 }
 
-- (void)fakeTapViewTapped {
-  [self.NTPMetricsRecorder recordFakeTapViewTapped];
-  [self.commandHandler fakeboxTapped];
-}
-
-- (void)fakeboxTapped {
-  [self.NTPMetricsRecorder recordFakeOmniboxTapped];
-  TriggerHapticFeedbackForSelectionChange();
-  [self.commandHandler fakeboxTapped];
-}
-
-// Opens Lens View Finder.
-- (void)openLensViewFinder {
-  [self.NTPShortcutsHandler openLensViewFinder];
-}
-
-// Directly loads voice search in single action.
-- (void)openVoiceSearch {
-  [self.NTPShortcutsHandler preloadVoiceSearch];
-  [self.NTPShortcutsHandler
-      loadVoiceSearchFromView:self.headerView.voiceSearchButton];
-}
-
-// Opens the multimodal actions menu.
-- (void)openMultimodalActionsMenu {
-  [self.NTPShortcutsHandler openMultimodalActionsMenu];
-}
-
 - (void)focusAccessibilityOnOmnibox {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.fakeOmnibox);
-}
-
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary*)change
-                       context:(void*)context {
-  if ([@"highlighted" isEqualToString:keyPath]) {
-    [self.headerView setFakeboxHighlighted:[object isHighlighted]];
-  }
+                                  self.headerView.fakeOmniboxContainer);
 }
 
 // If display is compact size, shows fakebox. If display is regular size,
@@ -1071,7 +803,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
                                                     self.traitCollection)];
-  self.fakeOmnibox.hidden =
+  self.headerView.fakeOmniboxContainer.hidden =
       CanShowTabStrip(self) &&
       (_searchEngineLogoState == SearchEngineLogoState::kNone);
   [self.headerView layoutIfNeeded];
@@ -1281,7 +1013,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)updatePlaceholderText {
   NSString* placeholderText = [self placeholderText];
   self.headerView.placeholderText = placeholderText;
-  self.accessibilityButton.accessibilityLabel = placeholderText;
+  self.headerView.accessibilityButton.accessibilityLabel = placeholderText;
 }
 
 // Returns the omnibox placeholder text.

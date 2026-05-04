@@ -20,8 +20,10 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
@@ -61,6 +63,9 @@
 #import "ui/gfx/ios/uikit_util.h"
 
 namespace {
+
+// Element ID for Fakebox scribble.
+NSString* const kScribbleFakeboxElementId = @"kScribbleFakeboxElementId";
 
 // Fakebox highlight animation duration.
 const CGFloat kFakeboxHighlightDuration = 0.4;
@@ -189,7 +194,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 @end
 
-@interface NewTabPageHeaderView () <TabGroupIndicatorViewDelegate>
+@interface NewTabPageHeaderView () <TabGroupIndicatorViewDelegate,
+                                    UIIndirectScribbleInteractionDelegate,
+                                    UIPointerInteractionDelegate>
 
 // The Lens button. May be null if Lens is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
@@ -198,7 +205,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* plusButton;
 
 @property(nonatomic, strong) UIView* voiceAndLensDivider;
-@property(nonatomic, strong) UIView* miaAndVoiceDivider;
 
 @property(nonatomic, strong, readwrite)
     ExtendedTouchTargetButton* voiceSearchButton;
@@ -294,6 +300,22 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self registerForTraitChanges:buttonTraits
                        withAction:@selector
                        (updateButtonsForCurrentTraitCollection)];
+
+    // Create the identity disc button.
+    _identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _identityDiscButton.accessibilityIdentifier = kNTPFeedHeaderIdentityDisc;
+    _identityDiscButton.pointerInteractionEnabled = YES;
+    _identityDiscButton.pointerStyleProvider = ^UIPointerStyle*(
+        UIButton* button, UIPointerEffect* proposedEffect,
+        UIPointerShape* proposedShape) {
+      CGFloat singleInset =
+          (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+      CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+      UIPointerShape* shape =
+          [UIPointerShape shapeWithRoundedRect:rect
+                                  cornerRadius:rect.size.width / 2];
+      return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+    };
   }
   return self;
 }
@@ -311,17 +333,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
     _toolbarNoTabGroupIndicartorConstraint,
   ]];
-}
 
-- (void)setIdentityDiscView:(UIView*)identityDiscView {
-  DCHECK(identityDiscView);
-  _identityDiscView = identityDiscView;
-  [self.toolBarView addSubview:_identityDiscView];
-
-  // Sets the layout constraints for size of Identity Disc and toolbar.
-  self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
+  // Add identity disc button to toolbar.
+  [self.toolBarView addSubview:self.identityDiscButton];
+  self.identityDiscButton.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [self.identityDiscView.centerYAnchor
+    [self.identityDiscButton.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
 }
@@ -351,7 +368,128 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self addFakeboxButtonsToStack];
 }
 
-- (void)addViewsToSearchField:(UIView*)searchField {
+- (void)setupSubviews {
+  [self setupFakeOmnibox];
+  [self setupFakeTapView];
+  [self setupIdentityDisc];
+  [self addSeparatorToSearchField:self.fakeOmniboxContainer];
+}
+
+- (void)setupIdentityDisc {
+  [self.identityDiscButton addTarget:self.commandHandler
+                              action:@selector(identityDiscWasTapped:)
+                    forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)setupFakeOmnibox {
+  self.fakeOmniboxContainer = [[UIView alloc] init];
+  self.fakeOmniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.fakeOmniboxContainer setIsAccessibilityElement:NO];
+  self.fakeOmniboxContainer.accessibilityIdentifier =
+      ntp_home::FakeOmniboxAccessibilityID();
+  [self addSubview:self.fakeOmniboxContainer];
+
+  self.accessibilityButton = [[UIButton alloc] init];
+  [self.accessibilityButton addTarget:self.commandHandler
+                               action:@selector(fakeboxTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+  [self.accessibilityButton addObserver:self
+                             forKeyPath:@"highlighted"
+                                options:NSKeyValueObservingOptionNew
+                                context:NULL];
+
+  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
+  self.accessibilityButton.layer.cornerRadius =
+      (fakeOmniboxHeight - kFakeLocationBarHeightMargin) / 2;
+  self.accessibilityButton.clipsToBounds = YES;
+  self.accessibilityButton.isAccessibilityElement = YES;
+  self.accessibilityButton.accessibilityLabel = self.placeholderText;
+  self.accessibilityButton.accessibilityIdentifier =
+      kNTPFakeOmniboxAccessibilityButton;
+  [self.fakeOmniboxContainer addSubview:self.accessibilityButton];
+  self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(self.fakeOmniboxContainer, self.accessibilityButton);
+
+  NSMutableArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =
+      [[NSMutableArray alloc] init];
+  if (self.lensButton) {
+    [accessibilityCustomActions
+        addObject:[[UIAccessibilityCustomAction alloc]
+                      initWithName:l10n_util::GetNSString(
+                                       IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS)
+                             image:nil
+                            target:self
+                          selector:@selector(openLensViewFinder)]];
+  }
+
+  if (self.voiceSearchButton) {
+    [accessibilityCustomActions
+        addObject:
+            [[UIAccessibilityCustomAction alloc]
+                initWithName:l10n_util::GetNSString(
+                                 IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH)
+                       image:nil
+                      target:self
+                    selector:@selector(openVoiceSearch)]];
+  }
+
+  if ([self shouldShowPlusButton]) {
+    [accessibilityCustomActions
+        addObject:
+            [[UIAccessibilityCustomAction alloc]
+                initWithName:
+                    l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL)
+                       image:nil
+                      target:self
+                    selector:@selector(openMultimodalActionsMenu)]];
+  }
+
+  self.accessibilityButton.accessibilityCustomActions =
+      accessibilityCustomActions;
+
+  [self.fakeOmniboxContainer
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+
+  [self addViewsToFakeOmnibox];
+
+  UIIndirectScribbleInteraction* scribbleInteraction =
+      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
+  [self.fakeOmniboxContainer addInteraction:scribbleInteraction];
+}
+
+- (void)openVoiceSearch {
+  [self.NTPShortcutsHandler preloadVoiceSearch];
+  [self.NTPShortcutsHandler loadVoiceSearchFromView:self.voiceSearchButton];
+}
+
+- (void)openMultimodalActionsMenu {
+  [self.NTPShortcutsHandler openMultimodalActionsMenu];
+}
+
+- (void)setupFakeTapView {
+  UIView* toolbar = [[UIView alloc] init];
+  toolbar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.fakeTapButton = [[UIButton alloc] init];
+  if (!IsChromeNextIaEnabled()) {
+    self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
+  }
+  self.fakeTapButton.isAccessibilityElement = NO;
+  self.fakeTapButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [toolbar addSubview:self.fakeTapButton];
+  [self addToolbarView:toolbar];
+  [self.fakeTapButton addTarget:self
+                         action:@selector(fakeTapViewTapped)
+               forControlEvents:UIControlEventTouchUpInside];
+  AddSameConstraints(self.fakeTapButton, toolbar);
+}
+
+- (void)fakeTapViewTapped {
+  [self.commandHandler fakeTapViewTapped];
+}
+
+- (void)addViewsToFakeOmnibox {
+  UIView* searchField = self.fakeOmniboxContainer;
   // Fake Toolbar.
   self.fakeToolbar = [[UIView alloc] init];
   [searchField insertSubview:self.fakeToolbar atIndex:0];
@@ -754,7 +892,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                                               1 - progress);
     // Hide divider when N badge is shown.
     self.voiceAndLensDivider.alpha = progress;
-    self.miaAndVoiceDivider.alpha = progress;
   }
 }
 
@@ -814,7 +951,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)setIdentityDiscErrorBadge {
-  if (!_identityDiscView) {
+  if (!_identityDiscButton) {
     return;
   }
   _accountDiscParticleBadgeImageView = [[UIImageView alloc]
@@ -833,14 +970,14 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _accountDiscParticleBadgeImageView.accessibilityIdentifier =
       kNTPFeedHeaderIdentityDiscBadge;
 
-  [_identityDiscView addSubview:_accountDiscParticleBadgeImageView];
+  [_identityDiscButton addSubview:_accountDiscParticleBadgeImageView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_accountDiscParticleBadgeImageView.centerXAnchor
-        constraintEqualToAnchor:_identityDiscView.centerXAnchor
+        constraintEqualToAnchor:_identityDiscButton.centerXAnchor
                        constant:kAccountBadgeOffsetFromDiscCenter],
     [_accountDiscParticleBadgeImageView.centerYAnchor
-        constraintEqualToAnchor:_identityDiscView.centerYAnchor
+        constraintEqualToAnchor:_identityDiscButton.centerYAnchor
                        constant:kAccountBadgeOffsetFromDiscCenter],
   ]];
 }
@@ -1322,7 +1459,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _lensButton.tintColor = tintColor;
   _plusButton.tintColor = tintColor;
   _voiceAndLensDivider.backgroundColor = dividerColor;
-  _miaAndVoiceDivider.backgroundColor = dividerColor;
 }
 
 // Creates a thin grey divider that acts as a visual separator.
@@ -1447,6 +1583,109 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     _toolbarTabGroupIndicartorConstraint.active = NO;
     _toolbarNoTabGroupIndicartorConstraint.active = YES;
   }
+}
+
+#pragma mark - UIIndirectScribbleInteractionDelegate
+
+- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+              requestElementsInRect:(CGRect)rect
+                         completion:
+                             (void (^)(NSArray<UIScribbleElementIdentifier>*
+                                           elements))completion {
+  completion(@[ kScribbleFakeboxElementId ]);
+}
+
+- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+                   isElementFocused:
+                       (UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+  return
+      [self.toolbarDelegate fakeboxScribbleForwardingTarget].isFirstResponder;
+}
+
+- (CGRect)
+    indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+
+  // Imitate the entire location bar being scribblable.
+  return interaction.view.bounds;
+}
+
+- (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+               focusElementIfNeeded:
+                   (UIScribbleElementIdentifier)elementIdentifier
+                     referencePoint:(CGPoint)focusReferencePoint
+                         completion:
+                             (void (^)(UIResponder<UITextInput>* focusedInput))
+                                 completion {
+  if (!
+      [self.toolbarDelegate fakeboxScribbleForwardingTarget].isFirstResponder) {
+    [[self.toolbarDelegate fakeboxScribbleForwardingTarget]
+        becomeFirstResponder];
+  }
+
+  completion([self.toolbarDelegate fakeboxScribbleForwardingTarget]);
+}
+
+- (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
+         shouldDelayFocusForElement:
+             (UIScribbleElementIdentifier)elementIdentifier {
+  DCHECK(elementIdentifier == kScribbleFakeboxElementId);
+  return YES;
+}
+
+#pragma mark - UIPointerInteractionDelegate
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  // If the view is no longer in a window due to a race condition, no
+  // pointer style is needed.
+  if (!interaction.view.window) {
+    return nil;
+  }
+  // Without this, the hover effect looks slightly oversized.
+  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
+  UIBezierPath* path =
+      [UIBezierPath bezierPathWithRoundedRect:rect
+                                 cornerRadius:rect.size.height];
+  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+  parameters.visiblePath = path;
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:interaction.view
+                                   parameters:parameters];
+  UIPointerHoverEffect* effect =
+      [UIPointerHoverEffect effectWithPreview:preview];
+  effect.prefersScaledContent = NO;
+  effect.prefersShadow = NO;
+  UIPointerShape* shape = [UIPointerShape
+      beamWithPreferredLength:interaction.view.bounds.size.height / 2
+                         axis:UIAxisVertical];
+  return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  if ([@"highlighted" isEqualToString:keyPath]) {
+    [self setFakeboxHighlighted:[object isHighlighted]];
+  } else {
+    [super observeValueForKeyPath:keyPath
+                         ofObject:object
+                           change:change
+                          context:context];
+  }
+}
+
+- (void)dealloc {
+  [self.accessibilityButton removeObserver:self forKeyPath:@"highlighted"];
 }
 
 @end

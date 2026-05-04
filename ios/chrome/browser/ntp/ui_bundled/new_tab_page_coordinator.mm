@@ -890,12 +890,19 @@
 }
 
 - (void)fakeboxTapped {
+  [self.NTPMetricsRecorder recordFakeOmniboxTapped];
+  TriggerHapticFeedbackForSelectionChange();
   [self dismissCustomizationMenu];
   _fakeboxTapped = YES;
   if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPFakebox)) {
     return;
   }
   [self.NTPViewController focusOmnibox];
+}
+
+- (void)fakeTapViewTapped {
+  [self.NTPMetricsRecorder recordFakeTapViewTapped];
+  [self fakeboxTapped];
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
