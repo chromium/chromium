@@ -457,21 +457,22 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext>) {
-        __strong __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
         if (!IsChromeNextIaEnabled()) {
+          __strong __typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+
           // Ensure omnibox is reset when not a regular tablet.
           if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
             [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
           }
+
+          // Fake Tap button only needs to work in portrait. Disable the button
+          // in landscape because in landscape the button covers logoView (which
+          // need to handle taps).
+          strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
         }
-        // Fake Tap button only needs to work in portrait. Disable the button
-        // in landscape because in landscape the button covers logoView (which
-        // need to handle taps).
-        strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
       };
 
   [coordinator animateAlongsideTransition:transitionBlock completion:nil];
@@ -791,7 +792,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   UIView* toolbar = [[UIView alloc] init];
   toolbar.translatesAutoresizingMaskIntoConstraints = NO;
   self.fakeTapButton = [[UIButton alloc] init];
-  self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
+  if (!IsChromeNextIaEnabled()) {
+    self.fakeTapButton.userInteractionEnabled = IsSplitToolbarMode(self);
+  }
   self.fakeTapButton.isAccessibilityElement = NO;
   self.fakeTapButton.translatesAutoresizingMaskIntoConstraints = NO;
   [toolbar addSubview:self.fakeTapButton];
