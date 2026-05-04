@@ -791,6 +791,10 @@ GaiaCookieManagerService::GetCookieManagerForPartition() {
   return signin_client_->GetCookieManager();
 }
 
+signin::PartitionSuffix GaiaCookieManagerService::GetPartitionSuffix() const {
+  return signin::PartitionSuffix::kDefault;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 GaiaCookieManagerService::

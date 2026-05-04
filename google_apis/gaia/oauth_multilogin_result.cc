@@ -32,10 +32,6 @@ std::string_view StripXSSICharacters(std::string_view raw_data) {
   return body.substr(std::min(body.find('\n'), body.size()));
 }
 
-void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status) {
-  base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseStatus", status);
-}
-
 void RecordMultiloginResponseEncryptionError(
     TokenBindingResponseEncryptionError error) {
   base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseEncryptionError",
@@ -360,14 +356,12 @@ OAuthMultiloginResult::OAuthMultiloginResult(
   std::optional<base::Value> json_data =
       base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_data) {
-    RecordMultiloginResponseStatus(status_);
     return;
   }
 
   const base::DictValue& json_dict = json_data->GetDict();
   const std::string* status_string = json_dict.FindString("status");
   if (!status_string) {
-    RecordMultiloginResponseStatus(status_);
     return;
   }
 
@@ -388,8 +382,6 @@ OAuthMultiloginResult::OAuthMultiloginResult(
     // Sets status_ to `kUnknownStatus` if failed accounts cannot be parsed.
     TryParseFailedAccountsFromValue(json_dict);
   }
-
-  RecordMultiloginResponseStatus(status_);
 }
 
 OAuthMultiloginResult::~OAuthMultiloginResult() = default;

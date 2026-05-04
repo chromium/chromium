@@ -30,6 +30,29 @@ class BoundSessionOAuthMultiLoginDelegate;
 struct MultiloginParameters;
 enum class SetAccountsInCookieResult;
 
+enum class PartitionSuffix {
+  kDefault,
+  kContextualTasks,
+  kGlic,
+  kTest,
+  kNone,
+};
+
+inline std::string_view PartitionSuffixToString(PartitionSuffix suffix) {
+  switch (suffix) {
+    case PartitionSuffix::kDefault:
+      return "Default";
+    case PartitionSuffix::kContextualTasks:
+      return "ContextualTasks";
+    case PartitionSuffix::kGlic:
+      return "Glic";
+    case PartitionSuffix::kTest:
+      return "Test";
+    case PartitionSuffix::kNone:
+      return "";
+  }
+}
+
 // AccountsCookieMutator is the interface to support merging known local Google
 // accounts into the cookie jar tracking the list of logged-in Google sessions.
 class AccountsCookieMutator {
@@ -45,6 +68,8 @@ class AccountsCookieMutator {
 
     // Returns the CookieManager for the partition.
     virtual network::mojom::CookieManager* GetCookieManagerForPartition() = 0;
+
+    virtual PartitionSuffix GetPartitionSuffix() const;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Creates a new BoundSessionOAuthMultiLoginDelegate for the partition. If

@@ -72,6 +72,11 @@ ContextualTasksCookieSynchronizer::GetCookieManagerForPartition() {
   return GetStoragePartition()->GetCookieManagerForBrowserProcess();
 }
 
+signin::PartitionSuffix ContextualTasksCookieSynchronizer::GetPartitionSuffix()
+    const {
+  return signin::PartitionSuffix::kContextualTasks;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 network::mojom::DeviceBoundSessionManager*
 ContextualTasksCookieSynchronizer::GetDeviceBoundSessionManagerForPartition() {

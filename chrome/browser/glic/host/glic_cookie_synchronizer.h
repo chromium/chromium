@@ -91,6 +91,7 @@ class GlicCookieSynchronizer
       GaiaAuthConsumer* consumer,
       const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
+  signin::PartitionSuffix GetPartitionSuffix() const override;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   network::mojom::DeviceBoundSessionManager*
   GetDeviceBoundSessionManagerForPartition() override;

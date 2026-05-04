@@ -323,6 +323,7 @@ class GaiaCookieManagerService
       GaiaAuthConsumer* consumer,
       const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
+  signin::PartitionSuffix GetPartitionSuffix() const override;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
   CreateBoundSessionOAuthMultiLoginDelegateForPartition() override;

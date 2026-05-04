@@ -156,13 +156,22 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
       registration_payload.allowed_refresh_initiators);
 }
 
-void RecordCreateBoundSessionsResult(
-    OAuthMultiloginHelper::DeviceBoundSessionCreateSessionsResult result) {
-  base::UmaHistogramEnumeration(
-      "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult",
-      result);
-}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status,
+                                    PartitionSuffix partition_suffix) {
+  if (status == OAuthMultiloginResponseStatus::kRetry) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseStatus", status);
+  std::string_view suffix_str = PartitionSuffixToString(partition_suffix);
+  if (!suffix_str.empty()) {
+    base::UmaHistogramEnumeration(
+        "Signin.OAuthMultiloginResponseStatus." + std::string(suffix_str),
+        status);
+  }
+}
 
 }  // namespace
 
@@ -326,6 +335,9 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
 
 void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
     const OAuthMultiloginResult& result) {
+  RecordMultiloginResponseStatus(result.status(),
+                                 partition_delegate_->GetPartitionSuffix());
+
   if (result.status() == OAuthMultiloginResponseStatus::kOk) {
     if (VLOG_IS_ON(1)) {
       std::vector<std::string> account_ids;
@@ -538,6 +550,20 @@ void OAuthMultiloginHelper::OnBoundSessionsCreated(
   }
 
   std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
+}
+void OAuthMultiloginHelper::RecordCreateBoundSessionsResult(
+    DeviceBoundSessionCreateSessionsResult result) {
+  base::UmaHistogramEnumeration(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult",
+      result);
+  PartitionSuffix suffix = partition_delegate_->GetPartitionSuffix();
+  std::string_view suffix_str = PartitionSuffixToString(suffix);
+  if (!suffix_str.empty()) {
+    base::UmaHistogramEnumeration(
+        "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult." +
+            std::string(suffix_str),
+        result);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

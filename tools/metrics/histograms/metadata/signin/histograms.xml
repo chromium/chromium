@@ -1499,7 +1499,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram
-    name="Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult"
+    name="Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult{PartitionSuffix}"
     enum="DeviceBoundSessionCreateSessionsResult" expires_after="2026-10-04">
   <owner>ernn@google.com</owner>
   <owner>alexilin@chromium.org</owner>
@@ -1508,8 +1508,15 @@ prefs when the profile is loaded.  -->
     This histogram records result of the attempt to create device bound sessions
     with the server-provided session(s) data from OAuthMultilogin. Only recorded
     for Chrome instances that support DBSC standard and OAuthMultilogin cookies
-    binding.
+    binding. {PartitionSuffix}
   </summary>
+  <token key="PartitionSuffix">
+    <variant name="" summary="Overall result across all partitions."/>
+    <variant name=".ContextualTasks"
+        summary="For the ContextualTasks partition."/>
+    <variant name=".Default" summary="For the default partition."/>
+    <variant name=".Glic" summary="For the Glic partition."/>
+  </token>
 </histogram>
 
 <histogram
@@ -2743,14 +2750,23 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.OAuthMultiloginResponseStatus"
+<histogram name="Signin.OAuthMultiloginResponseStatus{PartitionSuffix}"
     enum="OAuthMultiloginResponseStatus" expires_after="never">
 <!-- expires-never: This reports the status received from gaia Multilogin and
 should be kept to monitor/debug signin Multilogin issues-->
 
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
-  <summary>Response status received from gaia Multilogin.</summary>
+  <summary>
+    Response status received from gaia Multilogin. {PartitionSuffix}
+  </summary>
+  <token key="PartitionSuffix">
+    <variant name="" summary="Overall result across all partitions."/>
+    <variant name=".ContextualTasks"
+        summary="For the ContextualTasks partition."/>
+    <variant name=".Default" summary="For the default partition."/>
+    <variant name=".Glic" summary="For the Glic partition."/>
+  </token>
 </histogram>
 
 <histogram name="Signin.OpenTabsCount.{ConsentLevel}" units="count"

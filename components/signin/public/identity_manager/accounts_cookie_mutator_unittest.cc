@@ -160,6 +160,10 @@ class AccountsCookieMutatorTest
     return &cookie_manager_for_partition_;
   }
 
+  PartitionSuffix GetPartitionSuffix() const override {
+    return PartitionSuffix::kTest;
+  }
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   network::mojom::DeviceBoundSessionManager*
   GetDeviceBoundSessionManagerForPartition() override {

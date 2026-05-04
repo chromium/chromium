@@ -21,6 +21,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/cookies/cookie_access_result.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
@@ -119,6 +120,11 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
 
   // Invoked when all cookies has been set.
   void OnCookiesSet(const std::vector<net::CookieAccessResult>& results);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void RecordCreateBoundSessionsResult(
+      DeviceBoundSessionCreateSessionsResult result);
+#endif
 
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;

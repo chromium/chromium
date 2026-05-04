@@ -9,6 +9,11 @@
 
 namespace signin {
 
+PartitionSuffix AccountsCookieMutator::PartitionDelegate::GetPartitionSuffix()
+    const {
+  return PartitionSuffix::kNone;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<BoundSessionOAuthMultiLoginDelegate> AccountsCookieMutator::
     PartitionDelegate::CreateBoundSessionOAuthMultiLoginDelegateForPartition() {
