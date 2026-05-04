@@ -17,4 +17,7 @@ specific_include_rules = {
   "chrome_connected_header_helper.cc": [
     "+chromeos/crosapi/mojom/crosapi.mojom.h"
   ],
+  "mirror_account_reconcilor_delegate.cc": [
+    "+components/sync/base/features.h"
+  ],
 }

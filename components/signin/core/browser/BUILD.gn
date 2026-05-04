@@ -70,6 +70,7 @@ static_library("browser") {
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/common:buildflags",
     "//components/supervised_user/core/common:features",
+    "//components/sync/base:features",
     "//components/webdata/common",
     "//crypto",
     "//services/network/public/cpp",
