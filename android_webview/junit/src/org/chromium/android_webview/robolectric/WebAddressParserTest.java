@@ -82,6 +82,11 @@ public class WebAddressParserTest {
         Assert.assertEquals("http://google.com./b/c/g", fixupUrl("http://google.com./b/c/g"));
         Assert.assertEquals(
                 "http://www.myspace.com/?si=1", fixupUrl("http://www.myspace.com?si=1"));
+
+        // crbug.com/500311718
+        Assert.assertEquals(
+                "http://foo.com:@example.com/", fixupUrl("http://foo.com:@example.com/"));
+        Assert.assertEquals("http://foo.com:@example.com/", fixupUrl("foo.com:@example.com/"));
     }
 
     @Test

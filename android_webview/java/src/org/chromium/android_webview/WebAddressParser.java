@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 
 import java.net.URISyntaxException;
@@ -41,9 +39,10 @@ public class WebAddressParser {
     // See android.util.Patterns.GOOD_IRI_CHAR.
     private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
     private static final String SCHEME = "(?:(http|https|file)\\:\\/\\/)?";
-    // We replace the regex of AUTHORITY to fix crbug.com/1247395, this is the only functional
-    // change in this file comparing to the original WebAddress from Android framework.
-    private static final String AUTHORITY = "(?:([^/?#:]+(?::[^/?#]+)?)@)?";
+    // We replace the regex of AUTHORITY to fix crbug.com/1247395 and crbug.com/500311718, this is
+    // the only functional change in this file comparing to the original WebAddress from Android
+    // framework.
+    private static final String AUTHORITY = "(?:([^/?#:]+(?::[^/?#]*)?)@)?";
     private static final String HOST =
             "([" + GOOD_IRI_CHAR + "%_-][" + GOOD_IRI_CHAR + "%_\\.-]*|\\[[0-9a-fA-F:\\.]+\\])?";
     private static final String PORT = "(?:\\:([0-9]*))?";
@@ -115,7 +114,6 @@ public class WebAddressParser {
         if (mScheme.equals("")) mScheme = "http";
     }
 
-    @NonNull
     @Override
     public String toString() {
         String port = "";
