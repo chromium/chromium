@@ -156,7 +156,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self setAdditionalSafeAreaInsets:kSafeAreaInsets];
-  self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   [self setUpCollectionView];
   [self setUpDataSource];
@@ -260,7 +260,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
-  _collectionView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  _collectionView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   _collectionView.showsVerticalScrollIndicator = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
 
@@ -321,6 +322,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
         [[UICollectionLayoutListConfiguration alloc]
             initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
     listConfig.headerMode = UICollectionLayoutListHeaderModeSupplementary;
+    listConfig.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     NSCollectionLayoutSection* section = [NSCollectionLayoutSection
         sectionWithListConfiguration:listConfig
                    layoutEnvironment:layoutEnvironment];
@@ -519,6 +521,12 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   }
 
   cell.contentConfiguration = configuration;
+
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration listCellConfiguration];
+  backgroundConfiguration.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  cell.backgroundConfiguration = backgroundConfiguration;
 
   BOOL isSelected = NO;
   if (_inputState.activeTool != ComposeboxMode::kRegularSearch &&
