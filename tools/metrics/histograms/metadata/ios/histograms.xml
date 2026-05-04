@@ -8153,6 +8153,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserInterfaceStyle.CurrentlyUsed" enum="IOSUserInterfaceStyle"
+    expires_after="2027-04-29">
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    The currently used interface style (light or dark). Recorded when the app
+    becomes active and when the style changes while the app is in the
+    foreground.
+  </summary>
+</histogram>
+
+<histogram name="UserInterfaceStyle.CurrentlyUsed.{TimeOfDay}"
+    enum="IOSUserInterfaceStyle" expires_after="2027-04-29">
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    The currently used interface style (light or dark) during the specified time
+    of day. Recorded when the app becomes active and when the style changes
+    while the app is in the foreground. The time used for bucketing is based on
+    the device's local time.
+  </summary>
+  <token key="TimeOfDay">
+    <variant name="6AMToNoon"/>
+    <variant name="6PMToMidnight"/>
+    <variant name="MidnightTo6AM"/>
+    <variant name="NoonTo6PM"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

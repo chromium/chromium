@@ -23,6 +23,8 @@
   NSMapTable<UIView*, NSNumber*>* _overlayLevels;
   // Recorder for UI style metrics.
   UserInterfaceStyleRecorder* _userInterfaceStyleRecorder;
+  // The last recorded user interface style to prevent duplicate logging.
+  UIUserInterfaceStyle _lastRecordedUserInterfaceStyle;
 }
 
 - (instancetype)initWithWindowScene:(UIWindowScene*)windowScene {
@@ -116,6 +118,7 @@
   [self updateCrashKeys];
   _userInterfaceStyleRecorder = [[UserInterfaceStyleRecorder alloc]
       initWithUserInterfaceStyle:self.traitCollection.userInterfaceStyle];
+  _lastRecordedUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
   NSArray<UITrait>* traits =
       @[ UITraitHorizontalSizeClass.class, UITraitUserInterfaceStyle.class ];
   [self registerForTraitChanges:traits withAction:@selector(updateCrashKeys)];
@@ -133,6 +136,13 @@
       self.traitCollection.horizontalSizeClass);
   crash_keys::SetCurrentUserInterfaceStyle(
       self.traitCollection.userInterfaceStyle);
+
+  if (_lastRecordedUserInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    _lastRecordedUserInterfaceStyle = self.traitCollection.userInterfaceStyle;
+    [_userInterfaceStyleRecorder
+        userInterfaceStyleDidChange:_lastRecordedUserInterfaceStyle];
+  }
 }
 
 @end

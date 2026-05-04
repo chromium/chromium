@@ -15,6 +15,9 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Reports the new user interface style.
+- (void)userInterfaceStyleDidChange:(UIUserInterfaceStyle)newUserInterfaceStyle;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_USER_INTERFACE_STYLE_RECORDER_H_

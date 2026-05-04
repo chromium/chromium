@@ -1986,6 +1986,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Invalid Version"/>
 </enum>
 
+<!-- LINT.IfChange(IOSUserInterfaceStyle) -->
+
+<enum name="IOSUserInterfaceStyle">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Light"/>
+  <int value="2" label="Dark"/>
+  <int value="3" label="Unsupported"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/metrics/model/user_interface_style_recorder.mm:InterfaceStyleForReporting) -->
+
 <!-- LINT.IfChange(IOSUserUploadedImageError) -->
 
 <enum name="IOSUserUploadedImageError">
