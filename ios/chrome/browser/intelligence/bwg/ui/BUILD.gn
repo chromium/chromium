@@ -73,6 +73,7 @@ source_set("unit_tests") {
   sources = [
     "gemini_consent_view_controller_unittest.mm",
     "gemini_fre_wrapper_view_controller_unittest.mm",
+    "gemini_promo_view_controller_unittest.mm",
     "gemini_ui_utils_unittest.mm",
   ]
   deps = [
