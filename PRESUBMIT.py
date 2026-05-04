@@ -1865,6 +1865,15 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
     ),
     BanRule(
+        r'/\bperfetto::Track::FromPointer',
+        ('Creating tracks from pointer is discouraged because it risks aliasing when the address ',
+         'is reused. Consider using NamedTrack instead, see ',
+        'https://chromium.googlesource.com/chromium/src.git/+/main/docs/trace_events.md#named-tracks',
+        ),
+        False,
+        (),
+    ),
+    BanRule(
         'RoInitialize',
         ('Improper use of [base::win]::RoInitialize() has been implicated in a ',
          'few COM initialization leaks. Use base::win::ScopedWinrtInitializer ',
