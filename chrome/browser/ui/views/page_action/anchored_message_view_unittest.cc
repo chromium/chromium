@@ -94,7 +94,7 @@ TEST_F(AnchoredMessageBubbleViewTest, VisibilityReflectsModelOnCreation) {
       .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
@@ -121,7 +121,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
@@ -151,7 +151,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(&menu_model));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
@@ -173,7 +173,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(AnchoredMessageActionIconType::kMenu));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 
@@ -194,7 +194,7 @@ TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_ChipOnly) {
   ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(test_image_));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
 

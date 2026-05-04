@@ -368,8 +368,9 @@ TEST_F(OccludedWidgetInputProtectorTest, ShouldBlockEvent_AnchoredWidget) {
   // anchoring relationship which is resolved via `GetPrimaryWindowWidget`.
   auto bubble_delegate =
       std::make_unique<TestBubbleDelegate>(aot_widget->GetContentsView());
-  auto bubble_widget = base::WrapUnique(BubbleDialogDelegate::CreateBubble(
-      bubble_delegate.get(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto bubble_widget =
+      base::WrapUnique(BubbleDialogDelegate::CreateBubbleDeprecated(
+          bubble_delegate.get(), Widget::InitParams::CLIENT_OWNS_WIDGET));
   bubble_widget->Show();
   WidgetVisibleWaiter(bubble_widget.get()).Wait();
 

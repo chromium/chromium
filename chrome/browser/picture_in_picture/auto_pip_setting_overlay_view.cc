@@ -67,7 +67,7 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
   DCHECK(parent);
   init_.auto_pip_setting_view_->set_parent_window(parent);
   auto_pip_setting_view_ = init_.auto_pip_setting_view_.get();
-  widget_ = views::BubbleDialogDelegate::CreateBubble(
+  widget_ = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(init_.auto_pip_setting_view_),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 

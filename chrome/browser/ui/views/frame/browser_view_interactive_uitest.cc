@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   widget->Show();

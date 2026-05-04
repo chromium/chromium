@@ -510,7 +510,7 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 }
 
 // static
-Widget* BubbleDialogDelegate::CreateBubble(
+Widget* BubbleDialogDelegate::CreateBubbleDeprecated(
     BubbleDialogDelegate* bubble_delegate,
     Widget::InitParams::Ownership ownership) {
   // On Mac, ModalType::kWindow is implemented using sheets, which can't be
@@ -539,10 +539,10 @@ Widget* BubbleDialogDelegate::CreateBubble(
 }
 
 // static
-Widget* BubbleDialogDelegate::CreateBubble(
+Widget* BubbleDialogDelegate::CreateBubbleDeprecated(
     std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique,
     Widget::InitParams::Ownership ownership) {
-  return CreateBubble(bubble_delegate_unique.release(), ownership);
+  return CreateBubbleDeprecated(bubble_delegate_unique.release(), ownership);
 }
 
 // static

@@ -34,7 +34,8 @@ class View;
 //       ->GetElementInAnyContext(kElementId);
 //   auto bubble_delegate = std::make_unique<BubbleDialogDelegate>(
 //       views::BubbleAnchor(element), BubbleBorder::Arrow::TOP_LEFT);
-//   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+//   views::BubbleDialogDelegate::CreateBubbleDeprecated(std::move(bubble_delegate),
+//   views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 //   ...
 //
 // WARNING: Do not store these long-term, as underlying TrackedElement's

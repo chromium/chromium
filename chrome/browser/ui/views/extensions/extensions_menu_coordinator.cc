@@ -45,7 +45,7 @@ void ExtensionsMenuCoordinator::Show(
       CreateExtensionsMenuBubbleDialogDelegate(anchor,
                                                extensions_container_views);
 
-  views::BubbleDialogDelegate::CreateBubble(
+  views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble_delegate),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
       ->Show();

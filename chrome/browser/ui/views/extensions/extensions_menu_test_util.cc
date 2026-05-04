@@ -173,7 +173,7 @@ void ExtensionsMenuTestUtil::OpenExtensionsMenu() {
     menu_view_->View::AddObserver(this);
   }
 
-  views::BubbleDialogDelegate::CreateBubble(
+  views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble_dialog),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 }

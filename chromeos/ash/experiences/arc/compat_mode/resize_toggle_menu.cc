@@ -194,8 +194,8 @@ ResizeToggleMenu::ResizeToggleMenu(
       widget_, GetAnchorRect(),
       base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
                           base::Unretained(this)));
-  bubble_widget_ =
-      base::WrapUnique<views::Widget>(views::BubbleDialogDelegate::CreateBubble(
+  bubble_widget_ = base::WrapUnique<views::Widget>(
+      views::BubbleDialogDelegate::CreateBubbleDeprecated(
           bubble_delegate_.get(),
           views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget_observations_.AddObservation(widget_.get());

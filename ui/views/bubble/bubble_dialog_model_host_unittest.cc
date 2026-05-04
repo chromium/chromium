@@ -67,7 +67,7 @@ TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
   auto* host_ptr = host.get();
 
-  Widget* bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetDestroyedWaiter waiter(bubble_widget);
 
@@ -142,7 +142,7 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
           .Build(),
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
 
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter waiter(bubble_widget);
   bubble_widget->Show();
@@ -267,7 +267,7 @@ TEST_F(BubbleDialogModelHostTest, SetEnabledButtons) {
       anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
 
   auto* host = host_unique.get();
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host_unique),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter waiter(bubble_widget);
@@ -304,7 +304,7 @@ TEST_F(BubbleDialogModelHostTest, TestFieldVisibility) {
       std::move(dialog_model), anchor_widget->GetContentsView(),
       BubbleBorder::Arrow::TOP_RIGHT);
 
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter waiter(bubble_widget);
   bubble_widget->Show();
@@ -359,7 +359,7 @@ TEST_F(BubbleDialogModelHostTest, TestButtonLabelUpdate) {
       BubbleBorder::Arrow::TOP_RIGHT);
 
   auto* host = host_unique.get();
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host_unique),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter waiter(bubble_widget);
@@ -397,7 +397,7 @@ TEST_F(BubbleDialogModelHostTest, TestButtonEnableUpdate) {
       BubbleBorder::Arrow::TOP_RIGHT);
 
   auto* const host = host_unique.get();
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host_unique),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter waiter(bubble_widget);
@@ -438,7 +438,7 @@ TEST_F(BubbleDialogModelHostTest, TestAddButtonsWithCloseCallback) {
       BubbleBorder::Arrow::TOP_RIGHT);
 
   auto* host = host_unique.get();
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host_unique),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   test::WidgetVisibleWaiter shown_waiter(bubble_widget);
@@ -468,7 +468,7 @@ TEST_F(BubbleDialogModelHostTest, DisableCloseOnEscape) {
       std::move(dialog_model), anchor_widget->GetContentsView(),
       BubbleBorder::Arrow::TOP_RIGHT);
 
-  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubble(
+  Widget* const bubble_widget = BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host_unique),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget->Show();

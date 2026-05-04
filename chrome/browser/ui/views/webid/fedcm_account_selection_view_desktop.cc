@@ -1121,9 +1121,10 @@ std::unique_ptr<views::Widget> FedCmAccountSelectionView::CreateDialogWidget() {
         base::WrapUnique(views::AsViewClass<AccountSelectionBubbleView>(
             parked_dialog_view_.release())),
         GetAnchorView());
-    dialog_widget = base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
-        widget_delegate_.get()->AsBubbleDialogDelegate(),
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+    dialog_widget =
+        base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
+            widget_delegate_.get()->AsBubbleDialogDelegate(),
+            views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   } else {
     // Create and show the dialog widget. This is functionally a tab-modal
     // dialog.

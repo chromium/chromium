@@ -328,7 +328,7 @@ views::Widget* GlicSelectionWidgetDelegate::Show(
     delegate->set_parent_window(platform_util::GetViewForWindow(
         web_contents->GetTopLevelNativeWindow()));
   }
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(delegate),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->ShowInactive();

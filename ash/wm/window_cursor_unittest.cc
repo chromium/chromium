@@ -158,7 +158,7 @@ TEST_F(WindowCursorTest, DefaultCursorOnBubbleWidgetCorners) {
   // Create the bubble widget.
   auto delegate = std::make_unique<views::BubbleDialogDelegate>(
       /*anchor=*/child_view, views::BubbleBorder::Arrow::NONE);
-  views::Widget* bubble = views::BubbleDialogDelegate::CreateBubble(
+  views::Widget* bubble = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       delegate.get(), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble->Show();
 

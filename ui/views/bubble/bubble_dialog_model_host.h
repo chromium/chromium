@@ -82,8 +82,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
   // BubbleDialogDelegate. The BubbleDialogDelegate is nominally handed to
-  // BubbleDialogDelegate::CreateBubble() which returns a Widget that has taken
-  // ownership of the bubble. Widget::Show() finally shows the bubble.
+  // BubbleDialogDelegate::CreateBubbleDeprecated() which returns a Widget that
+  // has taken ownership of the bubble. Widget::Show() finally shows the bubble.
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         views::BubbleAnchor anchor,
                         BubbleBorder::Arrow arrow,

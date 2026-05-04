@@ -4166,7 +4166,7 @@ TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
   host1->set_parent_window(right_window.get());
   host1->set_close_on_deactivate(false);
 
-  auto* bubble_widget1 = views::BubbleDialogDelegate::CreateBubble(
+  auto* bubble_widget1 = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host1), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget1->Show();
 
@@ -4188,7 +4188,7 @@ TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
       views::BubbleBorder::Arrow::NONE);
   host2->set_parent_window(left_window.get());
   host2->set_close_on_deactivate(false);
-  auto* bubble_widget2 = views::BubbleDialogDelegate::CreateBubble(
+  auto* bubble_widget2 = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(host2), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   bubble_widget2->Show();
   EXPECT_EQ(kExpectedOpacity,

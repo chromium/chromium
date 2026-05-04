@@ -131,9 +131,10 @@ views::BubbleDialogModelHost* JsOptimizationsPageActionController::CreateBubble(
     GetTestCallback().Run(bubble);
   }
   // TODO(crbug.com/464011395): Refactor to use CLIENT_OWNS_WIDGET.
-  views::Widget* const widget = views::BubbleDialogDelegate::CreateBubble(
-      std::move(bubble_unique),
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  views::Widget* const widget =
+      views::BubbleDialogDelegate::CreateBubbleDeprecated(
+          std::move(bubble_unique),
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   widget->Show();
   return bubble;
 }

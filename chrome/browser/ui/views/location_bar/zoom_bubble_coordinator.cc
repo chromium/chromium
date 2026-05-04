@@ -128,7 +128,7 @@ void ZoomBubbleCoordinator::Show(
 
   ZoomBubbleView* bubble_raw = bubble_view.get();
 
-  auto* widget = views::BubbleDialogDelegate::CreateBubble(
+  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble_view),
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 

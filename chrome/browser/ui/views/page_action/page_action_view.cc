@@ -406,7 +406,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
   anchored_message_ = message_delegate.get();
 
   anchored_message_widget_ =
-      base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
+      base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
           std::move(message_delegate),
           views::Widget::InitParams::CLIENT_OWNS_WIDGET));
 

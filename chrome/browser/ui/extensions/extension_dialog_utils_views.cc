@@ -70,7 +70,7 @@ void ShowDialog(ExtensionsToolbarDesktop* container,
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), GetDialogAnchorView(container, extension_ids),
       views::BubbleBorder::TOP_RIGHT);
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   if (extension_ids.size() == 1) {
@@ -96,7 +96,7 @@ void ShowDialog(BrowserWindowInterface* browser,
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), std::move(anchor),
       views::BubbleBorder::TOP_RIGHT);
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubble(
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
       std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   widget->Show();
