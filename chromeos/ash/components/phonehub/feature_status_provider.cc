@@ -19,8 +19,10 @@ void FeatureStatusProvider::RemoveObserver(Observer* observer) {
 }
 
 void FeatureStatusProvider::NotifyStatusChanged() {
-  for (auto& observer : observer_list_)
-    observer.OnFeatureStatusChanged();
+  // TODO(crbug.com/507907151): Investigate if this reentrancy is valid or can
+  // be removed.
+  observer_list_.NotifyAllowReentrancyUntriaged(
+      &Observer::OnFeatureStatusChanged);
 }
 
 void FeatureStatusProvider::NotifyEligibleDevicesFound(
