@@ -170,8 +170,6 @@ class MultiContentsView
   void OnDragAndDropPrefStateChange();
 
   void SetShouldShowTopSeparator(bool should_show);
-  void SetShouldShowLeadingSeparator(bool should_show);
-  void SetShouldShowTrailingSeparator(bool should_show);
 
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
@@ -219,8 +217,6 @@ class MultiContentsView
     raw_ptr<CustomFloatingCorner> corner_separator = nullptr;
 
     bool should_show_top = false;
-    bool should_show_leading = false;
-    bool should_show_trailing = false;
   };
 
   static constexpr int kMinWebContentsWidth = 200;

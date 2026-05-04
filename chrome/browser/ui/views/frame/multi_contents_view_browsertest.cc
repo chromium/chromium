@@ -615,9 +615,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, LeadingSeparatorLayout) {
   MultiContentsView* view = multi_contents_view();
-  view->SetShouldShowTrailingSeparator(false);
-  view->SetShouldShowLeadingSeparator(true);
   view->SetShouldShowTopSeparator(true);
+  view->drop_target_view_->Show(
+      MultiContentsDropTargetView::DropSide::START,
+      MultiContentsDropTargetView::DropTargetState::kFull,
+      MultiContentsDropTargetView::DragType::kLink);
+  view->drop_target_view_->animation_for_testing().End();
 
   gfx::Rect initial_bounds(10, 20, 100, 80);
   std::vector<views::ChildLayout> actual_child_layouts;
@@ -658,9 +661,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, LeadingSeparatorLayout) {
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, TrailingSeparatorLayout) {
   MultiContentsView* view = multi_contents_view();
-  view->SetShouldShowTrailingSeparator(true);
-  view->SetShouldShowLeadingSeparator(false);
   view->SetShouldShowTopSeparator(true);
+  view->drop_target_view_->Show(
+      MultiContentsDropTargetView::DropSide::END,
+      MultiContentsDropTargetView::DropTargetState::kFull,
+      MultiContentsDropTargetView::DragType::kLink);
+  view->drop_target_view_->animation_for_testing().End();
 
   gfx::Rect initial_bounds(10, 20, 100, 80);
   std::vector<views::ChildLayout> actual_child_layouts;
