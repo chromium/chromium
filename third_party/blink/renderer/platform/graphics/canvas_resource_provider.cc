@@ -287,16 +287,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
               : nullptr) {
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-
-    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
-      gpu::ImageInfo image_info(
-          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
-          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-          is_software_);
-      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii, "CanvasResourceSharedImage",
-          kMaxRecycledCanvasResources);
-    }
   }
 }
 
@@ -2224,6 +2214,17 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         delegate) {
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  if (shared_image_interface_provider_) {
+    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
+      gpu::ImageInfo image_info(
+          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
+          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
+          is_software_);
+      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+          image_info, sii, "CanvasResourceSharedImage",
+          kMaxRecycledCanvasResources);
+    }
+  }
 }
 
 Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
@@ -2356,7 +2357,19 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)) {}
+                                                       /*client=*/nullptr)) {
+  if (shared_image_interface_provider_) {
+    if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
+      gpu::ImageInfo image_info(
+          size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
+          kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
+          is_software_);
+      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+          image_info, sii, "CanvasResourceSharedImage",
+          kMaxRecycledCanvasResources);
+    }
+  }
+}
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() {
