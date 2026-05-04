@@ -41,20 +41,37 @@ code or summarize state itself. It delegates to several auxiliary personas:
 6.  **The Release Engineer:** A terminal agent invoked with a clean context to
     handle workspace hygiene, formatting, and the final staging/upload of CLs.
 
-**MANDATE:** The Orchestrator MUST call the `update_topic` tool prior to invoking
-any sub-agents to clearly identify the current phase of the MAGI protocol in
-the UI (e.g., `title="MAGI Phase 1: Engineering Manager"`). Sub-agents do not
-have access to this tool.
+**MANDATE:** The Orchestrator MUST call the `update_topic` tool prior to
+invoking any sub-agents to clearly identify the current phase of the MAGI
+protocol in the UI (e.g., `title="MAGI Phase 2: Engineering Manager"`).
+Sub-agents do not have access to this tool.
 
 ## Workflow
 
-### 1. Preparation & Persona Selection (The Engineering Manager)
-- Identify the target file(s) and the core problem.
-- **The Engineering Manager:** The Orchestrator MUST act as or invoke a
-  sub-agent acting as the "Engineering Manager". The Engineering Manager reads
+### 1. Scaffolding (The Architect & Test Phase)
+- **Problem Definition:** Identify the target file(s) and the core problem.
+- **Roughing In (The Architect):** First, invoke an Architect sub-agent to
+  create a base scaffold. Their mandate is to create necessary files, define
+  class interfaces, set up Mojo pipes, and GN/DEPS rules. Leave implementation
+  details empty or stubbed (e.g., `NOTIMPLEMENTED()`).
+- **Test-Driven Development (The Test Expert):** Second, invoke a Test Expert
+  sub-agent to establish the testing boundaries. Their mandate is to add test
+  files (`*_unittest.cc`), define the required test fixtures, and stub out the
+  critical test cases based on the Architect's scaffold.
+- **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
+  the "Base Scaffold" so all parallel ideators share the exact same multi-file
+  API and test boundaries. The Synthesizing Architect will eventually amend or
+  squash the final implementation into this scaffold, ensuring no broken stubs
+  land in the final CL.
+
+### 2. Preparation & Persona Selection (The Engineering Manager)
+- **Needs Assessment:** Now that the scope of the change is defined by the
+  scaffold, the Orchestrator MUST act as or invoke an "Engineering Manager"
+  sub-agent. The Engineering Manager reads
   `src/remoting/tools/magi-mode/PERSONAS.md` (the routing catalog) to assess
-  and select the most appropriate experts. It returns the absolute file paths
-  of their definition files to the Orchestrator.
+  and select the most appropriate ideation experts required to implement the
+  stubs. It returns the absolute file paths of their definition files to the
+  Orchestrator.
 - **The Recruiter (Talent Acquisition):** If the Engineering Manager determines
   that a required expertise is lacking in the current catalog, they MUST invoke
   a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
@@ -67,17 +84,6 @@ have access to this tool.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
   personas to the sub-agents. The sub-agents use `read_file` to load their
   mandate, keeping the Orchestrator's context window lean.
-
-### 2. Scaffolding (The Pathfinder)
-- **Roughing In:** Invoke a "Pathfinder" sub-agent (e.g., Chromium Expert) to
-  create a base scaffold.
-- **Mandate:** Create necessary files, define class interfaces, set up Mojo
-  pipes, and GN/DEPS rules. Leave implementation details empty or stubbed (e.g.,
-  `NOTIMPLEMENTED()`).
-- **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
-  the "Base Scaffold" so all parallel ideators share the exact same multi-file API
-  boundaries. The Synthesizing Architect will eventually amend/squash the final
-  implementation into this scaffold, ensuring no broken stubs land in the final CL.
 
 ### 3. Parallel Compute (Ideation)
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
