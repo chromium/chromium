@@ -65,9 +65,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
       item_data.resolved_span =
           grid_lanes_item.resolved_position.Span(grid_axis_direction_);
-      if (grid_lanes_item.contribution_sizes) {
-        item_data.contribution_sizes = *grid_lanes_item.contribution_sizes;
-      }
+      item_data.contribution_sizes = grid_lanes_item.contribution_sizes;
       virtual_items_data_.emplace_back(std::move(item_data));
     }
   }
@@ -87,12 +85,12 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   LayoutUnit MaxContentContribution(wtf_size_t index) {
     return VirtualItemData(index)
-        .contribution_sizes.min_max_contribution.max_size;
+        .contribution_sizes->min_max_contribution.max_size;
   }
 
   LayoutUnit MinContentContribution(wtf_size_t index) {
     return VirtualItemData(index)
-        .contribution_sizes.min_max_contribution.min_size;
+        .contribution_sizes->min_max_contribution.min_size;
   }
 
   const GridSpan& VirtualItemSpan(wtf_size_t index) {
@@ -127,7 +125,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
  private:
   struct GridLanesItemCachedData {
-    GridItemData::VirtualItemContributions contribution_sizes;
+    Persistent<const GridItemData::VirtualItemContributions> contribution_sizes;
     GridSpan resolved_span{GridSpan::IndefiniteGridSpan()};
   };
 

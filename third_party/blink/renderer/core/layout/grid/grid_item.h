@@ -253,38 +253,25 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   }
 
   void EncompassContributionSize(MinMaxSizes sizes) {
-    if (contribution_sizes) {
-      contribution_sizes->min_max_contribution.Encompass(sizes);
-    } else {
-      contribution_sizes = VirtualItemContributions();
-      contribution_sizes->min_max_contribution = sizes;
-    }
+    EnsureContributionSizes()->min_max_contribution.Encompass(sizes);
   }
 
   void EncompassIntrinsicMinIgnoringTrackPlacement(LayoutUnit size) {
-    if (!contribution_sizes) {
-      contribution_sizes = VirtualItemContributions();
-    }
-    contribution_sizes->intrinsic_min_ignoring_track_placement = std::max(
-        contribution_sizes->intrinsic_min_ignoring_track_placement, size);
+    auto* contributions = EnsureContributionSizes();
+    contributions->intrinsic_min_ignoring_track_placement =
+        std::max(contributions->intrinsic_min_ignoring_track_placement, size);
   }
 
   void EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(LayoutUnit size) {
-    if (!contribution_sizes) {
-      contribution_sizes = VirtualItemContributions();
-    }
-    contribution_sizes
-        ->intrinsic_min_ignoring_track_placement_unclamped = std::max(
-        contribution_sizes->intrinsic_min_ignoring_track_placement_unclamped,
-        size);
+    auto* contributions = EnsureContributionSizes();
+    contributions->intrinsic_min_ignoring_track_placement_unclamped = std::max(
+        contributions->intrinsic_min_ignoring_track_placement_unclamped, size);
   }
 
   void EncompassIntrinsicMinAssumingTrackPlacement(LayoutUnit size) {
-    if (!contribution_sizes) {
-      contribution_sizes = VirtualItemContributions();
-    }
-    contribution_sizes->intrinsic_min_assuming_track_placement = std::max(
-        contribution_sizes->intrinsic_min_assuming_track_placement, size);
+    auto* contributions = EnsureContributionSizes();
+    contributions->intrinsic_min_assuming_track_placement =
+        std::max(contributions->intrinsic_min_assuming_track_placement, size);
   }
 
   // The min clamp size is the margin, border, padding, and baseline shim
@@ -293,27 +280,27 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   // be 100% equivalent to what we would get with the grid implementation, but
   // should be as close as we can get without leading to overflow.
   void EncompassMinClampSize(LayoutUnit min_clamp_size) {
-    if (!contribution_sizes) {
-      contribution_sizes = VirtualItemContributions();
-    }
-    contribution_sizes->min_clamp_size =
-        std::max(contribution_sizes->min_clamp_size, min_clamp_size);
+    auto* contributions = EnsureContributionSizes();
+    contributions->min_clamp_size =
+        std::max(contributions->min_clamp_size, min_clamp_size);
   }
 
   void SetSharedBaseline(LayoutUnit baseline) {
-    if (!contribution_sizes) {
-      contribution_sizes = VirtualItemContributions();
-    }
-    contribution_sizes->group_shared_baseline = baseline;
+    EnsureContributionSizes()->group_shared_baseline = baseline;
   }
 
-  // Clear all contribution sizes stored on a virtual item so that they are set
-  // back to their default values.
+  // Reset all contribution sizes stored on a virtual item to their default
+  // values. Allocates a fresh `VirtualItemContributions` (rather than mutating
+  // the existing one) so any sibling virtual items that share the previous
+  // instance keep their data intact.
   void ClearContributionSizes() {
-    contribution_sizes = VirtualItemContributions();
+    contribution_sizes = MakeGarbageCollected<VirtualItemContributions>();
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(node); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(node);
+    visitor->Trace(contribution_sizes);
+  }
 
   BlockNode node{nullptr};
   GridArea resolved_position;
@@ -369,7 +356,12 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   // every intrinsic contribution among the items that make up its respective
   // group, which may be the min/max sizes if parallel to the grid-axis, and the
   // block contribution size if perpendicular.
-  struct VirtualItemContributions {
+  struct CORE_EXPORT VirtualItemContributions
+      : public GarbageCollected<VirtualItemContributions> {
+    VirtualItemContributions() = default;
+
+    void Trace(Visitor*) const {}
+
     MinMaxSizes min_max_contribution;
 
     // Intrinsic minimums have special contribution size logic as outlined in
@@ -423,7 +415,15 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     // grid-lanes track sizing.
     LayoutUnit group_shared_baseline;
   };
-  std::optional<VirtualItemContributions> contribution_sizes;
+  Member<VirtualItemContributions> contribution_sizes;
+
+ private:
+  VirtualItemContributions* EnsureContributionSizes() {
+    if (!contribution_sizes) {
+      contribution_sizes = MakeGarbageCollected<VirtualItemContributions>();
+    }
+    return contribution_sizes.Get();
+  }
 };
 
 class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
