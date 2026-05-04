@@ -104,16 +104,12 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-  // Lazily creates and returns a reference to the owned contextual search
-  // session handle for `realbox_handler_`.
-  contextual_search::ContextualSearchSessionHandle*
-  GetOrCreateContextualSessionHandle();
+
   // webui_browser::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<webui_browser::mojom::Page> page,
       mojo::PendingReceiver<webui_browser::mojom::PageHandler> receiver)
       override;
-  void GetTabStripInset(GetTabStripInsetCallback callback) override;
 
   // bookmark_bar::mojom::PageHandlerFactory:
   void CreatePageHandler(mojo::PendingRemote<bookmark_bar::mojom::Page> page,
@@ -135,6 +131,11 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
   // UIs.
   const std::vector<ui::ElementIdentifier>& GetKnownElementIdentifiers() const;
+
+  // Lazily creates and returns a reference to the owned contextual search
+  // session handle for `realbox_handler_`.
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSessionHandle();
 
   // Must outlive `realbox_handler_`.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>

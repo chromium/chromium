@@ -16,9 +16,6 @@ interface PageHandlerFactory {
   CreatePageHandler(
       pending_remote<Page> page,
       pending_receiver<PageHandler> handler);
-
-  // How far to offset tab strip to avoid overlapping with the caption buttons.
-  GetTabStripInset() => (int32 width);
 };
 
 // Fullscreen context when in fullscreen mode.
@@ -90,6 +87,9 @@ interface PageHandler {
   // Shows the back or forward navigation history context menu.
   // `is_back` is true for the back button menu, false for forward.
   ShowBackForwardMenu(bool is_back);
+
+  // How far to offset tab strip to avoid overlapping with the caption buttons.
+  GetTabStripInset() => (int32 width);
 };
 
 // These are all the different icons that can be displayed in the chip next to

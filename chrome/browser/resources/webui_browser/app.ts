@@ -25,7 +25,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {FullscreenContext, PageHandlerFactory, SecurityIcon} from './browser.mojom-webui.js';
+import {FullscreenContext, SecurityIcon} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegionElement} from './content_region.js';
 import type {SidePanelElement} from './side_panel.js';
@@ -117,7 +117,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
         this.$.contentRegion, 'kContentsContainerViewElementId');
     this.setUpLongPress_(this.$.backButton, /*isBack=*/ true);
     this.setUpLongPress_(this.$.forwardButton, /*isBack=*/ false);
-    const {width} = await PageHandlerFactory.getRemote().getTabStripInset();
+    const {width} = await BrowserProxy.getPageHandler().getTabStripInset();
     this.tabStripInset_ = width;
   }
 

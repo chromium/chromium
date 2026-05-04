@@ -8,6 +8,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -295,6 +298,18 @@ void WebUIBrowserPageHandler::ShowBackForwardMenu(bool is_back) {
   back_forward_menu_runner_->RunMenuAt(
       GetBrowserWindow()->widget(), nullptr, button_element->GetScreenBounds(),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
+}
+
+void WebUIBrowserPageHandler::GetTabStripInset(
+    GetTabStripInsetCallback callback) {
+  std::move(callback).Run(
+#if BUILDFLAG(IS_MAC)
+      // Values from BrowserFrameViewMac::GetCaptionButtonBounds()
+      (base::mac::MacOSVersion() >= 26'00'00) ? 76 : 82
+#else
+      0
+#endif
+  );
 }
 
 WebUIBrowserPageHandler::WebUIBrowserPageHandler(

@@ -44,10 +44,6 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace {
 
 std::string SidePanelEntryIdToTitle(SidePanelEntryId id) {
@@ -236,17 +232,6 @@ void WebUIBrowserUI::CreatePageHandler(
   auto* render_frame_host = web_ui()->GetRenderFrameHost();
   WebUIBrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
                                                     std::move(receiver), this);
-}
-
-void WebUIBrowserUI::GetTabStripInset(GetTabStripInsetCallback callback) {
-  std::move(callback).Run(
-#if BUILDFLAG(IS_MAC)
-      // Values from BrowserFrameViewMac::GetCaptionButtonBounds()
-      (base::mac::MacOSVersion() >= 26'00'00) ? 76 : 82
-#else
-      0
-#endif
-  );
 }
 
 void WebUIBrowserUI::CreatePageHandler(

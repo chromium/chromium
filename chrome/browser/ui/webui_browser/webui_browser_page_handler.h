@@ -55,6 +55,7 @@ class WebUIBrowserPageHandler
   void Restore() override;
   void Close() override;
   void ShowBackForwardMenu(bool is_back) override;
+  void GetTabStripInset(GetTabStripInsetCallback callback) override;
 
  private:
   WebUIBrowserPageHandler(
