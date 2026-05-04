@@ -140,6 +140,10 @@ class OnDeviceTranslationServiceController
   CanTranslateResult CanTranslateImpl(const std::string& source_lang,
                                       const std::string& target_lang);
 
+  LanguagePackRequirements GetLanguagePackRequirements(
+      const std::string& source_lang,
+      const std::string& target_lang);
+
   // Send the CreateTranslator IPC call to the OnDeviceTranslationService.
   void CreateTranslatorImpl(const std::string& source_lang,
                             const std::string& target_lang,
