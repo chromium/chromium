@@ -75,8 +75,6 @@ void WaitForAppBundlePromoToDisappear() {
       segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
       segmentation_platform::kAppBundlePromoEphemeralModule);
 
-  config.features_enabled.push_back(
-      segmentation_platform::features::kAppBundlePromoEphemeralCard);
   config.additional_args.push_back(forceShowFlag);
 
   return config;

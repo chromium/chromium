@@ -629,15 +629,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             [self isLensEnabled]));
 
-    if (segmentation_platform::features::
-            IsAppBundlePromoEphemeralCardEnabled()) {
-      CHECK(_appStoreBundleService);
-      inputContext->metadata_args.emplace(
-          segmentation_platform::kAppBundleAppsInstalledCount,
-          segmentation_platform::processing::ProcessedValue::FromFloat(
-              static_cast<float>(
-                  _appStoreBundleService->GetInstalledAppCount())));
-    }
+    CHECK(_appStoreBundleService);
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kAppBundleAppsInstalledCount,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            static_cast<float>(
+                _appStoreBundleService->GetInstalledAppCount())));
+
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsDefaultBrowserChromeIos,
         segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -709,21 +707,17 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
         card = _sendTabPromoMediator.sendTabPromoConfigToShow;
         break;
-    } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
-      if (segmentation_platform::features::
-              IsAppBundlePromoEphemeralCardEnabled() &&
-          areTipsCardsEnabled) {
-        _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
-        card = _appBundlePromoMediator.config;
-        break;
-      }
+    } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule &&
+               areTipsCardsEnabled) {
+      _ephemeralCardToShow = ContentSuggestionsModuleType::kAppBundlePromo;
+      card = _appBundlePromoMediator.config;
+      break;
     } else if (label ==
-               segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
-      if (areTipsCardsEnabled) {
-        _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
-        card = _defaultBrowserMediator.config;
-        break;
-      }
+                   segmentation_platform::kDefaultBrowserPromoEphemeralModule &&
+               areTipsCardsEnabled) {
+      _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
+      card = _defaultBrowserMediator.config;
+      break;
     }
   }
   if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid && card) {
@@ -951,9 +945,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       }
       case ContentSuggestionsModuleType::kAppBundlePromo:
-        if (segmentation_platform::features::
-                IsAppBundlePromoEphemeralCardEnabled() &&
-            _appBundlePromoMediator && _appBundlePromoMediator.config) {
+        if (_appBundlePromoMediator && _appBundlePromoMediator.config) {
           [magicStackOrder addObject:_appBundlePromoMediator.config];
         }
         break;

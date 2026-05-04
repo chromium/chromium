@@ -15,6 +15,14 @@ namespace segmentation_platform::home_modules {
 // Signal Keys for this card.
 extern const char kAppBundleAppsInstalledCountSignalKey[];
 
+// The maximum number of impressions for the `AppBundlePromoEphemeralModule`
+// Magic Stack card before the card should be hidden.
+extern const int kMaxAppBundlePromoImpressions;
+
+// The maximum number of app bundle apps that a user can have installed on their
+// device to have the card be shown.
+extern const int kMaxAppBundleAppsInstalled;
+
 // `AppBundlePromoEphemeralModule` is a class that represents an ephemeral
 // Magic Stack module for the App Bundle promo. It is responsible for
 // determining whether the module should be shown to the user based on various

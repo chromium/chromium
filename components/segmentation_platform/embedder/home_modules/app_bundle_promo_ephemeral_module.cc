@@ -28,6 +28,9 @@ const char kAppBundlePromoEphemeralModuleImpressionCounterPref[] =
 const char kAppBundleAppsInstalledCountSignalKey[] =
     "app_bundle_apps_installed_count";
 
+const int kMaxAppBundlePromoImpressions = 3;
+const int kMaxAppBundleAppsInstalled = 4;
+
 AppBundlePromoEphemeralModule::AppBundlePromoEphemeralModule()
     : CardSelectionInfo(kAppBundlePromoEphemeralModule) {}
 
@@ -45,12 +48,6 @@ bool AppBundlePromoEphemeralModule::IsModuleLabel(std::string_view label) {
 
 // static
 bool AppBundlePromoEphemeralModule::IsEnabled(PrefService* local_state) {
-  // If the feature is not force enabled or enabled in the base feature list,
-  // return `false`.
-  if (!base::FeatureList::IsEnabled(features::kAppBundlePromoEphemeralCard)) {
-    return false;
-  }
-
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -66,7 +63,7 @@ bool AppBundlePromoEphemeralModule::IsEnabled(PrefService* local_state) {
   int impression_count = local_state->GetInteger(
       kAppBundlePromoEphemeralModuleImpressionCounterPref);
 
-  return impression_count < features::kMaxAppBundlePromoImpressions.Get();
+  return impression_count < kMaxAppBundlePromoImpressions;
 }
 
 void AppBundlePromoEphemeralModule::OnShow(PrefService* profile_prefs,
@@ -103,8 +100,7 @@ CardSelectionInfo::ShowResult AppBundlePromoEphemeralModule::ComputeCardResult(
       signals.GetSignal(kAppBundleAppsInstalledCountSignalKey);
 
   if (apps_installed_count.has_value() &&
-      apps_installed_count.value() <=
-          features::kMaxAppBundleAppsInstalled.Get()) {
+      apps_installed_count.value() <= kMaxAppBundleAppsInstalled) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;
   }

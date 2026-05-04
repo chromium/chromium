@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -25,11 +24,9 @@ class AppBundlePromoEphemeralModuleTest : public testing::Test {
     Test::SetUp();
     AppBundlePromoEphemeralModule::RegisterLocalStatePrefs(
         local_state_.registry());
-    feature_list_.InitAndEnableFeature(features::kAppBundlePromoEphemeralCard);
   }
 
   void TearDown() override {
-    feature_list_.Reset();
     Test::TearDown();
   }
 
@@ -45,7 +42,6 @@ class AppBundlePromoEphemeralModuleTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
 };
 
@@ -65,12 +61,10 @@ TEST_F(AppBundlePromoEphemeralModuleTest, TestComputeCardResult) {
   // If there are `kMaxAppBundleAppsInstalled` or fewer bundle apps on a user's
   // device, the card should be shown. If there are more, then the card should
   // be hidden.
+  TestComputeCardResultImpl(kMaxAppBundleAppsInstalled,
+                            /* expectedRank */ EphemeralHomeModuleRank::kTop);
   TestComputeCardResultImpl(
-      /* appBundleAppsInstalled */ features::kMaxAppBundleAppsInstalled.Get(),
-      /* expectedRank */ EphemeralHomeModuleRank::kTop);
-  TestComputeCardResultImpl(
-      /* appBundleAppsInstalled */ features::kMaxAppBundleAppsInstalled.Get() +
-          1,
+      kMaxAppBundleAppsInstalled + 1,
       /* expectedRank */ EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -82,10 +76,8 @@ TEST_F(AppBundlePromoEphemeralModuleTest,
 
   EXPECT_TRUE(AppBundlePromoEphemeralModule::IsEnabled(&local_state_));
 
-  int max_impressions = features::kMaxAppBundlePromoImpressions.Get();
-
   // Loop through and show the card exactly the max amount of times allowed.
-  for (int i = 0; i < max_impressions; ++i) {
+  for (int i = 0; i < kMaxAppBundlePromoImpressions; ++i) {
     EXPECT_TRUE(AppBundlePromoEphemeralModule::IsEnabled(&local_state_));
     // App Bundle uses local_state, so pass it in as the second parameter.
     card->OnShow(nullptr, &local_state_);

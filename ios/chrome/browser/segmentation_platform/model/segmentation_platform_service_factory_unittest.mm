@@ -16,6 +16,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -130,10 +131,10 @@ void ConfigureForEnhancedSafeBrowsingModule(
 // Sets signals relevant for the App Bundle ephemeral module.
 void ConfigureForAppBundleModule(scoped_refptr<InputContext> input_context,
                                  bool enable = true) {
-  float count = enable ? features::kMaxAppBundleAppsInstalled.Get()
-                       : features::kMaxAppBundleAppsInstalled.Get() + 1;
+  float count = enable ? home_modules::kMaxAppBundleAppsInstalled
+                       : home_modules::kMaxAppBundleAppsInstalled + 1;
   input_context->metadata_args.emplace(
-      segmentation_platform::kAppBundleAppsInstalledCount,
+      kAppBundleAppsInstalledCount,
       segmentation_platform::processing::ProcessedValue::FromFloat(count));
 }
 

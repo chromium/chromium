@@ -475,18 +475,14 @@ using segmentation_platform::TipIdentifier;
                                profile->GetSharedURLLoaderFactory())];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
-  }
 
-  if (segmentation_platform::features::IsAppBundlePromoEphemeralCardEnabled() &&
-      areTipsCardsEnabled) {
     _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
         initWithAppStoreBundleService:AppStoreBundleServiceFactory::
                                           GetForProfile(self.profile)
                    profilePrefService:prefs];
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
-  }
-  if (areTipsCardsEnabled) {
+
     _defaultBrowserMediator =
         [[DefaultBrowserMediator alloc] initWithProfilePrefService:prefs];
     _defaultBrowserMediator.presentationAudience = self;
@@ -725,20 +721,12 @@ using segmentation_platform::TipIdentifier;
 // Removes the App Bundle promo from the Magic Stack and opens the App Store
 // page to install the Best of Google bundle.
 - (void)didSelectAppBundlePromo {
-  // Note: The promo modal only works when the `kAppBundlePromoEphemeralCard`
-  // feature is enabled. If this card is forced in the
-  // #ios-segmentation-ephemeral-card-ranker, tapping the card does NOT do
-  // anything. This is because the creation of the AppStorePromoService is gated
-  // behind the feature flag.
   CHECK(_appBundlePromoMediator);
 
   __weak __typeof(self) weakSelf = self;
-
-  ProceduralBlock completion = ^{
+  [_appBundlePromoMediator removeModuleWithCompletion:^{
     [weakSelf presentAppStoreBundlePage];
-  };
-
-  [_appBundlePromoMediator removeModuleWithCompletion:completion];
+  }];
 }
 
 // Presents the Best of Google bundle install page in the App Store.

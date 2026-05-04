@@ -182,26 +182,6 @@ BASE_FEATURE(kSegmentationPlatformFedCmUser, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppBundlePromoEphemeralCard,
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-constexpr base::FeatureParam<int> kMaxAppBundlePromoImpressions{
-    &kAppBundlePromoEphemeralCard, "max_app_bundle_promo_impressions",
-    /*default_value=*/3};
-
-constexpr base::FeatureParam<int> kMaxAppBundleAppsInstalled{
-    &kAppBundlePromoEphemeralCard, "max_app_bundle_apps_installed",
-    /*default_value=*/4};
-
-bool IsAppBundlePromoEphemeralCardEnabled() {
-  return base::FeatureList::IsEnabled(
-      segmentation_platform::features::kAppBundlePromoEphemeralCard);
-}
-
 BASE_FEATURE(kDefaultBrowserMagicStackIos,
 #if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);

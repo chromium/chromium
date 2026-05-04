@@ -127,7 +127,6 @@ TEST_F(HomeModulesCardRegistryIOSTest, TestSendTabEphemeralModuleCard) {
 // Tests that the Registry registers the `AppBundlePromoEphemeralModule` card
 // when its feature is enabled.
 TEST_F(HomeModulesCardRegistryIOSTest, TestAppBundlePromoCard) {
-  feature_list_.InitAndEnableFeature(features::kAppBundlePromoEphemeralCard);
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 
