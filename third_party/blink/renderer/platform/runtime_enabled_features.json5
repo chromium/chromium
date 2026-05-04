@@ -1928,7 +1928,7 @@
       // https://drafts.csswg.org/css-shapes/#shape-outside-property
       // ChromeStatus: https://chromestatus.com/feature/6323071520735232
       name: "CSSShapeOutsideRectAndXywhSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/cssom-1/#dom-cssstylesheetinit-baseurl
