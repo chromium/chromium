@@ -318,9 +318,40 @@ TEST_F(MediaVideoEncoderWrapperTest, StillOutputsIfFrameDroppedByEncoder) {
             EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
       });
 
+  EXPECT_CALL(status_change_cb_, Run(STATUS_CODEC_INIT_FAILED));
+
   // We should have a nullptr output, but what's important is that we have
   // output. If the encoder implementation does not invoke the output callback,
   // this will hang forever.
+  EXPECT_EQ(EncodeVideoFrame(frame_info), nullptr);
+}
+
+TEST_F(MediaVideoEncoderWrapperTest, ReportsErrorOnEncodeFailure) {
+  const media::VideoEncoder::Options options = GetOptions();
+  EXPECT_CALL(*mock_encoder_,
+              Initialize(kProfile, OptionsAreEqual(options), _, _, _))
+      .WillOnce([](VideoCodecProfile profile,
+                   const media::VideoEncoder::Options& options,
+                   media::VideoEncoder::EncoderInfoCB info,
+                   media::VideoEncoder::OutputCB output,
+                   media::VideoEncoder::EncoderStatusCB done) {
+        std::move(info).Run(VideoEncoderInfo());
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+      });
+  EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
+
+  const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+  EXPECT_CALL(*mock_encoder_,
+              Encode(FrameInfosAreEqual(frame_info),
+                     FrameTypeIsEqual(frame_info.frame_type), _))
+      .WillOnce([&](scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kEncoderFailedEncode);
+      });
+
+  EXPECT_CALL(status_change_cb_, Run(STATUS_CODEC_RUNTIME_ERROR));
+
   EXPECT_EQ(EncodeVideoFrame(frame_info), nullptr);
 }
 

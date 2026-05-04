@@ -529,12 +529,13 @@ void MediaVideoEncoderWrapper::OnFrameEncodeDone(base::TimeTicks reference_time,
   recent_metadata_.pop();
 
   std::move(callback).Run(nullptr);
+
+  OnEncoderStatus(status);
 }
 
 void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   --num_pending_updates_;
-  OnEncoderStatus(status);
 
   if (num_pending_updates_ == 0) {
     for (auto& task : pending_encodes_) {
@@ -542,6 +543,8 @@ void MediaVideoEncoderWrapper::OnOptionsUpdated(EncoderStatus status) {
     }
     pending_encodes_.clear();
   }
+
+  OnEncoderStatus(status);
 }
 
 }  //  namespace media::cast
