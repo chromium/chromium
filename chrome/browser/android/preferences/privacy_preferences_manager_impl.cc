@@ -38,4 +38,11 @@ JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingDisabledByPolicy(
       IsMetricsReportingDisabledByPolicy(local_state);
 }
 
+static bool
+JNI_PrivacyPreferencesManagerImpl_ShouldUseMetricsConsentRestructure() {
+  const PrefService* local_state = g_browser_process->local_state();
+  return metrics::MetricsReportingChoiceService::
+      ShouldUseMetricsConsentRestructure(local_state);
+}
+
 DEFINE_JNI(PrivacyPreferencesManagerImpl)

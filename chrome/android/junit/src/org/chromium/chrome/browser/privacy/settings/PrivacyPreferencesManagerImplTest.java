@@ -165,6 +165,23 @@ public class PrivacyPreferencesManagerImplTest {
         assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
+    @Test
+    public void testShouldUseMetricsConsentRestructure() {
+        Context context = mock(Context.class);
+        PrivacyPreferencesManagerImpl preferenceManager =
+                new TestPrivacyPreferencesManager(context);
+
+        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
+                mock(PrivacyPreferencesManagerImpl.Natives.class);
+        when(preferenceManagerNatives.shouldUseMetricsConsentRestructure()).thenReturn(true);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+
+        assertTrue(preferenceManager.shouldUseMetricsConsentRestructure());
+
+        when(preferenceManagerNatives.shouldUseMetricsConsentRestructure()).thenReturn(false);
+        assertFalse(preferenceManager.shouldUseMetricsConsentRestructure());
+    }
+
     private void runTest(
             boolean isConnected,
             boolean isMetered,

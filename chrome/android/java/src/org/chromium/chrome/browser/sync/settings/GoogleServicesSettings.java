@@ -69,7 +69,10 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_ALLOW_SIGNIN = "allow_signin";
 
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
-    private static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
+
+    @VisibleForTesting
+    public static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
+
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
 
@@ -128,6 +131,10 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 (ChromeSwitchPreference) findPreference(PREF_USAGE_AND_CRASH_REPORTING);
         mUsageAndCrashReporting.setOnPreferenceChangeListener(this);
         mUsageAndCrashReporting.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        // TODO(b/483043192): Add UI for new Metrics Consent settings.
+        if (mPrivacyPrefManager.shouldUseMetricsConsentRestructure()) {
+            mUsageAndCrashReporting.setVisible(false);
+        }
 
         mUrlKeyedAnonymizedData =
                 (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
