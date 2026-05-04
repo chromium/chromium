@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -363,6 +364,14 @@ TEST_F(DataProtectionTabHelperTest, NoDmTokenSkipsRealTimeLookup) {
   tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
 
   EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
+}
+
+// Tests that NTP URLs are skipped.
+TEST_F(DataProtectionTabHelperTest, NTPUrlSkipped) {
+  SetScreenshotBlockRule("*");
+
+  VerifyInitialProtection(GURL(kChromeUINewTabURL), /*expected_enabled=*/false);
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
 }
 

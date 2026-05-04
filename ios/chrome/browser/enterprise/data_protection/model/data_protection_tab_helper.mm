@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -41,7 +41,7 @@ int64_t GetNavigationId(web::NavigationContext* context) {
 
 // Returns true if data protection checks should be skipped for the given URL.
 bool SkipUrl(const GURL& url) {
-  return !url.is_valid() || url.SchemeIs(kChromeUIScheme) ||
+  return !url.is_valid() || UrlHasChromeScheme(url) || IsUrlNtp(url) ||
          url.SchemeIs(content_settings::kChromeUIUntrustedScheme);
 }
 
