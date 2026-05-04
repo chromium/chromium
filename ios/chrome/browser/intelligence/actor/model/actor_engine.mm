@@ -58,16 +58,19 @@ std::string EngineResultToString(ActorEngine::EngineResult result) {
 }
 
 // Waits or immediately finishes tool execution based on the `tool_result`.
-void WaitOrImmediatelyFinishTool(base::OnceClosure on_delay_complete,
+void WaitOrImmediatelyFinishTool(ActorTool* tool,
+                                 base::OnceClosure on_delay_complete,
                                  ToolExecutionResult tool_result,
                                  ObservationDelayController* delay_controller) {
   // TODO(crbug.com/504625981): Move tool-specific state machine
   // into an iOS version of chrome/browser/actor/tools/tool_controller.h.
-  if (!tool_result.requires_page_stabilization() || !delay_controller) {
+  if (!tool || !delay_controller ||
+      !tool_result.requires_page_stabilization()) {
     std::move(on_delay_complete).Run();
     return;
   }
   delay_controller->Wait(
+      /*web_state=*/tool->GetTargetWebState(),
       // TODO(crbug.com/498991756): Get the WebFrame from the tool.
       /*web_frame=*/nullptr,
       base::BindOnce(
@@ -219,10 +222,11 @@ void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
                                                        InProgressActionIndex());
 
   tool_ptr->Execute(base::BindOnce(&ActorEngine::OnToolExecutionComplete,
-                                   weak_ptr_factory_.GetWeakPtr()));
+                                   weak_ptr_factory_.GetWeakPtr(), tool_ptr));
 }
 
-void ActorEngine::OnToolExecutionComplete(ToolExecutionResult tool_result) {
+void ActorEngine::OnToolExecutionComplete(ActorTool* tool,
+                                          ToolExecutionResult tool_result) {
   CHECK(current_async_entry_);
   EndAsyncEntry(current_async_entry_.get(), tool_result);
   current_async_entry_.reset();
@@ -230,7 +234,7 @@ void ActorEngine::OnToolExecutionComplete(ToolExecutionResult tool_result) {
   base::OnceClosure on_delay_complete =
       base::BindOnce(&ActorEngine::FinishedToolInvoke,
                      weak_ptr_factory_.GetWeakPtr(), ActionResult(tool_result));
-  WaitOrImmediatelyFinishTool(std::move(on_delay_complete), tool_result,
+  WaitOrImmediatelyFinishTool(tool, std::move(on_delay_complete), tool_result,
                               observation_delay_controller_.get());
 }
 

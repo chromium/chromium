@@ -94,7 +94,8 @@ class ActorEngine {
 
   // Callback invoked when a tool completes execution, which bridges the tool's
   // `ToolExecutionResult` into an `ActionResult`.
-  void OnToolExecutionComplete(ToolExecutionResult tool_result);
+  void OnToolExecutionComplete(ActorTool* tool,
+                               ToolExecutionResult tool_result);
 
   // Callback for when tool execution is finished.
   void FinishedToolInvoke(ActionResult result);
