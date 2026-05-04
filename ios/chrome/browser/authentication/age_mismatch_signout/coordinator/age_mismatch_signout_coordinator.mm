@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_coordinator.h"
 
 #import "base/not_fatal_until.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/age_mismatch_learn_more/coordinator/age_mismatch_learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_view_controller.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface AgeMismatchSignoutCoordinator () <
@@ -57,6 +59,13 @@
       [[AgeMismatchSignoutViewController alloc] initWithMode:_mode];
   _viewController.delegate = self;
   _mediator.consumer = _viewController;
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    _viewController.hideStaySignedOutButton = YES;
+  }
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

@@ -76,8 +76,10 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
   self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON);
-  self.configuration.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON);
+  if (!self.hideStaySignedOutButton) {
+    self.configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON);
+  }
 
   [self.specificContentView addSubview:self.subtitleTextView];
 

@@ -39,7 +39,10 @@ source_set("unit_tests") {
     ":prompt_mode",
     ":ui",
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/common/ui/button_stack",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -8,8 +8,11 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_prompt_mode.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -44,6 +47,19 @@ TEST_F(AgeMismatchSignoutViewControllerTest, TestBlockUI) {
     }
   }
   EXPECT_TRUE(has_waiting_view);
+}
+
+// Tests that hideStaySignedOutButton property hides the secondary button in
+// kSigninFlow mode.
+TEST_F(AgeMismatchSignoutViewControllerTest, TestHideStaySignedOutButton) {
+  AgeMismatchSignoutViewController* vc =
+      [[AgeMismatchSignoutViewController alloc]
+          initWithMode:AgeMismatchPromptMode::kSigninFlow];
+  vc.hideStaySignedOutButton = YES;
+  [vc view];
+
+  EXPECT_TRUE(vc.configuration.secondaryActionString == nil ||
+              [vc.configuration.secondaryActionString length] == 0);
 }
 
 }  // namespace
