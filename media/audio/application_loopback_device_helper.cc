@@ -67,18 +67,6 @@ std::string BuildDeviceId(std::string_view base_id,
 
 }  // namespace
 
-// TODO(crbug.com/502159773): When CreateApplicationLoopbackDeviceId() and
-// CreateRestrictOwnAudioBrowserLoopbackDeviceId() are only exposed on Windows,
-// these mock functions can be deleted.
-std::string MEDIA_EXPORT
-CreateApplicationLoopbackDeviceId(const uint32_t application_id) {
-  NOTREACHED();
-}
-
-std::string MEDIA_EXPORT CreateRestrictOwnAudioBrowserLoopbackDeviceId() {
-  NOTREACHED();
-}
-
 std::string MEDIA_EXPORT
 CreateApplicationLoopbackDeviceId(std::string_view bundle_id,
                                   std::optional<pid_t> application_id) {

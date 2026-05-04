@@ -43,6 +43,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
+#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -389,10 +390,25 @@ std::optional<std::string> ProcessIdToApplicationLoopbackDeviceId(
   if (process_id == base::kNullProcessId) {
     return std::nullopt;
   }
+#if BUILDFLAG(IS_MAC)
+  std::optional<media::ApplicationAudioCaptureId> capture_identifier =
+      media::GetApplicationAudioCaptureIdForProcess(process_id);
+  if (!capture_identifier) {
+    return std::nullopt;
+  }
+  if (restrict_own_audio &&
+      capture_identifier->pid == base::GetCurrentProcId()) {
+    return media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(
+        capture_identifier->bundle_id, *capture_identifier->pid);
+  }
+  return media::CreateApplicationLoopbackDeviceId(capture_identifier->bundle_id,
+                                                  capture_identifier->pid);
+#else
   if (restrict_own_audio && base::GetCurrentProcId() == process_id) {
     return media::CreateRestrictOwnAudioBrowserLoopbackDeviceId();
   }
   return media::CreateApplicationLoopbackDeviceId(process_id);
+#endif  // BUILDFLAG(IS_MAC)
 }
 }  // namespace
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
