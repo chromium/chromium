@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_contents.h"
 
+#include <atomic>
 #include <limits>
 #include <memory>
 #include <string>
@@ -49,7 +50,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/atomicops.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -190,7 +190,7 @@ class AwContentsUserData : public base::SupportsUserData::Data {
   raw_ptr<AwContents> contents_;
 };
 
-base::subtle::Atomic32 g_instance_count = 0;
+std::atomic<uint32_t> g_instance_count = 0;
 
 bool IsPrerenderHandleEquivalentTo(
     const std::unique_ptr<content::PrerenderHandle>& handle,
@@ -287,7 +287,7 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       web_contents_(std::move(web_contents)) {
   TRACE_EVENT_BEGIN("android_webview.timeline", "WebView Instance",
                     perfetto::Track::FromPointer(this));
-  base::subtle::NoBarrier_AtomicIncrement(&g_instance_count, 1);
+  g_instance_count.fetch_add(1, std::memory_order_relaxed);
   icon_helper_ = std::make_unique<IconHelper>(web_contents_.get());
   icon_helper_->SetListener(this);
   web_contents_->SetUserData(android_webview::kAwContentsUserDataKey,
@@ -428,8 +428,8 @@ AwContents::~AwContents() {
   }
   if (icon_helper_.get())
     icon_helper_->SetListener(NULL);
-  base::subtle::Atomic32 instance_count =
-      base::subtle::NoBarrier_AtomicIncrement(&g_instance_count, -1);
+  uint32_t instance_count =
+    g_instance_count.fetch_add(-1, std::memory_order_relaxed) - 1;
   // When the last WebView is destroyed free all discardable memory allocated by
   // Chromium, because the app process may continue to run for a long time
   // without ever using another WebView.
@@ -533,7 +533,7 @@ static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
 
 // static
 static int32_t JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
-  return base::subtle::NoBarrier_Load(&g_instance_count);
+  return g_instance_count.load(std::memory_order_relaxed);
 }
 
 // static
