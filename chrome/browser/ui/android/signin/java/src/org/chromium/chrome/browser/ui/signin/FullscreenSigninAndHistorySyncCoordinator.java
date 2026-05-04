@@ -210,7 +210,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         switch (mCurrentView) {
             case ChildView.SIGNIN:
                 if (ForcedSigninController.isForcedSigninPolicyEnabled()) {
-                    return BackPressResult.IGNORED;
+                    break;
                 }
                 if (isSignedIn()) {
                     mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
