@@ -917,6 +917,7 @@ cc_test("cc_unittests") {
     "tiles/software_image_decode_cache_unittest_combinations.cc",
     "tiles/tile_manager_unittest.cc",
     "tiles/tile_priority_unittest.cc",
+    "trees/client_layer_tree_host_impl_unittest.cc",
     "trees/damage_tracker_unittest.cc",
     "trees/draw_properties_unittest.cc",
     "trees/frame_data_unittest.cc",
