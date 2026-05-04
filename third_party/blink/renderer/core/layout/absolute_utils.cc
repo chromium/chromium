@@ -872,11 +872,15 @@ const LayoutResult* ComputeOofBlockDimensions(
     block_size = min_max_block_sizes.ClampSizeToMinAndMax(main_block_size);
   } else {
     DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);
+    const bool force_orthogonal_writing_mode_root = !IsParallelWritingMode(
+        container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
     // Create a new space, setting the fixed inline-size.
     ConstraintSpaceBuilder builder(style.GetWritingMode(),
                                    style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
+                                   /* is_new_fc */ true,
+                                   /* adjust_inline_size_if_needed */ true,
+                                   force_orthogonal_writing_mode_root);
     builder.SetAvailableSize({dimensions->size.inline_size, imcb.BlockSize()});
     builder.SetIsFixedInlineSize(true);
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());

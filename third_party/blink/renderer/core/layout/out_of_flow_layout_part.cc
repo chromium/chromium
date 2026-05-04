@@ -2753,18 +2753,16 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   const auto& style = node.Style();
   const LayoutUnit block_offset = offset_info.offset.block_offset;
 
-  // Convert from logical size in the writing mode of the child to the logical
-  // size in the writing mode of the container. That's what the constraint space
-  // builder expects.
-  const PhysicalSize physical_size =
-      ToPhysicalSize(offset_info.node_dimensions.size, style.GetWritingMode());
-  const LogicalSize available_size =
-      ToLogicalSize(physical_size, GetConstraintSpace().GetWritingMode());
+  const bool force_orthogonal_writing_mode_root = !IsParallelWritingMode(
+      GetConstraintSpace().GetWritingMode(), style.GetWritingMode());
 
-  ConstraintSpaceBuilder builder(GetConstraintSpace(),
+  // Build the constraint space in the writing-direction of the candidate.
+  ConstraintSpaceBuilder builder(GetConstraintSpace(), style.GetWritingMode(),
                                  style.GetWritingDirection(),
-                                 /* is_new_fc */ true);
-  builder.SetAvailableSize(available_size);
+                                 /* is_new_fc */ true,
+                                 /* adjust_inline_size_if_needed */ true,
+                                 force_orthogonal_writing_mode_root);
+  builder.SetAvailableSize(offset_info.node_dimensions.size);
   builder.SetPercentageResolutionSize(offset_info.container_content_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsHiddenForPaint(

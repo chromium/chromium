@@ -32,13 +32,28 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
                          WritingDirectionMode writing_direction,
                          bool is_new_fc,
                          bool adjust_inline_size_if_needed = true)
+      : ConstraintSpaceBuilder(parent_space,
+                               parent_space.GetWritingMode(),
+                               writing_direction,
+                               is_new_fc,
+                               adjust_inline_size_if_needed,
+                               /* force_orthogonal_writing_mode_root */ false) {
+  }
+
+  // The setters on this builder are in the writing mode of parent_writing_mode.
+  ConstraintSpaceBuilder(const ConstraintSpace& parent_space,
+                         WritingMode parent_writing_mode,
+                         WritingDirectionMode writing_direction,
+                         bool is_new_fc,
+                         bool adjust_inline_size_if_needed = true,
+                         bool force_orthogonal_writing_mode_root = false)
       : ConstraintSpaceBuilder(
             writing_direction,
-            IsParallelWritingMode(parent_space.GetWritingMode(),
+            IsParallelWritingMode(parent_writing_mode,
                                   writing_direction.GetWritingMode()),
             is_new_fc,
             adjust_inline_size_if_needed,
-            /* force_orthogonal_writing_mode_root */ false) {
+            force_orthogonal_writing_mode_root) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
     if (parent_space.ShouldRepeat())
