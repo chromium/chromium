@@ -53,10 +53,16 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContextualTasksButton,
 
 namespace {
 
-const int kGLogoIconSize = 15;
-
 // Will correspond to a 28x28 shadow circle when the location bar height is 34.
 const int kCircleShadowInset = 3;
+
+// Corresponds to a 32x32 pill background shape when the location bar height
+// is 34.
+const int kPillShapeShadowInset = 1;
+
+const int kGLogoCircularShapeIconSize = 16;
+
+const int kGLogoPillShapeIconSize = 15;
 
 // The top-left radius is needed to avoid the toolbar upper left rounded corner.
 // This will translate to the top-right if the button is on that side.
@@ -102,8 +108,9 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
       canvas->DrawCircle(center, scaled_radius, flags);
     } else {
       gfx::Rect inset_rect(size);
-      inset_rect.Inset(gfx::Insets::TLBR(
-          kCircleShadowInset, 0, kCircleShadowInset, kCircleShadowInset));
+      inset_rect.Inset(gfx::Insets::TLBR(kPillShapeShadowInset, 0,
+                                         kPillShapeShadowInset,
+                                         kPillShapeShadowInset));
       gfx::Rect fill_rect = gfx::ScaleToEnclosingRect(inset_rect, scale);
 
       float radius = fill_rect.height() / 2.0f;
@@ -126,6 +133,40 @@ class ContextualTasksButtonBackgroundPainter : public views::Painter {
   const SkColor bg_color_;
   const SkColor shadow_color_;
   const bool is_circle_shape_;
+};
+
+class ContextualTasksButtonHighlightPathGenerator
+    : public views::HighlightPathGenerator {
+ public:
+  explicit ContextualTasksButtonHighlightPathGenerator(
+      ContextualTasksButton* button)
+      : button_(button) {}
+  ~ContextualTasksButtonHighlightPathGenerator() override = default;
+
+  SkPath GetHighlightPath(const views::View* view) override {
+    gfx::Rect rect(view->size());
+    if (button_->ShouldApplyCircularBackgroundShadow()) {
+      rect.Inset(gfx::Insets(kCircleShadowInset));
+      return SkPath::Oval(gfx::RectToSkRect(rect));
+    } else {
+      rect.Inset(gfx::Insets::TLBR(kPillShapeShadowInset, 0,
+                                   kPillShapeShadowInset,
+                                   kPillShapeShadowInset));
+      const float radius = rect.height() / 2.0f;
+      const SkVector radii[4] = {
+          {kTopLeftRadius, kTopLeftRadius},       // top-left
+          {radius, radius},                       // top-right
+          {radius, radius},                       // bottom-right
+          {kBottomLeftRadius, kBottomLeftRadius}  // bottom-left
+      };
+      SkRRect rrect;
+      rrect.setRectRadii(gfx::RectToSkRect(rect), radii);
+      return SkPath::RRect(rrect);
+    }
+  }
+
+ private:
+  const raw_ptr<ContextualTasksButton> button_;
 };
 
 }  // namespace
@@ -203,6 +244,13 @@ ContextualTasksButton::ContextualTasksButton(
 
   OnSidePanelAlignmentChanged();
   MaybeUpdateVisibility();
+
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    views::HighlightPathGenerator::Install(
+        this,
+        std::make_unique<ContextualTasksButtonHighlightPathGenerator>(this));
+  }
 }
 
 ContextualTasksButton::~ContextualTasksButton() = default;
@@ -268,17 +316,7 @@ void ContextualTasksButton::OnSidePanelAlignmentChanged() {
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
-
-    const gfx::VectorIcon& contextual_tasks_icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleGLogoIcon;
-#else
-        kBrowserLogoIcon;
-#endif
-
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      contextual_tasks_icon, ui::kColorIcon, kGLogoIconSize));
+    UpdateColorsAndInsets();
   } else {
     PrefService* const pref_service =
         browser_window_interface_->GetProfile()->GetPrefs();
@@ -299,18 +337,38 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
     return;
   }
 
+  const int button_size = GetLayoutConstant(LayoutConstant::kLocationBarHeight);
+  SetPreferredSize(gfx::Size(button_size, button_size));
+
+  const gfx::VectorIcon& contextual_tasks_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kGoogleGLogoIcon;
+#else
+      kBrowserLogoIcon;
+#endif
+
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
+                                     ShouldApplyCircularBackgroundShadow()
+                                         ? kGLogoCircularShapeIconSize
+                                         : kGLogoPillShapeIconSize));
+
   const auto* color_provider = GetColorProvider();
   if (!color_provider) {
     return;
   }
 
-  const int button_size = GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-  SetPreferredSize(gfx::Size(button_size, button_size));
-  const int icon_inset = (button_size - kGLogoIconSize) / 2;
+  const int icon_size = ShouldApplyCircularBackgroundShadow()
+                            ? kGLogoCircularShapeIconSize
+                            : kGLogoPillShapeIconSize;
+  const int icon_inset = (button_size - icon_size) / 2;
+  const int vertical_inset =
+      ShouldApplyCircularBackgroundShadow() ? icon_inset : 0;
   const int icon_offset = ShouldApplyCircularBackgroundShadow() ? 0 : 2;
   const gfx::Insets insets =
-      gfx::Insets::TLBR(icon_inset, icon_inset - icon_offset, icon_inset,
-                        icon_inset + icon_offset) +
+      gfx::Insets::TLBR(vertical_inset, icon_inset - icon_offset,
+                        vertical_inset, icon_inset + icon_offset) +
       *GetProperty(views::kInternalPaddingKey);
   SetLayoutInsets(insets);
 

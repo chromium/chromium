@@ -31,6 +31,7 @@ class ContextualTasksButton
   ~ContextualTasksButton() override;
 
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
+  bool ShouldApplyCircularBackgroundShadow() const;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
       contextual_tasks::ContextualTasksPanelHost::SurfaceState state,
@@ -52,7 +53,6 @@ class ContextualTasksButton
   void OnSidePanelAlignmentChanged();
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
-  bool ShouldApplyCircularBackgroundShadow() const;
   void MaybeUpdateVisibility();
 
   BooleanPrefMember pin_state_;
