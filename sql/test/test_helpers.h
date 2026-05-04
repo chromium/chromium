@@ -110,6 +110,9 @@ int GetPageCount(sql::Database* db);
 //
 // C++ wrapper around the out-params of sqlite3_table_column_metadata().
 struct ColumnInfo {
+  // TODO(b/491051120): Consolidate usages of "main" string constants.
+  static constexpr char kMainDbName[] = "main";
+
   // Retrieves schema information for a column in a table.
   //
   // Crashes on SQLite errors.
