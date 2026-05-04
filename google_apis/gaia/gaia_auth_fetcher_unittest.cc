@@ -547,7 +547,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginFailureNetError) {
   EXPECT_CALL(consumer,
               OnOAuthMultiloginFinished(::testing::Property(
                   &OAuthMultiloginResult::status,
-                  ::testing::Eq(OAuthMultiloginResponseStatus::kRetry))))
+                  ::testing::Eq(OAuthMultiloginResponseStatus::kNetworkError))))
       .Times(1);
 
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());

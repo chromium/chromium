@@ -156,20 +156,35 @@ CreateStandardDeviceBoundSessionParamsFromRegistrationPayload(
       registration_payload.allowed_refresh_initiators);
 }
 
+void RecordCreateBoundSessionsResult(
+    OAuthMultiloginHelper::DeviceBoundSessionCreateSessionsResult result,
+    PartitionSuffix partition_suffix) {
+  static constexpr std::string_view kBaseHistogramName =
+      "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult";
+  base::UmaHistogramEnumeration(kBaseHistogramName, result);
+  std::string_view suffix_str = PartitionSuffixToString(partition_suffix);
+  if (!suffix_str.empty()) {
+    base::UmaHistogramEnumeration(
+        base::JoinString({kBaseHistogramName, suffix_str}, "."), result);
+  }
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status,
                                     PartitionSuffix partition_suffix) {
-  if (status == OAuthMultiloginResponseStatus::kRetry) {
+  // TODO(crbug.com/509497240): Consider recording network errors in the future
+  // (e.g., in a v2 histogram) to avoid skewing existing metrics.
+  if (status == OAuthMultiloginResponseStatus::kNetworkError) {
     return;
   }
 
-  base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseStatus", status);
+  static constexpr std::string_view kBaseHistogramName =
+      "Signin.OAuthMultiloginResponseStatus";
+  base::UmaHistogramEnumeration(kBaseHistogramName, status);
   std::string_view suffix_str = PartitionSuffixToString(partition_suffix);
   if (!suffix_str.empty()) {
     base::UmaHistogramEnumeration(
-        "Signin.OAuthMultiloginResponseStatus." + std::string(suffix_str),
-        status);
+        base::JoinString({kBaseHistogramName, suffix_str}, "."), status);
   }
 }
 
@@ -409,6 +424,7 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
   bool is_transient_error =
       result.status() == OAuthMultiloginResponseStatus::kInvalidTokens ||
       result.status() == OAuthMultiloginResponseStatus::kRetry ||
+      result.status() == OAuthMultiloginResponseStatus::kNetworkError ||
       result.status() ==
           OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge;
 
@@ -499,7 +515,8 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
   }
   if (sessions_params.empty()) {
     RecordCreateBoundSessionsResult(
-        DeviceBoundSessionCreateSessionsResult::kFallbackNoBoundSessions);
+        DeviceBoundSessionCreateSessionsResult::kFallbackNoBoundSessions,
+        partition_delegate_->GetPartitionSuffix());
     return false;
   }
 
@@ -512,7 +529,8 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
   }
   if (wrapped_key.empty()) {
     RecordCreateBoundSessionsResult(
-        DeviceBoundSessionCreateSessionsResult::kFallbackNoBindingKey);
+        DeviceBoundSessionCreateSessionsResult::kFallbackNoBindingKey,
+        partition_delegate_->GetPartitionSuffix());
     return false;
   }
 
@@ -543,27 +561,14 @@ void OAuthMultiloginHelper::OnBoundSessionsCreated(
 
   RecordCreateBoundSessionsResult(
       all_success ? DeviceBoundSessionCreateSessionsResult::kSuccess
-                  : DeviceBoundSessionCreateSessionsResult::kFailure);
+                  : DeviceBoundSessionCreateSessionsResult::kFailure,
+      partition_delegate_->GetPartitionSuffix());
 
   for (const auto& status : cookie_results) {
     base::UmaHistogramBoolean("Signin.SetCookieSuccess", status.IsInclude());
   }
 
   std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
-}
-void OAuthMultiloginHelper::RecordCreateBoundSessionsResult(
-    DeviceBoundSessionCreateSessionsResult result) {
-  base::UmaHistogramEnumeration(
-      "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult",
-      result);
-  PartitionSuffix suffix = partition_delegate_->GetPartitionSuffix();
-  std::string_view suffix_str = PartitionSuffixToString(suffix);
-  if (!suffix_str.empty()) {
-    base::UmaHistogramEnumeration(
-        "Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult." +
-            std::string(suffix_str),
-        result);
-  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

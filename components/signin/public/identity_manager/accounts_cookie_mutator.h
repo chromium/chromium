@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -47,6 +48,7 @@ inline std::string_view PartitionSuffixToString(PartitionSuffix suffix) {
     case PartitionSuffix::kGlic:
       return "Glic";
     case PartitionSuffix::kTest:
+      CHECK_IS_TEST();
       return "Test";
     case PartitionSuffix::kNone:
       return "";

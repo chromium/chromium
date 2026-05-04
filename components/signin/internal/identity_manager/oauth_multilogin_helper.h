@@ -121,11 +121,6 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // Invoked when all cookies has been set.
   void OnCookiesSet(const std::vector<net::CookieAccessResult>& results);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void RecordCreateBoundSessionsResult(
-      DeviceBoundSessionCreateSessionsResult result);
-#endif
-
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;

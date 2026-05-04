@@ -820,6 +820,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kInvalidTokens"/>
   <int value="5" label="kError"/>
   <int value="6" label="kRetryWithTokenBindingChallenge"/>
+  <int value="7" label="kNetworkError (not recorded)"/>
 </enum>
 
 <!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginResponseStatus) -->
