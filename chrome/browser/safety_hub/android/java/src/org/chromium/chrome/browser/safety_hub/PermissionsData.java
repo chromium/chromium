@@ -24,28 +24,50 @@ public class PermissionsData {
     // The reason why permissions were revoked.
     private final @PermissionsRevocationType int mRevocationType;
 
+    // Serialized string encoding revoked permission data needed by the C++ code for regrant/undo
+    // operations.
+    private final String mSerializedRevokedPermissionsMap;
+
     private PermissionsData(
             String origin,
             @ContentSettingsType.EnumType int[] permissions,
             long expiration,
             long lifetime,
-            @PermissionsRevocationType int revocationType) {
+            @PermissionsRevocationType int revocationType,
+            String serializedRevokedPermissionsMap) {
         mOrigin = origin;
         mPermissions = permissions;
         mExpiration = expiration;
         mLifetime = lifetime;
         mRevocationType = revocationType;
+        mSerializedRevokedPermissionsMap = serializedRevokedPermissionsMap;
     }
 
-    @VisibleForTesting
     @CalledByNative
     static PermissionsData create(
             @JniType("std::string") String origin,
             @JniType("std::vector<int32_t>") @ContentSettingsType.EnumType int[] permissions,
             @JniType("std::int64_t") long expiration,
             @JniType("std::int64_t") long lifetime,
-            @JniType("std::int32_t") @PermissionsRevocationType int revocationType) {
-        return new PermissionsData(origin, permissions, expiration, lifetime, revocationType);
+            @JniType("std::int32_t") @PermissionsRevocationType int revocationType,
+            @JniType("std::string") String serializedRevokedPermissionsMap) {
+        return new PermissionsData(
+                origin,
+                permissions,
+                expiration,
+                lifetime,
+                revocationType,
+                serializedRevokedPermissionsMap);
+    }
+
+    @VisibleForTesting
+    static PermissionsData create(
+            String origin,
+            @ContentSettingsType.EnumType int[] permissions,
+            long expiration,
+            long lifetime,
+            @PermissionsRevocationType int revocationType) {
+        return new PermissionsData(origin, permissions, expiration, lifetime, revocationType, "{}");
     }
 
     @CalledByNative
@@ -71,5 +93,10 @@ public class PermissionsData {
     @CalledByNative
     public @JniType("std::int32_t") @PermissionsRevocationType int getRevocationType() {
         return mRevocationType;
+    }
+
+    @CalledByNative
+    public @JniType("std::string") String getSerializedRevokedPermissionsMap() {
+        return mSerializedRevokedPermissionsMap;
     }
 }

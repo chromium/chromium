@@ -41,6 +41,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -134,12 +135,8 @@ BuildTestRevokedPermissionsOSNotificationDisplayManager(
 
 }  // namespace
 
-class RevokedPermissionsServiceTest
-    : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<
-          std::tuple</*should_setup_abusive_notification_sites*/ bool,
-                     /*should_setup_unused_sites*/ bool,
-                     /*should_setup_disruptive_sites*/ bool>> {
+class RevokedPermissionsServiceTestBase
+    : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -148,9 +145,7 @@ class RevokedPermissionsServiceTest
     clock_.SetNow(time);
 
     ResetService();
-    if (ShouldSetupSafeBrowsing()) {
-      SetUpSafeBrowsingService();
-    }
+    SetUpSafeBrowsingService();
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
     callback_count_ = 0;
@@ -164,13 +159,14 @@ class RevokedPermissionsServiceTest
   void TearDown() override {
     service()->SetClockForTesting(base::DefaultClock::GetInstance());
     hcsm()->SetClockForTesting(base::DefaultClock::GetInstance());
-    if (ShouldSetupSafeBrowsing()) {
-      TearDownSafeBrowsingService();
-    }
+    TearDownSafeBrowsingService();
 
     // ~BrowserTaskEnvironment() will properly call Shutdown on the services.
     ChromeRenderViewHostTestHarness::TearDown();
   }
+
+  virtual void SetUpSafeBrowsingService() {}
+  virtual void TearDownSafeBrowsingService() {}
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
@@ -188,14 +184,6 @@ class RevokedPermissionsServiceTest
                     &BuildTestRevokedPermissionsOSNotificationDisplayManager)}};
   }
 
-  // There are two variations of the test: where safe browsing is enabled and
-  // disabled. The former should allow abusive notifications to be revoked and
-  // the latter should not. However, other permission revocations are not gated
-  // by the safe browsing setting.
-  bool ShouldSetupSafeBrowsing() { return get<0>(GetParam()); }
-  bool ShouldSetupUnusedSites() { return get<1>(GetParam()); }
-  bool ShouldSetupDisruptiveSites() { return get<2>(GetParam()); }
-
   void ResetService() {
     // Setting the factory has the side effect of resetting the service
     // instance.
@@ -211,10 +199,6 @@ class RevokedPermissionsServiceTest
 
   HostContentSettingsMap* hcsm() {
     return HostContentSettingsMapFactory::GetForProfile(profile());
-  }
-
-  MockSafeBrowsingDatabaseManager* mock_database_manager() {
-    return fake_database_manager_.get();
   }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() {
@@ -273,27 +257,6 @@ class RevokedPermissionsServiceTest
     constraint.set_track_last_visit_for_autoexpiration(true);
     hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url), setting_type,
                                           setting_value, constraint);
-  }
-
-  void SetupAbusiveNotificationSite(std::string url, ContentSetting setting) {
-    hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url),
-                                          notifications_type, setting);
-    mock_database_manager()->SetThreatTypeForUrl(
-        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
-  }
-
-  void SetupSafeNotificationSite(std::string url) {
-    hcsm()->SetContentSettingDefaultScope(
-        GURL(url), GURL(url), notifications_type,
-        ContentSetting::CONTENT_SETTING_ALLOW);
-    mock_database_manager()->SetThreatTypeForUrl(
-        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
-  }
-
-  void ExpectRevokedAbusiveNotificationPermissionSize(size_t expected_size) {
-    ContentSettingsForOneType revoked_permissions_list =
-        safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
-    EXPECT_EQ(expected_size, revoked_permissions_list.size());
   }
 
   int GetRevokedDisruptiveNotificationPermissionSize() {
@@ -379,7 +342,10 @@ class RevokedPermissionsServiceTest
     PermissionsData permissions_data;
     permissions_data.primary_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url));
-    permissions_data.permission_types = permission_types;
+    for (ContentSettingsType type : permission_types) {
+      permissions_data.permissions.insert(
+          std::make_pair(type, base::Value(CONTENT_SETTING_ALLOW)));
+    }
     permissions_data.constraints =
         content_settings::ContentSettingConstraints(expiration - lifetime);
     permissions_data.constraints.set_lifetime(lifetime);
@@ -488,22 +454,6 @@ class RevokedPermissionsServiceTest
   }
 
  private:
-  void SetUpSafeBrowsingService() {
-    prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-    fake_database_manager_ =
-        base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
-    safe_browsing_factory_ =
-        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
-    safe_browsing_factory_->SetTestDatabaseManager(
-        fake_database_manager_.get());
-    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
-        safe_browsing_factory_->CreateSafeBrowsingService());
-  }
-
-  void TearDownSafeBrowsingService() {
-    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
-  }
-
   bool IsUrlInContentSettings(ContentSettingsForOneType content_settings,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
@@ -523,6 +473,67 @@ class RevokedPermissionsServiceTest
   uint8_t callback_count_;
   base::test::ScopedFeatureList feature_list_{
       content_settings::features::kSafetyCheckUnusedSitePermissions};
+};
+
+class RevokedPermissionsServiceTest
+    : public RevokedPermissionsServiceTestBase,
+      public testing::WithParamInterface<
+          std::tuple</*should_setup_abusive_notification_sites*/ bool,
+                     /*should_setup_unused_sites*/ bool,
+                     /*should_setup_disruptive_sites*/ bool>> {
+ public:
+  bool ShouldSetupSafeBrowsing() const { return std::get<0>(GetParam()); }
+  bool ShouldSetupUnusedSites() const { return std::get<1>(GetParam()); }
+  bool ShouldSetupDisruptiveSites() const { return std::get<2>(GetParam()); }
+
+  MockSafeBrowsingDatabaseManager* mock_database_manager() {
+    return fake_database_manager_.get();
+  }
+
+  void SetupAbusiveNotificationSite(std::string url, ContentSetting setting) {
+    hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url),
+                                          notifications_type, setting);
+    mock_database_manager()->SetThreatTypeForUrl(
+        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  }
+
+  void SetupSafeNotificationSite(std::string url) {
+    hcsm()->SetContentSettingDefaultScope(
+        GURL(url), GURL(url), notifications_type,
+        ContentSetting::CONTENT_SETTING_ALLOW);
+    mock_database_manager()->SetThreatTypeForUrl(
+        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
+  }
+
+  void ExpectRevokedAbusiveNotificationPermissionSize(size_t expected_size) {
+    ContentSettingsForOneType revoked_permissions_list =
+        safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+    EXPECT_EQ(expected_size, revoked_permissions_list.size());
+  }
+
+ private:
+  void SetUpSafeBrowsingService() override {
+    if (!ShouldSetupSafeBrowsing()) {
+      return;
+    }
+    prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+    fake_database_manager_ =
+        base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
+    safe_browsing_factory_ =
+        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
+    safe_browsing_factory_->SetTestDatabaseManager(
+        fake_database_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
+        safe_browsing_factory_->CreateSafeBrowsingService());
+  }
+
+  void TearDownSafeBrowsingService() override {
+    if (!ShouldSetupSafeBrowsing()) {
+      return;
+    }
+    TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+  }
+
   scoped_refptr<MockSafeBrowsingDatabaseManager> fake_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
@@ -1179,6 +1190,83 @@ TEST_P(RevokedPermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
   clock()->Advance(base::Days(70));
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+}
+
+TEST_F(RevokedPermissionsServiceTestBase,
+       UndoRegrantPermissionsForOrigin_GeolocationWithOptions) {
+  struct TestCase {
+    GeolocationSetting setting;
+    const char* url;
+  } test_cases[] = {
+      {{PermissionOption::kAllowed, PermissionOption::kDenied},
+       "https://example-approx-allow-precise-deny.com"},
+      {{PermissionOption::kAllowed, PermissionOption::kAsk},
+       "https://example-approx-allow-precise-ask.com"},
+      {{PermissionOption::kAllowed, PermissionOption::kAllowed},
+       "https://example-approx-allow-precise-allow.com"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    auto* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    GURL test_url(test_case.url);
+    base::Value initial_value = info->delegate().ToValue(test_case.setting);
+
+    content_settings::ContentSettingConstraints constraint;
+    constraint.set_track_last_visit_for_autoexpiration(true);
+    hcsm()->SetPermissionSettingDefaultScope(
+        test_url, test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        test_case.setting, constraint);
+
+    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+    clock()->Advance(base::Days(70));
+    safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+
+    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+    std::unique_ptr<RevokedPermissionsResult> result =
+        service()->GetRevokedPermissions();
+    EXPECT_EQ(result->GetRevokedPermissions().size(), 1u);
+    const ContentSettingPatternSource revoked_permission =
+        GetRevokedUnusedPermissions(hcsm())[0];
+
+    service()->RegrantPermissionsForOrigin(url::Origin::Create(test_url));
+
+    EXPECT_TRUE(GetAutorevocationBypassedByUser(
+        test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
+
+    service()->UndoRegrantPermissionsForOrigin(
+        result->GetRevokedPermissions().front());
+
+    EXPECT_FALSE(GetAutorevocationBypassedByUser(
+        test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
+    EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+    hcsm()->SetWebsiteSettingDefaultScope(
+        test_url, test_url, revoked_unused_site_type, base::Value());
+  }
+}
+
+TEST_F(RevokedPermissionsServiceTestBase,
+       RegrantGeolocationWithOptionsAfterRevokingGeolocation) {
+  base::test::ScopedFeatureList scoped_feature{
+      content_settings::features::kApproximateGeolocationPermission};
+
+  GURL test_url(url1);
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  // Setup a revoked GEOLOCATION permission.
+  SetupRevokedUnusedPermissionSite(url1);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+  service()->RegrantPermissionsForOrigin(test_origin);
+  EXPECT_EQ(
+      hcsm()->GetPermissionSetting(
+          test_url, test_url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+      PermissionSetting(
+          GeolocationSetting({.approximate = PermissionOption::kAllowed,
+                              .precise = PermissionOption::kAllowed})));
 }
 
 TEST_P(RevokedPermissionsServiceTest, NotRevokeNotificationPermission) {

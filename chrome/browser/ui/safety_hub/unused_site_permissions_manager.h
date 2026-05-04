@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
@@ -97,11 +99,17 @@ class UnusedSitePermissionsManager {
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInUnusedSitePermissionSetting(
-      const std::set<ContentSettingsType>& permissions,
+      base::flat_map<ContentSettingsType, base::Value> permissions,
       const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
+
+  // Helper function to convert the stored_value in website settings to a map
+  // from revoked permission type to revoked permission value, which can be
+  // stored in PermissionData.
+  base::flat_map<ContentSettingsType, base::Value> ExtractRevokedPermissions(
+      base::Value stored_value);
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);

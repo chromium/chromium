@@ -30,11 +30,13 @@ const base::Time kPastTime = base::Time::Now() - kLifetime;
 std::unique_ptr<RevokedPermissionsResult> CreateRevokedPermissionsResult(
     base::ListValue urls) {
   auto result = std::make_unique<RevokedPermissionsResult>();
-  PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
+    PermissionsData permissions_data;
     permissions_data.primary_pattern =
         ContentSettingsPattern::FromString(url_val.GetString());
-    permissions_data.permission_types = {ContentSettingsType::GEOLOCATION};
+    permissions_data.permissions.insert(
+        std::make_pair(ContentSettingsType::MEDIASTREAM_CAMERA,
+                       base::Value(CONTENT_SETTING_ALLOW)));
     permissions_data.constraints =
         content_settings::ContentSettingConstraints(kPastTime);
     permissions_data.constraints.set_lifetime(kLifetime);

@@ -7,12 +7,15 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -25,9 +28,6 @@ using base::android::AttachCurrentThread;
 namespace {
 
 constexpr char kUnusedTestSite[] = "https://example.com";
-std::set<ContentSettingsType> kUnusedPermissionList = {
-    ContentSettingsType::GEOLOCATION, ContentSettingsType::MEDIASTREAM_CAMERA,
-    ContentSettingsType::MEDIASTREAM_MIC};
 const base::Time kExpiration = base::Time::Now();
 const base::TimeDelta kLifetime = base::Days(30);
 
@@ -43,14 +43,46 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
   }
 
+  base::flat_map<ContentSettingsType, base::Value> GetUnusedPermissionMap() {
+    base::Value geolocation_value =
+        content_settings::PermissionSettingsRegistry::GetInstance()
+            ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+            ->delegate()
+            .ToValue(
+                GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                                   .precise = PermissionOption::kDenied});
+    base::flat_map<ContentSettingsType, base::Value> unused_permission_map;
+    unused_permission_map.insert(
+        std::make_pair(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                       std::move(geolocation_value)));
+    unused_permission_map.insert(
+        std::make_pair(ContentSettingsType::MEDIASTREAM_CAMERA,
+                       base::Value(CONTENT_SETTING_ALLOW)));
+    unused_permission_map.insert(
+        std::make_pair(ContentSettingsType::MEDIASTREAM_MIC,
+                       base::Value(CONTENT_SETTING_ALLOW)));
+    return unused_permission_map;
+  }
+
   void AddRevokedPermissions() {
-    base::ListValue revoked_permissions_list;
-    for (ContentSettingsType type : kUnusedPermissionList) {
-      revoked_permissions_list.Append(
-          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
+    base::ListValue permission_list;
+    for (auto&& [content_setting_type, setting_value] :
+         GetUnusedPermissionMap()) {
+      std::string content_setting_key =
+          UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
+              content_setting_type);
+      if (setting_value == base::Value(CONTENT_SETTING_ALLOW)) {
+        permission_list.Append(content_setting_key);
+      } else {
+        base::DictValue item;
+        item.Set(permissions::kRevokedPermissionType, content_setting_key);
+        item.Set(permissions::kRevokedPermissionSettingValue,
+                 std::move(setting_value));
+        permission_list.Append(std::move(item));
+      }
     }
     auto dict = base::DictValue().Set(permissions::kRevokedKey,
-                                      revoked_permissions_list.Clone());
+                                      std::move(permission_list));
 
     hcsm_->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),
@@ -72,7 +104,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   PermissionsData expected;
   expected.primary_pattern =
       ContentSettingsPattern::FromString(kUnusedTestSite);
-  expected.permission_types = kUnusedPermissionList;
+  expected.permissions = GetUnusedPermissionMap();
   expected.constraints =
       content_settings::ContentSettingConstraints(kExpiration - kLifetime);
   expected.constraints.set_lifetime(kLifetime);
@@ -82,7 +114,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
 
   EXPECT_EQ(expected.primary_pattern, converted.primary_pattern);
-  EXPECT_EQ(expected.permission_types, converted.permission_types);
+  EXPECT_EQ(expected.permissions, converted.permissions);
   EXPECT_EQ(kExpiration, converted.constraints.expiration());
   EXPECT_EQ(kLifetime, converted.constraints.lifetime());
   EXPECT_EQ(PermissionsRevocationType::kUnusedPermissions,
@@ -99,7 +131,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
 
   EXPECT_EQ(expected.primary_pattern, converted.primary_pattern);
-  EXPECT_EQ(expected.permission_types, converted.permission_types);
+  EXPECT_EQ(expected.permissions, converted.permissions);
   EXPECT_EQ(expected.constraints.expiration(),
             converted.constraints.expiration());
   EXPECT_EQ(expected.constraints.lifetime(), converted.constraints.lifetime());
@@ -114,7 +146,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {
   EXPECT_EQ(revoked_permissions_list.size(), 1UL);
 
   PermissionsData& permissions_data = revoked_permissions_list[0];
-  EXPECT_EQ(permissions_data.permission_types, kUnusedPermissionList);
+  EXPECT_EQ(permissions_data.permissions, GetUnusedPermissionMap());
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestRegrantAndUndoRegrantPermissions) {

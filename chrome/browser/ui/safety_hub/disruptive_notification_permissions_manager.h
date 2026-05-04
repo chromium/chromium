@@ -192,7 +192,7 @@ class DisruptiveNotificationPermissionsManager {
   friend class DisruptiveNotificationPermissionsMigrationTest;
   friend class RevokedPermissionsOSNotificationDisplayManagerTest;
   friend class RevokedPermissionsServiceBrowserTest;
-  friend class RevokedPermissionsServiceTest;
+  friend class RevokedPermissionsServiceTestBase;
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest,
       ProposedDisruptiveNotificationRevocationMetricsPersistent);

@@ -10,8 +10,8 @@ import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
-import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType} from 'chrome://settings/lazy_load.js';
+import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermission, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent, PermissionsRevocationType} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -29,11 +29,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   let testElement: SettingsSafetyHubUnusedSitePermissionsModuleElement;
 
-  const permissions = [
-    ContentSettingsTypes.GEOLOCATION,
-    ContentSettingsTypes.MIC,
-    ContentSettingsTypes.CAMERA,
-    ContentSettingsTypes.COOKIES,
+  const permissions: UnusedSitePermission[] = [
+    {
+      type: ContentSettingsTypes.GEOLOCATION,
+      settingValue: ContentSetting.ALLOW,
+    },
+    {type: ContentSettingsTypes.MIC, settingValue: ContentSetting.ALLOW},
+    {type: ContentSettingsTypes.CAMERA, settingValue: ContentSetting.ALLOW},
+    {type: ContentSettingsTypes.COOKIES, settingValue: ContentSetting.ALLOW},
   ];
 
   const mockData =
@@ -48,7 +51,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           .concat([
             {
               origin: `https://www.example5.com:443`,
-              permissions: [ContentSettingsTypes.NOTIFICATIONS],
+              permissions: [
+                {type: ContentSettingsTypes.NOTIFICATIONS, settingValue: null},
+              ],
               expiration:
                   '13317004800000000',  // Represents 2023-01-01T00:00:00.
               revocationType:
@@ -56,7 +61,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
             },
             {
               origin: `https://www.example6.com:443`,
-              permissions: [ContentSettingsTypes.NOTIFICATIONS],
+              permissions: [
+                {type: ContentSettingsTypes.NOTIFICATIONS, settingValue: null},
+              ],
               expiration:
                   '13317004800000000',  // Represents 2023-01-01T00:00:00.
               revocationType:

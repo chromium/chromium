@@ -343,8 +343,8 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.sites_ = sites.map(
         (site: UnusedSitePermissions): UnusedSitePermissionsDisplay => ({
           ...site,
-          detail:
-              this.getPermissionsText_(site.revocationType, site.permissions),
+          detail: this.getPermissionsText_(
+              site.revocationType, site.permissions.map(p => p.type)),
         }));
   }
 

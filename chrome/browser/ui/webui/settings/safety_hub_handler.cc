@@ -73,7 +73,7 @@ namespace {
 
 const char kRevocationTypeKey[] = "revocation_type";
 
-// Get values from |UnusedSitePermission| object in
+// Get values from |UnusedSitePermissions| object in
 // safety_hub_browser_proxy.ts.
 PermissionsData GetUnusedSitePermissionsFromDict(
     const base::DictValue& unused_site_permissions) {
@@ -88,13 +88,18 @@ PermissionsData GetUnusedSitePermissionsFromDict(
       unused_site_permissions.FindList(site_settings::kPermissions);
   CHECK(permissions);
   for (const auto& permission : *permissions) {
-    CHECK(permission.is_string());
-    const std::string& type_string = permission.GetString();
+    CHECK(permission.is_dict());
+    const std::string* type_string =
+        permission.GetDict().FindString(site_settings::kType);
+    CHECK(type_string);
+    const base::Value* setting_value =
+        permission.GetDict().Find(site_settings::kSettingValue);
     ContentSettingsType type =
-        site_settings::ContentSettingsTypeFromGroupName(type_string);
+        site_settings::ContentSettingsTypeFromGroupName(*type_string);
     CHECK(type != ContentSettingsType::DEFAULT)
         << type_string << " is not expected to have a UI representation.";
-    permissions_data.permission_types.insert(type);
+    permissions_data.permissions.insert(std::make_pair(
+        type, setting_value ? setting_value->Clone() : base::Value()));
   }
 
   // Handle expiration and lifetime for revoked permission.
@@ -269,11 +274,14 @@ base::ListValue SafetyHubHandler::PopulateUnusedSitePermissionsData() {
                                  permissions_data.primary_pattern.ToString());
 
     base::ListValue permissions_value_list;
-    for (ContentSettingsType type : permissions_data.permission_types) {
+    for (const auto& [type, value] : permissions_data.permissions) {
       std::string_view permission_str =
           site_settings::ContentSettingsTypeToGroupName(type);
       if (!permission_str.empty()) {
-        permissions_value_list.Append(permission_str);
+        base::DictValue dict;
+        dict.Set(site_settings::kType, permission_str);
+        dict.Set(site_settings::kSettingValue, value.Clone());
+        permissions_value_list.Append(std::move(dict));
       }
     }
 

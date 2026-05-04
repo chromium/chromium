@@ -117,6 +117,7 @@ inline constexpr char kPolicyIndicator[] = "indicator";
 inline constexpr char kReaderName[] = "readerName";
 inline constexpr char kRecentPermissions[] = "recentPermissions";
 inline constexpr char kSetting[] = "setting";
+inline constexpr char kSettingValue[] = "settingValue";
 inline constexpr char kSites[] = "sites";
 inline constexpr char kSource[] = "source";
 inline constexpr char kType[] = "type";

@@ -105,10 +105,19 @@ extern const char kPermissionPromptSurveyPromptDisplayDurationKey[];
 // from Android builds.
 
 // The key used for marking permissions as revoked, as per the unused site
-// permissions module of Safety Check, including both chooser and regular
-// permissions.
+// permissions module of Safety Check.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
+
+// The key for the revoked permission type, as per the unused site permissions
+// module of Safety Check
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kRevokedPermissionType[];
+
+// The key for the revoked permission value, as per the unused site permissions
+// module of Safety Check.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kRevokedPermissionSettingValue[];
 
 // How long an explicit Storage Access API permission grant/denial should last
 // (not taking renewals into account).

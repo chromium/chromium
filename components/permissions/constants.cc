@@ -72,6 +72,8 @@ const char kPermissionPromptSurveyPromptDisplayDurationKey[] =
 // from Android builds.
 
 const char kRevokedKey[] = "revoked";
+const char kRevokedPermissionType[] = "revoked_type";
+const char kRevokedPermissionSettingValue[] = "revoked_value";
 
 const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime =
     base::Days(30);

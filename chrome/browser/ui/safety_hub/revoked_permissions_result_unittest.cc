@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -40,12 +41,30 @@ std::set<ContentSettingsType> unused_permission_types({geolocation_type});
 std::set<ContentSettingsType> abusive_and_unused_permission_types(
     {notifications_type, geolocation_type});
 
+base::Value GetPermissionDataValue(ContentSettingsType permission_type) {
+  switch (permission_type) {
+    case notifications_type:
+      return base::Value();
+    case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
+      return content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+          ->delegate()
+          .ToValue(GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                                      .precise = PermissionOption::kDenied});
+    default:
+      return base::Value(CONTENT_SETTING_ALLOW);
+  }
+}
+
 PermissionsData CreatePermissionsData(
     ContentSettingsPattern& primary_pattern,
     std::set<ContentSettingsType>& permission_types) {
   PermissionsData permissions_data;
   permissions_data.primary_pattern = primary_pattern;
-  permissions_data.permission_types = permission_types;
+  for (ContentSettingsType permission_type : permission_types) {
+    permissions_data.permissions.insert(std::make_pair(
+        permission_type, GetPermissionDataValue(permission_type)));
+  }
   return permissions_data;
 }
 

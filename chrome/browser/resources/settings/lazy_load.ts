@@ -282,7 +282,7 @@ export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dial
 export {SettingsSafetyHubExtensionsModuleElement} from './safety_hub/extensions_module.js';
 export {SettingsSafetyHubNotificationPermissionsModuleElement} from './safety_hub/notification_permissions_module.js';
 export {CardState, PermissionsRevocationType, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub/safety_hub_browser_proxy.js';
-export type {CardInfo, EntryPointInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
+export type {CardInfo, EntryPointInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermission, UnusedSitePermissions} from './safety_hub/safety_hub_browser_proxy.js';
 export {SettingsSafetyHubCardElement} from './safety_hub/safety_hub_card.js';
 export {SettingsSafetyHubEntryPointElement} from './safety_hub/safety_hub_entry_point.js';
 export {SettingsSafetyHubModuleElement} from './safety_hub/safety_hub_module.js';

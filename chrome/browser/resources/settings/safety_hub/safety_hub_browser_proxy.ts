@@ -45,10 +45,15 @@ export enum PermissionsRevocationType {
 }
 // LINT.ThenChange(//chrome/browser/ui/safety_hub/revoked_permissions_result.h:PermissionsRevocationType)
 
+export interface UnusedSitePermission {
+  type: ContentSettingsTypes;
+  settingValue: any;
+}
+
 // The unused site permission information passed from safety_hub_handler.cc.
 export interface UnusedSitePermissions {
   origin: string;
-  permissions: ContentSettingsTypes[];
+  permissions: UnusedSitePermission[];
   expiration: string;
   revocationType: PermissionsRevocationType;
 }

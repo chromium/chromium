@@ -679,20 +679,30 @@ TEST_F(SafetyHubHandlerTest, PopulateAbusiveAndUnusedSitePermissionsData) {
   auto* revoked_permission_list_unused =
       revoked_permissions[0].GetDict().FindList(site_settings::kPermissions);
   EXPECT_EQ(revoked_permission_list_unused->size(), 1u);
-  EXPECT_EQ((*revoked_permission_list_unused)[0], "location");
+  EXPECT_EQ(*(*revoked_permission_list_unused)[0].GetDict().FindString(
+                site_settings::kType),
+            "location");
 
   // Abusive and unused site url should have both notifications and unused
   // permissions in permission list.
   auto* revoked_permission_list_abusive_and_unused =
       revoked_permissions[1].GetDict().FindList(site_settings::kPermissions);
   EXPECT_EQ(revoked_permission_list_abusive_and_unused->size(), 2u);
-  EXPECT_EQ((*revoked_permission_list_abusive_and_unused)[0], "location");
-  EXPECT_EQ((*revoked_permission_list_abusive_and_unused)[1], "notifications");
+  EXPECT_EQ(
+      *(*revoked_permission_list_abusive_and_unused)[0].GetDict().FindString(
+          site_settings::kType),
+      "location");
+  EXPECT_EQ(
+      *(*revoked_permission_list_abusive_and_unused)[1].GetDict().FindString(
+          site_settings::kType),
+      "notifications");
 
   // Abusive notification url should have notifications in permission list.
   auto* revoked_permission_list_abusive =
       revoked_permissions[2].GetDict().FindList(site_settings::kPermissions);
-  EXPECT_EQ((*revoked_permission_list_abusive)[0], "notifications");
+  EXPECT_EQ(*(*revoked_permission_list_abusive)[0].GetDict().FindString(
+                site_settings::kType),
+            "notifications");
 
   // Notifications should not be allowed.
   ExpectRevokedAbusiveNotificationPermission(kAbusiveAndUnusedTestSite);
@@ -1465,7 +1475,9 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
 
     auto* revoked_permission_list =
         revoked_permissions[0].GetDict().FindList(site_settings::kPermissions);
-    EXPECT_EQ((*revoked_permission_list)[0], "notifications");
+    EXPECT_EQ(*(*revoked_permission_list)[0].GetDict().FindString(
+                  site_settings::kType),
+              "notifications");
     // Notifications should not be allowed.
     ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
   } else {

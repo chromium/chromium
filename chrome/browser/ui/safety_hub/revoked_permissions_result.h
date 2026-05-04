@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -45,7 +46,7 @@ struct PermissionsData {
   PermissionsData& operator=(const PermissionsData&) = delete;
 
   ContentSettingsPattern primary_pattern;
-  std::set<ContentSettingsType> permission_types;
+  base::flat_map<ContentSettingsType, base::Value> permissions;
   content_settings::ContentSettingConstraints constraints;
   PermissionsRevocationType revocation_type;
 };
