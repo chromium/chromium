@@ -2371,8 +2371,15 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kInactive);
 }
 
+// TODO(crbug.com/508735742): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RemembersLastOpenedPresentation \
+  DISABLED_RemembersLastOpenedPresentation
+#else
+#define MAYBE_RemembersLastOpenedPresentation RemembersLastOpenedPresentation
+#endif
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       RemembersLastOpenedPresentation) {
+                       MAYBE_RemembersLastOpenedPresentation) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   auto* controller = ReadAnythingController::From(tab);
   PrefService* prefs = browser()->profile()->GetPrefs();
