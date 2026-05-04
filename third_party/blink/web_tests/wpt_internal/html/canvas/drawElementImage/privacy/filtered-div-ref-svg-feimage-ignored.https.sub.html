@@ -25,7 +25,7 @@
 <body>
   <svg width="0" height="0">
     <filter id="filter-same">
-      <feimage href="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png" />
+      <feimage href="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/green-100x100.png" />
     </filter>
     <filter id="filter-cross">
       <feImage href="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png"/>
@@ -49,7 +49,7 @@
         const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
         let pixel = getPixel(imgData, 50, 50);
-        assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
+        assert_array_equals(pixel, [0, 255, 0, 255], "Same origin should draw");
 
         // Ignored filter is not applied at all
         pixel = getPixel(imgData, 50, 150);

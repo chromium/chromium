@@ -18,7 +18,7 @@
     top: 0px;
     width: 100px;
     height: 100px;
-    background-image: url("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png");
+    background-image: url("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/green-100x100.png");
   }
   #crossOrigin {
     position: absolute;
@@ -49,7 +49,7 @@ window.onload = () => {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
     let pixel = getPixel(imgData, 50, 50);
-    assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
+    assert_array_equals(pixel, [0, 255, 0, 255], "Same origin should draw");
 
     pixel = getPixel(imgData, 50, 150);
     assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin should not draw");

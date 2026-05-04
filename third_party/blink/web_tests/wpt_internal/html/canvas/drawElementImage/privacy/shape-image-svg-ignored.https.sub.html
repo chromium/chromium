@@ -13,7 +13,7 @@
     #child {
       width: 100px;
       height: 200px;
-      background: red;
+      background: blue;
       color: black;
       font-family: Ahem;
       font-size: 50px;
@@ -85,13 +85,13 @@
         assert_array_equals(pixel, [0, 0, 0, 255], "Cross origin should draw text");
 
         pixel = getPixel(imgData, 75, 125);
-        assert_array_equals(pixel, [255, 0, 0, 255], "Cross origin should draw text");
+        assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin should draw text");
 
         pixel = getPixel(imgData, 25, 175);
         assert_array_equals(pixel, [0, 0, 0, 255], "Cross origin should not draw");
 
         pixel = getPixel(imgData, 75, 175);
-        assert_array_equals(pixel, [255, 0, 0, 255], "Cross origin should not draw");
+        assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin should not draw");
       });
     }
   </script>

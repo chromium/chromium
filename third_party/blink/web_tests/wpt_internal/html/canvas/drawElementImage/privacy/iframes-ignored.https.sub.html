@@ -10,7 +10,7 @@
   #child {
     width: 100px;
     height: 200px;
-    background: green;
+    background: blue;
   }
   #sameOrigin {
     position: absolute;
@@ -27,7 +27,7 @@
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
     <div id=child>
-      <iframe id=sameOrigin width=100 height=100 src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/iframe-subframe-red.html"></iframe>
+      <iframe id=sameOrigin width=100 height=100 src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/iframe-subframe-green.html"></iframe>
       <iframe id=crossOrigin width=100 height=100 src="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/iframe-subframe-red.html"></iframe>
     </div>
   </canvas>
@@ -46,10 +46,10 @@
           const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
           let pixel = getPixel(imgData, 50, 50);
-          assert_array_equals(pixel, [255, 0, 0, 255], "Same origin should draw");
+          assert_array_equals(pixel, [0, 128, 0, 255], "Same origin should draw");
 
           pixel = getPixel(imgData, 50, 150);
-          assert_array_equals(pixel, [0, 128, 0, 255], "Cross origin should not draw");
+          assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin should not draw");
         });
       }
     }
