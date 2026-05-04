@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,12 +17,12 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -120,10 +121,11 @@ bool AutocompleteTable::GetFormValuesForElementName(
     int limit,
     std::vector<AutocompleteEntry>& entries) {
   sql::Statement s;
-  SelectBuilder(db(), s, kAutocompleteTable,
-                {kName, kValue, kDateCreated, kDateLastUsed},
-                "WHERE name = ? AND value_lower LIKE ? "
-                "ORDER BY count DESC LIMIT ?");
+  sql::SelectBuilder(*db(), s, kAutocompleteTable,
+                     {kName, kValue, kDateCreated, kDateLastUsed},
+                     /*modifiers=*/
+                     "WHERE name = ? AND value_lower LIKE ? "
+                     "ORDER BY count DESC LIMIT ?");
   s.BindString16(0, name);
   s.BindString16(1, base::i18n::ToLower(prefix) + u"%");
   s.BindInt(2, limit);
@@ -150,10 +152,11 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   // Query for the name, value, count, and access dates of all form elements
   // that were used between the given times.
   sql::Statement s;
-  SelectBuilder(db(), s, kAutocompleteTable,
-                {kName, kValue, kCount, kDateCreated, kDateLastUsed},
-                "WHERE (date_created >= ? AND date_created < ?) OR "
-                "      (date_last_used >= ? AND date_last_used < ?)");
+  sql::SelectBuilder(*db(), s, kAutocompleteTable,
+                     {kName, kValue, kCount, kDateCreated, kDateLastUsed},
+                     /*modifiers=*/
+                     "WHERE (date_created >= ? AND date_created < ?) OR "
+                     "      (date_last_used >= ? AND date_last_used < ?)");
   s.BindInt64(0, delete_begin_time_t);
   s.BindInt64(1, delete_end_time_t);
   s.BindInt64(2, delete_begin_time_t);
@@ -219,8 +222,9 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
 
   // As a single transaction, remove or update the elements appropriately.
   sql::Statement s_delete;
-  DeleteBuilder(db(), s_delete, kAutocompleteTable,
-                "date_created >= ? AND date_last_used < ?");
+  sql::DeleteBuilder(
+      *db(), s_delete, kAutocompleteTable,
+      /*where_clause=*/"date_created >= ? AND date_last_used < ?");
   s_delete.BindInt64(0, delete_begin_time_t);
   s_delete.BindInt64(1, delete_end_time_t);
   sql::Transaction transaction(db());
@@ -232,9 +236,9 @@ bool AutocompleteTable::RemoveFormElementsAddedBetween(
   }
   for (const auto& update : updates) {
     sql::Statement s_update;
-    UpdateBuilder(db(), s_update, kAutocompleteTable,
-                  {kDateCreated, kDateLastUsed, kCount},
-                  "name = ? AND value = ?");
+    sql::UpdateBuilder(*db(), s_update, kAutocompleteTable,
+                       {kDateCreated, kDateLastUsed, kCount},
+                       /*where_clause=*/"name = ? AND value = ?");
     s_update.BindInt64(0, update.date_created);
     s_update.BindInt64(1, update.date_last_used);
     s_update.BindInt(2, update.count);
@@ -262,8 +266,8 @@ bool AutocompleteTable::RemoveExpiredFormElements(
   // Query for the name and value of all form elements that were last used
   // before the |expiration_time|.
   sql::Statement select_for_delete;
-  SelectBuilder(db(), select_for_delete, kAutocompleteTable, {kName, kValue},
-                "WHERE date_last_used < ?");
+  sql::SelectBuilder(*db(), select_for_delete, kAutocompleteTable,
+                     {kName, kValue}, /*modifiers=*/"WHERE date_last_used < ?");
   select_for_delete.BindInt64(0, expiration_time.ToTimeT());
   std::vector<AutocompleteChange> tentative_changes;
   while (select_for_delete.Step()) {
@@ -277,8 +281,8 @@ bool AutocompleteTable::RemoveExpiredFormElements(
   }
 
   sql::Statement delete_data_statement;
-  DeleteBuilder(db(), delete_data_statement, kAutocompleteTable,
-                "date_last_used < ?");
+  sql::DeleteBuilder(*db(), delete_data_statement, kAutocompleteTable,
+                     /*where_clause=*/"date_last_used < ?");
   delete_data_statement.BindInt64(0, expiration_time.ToTimeT());
   if (!delete_data_statement.Run()) {
     return false;
@@ -291,7 +295,8 @@ bool AutocompleteTable::RemoveExpiredFormElements(
 bool AutocompleteTable::RemoveFormElement(const std::u16string& name,
                                           const std::u16string& value) {
   sql::Statement s;
-  DeleteBuilder(db(), s, kAutocompleteTable, "name = ? AND value= ?");
+  sql::DeleteBuilder(*db(), s, kAutocompleteTable,
+                     /*where_clause=*/"name = ? AND value= ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
   return s.Run();
@@ -322,8 +327,8 @@ int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
 bool AutocompleteTable::GetAllAutocompleteEntries(
     std::vector<AutocompleteEntry>* entries) {
   sql::Statement s;
-  SelectBuilder(db(), s, kAutocompleteTable,
-                {kName, kValue, kDateCreated, kDateLastUsed});
+  sql::SelectBuilder(*db(), s, kAutocompleteTable,
+                     {kName, kValue, kDateCreated, kDateLastUsed});
 
   while (s.Step()) {
     std::u16string name = s.ColumnString16(0);
@@ -341,8 +346,9 @@ std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(
     const std::u16string& name,
     const std::u16string& value) {
   sql::Statement s;
-  SelectBuilder(db(), s, kAutocompleteTable, {kDateCreated, kDateLastUsed},
-                "WHERE name = ? AND value = ?");
+  sql::SelectBuilder(*db(), s, kAutocompleteTable,
+                     {kDateCreated, kDateLastUsed},
+                     /*modifiers=*/"WHERE name = ? AND value = ?");
   s.BindString16(0, name);
   s.BindString16(1, value);
   if (!s.Step()) {
@@ -363,7 +369,8 @@ bool AutocompleteTable::UpdateAutocompleteEntries(
   // Remove all existing entries.
   for (const auto& entry : entries) {
     sql::Statement s;
-    DeleteBuilder(db(), s, kAutocompleteTable, "name = ? AND value = ?");
+    sql::DeleteBuilder(*db(), s, kAutocompleteTable,
+                       /*where_clause=*/"name = ? AND value = ?");
     s.BindString16(0, entry.key().name());
     s.BindString16(1, entry.key().value());
     if (!s.Run()) {
@@ -416,8 +423,8 @@ bool AutocompleteTable::AddFormFieldValueTime(
 bool AutocompleteTable::InsertAutocompleteEntry(
     const AutocompleteEntry& entry) {
   sql::Statement s;
-  InsertBuilder(
-      db(), s, kAutocompleteTable,
+  sql::InsertBuilder(
+      *db(), s, kAutocompleteTable,
       {kName, kValue, kValueLower, kDateCreated, kDateLastUsed, kCount});
   s.BindString16(0, entry.key().name());
   s.BindString16(1, entry.key().value());
@@ -434,16 +441,16 @@ bool AutocompleteTable::InsertAutocompleteEntry(
 
 bool AutocompleteTable::InitMainTable() {
   if (!db()->DoesTableExist(kAutocompleteTable)) {
-    return CreateTable(db(), kAutocompleteTable,
-                       {{kName, "VARCHAR"},
-                        {kValue, "VARCHAR"},
-                        {kValueLower, "VARCHAR"},
-                        {kDateCreated, "INTEGER DEFAULT 0"},
-                        {kDateLastUsed, "INTEGER DEFAULT 0"},
-                        {kCount, "INTEGER DEFAULT 1"}},
-                       {kName, kValue}) &&
-           CreateIndex(db(), kAutocompleteTable, {kName}) &&
-           CreateIndex(db(), kAutocompleteTable, {kName, kValueLower});
+    return sql::CreateTable(*db(), kAutocompleteTable,
+                            {{kName, "VARCHAR"},
+                             {kValue, "VARCHAR"},
+                             {kValueLower, "VARCHAR"},
+                             {kDateCreated, "INTEGER DEFAULT 0"},
+                             {kDateLastUsed, "INTEGER DEFAULT 0"},
+                             {kCount, "INTEGER DEFAULT 1"}},
+                            {kName, kValue}) &&
+           sql::CreateIndex(*db(), kAutocompleteTable, {kName}) &&
+           sql::CreateIndex(*db(), kAutocompleteTable, {kName, kValueLower});
   }
   return true;
 }
