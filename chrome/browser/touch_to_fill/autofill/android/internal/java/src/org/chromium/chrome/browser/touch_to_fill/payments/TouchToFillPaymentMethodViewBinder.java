@@ -52,9 +52,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
@@ -80,7 +79,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -88,6 +86,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -110,13 +109,12 @@ class TouchToFillPaymentMethodViewBinder {
         private final FillableItemCollectionInfo mCollectionInfo;
 
         public TextViewCollectionInfoAccessibilityDelegate(
-                @NonNull FillableItemCollectionInfo collectionInfo) {
+                FillableItemCollectionInfo collectionInfo) {
             mCollectionInfo = collectionInfo;
         }
 
         @Override
-        public void onInitializeAccessibilityNodeInfo(
-                @NonNull View host, @NonNull AccessibilityNodeInfo info) {
+        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
 
             assert info.getText() != null;
@@ -310,13 +308,14 @@ class TouchToFillPaymentMethodViewBinder {
     }
 
     static void bindLoyaltyCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == LOYALTY_CARD_NUMBER) {
+        if (propertyKey == LOYALTY_CARD) {
+            LoyaltyCard loyaltyCard = model.get(LOYALTY_CARD);
             TextView loyaltyCardNumber = view.findViewById(R.id.loyalty_card_number);
-            loyaltyCardNumber.setText(model.get(LOYALTY_CARD_NUMBER));
+            loyaltyCardNumber.setText(loyaltyCard.getLoyaltyCardNumber());
             loyaltyCardNumber.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
-        } else if (propertyKey == MERCHANT_NAME) {
+
             TextView merchantName = view.findViewById(R.id.merchant_name);
-            merchantName.setText(model.get(MERCHANT_NAME));
+            merchantName.setText(loyaltyCard.getMerchantName());
             merchantName.setVisibility(View.VISIBLE);
         } else if (propertyKey == LOYALTY_CARD_ICON) {
             ImageView loyaltyCardIcon = view.findViewById(R.id.loyalty_card_icon);
