@@ -155,7 +155,7 @@ bool SVGFEDiffuseLightingElement::TaintsOrigin() const {
   // TaintsOrigin() is only called after a successful call to Build()
   // (see above), so we should have a ComputedStyle here.
   DCHECK(style);
-  return style->LightingColor().IsCurrentColor();
+  return style->LightingColor().DependsOnCurrentColor();
 }
 
 SVGAnimatedPropertyBase* SVGFEDiffuseLightingElement::PropertyFromAttribute(
