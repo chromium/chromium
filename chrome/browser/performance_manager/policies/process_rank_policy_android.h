@@ -20,7 +20,7 @@
 
 namespace performance_manager::policies {
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 class WebViewUpdater;
 #endif
 
@@ -79,6 +79,8 @@ class ProcessRankPolicyAndroid
       std::optional<blink::mojom::PermissionStatus> previous_status) override;
   void OnHadFormInteractionChanged(const PageNode* page_node) override;
   void OnHadUserEditsChanged(const PageNode* page_node) override;
+  void OnEmbedderFrameNodeChanged(const PageNode* page_node,
+                                  const FrameNode* previous_embedder) override;
   // TODO(crbug.com/410444953):
   // `DiscardEligibilityPolicy::IsPageOptedOutOfDiscarding()` depends on
   // `PageNode::GetMainFrameUrl()` and
@@ -109,7 +111,7 @@ class ProcessRankPolicyAndroid
       const PageNode* page_node) override;
 
  private:
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   friend class WebViewUpdater;
 #endif
 

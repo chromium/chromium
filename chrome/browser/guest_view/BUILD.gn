@@ -87,6 +87,7 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/glic",
+      "//chrome/browser/performance_manager",
       "//chrome/browser/task_manager",
     ]
 

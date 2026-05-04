@@ -8,6 +8,7 @@
 
 #include "base/android/android_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,15 +24,24 @@
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "chrome/common/webui_url_constants.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"  // nogncheck
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"  // nogncheck
+#else  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
-#include "components/guest_view/browser/test_guest_view_manager.h"
-#endif
-#include "url/gurl.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 namespace performance_manager::policies {
 
@@ -90,6 +100,17 @@ class ProcessRankPolicyAndroidTest : public ChromeRenderViewHostTestHarness {
         false, base::TimeTicks::Now(), 123, kDefaultUrl, "text/html",
         /* notification_permission_status= */ std::nullopt);
   }
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  std::unique_ptr<content::WebContents> CreateTestGuestWebContents() {
+    auto* context = GetBrowserContext();
+    return content::WebContentsTester::CreateTestWebContents(
+        context, content::SiteInstance::CreateForGuest(
+                     context, content::StoragePartitionConfig::Create(
+                                  context, "foo", "", true)));
+  }
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   const GURL kDefaultUrl{"http://example.test/"};
   std::unique_ptr<TestGraphImpl> graph_;
@@ -854,35 +875,48 @@ TEST_F(ProcessRankPolicyAndroidTest, ProtectRecentlyVisibleTab) {
             content::ChildProcessImportance::NORMAL);
 }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 TEST_F(ProcessRankPolicyAndroidTest,
-       SlimWebViewPageInheritsVisibilityFromEmbedder) {
+       WebViewPageInWebUiInheritsVisibilityFromEmbedder) {
   guest_view::TestGuestViewManagerFactory factory;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  factory.GetOrCreateTestGuestViewManager(
+      GetBrowserContext(),
+      std::make_unique<extensions::ChromeGuestViewManagerDelegate>());
+#else
   factory.GetOrCreateTestGuestViewManager(
       GetBrowserContext(),
       std::make_unique<android::ChromeGuestViewManagerDelegate>());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
 
   // Create Owner Page Node (the default one in the harness).
   MockPageGraph owner_page_graph = CreateDefaultPage();
-  DefaultNavigation(owner_page_graph.page.get());
+  // Fake that the owner page is a WebUI
+  owner_page_graph.page->OnMainFrameNavigationCommitted(
+      false, base::TimeTicks::Now(), 123, GURL(chrome::kChromeUIGlicURL),
+      "text/html",
+      /* notification_permission_status= */ std::nullopt);
   owner_page_graph.page.get()->SetIsFocused(true);
   owner_page_graph.page.get()->SetIsVisible(true);
 
   // Create Guest WebContents and its PageNode.
   std::unique_ptr<content::WebContents> guest_contents =
-      CreateTestWebContents();
+      CreateTestGuestWebContents();
   auto guest_process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
   auto guest_page = TestNodeWrapper<PageNodeImpl>::Create(
       graph_.get(), guest_contents->GetWeakPtr(),
       GetBrowserContext()->UniqueId());
 
-  // Link Guest to Owner via SlimWebViewGuest.
-  std::unique_ptr<guest_view::GuestViewBase> slim_webview_guest =
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<guest_view::GuestViewBase> webview_guest =
+      extensions::WebViewGuest::Create(main_rfh());
+#else   // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<guest_view::GuestViewBase> webview_guest =
       guest_view::SlimWebViewGuest::Create(main_rfh());
-  slim_webview_guest->InitWithWebContents(base::DictValue(),
-                                          guest_contents.get());
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  webview_guest->InitWithWebContents(base::DictValue(), guest_contents.get());
   // In these tests, there is no PerformanceManagerTabHelper, which would
   // normally associate the contents with the page. Due to this absence, the
   // test needs to manually notify the ProcessRankPolicyAndroid that the
@@ -907,6 +941,6 @@ TEST_F(ProcessRankPolicyAndroidTest,
   EXPECT_NE(guest_contents->GetPrimaryMainFrameImportanceForTesting(),
             content::ChildProcessImportance::IMPORTANT);
 }
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 }  // namespace performance_manager::policies

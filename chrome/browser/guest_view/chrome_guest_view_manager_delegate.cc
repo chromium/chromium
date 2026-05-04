@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/performance_manager/public/guest_view_policy.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/common/buildflags.h"
 #include "components/captive_portal/core/buildflags.h"
@@ -47,6 +48,8 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 
   // Check if guest belongs to glic and apply specific customizations if so.
   glic::OnGuestAdded(guest_web_contents);
+
+  performance_manager::GuestViewAssociatedToWebContents(guest_web_contents);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   // Attach Captive Portal helper to the WebView.
