@@ -706,22 +706,17 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
 
   // The second should though.
   ProfileDeletionObserver observer;
-  CloseBrowserSynchronously(browser_profile2);
-  observer.Wait();
-
-  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
+  bool watch_started = false;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePathWatcher watcher;
+  base::RunLoop run_loop;
 
 // The following check is flaky on Windows.
-// TODO(crbug.com/40756611): re-enable this check when the profile
-// directory deletion works more reliably on Windows.
+// TODO(crbug.com/40756611): re-enable this check when the profile directory
+// deletion works more reliably on Windows.
 #if !BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    // Check that NukeProfileFromDisk() works correctly.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePathWatcher watcher;
-    base::RunLoop run_loop;
-    ASSERT_TRUE(watcher.Watch(
+    watch_started = watcher.Watch(
         path_profile2, base::FilePathWatcher::Type::kNonRecursive,
         base::BindLambdaForTesting([&run_loop, &path_profile2](
                                        const base::FilePath& path, bool error) {
@@ -730,11 +725,23 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
           EXPECT_FALSE(error);
           if (!base::PathExists(path))
             run_loop.Quit();
-        })));
-    run_loop.Run();
-    EXPECT_FALSE(base::PathExists(path_profile2));
+        }));
+    ASSERT_TRUE(watch_started);
   }
 #endif  // !BUILDFLAG(IS_WIN)
+
+  CloseBrowserSynchronously(browser_profile2);
+  observer.Wait();
+
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
+
+  if (watch_started) {
+    if (base::PathExists(path_profile2)) {
+      run_loop.Run();
+    }
+    EXPECT_FALSE(base::PathExists(path_profile2));
+  }
 }
 
 // The test makes sense on those platforms where the keychain exists.
