@@ -1067,7 +1067,6 @@ try_.orchestrator_builder(
             "use_clang_coverage",
             "use_java_coverage",
             "partial_code_coverage_instrumentation",
-            "minimal_symbols",
         ],
     ),
     compilator = "android-x64-rel-compilator",
