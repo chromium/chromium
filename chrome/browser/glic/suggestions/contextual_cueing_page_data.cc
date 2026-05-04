@@ -10,8 +10,11 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,10 +115,20 @@ void ContextualCueingPageData::FindMatchingConfig() {
     }
     auto decision = DidMatchCueingConditions(config);
     if (decision == kAllowed) {
-      bool is_auto_open_eligible =
+      Profile* profile = Profile::FromBrowserContext(
+          page().GetMainDocument().GetBrowserContext());
+      CHECK(profile);
+      bool is_pdf_auto_open_candidate =
           config.auto_open_eligible() &&
           page().GetContentsMimeType() == pdf::kPDFMimeType &&
-          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+          glic::GlicEnabling::IsAutoOpenForPdfEnabled(profile);
+
+      if (is_pdf_auto_open_candidate && !pdf_page_count_) {
+        needs_pdf_page_count = true;
+        continue;
+      }
+
+      bool is_auto_open_eligible = config.auto_open_eligible();
       if (is_auto_open_eligible ||
           (kUseDynamicCues.Get() && config.has_dynamic_cue_label())) {
         CueingResult result;
@@ -123,7 +136,8 @@ void ContextualCueingPageData::FindMatchingConfig() {
         result.prompt_suggestion = config.default_text();
         result.anchored_message_text = config.dynamic_cue_secondary_label();
         result.is_dynamic = true;
-        result.auto_open_eligible = config.auto_open_eligible();
+        result.auto_open_eligible = is_auto_open_eligible;
+        result.pdf_page_count = pdf_page_count_;
         if (config.has_auto_send_params()) {
           result.auto_send_params = CueingResult::AutoSendParams{
               /*auto_send_eligible=*/
@@ -135,6 +149,7 @@ void ContextualCueingPageData::FindMatchingConfig() {
         CueingResult result;
         result.cue_label = l10n_util::GetStringUTF8(
             IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL);
+        result.pdf_page_count = pdf_page_count_;
         std::move(cueing_decision_callback_).Run(base::ok(std::move(result)));
         return;
       }
