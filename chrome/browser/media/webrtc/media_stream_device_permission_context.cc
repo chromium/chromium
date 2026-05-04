@@ -190,10 +190,8 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
-    OnAndroidPermissionDecided(request_data.id, request_data.requesting_origin,
-                               request_data.embedding_origin, decision,
-                               std::move(callback),
-                               false /*permission_granted*/);
+    OnAndroidPermissionDecided(request_data, decision, std::move(callback),
+                               /*permission_granted=*/false);
     return;
   }
 
@@ -217,19 +215,15 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     case permissions::PermissionRepromptState::kNoNeed:
       // We would have already returned if permission was denied by the user,
       // and this result indicates that we have all the OS permissions we need.
-      OnAndroidPermissionDecided(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, decision, std::move(callback),
-          true /*permission_granted*/);
+      OnAndroidPermissionDecided(request_data, decision, std::move(callback),
+                                 /*permission_granted=*/true);
       return;
 
     case permissions::PermissionRepromptState::kCannotShow:
       // If we cannot show the info bar, then we have to assume we don't have
       // the permissions we need.
-      OnAndroidPermissionDecided(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, decision, std::move(callback),
-          false /*permission_granted*/);
+      OnAndroidPermissionDecided(request_data, decision, std::move(callback),
+                                 /*permission_granted=*/false);
       return;
 
     case permissions::PermissionRepromptState::kShow:
@@ -242,18 +236,15 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
               permission_type, content_settings_type_,
               base::BindOnce(&MediaStreamDevicePermissionContext::
                                  OnAndroidPermissionDecided,
-                             weak_ptr_factory_.GetWeakPtr(), request_data.id,
-                             request_data.requesting_origin,
-                             request_data.embedding_origin, decision,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             request_data.Clone(), decision,
                              std::move(callback)));
       return;
   }
 }
 
 void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const permissions::PermissionRequestData& request_data,
     const permissions::PermissionPromptDecision& website_permission_decision,
     permissions::BrowserPermissionCallback callback,
     bool permission_granted) {
@@ -268,16 +259,7 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
   // already persisted, and `is_one_time=false` because it is only relevant when
   // persisting permission.
   ContentSettingPermissionContextBase::NotifyPermissionSet(
-      permissions::PermissionRequestData(
-          id,
-          content::PermissionRequestDescription(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      permissions::PermissionUtil::
-                          ContentSettingsTypeToPermissionType(
-                              content_settings_type_))),
-          requesting_origin, embedding_origin),
-      std::move(callback), false /*persist*/,
+      request_data, std::move(callback), /*persist=*/false,
       permissions::PermissionPromptDecision{
           .overall_decision = result_decision,
           .prompt_options = website_permission_decision.prompt_options,

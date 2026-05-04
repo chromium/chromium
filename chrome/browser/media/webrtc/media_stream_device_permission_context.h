@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_ANDROID)
 namespace permissions {
 struct PermissionPromptDecision;
+struct PermissionRequestData;
 }  // namespace permissions
 #endif
 
@@ -57,9 +58,7 @@ class MediaStreamDevicePermissionContext
                         bool allowed) override;
 
   void OnAndroidPermissionDecided(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
+      const permissions::PermissionRequestData& request_data,
       const permissions::PermissionPromptDecision& website_permission_decision,
       permissions::BrowserPermissionCallback callback,
       bool permission_granted);
