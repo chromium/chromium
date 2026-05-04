@@ -409,6 +409,9 @@ bool IsBlueDotOnToolsMenuButtoneEnabled();
 // DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccounts);
 
+// Killswitch for the reauth-first step in AuthenticationFlowInProfile.
+BASE_DECLARE_FEATURE(kAuthenticationFlowReauthFirstKillswitch);
+
 // Feature param for kSeparateProfilesForManagedAccountsForceMigration to
 // specify how much time to wait before force-migrating the primary managed
 // account to its own separate profile.

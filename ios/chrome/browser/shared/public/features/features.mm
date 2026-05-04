@@ -415,6 +415,9 @@ BASE_FEATURE(kEnableTraitCollectionRegistration,
 BASE_FEATURE(kSeparateProfilesForManagedAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAuthenticationFlowReauthFirstKillswitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature parameter for kSeparateProfilesForManagedAccountsForceMigration.
 constexpr base::FeatureParam<base::TimeDelta> kMultiProfileMigrationGracePeriod{
     &kSeparateProfilesForManagedAccountsForceMigration,

@@ -24,6 +24,9 @@ class Browser;
 @protocol AuthenticationFlowPerformerDelegate <
     AuthenticationFlowPerformerBaseDelegate>
 
+// Indicates that the reauthentication flow completed.
+- (void)didCompleteReauthWithSuccess:(BOOL)success;
+
 // Called after `-[AuthenticationFlowPerformerBase
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
 // unsynced in the current profile.

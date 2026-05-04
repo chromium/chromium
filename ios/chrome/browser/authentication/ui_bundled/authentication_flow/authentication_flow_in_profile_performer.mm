@@ -199,6 +199,7 @@
 
 - (void)didFetchAccountCapabilities {
   [_delegate didFetchAccountCapabilities];
+  _capabilitiesFetcher = nil;
 }
 
 // Starts a Watchdog Timer that ends the user policy registration on time out.

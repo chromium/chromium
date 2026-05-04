@@ -282,6 +282,9 @@
                          presentingViewController:self.viewController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
+  // During FRE, allows sign-in even if the account needs to be reauthenticated.
+  authenticationFlow.skipReauthIfNeeded =
+      _accessPoint == signin_metrics::AccessPoint::kStartPage;
   [self.mediator startSignInWithAuthenticationFlow:authenticationFlow];
 }
 

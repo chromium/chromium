@@ -32,6 +32,12 @@ class SyncService;
 // Cancels any outstanding work and dismisses an alert view (if shown).
 - (void)interrupt;
 
+// Starts the reauthentication flow for `identity`.
+- (void)reauthIdentity:(id<SystemIdentity>)identity
+               browser:(Browser*)browser
+        viewController:(UIViewController*)viewController
+           accessPoint:(signin_metrics::AccessPoint)accessPoint;
+
 // Fetches the list of data types with unsync data in the primary account.
 // `-[id<AuthenticationFlowPerformerDelegate>
 // didFetchUnsyncedDataWithUnsyncedDataTypes:]` is called once the data are

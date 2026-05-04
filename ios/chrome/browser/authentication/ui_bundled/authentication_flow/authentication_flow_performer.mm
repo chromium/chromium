@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/authentication/enterprise/managed_profile_creation/coordinator/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/enterprise/public/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base+protected.h"
@@ -128,7 +129,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 @interface AuthenticationFlowPerformer () <
     AgeMismatchSignoutCoordinatorDelegate,
-    ManagedProfileCreationCoordinatorDelegate>
+    ManagedProfileCreationCoordinatorDelegate,
+    SigninReauthCoordinatorDelegate>
 @end
 
 @implementation AuthenticationFlowPerformer {
@@ -148,6 +150,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   AgeMismatchSignoutCoordinator* _ageMismatchSignoutCoordinator;
   // Tracks if the CanSigninToChrome callback has been invoked.
   BOOL _canSignInToChromeCallbackInvoked;
+  SigninReauthCoordinator* _reauthCoordinator;
 }
 
 - (instancetype)
@@ -168,6 +171,32 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   _managedConfirmationAlertCoordinator = nil;
   _delegate = nil;
   [self stopWatchdogTimer];
+  [self stopReauthCoordinator];
+}
+
+- (void)reauthIdentity:(id<SystemIdentity>)identity
+               browser:(Browser*)browser
+        viewController:(UIViewController*)viewController
+           accessPoint:(signin_metrics::AccessPoint)accessPoint {
+  CHECK(!_reauthCoordinator);
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(
+          browser->GetProfile()->GetOriginalProfile());
+  CoreAccountInfo accountInfo =
+      identityManager->FindExtendedAccountInfoByGaiaId(identity.gaiaId);
+  if (accountInfo.IsEmpty()) {
+    accountInfo.gaia = identity.gaiaId;
+    accountInfo.email = base::SysNSStringToUTF8(identity.userEmail);
+  }
+
+  _reauthCoordinator =
+      [[SigninReauthCoordinator alloc] initWithBaseViewController:viewController
+                                                          browser:browser
+                                                          account:accountInfo
+                                                signinAccessPoint:accessPoint];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
 }
 
 - (void)fetchUnsyncedDataWithSyncService:(syncer::SyncService*)syncService {
@@ -372,6 +401,16 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   [_ageMismatchSignoutCoordinator start];
 }
 
+#pragma mark - SigninReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
+  [self stopReauthCoordinator];
+
+  BOOL success = (result == ReauthResult::kSuccess);
+  [_delegate didCompleteReauthWithSuccess:success];
+}
+
 #pragma mark - AuthenticationFlowPerformerBase
 
 - (void)checkNoDialog {
@@ -382,6 +421,12 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 }
 
 #pragma mark - Private
+
+- (void)stopReauthCoordinator {
+  [_reauthCoordinator stop];
+  _reauthCoordinator.delegate = nil;
+  _reauthCoordinator = nil;
+}
 
 - (void)delegateFetchCanSigninToChromeCompletedWithResult:
     (SystemIdentityCapabilityResult)result {

@@ -73,6 +73,8 @@ enum class AuthenticationState {
   // Fetch "CanSignInToChrome" capability before sign-in to check for age
   // restrictions.
   kFetchCanSigninToChromeCapability,
+  // If the user needs reauth, maybe reauth.
+  kReauthIfNeeded,
   // Check if there are unsynced data with the primary account, in the current
   // profile.
   kCheckUnsyncedData,
@@ -384,6 +386,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   DCHECK([self canceled]);
   switch (_state) {
     case AuthenticationState::kBegin:
+    case AuthenticationState::kReauthIfNeeded:
     case AuthenticationState::kCheckUnsyncedData:
     case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
     case AuthenticationState::kFetchCanSigninToChromeCapability:
@@ -412,6 +415,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kBegin:
       return AuthenticationState::kFetchCanSigninToChromeCapability;
     case AuthenticationState::kFetchCanSigninToChromeCapability:
+      return AuthenticationState::kReauthIfNeeded;
+    case AuthenticationState::kReauthIfNeeded:
       return AuthenticationState::kCheckUnsyncedData;
     case AuthenticationState::kCheckUnsyncedData:
       return AuthenticationState::kShowAgeMismatchDialogIfNeeded;
@@ -456,6 +461,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
     case AuthenticationState::kFetchCanSigninToChromeCapability:
       [self fetchCanSigninToChromeCapabilityStep];
+      return;
+
+    case AuthenticationState::kReauthIfNeeded:
+      [self reauthIfNeededStep];
       return;
 
     case AuthenticationState::kCheckUnsyncedData:
@@ -514,6 +523,19 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     }
   }
   NOTREACHED();
+}
+
+- (void)reauthIfNeededStep {
+  if (self.skipReauthIfNeeded ||
+      base::FeatureList::IsEnabled(kAuthenticationFlowReauthFirstKillswitch) ||
+      _identityToSignIn.hasValidAuth) {
+    [self continueFlow];
+    return;
+  }
+  [_performer reauthIdentity:_identityToSignIn
+                     browser:_browser
+              viewController:_presentingViewController
+                 accessPoint:_accessPoint];
 }
 
 - (void)checkUnsyncedDataStep {
@@ -850,6 +872,15 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 #pragma mark AuthenticationFlowPerformerDelegate
+
+- (void)didCompleteReauthWithSuccess:(BOOL)success {
+  // Success means the user reauthenticated with `_identityToSignIn`.
+  CHECK_EQ(AuthenticationState::kReauthIfNeeded, _state);
+  if (!success) {
+    _cancelationReason = signin_ui::CancelationReason::kUserCanceled;
+  }
+  [self continueFlow];
+}
 
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
     (syncer::DataTypeSet)unsyncedDataTypes {

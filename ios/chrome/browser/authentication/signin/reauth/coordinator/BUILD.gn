@@ -12,7 +12,6 @@ source_set("coordinator") {
   deps = [
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/authentication/ui_bundled",
-    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin/model:signin_util",
