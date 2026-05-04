@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -29,6 +30,8 @@ namespace content {
 class DevToolsAgentHostClient;
 class DevToolsAgentHostImpl;
 class DevToolsExternalAgentProxyDelegate;
+class DevToolsSession;
+class RenderProcessHost;
 
 namespace protocol {
 class DevToolsDomainHandler;
@@ -127,10 +130,15 @@ class DevToolsSession : public protocol::FrontendChannel,
                                       base::OnceClosure resume_callback);
   void DetachChildSession(const std::string& session_id);
   bool HasChildSession(const std::string& session_id);
+  static bool ValidateSessionId(const std::string& expected_session_id,
+                                base::span<const uint8_t> message);
+  DevToolsSession* GetSessionById(const std::string& session_id);
   Mode session_mode() const { return mode_; }
 
   void AddObserver(ChildObserver* obs);
   void RemoveObserver(ChildObserver* obs);
+
+  friend class FlattenedDevToolsProtocolTest;
 
   base::RepeatingCallback<void(std::string)> MakePrepareForReloadCallback() {
     return base::BindRepeating(&DevToolsSession::PrepareForReload,
@@ -203,6 +211,12 @@ class DevToolsSession : public protocol::FrontendChannel,
   // DevToolsExternalAgentProxy implementation.
   void DispatchOnClientHost(base::span<const uint8_t> message) override;
   void ConnectionClosed() override;
+
+  static void DispatchProtocolResponseOrNotification(
+      DevToolsAgentHostClient* client,
+      DevToolsAgentHostImpl* agent_host,
+      blink::mojom::DevToolsMessagePtr message,
+      const std::string& session_id);
 
   // Merges the |updates| received from the renderer into session_state_cookie_.
   void ApplySessionStateUpdates(blink::mojom::DevToolsSessionStatePtr updates);

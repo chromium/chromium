@@ -315,6 +315,23 @@ DevToolsSession* DevToolsAgentHostImpl::SessionByClient(
   return it == session_by_client_.end() ? nullptr : it->second.get();
 }
 
+DevToolsSession* DevToolsAgentHostImpl::GetSessionByIdForTesting(
+    const std::string& session_id) {
+  DevToolsSession* session = nullptr;
+  if (session_id.empty()) {
+    session = sessions_.empty() ? nullptr : sessions_.front();
+  } else {
+    for (DevToolsSession* root_session : sessions_) {
+      if (root_session->HasChildSession(session_id)) {
+        session = root_session->GetSessionById(session_id);
+        break;
+      }
+    }
+  }
+  CHECK(session) << "Session not found: " << session_id;
+  return session;
+}
+
 bool DevToolsAgentHostImpl::AttachInternal(
     std::unique_ptr<DevToolsSession> session_owned) {
   scoped_refptr<DevToolsAgentHostImpl> protect(this);
