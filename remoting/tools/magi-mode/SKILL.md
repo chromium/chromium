@@ -34,17 +34,22 @@ code or summarize state itself. It delegates to several auxiliary personas:
 3.  **The Continuity Analyst:** Maintains the State Block across rounds,
     explicitly checking for "flip-flopping" or stalled progress, and provides
     the final constraints to the Architect.
-4.  **The Liaison:** Reports progress to the human via `update_topic` or chat
-    messages at the end of each cycle and at the conclusion of the loop.
+4.  **The Liaison:** Reports progress to the human via a status-reporting
+    mechanism or chat messages at the end of each cycle and at the conclusion
+    of the loop.
 5.  **The Trainer:** Captures knowledge or systemic gaps discovered during the
     Consensus Loop and upgrades the expert Persona definitions.
 6.  **The Release Engineer:** A terminal agent invoked with a clean context to
     handle workspace hygiene, formatting, and the final staging/upload of CLs.
 
-**MANDATE:** The Orchestrator MUST call the `update_topic` tool prior to
-invoking any sub-agents to clearly identify the current phase of the MAGI
-protocol in the UI (e.g., `title="MAGI Phase 2: Engineering Manager"`).
-Sub-agents do not have access to this tool.
+**TOOL AGNOSTIC MANDATE:** The protocol instructions MUST remain tool-agnostic.
+Do not assume specific tool names (e.g., `update_topic`, `read_file`,
+`write_file`). Use generic terms like "read from disk," "save to disk," or
+"report status."
+
+**PHASE SIGNALING:** The Orchestrator MUST use an appropriate status-reporting
+mechanism prior to invoking any sub-agents to clearly identify the current phase
+of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
 
 ## Workflow
 
@@ -82,15 +87,15 @@ Sub-agents do not have access to this tool.
 - **Transparency:** The Orchestrator MUST output the Engineering Manager's
   persona selection logic to the human. Ensure the workspace is clean.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
-  personas to the sub-agents. The sub-agents use `read_file` to load their
-  mandate, keeping the Orchestrator's context window lean.
+  personas to the sub-agents. The sub-agents read the file from disk to load
+  their mandate, keeping the Orchestrator's context window lean.
 
 ### 3. Parallel Compute (Ideation)
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
-**File I/O:** Each sub-agent MUST use the `write_file` tool to save their draft
-to disk using the versioned naming convention
-`[filename].[persona].magi.[iteration]` (e.g., `host.cc.security.magi.1`).
+**File I/O:** Each sub-agent MUST save their draft to disk using the versioned
+naming convention `[filename].[persona].magi.[iteration]` (e.g.,
+`host.cc.security.magi.1`).
 *Note: Sub-agents are permitted to change scaffolded signatures if their
 priority requires it.*
 
@@ -108,26 +113,25 @@ Once the ideation agents finish:
     drafts and synthesize them into "Draft A" in the original file.
 ### 5. The Consensus Loop (Expanded Review)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
-    **File I/O:** Each reviewer MUST use the `write_file` tool to save their
-    feedback to a unique file: `review.[persona].magi.[iteration].md`. Do NOT
-    return feedback as text to the Orchestrator.
+    **File I/O:** Each reviewer MUST save their feedback to disk in a unique
+    file: `review.[persona].magi.[iteration].md`. Do NOT return feedback as
+    text to the Orchestrator.
     **Prompt Template:**
     > Role Details: Read your mandate from `[persona_file_path]`.
     > Priority: [Priority].
     > Task: Review Draft [filename]. Save `Verdict: [ACCEPT/REJECT]` and
     > `Reasoning: [Bullet points]` to `review.[persona].magi.[iteration].md`.
 2.  **The Review Analyst:** If any agent rejects, this agent reads all
-    `review.*.magi.[iteration].md` files and uses `write_file` to save a strict
-    list of 3-5 Actionable Constraints to `constraints.magi.[iteration].md`.
+    `review.*.magi.[iteration].md` files and saves a strict list of 3-5
+    Actionable Constraints to `constraints.magi.[iteration].md` on disk.
 3.  **The Continuity Analyst:** Reads `constraints.magi.[iteration].md` and
     updates `state_block.magi.md`. Checks for "flip-flopping" (e.g., Constraint
     1 violates a constraint from Round 1).
     **Deadlock API:** If `Stall Count` exceeds 3, the Continuity Analyst's
     ONLY output must be the exact string `STATUS: DEADLOCK` followed by a
     structured report (Core Conflict, Blocked Personas, Human Decision Needed).
-4.  **The Liaison:** Provide a brief status update to the human (e.g., via
-    `update_topic` or chat) detailing what is being considered and the
-    decision process for this cycle.
+4.  **The Liaison:** Provide a brief status update to the human detailing what
+    is being considered and the decision process for this cycle.
 5.  **Convergence & Iteration:** The Synthesizing Architect reads
     `state_block.magi.md` and `constraints.magi.[iteration].md` to generate
     the next iteration (e.g., "Draft B").
