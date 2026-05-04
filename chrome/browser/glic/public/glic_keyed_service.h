@@ -60,10 +60,6 @@ class GlicTabDataObserver;
 class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
 
-#if !BUILDFLAG(IS_ANDROID)
-class GlicExperimentalOptInController;
-#endif
-
 enum class GlicPrewarmingChecksResult;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
@@ -141,9 +137,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   GlicMetrics* metrics() { return metrics_.get(); }
   virtual GlicFreController& fre_controller();
-#if !BUILDFLAG(IS_ANDROID)
-  virtual GlicExperimentalOptInController& opt_in_controller();
-#endif
   virtual GlicInstanceCoordinator& instance_coordinator() const;
 
   // Return a `GlicActiveInstanceSharingManager` which tracks the sharing state
@@ -322,9 +315,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicFreController> fre_controller_;
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<GlicExperimentalOptInController> opt_in_controller_;
-#endif
   // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
