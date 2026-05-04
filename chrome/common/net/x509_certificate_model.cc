@@ -28,6 +28,7 @@
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/certificate_policies.h"
@@ -156,6 +157,11 @@ constexpr uint8_t kSecgEcSecp384r1[] = {0x2b, 0x81, 0x04, 0x00, 0x22};
 //     secp521r1 OBJECT IDENTIFIER ::= {
 //       iso(1) identified-organization(3) certicom(132) curve(0) 35 }
 constexpr uint8_t kSecgEcSecp512r1[] = {0x2b, 0x81, 0x04, 0x00, 0x23};
+
+// From RFC 9881
+constexpr uint8_t kOidAlgMldsa44[] = {OBJ_ENC_ML_DSA_44};
+constexpr uint8_t kOidAlgMldsa65[] = {OBJ_ENC_ML_DSA_65};
+constexpr uint8_t kOidAlgMldsa87[] = {OBJ_ENC_ML_DSA_87};
 
 // Old Netscape OIDs. Do we still need all these?
 // #define NETSCAPE_OID 0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42
@@ -436,6 +442,9 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(kSecgEcSecp256r1), IDS_CERT_OID_SECG_EC_SECP256R1},
     {bssl::der::Input(kSecgEcSecp384r1), IDS_CERT_OID_SECG_EC_SECP384R1},
     {bssl::der::Input(kSecgEcSecp512r1), IDS_CERT_OID_SECG_EC_SECP521R1},
+    {bssl::der::Input(kOidAlgMldsa44), IDS_CERT_OID_ML_DSA_44},
+    {bssl::der::Input(kOidAlgMldsa65), IDS_CERT_OID_ML_DSA_65},
+    {bssl::der::Input(kOidAlgMldsa87), IDS_CERT_OID_ML_DSA_87},
 
     // Extension fields (including details of extensions):
     {bssl::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},

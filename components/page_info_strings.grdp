@@ -920,6 +920,15 @@
   <message name="IDS_CERT_OID_SECG_EC_SECP521R1" desc="description of public key algorithm SEC_OID_SECG_EC_SECP521R1">
     SECG elliptic curve secp521r1 (aka NIST P-521)
   </message>
+  <message name="IDS_CERT_OID_ML_DSA_44" desc="description of public key algorithm ML-DSA-44">
+    ML-DSA-44
+  </message>
+  <message name="IDS_CERT_OID_ML_DSA_65" desc="description of public key algorithm ML-DSA-65">
+    ML-DSA-65
+  </message>
+  <message name="IDS_CERT_OID_ML_DSA_87" desc="description of public key algorithm ML-DSA-87">
+    ML-DSA-87
+  </message>
 
   <!-- Extended Key Usage strings shared across platforms -->
   <message name="IDS_CERT_EKU_ANY_EKU" desc="description of X.509 certificate extended key usage value `anyExtendedKeyUsage`. This indicates that the certificate may be used for any purpose.">
