@@ -1596,7 +1596,8 @@ TEST_F(ComposeboxQueryControllerTest,
             ContextUploadStatus::kUploadExpired);
 }
 
-TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithImplicitUpload_SetsIsImplicitUpload) {
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequestSuccessWithImplicitUpload_SetsIsImplicitUpload) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -1621,9 +1622,9 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithImplicitUpl
 
   // Assert: Check that is_implicit_upload is set correctly.
   EXPECT_TRUE(controller()
-                .GetFileInfoForTesting(file_token)
-                ->GetRequestIdForTesting()
-                ->is_implicit_upload());
+                  .GetFileInfoForTesting(file_token)
+                  ->GetRequestIdForTesting()
+                  ->is_implicit_upload());
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_SetsContextId) {
@@ -3923,8 +3924,8 @@ TEST_F(ComposeboxQueryControllerTest,
 TEST_F(ComposeboxQueryControllerTest,
        MultiContextPdfAndImageUploadQueryHasCinptsAndQueryParam) {
   CreateController(
-    /*send_lns_surface=*/false,
-    /*suppress_lns_surface_param_if_no_image=*/true);
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true);
 
   // Act: Start the session.
   controller().InitializeIfNeeded();
@@ -3975,7 +3976,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Assert: cinpts parameter is present with both file request IDs.
   lens::LensOverlayContextualInputs contextual_inputs =
-    GetContextualInputsFromUrl(aim_url.spec());
+      GetContextualInputsFromUrl(aim_url.spec());
   EXPECT_EQ(contextual_inputs.inputs_size(), 2);
 
   // The files may be in any order, so find which is PDF and which is image.
@@ -4215,6 +4216,59 @@ TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
 
   // Check that file is no longer in cache.
   EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       QuerySubmittedWithLnsSurfaceAndNoImageSuppressedForSvg) {
+  CreateController(
+      /*send_lns_surface=*/true,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/false,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->mime_type_string = "image/svg+xml";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kUnknown));
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: Lns surface is empty since it was suppressed due to no image.
+  std::string lns_surface_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsSurfaceParameterKey,
+                                         &lns_surface_value));
+  EXPECT_EQ(lns_surface_value, "");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
