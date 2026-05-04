@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -818,12 +819,20 @@ void BluetoothAdapterWinrt::CompleteInit(
   // run no matter how the function exits. Furthermore, we set |is_initialized_|
   // to true if adapter is still active when the callback gets run.
   base::ScopedClosureRunner on_init(base::BindOnce(
-      [](base::WeakPtr<BluetoothAdapterWinrt> adapter,
+      [](scoped_refptr<base::SequencedTaskRunner> expected_runner,
+         base::WeakPtr<BluetoothAdapterWinrt> adapter,
          base::OnceClosure init_callback) {
+        // This callback can be destroyed on a different sequence during
+        // shutdown if the target task runner has already shut down. In that
+        // case, we must not access the WeakPtr or run the callback.
+        if (!expected_runner->RunsTasksInCurrentSequence()) {
+          return;
+        }
         if (adapter)
           adapter->is_initialized_ = true;
         std::move(init_callback).Run();
       },
+      base::SequencedTaskRunner::GetCurrentDefault(),
       weak_ptr_factory_.GetWeakPtr(), std::move(init_callback)));
 
   bluetooth_adapter_statics_ = bluetooth_adapter_statics;
