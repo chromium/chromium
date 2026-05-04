@@ -7042,6 +7042,25 @@
             ]
         }
     ],
+    "ContextualCueingV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualCueingV2",
+                        "OnDeviceCategoryClassifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualSearchBoxGlobalExpansion": [
         {
             "platforms": [
@@ -17170,24 +17189,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "StarterPackIPH"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OnDeviceCategoryClassifier": [
-        {
-            "platforms": [
-                "chromeos",
-                "windows",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OnDeviceCategoryClassifier"
                     ]
                 }
             ]

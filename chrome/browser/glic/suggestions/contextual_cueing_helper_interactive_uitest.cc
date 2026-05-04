@@ -148,7 +148,7 @@ class ContextualCueingHelperBrowserTest
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},
-        /*disabled_features=*/{});
+        {contextual_cueing::kContextualCueingV2});
   }
 };
 
@@ -813,7 +813,7 @@ class ContextualCueingBypassNudgeCapsTest
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},
-        /*disabled_features=*/{});
+        {contextual_cueing::kContextualCueingV2});
   }
 
   void SetUp() override {
