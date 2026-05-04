@@ -85,11 +85,21 @@ def get_gemini_command(use_alias=False) -> list[str]:
 
 
 @functools.cache
-def get_gemini_version(use_alias=False) -> str | None:
-    """Gets the version of the Gemini CLI."""
+def get_gemini_version(use_alias=False,
+                       gemini_cli_cmd: tuple[str] | None = None) -> str | None:
+    """Gets the version of Gemini CLI.
+
+    Args:
+        use_alias: Whether to use aliases when looking for an existing Gemini
+            CLI installation
+        gemini_cli_cmd: If provided, used as the command to run Gemini CLI
+            instead of finding an existing installation.
+    """
+    gemini_cli_cmd = (list(gemini_cli_cmd) if gemini_cli_cmd else
+                      get_gemini_command(use_alias=use_alias))
     try:
         result = subprocess.run(
-            get_gemini_command(use_alias=use_alias) + ['--version'],
+            gemini_cli_cmd + ['--version'],
             check=True,
             capture_output=True,
             text=True,

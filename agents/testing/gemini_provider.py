@@ -42,7 +42,9 @@ MODEL = 'gemini-3-flash-preview'
 class GeminiCliArguments:
     """Information that is relevant to starting gemini-cli for a test."""
     # The command to run gemini-cli.
-    command: list[str]
+    base_gemini_cli_cmd: list[str]
+    # Additional arguments to pass to gemini-cli when running a test.
+    gemini_cli_args: list[str]
     # The home directory that gemini-cli will use.
     home_dir: pathlib.Path | None
     # The environment that gemini-cli will be started in.
@@ -57,6 +59,11 @@ class GeminiCliArguments:
     user_prompt: str
     # How wide to treat the console that gemini-cli is run in.
     console_width: int
+
+    @property
+    def command(self):
+        """The command to use to run a test in gemini-cli."""
+        return self.base_gemini_cli_cmd + self.gemini_cli_args
 
 
 def _stream_reader(stream, output_list: list[str], width):
@@ -74,9 +81,14 @@ def _stream_reader(stream, output_list: list[str], width):
         stream.close()
 
 
-def _get_sandbox_image_tag() -> str | None:
-    """Gets the full sandbox image tag."""
-    gemini_version = gemini_helpers.get_gemini_version()
+def _get_sandbox_image_tag(gemini_cli_cmd: list[str]) -> str | None:
+    """Gets the full sandbox image tag.
+
+    Args:
+        gemini_cli_cmd: The command to run Gemini CLI.
+    """
+    gemini_version = gemini_helpers.get_gemini_version(
+        gemini_cli_cmd=tuple(gemini_cli_cmd))
     if not gemini_version:
         logging.error('Failed to get gemini version.')
         return None
@@ -136,13 +148,29 @@ def _get_env_with_overrides(
     return env
 
 
-def _install_extensions(extensions: Collection[str] | None = None,
+def _install_extensions(gemini_cli_cmd: list[str],
+                        extensions: Collection[str] | None = None,
                         home_dir: pathlib.Path | None = None) -> None:
+    """Installs the provided extensions.
+
+    Args:
+        gemini_cli_cmd: The command to use to run Gemini CLI when installing
+            extensions.
+        extensions: An optional collection of extension names to install.
+        home_dir: An optional home directory to use for installing extensions.
+    """
     # The installation script should identify the working tree as the "repo
     # root", so use the copy in the working tree with the CWD set
     # appropriately for subprocesses like `git`.
     if not extensions:
         return
+
+    if len(gemini_cli_cmd) != 1:
+        raise RuntimeError(f'Gemini CLI command {gemini_cli_cmd} cannot be '
+                           f'used when installing extensions since only a '
+                           f'single path can be passed to the install script. '
+                           f'If this is actually needed, the install and test '
+                           f'scripts will need to be refactored.')
 
     logging.info('Installing extensions: %s', extensions)
     command = [
@@ -150,6 +178,8 @@ def _install_extensions(extensions: Collection[str] | None = None,
         pathlib.Path('agents', 'extensions', 'install.py'),
         '--extra-extensions-dir',
         pathlib.Path('agents', 'testing', 'extensions'),
+        '--gemini-cli-bin',
+        gemini_cli_cmd[0],
         'add',
         '--copy',
         '--skip-prompt',
@@ -164,7 +194,7 @@ def _install_extensions(extensions: Collection[str] | None = None,
     logging.debug('Extension install output:\n%s', result.stdout)
     result.check_returncode()
     logging.debug('Installed extensions:\n%s',
-                  _get_installed_extensions(home_dir))
+                  _get_installed_extensions(gemini_cli_cmd, home_dir))
 
 
 def _install_skills(skills: Collection[str] | None = None,
@@ -230,12 +260,32 @@ def _apply_changes(changes: list[dict[str, str]]) -> None:
                 'Invalid change object: key must be "apply" or "stage".')
 
 
-def _get_installed_extensions(home_dir: pathlib.Path | None) -> str:
-    """Returns a string listing the installed extensions."""
+def _get_installed_extensions(gemini_cli_cmd: list[str],
+                              home_dir: pathlib.Path | None) -> str:
+    """Check installed Gemini CLI extensions.
+
+    Args:
+        gemini_cli_cmd: The command to use to run Gemini CLI when listing
+            extensions.
+        home_dir: An optional home directory to use when listing extensions.
+
+    Returns:
+        A list of installed extension names.
+    """
+
+    if len(gemini_cli_cmd) != 1:
+        raise RuntimeError(f'Gemini CLI command {gemini_cli_cmd} cannot be '
+                           f'used when installing extensions since only a '
+                           f'single path can be passed to the install script. '
+                           f'If this is actually needed, the install and test '
+                           f'scripts will need to be refactored.')
+
     return subprocess.check_output(
         [
             sys.executable,
             pathlib.Path('agents', 'extensions', 'install.py'),
+            '--gemini-cli-bin',
+            gemini_cli_cmd[0],
             'list',
         ],
         env=_get_env_with_overrides(home_dir),
@@ -243,7 +293,7 @@ def _get_installed_extensions(home_dir: pathlib.Path | None) -> str:
     )
 
 
-def _get_sandbox_flags() -> tuple[list[str], str]:
+def _get_sandbox_flags(gemini_cli_cmd: list[str]) -> tuple[list[str], str]:
     """Gets flags for the gemini-cli sandbox.
 
     Returns:
@@ -258,7 +308,8 @@ def _get_sandbox_flags() -> tuple[list[str], str]:
                 'Sandbox requires depot_tools, but it could not be located.')
     sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
 
-    container_path = _get_container_path(_get_sandbox_image_tag())
+    container_path = _get_container_path(
+        _get_sandbox_image_tag(gemini_cli_cmd=gemini_cli_cmd))
     if container_path:
         sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
     else:
@@ -338,21 +389,22 @@ def _get_gemini_cli_arguments(
     except (ValueError, TypeError):
         return None, f'Failed to parse timeout from {unparsed_timeout}'
 
-    command = []
+    base_gemini_cli_cmd = []
+    gemini_cli_args = []
     node_bin = provider_vars.get('node_bin')
     if node_bin:
-        command.append(node_bin)
+        base_gemini_cli_cmd.append(node_bin)
     gemini_cli_bin = provider_vars.get('gemini_cli_bin')
     if gemini_cli_bin:
-        command.append(gemini_cli_bin)
+        base_gemini_cli_cmd.append(gemini_cli_bin)
     else:
-        command = gemini_helpers.get_gemini_command()
-    command.extend(['-y', '--model', MODEL])
+        base_gemini_cli_cmd = gemini_helpers.get_gemini_command()
+    gemini_cli_args.extend(['-y', '--model', MODEL])
 
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
-        command.append('--sandbox')
-        sandbox_flags, error = _get_sandbox_flags()
+        gemini_cli_args.append('--sandbox')
+        sandbox_flags, error = _get_sandbox_flags(base_gemini_cli_cmd)
         if error:
             return None, error
 
@@ -360,12 +412,14 @@ def _get_gemini_cli_arguments(
     home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
 
     return GeminiCliArguments(
-        command=command,
+        base_gemini_cli_cmd=base_gemini_cli_cmd,
+        gemini_cli_args=gemini_cli_args,
         home_dir=home_dir,
         env=_get_env_with_overrides(
             home=home_dir,
             sandbox_flags=sandbox_flags,
-            sandbox_image=_get_sandbox_image_tag(),
+            sandbox_image=_get_sandbox_image_tag(
+                gemini_cli_cmd=base_gemini_cli_cmd),
         ),
         timeout_seconds=timeout_seconds,
         system_prompt=_get_system_prompt(provider_config),

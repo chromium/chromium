@@ -236,11 +236,11 @@ def _perform_chromium_setup(force: bool, build: bool,
         _build_chromium(src_path, configs)
 
 
-def _fetch_sandbox_image() -> bool:
+def _fetch_sandbox_image(gemini_cli_cmd: list[str]) -> bool:
     """Pre-fetches the sandbox image.
 
     Args:
-        gemini_cli_bin: An optional path to the gemini-cli binary to use.
+        gemini_cli_cmd: The Gemini CLI cmd to use.
 
     Returns:
         True on success, False on failure.
@@ -248,7 +248,8 @@ def _fetch_sandbox_image() -> bool:
     logging.info('Pre-fetching sandbox image. This may take a minute...')
     image = ''
     try:
-        version = gemini_helpers.get_gemini_version()
+        version = gemini_helpers.get_gemini_version(
+            gemini_cli_cmd=tuple(gemini_cli_cmd))
         if not version:
             logging.error('Failed to get gemini version.')
             return False
@@ -337,15 +338,16 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         promptfoo = promptfoo_installation.FromCipdPromptfooInstallation(
             args.verbose)
 
-    if args.sandbox and not _fetch_sandbox_image():
-        return 1
-
     gemini_cli_bin = args.gemini_cli_bin
     node_bin = args.node_bin
     if args.use_pinned_binaries:
         (gemini_cli_bin,
          node_bin) = gemini_cli_installation.fetch_cipd_gemini_cli(
              args.verbose)
+
+    if args.sandbox and not _fetch_sandbox_image(
+            gemini_cli_cmd=[str(gemini_cli_bin)]):
+        return 1
 
     worker_options = workers.WorkerOptions(clean=not args.no_clean,
                                            verbose=args.verbose,
@@ -573,8 +575,10 @@ def _parse_args() -> argparse.Namespace:
                        type=pathlib.Path,
                        help='Path to a custom nodejs binary to use.')
     group.add_argument(
-        '--use-pinned-binaries',
-        action='store_true',
+        '--no-use-pinned-binaries',
+        dest='use_pinned_binaries',
+        default='true',
+        action='store_false',
         help=('Use the pinned cipd version. This is to control what is under '
               'test i.e. separating the changes in gemini-cli from the '
               'changing prompt/codebase.'))

@@ -336,10 +336,16 @@ def _check_for_workspace_extensions(project_root: Path | None) -> None:
             file=sys.stderr)
 
 
-def check_gemini_version() -> None:
-    """Checks if the Gemini CLI version is sufficient."""
+def check_gemini_version(gemini_cli_cmd: list[str] | None) -> None:
+    """Checks if the Gemini CLI version is sufficient.
+
+    Args:
+        gemini_cli_cmd: A Gemini CLI command to use instead of finding an
+            existing installation.
+    """
     required_version = (0, 8, 0)
-    version_str = gemini_helpers.get_gemini_version(use_alias=True)
+    version_str = gemini_helpers.get_gemini_version(
+        use_alias=True, gemini_cli_cmd=gemini_cli_cmd)
     if not version_str:
         raise Error('Could not determine Gemini CLI version. Please ensure '
                     "'gemini' is in your PATH and working correctly.")
@@ -405,108 +411,122 @@ def process_extensions(gemini_cmd: list[str],
                 ['extensions', 'disable', extension, f'--scope={scope}'])
 
 
+def _parse_args() -> argparse.Namespace:
+    """Parses and returns command line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Install and manage extensions.')
+    parser.add_argument(
+        '--extra-extensions-dir',
+        action='append',
+        type=Path,
+        default=[],
+        help='Path to a directory containing extensions. Can be specified '
+        'multiple times.',
+    )
+    parser.add_argument(
+        '--gemini-cli-bin',
+        type=Path,
+        help=('Path to a Gemini CLI binary to use instead of automatically '
+              'finding an existing installation.'))
+    subparsers = parser.add_subparsers(
+        dest='command',
+        help='Available commands.',
+        description=('Install and manage extensions. To get help for a '
+                     'specific command, run "install.py <command> -h".'))
+
+    add_parser = subparsers.add_parser(
+        'add', help='Add new extension (links by default).')
+    add_parser.add_argument(
+        '--copy',
+        action='store_true',
+        help='Use directory copies rather than links.',
+    )
+    add_parser.add_argument(
+        '--skip-prompt',
+        action='store_true',
+        help='Skip any interactive prompts.',
+    )
+    add_parser.add_argument(
+        'extensions',
+        nargs='+',
+        help='A list of extension directory names to add.',
+    )
+
+    update_parser = subparsers.add_parser('update', help='Update extensions.')
+    update_parser.add_argument(
+        '--skip-prompt',
+        action='store_true',
+        help='Skip any interactive prompts.',
+    )
+    update_parser.add_argument(
+        'extensions',
+        nargs='*',
+        help=('A list of extension directory names to update. If not '
+              'specified, all installed extensions will be updated.'))
+
+    remove_parser = subparsers.add_parser('remove', help='Remove extensions.')
+    remove_parser.add_argument(
+        'extensions',
+        nargs='+',
+        help='A list of extension directory names to remove.')
+
+    enable_parser = subparsers.add_parser('enable', help='Enable extensions.')
+    enable_parser.add_argument(
+        '--scope',
+        choices=['User', 'Workspace'],
+        default='Workspace',
+        help='The scope for enabling the extension.',
+    )
+    enable_parser.add_argument(
+        'extensions',
+        nargs='+',
+        help='A list of extension names to enable.',
+    )
+
+    disable_parser = subparsers.add_parser('disable',
+                                           help='Disable extensions.')
+    disable_parser.add_argument(
+        '--scope',
+        choices=['User', 'Workspace'],
+        default='Workspace',
+        help='The scope for disabling the extension.',
+    )
+    disable_parser.add_argument(
+        'extensions',
+        nargs='+',
+        help='A list of extension names to disable.',
+    )
+
+    subparsers.add_parser('list',
+                          help='List all available and installed extensions.')
+    subparsers.add_parser(
+        'fix',
+        help='Fix project-level extensions to follow the new model.',
+    )
+
+    args = parser.parse_args()
+
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+
+    return args
+
+
 def main() -> None:
     """Installs and manages extension."""
     try:
-        check_gemini_version()
-        gemini_cmd = gemini_helpers.get_gemini_command(use_alias=True)
+        args = _parse_args()
+
+        gemini_cli_cmd = None
+        if args.gemini_cli_bin:
+            gemini_cli_cmd = [str(args.gemini_cli_bin)]
+
+        check_gemini_version(gemini_cli_cmd=gemini_cli_cmd)
+        gemini_cmd = gemini_cli_cmd or gemini_helpers.get_gemini_command(
+            use_alias=True)
         project_root = get_project_root()
         _check_for_workspace_extensions(project_root)
-
-        parser = argparse.ArgumentParser(
-            description='Install and manage extensions.')
-        parser.add_argument(
-            '--extra-extensions-dir',
-            action='append',
-            type=Path,
-            default=[],
-            help='Path to a directory containing extensions. Can be specified '
-            'multiple times.',
-        )
-        subparsers = parser.add_subparsers(
-            dest='command',
-            help='Available commands.',
-            description=('Install and manage extensions. To get help for a '
-                         'specific command, run "install.py <command> -h".'))
-
-        add_parser = subparsers.add_parser(
-            'add', help='Add new extension (links by default).')
-        add_parser.add_argument(
-            '--copy',
-            action='store_true',
-            help='Use directory copies rather than links.',
-        )
-        add_parser.add_argument(
-            '--skip-prompt',
-            action='store_true',
-            help='Skip any interactive prompts.',
-        )
-        add_parser.add_argument(
-            'extensions',
-            nargs='+',
-            help='A list of extension directory names to add.',
-        )
-
-        update_parser = subparsers.add_parser('update',
-                                              help='Update extensions.')
-        update_parser.add_argument(
-            '--skip-prompt',
-            action='store_true',
-            help='Skip any interactive prompts.',
-        )
-        update_parser.add_argument(
-            'extensions',
-            nargs='*',
-            help=('A list of extension directory names to update. If not '
-                  'specified, all installed extensions will be updated.'))
-
-        remove_parser = subparsers.add_parser('remove',
-                                              help='Remove extensions.')
-        remove_parser.add_argument(
-            'extensions',
-            nargs='+',
-            help='A list of extension directory names to remove.')
-
-        enable_parser = subparsers.add_parser('enable',
-                                              help='Enable extensions.')
-        enable_parser.add_argument(
-            '--scope',
-            choices=['User', 'Workspace'],
-            default='Workspace',
-            help='The scope for enabling the extension.',
-        )
-        enable_parser.add_argument(
-            'extensions',
-            nargs='+',
-            help='A list of extension names to enable.',
-        )
-
-        disable_parser = subparsers.add_parser('disable',
-                                               help='Disable extensions.')
-        disable_parser.add_argument(
-            '--scope',
-            choices=['User', 'Workspace'],
-            default='Workspace',
-            help='The scope for disabling the extension.',
-        )
-        disable_parser.add_argument(
-            'extensions',
-            nargs='+',
-            help='A list of extension names to disable.',
-        )
-
-        subparsers.add_parser(
-            'list', help='List all available and installed extensions.')
-        subparsers.add_parser(
-            'fix',
-            help='Fix project-level extensions to follow the new model.',
-        )
-
-        args = parser.parse_args()
-
-        if not args.command:
-            parser.print_help()
-            sys.exit(1)
 
         if args.command == 'list':
             _handle_list_command(

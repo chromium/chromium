@@ -545,13 +545,13 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         """Tests that check_gemini_version raises install.Error."""
         self.mock_get_version.return_value = None
         with self.assertRaises(install.Error) as cm:
-            install.check_gemini_version()
+            install.check_gemini_version(gemini_cli_cmd=None)
         self.assertIn("Could not determine Gemini CLI version",
                       str(cm.exception))
 
         self.mock_get_version.return_value = "0.7.0"
         with self.assertRaises(install.Error) as cm:
-            install.check_gemini_version()
+            install.check_gemini_version(gemini_cli_cmd=None)
         self.assertIn("is too old", str(cm.exception))
 
 
