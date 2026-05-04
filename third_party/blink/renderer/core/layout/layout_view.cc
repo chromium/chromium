@@ -886,9 +886,9 @@ void LayoutView::LayoutRoot() {
   }
 
   const auto& style = StyleRef();
-  ConstraintSpaceBuilder builder(
-      style.GetWritingMode(), style.GetWritingDirection(),
-      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                 style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(InitialContainingBlockSize());
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);

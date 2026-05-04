@@ -139,9 +139,9 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // specifying them through CSS.
   overridden_location_ = PhysicalOffset::FromPointFFloor(zoomed_location);
 
-  ConstraintSpaceBuilder builder(
-      style.GetWritingMode(), style.GetWritingDirection(),
-      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                 style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(zoomed_size);
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);

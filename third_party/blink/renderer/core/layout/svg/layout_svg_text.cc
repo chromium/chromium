@@ -243,9 +243,9 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   const gfx::RectF old_boundaries = ObjectBoundingBox();
 
   const ComputedStyle& style = StyleRef();
-  ConstraintSpaceBuilder builder(
-      style.GetWritingMode(), style.GetWritingDirection(),
-      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                 style.GetWritingDirection(),
+                                 /* is_new_fc */ true);
   builder.SetAvailableSize(LogicalSize());
   BlockNode(this).Layout(builder.ToConstraintSpace());
 

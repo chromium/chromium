@@ -32,11 +32,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
                          WritingDirectionMode writing_direction,
                          bool is_new_fc,
                          bool adjust_inline_size_if_needed = true)
-      : ConstraintSpaceBuilder(parent_space.GetWritingMode(),
-                               writing_direction,
-                               is_new_fc,
-                               /* force_orthogonal_writing_mode_root */ false,
-                               adjust_inline_size_if_needed) {
+      : ConstraintSpaceBuilder(
+            writing_direction,
+            IsParallelWritingMode(parent_space.GetWritingMode(),
+                                  writing_direction.GetWritingMode()),
+            is_new_fc,
+            adjust_inline_size_if_needed,
+            /* force_orthogonal_writing_mode_root */ false) {
     if (parent_space.ShouldPropagateChildBreakValues())
       SetShouldPropagateChildBreakValues();
     if (parent_space.ShouldRepeat())
@@ -46,27 +48,20 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
   //
-  // forced_orthogonal_writing_mode_root is set for constraint spaces created
-  // directly from a LayoutObject. In this case parent_writing_mode isn't
-  // actually the parent's, it's the same as out_writing_mode.
-  // When this occurs we would miss setting the kOrthogonalWritingModeRoot flag
-  // unless we force it.
+  // force_orthogonal_writing_mode_root is used when parent_writing_mode isn't
+  // actually the parents.
   ConstraintSpaceBuilder(WritingMode parent_writing_mode,
                          WritingDirectionMode writing_direction,
                          bool is_new_fc,
-                         bool force_orthogonal_writing_mode_root = false,
-                         bool adjust_inline_size_if_needed = true)
-      : space_(writing_direction),
-        is_in_parallel_flow_(
+                         bool adjust_inline_size_if_needed = true,
+                         bool force_orthogonal_writing_mode_root = false)
+      : ConstraintSpaceBuilder(
+            writing_direction,
             IsParallelWritingMode(parent_writing_mode,
-                                  writing_direction.GetWritingMode())),
-        is_new_fc_(is_new_fc),
-        force_orthogonal_writing_mode_root_(force_orthogonal_writing_mode_root),
-        adjust_inline_size_if_needed_(adjust_inline_size_if_needed) {
-    space_.bitfields_.is_new_formatting_context = is_new_fc_;
-    space_.bitfields_.is_orthogonal_writing_mode_root =
-        !is_in_parallel_flow_ || force_orthogonal_writing_mode_root_;
-  }
+                                  writing_direction.GetWritingMode()),
+            is_new_fc,
+            adjust_inline_size_if_needed,
+            force_orthogonal_writing_mode_root) {}
 
   // If inline size is indefinite, use the fallback size for available inline
   // size for orthogonal flow roots. See:
@@ -247,8 +242,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetIsInitialBlockSizeIndefinite(bool b) {
-    if (is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_)
-        [[likely]] {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.is_initial_block_size_indefinite = b;
     }
   }
@@ -638,6 +632,21 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
  private:
+  ConstraintSpaceBuilder(WritingDirectionMode writing_direction,
+                         bool is_in_parallel_flow,
+                         bool is_new_fc,
+                         bool adjust_inline_size_if_needed,
+                         bool force_orthogonal_writing_mode_root)
+      : space_(writing_direction),
+        is_in_parallel_flow_(is_in_parallel_flow),
+        is_new_fc_(is_new_fc),
+        adjust_inline_size_if_needed_(adjust_inline_size_if_needed),
+        force_orthogonal_writing_mode_root_(
+            force_orthogonal_writing_mode_root) {
+    space_.bitfields_.is_new_formatting_context = is_new_fc_;
+    space_.bitfields_.is_orthogonal_writing_mode_root =
+        !is_in_parallel_flow_ || force_orthogonal_writing_mode_root_;
+  }
   ConstraintSpace space_;
   ConstraintSpace::RareData* rare_data_ = nullptr;
 
@@ -656,8 +665,8 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
 
   bool is_in_parallel_flow_;
   bool is_new_fc_;
-  bool force_orthogonal_writing_mode_root_;
   bool adjust_inline_size_if_needed_;
+  bool force_orthogonal_writing_mode_root_;
 
 #if DCHECK_IS_ON()
   bool is_hidden_for_paint_set_ = false;
