@@ -2,5 +2,6 @@ file://chrome/android/OWNERS
 
 bsazonov@chromium.org
 peconn@chromium.org
+hnakashima@chromium.org
 
 per-file BUILD.gn=*
