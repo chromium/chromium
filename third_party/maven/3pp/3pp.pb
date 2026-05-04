@@ -6,8 +6,8 @@ create {
   source {
     url {
       # See: https://maven.apache.org/download.cgi
-      download_url: "https://downloads.apache.org/maven/maven-3/3.9.14/binaries/apache-maven-3.9.14-bin.tar.gz"
-      version: "3.9.14"
+      download_url: "https://archive.apache.org/dist/maven/maven-3/3.9.15/binaries/apache-maven-3.9.15-bin.tar.gz"
+      version: "3.9.15"
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:apache:maven"
