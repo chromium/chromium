@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_mediator.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_view_controller.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -46,6 +48,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   ComposeboxEntrypoint _entrypoint;
   ComposeboxPickerPresenter* _pickerPresenter;
   ComposeboxUIInputState* _inputState;
+  ComposeboxAttachmentSelection* _preselection;
   // Whether the menu is invoked standalone and should manage its own state.
   BOOL _isStandaloneMenu;
   // Resources owned by the coordinator in standalone mode.
@@ -56,16 +59,28 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                entrypoint:(ComposeboxEntrypoint)entrypoint
-                                inputState:(ComposeboxUIInputState*)inputState {
+                    preselectedAttachments:
+                        (ComposeboxAttachmentSelection*)preselectedAttachments
+                                inputState:(ComposeboxUIInputState*)inputState
+                                entrypoint:(ComposeboxEntrypoint)entrypoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _entrypoint = entrypoint;
+    _preselection = preselectedAttachments;
     _inputState = inputState;
     _isStandaloneMenu = (inputState == nil);
   }
-
   return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                entrypoint:(ComposeboxEntrypoint)entrypoint {
+  return [self initWithBaseViewController:viewController
+                                  browser:browser
+                   preselectedAttachments:nil
+                               inputState:nil
+                               entrypoint:entrypoint];
 }
 
 - (void)start {
@@ -157,7 +172,8 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 }
 
 - (void)stop {
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
   _viewController = nil;
   _mediator = nil;
   _pickerPresenter = nil;
@@ -175,16 +191,85 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 
 #pragma mark - ComposeboxMenuMediatorDelegate
 
-- (void)composeboxMenuMediatorDidProduceFocusParams:
-    (ComposeboxFocusParams*)focusParams {
-  __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+- (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
+                    didTapTool:(ComposeboxMode)toolMode {
+  if (_isStandaloneMenu) {
+    ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:_entrypoint
+                     query:nil
+                  toolMode:toolMode
+                 modelMode:ComposeboxModelOption::kNone
+            attachmentList:nil];
+    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [commands showComposeboxWithParams:focusParams];
+                           }];
+  } else {
+    [_viewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [self.inputPlateDelegate
+                                 composeboxMenuCoordinator:self
+                                                didTapTool:toolMode];
+                           }];
+  }
+}
 
-  [self.baseViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [commands showComposeboxWithParams:focusParams];
-                         }];
+- (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
+                   didTapModel:(ComposeboxModelOption)modelMode {
+  if (_isStandaloneMenu) {
+    ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:_entrypoint
+                     query:nil
+                  toolMode:ComposeboxMode::kRegularSearch
+                 modelMode:modelMode
+            attachmentList:nil];
+    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [commands showComposeboxWithParams:focusParams];
+                           }];
+  } else {
+    [_viewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [self.inputPlateDelegate
+                                 composeboxMenuCoordinator:self
+                                               didTapModel:modelMode];
+                           }];
+  }
+}
+
+- (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
+          didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments {
+  if (_isStandaloneMenu) {
+    ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
+        initWithEntrypoint:_entrypoint
+                     query:nil
+                  toolMode:ComposeboxMode::kRegularSearch
+                 modelMode:ComposeboxModelOption::kNone
+            attachmentList:attachments];
+    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [commands showComposeboxWithParams:focusParams];
+                           }];
+  } else {
+    [_viewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [self.inputPlateDelegate
+                                 composeboxMenuCoordinator:self
+                                      didUpdateAttachments:attachments];
+                           }];
+  }
 }
 
 - (void)composeboxMenuMediatorDidRequestCameraSelection:

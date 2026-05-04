@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
@@ -109,6 +110,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxInputPlateMediatorDelegate,
     ComposeboxInputPlateViewControllerDelegate,
     ComposeboxPickerPresenterDelegate,
+    ComposeboxMenuCoordinatorInputPlateDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
     OmniboxFocusDelegate,
@@ -347,41 +349,14 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)applyFocusParams:(ComposeboxFocusParams*)params {
-  _modeHolder.mode = params.initialMode;
+  _modeHolder.mode = params.toolMode;
 
-  if (params.initialModelOption != ComposeboxModelOption::kNone) {
-    [_mediator setModelOption:params.initialModelOption explicitUserAction:YES];
+  if (params.modelMode != ComposeboxModelOption::kNone) {
+    [_mediator setModelOption:params.modelMode explicitUserAction:YES];
   }
 
-  for (ComposeboxPickerImageResult* item in params.initialImages) {
-    [_mediator processImageItemProvider:item.imageProvider
-                                assetID:item.assetID
-                             completion:nil];
-  }
-
-  for (NSURL* url in params.initialFiles) {
-    GURL gurl(url.absoluteString.UTF8String);
-
-    UTType* contentType = nil;
-    BOOL accessing = [url startAccessingSecurityScopedResource];
-    [url getResourceValue:&contentType forKey:NSURLContentTypeKey error:nil];
-    BOOL isPDF = [contentType conformsToType:UTTypePDF];
-
-    auto stopAccessScopedResourcesIfNeeded = ^{
-      if (accessing) {
-        [url stopAccessingSecurityScopedResource];
-      }
-    };
-
-    [_mediator processFileURL:gurl
-                        isPDF:isPDF
-                   completion:stopAccessScopedResourcesIfNeeded];
-  }
-
-  if (params.hasInitialTabIDs) {
-    [_mediator
-        attachSelectedTabsWithWebStateIDs:params.initialSelectedWebStateIDs
-                        cachedWebStateIDs:params.initialCachedWebStateIDs];
+  if (params.attachmentList) {
+    [_mediator updateAttachments:params.attachmentList];
   }
 }
 
@@ -489,10 +464,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:_viewController
                            browser:self.browser
-                        entrypoint:_entrypoint
-                        inputState:state];
-    // TODO(crbug.com/504900698): Pass the UIInputState and the delegate to
-    // handle actions.
+            preselectedAttachments:_mediator.currentAttachmentSelection
+                        inputState:state
+                        entrypoint:_entrypoint];
+    _menuCoorinator.inputPlateDelegate = self;
     [_menuCoorinator start];
   }
 }
@@ -891,6 +866,25 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                     cachedWebStateIDs:
                         (std::set<web::WebStateID>)cachedWebStateIDs {
   // TODO: Implement.
+}
+
+#pragma mark - ComposeboxMenuCoordinatorInputPlateDelegate
+
+- (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
+                       didTapTool:(ComposeboxMode)toolMode {
+  _modeHolder.mode = toolMode;
+}
+
+- (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
+                      didTapModel:(ComposeboxModelOption)modelMode {
+  [_mediator setModelOption:modelMode explicitUserAction:YES];
+}
+
+- (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
+             didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments {
+  if (attachments) {
+    [_mediator updateAttachments:attachments];
+  }
 }
 
 @end

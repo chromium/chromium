@@ -57,6 +57,8 @@
     copy.uploadIndex = self.uploadIndex;
     copy.state = self.state;
     copy.type = self.type;
+    copy.imageProvider = self.imageProvider;
+    copy.fileURL = self.fileURL;
   }
   return copy;
 }

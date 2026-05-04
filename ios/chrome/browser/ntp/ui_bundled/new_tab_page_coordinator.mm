@@ -1994,8 +1994,7 @@
     _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser
-                        entrypoint:ComposeboxEntrypoint::kNTPPlusButton
-                        inputState:nil];
+                        entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
     _composeboxMenuCoordinator.delegate = self;
     [_composeboxMenuCoordinator start];
   } else if (MaybeShowComposebox(self.browser,

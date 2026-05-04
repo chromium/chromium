@@ -23,6 +23,7 @@
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 @protocol BrowserCoordinatorCommands;
+@class ComposeboxAttachmentSelection;
 @class CobrowseContext;
 class CobrowseBrowserAgent;
 @protocol ComposeboxDebuggerLogger;
@@ -65,6 +66,9 @@ class ContextualSearchSessionHandle;
 
 // The composebox input plate consumer.
 @property(nonatomic, weak) id<ComposeboxInputPlateConsumer> consumer;
+// The current real-time attachment selection.
+@property(nonatomic, readonly)
+    ComposeboxAttachmentSelection* currentAttachmentSelection;
 // The composebox URL loader.
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;
 // The delegate for this mediator.
@@ -112,6 +116,9 @@ class ContextualSearchSessionHandle;
 // and maps dynamically injected Tools and Models to metrics.
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
     (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons;
+
+// Unpacks and attaches all items within the selection wrapper.
+- (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments;
 
 @end
 

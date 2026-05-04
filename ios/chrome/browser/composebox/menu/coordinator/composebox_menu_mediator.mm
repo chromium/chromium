@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_consumer.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 
 @implementation ComposeboxMenuMediator {
   // The entrypoint associated with this menu invocation.
@@ -28,10 +30,13 @@
 #pragma mark - Public
 
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems {
-  ComposeboxFocusParams* focusParams =
-      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
-  focusParams.initialImages = imageItems;
-  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+  std::set<web::WebStateID> emptySet;
+  ComposeboxAttachmentSelection* selection =
+      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:emptySet
+                                          cachedWebStateIDs:emptySet
+                                                     images:imageItems
+                                                      files:nil];
+  [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -45,19 +50,23 @@
 }
 
 - (void)processFileURLs:(NSArray<NSURL*>*)urls {
-  ComposeboxFocusParams* focusParams =
-      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
-  focusParams.initialFiles = [urls copy];
-  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+  std::set<web::WebStateID> emptySet;
+  ComposeboxAttachmentSelection* selection =
+      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:emptySet
+                                          cachedWebStateIDs:emptySet
+                                                     images:nil
+                                                      files:urls];
+  [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
 - (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
          cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
-  ComposeboxFocusParams* focusParams =
-      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
-  focusParams.initialSelectedWebStateIDs = selectedWebStateIDs;
-  focusParams.initialCachedWebStateIDs = cachedWebStateIDs;
-  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
+  ComposeboxAttachmentSelection* selection =
+      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:selectedWebStateIDs
+                                          cachedWebStateIDs:cachedWebStateIDs
+                                                     images:nil
+                                                      files:nil];
+  [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
 - (NSUInteger)remainingNumberOfImagesAllowed {
@@ -73,49 +82,50 @@
 #pragma mark - ComposeboxMenuMutator
 
 - (void)handleItemPickedWithType:(ComposeboxMenuItemType)type {
-  ComposeboxFocusParams* focusParams =
-      [[ComposeboxFocusParams alloc] initWithEntrypoint:_entrypoint];
-
-  // TODO (crbug.com/505269628): Implement menu items selection for attachments.
   switch (type) {
     case ComposeboxMenuItemType::kAIM:
-      focusParams.initialMode = ComposeboxMode::kAIM;
+      [self.delegate composeboxMenuMediator:self
+                                 didTapTool:ComposeboxMode::kAIM];
       break;
     case ComposeboxMenuItemType::kCreateImage:
-      focusParams.initialMode = ComposeboxMode::kImageGeneration;
+      [self.delegate composeboxMenuMediator:self
+                                 didTapTool:ComposeboxMode::kImageGeneration];
       break;
     case ComposeboxMenuItemType::kDeepSearch:
-      focusParams.initialMode = ComposeboxMode::kDeepSearch;
+      [self.delegate composeboxMenuMediator:self
+                                 didTapTool:ComposeboxMode::kDeepSearch];
       break;
     case ComposeboxMenuItemType::kCanvas:
-      focusParams.initialMode = ComposeboxMode::kCanvas;
+      [self.delegate composeboxMenuMediator:self
+                                 didTapTool:ComposeboxMode::kCanvas];
       break;
     case ComposeboxMenuItemType::kModelRegular:
-      focusParams.initialModelOption = ComposeboxModelOption::kRegular;
+      [self.delegate composeboxMenuMediator:self
+                                didTapModel:ComposeboxModelOption::kRegular];
       break;
     case ComposeboxMenuItemType::kModelAuto:
-      focusParams.initialModelOption = ComposeboxModelOption::kAuto;
+      [self.delegate composeboxMenuMediator:self
+                                didTapModel:ComposeboxModelOption::kAuto];
       break;
     case ComposeboxMenuItemType::kModelThinking:
-      focusParams.initialModelOption = ComposeboxModelOption::kThinking;
+      [self.delegate composeboxMenuMediator:self
+                                didTapModel:ComposeboxModelOption::kThinking];
       break;
     case ComposeboxMenuItemType::kAttachmentTabs:
       [self.delegate composeboxMenuMediatorDidRequestTabSelection:self];
-      return;
+      break;
     case ComposeboxMenuItemType::kAttachmentCamera:
       [self.delegate composeboxMenuMediatorDidRequestCameraSelection:self];
-      return;
+      break;
     case ComposeboxMenuItemType::kAttachmentGallery:
       [self.delegate composeboxMenuMediatorDidRequestGallerySelection:self];
-      return;
+      break;
     case ComposeboxMenuItemType::kAttachmentFiles:
       [self.delegate composeboxMenuMediatorDidRequestFileSelection:self];
-      return;
+      break;
     case ComposeboxMenuItemType::kUnknown:
       break;
   }
-
-  [self.delegate composeboxMenuMediatorDidProduceFocusParams:focusParams];
 }
 
 @end

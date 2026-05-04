@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 
 #import <PDFKit/PDFKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <memory>
 #import <optional>
@@ -60,10 +61,12 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
@@ -455,6 +458,83 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   return [_stateManager remainingNumberOfImagesAllowed];
 }
 
+- (ComposeboxAttachmentSelection*)currentAttachmentSelection {
+  std::set<web::WebStateID> tabIDs;
+  NSMutableArray<ComposeboxPickerImageResult*>* images =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<NSURL*>* files = [[NSMutableArray alloc] init];
+
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    switch (item.type) {
+      case ComposeboxInputItemType::kComposeboxInputItemTypeTab: {
+        auto it = _latestTabSelectionMapping.find(item.identifier);
+        if (it != _latestTabSelectionMapping.end() && it->second.valid()) {
+          tabIDs.insert(it->second);
+        }
+        break;
+      }
+      case ComposeboxInputItemType::kComposeboxInputItemTypeImage: {
+        if (item.imageProvider) {
+          ComposeboxPickerImageResult* result =
+              [[ComposeboxPickerImageResult alloc]
+                  initWithImageProvider:item.imageProvider
+                                assetID:item.assetID];
+          [images addObject:result];
+        }
+        break;
+      }
+      case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
+      case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile: {
+        if (item.fileURL) {
+          [files addObject:item.fileURL];
+        }
+        break;
+      }
+    }
+  }
+
+  return [[ComposeboxAttachmentSelection alloc] initWithTabIDs:tabIDs
+                                             cachedWebStateIDs:{}
+                                                        images:images
+                                                         files:files];
+}
+
+- (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments {
+  if (!attachments) {
+    return;
+  }
+
+  for (ComposeboxPickerImageResult* item in attachments.images) {
+    [self processImageItemProvider:item.imageProvider
+                           assetID:item.assetID
+                        completion:nil];
+  }
+
+  for (NSURL* url in attachments.files) {
+    GURL gurl(url.absoluteString.UTF8String);
+
+    UTType* contentType = nil;
+    BOOL accessing = [url startAccessingSecurityScopedResource];
+    [url getResourceValue:&contentType forKey:NSURLContentTypeKey error:nil];
+    BOOL isPDF = [contentType conformsToType:UTTypePDF];
+
+    auto stopAccessScopedResourcesIfNeeded = ^{
+      if (accessing) {
+        [url stopAccessingSecurityScopedResource];
+      }
+    };
+
+    [self processFileURL:gurl
+                   isPDF:isPDF
+              completion:stopAccessScopedResourcesIfNeeded];
+  }
+
+  if (!attachments.tabIDs.empty()) {
+    [self attachSelectedTabsWithWebStateIDs:attachments.tabIDs
+                          cachedWebStateIDs:attachments.cachedWebStateIDs];
+  }
+}
+
 #pragma mark - ComposeboxInputPlateMutator
 
 // Removes an item from the collection.
@@ -597,6 +677,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                                                            assetID:assetID];
   item.title = base::SysUTF8ToNSString(fileURL.ExtractFileName());
   [self addItem:item];
+  item.fileURL = nsURL;
   base::UnguessableToken identifier = item.identifier;
 
   // Read the data in the background then call `onDataReadForItem`.
@@ -640,6 +721,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                                           kComposeboxInputItemTypeImage
                               assetID:assetID];
   [self addItem:item];
+  item.imageProvider = itemProvider;
   __block base::UnguessableToken identifier = item.identifier;
 
   __block int requiredNumberOfLoads = 2;

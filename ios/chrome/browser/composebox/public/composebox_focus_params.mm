@@ -6,10 +6,19 @@
 
 @implementation ComposeboxFocusParams
 
-- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {
+- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
+                             query:(NSString*)query
+                          toolMode:(ComposeboxMode)toolMode
+                         modelMode:(ComposeboxModelOption)modelMode
+                    attachmentList:
+                        (ComposeboxAttachmentSelection*)attachmentList {
   self = [super init];
   if (self) {
     _entrypoint = entrypoint;
+    _query = [query copy];
+    _toolMode = toolMode;
+    _modelMode = modelMode;
+    _attachmentList = attachmentList;
   }
   return self;
 }
@@ -17,6 +26,14 @@
 - (BOOL)hasInitialTabIDs {
   return !self.initialSelectedWebStateIDs.empty() ||
          !self.initialCachedWebStateIDs.empty();
+}
+
+- (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {
+  return [self initWithEntrypoint:entrypoint
+                            query:nil
+                         toolMode:ComposeboxMode::kRegularSearch
+                        modelMode:ComposeboxModelOption::kNone
+                   attachmentList:nil];
 }
 
 @end

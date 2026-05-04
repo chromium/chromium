@@ -55,6 +55,11 @@ enum class ComposeboxInputItemType {
 // Optional, uniquely identifying the asset the item is associated with.
 @property(nonatomic, copy, readonly) NSString* assetID;
 
+// The image provider for this item. Only set for image types.
+@property(nonatomic, strong) NSItemProvider* imageProvider;
+// The file URL for this item. Only set for PDF and raw file types.
+@property(nonatomic, strong) NSURL* fileURL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_ITEM_H_
