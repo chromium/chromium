@@ -626,9 +626,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset);
         int sideMargin = isMaxWidthLandscapeBottomSheet ? sideOffset : 0;
-        if (handleView != null) {
+        View handleContainer = mActivity.findViewById(R.id.custom_tabs_handle_container);
+        if (handleContainer != null) {
             ViewGroup.MarginLayoutParams lp =
-                    (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
+                    (ViewGroup.MarginLayoutParams) handleContainer.getLayoutParams();
             lp.setMargins(sideMargin, shadowOffset, sideMargin, 0);
         }
 
