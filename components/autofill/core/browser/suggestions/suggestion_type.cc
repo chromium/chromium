@@ -123,6 +123,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kLoadingThrobber";
     case SuggestionType::kBnplFootnote:
       return "kBnplFootnote";
+    case SuggestionType::kAutocompleteAtMemoryButton:
+      return "kAutocompleteAtMemoryButton";
   }
   NOTREACHED();
 }

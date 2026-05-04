@@ -187,8 +187,11 @@ enum class SuggestionType {
   // use AtMemory (opens AtMemory UI when clicked).
   kAtMemoryInactivityNudge = 80,
 
-  // Next ID: 81
-  kMaxValue = kAtMemoryInactivityNudge
+  // Static button in Autocomplete menu prompting use of AtMemory.
+  kAutocompleteAtMemoryButton = 81,
+
+  // Next ID: 82
+  kMaxValue = kAutocompleteAtMemoryButton
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

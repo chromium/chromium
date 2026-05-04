@@ -245,6 +245,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }
@@ -617,6 +618,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -835,6 +837,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       manager_->driver().RendererShouldTriggerSuggestions(
           query_field_.global_id(), AutofillSuggestionTriggerSource::kAtMemory);
       break;
@@ -983,6 +986,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }

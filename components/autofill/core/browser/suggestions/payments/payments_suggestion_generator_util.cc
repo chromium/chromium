@@ -1135,6 +1135,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }

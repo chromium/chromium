@@ -59,6 +59,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:

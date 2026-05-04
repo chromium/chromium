@@ -108,6 +108,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return FillingProduct::kNone;
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:

@@ -611,6 +611,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }

@@ -1069,6 +1069,11 @@ BASE_FEATURE(kManageYourSavedInfoPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 
+// If enabled, an entry point to AtMemory will be shown at the bottom of the
+// Autocomplete dialogs.
+BASE_FEATURE(kShowAutocompleteAtMemoryButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch: if enabled, suggestions are shown for fields with unrecognized
 // autocomplete attribute if they are already autofilled.
 BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,

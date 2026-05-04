@@ -644,6 +644,19 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
             FillingProduct::kCreditCard);
 }
 
+// Test that accepting the Autocomplete AtMemory button triggers AtMemory
+// dialog.
+TEST_F(AutofillExternalDelegateTest, SelectAutocompleteAtMemoryButton) {
+  IssueOnQuery();
+  EXPECT_CALL(autofill_driver(),
+              RendererShouldTriggerSuggestions(
+                  queried_field().global_id(),
+                  AutofillSuggestionTriggerSource::kAtMemory));
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(SuggestionType::kAutocompleteAtMemoryButton),
+      SuggestionPosition{.row = 0});
+}
+
 TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
 

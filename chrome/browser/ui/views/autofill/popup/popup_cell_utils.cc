@@ -363,6 +363,7 @@ bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }

@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -179,6 +180,79 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   generator().GenerateSuggestions(form, form.fields()[1], &form_structure,
                                   form_structure.field(1), client(),
                                   suggestions_generated_callback.Get());
+}
+
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       GenerateAutocompleteSuggestionsWithAtMemoryButtonEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory},
+      /*disabled_features=*/{});
+
+  FormFieldData field_data =
+      test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                                FormControlType::kInputText);
+  FormData form_data;
+  form_data.set_url(GURL("https://www.foo.com"));
+  form_data.set_fields({field_data});
+
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(field_data.name(), u"SomePrefixOne"),
+      GetAutocompleteEntry(field_data.name(), u"SomePrefixTwo")};
+  std::unique_ptr<WDTypedResult> mocked_results =
+      std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
+          AUTOFILL_VALUE_RESULT, expected_values);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+  SuggestionGenerator::ReturnedSuggestions
+      saved_on_suggestions_generated_argument;
+
+  // 1. Simulate the asynchronous response from the WebDataService. We need to
+  // intercept the web data service call and simulate its completion by posting
+  // a task to the main thread with our mocked results.
+  EXPECT_CALL(
+      *web_data_service(),
+      GetFormValuesForElementName(field_data.name(), field_data.value(), _, _))
+      .WillOnce([&](auto, auto, int, DbCallback callback) {
+        task_environment().GetMainThreadTaskRunner()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
+                                      std::move(mocked_results)));
+        return kDbQueryId;
+      });
+
+  auto IsSeparator = []() {
+    return testing::Field(&Suggestion::type,
+                          testing::Eq(SuggestionType::kSeparator));
+  };
+  auto IsAtMemoryButton = []() {
+    return testing::Field(
+        &Suggestion::type,
+        testing::Eq(SuggestionType::kAutocompleteAtMemoryButton));
+  };
+
+  // 2. Set up expectations for GenerateSuggestions and execute it.
+  // We expect that the generated suggestions include a visual separator
+  // followed by an AtMemory button (since both flags are enabled!).
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                        testing::UnorderedElementsAre(
+                            HasSingleSuggestionWithMainText(u"SomePrefixOne"),
+                            HasSingleSuggestionWithMainText(u"SomePrefixTwo"),
+                            IsSeparator(), IsAtMemoryButton()))))
+      .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
+
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
+                                  suggestions_generated_callback.Get());
+  EXPECT_TRUE(
+      base::test::RunUntil([&saved_on_suggestions_generated_argument]() {
+        return saved_on_suggestions_generated_argument.second.size() == 4;
+      }));
 }
 
 }  // namespace

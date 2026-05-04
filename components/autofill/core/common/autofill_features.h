@@ -374,6 +374,8 @@ BASE_DECLARE_FEATURE(kManageTravelPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kManageYourSavedInfoPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kShowAutocompleteAtMemoryButton);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill);

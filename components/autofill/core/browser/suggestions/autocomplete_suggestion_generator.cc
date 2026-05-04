@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -160,6 +161,13 @@ void AutocompleteSuggestionGenerator::OnAutofillValuesReturned(
         suggestion.payload = std::move(entry);
         return suggestion;
       });
+  if (base::FeatureList::IsEnabled(features::kShowAutocompleteAtMemoryButton) &&
+      base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    // TODO(crbug.com/494131942): Localize the string.
+    suggestions.emplace_back(u"Try searching in Chrome Memory",
+                             SuggestionType::kAutocompleteAtMemoryButton);
+  }
   std::move(query_handler.on_suggestions_returned)
       .Run({SuggestionDataSource::kAutocomplete, std::move(suggestions)});
 }

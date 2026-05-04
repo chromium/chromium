@@ -342,6 +342,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       NOTREACHED();
   }
   NOTREACHED();
@@ -752,6 +753,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
 }

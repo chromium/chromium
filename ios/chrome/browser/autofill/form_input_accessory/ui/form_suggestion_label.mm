@@ -296,6 +296,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       return false;
   }
   NOTREACHED();
