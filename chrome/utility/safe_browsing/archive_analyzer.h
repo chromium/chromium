@@ -45,6 +45,7 @@ class ArchiveAnalyzer {
 
   void SetResultsForTesting(ArchiveAnalyzerResults* results);
   void SetFinishedCallbackForTesting(FinishedAnalysisCallback callback);
+  void SetGetTempFileCallbackForTesting(GetTempFileCallback callback);
 
   void SetAnalysisDelegate(
       std::unique_ptr<ArchiveAnalysisDelegate> analysis_delegate);

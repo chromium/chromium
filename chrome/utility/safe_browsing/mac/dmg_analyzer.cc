@@ -213,11 +213,13 @@ bool DMGAnalyzer::ResumeExtraction() {
         }
 
         // TODO(crbug.com/40871873): Support file length here.
-        return !UpdateResultsForEntry(
-            temp_file_.Duplicate(), GetRootPath().Append(path),
-            /*file_length=*/0,
-            /*is_encrypted=*/false, /*is_directory=*/false,
-            /*contents_valid=*/true);
+        if (!UpdateResultsForEntry(
+                temp_file_.Duplicate(), GetRootPath().Append(path),
+                /*file_length=*/0,
+                /*is_encrypted=*/false, /*is_directory=*/false,
+                /*contents_valid=*/true)) {
+          return false;
+        }
       }
     }
   }
@@ -230,6 +232,8 @@ void DMGAnalyzer::OnGetTempFile(base::File temp_file) {
     InitComplete(ArchiveAnalysisResult::kFailedToOpenTempFile);
     return;
   }
+
+  temp_file_ = std::move(temp_file);
 
   if (!iterator_->Open()) {
     InitComplete(ArchiveAnalysisResult::kUnknown);

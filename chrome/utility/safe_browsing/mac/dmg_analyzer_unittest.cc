@@ -200,6 +200,59 @@ TEST(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
   EXPECT_EQ(0, results.detached_code_signatures.size());
 }
 
+// Regression test for crbug.com/495840862. This verifies that nested archives
+// are correctly detected and processed by ensuring the analyzer saves the
+// temporary file and correctly pauses extraction for nested analysis.
+// Note: We expect results.success to be false because the nested archive
+// provided in the test is intentionally invalid (it has no 7z header), which
+// causes the nested analyzer (and thus the overall analysis) to report failure.
+TEST(DMGAnalyzerTest, NestedArchive) {
+  base::test::TaskEnvironment task_environment;
+  DMGAnalyzer analyzer_;
+  base::FilePath temp_path;
+  base::File temp_file;
+  base::CreateTemporaryFile(&temp_path);
+  temp_file.Initialize(
+      temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                  base::File::FLAG_DELETE_ON_CLOSE));
+
+  MockDMGIterator::FileList file_list{
+      {"Nested.7z", {0x01, 0x02, 0x03, 0x04}},
+  };
+
+  std::unique_ptr<MockDMGIterator> iterator =
+      std::make_unique<MockDMGIterator>(true, file_list);
+  safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
+
+  analyzer_.SetGetTempFileCallbackForTesting(
+      base::BindRepeating([](base::OnceCallback<void(base::File)> callback) {
+        base::FilePath path;
+        base::CreateTemporaryFile(&path);
+        base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                                  base::File::FLAG_READ |
+                                  base::File::FLAG_WRITE |
+                                  base::File::FLAG_DELETE_ON_CLOSE);
+        std::move(callback).Run(std::move(file));
+      }));
+
+  analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The analysis as a whole fails because the nested 7z is invalid.
+  EXPECT_FALSE(results.success);
+  // However, we verify the logic fix by checking that the archive was detected.
+  // If the logic fix were missing, has_archive would be false because the
+  // Nested.7z would have been skipped entirely.
+  EXPECT_TRUE(results.has_archive);
+  ASSERT_EQ(1u, results.archived_archive_filenames.size());
+  EXPECT_EQ(FILE_PATH_LITERAL("Nested.7z"),
+            results.archived_archive_filenames[0].value());
+}
+
 }  // namespace
 }  // namespace dmg
 }  // namespace safe_browsing
