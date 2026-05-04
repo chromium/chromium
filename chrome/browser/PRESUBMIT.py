@@ -428,6 +428,34 @@ def _CheckNewDirectoryHasBuildGn(input_api, output_api):
 
     return []
 
+def _CheckNoNewProfileIDPrefixes(input_api, output_api):
+    """Makes sure developers don't add new profile ID prefixes."""
+    problems = []
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=[
+                r'chrome[/\\]browser[/\\]profiles[/\\]profile\.cc'
+            ])
+
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=FileFilter):
+        for line_num, line in f.ChangedContents():
+            if input_api.re.search(r'char\s+k[A-Za-z0-9_]+ProfileIDPrefix\[\]',
+                                   line):
+                problems.append('  %s:%d:%s' %
+                                (f.LocalPath(), line_num, line.strip()))
+
+    if not problems:
+        return []
+
+    WARNING_MSG = (
+        'Adding new Profile ID prefixes is strongly discouraged.\n'
+        'Please avoid adding new prefixes and associated custom logic\n'
+        'for Profile differentiated by such prefixes.')
+    return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+
 ###############################################################################
 # Presubmit aggregator
 ###############################################################################
@@ -439,6 +467,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(
         _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
             input_api, output_api))
+    results.extend(_CheckNoNewProfileIDPrefixes(input_api, output_api))
     results.extend(_CheckUnwantedDependencies(input_api, output_api))
     results.extend(
         _RunHistogramChecks(input_api, output_api, "BadMessageReasonChrome"))

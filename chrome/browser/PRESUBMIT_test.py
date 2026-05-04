@@ -19,6 +19,45 @@ _INVALID_DEP = "+third_party/blink/public/web/web_something.h,"
 _INVALID_DEP2 = "+third_party/blink/public/web/web_nothing.h,"
 
 
+class CheckNoNewProfileIDPrefixesTest(unittest.TestCase):
+    def testAdditionOfNewPrefix(self):
+        lines = [
+            'constexpr char kMyNewOTRProfileIDPrefix[] = "MyNew::OTRPrefix";',
+            'constexpr char kAnotherProfileIDPrefix[] = "Another::Prefix";'
+        ]
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/profiles/profile.cc', lines)
+        ]
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNoNewProfileIDPrefixes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(1, len(errors))
+        self.assertEqual(2, len(errors[0].items))
+
+    def testNoNewPrefix(self):
+        lines = ['const char kSomethingElse[] = "SomethingElse";']
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/profiles/profile.cc', lines)
+        ]
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNoNewProfileIDPrefixes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(0, len(errors))
+
+    def testAdditionInOtherFile(self):
+        lines = ['const char kMyNewProfileIDPrefix[] = "MyNew::Prefix";']
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('chrome/browser/profiles/other_file.cc', lines)
+        ]
+        mock_output_api = MockOutputApi()
+        errors = PRESUBMIT._CheckNoNewProfileIDPrefixes(
+            mock_input_api, mock_output_api)
+        self.assertEqual(0, len(errors))
+
+
 class BlinkPublicWebUnwantedDependenciesTest(unittest.TestCase):
 
     def makeInputApi(self, files):
