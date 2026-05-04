@@ -12,11 +12,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-
-class HTMLElement;
 class SubmitEventInit;
 
 class SubmitEvent : public Event {
@@ -29,6 +28,7 @@ class SubmitEvent : public Event {
 
   void Trace(Visitor* visitor) const override;
   HTMLElement* submitter() const { return submitter_.Get(); }
+  Element* SourceElement() const override { return submitter_.Get(); }
   const AtomicString& InterfaceName() const override;
 
   bool agentInvoked() const { return agent_invoked_; }
