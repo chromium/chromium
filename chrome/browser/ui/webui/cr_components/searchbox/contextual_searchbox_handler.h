@@ -320,11 +320,6 @@ class ContextualSearchboxHandler
       std::map<std::string, std::string> additional_params,
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
-  // Callback invoked when relevant tabs are determined for the query to inform
-  // if the smart tab sharing promo should be shown to the user.
-  void OnRelevantTabsReceivedToMaybeShowPromo(
-      std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
-
   std::optional<base::Uuid> GetTaskId();
 
   std::optional<std::pair<base::UnguessableToken,
@@ -357,6 +352,16 @@ class ContextualSearchboxHandler
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;
+
+  // Checks eligibility and triggers the smart tab sharing IPH promo logic.
+  void MaybeTriggerSmartTabSharingPromo(
+      const std::string& query,
+      content::WebContents* web_contents_for_window);
+
+  // Callback invoked when relevant tabs are determined for the query to inform
+  // if the smart tab sharing promo should be shown to the user.
+  virtual void OnRelevantTabsReceivedToMaybeShowPromo(
+      std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };

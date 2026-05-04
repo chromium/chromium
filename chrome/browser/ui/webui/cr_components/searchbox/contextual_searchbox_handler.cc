@@ -913,54 +913,62 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                /*additional_params=*/{});
 }
 
+void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
+    const std::string& query,
+    content::WebContents* web_contents_for_window) {
+  if (!contextual_tasks_context_service_) {
+    return;
+  }
+
+  std::vector<GURL> explicit_urls;
+  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
+    for (const contextual_search::FileInfo* file_info :
+         contextual_session_handle->GetController()->GetFileInfoList()) {
+      if (file_info->tab_url) {
+        explicit_urls.push_back(*(file_info->tab_url));
+      }
+    }
+  }
+
+  const bool is_eligible_for_promo =
+      !IsSmartTabSharingActive() &&
+      contextual_tasks::GetIsSmartTabSharingEnabled();
+  if (is_eligible_for_promo) {
+    contextual_tasks::TabSelectionOptions tab_selection_options;
+    tab_selection_options.tab_selection_timeout =
+        contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
+    if (auto* browser_window_interface =
+            webui::GetBrowserWindowInterface(web_contents_for_window)) {
+      tab_selection_options.browser_window_interface =
+          browser_window_interface->GetWeakPtr();
+    }
+    tab_selection_options.min_model_score = static_cast<float>(
+        contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
+    contextual_tasks_context_service_->GetRelevantTabsForQuery(
+        tab_selection_options, query, explicit_urls,
+        base::BindOnce(
+            &ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+    // Run dark experiment if smart tab sharing is not enabled and do not
+    // block.
+    contextual_tasks::TabSelectionOptions tab_selection_options;
+    if (auto* browser_window_interface =
+            webui::GetBrowserWindowInterface(web_contents_for_window)) {
+      tab_selection_options.browser_window_interface =
+          browser_window_interface->GetWeakPtr();
+    }
+    contextual_tasks_context_service_->GetRelevantTabsForQuery(
+        tab_selection_options, query, explicit_urls, base::DoNothing());
+  }
+}
+
 void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params) {
-  if (contextual_tasks_context_service_) {
-    std::vector<GURL> explicit_urls;
-    if (auto* contextual_session_handle = GetContextualSessionHandle()) {
-      for (const contextual_search::FileInfo* file_info :
-           contextual_session_handle->GetController()->GetFileInfoList()) {
-        if (file_info->tab_url) {
-          explicit_urls.push_back(*(file_info->tab_url));
-        }
-      }
-    }
-
-    const bool is_eligible_for_promo =
-        !IsSmartTabSharingActive() &&
-        contextual_tasks::GetIsSmartTabSharingEnabled();
-    if (is_eligible_for_promo) {
-      contextual_tasks::TabSelectionOptions tab_selection_options;
-      tab_selection_options.tab_selection_timeout =
-          contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
-      if (auto* browser_window_interface =
-              webui::GetBrowserWindowInterface(web_contents_)) {
-        tab_selection_options.browser_window_interface =
-            browser_window_interface->GetWeakPtr();
-      }
-      tab_selection_options.min_model_score = static_cast<float>(
-          contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
-      contextual_tasks_context_service_->GetRelevantTabsForQuery(
-          tab_selection_options, query_text, explicit_urls,
-          base::BindOnce(&ContextualSearchboxHandler::
-                             OnRelevantTabsReceivedToMaybeShowPromo,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
-      // Run dark experiment if smart tab sharing is not enabled and do not
-      // block.
-      contextual_tasks::TabSelectionOptions tab_selection_options;
-      if (auto* browser_window_interface =
-              webui::GetBrowserWindowInterface(web_contents_)) {
-        tab_selection_options.browser_window_interface =
-            browser_window_interface->GetWeakPtr();
-      }
-      contextual_tasks_context_service_->GetRelevantTabsForQuery(
-          tab_selection_options, query_text, explicit_urls, base::DoNothing());
-    }
-  }
+  MaybeTriggerSmartTabSharingPromo(query_text, web_contents_);
 
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
