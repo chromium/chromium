@@ -81,55 +81,56 @@ code or summarize state itself. It delegates to several auxiliary personas:
 ### 3. Parallel Compute (Ideation)
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
+**File I/O:** Each sub-agent MUST save their draft to disk using the versioned
+naming convention `[filename].[persona].magi.[iteration]` (e.g.,
+`host.cc.security.magi.1`).
 *Note: Sub-agents are permitted to change scaffolded signatures if their
-priority
-requires it. Their first action must be to call `update_topic` to identify
-their specific persona.*
+priority requires it. Their first action must be to call `update_topic` to
+identify their specific persona.*
 
 ### 4. The Synthesis Phase
 Once the ideation agents finish:
-1.  **The Continuity Analyst:** Initialize the State Block with the identified
-    trade-offs to prevent context bloat:
+1.  **The Continuity Analyst:** Initialize the State Block and save it to
+    `state_block.magi.md` to prevent Orchestrator context bloat:
     *   **Iteration:** [N]
     *   **Personas:** [Selected Experts]
     *   **Resolved:** [Addressed critiques]
     *   **Active Conflicts:** [Specific trade-offs, e.g., "Security vs.
         Performance"]
     *   **Stall Count:** [Count of non-productive iterations]
-2.  **The Synthesizing Architect:** Pass the `.magi` drafts to this agent to
-    synthesize into "Draft A" in the original file.
+2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
+    drafts and synthesize them into "Draft A" in the original file.
 
 ### 5. The Consensus Loop (Expanded Review)
-1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers. The
-    panel MUST include the core ideators PLUS 3-6 specialized reviewer personas
-    (e.g., **Test Expert**, **Readability Expert**, **Cross-Platform Expert**).
+1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
+    **File I/O:** All reviewers MUST append their feedback to
+    `reviews.magi.[iteration].md`. Do NOT return feedback as text to the
     **Prompt Template:**
     > "**IMPORTANT:** Your very first action MUST be to call the `update_topic`
-    > tool with the `title` set to your assigned MAGI Persona name (e.g.,
-    > 'MAGI Persona: WebRTC Expert') and a `summary` of your immediate goal.
-    >
+    > tool with the `title` set to your assigned MAGI Persona name.
     > Role Details: Read your mandate from `[persona_file_path]`.
     > Priority: [Priority].
-    > Task: Review Draft [filename].
-    > Output ONLY: `Verdict: [ACCEPT/REJECT]` and `Reasoning: [Bullet points]`."
-2.  **The Review Analyst:** If any agent rejects, pass all feedback to the
-    Review Analyst agent to condense into a strict list of 3-5 Actionable
-    Constraints.
-3.  **The Continuity Analyst:** Pass the Review Analyst's constraints to the
-    Continuity Analyst. The Continuity Analyst updates the State Block and
-    checks for "flip-flopping" (e.g., Constraint 1 violates a constraint from
-    Round 1) and modifies the feedback provided to the Architect if necessary
-    to ensure progress.
+    > Task: Review Draft [filename]. Append `Verdict: [ACCEPT/REJECT]` and
+    > `Reasoning: [Bullet points]` to `reviews.magi.[iteration].md`."
+2.  **The Review Analyst:** If any agent rejects, this agent reads
+    `reviews.magi.[iteration].md` and writes a strict list of 3-5 Actionable
+    Constraints to `constraints.magi.[iteration].md`.
+3.  **The Continuity Analyst:** Reads `constraints.magi.[iteration].md` and
+    updates `state_block.magi.md`. Checks for "flip-flopping" (e.g., Constraint
+    1 violates a constraint from Round 1).
+    **Deadlock API:** If `Stall Count` exceeds 3, the Continuity Analyst's
+    ONLY output must be the exact string `STATUS: DEADLOCK` followed by a
+    structured report (Core Conflict, Blocked Personas, Human Decision Needed).
 4.  **The Liaison:** Provide a brief status update to the human (e.g., via
     `update_topic` or chat) detailing what is being considered and the
     decision process for this cycle.
-5.  **Convergence & Iteration:** Pass the updated State Block and Draft back to
-    the Synthesizing Architect to generate Draft B.
-6.  **Executive Tie-Breaker (Handover):** If the Continuity Analyst detects a
-    deadlock, the Orchestrator MUST pause and escalate to the human with a
-    structured **Deadlock Report**. Feed the human's decision back to break the
-    tie.
-7.  **CLEANUP:** Immediately execute `rm *.magi.*` once consensus is reached.
+5.  **Convergence & Iteration:** The Synthesizing Architect reads
+    `state_block.magi.md` and `constraints.magi.[iteration].md` to generate
+    the next iteration (e.g., "Draft B").
+6.  **Executive Tie-Breaker (Handover):** If the Orchestrator receives the
+    `STATUS: DEADLOCK` string, it MUST immediately halt the loop, print the
+    structured report to the human, and wait for a tie-breaking decision.
+7.  **CLEANUP:** Do NOT delete `.magi` files yet; the Trainer will need them.
     The Liaison should report the final conclusion of the work.
 
 ### 6. Specialized Modes
@@ -168,7 +169,8 @@ updated by the Trainer/Recruiter.
 
 The Release Engineer's **exclusive mandate** is:
 1. **Workspace Hygiene:** Run `git status` / `jj st`. Detect and revert
-   accidental submodule bumps. Remove any lingering `*.magi` temporary files.
+   accidental submodule bumps. Remove any lingering temporary files generated by
+   the protocol (e.g., `*.magi`, `*.magi.*`).
 2. **Formatting:** Enforce `git cl format` or project-specific formatters.
 3. **The Feature CL:** Stage *only* the product source files. Verify the commit
    message. Upload the main feature CL.
