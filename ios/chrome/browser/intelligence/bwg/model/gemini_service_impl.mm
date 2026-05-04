@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
@@ -50,7 +51,7 @@ GeminiServiceImpl::GeminiServiceImpl(
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
   }
 
-  if (!IsPageActionMenuAuthFlowEnabled()) {
+  if (!IsPageActionMenuAuthFlowEnabled() || IsChromeNextIaEnabled()) {
     CheckGeminiEnterpriseEligibility();
   }
 }
