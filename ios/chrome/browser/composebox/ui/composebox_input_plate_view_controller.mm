@@ -247,6 +247,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// Whether the input plate was presented.
   BOOL _inputPlatePresented;
+  /// Caches the items list if set before viewDidLoad.
+  NSArray<ComposeboxInputItem*>* _cachedItems;
 }
 
 /// ComposeboxAnimationContext
@@ -285,6 +287,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _askAboutThisPageButton = [self createAskAboutThisPageButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
+  if (_cachedItems.count > 0) {
+    [self setItems:_cachedItems];
+  }
 
   _inputPlateStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[ _omniboxContainer ]];
@@ -410,6 +415,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 #pragma mark - ComposeboxInputPlateConsumer
 
 - (void)setItems:(NSArray<ComposeboxInputItem*>*)items {
+  // Cache the items if called before `viewDidLoad` initializes `_dataSource`.
+  // They will be applied once the view loads.
+  if (!_dataSource) {
+    _cachedItems = [items copy];
+    return;
+  }
+  _cachedItems = nil;
   _carouselContainer.hidden = !items.count;
   [self updateInputPlateStackViewTopConstraint];
   NSDiffableDataSourceSnapshot<NSString*, ComposeboxInputItem*>* snapshot =
