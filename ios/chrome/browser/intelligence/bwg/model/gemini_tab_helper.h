@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_HELPER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -40,14 +40,14 @@ class ZeroStateSuggestionsServiceImpl;
 
 class GeminiSuggestionHandlerTest;
 
-// Tab helper controlling the BWG feature and its current state for a given tab.
-class BwgTabHelper : public web::WebStateObserver,
-                     public web::WebStateUserData<BwgTabHelper> {
+// Tab helper controlling Gemini and its current state for a given tab.
+class GeminiTabHelper : public web::WebStateObserver,
+                        public web::WebStateUserData<GeminiTabHelper> {
  public:
-  BwgTabHelper(const BwgTabHelper&) = delete;
-  BwgTabHelper& operator=(const BwgTabHelper&) = delete;
+  GeminiTabHelper(const GeminiTabHelper&) = delete;
+  GeminiTabHelper& operator=(const GeminiTabHelper&) = delete;
 
-  ~BwgTabHelper() override;
+  ~GeminiTabHelper() override;
 
   // Set up generation of page Context and the callback to be run when the page
   // context is ready.
@@ -64,23 +64,23 @@ class BwgTabHelper : public web::WebStateObserver,
   void ExecuteZeroStateSuggestions(
       base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback);
 
-  // Deactivates the BWG associated to this WebState.
-  void DeactivateBWGSession();
+  // Deactivates the Gemini associated to this WebState.
+  void DeactivateGeminiSession();
 
   // Returns true if the URL of last recorded interaction is not the same as the
   // current URL (ignoring URL fragments).
   bool IsLastInteractionUrlDifferent();
 
-  // Whether BWG should show the suggestion chips for the current Web State and
-  // visible URL.
+  // Whether Gemini should show the suggestion chips for the current Web State
+  // and visible URL.
   bool ShouldShowSuggestionChips();
 
-  // Creates, or updates, a new BWG session in storage with the current
+  // Creates, or updates, a new Gemini session in storage with the current
   // timestamp, server ID and URL for the associated WebState.
-  void CreateOrUpdateBwgSessionInStorage(std::string server_id);
+  void CreateOrUpdateGeminiSessionInStorage(std::string server_id);
 
   // Removes the associated WebState's session from storage.
-  void DeleteBwgSessionInStorage();
+  void DeleteGeminiSessionInStorage();
 
   // Whether Gemini is available for the current web state.
   bool IsGeminiAvailableForWebState();
@@ -89,13 +89,13 @@ class BwgTabHelper : public web::WebStateObserver,
   // blocked for AIM/Search-related reasons).
   bool IsUrlEligibleForGemini(const GURL& url);
 
-  // Gets the client and server IDs for the BWG session for the associated
+  // Gets the client and server IDs for the Gemini session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
   std::string GetClientId();
   std::optional<std::string> GetServerId();
 
-  // Set the BWG commands handler, used to show/hide the BWG UI.
-  void SetBwgCommandsHandler(id<BWGCommands> handler);
+  // Set the Gemini commands handler, used to show/hide the Gemini UI.
+  void SetGeminiCommandsHandler(id<BWGCommands> handler);
 
   // Set help commands handler, for showing in-product help UI.
   void SetHelpCommandsHandler(id<HelpCommands> handler);
@@ -174,9 +174,9 @@ class BwgTabHelper : public web::WebStateObserver,
     bool can_apply = false;
   };
 
-  explicit BwgTabHelper(web::WebState* web_state);
+  explicit GeminiTabHelper(web::WebState* web_state);
 
-  friend class web::WebStateUserData<BwgTabHelper>;
+  friend class web::WebStateUserData<GeminiTabHelper>;
 
   // The PageContext wrapper used to provide context about a page.
   __strong PageContextWrapper* page_context_wrapper_ = nil;
@@ -216,20 +216,20 @@ class BwgTabHelper : public web::WebStateObserver,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  // Adding BwgTabHelperTest as a friend to facilitate validation of behavior in
-  // tests.
-  friend class BwgTabHelperTest;
+  // Adding GeminiTabHelperTest as a friend to facilitate validation of behavior
+  // in tests.
+  friend class GeminiTabHelperTest;
 
   // TODO(crbug.com/502249229): Refactor GeminiSuggestionHandler to use a
-  // protocol or delegate to avoid needing to be a friend of BwgTabHelper.
+  // protocol or delegate to avoid needing to be a friend of GeminiTabHelper.
   friend class GeminiSuggestionHandlerTest;
 
-  // Creates a new BWG session in the prefs, or updates an existing one, with
+  // Creates a new Gemini session in the prefs, or updates an existing one, with
   // the current timestamp.
   void CreateOrUpdateSessionInPrefs(std::string client_id,
                                     std::string server_id);
 
-  // Removes the BWG session from the prefs.
+  // Removes the Gemini session from the prefs.
   void CleanupSessionFromPrefs();
 
   // Parses the response of a zero state suggestions execution.
@@ -240,9 +240,8 @@ class BwgTabHelper : public web::WebStateObserver,
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
-
-  // Commands handler for BWG commands.
-  __weak id<BWGCommands> bwg_commands_handler_ = nullptr;
+  // Commands handler for Gemini commands.
+  __weak id<BWGCommands> gemini_commands_handler_ = nullptr;
 
   // Commands handler for help commands.
   __weak id<HelpCommands> help_commands_handler_ = nullptr;
@@ -310,7 +309,7 @@ class BwgTabHelper : public web::WebStateObserver,
   bool is_snackbar_presented_ = false;
 
   // Weak pointer factory.
-  base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GeminiTabHelper> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_HELPER_H_

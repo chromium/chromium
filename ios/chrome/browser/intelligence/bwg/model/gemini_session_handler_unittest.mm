@@ -8,7 +8,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -66,7 +66,7 @@ class GeminiSessionHandlerTest : public PlatformTest {
   void AddWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(profile_.get());
-    BwgTabHelper::CreateForWebState(web_state.get());
+    GeminiTabHelper::CreateForWebState(web_state.get());
     web_state_list_->InsertWebState(std::move(web_state),
                                     WebStateList::InsertionParams::Automatic());
   }
@@ -200,7 +200,7 @@ TEST_F(GeminiSessionHandlerTest, TestFirstRunFlag) {
 
   // Set first run flag.
   web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
   tab_helper->SetIsFirstRun(true);
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
@@ -337,7 +337,7 @@ TEST_F(GeminiSessionHandlerTest, TestSetSessionActiveTrue) {
 
   // Get the tab helper and verify it exists.
   web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
   ASSERT_TRUE(tab_helper);
 }
 
@@ -365,7 +365,7 @@ TEST_F(GeminiSessionHandlerTest, TestUpdateSessionWithClientID) {
   NSString* server_id = @"test_server_id";
 
   web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
 
   // Check initial state - no server ID should exist.
   std::optional<std::string> initial_server_id = tab_helper->GetServerId();
@@ -389,7 +389,7 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatButtonTapped) {
   [session_handler_ UIDidAppearWithClientID:client_id serverID:server_id];
 
   web::WebState* web_state = web_state_list_->GetWebStateAt(0);
-  BwgTabHelper* tab_helper = BwgTabHelper::FromWebState(web_state);
+  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
 
   // Verify session exists with server ID.
   std::optional<std::string> initial_server_id = tab_helper->GetServerId();

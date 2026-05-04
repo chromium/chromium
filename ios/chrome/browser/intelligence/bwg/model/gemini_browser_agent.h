@@ -89,7 +89,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // GeminiTabHelperObserver:
   void OnPageContextUpdated(web::WebState* web_state) override;
-  void OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) override;
+  void OnGeminiTabHelperDestroyed(GeminiTabHelper* tab_helper) override;
 
   // Checks if the FRE needs to be shown and start the Gemini flow
   // accordingly.
@@ -180,9 +180,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // at that time.
   void SetSessionCommandHandlers();
 
-  // Helper to get the BwgTabHelper for the active web state if it matches the
-  // provided web state.
-  BwgTabHelper* GetActiveTabHelper(web::WebState* web_state);
+  // Helper to get the GeminiTabHelper for the active web state if it matches
+  // the provided web state.
+  GeminiTabHelper* GetActiveTabHelper(web::WebState* web_state);
 
   // Callback for scroll events.
   void OnScrollEvent();

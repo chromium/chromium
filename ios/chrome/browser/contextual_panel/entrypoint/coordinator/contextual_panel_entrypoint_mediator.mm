@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -338,10 +338,10 @@
 
   // Prevents entrypoint from showing while the Gemini promo is showing.
   if (IsPageActionMenuEnabled()) {
-    BwgTabHelper* BWGTabHelper =
-        BwgTabHelper::FromWebState(_webStateList->GetActiveWebState());
-    if (BWGTabHelper) {
-      if (BWGTabHelper->ShouldPreventContextualPanelEntryPoint()) {
+    GeminiTabHelper* geminiTabHelper =
+        GeminiTabHelper::FromWebState(_webStateList->GetActiveWebState());
+    if (geminiTabHelper) {
+      if (geminiTabHelper->ShouldPreventContextualPanelEntryPoint()) {
         [self.consumer hideEntrypoint];
         return;
       }

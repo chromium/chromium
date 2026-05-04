@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_panel_item_configuration.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -20,12 +20,12 @@ void HandleCurrentPageIsDistillableResult(
     base::WeakPtr<web::WebState> web_state,
     ReaderModeModel::FetchConfigurationForWebStateCallback callback,
     std::optional<bool> current_page_supports_reader_mode) {
-  BwgTabHelper* bwg_tab_helper =
-      web_state ? BwgTabHelper::FromWebState(web_state.get()) : nullptr;
+  GeminiTabHelper* gemini_tab_helper =
+      web_state ? GeminiTabHelper::FromWebState(web_state.get()) : nullptr;
   // Ensures that the Reader Mode omnibox large entrypoint impression isn't
   // counted.
-  if (bwg_tab_helper &&
-      bwg_tab_helper->ShouldPreventContextualPanelEntryPoint()) {
+  if (gemini_tab_helper &&
+      gemini_tab_helper->ShouldPreventContextualPanelEntryPoint()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;

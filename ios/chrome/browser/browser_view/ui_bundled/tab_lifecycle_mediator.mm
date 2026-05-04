@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -263,21 +263,21 @@
     editMenuTabHelper->SetEditMenuBuilder(self.editMenuBuilder);
   }
 
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  if (BWGTabHelper) {
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  if (geminiTabHelper) {
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(_commandDispatcher, BWGCommands);
-    BWGTabHelper->SetBwgCommandsHandler(BWGCommandsHandler);
+    geminiTabHelper->SetGeminiCommandsHandler(BWGCommandsHandler);
 
     if (IsAskGeminiChipEnabled()) {
-      BWGTabHelper->SetLocationBarBadgeCommandsHandler(
+      geminiTabHelper->SetLocationBarBadgeCommandsHandler(
           id<LocationBarBadgeCommands>(_commandDispatcher));
     }
 
     if (IsGeminiImageRemixToolEnabled()) {
       id<HelpCommands> helpCommandsHandler =
           HandlerForProtocol(_commandDispatcher, HelpCommands);
-      BWGTabHelper->SetHelpCommandsHandler(helpCommandsHandler);
+      geminiTabHelper->SetHelpCommandsHandler(helpCommandsHandler);
     }
   }
 
@@ -420,14 +420,14 @@
 
   FormSuggestionTabHelper::RemoveFromWebState(webState);
 
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  if (BWGTabHelper) {
-    BWGTabHelper->SetBwgCommandsHandler(nil);
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  if (geminiTabHelper) {
+    geminiTabHelper->SetGeminiCommandsHandler(nil);
     if (IsAskGeminiChipEnabled()) {
-      BWGTabHelper->SetLocationBarBadgeCommandsHandler(nil);
+      geminiTabHelper->SetLocationBarBadgeCommandsHandler(nil);
     }
     if (IsGeminiImageRemixToolEnabled()) {
-      BWGTabHelper->SetHelpCommandsHandler(nil);
+      geminiTabHelper->SetHelpCommandsHandler(nil);
     }
   }
 

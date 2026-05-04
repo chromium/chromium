@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
@@ -90,7 +90,8 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
-  BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(activeWebState);
+  GeminiTabHelper* geminiTabHelper =
+      GeminiTabHelper::FromWebState(activeWebState);
 
   HostContentSettingsMap* hostContentSettingsMap =
       ios::HostContentSettingsMapFactory::GetForProfile(self.profile);

@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -155,9 +155,9 @@
 #pragma mark - Public
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
-  BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
-  if (BWGTabHelper) {
-    BWGTabHelper->SetPreventContextualPanelEntryPoint(NO);
+  GeminiTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
+  if (geminiTabHelper) {
+    geminiTabHelper->SetPreventContextualPanelEntryPoint(NO);
   }
 
   [self presentPageActionMenuIPH];
@@ -319,14 +319,14 @@
 }
 
 // Returns the currently active WebState's Gemini tab helper.
-- (BwgTabHelper*)activeWebStateGeminiTabHelper {
+- (GeminiTabHelper*)activeWebStateGeminiTabHelper {
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   if (!activeWebState) {
     return nil;
   }
 
-  return BwgTabHelper::FromWebState(activeWebState);
+  return GeminiTabHelper::FromWebState(activeWebState);
 }
 
 // Attempts to present the entry point IPH the user hasn't used the AI Hub entry

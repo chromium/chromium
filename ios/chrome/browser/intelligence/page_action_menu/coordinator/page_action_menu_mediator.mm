@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -87,7 +87,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
   raw_ptr<GeminiService> _geminiService;
 
   // The tab helper for the Gemini floaty.
-  raw_ptr<BwgTabHelper> _geminiTabHelper;
+  raw_ptr<GeminiTabHelper> _geminiTabHelper;
 
   // The tab helper for Reader mode.
   raw_ptr<ReaderModeTabHelper> _readerModeTabHelper;
@@ -101,7 +101,7 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
                    geminiService:(GeminiService*)geminiService
-                 geminiTabHelper:(BwgTabHelper*)geminiTabHelper
+                 geminiTabHelper:(GeminiTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
           hostContentSettingsMap:
               (HostContentSettingsMap*)hostContentSettingsMap {
@@ -687,7 +687,7 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   if (!IsZeroStateSuggestionsAIHubEnabled()) {
     return;
   }
-  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_webState);
+  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_webState);
   if (!tabHelper) {
     return;
   }

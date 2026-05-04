@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -100,8 +100,8 @@ class PageActionMenuMediatorTest : public PlatformTest {
     ASSERT_TRUE(settings_map_);
 
     // Attach required tab helpers to the fake web state.
-    BwgTabHelper::CreateForWebState(web_state_.get());
-    bwg_tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
+    GeminiTabHelper::CreateForWebState(web_state_.get());
+    gemini_tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
 
     // Initialize the default mediator with the fake web state and services.
     mediator_ = [[PageActionMenuMediator alloc]
@@ -110,7 +110,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
             profilePrefService:pref_service_
             templateURLService:template_url_service
                  geminiService:fake_gemini_service_.get()
-               geminiTabHelper:bwg_tab_helper_
+               geminiTabHelper:gemini_tab_helper_
            readerModeTabHelper:nil
         hostContentSettingsMap:settings_map_];
     fake_consumer_ = [[FakePageActionMenuConsumer alloc] init];
@@ -120,7 +120,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nil;
     fake_consumer_ = nil;
-    bwg_tab_helper_ = nullptr;
+    gemini_tab_helper_ = nullptr;
     web_state_.reset();
     fake_gemini_service_.reset();
     settings_map_ = nullptr;
@@ -140,7 +140,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<FakeGeminiService> fake_gemini_service_;
-  raw_ptr<BwgTabHelper> bwg_tab_helper_;
+  raw_ptr<GeminiTabHelper> gemini_tab_helper_;
   PageActionMenuMediator* mediator_;
   FakePageActionMenuConsumer* fake_consumer_;
 };
@@ -237,7 +237,7 @@ TEST_F(PageActionMenuMediatorTest, PopupBlocker) {
       BlockedPopupTabHelper::FromWebState(real_web_state.get());
   ASSERT_TRUE(helper);
 
-  BwgTabHelper::CreateForWebState(real_web_state.get());
+  GeminiTabHelper::CreateForWebState(real_web_state.get());
 
   // We instantiate the mediator directly in the test scope rather than using a
   // helper method. This ensures ARC owns the object and releases it immediately
@@ -252,7 +252,7 @@ TEST_F(PageActionMenuMediatorTest, PopupBlocker) {
           profilePrefService:pref_service_
           templateURLService:template_url_service
                geminiService:fake_gemini_service_.get()
-             geminiTabHelper:BwgTabHelper::FromWebState(real_web_state.get())
+             geminiTabHelper:GeminiTabHelper::FromWebState(real_web_state.get())
          readerModeTabHelper:nil
       hostContentSettingsMap:settings_map_];
 

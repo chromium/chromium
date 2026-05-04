@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
@@ -379,7 +379,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   if (!_activeWebState) {
     return;
   }
-  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_activeWebState);
+  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_activeWebState);
   if (tabHelper) {
     tabHelper->SetPreventContextualPanelEntryPoint(prevent);
   }
@@ -684,7 +684,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 // Checks if the page is eligible for Gemini, a user has consented, and checks
 // if two hours has passed since the last chip display.
 - (BOOL)shouldShowGeminiContextualBadge {
-  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_activeWebState);
+  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_activeWebState);
   BOOL isPageEligible = tabHelper &&
                         tabHelper->IsGeminiAvailableForWebState() &&
                         _geminiService->IsProfileEligibleForGemini();
@@ -740,10 +740,10 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 
   // Prevents entrypoint from showing while the Gemini promo is showing.
   if (IsPageActionMenuEnabled()) {
-    BwgTabHelper* BWGTabHelper =
-        BwgTabHelper::FromWebState(_webStateList->GetActiveWebState());
-    if (BWGTabHelper) {
-      if (BWGTabHelper->ShouldPreventContextualPanelEntryPoint()) {
+    GeminiTabHelper* geminiTabHelper =
+        GeminiTabHelper::FromWebState(_webStateList->GetActiveWebState());
+    if (geminiTabHelper) {
+      if (geminiTabHelper->ShouldPreventContextualPanelEntryPoint()) {
         [self.consumer hideBadge];
         return;
       }

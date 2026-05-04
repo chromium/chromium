@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -569,7 +569,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   UIMenuElement* geminiElement = nil;
   GeminiService* geminiService =
       GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
-  BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(webState);
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
   // To show the Gemini element, we check three distinct layers of availability:
   // - Feature-level (`IsFeatureAvailable`): Handles fine-grained or regulatory
   //   restrictions for specific features like ImageRemix, even when Gemini is

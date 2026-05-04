@@ -105,8 +105,8 @@ source_set("browser_agent") {
 
 source_set("tab_helper") {
   sources = [
-    "bwg_tab_helper.h",
-    "bwg_tab_helper.mm",
+    "gemini_tab_helper.h",
+    "gemini_tab_helper.mm",
     "gemini_tab_helper_observer.h",
   ]
   deps = [
@@ -228,7 +228,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bwg_tab_helper_unittest.mm",
     "gemini_actuation_handler_unittest.mm",
     "gemini_browser_agent_unittest.mm",
     "gemini_camera_handler_unittest.mm",
@@ -242,6 +241,7 @@ source_set("unit_tests") {
     "gemini_session_handler_unittest.mm",
     "gemini_startup_configuration_unittest.mm",
     "gemini_suggestion_handler_unittest.mm",
+    "gemini_tab_helper_unittest.mm",
     "gemini_view_state_change_handler_unittest.mm",
   ]
   deps = [

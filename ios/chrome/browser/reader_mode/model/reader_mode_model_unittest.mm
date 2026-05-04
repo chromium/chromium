@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -135,7 +135,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationWithoutReaderModeTabHelper) {
   EXPECT_EQ(configuration, nullptr);
 }
 
-// Fetching the configuration while BwgTabHelper is preventing the Contextual
+// Fetching the configuration while GeminiTabHelper is preventing the Contextual
 // Panel entrypoint should result in a null configuration.
 TEST_F(ReaderModeModelTest, FetchConfigurationPreventedByGemini) {
   ReaderModeModel model(profile());
@@ -147,9 +147,10 @@ TEST_F(ReaderModeModelTest, FetchConfigurationPreventedByGemini) {
   LoadWebpage(web_state(), test_url);
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  BwgTabHelper::CreateForWebState(web_state());
-  BwgTabHelper* bwg_tab_helper = BwgTabHelper::FromWebState(web_state());
-  bwg_tab_helper->SetPreventContextualPanelEntryPoint(true);
+  GeminiTabHelper::CreateForWebState(web_state());
+  GeminiTabHelper* gemini_tab_helper =
+      GeminiTabHelper::FromWebState(web_state());
+  gemini_tab_helper->SetPreventContextualPanelEntryPoint(true);
 
   model.FetchConfigurationForWebState(
       web_state(),

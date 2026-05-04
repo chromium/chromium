@@ -140,10 +140,10 @@ const CGFloat kInsetAdjustment = 20;
     [self.mutator didShowGeminiPromo];
   }
   // The related WebState can be hidden asynchronously while this animated view
-  // is being shown. `BWGTabHelper::WasHidden()` causes the related coordinator
-  // to shut down, causing the `mutator` to be nil, and leaves the view in a
-  // broken state once shown. This check ensures that if the view is in a broken
-  // state, automatically dismiss it.
+  // is being shown. `GeminiTabHelper::WasHidden()` causes the related
+  // coordinator to shut down, causing the `mutator` to be nil, and leaves the
+  // view in a broken state once shown. This check ensures that if the view is
+  // in a broken state, automatically dismiss it.
   if (!self.mutator) {
     [self dismissViewControllerAnimated:YES completion:nil];
   }

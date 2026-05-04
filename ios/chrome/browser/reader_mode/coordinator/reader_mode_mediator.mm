@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

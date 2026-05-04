@@ -39,9 +39,9 @@
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -1933,7 +1933,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(_webState->GetBrowserState());
   GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
-  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_webState);
+  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_webState);
   return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
          geminiService && geminiService->IsProfileEligibleForGemini();
 }

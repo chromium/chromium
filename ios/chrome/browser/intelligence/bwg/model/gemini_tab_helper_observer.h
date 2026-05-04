@@ -7,20 +7,20 @@
 
 #import "base/observer_list_types.h"
 
-class BwgTabHelper;
+class GeminiTabHelper;
 
 namespace web {
 class WebState;
 }  // namespace web
 
-// Observer interface for BwgTabHelper.
+// Observer interface for GeminiTabHelper.
 class GeminiTabHelperObserver : public base::CheckedObserver {
  public:
   // Called when the page context (URL, title, favicon, etc.) has been updated.
   virtual void OnPageContextUpdated(web::WebState* web_state) {}
 
-  // Called when the BwgTabHelper is about to be destroyed.
-  virtual void OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {}
+  // Called when the GeminiTabHelper is about to be destroyed.
+  virtual void OnGeminiTabHelperDestroyed(GeminiTabHelper* tab_helper) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_HELPER_OBSERVER_H_

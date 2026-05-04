@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -129,7 +129,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   if (impressionCount == 1) {
     _tracker->NotifyEvent(
         feature_engagement::events::kIOSGeminiPromoFirstCompletion);
-    BwgTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
+    GeminiTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
     if (geminiTabHelper) {
       geminiTabHelper->SetPreventContextualPanelEntryPoint(
           [self shouldShowAIHubIPH]);
@@ -208,7 +208,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   [self logPromoShown];
 
-  BwgTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
+  GeminiTabHelper* geminiTabHelper = [self activeWebStateGeminiTabHelper];
   if (geminiTabHelper) {
     geminiTabHelper->SetIsFirstRun(true);
   }
@@ -229,13 +229,13 @@ const CGFloat kPromoMaxImpressionCount = 3;
 }
 
 // Returns the currently active WebState's Gemini tab helper.
-- (BwgTabHelper*)activeWebStateGeminiTabHelper {
+- (GeminiTabHelper*)activeWebStateGeminiTabHelper {
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {
     return nil;
   }
 
-  return BwgTabHelper::FromWebState(activeWebState);
+  return GeminiTabHelper::FromWebState(activeWebState);
 }
 
 @end

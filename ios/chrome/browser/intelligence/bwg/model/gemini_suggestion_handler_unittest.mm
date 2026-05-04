@@ -11,7 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -34,34 +34,34 @@ class GeminiSuggestionHandlerTest : public PlatformTest {
         initWithWebStateList:browser_->GetWebStateList()];
   }
 
-  // Helper to set cached suggestions in BwgTabHelper using the friend class
+  // Helper to set cached suggestions in GeminiTabHelper using the friend class
   // access.
-  void SetSuggestions(BwgTabHelper* tab_helper,
+  void SetSuggestions(GeminiTabHelper* tab_helper,
                       const std::vector<std::string>& suggestions) {
     ASSERT_TRUE(tab_helper->zero_state_suggestions_);
     tab_helper->zero_state_suggestions_->can_apply = true;
     tab_helper->zero_state_suggestions_->suggestions = suggestions;
   }
 
-  // Helper to set current URL in BwgTabHelper using the friend class access.
-  void SetCurrentUrl(BwgTabHelper* tab_helper, const GURL& url) {
+  // Helper to set current URL in GeminiTabHelper using the friend class access.
+  void SetCurrentUrl(GeminiTabHelper* tab_helper, const GURL& url) {
     tab_helper->current_url_ = url;
   }
 
-  // Helper to create a fake web state, optionally attach BwgTabHelper, and
+  // Helper to create a fake web state, optionally attach GeminiTabHelper, and
   // insert it into the web state list.
-  BwgTabHelper* CreateAndInsertWebState(bool attach_tab_helper,
-                                        const GURL& url = GURL()) {
+  GeminiTabHelper* CreateAndInsertWebState(bool attach_tab_helper,
+                                           const GURL& url = GURL()) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(profile_.get());
     if (!url.is_empty()) {
       web_state->SetCurrentURL(url);
     }
 
-    BwgTabHelper* tab_helper = nullptr;
+    GeminiTabHelper* tab_helper = nullptr;
     if (attach_tab_helper) {
-      BwgTabHelper::CreateForWebState(web_state.get());
-      tab_helper = BwgTabHelper::FromWebState(web_state.get());
+      GeminiTabHelper::CreateForWebState(web_state.get());
+      tab_helper = GeminiTabHelper::FromWebState(web_state.get());
       if (!url.is_empty()) {
         SetCurrentUrl(tab_helper, url);
       }
@@ -101,7 +101,7 @@ TEST_F(GeminiSuggestionHandlerTest,
 }
 
 // Tests that fetchZeroStateSuggestions calls completion with nil when the
-// active web state has no BwgTabHelper.
+// active web state has no GeminiTabHelper.
 TEST_F(GeminiSuggestionHandlerTest, FetchZeroStateSuggestions_NoTabHelper) {
   CreateAndInsertWebState(false);
 
@@ -124,7 +124,7 @@ TEST_F(GeminiSuggestionHandlerTest, FetchZeroStateSuggestions_NoTabHelper) {
 // available.
 TEST_F(GeminiSuggestionHandlerTest, FetchZeroStateSuggestions_Success) {
   GURL url("https://www.example.com");
-  BwgTabHelper* tab_helper = CreateAndInsertWebState(true, url);
+  GeminiTabHelper* tab_helper = CreateAndInsertWebState(true, url);
 
   // Set up the expected suggestions using helper method.
   SetSuggestions(tab_helper, {"suggestion1", "suggestion2"});
@@ -153,7 +153,7 @@ TEST_F(GeminiSuggestionHandlerTest, FetchZeroStateSuggestions_Success) {
 // suggestions are empty.
 TEST_F(GeminiSuggestionHandlerTest, FetchZeroStateSuggestions_Empty) {
   GURL url("https://www.example.com");
-  BwgTabHelper* tab_helper = CreateAndInsertWebState(true, url);
+  GeminiTabHelper* tab_helper = CreateAndInsertWebState(true, url);
 
   // Set up empty suggestions using helper methods.
   SetSuggestions(tab_helper, std::vector<std::string>());

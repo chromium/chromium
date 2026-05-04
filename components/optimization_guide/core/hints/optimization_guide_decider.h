@@ -23,7 +23,7 @@ namespace page_image_service {
 class ImageServiceImpl;
 }  // namespace page_image_service
 
-class BwgTabHelper;
+class GeminiTabHelper;
 
 namespace optimization_guide {
 
@@ -61,7 +61,7 @@ class OptimizationGuideDecider {
   // These friend are consumers of the CanApplyOptimizationOnDemand API.
   friend class commerce::ShoppingService;
   friend class page_image_service::ImageServiceImpl;
-  friend class ::BwgTabHelper;
+  friend class ::GeminiTabHelper;
 
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient

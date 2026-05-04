@@ -8,8 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -190,15 +190,15 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   if (!webState) {
     return;
   }
-  // Get the BWGTabHelper from the WebState.
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+  // Get the GeminiTabHelper from the WebState.
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
   // WebState should always be valid as long as the tab is open.
-  if (!BWGTabHelper) {
+  if (!geminiTabHelper) {
     // Early exit if no valid tab helper is found.
     return;
   }
-  bool isFirstSession = BWGTabHelper->GetIsFirstRun();
-  BWGTabHelper->SetIsFirstRun(false);
+  bool isFirstSession = geminiTabHelper->GetIsFirstRun();
+  geminiTabHelper->SetIsFirstRun(false);
 
   // Record session duration.
   if (!_sessionStartTime.is_null()) {
@@ -298,12 +298,12 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   if (!webState) {
     return;
   }
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  BWGTabHelper->DeleteBwgSessionInStorage();
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  geminiTabHelper->DeleteGeminiSessionInStorage();
   // Ensure page context is attached for a new chat.
   ios::provider::UpdatePageAttachmentState(
       ios::provider::GeminiPageContextAttachmentState::kAttached);
-  BWGTabHelper->NotifyPageContextUpdated(webState);
+  geminiTabHelper->NotifyPageContextUpdated(webState);
   // Record the new chat metric.
   RecordGeminiNewChatButtonTapped();
 
@@ -385,8 +385,8 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
     return;
   }
 
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  BWGTabHelper->CreateOrUpdateBwgSessionInStorage(
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  geminiTabHelper->CreateOrUpdateGeminiSessionInStorage(
       base::SysNSStringToUTF8(serverID));
 }
 
@@ -404,8 +404,8 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
       continue;
     }
 
-    BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-    BWGTabHelper->DeactivateBWGSession();
+    GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+    geminiTabHelper->DeactivateGeminiSession();
   }
 }
 
