@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_dropdown.js';
+import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './omnibox_composebox.css.js';
 import {getHtml} from './omnibox_composebox.html.js';
@@ -18,6 +21,7 @@ export interface OmniboxComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
+    matches: ComposeboxDropdownElement,
   };
 }
 
@@ -48,16 +52,23 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   accessor disableCaretColorAnimation: boolean = false;
   accessor entrypointName: string = 'Omnibox';
   private pageHandler_: PageHandlerRemote;
+  private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
 
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
+    this.searchboxCallbackRouter_ =
+        ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
   }
 
   override getActiveElement(): Element|null {
     return this.shadowRoot?.activeElement || null;
+  }
+
+  override getDropdownElement(): ComposeboxDropdownElement {
+    return this.$.matches;
   }
 
   override getInputElement(): ComposeboxInputElement {
@@ -68,18 +79,58 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     return this.pageHandler_;
   }
 
+  override getSearchboxCallbackRouter(): SearchboxPageCallbackRouter {
+    return this.searchboxCallbackRouter_;
+  }
+
   override getSearchboxHandler(): SearchboxPageHandlerRemote {
     return this.searchboxHandler_;
+  }
+
+  addSearchContext(context: SearchContext|null) {
+    if (context) {
+      if (context.input.length > 0) {
+        this.input = context.input;
+      }
+      for (const attachment of context.attachments) {
+        if (attachment.fileAttachment) {
+          this.addFileFromAttachment_(attachment.fileAttachment);
+        } else if (attachment.tabAttachment) {
+          this.addTabFromAttachment_(attachment.tabAttachment);
+        }
+      }
+    }
+
+    // Query for ZPS even if there's no context.
+    if (this.showZps) {
+      this.queryAutocomplete(/* clearMatches= */ false);
+    }
+  }
+
+  // TODO(crbug.com/486707998): Implement when carousel is added.
+  private addFileFromAttachment_(fileAttachment: FileAttachment) {
+    return fileAttachment;
+  }
+
+  // TODO(crbug.com/486707998): Implement when carousel is added.
+  private addTabFromAttachment_(tabAttachment: TabAttachment) {
+    return tabAttachment;
+  }
+
+  override shouldShowDivider(): boolean {
+    if (this.searchboxLayoutMode === 'TallBottomContext' &&
+        !this.showFileCarousel) {
+      return false;
+    }
+
+    return this.showDropdown &&
+        (this.showFileCarousel || this.shouldShowSubmitButton() ||
+         this.inToolMode);
   }
 
   // TODO(crbug.com/486707998): Remove once this is added to mixin.
   playGlowAnimation() {
     return;
-  }
-
-  // TODO(crbug.com/486707998): Implement when carousel is added.
-  addSearchContext(context: SearchContext|null) {
-    return context;
   }
 }
 

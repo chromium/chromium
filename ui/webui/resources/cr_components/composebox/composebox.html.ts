@@ -58,7 +58,7 @@ export function getHtml(this: ComposeboxElement) {
         <div id="context" part="context-entrypoint"
             class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">
           <cr-composebox-file-inputs id="fileInputs"
-              @file-change="${this.onFileChange_}"
+              @file-change="${this.onFileChange}"
               .disableFileInputs="${this.shouldDisableFileInputs_()}">
             ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ?
               getContextMenuHtml.bind(this)()
@@ -88,7 +88,7 @@ export function getHtml(this: ComposeboxElement) {
                   </div>
                   ` : ''}
               </div>
-              ${this.shouldShowSubmitButton_() && this.searchboxLayoutMode === 'Compact' ? html`
+              ${this.shouldShowSubmitButton() && this.searchboxLayoutMode === 'Compact' ? html`
               <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
                 ?disabled="${!this.canSubmitFilesAndInput}"
@@ -113,7 +113,7 @@ export function getHtml(this: ComposeboxElement) {
                 .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
                 @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
                 @match-focusin="${this.onMatchFocusin}"
-                @match-click="${this.onMatchClick_}"
+                @match-click="${this.onMatchClick}"
                 ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
                 .lastQueriedInput="${this.lastQueriedInput}">
             </cr-composebox-dropdown>
@@ -126,7 +126,8 @@ export function getHtml(this: ComposeboxElement) {
                   title="${this.i18n('voiceSearchButtonLabel')}">
               </cr-icon-button>
             ` : ''}
-            ${this.shouldShowSubmitButton_() && this.searchboxLayoutMode === 'TallBottomContext' ? html`
+            ${this.shouldShowSubmitButton() &&
+                  this.searchboxLayoutMode === 'TallBottomContext' ? html`
                 <cr-composebox-submit
                   exportparts="action-icon, submit, submit-icon, submit-overlay"
                   ?disabled="${!this.canSubmitFilesAndInput}"

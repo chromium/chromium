@@ -129,13 +129,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // not use them.
       observeResize: {type: Boolean},
       enableCarouselScrolling: {type: Boolean},
-      inputPlaceholderOverride: {type: String},
       isOmniboxInCompactMode_: {
         type: Boolean,
         reflect: true,
       },
       isFollowupQuery: {type: Boolean},
-      enableFileHint: {type: Boolean},
       energyEffectAnimationEnabled: {
         type: Boolean,
         reflect: true,
@@ -143,10 +141,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     };
   }
 
-  accessor enableFileHint: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isFollowupQuery: boolean = false;
-  accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
@@ -192,12 +188,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     return this.showDropdown &&
-        (this.showFileCarousel || this.shouldShowSubmitButton_() ||
+        (this.showFileCarousel || this.shouldShowSubmitButton() ||
          this.inToolMode);
-  }
-
-  protected shouldShowSubmitButton_(): boolean {
-    return this.searchboxNextEnabled && this.submitEnabled;
   }
 
   override computeSubmitEnabled(): boolean {
@@ -221,12 +213,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.pageHandler_;
   }
 
-  override getSearchboxHandler(): SearchboxPageHandlerRemote {
-    return this.searchboxHandler_;
-  }
-
   override getSearchboxCallbackRouter(): SearchboxPageCallbackRouter {
     return this.searchboxCallbackRouter_;
+  }
+
+  override getSearchboxHandler(): SearchboxPageHandlerRemote {
+    return this.searchboxHandler_;
   }
 
   constructor() {
@@ -310,7 +302,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     super.disconnectedCallback();
 
     this.eventTracker_.removeAll();
-
     this.tearDownResizeObservers_();
   }
 
@@ -322,6 +313,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
           this.searchboxLayoutMode === 'Compact';
     }
   }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('observeResize')) {
@@ -946,21 +938,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     this.fire('composebox-submit');
-  }
-
-  protected onMatchClick_(e: CustomEvent<{
-    ctrlKey: boolean,
-    metaKey: boolean,
-    shiftKey: boolean,
-  }>) {
-    this.clearAutocompleteMatches();
-    // We only close the composebox when opening in a new tab because doing
-    // so in the current tab causes a visual jitter where the composebox
-    // closes before the new results page finishes loading.
-    if (e && e.detail &&
-        (e.detail.ctrlKey || e.detail.metaKey || e.detail.shiftKey)) {
-      this.closeComposebox();
-    }
   }
 
   // TODO(crbug.com/486706573): Refactor this function and move the common logic

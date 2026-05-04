@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "aim_app_test.ts",
     "app_test.ts",
     "full_app_test.ts",
+    "omnibox_composebox_test.ts",
     "test_omnibox_popup_browser_proxy.ts",
     "test_searchbox_browser_proxy.ts",
   ]
@@ -24,6 +25,7 @@ build_webui_tests("build") {
                            target_gen_dir) ]
   ts_deps = [
     "//chrome/browser/resources/omnibox_popup:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/js:build_ts",
