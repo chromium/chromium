@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -25,7 +26,9 @@ constexpr size_t kCacheLimit = 1024u;
 
 class GrShaderCacheTest : public GrShaderCache::Client, public testing::Test {
  public:
-  GrShaderCacheTest() : cache_(kCacheLimit, this) {}
+  GrShaderCacheTest() : cache_(kCacheLimit, this) {
+    scoped_feature_list_.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  }
 
   void StoreShader(const std::string& key, const std::string& shader) override {
     disk_cache_[key] = shader;
@@ -33,6 +36,7 @@ class GrShaderCacheTest : public GrShaderCache::Client, public testing::Test {
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   GrShaderCache cache_;
   std::unordered_map<std::string, std::string> disk_cache_;

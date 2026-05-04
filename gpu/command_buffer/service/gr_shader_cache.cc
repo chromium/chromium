@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -199,6 +200,11 @@ void GrShaderCache::OnMemoryPressure(
   // Memory pressure has changed, so the cache limit may have been updated.
   // Evict entries to match the new limit.
   EnforceLimits(0u);
+
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    memory_pressure_level_ =
+        base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  }
 }
 
 size_t GrShaderCache::num_cache_entries() const {

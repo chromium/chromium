@@ -132,7 +132,7 @@ class RASTER_EXPORT GrShaderCache
 
   mutable base::Lock lock_;
   const size_t cache_size_limit_;
-  size_t curr_size_bytes_ GUARDED_BY(lock_);
+  size_t curr_size_bytes_ GUARDED_BY(lock_) = 0u;
   Store store_ GUARDED_BY(lock_);
   raw_ptr<Client> const client_ GUARDED_BY(lock_);
   base::flat_set<int32_t> client_ids_to_cache_on_disk_ GUARDED_BY(lock_);
