@@ -55,7 +55,7 @@
 #include "third_party/litert/src/litert/cc/options/litert_gpu_options.h"
 
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
-#include "third_party/litert/src/tflite/delegates/xnnpack/xnnpack_delegate.h"  // nogncheck
+#include "third_party/litert/src/tflite/delegates/xnnpack/xnnpack_delegate.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
 #endif
 

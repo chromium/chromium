@@ -15,20 +15,89 @@ import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tf_version.gni")
 import("//third_party/tflite/tflite_target.gni")
 
+config("tflite_shim_config") {
+  include_dirs = [ "shims" ]
+}
+
+# The config `tflite_config_no_undef` is used when compiling WebRTC outside the
+# Chromium environment.
+config("tflite_config_no_undef") {
+  cflags = [ "-Wno-undef" ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack",
+    "USE_LITERT_TFLITE=$use_litert_tflite",
+  ]
+}
+
+if (use_litert_tflite) {
+  # LiteRT Router Branch
+  tflite_group("tflite") {
+    public_configs = [ ":tflite_shim_config" ]
+    conditional_public_deps = [ "//third_party/litert:tflite" ]
+  }
+
+  tflite_group("tflite_builtin_op_resolver") {
+    public_configs = [ ":tflite_shim_config" ]
+    conditional_public_deps =
+        [ "//third_party/litert:tflite_builtin_op_resolver" ]
+  }
+
+  tflite_group("tflite_litert") {
+    public_configs = [ ":tflite_shim_config" ]
+    conditional_public_deps = [ "//third_party/litert:tflite_litert" ]
+  }
+
+  group("tflite_public_headers") {
+    public_configs = [ ":tflite_shim_config" ]
+    public_deps = [ "//third_party/litert:tflite_public_headers" ]
+  }
+
+  group("tflite_kernel_common_headers") {
+    public_deps = [ "//third_party/litert:tflite_kernel_common_headers" ]
+  }
+
+  group("mutable_schema") {
+    public_deps = [ "//third_party/litert:mutable_tflite_schema" ]
+  }
+
+  group("tflite_compiler_utils") {
+    public_deps = [ "//third_party/litert:tflite_compiler_utils" ]
+  }
+
+  if (!is_fuchsia) {
+    tflite_group("tflite_op_shim") {
+      conditional_public_deps = [ "//third_party/litert:tflite_op_shim" ]
+    }
+  }
+
+  if (build_with_chromium) {
+    group("tflite_logging") {
+      public_deps = [ "//third_party/litert:tflite_logging" ]
+    }
+
+    group("tflite_benchmark") {
+      public_deps = [ "//third_party/litert:litert_benchmark" ]
+    }
+  }
+
+  group("tflite_logging_standalone") {
+    public_deps = [ "//third_party/litert:tflite_logging_standalone" ]
+  }
+
+  group("weight_cache_schema_generated") {
+    public_deps = [ "//third_party/litert:weight_cache_schema_litert" ]
+  }
+}
+
+# xla protos and fft2d are not available in LiteRT, we still need to access
+# these targets from TFLite.
 proto_library("tflite_xla_proto") {
   proto_in_dir = "src"
   sources = [ "src/third_party/xla/xla/tsl/protobuf/coordination_config.proto" ]
-  cc_generator_options = "lite=true:"
-}
-
-proto_library("tflite_proto") {
-  deps = [ ":tflite_xla_proto" ]
-  proto_in_dir = "src"
-  sources = [
-    "src/tensorflow/lite/acceleration/configuration/configuration.proto",
-    "src/tensorflow/lite/profiling/proto/model_runtime_info.proto",
-    "src/tensorflow/lite/profiling/proto/profiling_info.proto",
-  ]
   cc_generator_options = "lite=true:"
 }
 
@@ -47,339 +116,6 @@ proto_library("tflite_tools_proto") {
   cc_generator_options = "lite=true:"
 }
 
-proto_library("benchmark_result_proto") {
-  proto_in_dir = "src"
-  sources =
-      [ "src/tensorflow/lite/tools/benchmark/proto/benchmark_result.proto" ]
-  cc_generator_options = "lite=true:"
-  visibility = [ ":tflite_benchmark" ]
-}
-
-config("tflite_config") {
-  include_dirs = [
-    "$root_gen_dir/third_party/tflite/src",
-    "shims",
-    "src",
-    "src/third_party/xla",
-    "src/third_party/xla/third_party/tsl",
-    "//third_party/pthreadpool/src/include",
-  ]
-  defines = [
-    "TFL_STATIC_LIBRARY_BUILD",
-    "TF_MAJOR_VERSION=" + tf_version_major,
-    "TF_MINOR_VERSION=" + tf_version_minor,
-    "TF_PATCH_VERSION=" + tf_version_patch,
-    "TF_VERSION_SUFFIX=",
-  ]
-
-  if (is_win) {
-    cflags = [ "-Wno-sign-compare" ]
-  }
-
-  if (is_android) {
-    libs = [ "log" ]
-  }
-}
-
-# The config `tflite_config_no_undef` is used when compiling WebRTC outside the
-# Chromium environment.
-config("tflite_config_no_undef") {
-  cflags = [ "-Wno-undef" ]
-}
-
-config("tflite_flags") {
-  cflags = [
-    "-Wno-c99-extensions",
-    "-Wno-comment",
-    "-Wno-extern-c-compat",
-    "-Wno-gnu-inline-cpp-without-extern",
-    "-Wno-loop-analysis",
-    "-Wno-shadow",
-    "-Wno-deprecated-anon-enum-enum-conversion",
-    "-Wno-unused-function",
-    "-Wno-unreachable-code-return",
-
-    # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
-    "-Wno-sign-compare",
-
-    "-Wno-unused-but-set-variable",
-
-    # This flag is needed to enable the strip error strings flag since a handful
-    # of variables are only used in error logs, which are no-op'd in a macro
-    # when the strings are stripped. Overall, removing the error strings saves
-    # 90kb of binary size so having a few dangling variables is well worth it,
-    # in addition to keeping the updating process simple.
-    "-Wno-unused-variable",
-  ]
-
-  defines = [
-    "FARMHASH_NO_CXX_STRING",
-    "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
-    "TFL_STATIC_LIBRARY_BUILD",
-  ]
-  if (!is_debug) {
-    defines += [ "TF_LITE_STRIP_ERROR_STRINGS" ]
-  }
-
-  if (build_tflite_with_xnnpack) {
-    defines += [
-      "TFLITE_BUILD_WITH_XNNPACK_DELEGATE",
-      "XNNPACK_DELEGATE_ENABLE_QS8",
-      "XNNPACK_DELEGATE_ENABLE_QU8",
-      "XNNPACK_DELEGATE_USE_LATEST_OPS",
-      "TFLITE_KERNEL_USE_XNNPACK",
-    ]
-  } else {
-    defines += [ "TFLITE_WITHOUT_XNNPACK" ]
-  }
-
-  if (is_win) {
-    cflags += [
-      "/DTFL_COMPILE_LIBRARY",
-      "/wd4018",
-    ]
-
-    defines += [ "TFLITE_MMAP_DISABLED" ]
-  }
-
-  if (build_tflite_with_ruy) {
-    defines += [ "TFLITE_WITH_RUY" ]
-  } else if (is_linux) {
-    defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
-  }
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack" ]
-}
-
-static_library("tflite_builtin_op_resolver_internals") {
-  sources = [
-    "src/tensorflow/lite/kernels/internal/mfcc.cc",
-    "src/tensorflow/lite/kernels/internal/mfcc_dct.cc",
-    "src/tensorflow/lite/kernels/internal/mfcc_mel_filterbank.cc",
-  ]
-
-  deps = [
-    "//third_party/abseil-cpp:absl",
-    "//third_party/gemmlowp",
-    "//third_party/neon_2_sse",
-  ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/eigen3:eigen_includes",
-    ":tflite_flags",
-  ]
-
-  public_configs = [ ":tflite_config" ]
-}
-
-tflite_static_library("tflite_builtin_op_resolver") {
-  sources = [
-    "src/tensorflow/lite/c/c_api_opaque_internal.cc",
-    "src/tensorflow/lite/c/c_api_opaque_internal.h",
-    "src/tensorflow/lite/core/c/c_api.cc",
-    "src/tensorflow/lite/core/c/c_api.h",
-    "src/tensorflow/lite/core/c/c_api_opaque.cc",
-    "src/tensorflow/lite/core/c/c_api_opaque.h",
-    "src/tensorflow/lite/core/c/operator.cc",
-    "src/tensorflow/lite/core/c/operator.h",
-    "src/tensorflow/lite/core/create_op_resolver.h",
-    "src/tensorflow/lite/core/create_op_resolver_with_builtin_ops.cc",
-    "src/tensorflow/lite/core/kernels/register.cc",
-    "src/tensorflow/lite/core/kernels/register.h",
-    "src/tensorflow/lite/kernels/atan2.cc",
-    "src/tensorflow/lite/kernels/atan2_custom.cc",
-    "src/tensorflow/lite/kernels/audio_spectrogram.cc",
-    "src/tensorflow/lite/kernels/bitcast.cc",
-    "src/tensorflow/lite/kernels/bitwise_xor.cc",
-    "src/tensorflow/lite/kernels/broadcast_args.cc",
-    "src/tensorflow/lite/kernels/bucketize.cc",
-    "src/tensorflow/lite/kernels/call_once.cc",
-    "src/tensorflow/lite/kernels/complex_support.cc",
-    "src/tensorflow/lite/kernels/conv3d.cc",
-    "src/tensorflow/lite/kernels/conv3d_transpose.cc",
-    "src/tensorflow/lite/kernels/detection_postprocess.cc",
-    "src/tensorflow/lite/kernels/dilate.cc",
-    "src/tensorflow/lite/kernels/dynamic_update_slice.cc",
-    "src/tensorflow/lite/kernels/hashtable.cc",
-    "src/tensorflow/lite/kernels/hashtable_find.cc",
-    "src/tensorflow/lite/kernels/hashtable_import.cc",
-    "src/tensorflow/lite/kernels/hashtable_size.cc",
-    "src/tensorflow/lite/kernels/kernel_util.h",
-    "src/tensorflow/lite/kernels/mfcc.cc",
-    "src/tensorflow/lite/kernels/multinomial.cc",
-    "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
-    "src/tensorflow/lite/kernels/random_uniform_custom.cc",
-    "src/tensorflow/lite/kernels/register_ref.cc",
-    "src/tensorflow/lite/kernels/right_shift.cc",
-    "src/tensorflow/lite/kernels/sign.cc",
-    "src/tensorflow/lite/kernels/sign_custom.cc",
-    "src/tensorflow/lite/kernels/stablehlo_add.cc",
-    "src/tensorflow/lite/kernels/stablehlo_and.cc",
-    "src/tensorflow/lite/kernels/stablehlo_case.cc",
-    "src/tensorflow/lite/kernels/stablehlo_composite.cc",
-    "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
-    "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
-    "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
-    "src/tensorflow/lite/kernels/stablehlo_pad.cc",
-    "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
-    "src/tensorflow/lite/kernels/stablehlo_shift_left.cc",
-    "src/tensorflow/lite/kernels/unsorted_segment.cc",
-    "src/tensorflow/lite/kernels/var_handle.cc",
-  ]
-
-  deps = [
-    ":tflite_builtin_op_resolver_internals",
-    ":tflite_op_resolver_proto",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/flatbuffers",
-    "//third_party/gemmlowp",
-    "//third_party/neon_2_sse",
-    "//third_party/ruy",
-  ]
-
-  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
-  configs_to_add = [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/eigen3:eigen_includes",
-    ":tflite_flags",
-  ]
-
-  public_configs = [ ":tflite_config" ]
-
-  visibility = [
-    ":tflite_benchmark",
-    "//components/optimization_guide/internal/*",
-    "//modules/*",
-    "//services/webnn/*",
-    "//third_party/mediapipe/*",
-    "//third_party/webrtc/modules/*",
-  ]
-
-  conditional_deps = [ ":tflite" ]
-}
-
-flatbuffer("mutable_schema_tflite_path") {
-  sources = [ "src/tensorflow/compiler/mlir/lite/schema/schema.fbs" ]
-  flatc_out_dir = "src/tensorflow/lite/schema/mutable"
-  args = [ "--gen-object-api" ]
-  mutable = true
-}
-
-# TFLite's model_serialize.cc expects the mutable schema to be in two different
-# places in the source tree. :/
-copy("mutable_schema_compiler_path") {
-  sources = [
-    "$target_gen_dir/src/tensorflow/lite/schema/mutable/schema_generated.h",
-  ]
-  outputs =
-      [ "$target_gen_dir/src/tensorflow/compiler/mlir/lite/schema/mutable" ]
-  deps = [ ":mutable_schema_tflite_path" ]
-}
-
-source_set("mutable_schema") {
-  public_deps = [
-    ":mutable_schema_compiler_path",
-    ":mutable_schema_tflite_path",
-  ]
-}
-
-source_set("tflite_public_headers") {
-  public = [
-    "shims/tensorflow/lite/types/fp16.h",
-    "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
-    "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
-    "src/tensorflow/lite/allocation.h",
-    "src/tensorflow/lite/arena_planner.h",
-    "src/tensorflow/lite/array.h",
-    "src/tensorflow/lite/builtin_ops.h",
-    "src/tensorflow/lite/c/builtin_op_data.h",
-    "src/tensorflow/lite/context.h",
-    "src/tensorflow/lite/context_util.h",
-    "src/tensorflow/lite/core/c/c_api_types.h",
-    "src/tensorflow/lite/core/c/common.h",
-    "src/tensorflow/lite/core/interpreter.h",
-    "src/tensorflow/lite/core/interpreter_builder.h",
-    "src/tensorflow/lite/core/macros.h",
-    "src/tensorflow/lite/core/model_builder.h",
-    "src/tensorflow/lite/core/subgraph.h",
-    "src/tensorflow/lite/error_reporter.h",
-    "src/tensorflow/lite/graph_info.h",
-    "src/tensorflow/lite/logger.h",
-    "src/tensorflow/lite/minimal_logging.h",
-    "src/tensorflow/lite/model.h",
-    "src/tensorflow/lite/mutable_op_resolver.h",
-    "src/tensorflow/lite/op_resolver.h",
-    "src/tensorflow/lite/optional_debug_tools.h",
-    "src/tensorflow/lite/signature_runner.h",
-    "src/tensorflow/lite/stderr_reporter.h",
-    "src/tensorflow/lite/string_type.h",
-    "src/tensorflow/lite/string_util.h",
-    "src/tensorflow/lite/util.h",
-  ]
-
-  deps = [ "//third_party/fp16" ]
-
-  configs += [ ":tflite_flags" ]
-}
-
-source_set("tflite_kernel_common_headers") {
-  public = [
-    "src/tensorflow/lite/core/kernels/register.h",
-    "src/tensorflow/lite/experimental/resource/resource_base.h",
-    "src/tensorflow/lite/experimental/resource/resource_variable.h",
-    "src/tensorflow/lite/external_cpu_backend_context.h",
-    "src/tensorflow/lite/kernels/cpu_backend_context.h",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm.h",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_params.h",
-    "src/tensorflow/lite/kernels/cpu_backend_threadpool.h",
-    "src/tensorflow/lite/kernels/internal/compatibility.h",
-    "src/tensorflow/lite/kernels/internal/runtime_shape.h",
-    "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
-    "src/tensorflow/lite/kernels/kernel_util.h",
-    "src/tensorflow/lite/kernels/op_macros.h",
-    "src/tensorflow/lite/kernels/register_ref.h",
-    "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
-    "src/tensorflow/lite/type_to_tflitetype.h",
-  ]
-
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
-
-  configs += [ ":tflite_flags" ]
-
-  visibility = [ ":*" ]
-}
-
-tflite_source_set("tflite_litert") {
-  sources = [
-    "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
-    "src/tensorflow/lite/experimental/genai/genai_ops.cc",
-    "src/tensorflow/lite/experimental/genai/genai_ops.h",
-    "src/tensorflow/lite/experimental/genai/kvcache.cc",
-    "src/tensorflow/lite/experimental/genai/sdpa.cc",
-    "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
-    "src/tensorflow/lite/experimental/resource/cache_buffer.h",
-  ]
-
-  deps = [
-    ":tflite_kernel_common_headers",
-    ":tflite_kernel_internals",
-    ":tflite_public_headers",
-    "//third_party/flatbuffers",
-  ]
-
-  conditional_deps = [ ":tflite_logging" ]
-
-  configs_to_add = [
-    ":tflite_config",
-    ":tflite_flags",
-  ]
-}
-
 source_set("fft2d_deps") {
   public = [
     "src/third_party/fft2d/fft.h",
@@ -393,344 +129,712 @@ source_set("fft2d_deps") {
   ]
 }
 
-source_set("tflite_kernel_internals") {
-  sources = [
-    "src/tensorflow/lite/kernels/internal/common.cc",
-    "src/tensorflow/lite/kernels/internal/common.h",
-    "src/tensorflow/lite/kernels/internal/cppmath.h",
-    "src/tensorflow/lite/kernels/internal/kernel_utils.cc",
-    "src/tensorflow/lite/kernels/internal/kernel_utils.h",
-    "src/tensorflow/lite/kernels/internal/max.h",
-    "src/tensorflow/lite/kernels/internal/min.h",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
-    "src/tensorflow/lite/kernels/internal/optimized/cpu_check.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/cpu_check.h",
-    "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_3x3_filter_common.h",
-    "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_float.h",
-    "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_multithread.h",
-    "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8.h",
-    "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8_3x3_filter.h",
-    "src/tensorflow/lite/kernels/internal/optimized/eigen_spatial_convolutions.h",
-    "src/tensorflow/lite/kernels/internal/optimized/im2col_utils.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/add.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/conv.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_3x3_filter.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid_3x3_filter.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/fully_connected.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/mean.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/mul.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/pooling.h",
-    "src/tensorflow/lite/kernels/internal/optimized/integer_ops/transpose_conv.h",
-    "src/tensorflow/lite/kernels/internal/optimized/multithreaded_conv.h",
-    "src/tensorflow/lite/kernels/internal/optimized/neon_check.h",
-    "src/tensorflow/lite/kernels/internal/optimized/neon_tensor_utils.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/neon_tensor_utils_impl.h",
-    "src/tensorflow/lite/kernels/internal/optimized/optimized_ops.h",
-    "src/tensorflow/lite/kernels/internal/optimized/sparse_ops/fully_connected.h",
-    "src/tensorflow/lite/kernels/internal/optimized/sse_tensor_utils.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/sse_tensor_utils_impl.h",
-    "src/tensorflow/lite/kernels/internal/quantization_util.cc",
-    "src/tensorflow/lite/kernels/internal/quantization_util.h",
-    "src/tensorflow/lite/kernels/internal/reference/add.h",
-    "src/tensorflow/lite/kernels/internal/reference/arg_min_max.h",
-    "src/tensorflow/lite/kernels/internal/reference/batch_matmul.h",
-    "src/tensorflow/lite/kernels/internal/reference/binary_function.h",
-    "src/tensorflow/lite/kernels/internal/reference/ceil.h",
-    "src/tensorflow/lite/kernels/internal/reference/comparisons.cc",
-    "src/tensorflow/lite/kernels/internal/reference/comparisons.h",
-    "src/tensorflow/lite/kernels/internal/reference/concatenation.h",
-    "src/tensorflow/lite/kernels/internal/reference/conv.h",
-    "src/tensorflow/lite/kernels/internal/reference/densify.h",
-    "src/tensorflow/lite/kernels/internal/reference/depthwiseconv_float.h",
-    "src/tensorflow/lite/kernels/internal/reference/depthwiseconv_uint8.h",
-    "src/tensorflow/lite/kernels/internal/reference/dequantize.h",
-    "src/tensorflow/lite/kernels/internal/reference/floor.h",
-    "src/tensorflow/lite/kernels/internal/reference/fully_connected.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/add.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/conv.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/depthwise_conv.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/dequantize.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/fully_connected.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/l2normalization.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/log_softmax.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/logistic.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/mean.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/mul.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/pooling.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/tanh.h",
-    "src/tensorflow/lite/kernels/internal/reference/integer_ops/transpose_conv.h",
-    "src/tensorflow/lite/kernels/internal/reference/l2normalization.h",
-    "src/tensorflow/lite/kernels/internal/reference/logistic.h",
-    "src/tensorflow/lite/kernels/internal/reference/maximum_minimum.h",
-    "src/tensorflow/lite/kernels/internal/reference/mul.h",
-    "src/tensorflow/lite/kernels/internal/reference/neg.h",
-    "src/tensorflow/lite/kernels/internal/reference/non_max_suppression.h",
-    "src/tensorflow/lite/kernels/internal/reference/pad.h",
-    "src/tensorflow/lite/kernels/internal/reference/pooling.h",
-    "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc",
-    "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.h",
-    "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils_impl.h",
-    "src/tensorflow/lite/kernels/internal/reference/prelu.h",
-    "src/tensorflow/lite/kernels/internal/reference/process_broadcast_shapes.h",
-    "src/tensorflow/lite/kernels/internal/reference/quantize.h",
-    "src/tensorflow/lite/kernels/internal/reference/reduce.h",
-    "src/tensorflow/lite/kernels/internal/reference/reference_ops.h",
-    "src/tensorflow/lite/kernels/internal/reference/requantize.h",
-    "src/tensorflow/lite/kernels/internal/reference/resize_nearest_neighbor.h",
-    "src/tensorflow/lite/kernels/internal/reference/round.h",
-    "src/tensorflow/lite/kernels/internal/reference/softmax.h",
-    "src/tensorflow/lite/kernels/internal/reference/sparse_ops/fully_connected.h",
-    "src/tensorflow/lite/kernels/internal/reference/strided_slice.h",
-    "src/tensorflow/lite/kernels/internal/reference/sub.h",
-    "src/tensorflow/lite/kernels/internal/reference/svdf.h",
-    "src/tensorflow/lite/kernels/internal/reference/tanh.h",
-    "src/tensorflow/lite/kernels/internal/runtime_shape.cc",
-    "src/tensorflow/lite/kernels/internal/runtime_shape.h",
-    "src/tensorflow/lite/kernels/internal/spectrogram.cc",
-    "src/tensorflow/lite/kernels/internal/spectrogram.h",
-    "src/tensorflow/lite/kernels/internal/strided_slice_logic.h",
-    "src/tensorflow/lite/kernels/internal/tensor.h",
-    "src/tensorflow/lite/kernels/internal/tensor_ctypes.cc",
-    "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
-    "src/tensorflow/lite/kernels/internal/tensor_utils.cc",
-    "src/tensorflow/lite/kernels/internal/tensor_utils.h",
-    "src/tensorflow/lite/kernels/internal/transpose_utils.cc",
-    "src/tensorflow/lite/kernels/internal/transpose_utils.h",
-    "src/tensorflow/lite/kernels/internal/types.h",
-    "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.cc",
-    "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.h",
-  ]
-
-  public_deps = [
-    "//third_party/gemmlowp",
-    "//third_party/neon_2_sse",
-    "//third_party/ruy",
-  ]
-
-  deps = [
-    ":fft2d_deps",
-    ":tflite_kernel_common_headers",
-    ":tflite_public_headers",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/farmhash",
-    "//third_party/flatbuffers",
-    "//third_party/fp16",
-  ]
-
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
-    "//third_party/eigen3:eigen_includes",
-  ]
-
-  public_configs = [ "//third_party/eigen3:eigen_public_includes" ]
-  visibility = [ ":*" ]
-}
-
-tflite_static_library("tflite_kernels") {
-  sources = [
-    "src/tensorflow/lite/kernels/activations.cc",
-    "src/tensorflow/lite/kernels/add.cc",
-    "src/tensorflow/lite/kernels/add_n.cc",
-    "src/tensorflow/lite/kernels/arg_min_max.cc",
-    "src/tensorflow/lite/kernels/assign_variable.cc",
-    "src/tensorflow/lite/kernels/basic_rnn.cc",
-    "src/tensorflow/lite/kernels/batch_matmul.cc",
-    "src/tensorflow/lite/kernels/batch_to_space_nd.cc",
-    "src/tensorflow/lite/kernels/bidirectional_sequence_lstm.cc",
-    "src/tensorflow/lite/kernels/bidirectional_sequence_rnn.cc",
-    "src/tensorflow/lite/kernels/broadcast_to.cc",
-    "src/tensorflow/lite/kernels/builtin_op_kernels.h",
-    "src/tensorflow/lite/kernels/cast.cc",
-    "src/tensorflow/lite/kernels/ceil.cc",
-    "src/tensorflow/lite/kernels/comparisons.cc",
-    "src/tensorflow/lite/kernels/concatenation.cc",
-    "src/tensorflow/lite/kernels/control_flow_common.cc",
-    "src/tensorflow/lite/kernels/conv.cc",
-    "src/tensorflow/lite/kernels/cpu_backend_context.cc",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_custom_gemv.h",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.cc",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.h",
-    "src/tensorflow/lite/kernels/cpu_backend_gemm_ruy.h",
-    "src/tensorflow/lite/kernels/cumsum.cc",
-    "src/tensorflow/lite/kernels/densify.cc",
-    "src/tensorflow/lite/kernels/depth_to_space.cc",
-    "src/tensorflow/lite/kernels/depthwise_conv.cc",
-    "src/tensorflow/lite/kernels/dequantize.cc",
-    "src/tensorflow/lite/kernels/dequantize.h",
-    "src/tensorflow/lite/kernels/div.cc",
-    "src/tensorflow/lite/kernels/eigen_support.cc",
-    "src/tensorflow/lite/kernels/eigen_support.h",
-    "src/tensorflow/lite/kernels/elementwise.cc",
-    "src/tensorflow/lite/kernels/embedding_lookup.cc",
-    "src/tensorflow/lite/kernels/embedding_lookup_sparse.cc",
-    "src/tensorflow/lite/kernels/exp.cc",
-    "src/tensorflow/lite/kernels/expand_dims.cc",
-    "src/tensorflow/lite/kernels/fake_quant.cc",
-    "src/tensorflow/lite/kernels/fill.cc",
-    "src/tensorflow/lite/kernels/floor.cc",
-    "src/tensorflow/lite/kernels/floor_div.cc",
-    "src/tensorflow/lite/kernels/floor_mod.cc",
-    "src/tensorflow/lite/kernels/fully_connected.cc",
-    "src/tensorflow/lite/kernels/gather.cc",
-    "src/tensorflow/lite/kernels/gather_nd.cc",
-    "src/tensorflow/lite/kernels/hadamard_rotation.cc",
-    "src/tensorflow/lite/kernels/hashtable_lookup.cc",
-    "src/tensorflow/lite/kernels/if.cc",
-    "src/tensorflow/lite/kernels/kernel_util.cc",
-    "src/tensorflow/lite/kernels/l2norm.cc",
-    "src/tensorflow/lite/kernels/local_response_norm.cc",
-    "src/tensorflow/lite/kernels/logical.cc",
-    "src/tensorflow/lite/kernels/lsh_projection.cc",
-    "src/tensorflow/lite/kernels/lstm.cc",
-    "src/tensorflow/lite/kernels/lstm_eval.cc",
-    "src/tensorflow/lite/kernels/lstm_eval.h",
-    "src/tensorflow/lite/kernels/lstm_shared.h",
-    "src/tensorflow/lite/kernels/matrix_diag.cc",
-    "src/tensorflow/lite/kernels/matrix_set_diag.cc",
-    "src/tensorflow/lite/kernels/maximum_minimum.cc",
-    "src/tensorflow/lite/kernels/mirror_pad.cc",
-    "src/tensorflow/lite/kernels/mul.cc",
-    "src/tensorflow/lite/kernels/neg.cc",
-    "src/tensorflow/lite/kernels/non_max_suppression.cc",
-    "src/tensorflow/lite/kernels/numeric_verify.cc",
-    "src/tensorflow/lite/kernels/one_hot.cc",
-    "src/tensorflow/lite/kernels/pack.cc",
-    "src/tensorflow/lite/kernels/pad.cc",
-    "src/tensorflow/lite/kernels/padding.h",
-    "src/tensorflow/lite/kernels/pooling.cc",
-    "src/tensorflow/lite/kernels/pow.cc",
-    "src/tensorflow/lite/kernels/quantize.cc",
-    "src/tensorflow/lite/kernels/random_ops.cc",
-    "src/tensorflow/lite/kernels/range.cc",
-    "src/tensorflow/lite/kernels/rank.cc",
-    "src/tensorflow/lite/kernels/read_variable.cc",
-    "src/tensorflow/lite/kernels/reduce.cc",
-    "src/tensorflow/lite/kernels/reshape.cc",
-    "src/tensorflow/lite/kernels/resize_bilinear.cc",
-    "src/tensorflow/lite/kernels/resize_nearest_neighbor.cc",
-    "src/tensorflow/lite/kernels/reverse.cc",
-    "src/tensorflow/lite/kernels/reverse_sequence.cc",
-    "src/tensorflow/lite/kernels/rfft2d.cc",
-    "src/tensorflow/lite/kernels/rng_bit_generator.cc",
-    "src/tensorflow/lite/kernels/rng_util.cc",
-    "src/tensorflow/lite/kernels/round.cc",
-    "src/tensorflow/lite/kernels/scatter_nd.cc",
-    "src/tensorflow/lite/kernels/segment_sum.cc",
-    "src/tensorflow/lite/kernels/select.cc",
-    "src/tensorflow/lite/kernels/shape.cc",
-    "src/tensorflow/lite/kernels/skip_gram.cc",
-    "src/tensorflow/lite/kernels/slice.cc",
-    "src/tensorflow/lite/kernels/space_to_batch_nd.cc",
-    "src/tensorflow/lite/kernels/space_to_depth.cc",
-    "src/tensorflow/lite/kernels/sparse_to_dense.cc",
-    "src/tensorflow/lite/kernels/split.cc",
-    "src/tensorflow/lite/kernels/split_v.cc",
-    "src/tensorflow/lite/kernels/squared_difference.cc",
-    "src/tensorflow/lite/kernels/squeeze.cc",
-    "src/tensorflow/lite/kernels/stablehlo_gather.cc",
-    "src/tensorflow/lite/kernels/stablehlo_scatter.cc",
-    "src/tensorflow/lite/kernels/strided_slice.cc",
-    "src/tensorflow/lite/kernels/sub.cc",
-    "src/tensorflow/lite/kernels/svdf.cc",
-    "src/tensorflow/lite/kernels/tensor_slice_util.cc",
-    "src/tensorflow/lite/kernels/tensor_slice_util.h",
-    "src/tensorflow/lite/kernels/tile.cc",
-    "src/tensorflow/lite/kernels/topk_v2.cc",
-    "src/tensorflow/lite/kernels/transpose.cc",
-    "src/tensorflow/lite/kernels/transpose_conv.cc",
-    "src/tensorflow/lite/kernels/unidirectional_sequence_lstm.cc",
-    "src/tensorflow/lite/kernels/unidirectional_sequence_rnn.cc",
-    "src/tensorflow/lite/kernels/unique.cc",
-    "src/tensorflow/lite/kernels/unpack.cc",
-    "src/tensorflow/lite/kernels/where.cc",
-    "src/tensorflow/lite/kernels/while.cc",
-    "src/tensorflow/lite/kernels/zeros_like.cc",
-  ]
-
-  if (!build_tflite_with_ruy) {
-    sources += [ "src/tensorflow/lite/kernels/cpu_backend_gemm_gemmlowp.h" ]
-  }
-
-  deps = [
-    ":fft2d_deps",
-    ":tflite_kernel_common_headers",
-    ":tflite_kernel_internals",
-    ":tflite_public_headers",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/farmhash",
-    "//third_party/flatbuffers",
-    "//third_party/fp16",
-    "//third_party/gemmlowp",
-    "//third_party/neon_2_sse",
-    "//third_party/ruy",
-  ]
-
-  conditional_deps = [ "//third_party/pthreadpool" ]
-
-  if (use_cpuinfo) {
-    defines = [ "TFLITE_HAVE_CPUINFO" ]
-    deps += [ "//third_party/cpuinfo" ]
-    include_dirs = [ "//third_party/cpuinfo/src" ]
-  }
-
-  if (build_tflite_with_xnnpack) {
-    conditional_deps += [ "//third_party/xnnpack" ]
-  }
-
-  configs_to_add = [
-    ":tflite_config",
-    ":tflite_flags",
-    "//third_party/eigen3:eigen_includes",
-  ]
-  visibility = [ ":*" ]
-}
-
-if (!is_fuchsia) {
-  tflite_static_library("tflite_op_shim") {
+# The following targets are the original TFLite implementation.
+# They are only declared if use_litert_tflite is false.
+if (!use_litert_tflite) {
+  proto_library("tflite_proto") {
+    proto_in_dir = "src"
     sources = [
-      "src/tensorflow/lite/kernels/shim/shape.cc",
-      "src/tensorflow/lite/kernels/shim/tflite_op_shim.cc",
-      "src/tensorflow/lite/kernels/shim/tflite_tensor_view.cc",
+      "src/tensorflow/lite/acceleration/configuration/configuration.proto",
+      "src/tensorflow/lite/profiling/proto/model_runtime_info.proto",
+      "src/tensorflow/lite/profiling/proto/profiling_info.proto",
+    ]
+    cc_generator_options = "lite=true:"
+    deps = [ ":tflite_xla_proto" ]
+  }
+
+  proto_library("benchmark_result_proto") {
+    proto_in_dir = "src"
+    sources =
+        [ "src/tensorflow/lite/tools/benchmark/proto/benchmark_result.proto" ]
+    cc_generator_options = "lite=true:"
+    visibility = [
+      ":tflite_benchmark",
+      "//third_party/litert:litert_benchmark",
+    ]
+  }
+
+  config("tflite_config") {
+    include_dirs = [
+      "$root_gen_dir/third_party/tflite/src",
+      "shims",
+      "src",
+      "src/third_party/xla",
+      "src/third_party/xla/third_party/tsl",
+      "//third_party/pthreadpool/src/include",
+    ]
+    defines = [
+      "TFL_STATIC_LIBRARY_BUILD",
+      "TF_MAJOR_VERSION=" + tf_version_major,
+      "TF_MINOR_VERSION=" + tf_version_minor,
+      "TF_PATCH_VERSION=" + tf_version_patch,
+      "TF_VERSION_SUFFIX=",
     ]
 
     if (is_win) {
-      sources += [ "src/third_party/xla/xla/tsl/platform/windows/env_time.cc" ]
-    } else {
-      sources += [ "src/third_party/xla/xla/tsl/platform/default/env_time.cc" ]
+      cflags = [ "-Wno-sign-compare" ]
     }
 
+    if (is_android) {
+      libs = [ "log" ]
+    }
+  }
+
+  config("tflite_flags") {
+    cflags = [
+      "-Wno-c99-extensions",
+      "-Wno-comment",
+      "-Wno-extern-c-compat",
+      "-Wno-gnu-inline-cpp-without-extern",
+      "-Wno-loop-analysis",
+      "-Wno-shadow",
+      "-Wno-deprecated-anon-enum-enum-conversion",
+      "-Wno-unused-function",
+      "-Wno-unreachable-code-return",
+
+      # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
+      "-Wno-sign-compare",
+
+      "-Wno-unused-but-set-variable",
+
+      # This flag is needed to enable the strip error strings flag since a handful
+      # of variables are only used in error logs, which are no-op'd in a macro
+      # when the strings are stripped. Overall, removing the error strings saves
+      # 90kb of binary size so having a few dangling variables is well worth it,
+      # in addition to keeping the updating process simple.
+      "-Wno-unused-variable",
+    ]
+
+    defines = [
+      "FARMHASH_NO_CXX_STRING",
+      "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
+      "TFL_STATIC_LIBRARY_BUILD",
+    ]
+    if (!is_debug) {
+      defines += [ "TF_LITE_STRIP_ERROR_STRINGS" ]
+    }
+
+    if (build_tflite_with_xnnpack) {
+      defines += [
+        "TFLITE_BUILD_WITH_XNNPACK_DELEGATE",
+        "XNNPACK_DELEGATE_ENABLE_QS8",
+        "XNNPACK_DELEGATE_ENABLE_QU8",
+        "XNNPACK_DELEGATE_USE_LATEST_OPS",
+        "TFLITE_KERNEL_USE_XNNPACK",
+      ]
+    } else {
+      defines += [ "TFLITE_WITHOUT_XNNPACK" ]
+    }
+
+    if (is_win) {
+      cflags += [
+        "/DTFL_COMPILE_LIBRARY",
+        "/wd4018",
+      ]
+
+      defines += [ "TFLITE_MMAP_DISABLED" ]
+    }
+
+    if (build_tflite_with_ruy) {
+      defines += [ "TFLITE_WITH_RUY" ]
+    } else if (is_linux) {
+      defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
+    }
+  }
+
+  static_library("tflite_builtin_op_resolver_internals") {
+    sources = [
+      "src/tensorflow/lite/kernels/internal/mfcc.cc",
+      "src/tensorflow/lite/kernels/internal/mfcc_dct.cc",
+      "src/tensorflow/lite/kernels/internal/mfcc_mel_filterbank.cc",
+    ]
+
     deps = [
+      "//third_party/abseil-cpp:absl",
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    public_configs = [ ":tflite_config" ]
+  }
+
+  tflite_static_library("tflite_builtin_op_resolver") {
+    sources = [
+      "src/tensorflow/lite/c/c_api_opaque_internal.cc",
+      "src/tensorflow/lite/c/c_api_opaque_internal.h",
+      "src/tensorflow/lite/core/c/c_api.cc",
+      "src/tensorflow/lite/core/c/c_api.h",
+      "src/tensorflow/lite/core/c/c_api_opaque.cc",
+      "src/tensorflow/lite/core/c/c_api_opaque.h",
+      "src/tensorflow/lite/core/c/operator.cc",
+      "src/tensorflow/lite/core/c/operator.h",
+      "src/tensorflow/lite/core/create_op_resolver.h",
+      "src/tensorflow/lite/core/create_op_resolver_with_builtin_ops.cc",
+      "src/tensorflow/lite/core/kernels/register.cc",
+      "src/tensorflow/lite/core/kernels/register.h",
+      "src/tensorflow/lite/kernels/atan2.cc",
+      "src/tensorflow/lite/kernels/atan2_custom.cc",
+      "src/tensorflow/lite/kernels/audio_spectrogram.cc",
+      "src/tensorflow/lite/kernels/bitcast.cc",
+      "src/tensorflow/lite/kernels/bitwise_xor.cc",
+      "src/tensorflow/lite/kernels/broadcast_args.cc",
+      "src/tensorflow/lite/kernels/bucketize.cc",
+      "src/tensorflow/lite/kernels/call_once.cc",
+      "src/tensorflow/lite/kernels/complex_support.cc",
+      "src/tensorflow/lite/kernels/conv3d.cc",
+      "src/tensorflow/lite/kernels/conv3d_transpose.cc",
+      "src/tensorflow/lite/kernels/detection_postprocess.cc",
+      "src/tensorflow/lite/kernels/dilate.cc",
+      "src/tensorflow/lite/kernels/dynamic_update_slice.cc",
+      "src/tensorflow/lite/kernels/hashtable.cc",
+      "src/tensorflow/lite/kernels/hashtable_find.cc",
+      "src/tensorflow/lite/kernels/hashtable_import.cc",
+      "src/tensorflow/lite/kernels/hashtable_size.cc",
+      "src/tensorflow/lite/kernels/kernel_util.h",
+      "src/tensorflow/lite/kernels/mfcc.cc",
+      "src/tensorflow/lite/kernels/multinomial.cc",
+      "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
+      "src/tensorflow/lite/kernels/random_uniform_custom.cc",
+      "src/tensorflow/lite/kernels/register_ref.cc",
+      "src/tensorflow/lite/kernels/right_shift.cc",
+      "src/tensorflow/lite/kernels/sign.cc",
+      "src/tensorflow/lite/kernels/sign_custom.cc",
+      "src/tensorflow/lite/kernels/stablehlo_add.cc",
+      "src/tensorflow/lite/kernels/stablehlo_and.cc",
+      "src/tensorflow/lite/kernels/stablehlo_case.cc",
+      "src/tensorflow/lite/kernels/stablehlo_composite.cc",
+      "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
+      "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
+      "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
+      "src/tensorflow/lite/kernels/stablehlo_pad.cc",
+      "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
+      "src/tensorflow/lite/kernels/stablehlo_shift_left.cc",
+      "src/tensorflow/lite/kernels/unsorted_segment.cc",
+      "src/tensorflow/lite/kernels/var_handle.cc",
+    ]
+
+    deps = [
+      ":tflite_builtin_op_resolver_internals",
+      ":tflite_op_resolver_proto",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+      "//third_party/ruy",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    public_configs = [
+      ":tflite_config",
+      ":tflite_shim_config",
+    ]
+
+    visibility = [
+      ":tflite_benchmark",
+      "//components/optimization_guide/internal/*",
+      "//modules/*",
+      "//services/webnn/*",
+      "//third_party/mediapipe/*",
+      "//third_party/webrtc/modules/*",
+    ]
+
+    conditional_deps = [ ":tflite" ]
+  }
+
+  flatbuffer("mutable_schema_tflite_path") {
+    sources = [ "src/tensorflow/compiler/mlir/lite/schema/schema.fbs" ]
+    flatc_out_dir = "src/tensorflow/lite/schema/mutable"
+    args = [ "--gen-object-api" ]
+    mutable = true
+  }
+
+  # TFLite's model_serialize.cc expects the mutable schema to be in two different
+  # places in the source tree. :/
+  copy("mutable_schema_compiler_path") {
+    sources = [
+      "$target_gen_dir/src/tensorflow/lite/schema/mutable/schema_generated.h",
+    ]
+    outputs =
+        [ "$target_gen_dir/src/tensorflow/compiler/mlir/lite/schema/mutable" ]
+    deps = [ ":mutable_schema_tflite_path" ]
+  }
+
+  source_set("mutable_schema") {
+    public_deps = [
+      ":mutable_schema_compiler_path",
+      ":mutable_schema_tflite_path",
+    ]
+  }
+
+  source_set("tflite_public_headers") {
+    public_configs = [ ":tflite_shim_config" ]
+    public = [
+      "shims/tensorflow/lite/types/fp16.h",
+      "src/tensorflow/compiler/mlir/lite/schema/schema_generated.h",
+      "src/tensorflow/compiler/mlir/lite/schema/schema_utils.h",
+      "src/tensorflow/lite/allocation.h",
+      "src/tensorflow/lite/arena_planner.h",
+      "src/tensorflow/lite/array.h",
+      "src/tensorflow/lite/builtin_ops.h",
+      "src/tensorflow/lite/c/builtin_op_data.h",
+      "src/tensorflow/lite/context.h",
+      "src/tensorflow/lite/context_util.h",
+      "src/tensorflow/lite/core/c/c_api_types.h",
+      "src/tensorflow/lite/core/c/common.h",
+      "src/tensorflow/lite/core/interpreter.h",
+      "src/tensorflow/lite/core/interpreter_builder.h",
+      "src/tensorflow/lite/core/macros.h",
+      "src/tensorflow/lite/core/model_builder.h",
+      "src/tensorflow/lite/core/subgraph.h",
+      "src/tensorflow/lite/error_reporter.h",
+      "src/tensorflow/lite/graph_info.h",
+      "src/tensorflow/lite/logger.h",
+      "src/tensorflow/lite/minimal_logging.h",
+      "src/tensorflow/lite/model.h",
+      "src/tensorflow/lite/mutable_op_resolver.h",
+      "src/tensorflow/lite/op_resolver.h",
+      "src/tensorflow/lite/optional_debug_tools.h",
+      "src/tensorflow/lite/signature_runner.h",
+      "src/tensorflow/lite/stderr_reporter.h",
+      "src/tensorflow/lite/string_type.h",
+      "src/tensorflow/lite/string_util.h",
+      "src/tensorflow/lite/util.h",
+    ]
+
+    deps = [ "//third_party/fp16" ]
+
+    configs += [ ":tflite_flags" ]
+  }
+
+  source_set("tflite_kernel_common_headers") {
+    public = [
+      "src/tensorflow/lite/core/kernels/register.h",
+      "src/tensorflow/lite/experimental/resource/resource_base.h",
+      "src/tensorflow/lite/experimental/resource/resource_variable.h",
+      "src/tensorflow/lite/external_cpu_backend_context.h",
+      "src/tensorflow/lite/kernels/cpu_backend_context.h",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm.h",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm_params.h",
+      "src/tensorflow/lite/kernels/cpu_backend_threadpool.h",
+      "src/tensorflow/lite/kernels/internal/compatibility.h",
+      "src/tensorflow/lite/kernels/internal/runtime_shape.h",
+      "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
+      "src/tensorflow/lite/kernels/kernel_util.h",
+      "src/tensorflow/lite/kernels/op_macros.h",
+      "src/tensorflow/lite/kernels/register_ref.h",
+      "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
+      "src/tensorflow/lite/type_to_tflitetype.h",
+    ]
+
+    public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+    configs += [ ":tflite_flags" ]
+
+    visibility = [ ":*" ]
+  }
+
+  tflite_source_set("tflite_litert") {
+    sources = [
+      "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
+      "src/tensorflow/lite/experimental/genai/genai_ops.cc",
+      "src/tensorflow/lite/experimental/genai/genai_ops.h",
+      "src/tensorflow/lite/experimental/genai/kvcache.cc",
+      "src/tensorflow/lite/experimental/genai/sdpa.cc",
+      "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
+      "src/tensorflow/lite/experimental/resource/cache_buffer.h",
+    ]
+
+    deps = [
+      ":buildflags",
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_public_headers",
+      "//third_party/flatbuffers",
+    ]
+
+    conditional_deps = [ ":tflite_logging" ]
+
+    configs_to_add = [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+  }
+
+  source_set("tflite_kernel_internals") {
+    sources = [
+      "src/tensorflow/lite/kernels/internal/common.cc",
+      "src/tensorflow/lite/kernels/internal/common.h",
+      "src/tensorflow/lite/kernels/internal/cppmath.h",
+      "src/tensorflow/lite/kernels/internal/kernel_utils.cc",
+      "src/tensorflow/lite/kernels/internal/kernel_utils.h",
+      "src/tensorflow/lite/kernels/internal/max.h",
+      "src/tensorflow/lite/kernels/internal/min.h",
+      "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
+      "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
+      "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
+      "src/tensorflow/lite/kernels/internal/optimized/cpu_check.cc",
+      "src/tensorflow/lite/kernels/internal/optimized/cpu_check.h",
+      "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_3x3_filter_common.h",
+      "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_float.h",
+      "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_multithread.h",
+      "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8.h",
+      "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8_3x3_filter.h",
+      "src/tensorflow/lite/kernels/internal/optimized/eigen_spatial_convolutions.h",
+      "src/tensorflow/lite/kernels/internal/optimized/im2col_utils.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/add.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/conv.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_3x3_filter.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/depthwise_conv_hybrid_3x3_filter.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/fully_connected.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/mean.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/mul.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/pooling.h",
+      "src/tensorflow/lite/kernels/internal/optimized/integer_ops/transpose_conv.h",
+      "src/tensorflow/lite/kernels/internal/optimized/multithreaded_conv.h",
+      "src/tensorflow/lite/kernels/internal/optimized/neon_check.h",
+      "src/tensorflow/lite/kernels/internal/optimized/neon_tensor_utils.cc",
+      "src/tensorflow/lite/kernels/internal/optimized/neon_tensor_utils_impl.h",
+      "src/tensorflow/lite/kernels/internal/optimized/optimized_ops.h",
+      "src/tensorflow/lite/kernels/internal/optimized/sparse_ops/fully_connected.h",
+      "src/tensorflow/lite/kernels/internal/optimized/sse_tensor_utils.cc",
+      "src/tensorflow/lite/kernels/internal/optimized/sse_tensor_utils_impl.h",
+      "src/tensorflow/lite/kernels/internal/quantization_util.cc",
+      "src/tensorflow/lite/kernels/internal/quantization_util.h",
+      "src/tensorflow/lite/kernels/internal/reference/add.h",
+      "src/tensorflow/lite/kernels/internal/reference/arg_min_max.h",
+      "src/tensorflow/lite/kernels/internal/reference/batch_matmul.h",
+      "src/tensorflow/lite/kernels/internal/reference/binary_function.h",
+      "src/tensorflow/lite/kernels/internal/reference/ceil.h",
+      "src/tensorflow/lite/kernels/internal/reference/comparisons.cc",
+      "src/tensorflow/lite/kernels/internal/reference/comparisons.h",
+      "src/tensorflow/lite/kernels/internal/reference/concatenation.h",
+      "src/tensorflow/lite/kernels/internal/reference/conv.h",
+      "src/tensorflow/lite/kernels/internal/reference/densify.h",
+      "src/tensorflow/lite/kernels/internal/reference/depthwiseconv_float.h",
+      "src/tensorflow/lite/kernels/internal/reference/depthwiseconv_uint8.h",
+      "src/tensorflow/lite/kernels/internal/reference/dequantize.h",
+      "src/tensorflow/lite/kernels/internal/reference/floor.h",
+      "src/tensorflow/lite/kernels/internal/reference/fully_connected.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/add.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/conv.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/depthwise_conv.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/dequantize.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/fully_connected.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/l2normalization.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/log_softmax.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/logistic.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/mean.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/mul.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/pooling.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/tanh.h",
+      "src/tensorflow/lite/kernels/internal/reference/integer_ops/transpose_conv.h",
+      "src/tensorflow/lite/kernels/internal/reference/l2normalization.h",
+      "src/tensorflow/lite/kernels/internal/reference/logistic.h",
+      "src/tensorflow/lite/kernels/internal/reference/maximum_minimum.h",
+      "src/tensorflow/lite/kernels/internal/reference/mul.h",
+      "src/tensorflow/lite/kernels/internal/reference/neg.h",
+      "src/tensorflow/lite/kernels/internal/reference/non_max_suppression.h",
+      "src/tensorflow/lite/kernels/internal/reference/pad.h",
+      "src/tensorflow/lite/kernels/internal/reference/pooling.h",
+      "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc",
+      "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.h",
+      "src/tensorflow/lite/kernels/internal/reference/portable_tensor_utils_impl.h",
+      "src/tensorflow/lite/kernels/internal/reference/prelu.h",
+      "src/tensorflow/lite/kernels/internal/reference/process_broadcast_shapes.h",
+      "src/tensorflow/lite/kernels/internal/reference/quantize.h",
+      "src/tensorflow/lite/kernels/internal/reference/reduce.h",
+      "src/tensorflow/lite/kernels/internal/reference/reference_ops.h",
+      "src/tensorflow/lite/kernels/internal/reference/requantize.h",
+      "src/tensorflow/lite/kernels/internal/reference/resize_nearest_neighbor.h",
+      "src/tensorflow/lite/kernels/internal/reference/round.h",
+      "src/tensorflow/lite/kernels/internal/reference/softmax.h",
+      "src/tensorflow/lite/kernels/internal/reference/sparse_ops/fully_connected.h",
+      "src/tensorflow/lite/kernels/internal/reference/strided_slice.h",
+      "src/tensorflow/lite/kernels/internal/reference/sub.h",
+      "src/tensorflow/lite/kernels/internal/reference/svdf.h",
+      "src/tensorflow/lite/kernels/internal/reference/tanh.h",
+      "src/tensorflow/lite/kernels/internal/runtime_shape.cc",
+      "src/tensorflow/lite/kernels/internal/runtime_shape.h",
+      "src/tensorflow/lite/kernels/internal/spectrogram.cc",
+      "src/tensorflow/lite/kernels/internal/spectrogram.h",
+      "src/tensorflow/lite/kernels/internal/strided_slice_logic.h",
+      "src/tensorflow/lite/kernels/internal/tensor.h",
+      "src/tensorflow/lite/kernels/internal/tensor_ctypes.cc",
+      "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
+      "src/tensorflow/lite/kernels/internal/tensor_utils.cc",
+      "src/tensorflow/lite/kernels/internal/tensor_utils.h",
+      "src/tensorflow/lite/kernels/internal/transpose_utils.cc",
+      "src/tensorflow/lite/kernels/internal/transpose_utils.h",
+      "src/tensorflow/lite/kernels/internal/types.h",
+      "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.cc",
+      "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.h",
+    ]
+
+    public_deps = [
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+      "//third_party/ruy",
+    ]
+
+    deps = [
+      ":fft2d_deps",
       ":tflite_kernel_common_headers",
       ":tflite_public_headers",
       "//third_party/abseil-cpp:absl",
+      "//third_party/farmhash",
       "//third_party/flatbuffers",
+      "//third_party/fp16",
     ]
+
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+      "//third_party/eigen3:eigen_includes",
+    ]
+
+    public_configs = [ "//third_party/eigen3:eigen_public_includes" ]
+    visibility = [ ":*" ]
+  }
+
+  tflite_static_library("tflite_kernels") {
+    sources = [
+      "src/tensorflow/lite/kernels/activations.cc",
+      "src/tensorflow/lite/kernels/add.cc",
+      "src/tensorflow/lite/kernels/add_n.cc",
+      "src/tensorflow/lite/kernels/arg_min_max.cc",
+      "src/tensorflow/lite/kernels/assign_variable.cc",
+      "src/tensorflow/lite/kernels/basic_rnn.cc",
+      "src/tensorflow/lite/kernels/batch_matmul.cc",
+      "src/tensorflow/lite/kernels/batch_to_space_nd.cc",
+      "src/tensorflow/lite/kernels/bidirectional_sequence_lstm.cc",
+      "src/tensorflow/lite/kernels/bidirectional_sequence_rnn.cc",
+      "src/tensorflow/lite/kernels/broadcast_to.cc",
+      "src/tensorflow/lite/kernels/builtin_op_kernels.h",
+      "src/tensorflow/lite/kernels/cast.cc",
+      "src/tensorflow/lite/kernels/ceil.cc",
+      "src/tensorflow/lite/kernels/comparisons.cc",
+      "src/tensorflow/lite/kernels/concatenation.cc",
+      "src/tensorflow/lite/kernels/control_flow_common.cc",
+      "src/tensorflow/lite/kernels/conv.cc",
+      "src/tensorflow/lite/kernels/cpu_backend_context.cc",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm_custom_gemv.h",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.cc",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.h",
+      "src/tensorflow/lite/kernels/cpu_backend_gemm_ruy.h",
+      "src/tensorflow/lite/kernels/cumsum.cc",
+      "src/tensorflow/lite/kernels/densify.cc",
+      "src/tensorflow/lite/kernels/depth_to_space.cc",
+      "src/tensorflow/lite/kernels/depthwise_conv.cc",
+      "src/tensorflow/lite/kernels/dequantize.cc",
+      "src/tensorflow/lite/kernels/dequantize.h",
+      "src/tensorflow/lite/kernels/div.cc",
+      "src/tensorflow/lite/kernels/eigen_support.cc",
+      "src/tensorflow/lite/kernels/eigen_support.h",
+      "src/tensorflow/lite/kernels/elementwise.cc",
+      "src/tensorflow/lite/kernels/embedding_lookup.cc",
+      "src/tensorflow/lite/kernels/embedding_lookup_sparse.cc",
+      "src/tensorflow/lite/kernels/exp.cc",
+      "src/tensorflow/lite/kernels/expand_dims.cc",
+      "src/tensorflow/lite/kernels/fake_quant.cc",
+      "src/tensorflow/lite/kernels/fill.cc",
+      "src/tensorflow/lite/kernels/floor.cc",
+      "src/tensorflow/lite/kernels/floor_div.cc",
+      "src/tensorflow/lite/kernels/floor_mod.cc",
+      "src/tensorflow/lite/kernels/fully_connected.cc",
+      "src/tensorflow/lite/kernels/gather.cc",
+      "src/tensorflow/lite/kernels/gather_nd.cc",
+      "src/tensorflow/lite/kernels/hadamard_rotation.cc",
+      "src/tensorflow/lite/kernels/hashtable_lookup.cc",
+      "src/tensorflow/lite/kernels/if.cc",
+      "src/tensorflow/lite/kernels/kernel_util.cc",
+      "src/tensorflow/lite/kernels/l2norm.cc",
+      "src/tensorflow/lite/kernels/local_response_norm.cc",
+      "src/tensorflow/lite/kernels/logical.cc",
+      "src/tensorflow/lite/kernels/lsh_projection.cc",
+      "src/tensorflow/lite/kernels/lstm.cc",
+      "src/tensorflow/lite/kernels/lstm_eval.cc",
+      "src/tensorflow/lite/kernels/lstm_eval.h",
+      "src/tensorflow/lite/kernels/lstm_shared.h",
+      "src/tensorflow/lite/kernels/matrix_diag.cc",
+      "src/tensorflow/lite/kernels/matrix_set_diag.cc",
+      "src/tensorflow/lite/kernels/maximum_minimum.cc",
+      "src/tensorflow/lite/kernels/mirror_pad.cc",
+      "src/tensorflow/lite/kernels/mul.cc",
+      "src/tensorflow/lite/kernels/neg.cc",
+      "src/tensorflow/lite/kernels/non_max_suppression.cc",
+      "src/tensorflow/lite/kernels/numeric_verify.cc",
+      "src/tensorflow/lite/kernels/one_hot.cc",
+      "src/tensorflow/lite/kernels/pack.cc",
+      "src/tensorflow/lite/kernels/pad.cc",
+      "src/tensorflow/lite/kernels/padding.h",
+      "src/tensorflow/lite/kernels/pooling.cc",
+      "src/tensorflow/lite/kernels/pow.cc",
+      "src/tensorflow/lite/kernels/quantize.cc",
+      "src/tensorflow/lite/kernels/random_ops.cc",
+      "src/tensorflow/lite/kernels/range.cc",
+      "src/tensorflow/lite/kernels/rank.cc",
+      "src/tensorflow/lite/kernels/read_variable.cc",
+      "src/tensorflow/lite/kernels/reduce.cc",
+      "src/tensorflow/lite/kernels/reshape.cc",
+      "src/tensorflow/lite/kernels/resize_bilinear.cc",
+      "src/tensorflow/lite/kernels/resize_nearest_neighbor.cc",
+      "src/tensorflow/lite/kernels/reverse.cc",
+      "src/tensorflow/lite/kernels/reverse_sequence.cc",
+      "src/tensorflow/lite/kernels/rfft2d.cc",
+      "src/tensorflow/lite/kernels/rng_bit_generator.cc",
+      "src/tensorflow/lite/kernels/rng_util.cc",
+      "src/tensorflow/lite/kernels/round.cc",
+      "src/tensorflow/lite/kernels/scatter_nd.cc",
+      "src/tensorflow/lite/kernels/segment_sum.cc",
+      "src/tensorflow/lite/kernels/select.cc",
+      "src/tensorflow/lite/kernels/shape.cc",
+      "src/tensorflow/lite/kernels/skip_gram.cc",
+      "src/tensorflow/lite/kernels/slice.cc",
+      "src/tensorflow/lite/kernels/space_to_batch_nd.cc",
+      "src/tensorflow/lite/kernels/space_to_depth.cc",
+      "src/tensorflow/lite/kernels/sparse_to_dense.cc",
+      "src/tensorflow/lite/kernels/split.cc",
+      "src/tensorflow/lite/kernels/split_v.cc",
+      "src/tensorflow/lite/kernels/squared_difference.cc",
+      "src/tensorflow/lite/kernels/squeeze.cc",
+      "src/tensorflow/lite/kernels/stablehlo_gather.cc",
+      "src/tensorflow/lite/kernels/stablehlo_scatter.cc",
+      "src/tensorflow/lite/kernels/strided_slice.cc",
+      "src/tensorflow/lite/kernels/sub.cc",
+      "src/tensorflow/lite/kernels/svdf.cc",
+      "src/tensorflow/lite/kernels/tensor_slice_util.cc",
+      "src/tensorflow/lite/kernels/tensor_slice_util.h",
+      "src/tensorflow/lite/kernels/tile.cc",
+      "src/tensorflow/lite/kernels/topk_v2.cc",
+      "src/tensorflow/lite/kernels/transpose.cc",
+      "src/tensorflow/lite/kernels/transpose_conv.cc",
+      "src/tensorflow/lite/kernels/unidirectional_sequence_lstm.cc",
+      "src/tensorflow/lite/kernels/unidirectional_sequence_rnn.cc",
+      "src/tensorflow/lite/kernels/unique.cc",
+      "src/tensorflow/lite/kernels/unpack.cc",
+      "src/tensorflow/lite/kernels/where.cc",
+      "src/tensorflow/lite/kernels/while.cc",
+      "src/tensorflow/lite/kernels/zeros_like.cc",
+    ]
+
+    if (!build_tflite_with_ruy) {
+      sources += [ "src/tensorflow/lite/kernels/cpu_backend_gemm_gemmlowp.h" ]
+    }
+
+    deps = [
+      ":buildflags",
+      ":fft2d_deps",
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/farmhash",
+      "//third_party/flatbuffers",
+      "//third_party/fp16",
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+      "//third_party/ruy",
+    ]
+
+    conditional_deps = [ "//third_party/pthreadpool" ]
+
+    if (use_cpuinfo) {
+      defines = [ "TFLITE_HAVE_CPUINFO" ]
+      deps += [ "//third_party/cpuinfo" ]
+      include_dirs = [ "//third_party/cpuinfo/src" ]
+    }
+
+    if (build_tflite_with_xnnpack) {
+      conditional_deps += [ "//third_party/xnnpack" ]
+    }
 
     configs_to_add = [
       ":tflite_config",
       ":tflite_flags",
       "//third_party/eigen3:eigen_includes",
-      "//third_party/ml_dtypes:ml_dtypes-includes",
     ]
     visibility = [ ":*" ]
   }
-}
 
-# The two below TFLite logging targets are separate since the Chromium one
-# requires //base, which is not allowed to be embedded by non-libchrome shared
-# libraries.
-if (build_with_chromium) {
-  source_set("tflite_logging") {
-    sources = [ "shims/minimal_logging_chromium.cc" ]
-    deps = [
-      ":tflite_public_headers",
-      "//base",
-    ]
+  if (!is_fuchsia) {
+    tflite_static_library("tflite_op_shim") {
+      sources = [
+        "src/tensorflow/lite/kernels/shim/shape.cc",
+        "src/tensorflow/lite/kernels/shim/tflite_op_shim.cc",
+        "src/tensorflow/lite/kernels/shim/tflite_tensor_view.cc",
+      ]
+
+      if (is_win) {
+        sources +=
+            [ "src/third_party/xla/xla/tsl/platform/windows/env_time.cc" ]
+      } else {
+        sources +=
+            [ "src/third_party/xla/xla/tsl/platform/default/env_time.cc" ]
+      }
+
+      deps = [
+        ":tflite_kernel_common_headers",
+        ":tflite_public_headers",
+        "//third_party/abseil-cpp:absl",
+        "//third_party/flatbuffers",
+      ]
+
+      configs_to_add = [
+        ":tflite_config",
+        ":tflite_flags",
+        "//third_party/eigen3:eigen_includes",
+        "//third_party/ml_dtypes:ml_dtypes-includes",
+      ]
+      visibility = [ ":*" ]
+    }
+  }
+
+  # The two below TFLite logging targets are separate since the Chromium one
+  # requires //base, which is not allowed to be embedded by non-libchrome shared
+  # libraries.
+  if (build_with_chromium) {
+    source_set("tflite_logging") {
+      sources = [ "shims/minimal_logging_chromium.cc" ]
+      deps = [
+        ":tflite_public_headers",
+        "//base",
+      ]
+
+      configs += [
+        ":tflite_config",
+        ":tflite_flags",
+      ]
+
+      visibility = [ ":*" ]
+    }
+  }
+
+  # This target is used in conditional_deps in the ":tflite" target, which
+  # requires both a "target" and companion "target_standalone" source set.
+  source_set("tflite_logging_standalone") {
+    if (is_ios) {
+      sources = [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
+    } else if (is_android) {
+      sources = [ "src/tensorflow/lite/minimal_logging_android.cc" ]
+    } else {
+      sources = [ "src/tensorflow/lite/minimal_logging_default.cc" ]
+    }
+    deps = [ ":tflite_public_headers" ]
 
     configs += [
       ":tflite_config",
@@ -739,285 +843,270 @@ if (build_with_chromium) {
 
     visibility = [ ":*" ]
   }
-}
 
-# This target is used in conditional_deps in the ":tflite" target, which
-# requires both a "target" and companion "target_standalone" source set.
-source_set("tflite_logging_standalone") {
-  if (is_ios) {
-    sources = [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
-  } else if (is_android) {
-    sources = [ "src/tensorflow/lite/minimal_logging_android.cc" ]
-  } else {
-    sources = [ "src/tensorflow/lite/minimal_logging_default.cc" ]
+  flatbuffer("weight_cache_schema_generated") {
+    sources =
+        [ "src/tensorflow/lite/delegates/xnnpack/weight_cache_schema.fbs" ]
+    args = [ "--gen-object-api" ]
   }
-  deps = [ ":tflite_public_headers" ]
 
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
-  ]
-
-  visibility = [ ":*" ]
-}
-
-flatbuffer("weight_cache_schema_generated") {
-  sources = [ "src/tensorflow/lite/delegates/xnnpack/weight_cache_schema.fbs" ]
-  args = [ "--gen-object-api" ]
-}
-
-source_set("tflite_compiler_utils") {
-  sources = [
-    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.cc",
-    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.h",
-    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc",
-    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.h",
-  ]
-
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
-  ]
-
-  public_deps = [
-    ":tflite_kernel_common_headers",
-    ":tflite_kernel_internals",
-    ":tflite_proto",
-    ":tflite_public_headers",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/flatbuffers",
-    "//third_party/gemmlowp",
-  ]
-  visibility = [ ":*" ]
-}
-
-# TODO(crbug.com/1147996): Update to a component build. Will require updating the
-# tflite version.
-# TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
-tflite_static_library("tflite") {
-  sources = [
-    "src/tensorflow/compiler/mlir/lite/allocation.cc",
-    "src/tensorflow/compiler/mlir/lite/allocation.h",
-    "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.cc",
-    "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.h",
-    "src/tensorflow/compiler/mlir/lite/core/model_builder_base.cc",
-    "src/tensorflow/compiler/mlir/lite/core/model_builder_base.h",
-    "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.cc",
-    "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.h",
-    "src/tensorflow/compiler/mlir/lite/schema/schema_utils.cc",
-    "src/tensorflow/compiler/mlir/lite/utils/string_utils.cc",
-    "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.cc",
-    "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h",
-    "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.cc",
-    "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
-    "src/tensorflow/lite/arena_planner.cc",
-    "src/tensorflow/lite/array.cc",
-    "src/tensorflow/lite/c/common_internal.cc",
-    "src/tensorflow/lite/c/common_internal.h",
-    "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.cc",
-    "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.h",
-    "src/tensorflow/lite/core/api/flatbuffer_conversions.cc",
-    "src/tensorflow/lite/core/api/flatbuffer_conversions.h",
-    "src/tensorflow/lite/core/api/op_resolver.cc",
-    "src/tensorflow/lite/core/api/profiler.h",
-    "src/tensorflow/lite/core/api/tensor_utils.cc",
-    "src/tensorflow/lite/core/api/tensor_utils.h",
-    "src/tensorflow/lite/core/async/async_kernel_internal.h",
-    "src/tensorflow/lite/core/async/async_signature_runner.cc",
-    "src/tensorflow/lite/core/async/async_signature_runner.h",
-    "src/tensorflow/lite/core/async/async_subgraph.cc",
-    "src/tensorflow/lite/core/async/async_subgraph.h",
-    "src/tensorflow/lite/core/async/task_internal.cc",
-    "src/tensorflow/lite/core/async/task_internal.h",
-    "src/tensorflow/lite/core/c/common.cc",
-    "src/tensorflow/lite/core/interpreter.cc",
-    "src/tensorflow/lite/core/interpreter_builder.cc",
-    "src/tensorflow/lite/core/interpreter_experimental.cc",
-    "src/tensorflow/lite/core/signature_runner.cc",
-    "src/tensorflow/lite/core/signature_runner.h",
-    "src/tensorflow/lite/core/subgraph.cc",
-    "src/tensorflow/lite/core/tools/verifier.cc",
-    "src/tensorflow/lite/core/tools/verifier_internal.cc",
-    "src/tensorflow/lite/core/tools/verifier_internal.h",
-    "src/tensorflow/lite/delegates/interpreter_utils.cc",
-    "src/tensorflow/lite/delegates/interpreter_utils.h",
-    "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
-    "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
-    "src/tensorflow/lite/delegates/serialization.cc",
-    "src/tensorflow/lite/delegates/serialization.h",
-    "src/tensorflow/lite/delegates/utils.cc",
-    "src/tensorflow/lite/delegates/utils.h",
-    "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
-    "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
-    "src/tensorflow/lite/experimental/resource/initialization_status.cc",
-    "src/tensorflow/lite/experimental/resource/initialization_status.h",
-    "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
-    "src/tensorflow/lite/experimental/resource/lookup_util.h",
-    "src/tensorflow/lite/experimental/resource/resource_variable.cc",
-    "src/tensorflow/lite/experimental/resource/static_hashtable.cc",
-    "src/tensorflow/lite/experimental/resource/static_hashtable.h",
-    "src/tensorflow/lite/external_cpu_backend_context.cc",
-    "src/tensorflow/lite/graph_info.cc",
-    "src/tensorflow/lite/kernels/internal/portable_tensor_utils.cc",
-    "src/tensorflow/lite/logger.cc",
-    "src/tensorflow/lite/memory_planner.h",
-    "src/tensorflow/lite/minimal_logging.cc",
-    "src/tensorflow/lite/mutable_op_resolver.cc",
-    "src/tensorflow/lite/nnapi/NeuralNetworksTypes.h",
-    "src/tensorflow/lite/nnapi/nnapi_implementation.h",
-    "src/tensorflow/lite/nnapi/nnapi_implementation_disabled.cc",
-    "src/tensorflow/lite/optional_debug_tools.cc",
-    "src/tensorflow/lite/profiling/memory_info.cc",
-    "src/tensorflow/lite/profiling/memory_info.h",
-    "src/tensorflow/lite/profiling/memory_latency_logger.cc",
-    "src/tensorflow/lite/profiling/memory_latency_logger.h",
-    "src/tensorflow/lite/profiling/memory_usage_monitor.cc",
-    "src/tensorflow/lite/profiling/memory_usage_monitor.h",
-    "src/tensorflow/lite/profiling/model_runtime_info.cc",
-    "src/tensorflow/lite/profiling/model_runtime_info.h",
-    "src/tensorflow/lite/profiling/platform_profiler.cc",
-    "src/tensorflow/lite/profiling/platform_profiler.h",
-    "src/tensorflow/lite/profiling/profile_buffer.cc",
-    "src/tensorflow/lite/profiling/profile_buffer.h",
-    "src/tensorflow/lite/profiling/profile_summarizer.cc",
-    "src/tensorflow/lite/profiling/profile_summarizer.h",
-    "src/tensorflow/lite/profiling/profile_summary_formatter.cc",
-    "src/tensorflow/lite/profiling/profile_summary_formatter.h",
-    "src/tensorflow/lite/profiling/root_profiler.cc",
-    "src/tensorflow/lite/profiling/root_profiler.h",
-    "src/tensorflow/lite/profiling/telemetry/profiler.cc",
-    "src/tensorflow/lite/profiling/telemetry/profiler.h",
-    "src/tensorflow/lite/profiling/telemetry/telemetry.cc",
-    "src/tensorflow/lite/profiling/telemetry/telemetry.h",
-    "src/tensorflow/lite/profiling/time.cc",
-    "src/tensorflow/lite/profiling/time.h",
-    "src/tensorflow/lite/simple_memory_arena.cc",
-    "src/tensorflow/lite/simple_memory_arena.h",
-    "src/tensorflow/lite/stderr_reporter.cc",
-    "src/tensorflow/lite/string_util.cc",
-    "src/tensorflow/lite/tflite_with_xnnpack_optional.cc",
-    "src/tensorflow/lite/tflite_with_xnnpack_optional.h",
-    "src/tensorflow/lite/tools/command_line_flags.h",
-    "src/tensorflow/lite/tools/delegates/delegate_provider.h",
-    "src/tensorflow/lite/tools/logging.h",
-    "src/tensorflow/lite/tools/tool_params.h",
-    "src/tensorflow/lite/tools/versioning/gpu_compatibility.cc",
-    "src/tensorflow/lite/tools/versioning/gpu_compatibility.h",
-    "src/tensorflow/lite/tools/versioning/op_signature.cc",
-    "src/tensorflow/lite/tools/versioning/op_signature.h",
-    "src/tensorflow/lite/util.cc",
-    "src/tensorflow/lite/version.h",
-    "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
-    "src/third_party/xla/xla/tsl/util/stats_calculator.h",
-  ]
-
-  if (build_tflite_with_xnnpack) {
-    sources += [
-      "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
-      "src/tensorflow/lite/delegates/xnnpack/file_util.h",
-      "src/tensorflow/lite/delegates/xnnpack/mmap_handle.cc",
-      "src/tensorflow/lite/delegates/xnnpack/mmap_handle.h",
-      "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
-      "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
-      "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
-      "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
-      "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
-      "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
-      "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
-      "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
+  source_set("tflite_compiler_utils") {
+    sources = [
+      "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.cc",
+      "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.h",
+      "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc",
+      "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.h",
     ]
-  }
 
-  if (is_win) {
-    sources +=
-        [ "src/tensorflow/compiler/mlir/lite/mmap_allocation_disabled.cc" ]
-  } else {
-    sources += [ "src/tensorflow/compiler/mlir/lite/mmap_allocation.cc" ]
-  }
-
-  if (is_ios) {
-    sources += [
-      "src/tensorflow/lite/profiling/signpost_profiler.h",
-      "src/tensorflow/lite/profiling/signpost_profiler.mm",
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
     ]
-  } else if (is_android) {
-    sources += [
-      "src/tensorflow/lite/profiling/atrace_profiler.cc",
-      "src/tensorflow/lite/profiling/atrace_profiler.h",
+
+    public_deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_proto",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+      "//third_party/gemmlowp",
     ]
+    visibility = [ ":*" ]
   }
 
-  deps = [
-    "//third_party/abseil-cpp:absl",
-    "//third_party/farmhash",
-    "//third_party/fft2d",
-    "//third_party/fp16",
-    "//third_party/neon_2_sse",
-  ]
-
-  conditional_deps = [
-    ":tflite_logging",
-    "//third_party/pthreadpool",
-  ]
-
-  if (build_tflite_with_xnnpack) {
-    deps += [
-      ":weight_cache_schema_generated",
-      "//third_party/cpuinfo",
+  # TODO(crbug.com/1147996): Update to a component build. Will require updating the
+  # tflite version.
+  # TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
+  tflite_static_library("tflite") {
+    sources = [
+      "src/tensorflow/compiler/mlir/lite/allocation.cc",
+      "src/tensorflow/compiler/mlir/lite/allocation.h",
+      "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.cc",
+      "src/tensorflow/compiler/mlir/lite/core/api/error_reporter.h",
+      "src/tensorflow/compiler/mlir/lite/core/model_builder_base.cc",
+      "src/tensorflow/compiler/mlir/lite/core/model_builder_base.h",
+      "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.cc",
+      "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.h",
+      "src/tensorflow/compiler/mlir/lite/schema/schema_utils.cc",
+      "src/tensorflow/compiler/mlir/lite/utils/string_utils.cc",
+      "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.cc",
+      "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h",
+      "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.cc",
+      "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
+      "src/tensorflow/lite/arena_planner.cc",
+      "src/tensorflow/lite/array.cc",
+      "src/tensorflow/lite/c/common_internal.cc",
+      "src/tensorflow/lite/c/common_internal.h",
+      "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.cc",
+      "src/tensorflow/lite/core/acceleration/configuration/delegate_registry.h",
+      "src/tensorflow/lite/core/api/flatbuffer_conversions.cc",
+      "src/tensorflow/lite/core/api/flatbuffer_conversions.h",
+      "src/tensorflow/lite/core/api/op_resolver.cc",
+      "src/tensorflow/lite/core/api/profiler.h",
+      "src/tensorflow/lite/core/api/tensor_utils.cc",
+      "src/tensorflow/lite/core/api/tensor_utils.h",
+      "src/tensorflow/lite/core/async/async_kernel_internal.h",
+      "src/tensorflow/lite/core/async/async_signature_runner.cc",
+      "src/tensorflow/lite/core/async/async_signature_runner.h",
+      "src/tensorflow/lite/core/async/async_subgraph.cc",
+      "src/tensorflow/lite/core/async/async_subgraph.h",
+      "src/tensorflow/lite/core/async/task_internal.cc",
+      "src/tensorflow/lite/core/async/task_internal.h",
+      "src/tensorflow/lite/core/c/common.cc",
+      "src/tensorflow/lite/core/interpreter.cc",
+      "src/tensorflow/lite/core/interpreter_builder.cc",
+      "src/tensorflow/lite/core/interpreter_experimental.cc",
+      "src/tensorflow/lite/core/signature_runner.cc",
+      "src/tensorflow/lite/core/signature_runner.h",
+      "src/tensorflow/lite/core/subgraph.cc",
+      "src/tensorflow/lite/core/tools/verifier.cc",
+      "src/tensorflow/lite/core/tools/verifier_internal.cc",
+      "src/tensorflow/lite/core/tools/verifier_internal.h",
+      "src/tensorflow/lite/delegates/interpreter_utils.cc",
+      "src/tensorflow/lite/delegates/interpreter_utils.h",
+      "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
+      "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+      "src/tensorflow/lite/delegates/serialization.cc",
+      "src/tensorflow/lite/delegates/serialization.h",
+      "src/tensorflow/lite/delegates/utils.cc",
+      "src/tensorflow/lite/delegates/utils.h",
+      "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
+      "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
+      "src/tensorflow/lite/experimental/resource/initialization_status.cc",
+      "src/tensorflow/lite/experimental/resource/initialization_status.h",
+      "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
+      "src/tensorflow/lite/experimental/resource/lookup_util.h",
+      "src/tensorflow/lite/experimental/resource/resource_variable.cc",
+      "src/tensorflow/lite/experimental/resource/static_hashtable.cc",
+      "src/tensorflow/lite/experimental/resource/static_hashtable.h",
+      "src/tensorflow/lite/external_cpu_backend_context.cc",
+      "src/tensorflow/lite/graph_info.cc",
+      "src/tensorflow/lite/kernels/internal/portable_tensor_utils.cc",
+      "src/tensorflow/lite/logger.cc",
+      "src/tensorflow/lite/memory_planner.h",
+      "src/tensorflow/lite/minimal_logging.cc",
+      "src/tensorflow/lite/mutable_op_resolver.cc",
+      "src/tensorflow/lite/nnapi/NeuralNetworksTypes.h",
+      "src/tensorflow/lite/nnapi/nnapi_implementation.h",
+      "src/tensorflow/lite/nnapi/nnapi_implementation_disabled.cc",
+      "src/tensorflow/lite/optional_debug_tools.cc",
+      "src/tensorflow/lite/profiling/memory_info.cc",
+      "src/tensorflow/lite/profiling/memory_info.h",
+      "src/tensorflow/lite/profiling/memory_latency_logger.cc",
+      "src/tensorflow/lite/profiling/memory_latency_logger.h",
+      "src/tensorflow/lite/profiling/memory_usage_monitor.cc",
+      "src/tensorflow/lite/profiling/memory_usage_monitor.h",
+      "src/tensorflow/lite/profiling/model_runtime_info.cc",
+      "src/tensorflow/lite/profiling/model_runtime_info.h",
+      "src/tensorflow/lite/profiling/platform_profiler.cc",
+      "src/tensorflow/lite/profiling/platform_profiler.h",
+      "src/tensorflow/lite/profiling/profile_buffer.cc",
+      "src/tensorflow/lite/profiling/profile_buffer.h",
+      "src/tensorflow/lite/profiling/profile_summarizer.cc",
+      "src/tensorflow/lite/profiling/profile_summarizer.h",
+      "src/tensorflow/lite/profiling/profile_summary_formatter.cc",
+      "src/tensorflow/lite/profiling/profile_summary_formatter.h",
+      "src/tensorflow/lite/profiling/root_profiler.cc",
+      "src/tensorflow/lite/profiling/root_profiler.h",
+      "src/tensorflow/lite/profiling/telemetry/profiler.cc",
+      "src/tensorflow/lite/profiling/telemetry/profiler.h",
+      "src/tensorflow/lite/profiling/telemetry/telemetry.cc",
+      "src/tensorflow/lite/profiling/telemetry/telemetry.h",
+      "src/tensorflow/lite/profiling/time.cc",
+      "src/tensorflow/lite/profiling/time.h",
+      "src/tensorflow/lite/simple_memory_arena.cc",
+      "src/tensorflow/lite/simple_memory_arena.h",
+      "src/tensorflow/lite/stderr_reporter.cc",
+      "src/tensorflow/lite/string_util.cc",
+      "src/tensorflow/lite/tflite_with_xnnpack_optional.cc",
+      "src/tensorflow/lite/tflite_with_xnnpack_optional.h",
+      "src/tensorflow/lite/tools/command_line_flags.h",
+      "src/tensorflow/lite/tools/delegates/delegate_provider.h",
+      "src/tensorflow/lite/tools/logging.h",
+      "src/tensorflow/lite/tools/tool_params.h",
+      "src/tensorflow/lite/tools/versioning/gpu_compatibility.cc",
+      "src/tensorflow/lite/tools/versioning/gpu_compatibility.h",
+      "src/tensorflow/lite/tools/versioning/op_signature.cc",
+      "src/tensorflow/lite/tools/versioning/op_signature.h",
+      "src/tensorflow/lite/util.cc",
+      "src/tensorflow/lite/version.h",
+      "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
+      "src/third_party/xla/xla/tsl/util/stats_calculator.h",
     ]
-    conditional_deps += [ "//third_party/xnnpack" ]
+
+    if (build_tflite_with_xnnpack) {
+      sources += [
+        "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/file_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.cc",
+        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.h",
+        "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
+        "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
+        "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
+        "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
+      ]
+    }
+
+    if (is_win) {
+      sources +=
+          [ "src/tensorflow/compiler/mlir/lite/mmap_allocation_disabled.cc" ]
+    } else {
+      sources += [ "src/tensorflow/compiler/mlir/lite/mmap_allocation.cc" ]
+    }
+
+    if (is_ios) {
+      sources += [
+        "src/tensorflow/lite/profiling/signpost_profiler.h",
+        "src/tensorflow/lite/profiling/signpost_profiler.mm",
+      ]
+    } else if (is_android) {
+      sources += [
+        "src/tensorflow/lite/profiling/atrace_profiler.cc",
+        "src/tensorflow/lite/profiling/atrace_profiler.h",
+      ]
+    }
+
+    deps = [
+      ":buildflags",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/farmhash",
+      "//third_party/fft2d",
+      "//third_party/fp16",
+      "//third_party/neon_2_sse",
+    ]
+
+    conditional_deps = [
+      ":tflite_logging",
+      "//third_party/pthreadpool",
+    ]
+
+    if (build_tflite_with_xnnpack) {
+      deps += [
+        ":weight_cache_schema_generated",
+        "//third_party/cpuinfo",
+      ]
+      conditional_deps += [ "//third_party/xnnpack" ]
+    }
+
+    conditional_public_deps = [
+      ":tflite_kernels",
+      ":tflite_litert",
+    ]
+    if (!is_fuchsia) {
+      # absl::Cord::CopyToArray is not available on fuchsia but is required by
+      # this library.
+      conditional_public_deps += [ ":tflite_op_shim" ]
+    }
+
+    public_deps = [
+      ":mutable_schema",
+      ":tflite_compiler_utils",
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_proto",
+      ":tflite_public_headers",
+      "//third_party/flatbuffers",
+      "//third_party/gemmlowp",
+      "//third_party/ruy",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      # Do not compile with ARC because TFLite code is not compatible with
+      # being compiled with ARC.
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [
+      ":tflite_shim_config",
+      ":tflite_config",
+    ]
+
+    # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
+    # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
+    # that adds to the "include_dirs". This means any file including
+    # "neon_check.h" needs the config, so that neon_2_sse should be in
+    # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
+    # not want propagated. For the time being, allow this in the standalone
+    # target (which is assumed to be for third-party code that is OK to have
+    # these switches).
+    public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
   }
-
-  conditional_public_deps = [
-    ":tflite_kernels",
-    ":tflite_litert",
-  ]
-  if (!is_fuchsia) {
-    # absl::Cord::CopyToArray is not available on fuchsia but is required by
-    # this library.
-    conditional_public_deps += [ ":tflite_op_shim" ]
-  }
-
-  public_deps = [
-    ":mutable_schema",
-    ":tflite_compiler_utils",
-    ":tflite_kernel_common_headers",
-    ":tflite_kernel_internals",
-    ":tflite_proto",
-    ":tflite_public_headers",
-    "//third_party/flatbuffers",
-    "//third_party/gemmlowp",
-    "//third_party/ruy",
-  ]
-
-  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
-  configs_to_add = [
-    "//build/config/compiler:no_chromium_code",
-    "//build/config/compiler:rtti",
-    "//third_party/eigen3:eigen_includes",
-    ":tflite_flags",
-  ]
-
-  if (is_apple) {
-    # Do not compile with ARC because TFLite code is not compatible with
-    # being compiled with ARC.
-    configs_to_remove += [ "//build/config/compiler:enable_arc" ]
-  }
-
-  public_configs = [ ":tflite_config" ]
-
-  # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
-  # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
-  # that adds to the "include_dirs". This means any file including
-  # "neon_check.h" needs the config, so that neon_2_sse should be in
-  # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
-  # not want propagated. For the time being, allow this in the standalone
-  # target (which is assumed to be for third-party code that is OK to have
-  # these switches).
-  public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
 }
 
-if (build_with_chromium) {
+if (!use_litert_tflite && build_with_chromium) {
   executable("tflite_benchmark") {
     sources = [
       "src/tensorflow/lite/tools/benchmark/benchmark_main.cc",
