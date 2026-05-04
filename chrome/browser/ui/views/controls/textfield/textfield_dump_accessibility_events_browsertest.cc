@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
@@ -51,6 +53,20 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
   AddDenyFilter("AXValueChanged on AXGroup*");
   BEGIN_RECORDING_EVENTS_OR_SKIP("textfield-value-changed");
   textfield_->SetText(u"Hello World");
+}
+
+IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest,
+                       TextSelectionChanged) {
+  textfield_->SetText(u"Hello World");
+  textfield_->SetSelectedRange(gfx::Range(0));
+  WaitForPendingSerialization();
+
+  textfield_->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return textfield_->HasFocus(); }));
+  WaitForPendingSerialization();
+
+  BEGIN_RECORDING_EVENTS_OR_SKIP("textfield-text-selection-changed");
+  textfield_->SetSelectedRange(gfx::Range(1, 5));
 }
 
 INSTANTIATE_TEST_SUITE_P(

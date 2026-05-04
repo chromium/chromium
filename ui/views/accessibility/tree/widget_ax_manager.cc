@@ -60,6 +60,7 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kSelection:
     case Event::kSelectedChildrenChanged:
     case Event::kTextChanged:
+    case Event::kTextSelectionChanged:
     case Event::kValueChanged:
       return false;
     default:
@@ -94,7 +95,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:
     case Event::kMenuStart:
-    case Event::kTextSelectionChanged:
       return false;
     default:
       break;
