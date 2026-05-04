@@ -290,7 +290,6 @@ void Event::SetRelatedTargetIfExists(EventTarget* related_target) {
 void Event::ReceivedTarget() {}
 
 Element* Event::Retarget(Element* element) const {
-  CHECK(RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled());
   if (!element) {
     return nullptr;
   }

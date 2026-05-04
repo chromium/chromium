@@ -37,21 +37,11 @@ CommandEvent::CommandEvent(const AtomicString& type,
 }
 
 Element* CommandEvent::source() const {
-  auto* current = currentTarget();
   Element* source = source_.Get();
   if (!source) {
     return nullptr;
   }
-
-  if (RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled()) {
-    return Retarget(source);
-  }
-
-  if (current) {
-    return &current->ToNode()->GetTreeScope().Retarget(*source);
-  }
-  DCHECK_EQ(eventPhase(), Event::PhaseType::kNone);
-  return source;
+  return Retarget(source);
 }
 
 void CommandEvent::Trace(Visitor* visitor) const {

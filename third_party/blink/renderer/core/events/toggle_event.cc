@@ -55,14 +55,7 @@ const String& ToggleEvent::newState() const {
 }
 
 Element* ToggleEvent::source() const {
-  if (RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled()) {
-    return Retarget(source_);
-  }
-
-  if (source_ && currentTarget()) {
-    return &currentTarget()->ToNode()->GetTreeScope().Retarget(*source_);
-  }
-  return source_;
+  return Retarget(source_);
 }
 
 const AtomicString& ToggleEvent::InterfaceName() const {
