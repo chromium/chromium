@@ -3291,8 +3291,7 @@ class MonthPopupButton extends View {
    */
   constructor(maxWidth) {
     super(createElement('button', MonthPopupButton.ClassNameMonthPopupButton));
-    this.element.setAttribute(
-        'aria-description', global.params.axShowMonthSelector);
+    this.element.setAttribute('aria-label', global.params.axShowMonthSelector);
 
     /**
      * @type {!Element}
