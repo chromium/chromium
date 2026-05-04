@@ -55,4 +55,26 @@ TEST_F(ContentWebStateTest, VisibilityTest) {
   EXPECT_TRUE(web_state->IsVisible());
 }
 
+// Tests that setting and getting user agent override works.
+TEST_F(ContentWebStateTest, UserAgentOverride) {
+  std::unique_ptr<ContentWebState> web_state =
+      std::make_unique<ContentWebState>(
+          WebState::CreateParams(browser_state()));
+
+  EXPECT_FALSE(web_state->GetUserAgentOverride().has_value());
+  std::string ua_override = "Fake UA String";
+  web_state->SetUserAgentOverride(ua_override);
+  EXPECT_EQ(ua_override, web_state->GetUserAgentOverride().value());
+
+  web_state->SetUserAgentOverride(std::nullopt);
+  EXPECT_FALSE(web_state->GetUserAgentOverride().has_value());
+
+  web_state->SetUserAgentOverride(ua_override);
+  EXPECT_TRUE(web_state->GetUserAgentOverride().has_value());
+
+  // An explicit empty string is treated as no override (std::nullopt).
+  web_state->SetUserAgentOverride("");
+  EXPECT_FALSE(web_state->GetUserAgentOverride().has_value());
+}
+
 }  // namespace web
