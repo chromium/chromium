@@ -1115,38 +1115,10 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyStateChange() {
     NotifyPanelStateChanged();
     host().PanelWasClosed();
 #if !BUILDFLAG(IS_ANDROID)
-    MaybeShowShortcutToastPromo();
     MaybeShowShortcutSnoozePromo();
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
   return;
-}
-
-void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
-  if (!g_browser_process->local_state()->GetBoolean(
-          prefs::kGlicLauncherEnabled)) {
-    // Hotkey might not be registered, skip the promo.
-    return;
-  }
-// TODO(b/483455896): implement hotkey promo for android
-#if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
-  if (!browser) {
-    // If there is no browser window open for the profile, skip the promo.
-    return;
-  }
-
-  user_education::FeaturePromoParams params(
-      feature_engagement::
-          kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature);
-  params.body_params = l10n_util::GetStringFUTF16(
-      IDS_GLIC_SHORTCUT_IPH_TEXT,
-      glic::GlicLauncherConfiguration::GetGlobalHotkey().GetShortcutText());
-
-  BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
-      std::move(params));
-#endif
 }
 
 void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {

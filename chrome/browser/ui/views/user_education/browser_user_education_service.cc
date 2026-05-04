@@ -782,24 +782,6 @@ void MaybeRegisterChromeFeaturePromos(
               142, "dewittj@chromium.org",
               "Attempts to trigger when the user is on a supported page.")));
 
-  // kGlicTrustFirstOnboarding shortcut toast IPH:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::
-              kIPHGlicTrustFirstOnboardingShortcutToastPromoFeature,
-          kGlicButtonElementId, IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE,
-          IDS_GLIC_SHORTCUT_IPH_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo(
-              glic::GlicLauncherConfiguration::GetGlobalHotkey()))
-          .SetAdditionalConditions(std::move(
-              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
-                  feature_engagement::events::kGlicOnboardingCompleted,
-                  AdditionalConditions::Constraint::kAtLeast, 1})))
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(144, "zalmashni@google.com",
-                       "Triggered after the Glic side panel is closed or the "
-                       "user navigates to a new tab.")));
-
   // kGlicTrustFirstOnboarding shortcut snooze IPH:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForSnoozePromo(

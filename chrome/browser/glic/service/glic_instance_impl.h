@@ -396,7 +396,6 @@ class GlicInstanceImpl : public GlicInstance,
       bool auto_send,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
 
-  void MaybeShowShortcutToastPromo();
 
   void MaybeShowShortcutSnoozePromo();
 
