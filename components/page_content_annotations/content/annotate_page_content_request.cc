@@ -414,7 +414,9 @@ AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
           features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
 
   if (trigger_on_load || !on_demand_callbacks_.empty()) {
-    CHECK(!on_hide);
+    // TODO(b/490161242): Investigate why this check can fail and then consider
+    // re-enabling it.
+    // CHECK(!on_hide);
     if (!on_demand_callbacks_.empty()) {
       return TriggerSource::kOnDemand;
     }
