@@ -5,7 +5,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/convert_user_script.h"
@@ -13,13 +12,17 @@
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/user_script.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
+namespace {
 
 class UserScriptExtensionBrowserTest : public ExtensionBrowserTest {
  public:
@@ -84,4 +87,5 @@ IN_PROC_BROWSER_TEST_F(UserScriptExtensionBrowserTest, TestBasicInjection) {
             content::EvalJs(GetActiveWebContents(), "document.title"));
 }
 
+}  // namespace
 }  // namespace extensions
