@@ -1566,6 +1566,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetAuthController().ForceSyncCookies(std::move(callback));
   }
 
+  void ClientErrorDialogStateChanged(
+      std::optional<glic::mojom::ClientErrorDialogType> shown_dialog_type)
+      override {
+    if (shown_dialog_type) {
+      glic_service_->GetAuthController().OnClientError();
+    }
+  }
+
   void LogBeginAsyncEvent(uint64_t event_async_id,
                           int32_t task_id,
                           const std::string& event,

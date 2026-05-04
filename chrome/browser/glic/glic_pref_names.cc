@@ -76,6 +76,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kGlicActuationOnWebBlockedForURLs);
 
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
+
+  registry->RegisterBooleanPref(prefs::kGlicPartitionNeedsCookieSync, true);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

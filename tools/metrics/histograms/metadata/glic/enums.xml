@@ -122,6 +122,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:BrowserActiveState) -->
 
+<!-- LINT.IfChange(GlicCheckAuthBeforeLoadOutcome) -->
+
+<enum name="GlicCheckAuthBeforeLoadOutcome">
+  <int value="0" label="Skipped sync: test automation is enabled"/>
+  <int value="1" label="Skipped sync: user must manually sign in"/>
+  <int value="2"
+      label="Skipped sync: GlicCookieSyncOnTokenChange is on and sync is not
+             needed"/>
+  <int value="3" label="Skipped sync: GlicSkipCookieSyncOnOpen is on"/>
+  <int value="4" label="Cookie sync was attempted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/auth_controller.h:CheckAuthBeforeLoadOutcome) -->
+
 <!-- LINT.IfChange(ClientErrorDialogType) -->
 
 <enum name="GlicClientErrorDialogType">

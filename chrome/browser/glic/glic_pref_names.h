@@ -148,6 +148,10 @@ inline constexpr char kGlicActuationOnWebAllowedForURLs[] =
 inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
     "glic.actuation_on_web_blocked_for_urls";
 
+// Boolean pref that tracks if the Glic partition needs a cookie sync.
+inline constexpr char kGlicPartitionNeedsCookieSync[] =
+    "glic.partition_needs_cookie_sync";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

@@ -19,6 +19,22 @@ class GlicCookieSynchronizer;
 
 bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager);
 
+// LINT.IfChange(CheckAuthBeforeLoadOutcome)
+enum class CheckAuthBeforeLoadOutcome {
+  // Test automation is enabled.
+  kAutomationSkipped = 0,
+  // User must manually sign in.
+  kRequiresSignIn = 1,
+  // GlicCookieSyncOnTokenChange is enabled and allowed skipping sync.
+  kTokenChangeNoSyncNeeded = 2,
+  // Skipped due to GlicSkipCookieSyncOnOpen.
+  kSkipOnOpen = 3,
+  // Cookie sync was attempted.
+  kSyncAttempted = 4,
+  kMaxValue = kSyncAttempted,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicCheckAuthBeforeLoadOutcome)
+
 // Decides when to refresh sign-in cookies for the webview.
 class AuthController : public signin::IdentityManager::Observer {
  public:
@@ -33,6 +49,9 @@ class AuthController : public signin::IdentityManager::Observer {
 
   // Sync cookies, even if it appears as though a sync is not required.
   void ForceSyncCookies(base::OnceCallback<void(bool)> callback);
+
+  // Called when the client reports that it has encountered an error.
+  void OnClientError();
 
   // Show the sign-in page. `after_signin` will be called after the user has
   // signed in. It will not be called if the user cancels the sign-in, or the
@@ -49,6 +68,8 @@ class AuthController : public signin::IdentityManager::Observer {
   GlicCookieSynchronizer* GetCookieSynchronizerForTesting() const {
     return cookie_synchronizer_.get();
   }
+
+  bool NeedsSyncForTesting() const;
 
   // signin::IdentityManager::Observer implementation.
   void OnErrorStateOfRefreshTokenUpdatedForAccount(

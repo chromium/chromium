@@ -385,6 +385,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Auth.CheckAuthBeforeLoadOutcome"
+    enum="GlicCheckAuthBeforeLoadOutcome" expires_after="2027-04-27">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the outcome of CheckAuthBeforeLoad in AuthController, indicating why
+    cookie sync was skipped or attempted.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
     enum="BooleanEnabled" expires_after="2026-03-22">
   <owner>birnie@google.com</owner>

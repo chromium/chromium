@@ -1294,6 +1294,10 @@ interface WebClientHandler {
   // webview.
   SyncCookies() => (bool success);
 
+  // Notifies the browser that the client error dialog state has changed.
+  // `shown_dialog_type` is null when no dialog is shown (e.g., it was closed).
+  ClientErrorDialogStateChanged(ClientErrorDialogType? shown_dialog_type);
+
   // Log a begin event in the journal.
   LogBeginAsyncEvent(
       uint64 event_async_id, int32 task_id, string event, string details);
