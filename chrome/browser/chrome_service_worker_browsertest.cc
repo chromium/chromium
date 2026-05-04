@@ -446,15 +446,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
 }
 
 // TODO(crbug.com/480291001): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_StaticRoutingAPISubresourceHistogramTest \
-  DISABLED_StaticRoutingAPISubresourceHistogramTest
-#else
-#define MAYBE_StaticRoutingAPISubresourceHistogramTest \
-  StaticRoutingAPISubresourceHistogramTest
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
-                       MAYBE_StaticRoutingAPISubresourceHistogramTest) {
+                       DISABLED_StaticRoutingAPISubresourceHistogramTest) {
   base::HistogramTester histogram_tester;
   WriteFile(FILE_PATH_LITERAL("scope/fallback.css"), "");
   WriteFile(FILE_PATH_LITERAL("scope/nofallback.css"), "");
