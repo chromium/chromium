@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP Origin Trial Kill-Switched</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- This Origin Trial token was generated with:
+tools/origin_trials/generate_token.py https://web-platform.test:8444/ WebMCP --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A1DWxLRHibb5ZKogrVTN3JoMuSeGOoMuWiGy272OmPuFUzManUB6+mBB40mthlj57hcqsYWWKwA8BPc7sVmHmAwAAABXeyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiV2ViTUNQIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+</head>
+<body>
+<script>
+// This test runs with the WebMCP base::Feature force-disabled, but with a page
+// trying to enable the Origin Trial with a valid token. We assert that
+// `modelContext` is not exposed in this circumstance, so that the page cannot
+// try and reach the browser process, which would terminate the renderer.
+test(t => {
+  assert_false("modelContext" in navigator, "navigator.modelContext should NOT be exposed when the kill-switch is active, even with a valid Origin Trial token!");
+}, "navigator.modelContext is not exposed when WebMCP is kill-switched");
+</script>
+</body>
+</html>

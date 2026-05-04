@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP Origin Trial Enabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- This Origin Trial token was generated with:
+tools/origin_trials/generate_token.py https://web-platform.test:8444/ WebMCP --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A1DWxLRHibb5ZKogrVTN3JoMuSeGOoMuWiGy272OmPuFUzManUB6+mBB40mthlj57hcqsYWWKwA8BPc7sVmHmAwAAABXeyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiV2ViTUNQIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+</head>
+<body>
+<script>
+test(t => {
+  assert_true("modelContext" in navigator, "navigator.modelContext should be exposed when the origin trial token is present");
+}, "navigator.modelContext is exposed via Origin Trial");
+</script>
+</body>
+</html>

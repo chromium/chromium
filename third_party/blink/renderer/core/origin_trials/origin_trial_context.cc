@@ -564,6 +564,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "InstallElement") {
     return base::FeatureList::IsEnabled(blink::features::kInstallElement);
   }
+
+  if (trial_name == "WebMCP") {
+    return base::FeatureList::IsEnabled(blink::features::kWebMCP);
+  }
   return true;
 }
 

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP Origin Trial Disabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+test(t => {
+  assert_false("modelContext" in navigator, "navigator.modelContext should NOT be exposed when no origin trial token is present");
+}, "navigator.modelContext is not exposed by default");
+</script>
+</body>
+</html>

@@ -6598,6 +6598,8 @@
       name: "WebMCP",
       origin_trial_feature_name: "WebMCP",
       public: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
       // Note that `depends_on` isn't supported by origin trials.
       implied_by: [
         "WebMCPDeclarativeFileInput",
