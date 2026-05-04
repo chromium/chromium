@@ -53,6 +53,8 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   vpx_codec_unique_ptr codec_;
   vpx_codec_enc_cfg_t codec_config_ = {};
   vpx_image_t vpx_image_ = {};
+  // True if `vpx_image_` was allocated with vpx_img_alloc().
+  bool vpx_image_owns_memory_ = false;
   gfx::Size originally_configured_size_;
   base::TimeDelta last_frame_timestamp_;
   gfx::ColorSpace last_frame_color_space_;

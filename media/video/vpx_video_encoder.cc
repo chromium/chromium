@@ -907,13 +907,15 @@ void VpxVideoEncoder::RecreateVpxImageIfNeeded(vpx_img_fmt fmt,
                                                bool needs_memory) {
   const bool has_changed = vpx_image_.fmt != fmt ||
                            vpx_image_.d_w != codec_config_.g_w ||
-                           vpx_image_.d_h != codec_config_.g_h;
+                           vpx_image_.d_h != codec_config_.g_h ||
+                           vpx_image_owns_memory_ != needs_memory;
 
   if (!has_changed) {
     return;
   }
 
   vpx_img_free(&vpx_image_);
+  vpx_image_owns_memory_ = needs_memory;
   if (needs_memory) {
     CHECK(vpx_img_alloc(&vpx_image_, fmt, codec_config_.g_w, codec_config_.g_h,
                         /*align=*/1));
