@@ -388,9 +388,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(*element_out);
     }
 
-    // WebUILocationBar for now has PermissionDashboardView as a child,
-    // but that will go away once that's ported.
-    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 2u);
+    ASSERT_EQ((*webui_toolbar_view_out)->children().size(), 1u);
     *web_view_out = views::AsViewClass<views::WebView>(
         (*webui_toolbar_view_out)->children()[0].get());
     ASSERT_TRUE(*web_view_out);

@@ -35,8 +35,10 @@ suite('LocationBar', function() {
           text: 'Not secure',
           isClickable: true,
           isTextDangerous: false,
+          isVisible: true,
         },
         activityIndicators: [],
+        permissionDashboard: null,
       },
     };
     await microtasksFinished();

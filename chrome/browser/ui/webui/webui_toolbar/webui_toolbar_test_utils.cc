@@ -50,9 +50,10 @@ CreateValidNavigationControlsState() {
               toolbar_ui_api::mojom::SecurityChipState::New(
                   toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
                   toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
-                  false, false),
-              std::vector<
-                  toolbar_ui_api::mojom::ContentSettingImageStatePtr>())),
+                  /*is_clickable=*/false, /*is_text_dangerous=*/false,
+                  /*is_visible=*/true),
+              std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
+              /*permission_dashboard=*/nullptr)),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
       /*layout_constants_version=*/0);
 }

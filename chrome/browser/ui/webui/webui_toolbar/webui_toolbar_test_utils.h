@@ -79,6 +79,14 @@ class MockToolbarUIServiceDelegate
               (toolbar_ui_api::mojom::LhsChipIdentifier, bool),
               (override));
   MOCK_METHOD(void,
+              OnLhsChipPointerEntered,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
+  MOCK_METHOD(void,
+              OnLhsChipPointerExited,
+              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (override));
+  MOCK_METHOD(void,
               OnLhsChipExpandAnimationEnded,
               (toolbar_ui_api::mojom::LhsChipIdentifier),
               (override));

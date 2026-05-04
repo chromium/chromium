@@ -130,6 +130,20 @@ void ToolbarUIService::OnLhsChipClicked(
   }
 }
 
+void ToolbarUIService::OnLhsChipPointerEntered(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipPointerEntered(identifier);
+  }
+}
+
+void ToolbarUIService::OnLhsChipPointerExited(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (delegate_) {
+    delegate_->OnLhsChipPointerExited(identifier);
+  }
+}
+
 void ToolbarUIService::OnLhsChipExpandAnimationEnded(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (delegate_) {

@@ -66,6 +66,9 @@ ChipController::ChipController(
 }
 
 ChipController::~ChipController() {
+  if (chip_) {
+    chip_->SetBubbleOwner(nullptr);
+  }
   views::Widget* current = GetBubbleWidget();
   if (current) {
     current->RemoveObserver(this);

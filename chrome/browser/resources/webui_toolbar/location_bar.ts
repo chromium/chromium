@@ -58,8 +58,10 @@ export class LocationBarElement extends CrLitElement {
         text: '',
         isClickable: false,
         isTextDangerous: false,
+        isVisible: true,
       },
       activityIndicators: [],
+      permissionDashboard: null,
     },
   };
 

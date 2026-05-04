@@ -56,6 +56,7 @@ export class LocationIconElement extends CrLitElement {
     text: '',
     isClickable: false,
     isTextDangerous: false,
+    isVisible: true,
   };
 
   accessor clickable: boolean = false;

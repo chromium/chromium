@@ -9,7 +9,10 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -17,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace {
 
@@ -82,6 +86,10 @@ class WebUILocationBarTest : public testing::Test {
         views::Widget::ClosedReason::kCloseButtonClicked, false);
   }
 
+  WebUIPermissionDashboard* permission_dashboard() {
+    return location_bar_->permission_dashboard_.get();
+  }
+
   content::BrowserTaskEnvironment browser_threads_;
   TestingProfile profile_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
@@ -137,6 +145,37 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
     EXPECT_EQ(chip->text, test_case.display_text);
     EXPECT_TRUE(chip->is_clickable);
   }
+}
+
+TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
+  WebUIPermissionChip chip(location_bar_);
+
+  chip.SetVisible(true);
+  chip.SetChipIcon(kCameraIcon);
+  chip.SetMessage(u"Camera in use");
+  chip.SetTooltipText(u"Tooltip");
+  chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  chip.SetUserDecision(permissions::PermissionAction::GRANTED);
+  chip.SetBlockedIconShowing(false);
+  chip.SetPermissionPromptStyle(PermissionPromptStyle::kChip);
+  chip.SetAccessibilityName(u"Camera");
+  chip.AnimateExpand(base::Milliseconds(100));
+
+  auto state = chip.GetState();
+  EXPECT_TRUE(state->is_visible);
+  EXPECT_EQ(state->icon_name, "kCameraIcon");
+  EXPECT_EQ(state->message, u"Camera in use");
+  EXPECT_EQ(state->tooltip, u"Tooltip");
+  EXPECT_EQ(
+      state->theme,
+      toolbar_ui_api::mojom::PermissionChipTheme::kInUseActivityIndicator);
+  EXPECT_EQ(state->user_decision,
+            toolbar_ui_api::mojom::PermissionAction::kGranted);
+  EXPECT_FALSE(state->should_show_blocked_icon);
+  EXPECT_EQ(state->prompt_style,
+            toolbar_ui_api::mojom::PermissionPromptStyle::kChip);
+  EXPECT_FALSE(state->is_fully_collapsed);
+  EXPECT_EQ(state->accessibility_name, u"Camera");
 }
 
 TEST_F(WebUILocationBarTest, HasSecurityStateChanged) {

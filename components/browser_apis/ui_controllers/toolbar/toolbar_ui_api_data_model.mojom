@@ -331,6 +331,62 @@ struct LocationBarState {
 enum LhsChipIdentifier {
   kUnspecified,
   kLocationIcon,
+  kPermissionIndicator,
+  kPermissionRequest,
+};
+
+// Defines the visual styling and color mappings for the permission chip,
+// matching the equivalent C++ views::PermissionChipTheme enum.
+enum PermissionChipTheme {
+  kUnspecified,
+  kNormalVisibility,
+  kLowVisibility,
+  kActivityIndicator,
+  kInUseActivityIndicator,
+  kBlockedActivityIndicator,
+  kOnSystemBlockedActivityIndicator,
+};
+
+// Defines the visual style of the permission prompt, matching the equivalent
+// C++ PermissionPromptStyle enum. This dictates whether the prompt is shown
+// as a bubble, a chip, or a quieter UI treatment.
+enum PermissionPromptStyle {
+  kUnspecified,
+  kBubbleOnly,
+  kChip,
+  kLocationBarRightIcon,
+  kQuietChip,
+};
+
+// Represents the user's decision or action regarding a permission request,
+// matching the equivalent C++ permissions::PermissionAction enum.
+enum PermissionAction {
+  kUnspecified,
+  kGranted,
+  kDenied,
+  kDismissed,
+  kIgnored,
+  kRevoked,
+  kGrantedOnce,
+};
+
+struct PermissionChipState {
+  bool is_visible;
+  string icon_name;
+  mojo_base.mojom.String16 message;
+  mojo_base.mojom.String16 tooltip;
+  PermissionChipTheme theme;
+  PermissionAction user_decision;
+  bool should_show_blocked_icon;
+  PermissionPromptStyle prompt_style;
+  bool is_fully_collapsed;
+  mojo_base.mojom.String16 accessibility_name;
+};
+
+struct PermissionDashboardState {
+  PermissionChipState indicator_chip;
+  PermissionChipState request_chip;
+  bool is_divider_visible;
 };
 
 enum SecurityChipIcon {
@@ -363,6 +419,9 @@ struct SecurityChipState {
   // represents a higher alert state than the standard kDangerous security
   // level, and generally receives a more prominent visual treatment.
   bool is_text_dangerous;
+  // Whether the security chip is visible. It might be hidden if it is
+  // overridden by permission chips.
+  bool is_visible;
 };
 
 // Note: The security chip and permission chips are visually mutually exclusive.
@@ -375,6 +434,8 @@ struct LhsChipsState {
   SecurityChipState security_chip;
   // Multiple indicators can be active (e.g., Camera + Mic).
   array<ContentSettingImageState> activity_indicators;
+
+  PermissionDashboardState? permission_dashboard;
 };
 
 struct NavigationControlsState {

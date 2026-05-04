@@ -21,7 +21,7 @@ class Browser;
 class OmniboxController;
 class OmniboxPopupViewWebUI;
 class PermissionDashboardController;
-class PermissionDashboardView;
+class WebUIPermissionDashboard;
 class Profile;
 class WebUIToolbarWebView;
 
@@ -56,6 +56,8 @@ class WebUILocationBar : public LocationBar,
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
   ChipController* GetChipController() override;
   content::WebContents* GetWebContents() override;
+
+  // LocationBarTesting:
   LocationBarModel* GetLocationBarModel() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
@@ -84,6 +86,10 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
                         bool is_mouse_interaction);
+  void OnLhsChipPointerEntered(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier);
+  void OnLhsChipPointerExited(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier);
   void OnLhsChipCollapseAnimationEnded(
@@ -111,6 +117,10 @@ class WebUILocationBar : public LocationBar,
  private:
   friend class WebUILocationBarTest;
 
+  // Determines whether the location icon should be overridden while a chip is
+  // being displayed.
+  bool ShouldChipOverrideLocationIcon();
+
   void OnMovedOrShown(ui::TrackedElement* element);
   void OnOmniboxFocusChange(
       const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
@@ -127,6 +137,8 @@ class WebUILocationBar : public LocationBar,
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
 
+  void ShowPageInfoBubble();
+
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
@@ -134,9 +146,9 @@ class WebUILocationBar : public LocationBar,
   ui::ElementTracker::Subscription moved_subscription_;
   ui::ElementTracker::Subscription shown_subscription_;
 
+  std::unique_ptr<WebUIPermissionDashboard> permission_dashboard_;
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;
-  raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;

@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -82,21 +82,19 @@ WebUILocationBar::WebUILocationBar(Browser* browser,
     : LocationBar(browser ? browser->command_controller() : nullptr),
       browser_(browser),
       delegate_(delegate),
-      content_setting_image_control_(this) {}
+      content_setting_image_control_(this) {
+  permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
+  permission_dashboard_controller_ =
+      std::make_unique<PermissionDashboardController>(
+          /*location_bar=*/this,
+          /*content_settings_image_delegate=*/this,
+          permission_dashboard_.get());
+}
 
 WebUILocationBar::~WebUILocationBar() = default;
 
 void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
   toolbar_view_ = toolbar_view;
-
-  // TODO(crbug.com/474060773): Replace the View with a WebUI impl.
-  permission_dashboard_view_ =
-      toolbar_view->AddChildView(std::make_unique<PermissionDashboardView>());
-
-  permission_dashboard_controller_ =
-      std::make_unique<PermissionDashboardController>(
-          /*location_bar=*/this,
-          /*content_settings_image_delegate=*/this, permission_dashboard_view_);
 
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
@@ -360,6 +358,9 @@ void WebUILocationBar::Update(content::WebContents* contents) {
 }
 
 void WebUILocationBar::UpdateLhsChipsState() {
+  if (GetLocationBarWidget() && GetLocationBarWidget()->IsClosed()) {
+    return;
+  }
   LocationBarModel* model = GetLocationBarModel();
   bool is_editing_or_empty = IsEditingOrEmpty();
 
@@ -380,8 +381,9 @@ void WebUILocationBar::UpdateLhsChipsState() {
   auto lhs_chips_state = toolbar_ui_api::mojom::LhsChipsState::New(
       toolbar_ui_api::mojom::SecurityChipState::New(
           mojo_security_chip_icon, mojo_security_level, security_chip_text,
-          is_clickable, is_text_dangerous),
-      std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>());
+          is_clickable, is_text_dangerous, !ShouldChipOverrideLocationIcon()),
+      std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
+      permission_dashboard_->GetState());
 
   if (toolbar_view_) {
     toolbar_view_->OnLhsChipsStateChanged(std::move(lhs_chips_state));
@@ -424,6 +426,12 @@ void WebUILocationBar::OnLhsChipMousePressed(
          PageInfoBubbleView::BUBBLE_NONE) ||
         (base::TimeTicks::Now() - last_page_info_bubble_close_time_ <
          views::kMinimumTimeBetweenButtonClicks);
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnMousePressed();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnMousePressed();
   }
 }
 
@@ -442,22 +450,32 @@ void WebUILocationBar::OnPageInfoBubbleClosed(
 void WebUILocationBar::OnLhsChipClicked(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier,
     bool is_mouse_interaction) {
-  if (identifier != toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
-    return;
-  }
-
-  // Prevent reopening the bubble if it was just closed by this exact click.
-  // We only suppress mouse interactions because keyboard activations (e.g.
-  // pressing Enter) do not cause native focus loss and therefore don't suffer
-  // from this race condition. This matches the native Views implementation in
-  // IconLabelBubbleView::IsTriggerableEvent.
-  if (is_mouse_interaction) {
-    if (suppress_lhs_chip_clicked_) {
-      suppress_lhs_chip_clicked_ = false;
-      return;
+  if (identifier == toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
+    // Prevent reopening the bubble if it was just closed by this exact click.
+    // We only suppress mouse interactions because keyboard activations (e.g.
+    // pressing Enter) do not cause native focus loss and therefore don't suffer
+    // from this race condition. This matches the native Views implementation in
+    // IconLabelBubbleView::IsTriggerableEvent.
+    if (is_mouse_interaction) {
+      if (suppress_lhs_chip_clicked_) {
+        suppress_lhs_chip_clicked_ = false;
+        return;
+      }
     }
-  }
 
+    ShowPageInfoBubble();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnClicked();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnClicked();
+  } else {
+    NOTREACHED();
+  }
+}
+
+void WebUILocationBar::ShowPageInfoBubble() {
   // WebContents can be null during window teardown/startup, or if the tab
   // crashed/closed while this asynchronous IPC was in flight. We return early
   // rather than CHECKing to avoid crashing the browser in these edge cases.
@@ -488,16 +506,49 @@ void WebUILocationBar::OnLhsChipClicked(
   bubble->GetWidget()->Show();
 }
 
+void WebUILocationBar::OnLhsChipPointerEntered(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (identifier ==
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnMouseEntered();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnMouseEntered();
+  }
+}
+
+void WebUILocationBar::OnLhsChipPointerExited(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (identifier ==
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnMouseExited();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnMouseExited();
+  }
+}
+
 void WebUILocationBar::OnLhsChipExpandAnimationEnded(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
-  NOTIMPLEMENTED();
+  if (identifier ==
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnExpandAnimationEnded();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnExpandAnimationEnded();
+  }
 }
 
 void WebUILocationBar::OnLhsChipCollapseAnimationEnded(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
-  NOTIMPLEMENTED();
+  if (identifier ==
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
+    permission_dashboard_->request_chip()->OnCollapseAnimationEnded();
+  } else if (identifier ==
+             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
+    permission_dashboard_->indicator_chip()->OnCollapseAnimationEnded();
+  }
 }
-
 bool WebUILocationBar::ShouldHideContentSettingImage() {
   if (omnibox_controller_->edit_model()->user_input_in_progress()) {
     return true;
@@ -528,6 +579,11 @@ OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
     const {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
+  return permission_dashboard_->GetIndicatorChip()->GetVisible() ||
+         permission_dashboard_->GetRequestChip()->GetVisible();
 }
 
 void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {

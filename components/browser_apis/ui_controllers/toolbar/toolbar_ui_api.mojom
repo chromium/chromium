@@ -71,6 +71,13 @@ interface ToolbarUIService {
   // due to native focus loss.
   OnLhsChipClicked(LhsChipIdentifier identifier, bool is_mouse_interaction);
 
+  // Called when an LHS permission chip pointerenter event is fired.
+  OnLhsChipPointerEntered(LhsChipIdentifier identifier);
+
+  // Called when an LHS permission chip pointerleave or pointercancel event is
+  // fired.
+  OnLhsChipPointerExited(LhsChipIdentifier identifier);
+
   // Called when an expand animation finishes.
   OnLhsChipExpandAnimationEnded(LhsChipIdentifier identifier);
 

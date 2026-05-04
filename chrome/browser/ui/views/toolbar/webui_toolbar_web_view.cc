@@ -214,8 +214,10 @@ WebUIToolbarWebView::WebUIToolbarWebView(
           toolbar_ui_api::mojom::SecurityChipState::New(
               toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
               toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
-              false, false),
-          std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>());
+              /*is_clickable=*/false, /*is_text_dangerous=*/false,
+              /*is_visible=*/true),
+          std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
+          /*permission_dashboard=*/nullptr);
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
 
@@ -761,6 +763,20 @@ void WebUIToolbarWebView::OnLhsChipClicked(
     bool is_mouse_interaction) {
   if (location_bar_) {
     location_bar_->OnLhsChipClicked(identifier, is_mouse_interaction);
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipPointerEntered(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipPointerEntered(identifier);
+  }
+}
+
+void WebUIToolbarWebView::OnLhsChipPointerExited(
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (location_bar_) {
+    location_bar_->OnLhsChipPointerExited(identifier);
   }
 }
 
