@@ -181,18 +181,6 @@ InvalidatableInterpolation::EnsureValidConversion(
       MaybeConvertPairwise(environment, underlying_value_owner);
   if (pairwise_conversion) {
     cached_value_ = pairwise_conversion->InitialValue();
-
-    if (current_iteration_composite_ ==
-        EffectModel::kIterationCompositeAccumulate) {
-      // Use the final keyframe value when accumulating across iterations.
-      if (final_keyframe_ && final_keyframe_ != end_keyframe_) {
-        cached_end_value_ = ConvertSingleKeyframe(*final_keyframe_, environment,
-                                                  underlying_value_owner);
-      } else {
-        cached_end_value_ = ConvertSingleKeyframe(*end_keyframe_, environment,
-                                                  underlying_value_owner);
-      }
-    }
     cached_pair_conversion_ = std::move(pairwise_conversion);
   } else {
     cached_pair_conversion_ = MakeGarbageCollected<FlipPrimitiveInterpolation>(
@@ -200,18 +188,15 @@ InvalidatableInterpolation::EnsureValidConversion(
                               underlying_value_owner),
         ConvertSingleKeyframe(*end_keyframe_, environment,
                               underlying_value_owner));
+  }
 
+  if (current_iteration_composite_ ==
+      EffectModel::kIterationCompositeAccumulate) {
     // Use the final keyframe value when accumulating across iterations.
-    if (current_iteration_composite_ ==
-        EffectModel::kIterationCompositeAccumulate) {
-      if (final_keyframe_ && final_keyframe_ != end_keyframe_) {
-        cached_end_value_ = ConvertSingleKeyframe(*final_keyframe_, environment,
-                                                  underlying_value_owner);
-      } else {
-        cached_end_value_ = ConvertSingleKeyframe(*end_keyframe_, environment,
-                                                  underlying_value_owner);
-      }
-    }
+    PropertySpecificKeyframe* keyframe =
+        final_keyframe_ ? final_keyframe_ : end_keyframe_;
+    cached_end_value_ =
+        ConvertSingleKeyframe(*keyframe, environment, underlying_value_owner);
   }
 
   cached_iteration_composite_ = current_iteration_composite_;
@@ -275,7 +260,8 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
   if (current_iteration_ <= 0 ||
       current_iteration_composite_ !=
           EffectModel::kIterationCompositeAccumulate ||
-      !cached_end_value_ || !cached_value_) {
+      !cached_end_value_ || !cached_value_ ||
+      cached_end_value_->GetType() != cached_value_->GetType()) {
     return;
   }
 
