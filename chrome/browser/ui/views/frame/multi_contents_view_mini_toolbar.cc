@@ -49,6 +49,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "url/url_constants.h"
 
 namespace {
 constexpr int kMiniToolbarContentPadding = 4;
@@ -190,6 +191,8 @@ void MultiContentsViewMiniToolbar::UpdateContents() {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
   } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
+  } else if (domain_url.IsAboutBlank()) {
+    domain = url::kAboutBlankURL16;
   } else if (tab_ui_helper->ShouldDisplayURL()) {
     domain = url_formatter::FormatUrl(
         domain_url,

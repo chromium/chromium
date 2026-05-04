@@ -21,6 +21,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -103,6 +104,8 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
   } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
+  } else if (domain_url.IsAboutBlank()) {
+    domain = url::kAboutBlankURL16;
   } else {
     if (tab_data.should_display_url) {
       is_domain_url = true;
