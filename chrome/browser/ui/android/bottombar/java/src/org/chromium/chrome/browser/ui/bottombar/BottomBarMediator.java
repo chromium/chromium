@@ -71,7 +71,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         mShouldIncludeHomeButton = shouldIncludeHomeButton;
         mProfileSupplier = profileSupplier;
 
-        mProfileSupplier.addSyncObserver(mProfileObserver);
+        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -116,7 +116,13 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     }
 
     private void updateGlicVisibility(@Nullable Profile profile) {
-        boolean isGlicVisible = profile != null && GlicEnabling.isEnabledForProfile(profile);
+        if (profile == null) {
+            mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, false);
+            return;
+        }
+        // We only care about whether the original profile allows GLIC. To disable on OTR profiles
+        // we rely on the button state which is set elsewhere.
+        boolean isGlicVisible = GlicEnabling.isEnabledForProfile(profile.getOriginalProfile());
         mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, isGlicVisible);
     }
 
