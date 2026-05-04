@@ -985,10 +985,8 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
       app_dict.Set("name", app.name);
       app_dict.Set("effective_display_mode",
                    static_cast<int>(app.effective_display_mode));
-      if (app.user_display_mode.has_value()) {
-        app_dict.Set("user_display_mode",
-                     static_cast<int>(app.user_display_mode.value()));
-      }
+      app_dict.Set("user_display_mode",
+                   static_cast<int>(app.effective_display_mode));
       app_dict.Set("manifest_launcher_icon_filename",
                    app.manifest_launcher_icon_filename);
       app_dict.Set("install_state", app.install_state);
@@ -4239,7 +4237,6 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   }
   web_app::test::CompletePageLoadForAllWebContents();
-
   // Updates are triggered by the page load completing, so wait for them to
   // finish.
   if (provider()) {
