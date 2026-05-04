@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_TOOLBAR;
@@ -12,10 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -36,6 +37,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
@@ -61,13 +63,6 @@ public class ToolbarTabletTest {
     private ToolbarTablet mToolbar;
     private WebPageStation mPage;
 
-    @BeforeClass
-    public static void setupClass() {
-        // Setting touch mode: false allows us to test the button's focused appearance.
-        // It seems like touch mode has to be configured during setup.
-        InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
-    }
-
     @Before
     public void setUp() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -78,9 +73,38 @@ public class ToolbarTabletTest {
     @SmallTest
     @Feature("RenderTest")
     public void testLastOmniboxButtonFocus_notClipped() throws IOException {
+        // Transition to URL focused state, which expands the Omnibox on tablets.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.onUrlFocusChange(true));
+
         var bookmarkButton = mToolbar.findViewById(R.id.bookmark_button);
-        ThreadUtils.runOnUiThreadBlocking(() -> bookmarkButton.requestFocus());
+
+        // Wait for the button to be visible and then request focus. We explicitly set
+        // focusableInTouchMode to true because the system-wide touch mode state is often
+        // unpredictable in instrumentation tests.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bookmark button is not visible",
+                            bookmarkButton.getVisibility(),
+                            is(View.VISIBLE));
+                });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bookmarkButton.setFocusableInTouchMode(true);
+                    bookmarkButton.requestFocus();
+                });
+
+        // Wait for focus to be acquired and for the layout to stabilize (ensures the focus ripple
+        // has finished its initial draw).
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bookmark button should be focused",
+                            bookmarkButton.isFocused(),
+                            is(true));
+                });
+        ViewUtils.waitForStableView(mToolbar);
+
         mRenderTestRule.render(mToolbar, "last_button_focused");
     }
 
