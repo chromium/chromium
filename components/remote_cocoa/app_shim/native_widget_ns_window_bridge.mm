@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cert/x509_util_apple.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/animation_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
@@ -52,6 +53,7 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/display/display.h"
@@ -636,6 +638,10 @@ void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
     const gfx::Size& minimum_content_size,
     const std::optional<gfx::Size>& maximum_content_size) {
+  // Discard any pending live resizes.
+  live_resize_.pending_window_frame = std::nullopt;
+  live_resize_.queued_pending_window_frame = std::nullopt;
+
   // -[NSWindow contentMinSize] and [NSWindow contentMaxSize] are only checked
   // by Cocoa for user-initiated resizes. This is not what toolkit-views
   // expects, so clamp.
@@ -1894,6 +1900,12 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
     return;
   compositor_frame_dip_size_ = frame_dip_size;
 
+  // Update the contents atomically with the NSWindow frame resize.
+  std::optional<ScopedCAActionDisabler> disabler;
+  if (live_resize_.pending_window_frame.has_value()) {
+    disabler.emplace();
+  }
+
   // Update the DisplayCALayerTree with the most recent CALayerParams, to make
   // the content display on-screen.
   display_ca_layer_tree_->UpdateCALayerTree(std::move(ca_layer_params));
@@ -1904,6 +1916,21 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
   if (invalidate_shadow_on_frame_swap_) {
     invalidate_shadow_on_frame_swap_ = false;
     [window_ invalidateShadow];
+  }
+
+  // If this frame is in response to a live-resize, then update the NSWindow's
+  // frame now.
+  if (live_resize_.pending_window_frame.has_value()) {
+    [window_ setFrame:live_resize_.pending_window_frame.value()
+              display:YES
+              animate:NO];
+
+    // If a subsequent resize came in, send the new size to the compositor now.
+    live_resize_.pending_window_frame =
+        std::exchange(live_resize_.queued_pending_window_frame, std::nullopt);
+    if (live_resize_.pending_window_frame.has_value()) {
+      SendWindowFrameChangeToHost(live_resize_.pending_window_frame.value());
+    }
   }
 }
 
@@ -2061,25 +2088,61 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   OrderChildren();
 }
 
-void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
-  gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect([window_ frame]);
-  gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
-      [window_ contentRectForFrameRect:[window_ frame]]);
-  bool content_resized = content_dip_size_ != content_in_screen.size();
-  content_dip_size_ = content_in_screen.size();
+void NativeWidgetNSWindowBridge::OnLiveResizeToFrame(NSRect new_window_frame) {
+  // If there is a pending live resize, just queue the resize request (wait for
+  // the compositor to produce a frame of the previously-requested size before
+  // asking it for a new one).
+  if (live_resize_.pending_window_frame.has_value()) {
+    if (gfx::Size(new_window_frame.size) ==
+        gfx::Size(live_resize_.pending_window_frame->size)) {
+      // If this request is the same as the pending live resize request, just
+      // discard it.
+      live_resize_.queued_pending_window_frame = std::nullopt;
+    } else {
+      live_resize_.queued_pending_window_frame = new_window_frame;
+    }
+    return;
+  }
 
-  host_->OnWindowGeometryChanged(window_in_screen, content_in_screen);
+  // Tell the compositor about the new frame, so it can produce the right
+  // sized frame. We will call -[NSWindow setFrame:] when the compositor
+  // produces the frame.
+  live_resize_.pending_window_frame = new_window_frame;
+  SendWindowFrameChangeToHost(new_window_frame);
+}
+
+void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
+  // When a live resize is in progress, do not read the window's frame. Continue
+  // to use the pending size.
+  if (live_resize_.pending_window_frame.has_value()) {
+    return;
+  }
+
+  const auto content_dip_size_before = content_dip_size_;
+  SendWindowFrameChangeToHost([window_ frame]);
+  bool content_resized = content_dip_size_before != content_dip_size_;
 
   CheckAndNotifyZoomedStateChanged();
   CheckAndNotifyAllWorkspacesStateChanged();
 
-  if (content_resized && !ca_transaction_sync_suppressed_)
+  if (content_resized && !ca_transaction_sync_suppressed_ &&
+      !base::FeatureList::IsEnabled(features::kCATransactionV2)) {
     ui::CATransactionCoordinator::Get().Synchronize();
+  }
 
   // For a translucent window, the shadow calculation needs to be carried out
   // after the frame from the compositor arrives.
   if (content_resized && ![window_ isOpaque])
     invalidate_shadow_on_frame_swap_ = true;
+}
+
+void NativeWidgetNSWindowBridge::SendWindowFrameChangeToHost(
+    NSRect new_window_frame) {
+  gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect(new_window_frame);
+  gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
+      [window_ contentRectForFrameRect:new_window_frame]);
+  content_dip_size_ = content_in_screen.size();
+  host_->OnWindowGeometryChanged(window_in_screen, content_in_screen);
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {

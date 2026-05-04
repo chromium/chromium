@@ -65,6 +65,8 @@ extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
 #if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kOnlyUseWindowResizeHelperOnResize);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kCATransactionV2);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)

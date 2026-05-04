@@ -15,7 +15,19 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/resize_utils.h"
+
+enum NSWindowLiveResizeEdge {
+  kLeftEdge = 1 << 0,
+  kBottomEdge = 1 << 1,
+  kRightEdge = 1 << 2,
+  kTopEdge = 1 << 3
+};
+
+@interface NSWindow (SPI)
+- (NSWindowLiveResizeEdge)liveResizeEdges;
+@end
 
 @implementation ViewsNSWindowDelegate {
  @private
@@ -142,31 +154,55 @@
 }
 
 - (NSSize)windowWillResize:(NSWindow*)window toSize:(NSSize)size {
-  if (!_aspectRatio)
-    return size;
+  const NSRect windowFrame = [window frame];
+  if (_aspectRatio) {
+    if (!_resizingHorizontally) {
+      const auto widthDelta = size.width - windowFrame.size.width;
+      const auto heightDelta = size.height - windowFrame.size.height;
+      _resizingHorizontally = std::abs(widthDelta) > std::abs(heightDelta);
+    }
 
-  if (!_resizingHorizontally) {
-    const auto widthDelta = size.width - [window frame].size.width;
-    const auto heightDelta = size.height - [window frame].size.height;
-    _resizingHorizontally = std::abs(widthDelta) > std::abs(heightDelta);
+    gfx::Rect resizedWindowRect(gfx::Point(windowFrame.origin),
+                                gfx::Size(size));
+
+    std::optional<gfx::Size> maxSizeParam;
+    gfx::Size maxSize([window maxSize]);
+    if (!maxSize.IsEmpty()) {
+      maxSizeParam = maxSize;
+    }
+
+    gfx::SizeRectToAspectRatioWithExcludedMargin(
+        *_resizingHorizontally ? gfx::ResizeEdge::kRight
+                               : gfx::ResizeEdge::kBottom,
+        *_aspectRatio, gfx::Size([window minSize]), maxSizeParam,
+        _excludedMargin, resizedWindowRect);
+    // Discard any updates to |resizedWindowRect| origin as Cocoa takes care of
+    // that.
+    size = resizedWindowRect.size().ToCGSize();
   }
 
-  gfx::Rect resizedWindowRect(gfx::Point([window frame].origin),
-                              gfx::Size(size));
+  // For live-resize, reject the automatic resize. Instead, tell the compositor
+  // to produce a frame of the new size, and then call -[NSWindow setFrame:]
+  // when the new frame is ready.
+  if (base::FeatureList::IsEnabled(features::kCATransactionV2) &&
+      [_parent->ns_window() inLiveResize]) {
+    NSRect newWindowFrame = windowFrame;
+    newWindowFrame.size = size;
 
-  std::optional<gfx::Size> maxSizeParam;
-  gfx::Size maxSize([window maxSize]);
-  if (!maxSize.IsEmpty())
-    maxSizeParam = maxSize;
+    NSWindowLiveResizeEdge edge = [_parent->ns_window() liveResizeEdges];
+    if (edge & kLeftEdge) {
+      newWindowFrame.origin.x -=
+          newWindowFrame.size.width - windowFrame.size.width;
+    }
+    if (edge & kBottomEdge) {
+      newWindowFrame.origin.y -=
+          newWindowFrame.size.height - windowFrame.size.height;
+    }
 
-  gfx::SizeRectToAspectRatioWithExcludedMargin(
-      *_resizingHorizontally ? gfx::ResizeEdge::kRight
-                             : gfx::ResizeEdge::kBottom,
-      *_aspectRatio, gfx::Size([window minSize]), maxSizeParam, _excludedMargin,
-      resizedWindowRect);
-  // Discard any updates to |resizedWindowRect| origin as Cocoa takes care of
-  // that.
-  return resizedWindowRect.size().ToCGSize();
+    _parent->OnLiveResizeToFrame(newWindowFrame);
+    return windowFrame.size;
+  }
+  return size;
 }
 
 - (void)windowWillStartLiveResize:(NSNotification*)notification {

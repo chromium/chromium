@@ -365,6 +365,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   base::WeakPtr<NativeWidgetNSWindowBridge> GetWeakPtr();
 
+  // Called by the NSWindowDelegate to cause a live-resize step to the specified
+  // frame.
+  void OnLiveResizeToFrame(NSRect new_window_frame);
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 
@@ -409,6 +413,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Restores the initial collection behavior after temporarily changing it in
   // `MoveToActiveFullscreenSpace()`.
   void RestoreCollectionBehavior();
+
+  // Update `host_` and its compositor with a new NSWindow frame size. This
+  // can be done in response to the -[NSWindow frame] attribute changing, or
+  // in anticipation of a live-resize step.
+  void SendWindowFrameChangeToHost(NSRect new_window_frame);
 
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;
@@ -462,6 +471,22 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   // Manager of fullscreen state transitions.
   NativeWidgetNSWindowFullscreenController fullscreen_controller_{this};
+
+  // State for live resize.
+  struct LiveResizeState {
+    // If non-nullopt, then this is the frame that the window is being
+    // live-resized to. Once a compositor frame of this size arrives, we will
+    // call -[NSWindow setFrame:] with this frame.
+    std::optional<NSRect> pending_window_frame;
+
+    // This can only be non-nullopt if `pending_window_frame` is also
+    // non-nullopt. It is the next requested window frame for live-resize. It
+    // has not been sent to the compositor yet. It will be sent to the
+    // compositor only once the compositor has produced a frame for the size of
+    // `pending_window_frame`.
+    std::optional<NSRect> queued_pending_window_frame;
+  };
+  LiveResizeState live_resize_;
 
   // If true, the window is either visible, or wants to be visible but is
   // currently hidden due to having a hidden parent.
