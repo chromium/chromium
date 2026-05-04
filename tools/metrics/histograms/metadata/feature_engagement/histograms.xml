@@ -648,6 +648,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_SignInBenefitsNewSignin"
       summary="IPH informing signed-in users of benefits after the
                sync-to-signin migration."/>
+  <variant name="IPH_SiteControls"
+      summary="educating users that site controls have moved to the app menu"/>
   <variant name="IPH_SupervisedUserProfileSignin"
       summary="informing supervised users about parental controls"/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>
