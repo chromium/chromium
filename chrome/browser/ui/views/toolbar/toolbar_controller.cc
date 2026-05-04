@@ -870,7 +870,9 @@ void ToolbarController::PopulateMenu(views::MenuItemView* parent) {
     }
   }
 
-  parent->GetSubmenu()->InvalidateLayout();
+  if (parent->HasSubmenu()) {
+    parent->GetSubmenu()->InvalidateLayout();
+  }
 }
 
 void ToolbarController::ShowMenu() {
