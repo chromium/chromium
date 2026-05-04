@@ -336,9 +336,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [ChromeEarlGrey openNewTab];
 
   // Check the What's New.
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
@@ -350,9 +352,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_tap()];
 
   // Check the ReadingList.
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_READING_LIST)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
@@ -364,9 +368,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_tap()];
 
   // Check the RecentTabs.
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
@@ -379,9 +385,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_tap()];
 
   // Check the History.
-  [[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_SUGGESTIONS_HISTORY)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
@@ -1166,15 +1174,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:magicStackScrollView];
 
-  // Scroll down to find the MagicStack.
-  [[[EarlGrey selectElementWithMatcher:magicStackScrollView]
+  // Scroll down to find the Safety Check module inside the Magic Stack.
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           safety_check::kSafetyCheckViewID)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
       onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Verify safety check module title is visible.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          safety_check::kSafetyCheckViewID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Swipe to next module
