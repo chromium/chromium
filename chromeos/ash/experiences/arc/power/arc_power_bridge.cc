@@ -382,7 +382,8 @@ void ArcPowerBridge::NotifyAndroidIdleState(ArcBridgeService* bridge,
   ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(
       state == IdleState::ACTIVE);
 
-  for (auto& observer : observer_list_) {
+  // A state can be updated upon other observer events.
+  for (auto& observer : observer_list_.GetReentrantRange()) {
     observer.OnAndroidIdleStateChange(state);
   }
 }
