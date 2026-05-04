@@ -27,7 +27,7 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/sheet_header"
         android:layout_width="match_parent"
-        android:minHeight="@dimen/keyboard_accessory_height"
+        android:minHeight="@dimen/keyboard_accessory_sheet_title_height"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"

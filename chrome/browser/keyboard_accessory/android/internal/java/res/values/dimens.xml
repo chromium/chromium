@@ -11,7 +11,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_bar_dynamic_positioning_max_width">640dp</dimen>
     <dimen name="keyboard_accessory_bar_dynamic_positioning_horizontal_margin">20dp</dimen>
     <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
-    <dimen name="keyboard_accessory_height">48dp</dimen>
+    <dimen name="keyboard_accessory_sheet_title_height">48dp</dimen>
     <!-- TODO: crbug.com/385172647 - Remove redesign suffix from all dimensions. -->
     <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_height_with_shadow_redesign">72dp</dimen>
