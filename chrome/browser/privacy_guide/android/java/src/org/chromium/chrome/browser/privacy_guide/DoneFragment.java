@@ -42,13 +42,9 @@ public class DoneFragment extends PrivacyGuideBasePage {
                         || getPrivacySandboxBridge().isRestrictedNoticeEnabled())) {
             ChromeImageButton psButton = view.findViewById(R.id.ps_button);
             psButton.setOnClickListener(this::onPsButtonClick);
-
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
-                TextView privacySandboxDescription = view.findViewById(R.id.ps_description);
-                privacySandboxDescription.setText(
-                        R.string.privacy_guide_privacy_sandbox_description_ad_topics);
-            }
+            TextView privacySandboxDescription = view.findViewById(R.id.ps_description);
+            privacySandboxDescription.setText(
+                    R.string.privacy_guide_privacy_sandbox_description_ad_topics);
         } else {
             view.findViewById(R.id.ps_heading).setVisibility(View.GONE);
             view.findViewById(R.id.ps_explanation).setVisibility(View.GONE);

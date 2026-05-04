@@ -40,7 +40,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
 @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
 public class DoneFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -180,17 +179,5 @@ public class DoneFragmentTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.privacy_guide_privacy_sandbox_description_ad_topics);
         assertEquals(mPrivacySandboxDescriptionText, privacySandboxDescriptionAdTopicsString);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
-    public void testPrivacySandboxDescriptionIsDisplayedWhenAdTopicsIsDisabled() {
-        setPrivacySandboxState(false, false);
-        initFragment();
-
-        String privacySandboxDescriptionString =
-                ApplicationProvider.getApplicationContext()
-                        .getString(R.string.privacy_guide_privacy_sandbox_description);
-        assertEquals(mPrivacySandboxDescriptionText, privacySandboxDescriptionString);
     }
 }

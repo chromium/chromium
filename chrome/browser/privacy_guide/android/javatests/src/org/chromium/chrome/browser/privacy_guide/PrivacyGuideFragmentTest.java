@@ -90,9 +90,6 @@ import java.util.Map;
 /** Tests {@link PrivacyGuideFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
-})
 @DisableFeatures({
     ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION

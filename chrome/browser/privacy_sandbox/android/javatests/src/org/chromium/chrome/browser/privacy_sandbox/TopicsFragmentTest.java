@@ -49,7 +49,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -137,10 +136,6 @@ public final class TopicsFragmentTest {
                                         withText(R.string.settings_topics_page_toggle_label)))));
     }
 
-    private View getTopicsRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label_v2);
-    }
-
     private View getTopicsRootViewAdTopicsContentParity() {
         return getRootViewSanitized(R.string.settings_ad_topics_page_toggle_sub_label);
     }
@@ -166,37 +161,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void testRenderTopicsOff() throws IOException {
-        setTopicsPrefEnabled(false);
-        startTopicsSettings();
-        mRenderTestRule.render(getTopicsRootView(), "topics_page_off");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void testRenderTopicsEmpty() throws IOException {
-        setTopicsPrefEnabled(true);
-        startTopicsSettings();
-        mRenderTestRule.render(getTopicsRootView(), "topics_page_empty");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void testRenderTopicsPopulated() throws IOException {
-        setTopicsPrefEnabled(true);
-        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-        mRenderTestRule.render(getTopicsRootView(), "topic_page_populated");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
     public void testRenderBlockedTopicsEmpty() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -217,29 +181,6 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void adTopicsDisclaimerMetrics() throws IOException {
-        setTopicsPrefEnabled(true);
-        startTopicsSettings();
-        String disclaimerText =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .getResources()
-                        .getString(R.string.settings_ad_topics_page_disclaimer_clank);
-        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
-        ViewUtils.onViewWaiting(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(matcherText))));
-        onView(withText(matcherText)).check(matches(isDisplayed()));
-        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
-        assertEquals(
-                1,
-                mUserActionTester.getActionCount(
-                        "Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void adTopicsDisclaimerMetricsAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -257,16 +198,6 @@ public final class TopicsFragmentTest {
                 1,
                 mUserActionTester.getActionCount(
                         "Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked"));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void testRenderTopicsOffV2() throws IOException {
-        setTopicsPrefEnabled(false);
-        startTopicsSettings();
-        mRenderTestRule.render(getTopicsRootView(), "topics_page_off_v2");
     }
 
     @Test
@@ -418,47 +349,6 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
-    public void testUnblockTopics() {
-        setTopicsPrefEnabled(true);
-        mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-
-        // Open the blocked Topics sub-page
-        clickRecyclerViewItemWithText(mBlockedTopicsHeadingText);
-        onViewWaiting(withText(mBlockedTopicsHeadingText));
-
-        // Unblock the first Topic
-        clickImageButtonNextToText(TOPIC_NAME_1);
-        onView(withText(TOPIC_NAME_1)).check(doesNotExist());
-
-        // Unblock the second Topic
-        clickImageButtonNextToText(TOPIC_NAME_2);
-        onView(withText(TOPIC_NAME_2)).check(doesNotExist());
-
-        // Check that the empty state UI is displayed when the Topic list is empty.
-        onView(withText(R.string.settings_topics_page_blocked_topics_description_empty_text_v2))
-                .check(matches(isDisplayed()));
-
-        // Go back to the main Topics fragment
-        pressBack();
-        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2));
-
-        // Verify that the Topics are unblocked
-        onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
-        onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
-
-        // Verify that actions are sent
-        assertThat(
-                mUserActionTester.getActions(),
-                hasItems(
-                        "Settings.PrivacySandbox.Topics.BlockedTopicsOpened",
-                        "Settings.PrivacySandbox.Topics.TopicAdded"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testUnblockTopicsAdTopicsContentParity() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
@@ -575,7 +465,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsOffV2AdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
@@ -587,7 +476,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsEmptyAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
@@ -599,7 +487,6 @@ public final class TopicsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testRenderTopicsPopulatedAdTopicsContentParity() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);

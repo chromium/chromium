@@ -566,8 +566,6 @@ public abstract class ChromeFeatureList {
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
     public static final String PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION =
             "PrivacySandboxAdPrivacyUxDeprecation";
-    public static final String PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY =
-            "PrivacySandboxAdTopicsContentParity";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
     public static final String PROCESS_RANK_POLICY_ANDROID = "ProcessRankPolicyAndroid";
     public static final String PROTECT_RECENTLY_VISIBLE_TAB = "ProtectRecentlyVisibleTab";

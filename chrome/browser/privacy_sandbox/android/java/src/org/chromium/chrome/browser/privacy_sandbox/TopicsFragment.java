@@ -8,7 +8,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -120,10 +119,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void maybeApplyAdTopicsContentParity() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
-            return;
-        }
         mTopicsTogglePreference.setSummary(
                 getResources().getString(R.string.settings_ad_topics_page_toggle_sub_label));
         mActiveTopicsPreference.setSummary(
@@ -145,17 +140,12 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                 "</link2>",
                                 new ChromeClickableSpan(
                                         getContext(), this::onCookieSettingsLink))));
-        @StringRes int disclaimerStringResId = R.string.settings_ad_topics_page_disclaimer_clank;
-        // Use the updated disclaimer text if the Ad Topics Content Parity feature is enabled.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
-            disclaimerStringResId = R.string.settings_ad_topics_page_disclaimer_v2_clank;
-        }
         ClickableSpansTextMessagePreference disclaimerPreference =
                 findPreference(TOPICS_DISCLAIMER);
         disclaimerPreference.setSummary(
                 SpanApplier.applySpans(
-                        getResources().getString(disclaimerStringResId),
+                        getResources()
+                                .getString(R.string.settings_ad_topics_page_disclaimer_v2_clank),
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",

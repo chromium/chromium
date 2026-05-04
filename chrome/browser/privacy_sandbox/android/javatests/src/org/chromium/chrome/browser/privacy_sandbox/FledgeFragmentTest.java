@@ -48,7 +48,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -544,26 +543,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
-    @DisableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
-        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT
-    })
-    public void testFooterTopicsLink() throws IOException {
-        setFledgePrefEnabled(true);
-        startFledgeSettings();
-        // Open a Topics settings activity.
-        onView(withText(containsString("ad topics"))).perform(clickOnClickableSpan(0));
-        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2))
-                .check(matches(isDisplayed()));
-        // Close the additional activity by navigating back.
-        pressBack();
-    }
-
-    @Test
-    @SmallTest
-    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
     @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testFooterTopicsLinkAdTopicsContentParity() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
