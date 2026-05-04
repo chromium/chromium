@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `wasm-bindgen-macro-support-0.2.120` crate.
+// `futures-util-0.3.32` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.

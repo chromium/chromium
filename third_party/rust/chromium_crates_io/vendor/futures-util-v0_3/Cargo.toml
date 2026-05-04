@@ -1,0 +1,58 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `futures-util-0.3.32` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "futures-util"
+version = "0.3.32"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"alloc" = []
+"async-await" = []
+"async-await-macro" = []
+"bilock" = []
+"cfg-target-has-atomic" = []
+"channel" = []
+"compat" = []
+"default" = []
+"futures-channel" = []
+"futures-io" = []
+"futures-macro" = []
+"futures-sink" = []
+"futures_01" = []
+"io" = []
+"io-compat" = []
+"libc" = []
+"memchr" = []
+"portable-atomic" = []
+"sink" = []
+"slab" = []
+"spin" = []
+"std" = []
+"tokio-io" = []
+"unstable" = []
+"write-all-vectored" = []
+
+[dependencies.futures-core]
+version = "^0.3.32"
+default_features = false
+[dependencies.futures-task]
+version = "^0.3.32"
+default_features = false
+[dependencies.pin-project-lite]
+version = "^0.2.6"
+default_features = false
+[dependencies.slab]
+version = "^0.4.7"
+default_features = false
