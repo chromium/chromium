@@ -122,6 +122,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_add_credit_card_mediator_unittest.mm",
     "autofill_credit_card_table_view_controller_unittest.mm",
+    "autofill_profile_table_view_controller+testing.h",
     "autofill_profile_table_view_controller_unittest.mm",
     "autofill_settings_profile_edit_table_view_controller_unittest.mm",
   ]
@@ -143,6 +144,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/util",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled:test_support",
     "//ios/chrome/browser/settings/ui_bundled/autofill/cells",

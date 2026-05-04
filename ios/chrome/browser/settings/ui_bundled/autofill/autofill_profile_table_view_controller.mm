@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -429,6 +430,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   item.typeDescription =
       base::SysUTF16ToNSString(instance.type().GetNameForI18n());
   item.guid = instance.guid();
+  item.entityTypeName = instance.type().name();
 
   if (instance.IsServerInstance()) {
     item.isServerWalletItem = YES;
@@ -1356,6 +1358,12 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       AutofillAIEntityItem* aiItem =
           base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
       if (_entityDataManager) {
+        autofill::EntityInstance::RecordType recordType =
+            aiItem.isServerWalletItem
+                ? autofill::EntityInstance::RecordType::kServerWallet
+                : autofill::EntityInstance::RecordType::kLocal;
+        autofill::LogEntityDeletedFromSettings(
+            autofill::EntityType(aiItem.entityTypeName), recordType);
         _entityDataManager->RemoveEntityInstance(aiItem.guid);
       }
     }

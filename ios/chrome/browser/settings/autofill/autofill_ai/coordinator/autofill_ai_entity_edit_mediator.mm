@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
 #import "components/consent_auditor/consent_auditor.h"
@@ -51,6 +52,16 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   dateFormatter.locale =
       [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(locale)];
   return dateFormatter;
+}
+
+// Logs metrics for entity save or update.
+void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
+                           const autofill::EntityInstance& entity) {
+  if (mode == AutofillAIEntityEditMode::kCreate) {
+    autofill::LogEntityAddedFromSettings(entity.type(), entity.record_type());
+  } else {
+    autofill::LogEntityUpdatedFromSettings(entity.type(), entity.record_type());
+  }
 }
 
 }  // namespace
@@ -225,6 +236,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
       _entityInstance->type(), _entityInstance->record_type());
 
   if (!isSaveAsynchronous || !_walletPassManager) {
+    LogEntitySaveOrUpdate(self.consumer.mode, *_entityInstance);
     _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
     [self.consumer didFinishSavingWithLocalFallback:NO];
     return;
@@ -235,6 +247,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
     // Save to local.
     EntityInstance local_entity = _entityInstance->CopyWithNewRecordType(
         EntityInstance::RecordType::kLocal);
+    LogEntitySaveOrUpdate(self.consumer.mode, local_entity);
     _entityDataManager->AddOrUpdateEntityInstance(local_entity);
     [self.consumer didFinishSavingWithLocalFallback:YES];
     return;
@@ -411,12 +424,14 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   [self.consumer setLoadingState:NO];
 
   if (savedEntity.has_value()) {
+    LogEntitySaveOrUpdate(self.consumer.mode, *savedEntity);
     _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));
     [self.consumer didFinishSavingWithLocalFallback:NO];
   } else {
     // Wallet save failed, fallback to Local.
     autofill::EntityInstance localEntity = originalEntity.CopyWithNewRecordType(
         autofill::EntityInstance::RecordType::kLocal);
+    LogEntitySaveOrUpdate(self.consumer.mode, localEntity);
     _entityDataManager->AddOrUpdateEntityInstance(std::move(localEntity));
 
     [self.consumer didFinishSavingWithLocalFallback:YES];

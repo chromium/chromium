@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
@@ -239,6 +240,8 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
             std::move(callback).Run(masked_saved_entity);
           });
 
+  base::HistogramTester histogram_tester;
+
   [mediator_ saveEntityInstance];
 
   EXPECT_TRUE(consumer_.showLoadingStateCalled);
@@ -251,6 +254,9 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveWalletEligibleEntity_Success) {
         return entity_data_manager_->GetEntityInstance(instance.guid())
             .has_value();
       }));
+
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityUpdatedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
 }
 
 // Tests that if the Wallet API fails to save, the mediator falls back to saving
@@ -273,6 +279,8 @@ TEST_F(AutofillAIEntityEditMediatorTest,
               autofill::WalletPassAccessManager::UpsertEntityInstanceCallback
                   callback) { std::move(callback).Run(std::nullopt); });
 
+  base::HistogramTester histogram_tester;
+
   [mediator_ saveEntityInstance];
 
   EXPECT_TRUE(consumer_.showLoadingStateCalled);
@@ -291,6 +299,9 @@ TEST_F(AutofillAIEntityEditMediatorTest,
       entity_data_manager_->GetEntityInstance(instance.guid());
   EXPECT_EQ(saved_instance->record_type(),
             autofill::EntityInstance::RecordType::kLocal);
+
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityUpdatedFromSettings",
+                                      autofill::EntityTypeName::kPassport, 1);
 }
 
 // Tests that entities not eligible for wallet storage save directly to the data
@@ -306,6 +317,8 @@ TEST_F(AutofillAIEntityEditMediatorTest,
               SaveWalletEntityInstance(testing::_, testing::_, testing::_))
       .Times(0);
 
+  base::HistogramTester histogram_tester;
+
   [mediator_ saveEntityInstance];
 
   // Loading state should not be triggered for synchronous local saves.
@@ -319,4 +332,31 @@ TEST_F(AutofillAIEntityEditMediatorTest,
         return entity_data_manager_->GetEntityInstance(instance.guid())
             .has_value();
       }));
+
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityUpdatedFromSettings",
+                                      autofill::EntityTypeName::kVehicle, 1);
+}
+
+// Tests that saving an entity in Create mode logs the Added metric.
+TEST_F(AutofillAIEntityEditMediatorTest, SaveEntity_CreateMode) {
+  autofill::EntityInstance instance =
+      autofill::test::GetVehicleEntityInstance();
+  CreateMediator(instance);
+  consumer_.mode = AutofillAIEntityEditMode::kCreate;
+
+  base::HistogramTester histogram_tester;
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+
+  // Verify it was saved.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(instance.guid())
+            .has_value();
+      }));
+
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityAddedFromSettings",
+                                      autofill::EntityTypeName::kVehicle, 1);
 }

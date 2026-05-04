@@ -31,6 +31,9 @@
 // Whether the entity is of type Server Wallet.
 @property(nonatomic, assign) BOOL isServerWalletItem;
 
+// The type name of the entity.
+@property(nonatomic, assign) autofill::EntityTypeName entityTypeName;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_ITEM_H_
