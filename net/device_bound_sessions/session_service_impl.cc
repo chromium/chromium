@@ -282,7 +282,8 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
       RegistrationFetcher::CreateFetcher(
           request_params, *this, key_service_.get(), context_.get(),
           isolation_info, net_log_source_for_registration,
-          original_request_initiator);
+          original_request_initiator,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
 
@@ -1283,11 +1284,16 @@ void SessionServiceImpl::RefreshSessionInternal(
       &SessionServiceImpl::OnRefreshRequestCompletion,
       weak_factory_.GetWeakPtr(), trigger,
       request.device_bound_session_access_callback(), session_key);
+  unexportable_keys::BackgroundTaskPriority priority =
+      trigger == RefreshTrigger::kMissingCookie
+          ? unexportable_keys::BackgroundTaskPriority::kUserBlocking
+          : unexportable_keys::BackgroundTaskPriority::kBestEffort;
+
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           registration_param, *this, key_service_.get(), context_.get(),
           request.isolation_info(), net_log_source_for_refresh,
-          request.initiator());
+          request.initiator(), priority);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
   fetcher_raw->StartFetchWithExistingKey(registration_param, *key_id,
