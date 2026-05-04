@@ -4,10 +4,12 @@ per-file deep_scanning_test_utils*=domfc@chromium.org
 per-file file_opening_job*=domfc@chromium.org
 per-file resumable_uploader*=nancylanxiao@google.com
 
+# Primary:
+yawfrempong@google.com
+
+# Secondary:
 chlily@chromium.org
 drubery@chromium.org
-liu@chromium.org
-yawfrempong@google.com
 
 # For enterprise changes.
 domfc@chromium.org
