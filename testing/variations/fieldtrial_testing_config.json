@@ -24147,24 +24147,6 @@
             ]
         }
     ],
-    "UsePrimaryAndTonalButtonsForPromos": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UsePrimaryAndTonalButtonsForPromos"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [

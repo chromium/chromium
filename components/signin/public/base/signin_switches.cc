@@ -699,7 +699,7 @@ BASE_FEATURE(kBookmarksMigrateUiChanges,
 );
 
 BASE_FEATURE(kUsePrimaryAndTonalButtonsForPromos,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // keep-sorted end
 
