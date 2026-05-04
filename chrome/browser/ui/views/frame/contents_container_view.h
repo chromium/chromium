@@ -104,6 +104,8 @@ class ContentsContainerView : public views::View,
     return &web_contents_modal_dialog_host_;
   }
 
+  views::View* indigo_overlay_view() { return indigo_overlay_view_; }
+
   // Sets the contents resizing strategy.
   void SetContentsResizingStrategy(
       const DevToolsContentsResizingStrategy& strategy);
@@ -212,6 +214,10 @@ class ContentsContainerView : public views::View,
   raw_ptr<ContentsContainerOutline> container_outline_ = nullptr;
 
   raw_ptr<ContentsCaptureBorderView> capture_contents_border_view_ = nullptr;
+
+  // Toolbar for chrome/browser/indigo/, which determines where in the content
+  // area it wants to float.
+  raw_ptr<views::View> indigo_overlay_view_ = nullptr;
 
   // See `SetTargetContentSize()`.
   std::optional<gfx::Outsets> target_content_bounds_;

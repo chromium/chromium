@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/search/ntp_features.h"
@@ -102,8 +104,9 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
       AddChildView(std::make_unique<
                    enterprise_data_protection::DataProtectionOverlayView>());
 
-  // `indigo_toolbar_view_` dynamically adds itself after
-  // `data_protection_overlay_view_`.
+  if (base::FeatureList::IsEnabled(features::kIndigo)) {
+    indigo_overlay_view_ = AddChildView(indigo::CreateIndigoOverlayView());
+  }
 
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
     auto ai_overlay_dialog_view =
@@ -170,6 +173,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
 }
 
 ContentsContainerView::~ContentsContainerView() {
+  indigo_overlay_view_ = nullptr;
   // read_anything_immersive_overlay_view_ holds a raw_ptr to
   // contents_view_. We need to make sure we destroy
   // read_anything_immersive_overlay_view_ first to avoid a dangling pointer.
@@ -610,6 +614,12 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
         read_anything_immersive_overlay_view_.get(),
         read_anything_immersive_overlay_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
+  }
+
+  if (indigo_overlay_view_) {
+    layouts.child_layouts.emplace_back(indigo_overlay_view_.get(),
+                                       indigo_overlay_view_->GetVisible(),
+                                       non_devtools_contents_bounds);
   }
 
   if (mini_toolbar_) {
