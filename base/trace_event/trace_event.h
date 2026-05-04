@@ -26,6 +26,7 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/traced_value_support.h"
 #include "base/tracing_buildflags.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 // Legacy TRACE_EVENT_API entrypoints. Do not use from new code.
 
@@ -149,31 +150,6 @@ UpdateTraceEventDuration(const unsigned char* category_group_enabled,
 
 namespace base {
 namespace trace_event {
-
-template <typename IDType, const char* category>
-class TraceScopedTrackableObject {
- public:
-  TraceScopedTrackableObject(const char* name, IDType id)
-      : name_(name), id_(id) {
-    TRACE_EVENT_OBJECT_CREATED_WITH_ID(category, name_, id_);
-  }
-  TraceScopedTrackableObject(const TraceScopedTrackableObject&) = delete;
-  TraceScopedTrackableObject& operator=(const TraceScopedTrackableObject&) =
-      delete;
-
-  template <typename ArgType>
-  void snapshot(ArgType snapshot) {
-    TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(category, name_, id_, snapshot);
-  }
-
-  ~TraceScopedTrackableObject() {
-    TRACE_EVENT_OBJECT_DELETED_WITH_ID(category, name_, id_);
-  }
-
- private:
-  const char* name_;
-  IDType id_;
-};
 
 // Tracks that are used to group other tracks may not get any events of their
 // own, so their descriptor needs to be explicitly registered. This class wraps

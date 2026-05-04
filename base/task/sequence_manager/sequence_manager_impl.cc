@@ -42,6 +42,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace base::sequence_manager {
 namespace {
@@ -160,8 +161,9 @@ SequenceManagerImpl::SequenceManagerImpl(
       empty_queues_to_reload_(associated_thread_),
       main_thread_only_(this, associated_thread_, settings_, settings_.clock),
       clock_(settings_.clock) {
-  TRACE_EVENT_OBJECT_CREATED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
+                      "SequenceManager:created",
+                      perfetto::Flow::FromPointer(this, "SequenceManager"));
   main_thread_only().selector.SetTaskQueueSelectorObserver(this);
 
   main_thread_only().next_time_to_reclaim_memory =
@@ -176,8 +178,9 @@ SequenceManagerImpl::SequenceManagerImpl(
 
 SequenceManagerImpl::~SequenceManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager:deleted",
+      perfetto::TerminatingFlow::FromPointer(this, "SequenceManager"));
 
   if (settings_.should_block_on_scoped_fences) {
     ScopedBestEffortExecutionFence::RemoveSequenceManager(this);
@@ -495,11 +498,12 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
   while (true) {
     internal::WorkQueue* work_queue =
         main_thread_only().selector.SelectWorkQueueToService(option);
-    TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
-        TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"), "SequenceManager",
-        this,
-        AsValueWithSelectorResultForTracing(work_queue,
-                                            /* force_verbose */ false));
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"),
+                        "SequenceManager:select_task_snapshot",
+                        perfetto::Flow::FromPointer(this, "SequenceManager"),
+                        "snapshot",
+                        AsValueWithSelectorResultForTracing(
+                            work_queue, /* force_verbose */ false));
 
     if (!work_queue) {
       return std::nullopt;

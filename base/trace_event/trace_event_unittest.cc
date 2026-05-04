@@ -69,7 +69,6 @@ const int kAsyncId2 = 6;
 const char kAsyncId2Str[] = "0x6";
 
 constexpr const char kRecordAllCategoryFilter[] = "*";
-constexpr const char kAllCategory[] = "test_all";
 
 bool IsCategoryEnabled(const char* name) {
   bool result;
@@ -441,10 +440,6 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
                                         "hello");
     TRACE_EVENT_OBJECT_DELETED_WITH_ID("test_all", "tracked object 1", 0x42);
 
-    TraceScopedTrackableObject<int, kAllCategory> trackable("tracked object 2",
-                                                            0x2128506);
-    trackable.snapshot("world");
-
     TRACE_EVENT_OBJECT_CREATED_WITH_ID("test_all", "tracked object 3",
                                        TRACE_ID_WITH_SCOPE("scope", 0x42));
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("test_all", "tracked object 3",
@@ -637,23 +632,6 @@ void ValidateAllTraceMacrosCreatedData(const ListValue& trace_parsed) {
     EXPECT_EQ(*item->FindString("ph"), "D");
     EXPECT_FALSE(item->contains("scope"));
     EXPECT_EQ(*item->FindString("id"), "0x42");
-  }
-
-  EXPECT_FIND_("tracked object 2");
-  {
-    EXPECT_EQ(*item->FindString("ph"), "N");
-    EXPECT_EQ(*item->FindString("id"), "0x2128506");
-
-    item = FindTraceEntry(trace_parsed, "tracked object 2", item);
-    EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindString("ph"), "O");
-    EXPECT_EQ(*item->FindString("id"), "0x2128506");
-    EXPECT_EQ(*item->FindStringByDottedPath("args.snapshot"), "world");
-
-    item = FindTraceEntry(trace_parsed, "tracked object 2", item);
-    EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindString("ph"), "D");
-    EXPECT_EQ(*item->FindString("id"), "0x2128506");
   }
 
   EXPECT_FIND_("tracked object 3");
