@@ -169,9 +169,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   std::unique_ptr<content::WebContentsViewDelegate> view_delegate =
       CreateWebContentsViewDelegate(web_contents);
   view_delegate->ShowContextMenu(*subframe, params);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return view_delegate->IsContextMenuShowingForTesting();
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return view_delegate->IsContextMenuShowingForTesting(); }));
 
   // Simulate using the context menu to "Open link in new tab".
   content::WebContents* new_web_contents = nullptr;
@@ -501,10 +500,8 @@ class GlicInteractiveContextMenuTestBase
     return Steps(
         PollUntil(
             [this]() {
-              if (glic::GlicInstance* instance =
-                      glic_service()->GetInstanceForActiveTab(browser())) {
-                return instance->host().GetPrimaryWebUiState() ==
-                       glic::mojom::WebUiState::kReady;
+              if (auto* instance = GetGlicInstanceImpl()) {
+                return instance->host().IsWebClientConnected();
               }
               return false;
             },
@@ -526,10 +523,8 @@ class GlicInteractiveContextMenuTestBase
         // multi- instance, so we will poll.
         PollUntil(
             [this]() {
-              if (glic::GlicInstance* instance =
-                      glic_service()->GetInstanceForActiveTab(browser())) {
-                return instance->host().GetPrimaryWebUiState() ==
-                       glic::mojom::WebUiState::kReady;
+              if (auto* instance = GetGlicInstanceImpl()) {
+                return instance->host().IsWebClientConnected();
               }
               return false;
             },

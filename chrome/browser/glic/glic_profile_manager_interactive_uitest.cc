@@ -108,11 +108,7 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
     if (!instance) {
       return "No instance";
     }
-    auto* contents = instance->host().webui_contents();
-    if (!contents) {
-      return "No contents";
-    }
-    if (contents->GetSize().IsEmpty()) {
+    if (instance->GetPanelSize().IsEmpty()) {
       return "Size is empty";
     }
     return "warmed and sized";

@@ -400,18 +400,19 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
           selection::RegionShape::NewRect(gfx::RectF(10, 10, 10, 10))));
 
   auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
-  auto* instance = GetInstanceForTab(browser()->profile(), tab_interface);
+  glic::GlicInstanceTracker tracker(browser()->profile());
+  tracker.TrackGlicInstanceWithTabHandle(tab_interface->GetHandle());
+  auto* host = tracker.GetHost();
+  CHECK(host);
 
-  instance->host()
-      .instance_metrics_backwards_compatibility()
-      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 1, 1);
 
   // Submit another input, should still log 1.
-  instance->host()
-      .instance_metrics_backwards_compatibility()
-      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 1, 2);
 
@@ -419,9 +420,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
   SelectionOverlayController::FromTabWebContents(web_contents)->Close();
 
   // Submit another input, should log 0.
-  instance->host()
-      .instance_metrics_backwards_compatibility()
-      .OnUserInputSubmitted(mojom::WebClientMode::kText);
+  host->instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
   histogram_tester.ExpectBucketCount(
       "Glic.Instance.InputSubmitted.SelectionCount", 0, 1);
   histogram_tester.ExpectTotalCount(
