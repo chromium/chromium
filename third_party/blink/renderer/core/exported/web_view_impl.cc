@@ -1725,6 +1725,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
                                       prefs.default_maximum_page_scale_factor);
 
   settings->SetFullscreenSupported(prefs.fullscreen_supported);
+  settings->SetTextSizeAdjustEnabled(prefs.text_size_adjust_enabled);
   settings->SetDoubleTapToZoomEnabled(prefs.double_tap_to_zoom_enabled);
   blink::WebNetworkStateNotifier::SetNetworkQualityWebHoldback(
       static_cast<blink::WebEffectiveConnectionType>(

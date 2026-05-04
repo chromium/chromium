@@ -108,6 +108,8 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()->GetSettings().GetViewportEnabled()),
       embedder_viewport_meta_enabled_(
           web_view->GetPage()->GetSettings().GetViewportMetaEnabled()),
+      embedder_text_size_adjust_enabled_(
+          web_view->GetPage()->GetSettings().GetTextSizeAdjustEnabled()),
       touch_event_emulation_enabled_(false),
       double_tap_to_zoom_enabled_(false),
       original_max_touch_points_(0),
@@ -229,6 +231,13 @@ void DevToolsEmulator::SetViewportMetaEnabled(bool enabled) {
   embedder_viewport_meta_enabled_ = enabled;
   if (!emulate_mobile_enabled()) {
     web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(enabled);
+  }
+}
+
+void DevToolsEmulator::SetTextSizeAdjustEnabled(bool enabled) {
+  embedder_text_size_adjust_enabled_ = enabled;
+  if (!emulate_mobile_enabled()) {
+    web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(enabled);
   }
 }
 
@@ -360,6 +369,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
       mojom::blink::ViewportStyle::kMobile);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(true);
+  web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(true);
   web_view_->GetPage()->GetSettings().SetShrinksViewportContentToFit(true);
   web_view_->GetPage()->GetSettings().SetLCDTextPreference(
       LCDTextPreference::kIgnored);
@@ -390,6 +400,8 @@ void DevToolsEmulator::DisableMobileEmulation() {
       embedder_viewport_enabled_);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(
       embedder_viewport_meta_enabled_);
+  web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(
+      embedder_text_size_adjust_enabled_);
   web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
   web_view_->GetSettings()->SetShrinksViewportContentToFit(
       embedder_shrink_viewport_content_);

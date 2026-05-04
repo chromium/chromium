@@ -52,6 +52,7 @@ class CORE_EXPORT DevToolsEmulator final
   void SetShrinksViewportContentToFit(bool shrink_viewport_content);
   void SetViewportEnabled(bool);
   void SetViewportMetaEnabled(bool);
+  void SetTextSizeAdjustEnabled(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
@@ -146,6 +147,7 @@ class CORE_EXPORT DevToolsEmulator final
   bool embedder_shrink_viewport_content_;
   bool embedder_viewport_enabled_;
   bool embedder_viewport_meta_enabled_;
+  bool embedder_text_size_adjust_enabled_;
 
   bool touch_event_emulation_enabled_;
   bool double_tap_to_zoom_enabled_;

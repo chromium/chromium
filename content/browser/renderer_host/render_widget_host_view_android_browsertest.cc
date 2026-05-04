@@ -219,4 +219,22 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAndroidFluidResizeBrowserTest,
   }
 }
 
+using TextSizeAdjustAndroidBrowserTest = ContentBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(TextSizeAdjustAndroidBrowserTest, AffectsFontSize) {
+  const char kHtml[] = R"HTML(
+    data:text/html,
+    <!DOCTYPE html>
+    <body style="font-size: 16px;">
+      <div id="textSizeAdjust" style="text-size-adjust: 150%;">Hello world</div>
+    </body>
+  )HTML";
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kHtml)));
+
+  EXPECT_EQ(24, EvalJs(shell(),
+                       "parseFloat(getComputedStyle(document.getElementById('"
+                       "textSizeAdjust')).fontSize)"));
+}
+
 }  // namespace content
