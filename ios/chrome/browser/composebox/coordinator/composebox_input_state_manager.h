@@ -77,7 +77,8 @@ class WebStateID;
 @property(nonatomic, readonly) std::optional<contextual_search::InputState>
     inputState;
 
-// The collection of items attached to the composebox.
+// The collection of items attached to the composebox. Only used to query the
+// state of the items, `ComposeboxInputStateManager` should not modify items.
 @property(nonatomic, weak) ComposeboxInputItemCollection* items;
 
 // Initializes the manager.
@@ -101,11 +102,12 @@ class WebStateID;
 // Sets the searchbox configuration.
 - (void)setSearchboxConfig:(const omnibox::SearchboxConfig&)searchboxConfig;
 
-// Sets the active model. If explicitUserAction is YES, records metrics.
+// Sets the active model if eligible. If explicitUserAction is YES, records
+// metrics.
 - (void)setActiveModel:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction;
 
-// Retrieves additional query parameters from the underlying input state model.
+// Retrieves additional query parameters for the current state.
 - (std::map<std::string, std::string>)additionalQueryParams;
 
 // Notifies the model that the context has changed.
@@ -130,24 +132,6 @@ class WebStateID;
 // Checks if the Default Search Engine is Google.
 - (BOOL)isDSEGoogle;
 
-// Whether the given attachment option is allowed.
-- (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption;
-
-// Whether the given attachment option is disabled.
-- (BOOL)isAttachmentDisabled:(ComposeboxAttachmentOption)attachmentOption;
-
-// Whether the given tool mode is allowed.
-- (BOOL)isToolAllowed:(ComposeboxMode)mode;
-
-// Whether the given tool mode is disabled.
-- (BOOL)isToolDisabled:(ComposeboxMode)mode;
-
-// Whether the given model option is allowed.
-- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption;
-
-// Whether the given model option is disabled.
-- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption;
-
 // Whether the given tool mode can be selected.
 - (BOOL)canSelectTool:(ComposeboxMode)mode;
 
@@ -170,8 +154,8 @@ class WebStateID;
 // Returns the remaining number of images allowed.
 - (NSUInteger)remainingNumberOfImagesAllowed;
 
-// Computes the full UI input state based on favicon, and attached web state
-// IDs.
+// Computes the full UI input state based on `currentTabFavicon`,
+// `attachedWebStateIDs`, `items` and the current input state.
 - (ComposeboxUIInputState*)
     computeUIInputStateWithFavicon:(UIImage*)currentTabFavicon
                attachedWebStateIDs:

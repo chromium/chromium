@@ -311,34 +311,14 @@ ComposeboxStrings* ServerStringsFromInputState(
       _inputStateModel->GetInputState().active_model);
 }
 
-/// Sets the `activeTool` mode in the input state model.
-- (void)setActiveToolInInputState:(omnibox::ToolMode)activeTool {
-  if (!_inputStateModel) {
-    return;
-  }
-
-  if (_inputStateModel->GetInputState().active_tool == activeTool) {
-    return;
-  }
-
-  contextual_search::ContextualSearchMetricsRecorder* recorder =
-      _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
-  if (recorder) {
-    recorder->RecordToolMode(activeTool);
-  }
-
-  _inputStateModel->setActiveTool(activeTool);
-}
-
 - (void)setActiveModel:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction {
   if (!_inputStateModel) {
     return;
   }
 
-  // If model is not valid, fallback to the default model;
   if (![self canSelectModel:modelOption]) {
-    modelOption = [self defaultModel];
+    return;
   }
 
   if (modelOption == _activeModel) {
@@ -441,108 +421,6 @@ ComposeboxStrings* ServerStringsFromInputState(
   return search::DefaultSearchProviderIsGoogle(_templateURLService);
 }
 
-- (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption {
-  if (![self attachmentsAvailable]) {
-    return NO;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self isAttachmentAllowedByServer:attachmentOption];
-  } else {
-    return [self isAttachmentAllowedLocally:attachmentOption];
-  }
-}
-
-- (BOOL)isAttachmentDisabled:(ComposeboxAttachmentOption)attachmentOption {
-  if (![self canAddMoreAttachments]) {
-    return YES;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self isAttachmentDisabledByServer:attachmentOption];
-  } else {
-    return [self isAttachmentDisabledLocally:attachmentOption];
-  }
-}
-
-/// Returns the default model for the active mode.
-- (ComposeboxModelOption)defaultModel {
-  if ([self activeMode] == ComposeboxMode::kRegularSearch) {
-    return ComposeboxModelOption::kNone;
-  }
-  if (!_inputState.has_value()) {
-    return ComposeboxModelOption::kNone;
-  }
-  return ModelOptionForModelMode(_inputState->GetDefaultModel());
-}
-
-/// Returns the default mode/tool that is implicit in the context. The tool is
-/// not displayed in the input menu.
-- (ComposeboxMode)defaultTool {
-  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
-    return ComposeboxMode::kAIM;
-  } else {
-    return ComposeboxMode::kRegularSearch;
-  }
-}
-
-- (BOOL)isToolAllowed:(ComposeboxMode)mode {
-  if (mode == [self defaultTool]) {
-    return YES;
-  }
-
-  // All tools are gated by AI omnibox eligibility.
-  if (![self isEligibleToAIM]) {
-    return NO;
-  }
-
-  // Global checks first
-  switch (mode) {
-    case ComposeboxMode::kImageGeneration:
-      if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
-        return NO;
-      }
-      break;
-    case ComposeboxMode::kCanvas:
-      if (!ShowComposeboxAdditionalAdvancedTools() ||
-          experimental_flags::ShouldForceDisableComposeboxCanvas()) {
-        return NO;
-      }
-      break;
-    case ComposeboxMode::kDeepSearch:
-      if (!ShowDeepSearchTool() ||
-          experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
-        return NO;
-      }
-      break;
-    case ComposeboxMode::kAIM:
-      break;
-    case ComposeboxMode::kRegularSearch:
-      if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
-        return NO;
-      }
-      break;
-  }
-
-  if (EnableComposeboxServerSideState()) {
-    return [self isToolAllowedByServer:mode];
-  } else {
-    return [self isToolAllowedLocally:mode];
-  }
-}
-
-- (BOOL)isToolDisabled:(ComposeboxMode)mode {
-  if ([self activeMode] == mode) {
-    // Allows the user to exit the active mode.
-    return NO;
-  }
-  if (EnableComposeboxServerSideState()) {
-    return [self isToolDisabledByServer:mode];
-  } else {
-    return [self isToolDisabledLocally:mode];
-  }
-}
-
 - (BOOL)canSelectTool:(ComposeboxMode)mode {
   return [self isToolAllowed:mode] && ![self isToolDisabled:mode];
 }
@@ -550,48 +428,6 @@ ComposeboxStrings* ServerStringsFromInputState(
 - (BOOL)canSelectModel:(ComposeboxModelOption)modelOption {
   return
       [self isModelAllowed:modelOption] && ![self isModelDisabled:modelOption];
-}
-
-- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption {
-  // None is the fallback/default option that is always available.
-  if (modelOption == ComposeboxModelOption::kNone) {
-    return YES;
-  }
-
-  // All models are gated by AI omnibox eligibility.
-  if (![self isEligibleToAIM]) {
-    return NO;
-  }
-
-  // Models are only available from server state.
-  if (!ShowComposeboxAdditionalAdvancedTools() ||
-      !EnableComposeboxServerSideState()) {
-    return NO;
-  }
-
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-
-  omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState.value());
-  return std::ranges::contains(_inputState->allowed_models, modelMode);
-}
-
-- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption {
-  // Models are only available from server state.
-  if (!ShowComposeboxAdditionalAdvancedTools() ||
-      !EnableComposeboxServerSideState()) {
-    return NO;
-  }
-
-  if (!_inputState.has_value()) {
-    return NO;
-  }
-
-  omnibox::ModelMode modelMode =
-      ModelModeForModelOption(modelOption, _inputState.value());
-  return std::ranges::contains(_inputState->disabled_models, modelMode);
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -930,6 +766,137 @@ ComposeboxStrings* ServerStringsFromInputState(
   }
 }
 
+#pragma mark - State Availability
+
+// Whether the given attachment option is allowed.
+- (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption {
+  if (![self attachmentsAvailable]) {
+    return NO;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isAttachmentAllowedByServer:attachmentOption];
+  } else {
+    return [self isAttachmentAllowedLocally:attachmentOption];
+  }
+}
+
+// Whether the given attachment option is disabled.
+- (BOOL)isAttachmentDisabled:(ComposeboxAttachmentOption)attachmentOption {
+  if (![self canAddMoreAttachments]) {
+    return YES;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isAttachmentDisabledByServer:attachmentOption];
+  } else {
+    return [self isAttachmentDisabledLocally:attachmentOption];
+  }
+}
+
+// Whether the given tool mode is allowed.
+- (BOOL)isToolAllowed:(ComposeboxMode)mode {
+  if (mode == [self defaultTool]) {
+    return YES;
+  }
+
+  // All tools are gated by AI omnibox eligibility.
+  if (![self isEligibleToAIM]) {
+    return NO;
+  }
+
+  // Global checks first
+  switch (mode) {
+    case ComposeboxMode::kImageGeneration:
+      if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kCanvas:
+      if (!ShowComposeboxAdditionalAdvancedTools() ||
+          experimental_flags::ShouldForceDisableComposeboxCanvas()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kDeepSearch:
+      if (!ShowDeepSearchTool() ||
+          experimental_flags::ShouldForceDisableComposeboxDeepSearch()) {
+        return NO;
+      }
+      break;
+    case ComposeboxMode::kAIM:
+      break;
+    case ComposeboxMode::kRegularSearch:
+      if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+        return NO;
+      }
+      break;
+  }
+
+  if (EnableComposeboxServerSideState()) {
+    return [self isToolAllowedByServer:mode];
+  } else {
+    return [self isToolAllowedLocally:mode];
+  }
+}
+
+// Whether the given tool mode is disabled.
+- (BOOL)isToolDisabled:(ComposeboxMode)mode {
+  if ([self activeMode] == mode) {
+    // Allows the user to exit the active mode.
+    return NO;
+  }
+  if (EnableComposeboxServerSideState()) {
+    return [self isToolDisabledByServer:mode];
+  } else {
+    return [self isToolDisabledLocally:mode];
+  }
+}
+
+// Whether the given model option is allowed.
+- (BOOL)isModelAllowed:(ComposeboxModelOption)modelOption {
+  // None is the fallback/default option that is always available.
+  if (modelOption == ComposeboxModelOption::kNone) {
+    return YES;
+  }
+
+  // All models are gated by AI omnibox eligibility.
+  if (![self isEligibleToAIM]) {
+    return NO;
+  }
+
+  // Models are only available from server state.
+  if (!ShowComposeboxAdditionalAdvancedTools() ||
+      !EnableComposeboxServerSideState()) {
+    return NO;
+  }
+
+  if (!_inputState.has_value()) {
+    return NO;
+  }
+
+  omnibox::ModelMode modelMode =
+      ModelModeForModelOption(modelOption, _inputState.value());
+  return std::ranges::contains(_inputState->allowed_models, modelMode);
+}
+
+// Whether the given model option is disabled.
+- (BOOL)isModelDisabled:(ComposeboxModelOption)modelOption {
+  // Models are only available from server state.
+  if (!ShowComposeboxAdditionalAdvancedTools() ||
+      !EnableComposeboxServerSideState()) {
+    return NO;
+  }
+
+  if (!_inputState.has_value()) {
+    return NO;
+  }
+
+  omnibox::ModelMode modelMode =
+      ModelModeForModelOption(modelOption, _inputState.value());
+  return std::ranges::contains(_inputState->disabled_models, modelMode);
+}
+
 #pragma mark - InputState Helpers
 
 // Returns the current active mode from the mode holder.
@@ -960,7 +927,47 @@ ComposeboxStrings* ServerStringsFromInputState(
   }
 }
 
+/// Sets the `activeTool` mode in the input state model.
+- (void)setActiveToolInInputState:(omnibox::ToolMode)activeTool {
+  if (!_inputStateModel) {
+    return;
+  }
+
+  if (_inputStateModel->GetInputState().active_tool == activeTool) {
+    return;
+  }
+
+  contextual_search::ContextualSearchMetricsRecorder* recorder =
+      _sessionHandle ? _sessionHandle->GetMetricsRecorder() : nullptr;
+  if (recorder) {
+    recorder->RecordToolMode(activeTool);
+  }
+
+  _inputStateModel->setActiveTool(activeTool);
+}
+
 #pragma mark - Eligibility & Availability
+
+/// Returns the default model for the active mode.
+- (ComposeboxModelOption)defaultModel {
+  if ([self activeMode] == ComposeboxMode::kRegularSearch) {
+    return ComposeboxModelOption::kNone;
+  }
+  if (!_inputState.has_value()) {
+    return ComposeboxModelOption::kNone;
+  }
+  return ModelOptionForModelMode(_inputState->GetDefaultModel());
+}
+
+/// Returns the default mode/tool that is implicit in the context. The tool is
+/// not displayed in the input menu.
+- (ComposeboxMode)defaultTool {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    return ComposeboxMode::kAIM;
+  } else {
+    return ComposeboxMode::kRegularSearch;
+  }
+}
 
 /// Whether the user is eligible to share content (enterprise policy).
 - (BOOL)isContentSharingEnabled {

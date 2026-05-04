@@ -673,10 +673,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                 }];
 }
 
-- (void)setModelOption:(ComposeboxModelOption)modelOption {
-  [self setModelOption:modelOption explicitUserAction:NO];
-}
-
 - (void)setModelOption:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction {
   [_stateManager setActiveModel:modelOption

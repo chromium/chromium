@@ -321,11 +321,13 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolAllowed_ServerSideDisabled) {
 
   // Set up mock expectation for AIM eligibility service.
   EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
-      .WillOnce(testing::Return(true));
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_aim_service_, IsCreateImagesEligible())
-      .WillOnce(testing::Return(true));
+      .WillRepeatedly(testing::Return(true));
 
-  EXPECT_TRUE([manager_ isToolAllowed:ComposeboxMode::kImageGeneration]);
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_TRUE([state isToolAvailable:ComposeboxMode::kImageGeneration]);
 }
 
 // Tests that the image tool is disabled in local fallback mode when there are
@@ -345,7 +347,9 @@ TEST_F(ComposeboxInputStateManagerTest, ImageToolDisabled_HasTabOrFile) {
 
   manager_.items = collection;
 
-  EXPECT_TRUE([manager_ isToolDisabled:ComposeboxMode::kImageGeneration]);
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_TRUE([state isToolDisabled:ComposeboxMode::kImageGeneration]);
 }
 
 // Tests that onItemsUpdated correctly updates the tool mode in image generation
@@ -411,7 +415,9 @@ TEST_F(ComposeboxInputStateManagerTest, TabAttachmentDisabled_ImageGenMode) {
   // Set the active mode to image generation.
   mode_holder_.mode = ComposeboxMode::kImageGeneration;
 
-  EXPECT_TRUE([manager_ isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_TRUE([state isAttachmentDisabled:ComposeboxAttachmentOption::kTab]);
 }
 
 #pragma mark - Attachment Capacity
