@@ -8,13 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
-#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 @protocol PaymentsScanSaveAndFillOfferBottomSheetDelegate;
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetViewController
-    : TableViewBottomSheetViewController <
+    : ConfirmationAlertViewController <
           PaymentsScanSaveAndFillOfferBottomSheetConsumer>
 
 @property(nonatomic, weak) id<PaymentsScanSaveAndFillOfferBottomSheetDelegate>

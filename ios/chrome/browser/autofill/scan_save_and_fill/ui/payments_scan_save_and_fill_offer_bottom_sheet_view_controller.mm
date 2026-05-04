@@ -6,10 +6,10 @@
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -17,13 +17,15 @@
 namespace {
 
 // Spacing used for the spacing before the logo title in the bottom sheet.
-CGFloat const kSpacingBeforeImage = 16;
+CGFloat const kSpacingBeforeImage = 32;
 
 // Spacing used for the spacing after the logo title in the bottom sheet.
-CGFloat const kSpacingAfterImage = 4;
+CGFloat const kSpacingAfterImage = 24;
 
 // Height of the logo used as the title of the bottom sheet.
 CGFloat const kTitleLogoHeight = 32;
+// Side length for the custom favicon.
+CGFloat const kCustomFaviconSideLength = 58;
 
 }  // namespace
 
@@ -38,8 +40,14 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (void)viewDidLoad {
   self.image = [self titleImage];
+  self.imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.imageEnclosedWithShadowWithoutBadge = YES;
+  self.customFaviconSideLength = kCustomFaviconSideLength;
+  self.imageEnclosedWithShadowAndBadge = NO;
   self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
+  self.imageHasFixedSize = YES;
+
   self.titleString = l10n_util::GetNSString(
       IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_TITLE);
   self.titleTextStyle = UIFontTextStyleTitle2;
@@ -57,11 +65,15 @@ CGFloat const kTitleLogoHeight = 32;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
-  [super viewDidLoad];
+  self.topAlignedLayout = YES;
+  self.addsContentViewBottomInset = NO;
 
-  [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                    @[ UITraitUserInterfaceStyle.class ])
-                     withAction:@selector(resizeLogoOnTraitChange)];
+  UIView* spacerView = [[UIView alloc] init];
+  spacerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [spacerView.heightAnchor constraintEqualToConstant:0].active = YES;
+  self.underTitleView = spacerView;
+
+  [super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -87,20 +99,6 @@ CGFloat const kTitleLogoHeight = 32;
   [self.delegate didTapOnCancelButton];
 }
 
-#pragma mark - TableViewBottomSheetViewController
-
-- (UITableView*)createTableView {
-  return [super createTableView];
-}
-
-- (NSUInteger)rowCount {
-  return 0;
-}
-
-- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  return 0;
-}
-
 #pragma mark - UIResponder
 
 - (void)dismiss {
@@ -115,18 +113,13 @@ CGFloat const kTitleLogoHeight = 32;
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kTitleLogoHeight));
+      CustomSymbolWithPointSize(kGoogleWalletIconSymbol, kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   return image;
-}
-
-// Resizes the GPay logo to match the new trait collection.
-- (void)resizeLogoOnTraitChange {
-  self.image = [self titleImage];
 }
 
 @end

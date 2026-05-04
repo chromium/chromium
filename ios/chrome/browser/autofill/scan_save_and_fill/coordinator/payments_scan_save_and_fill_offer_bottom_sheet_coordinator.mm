@@ -79,9 +79,14 @@
 
   _mediator.consumer = _viewController;
 
-  _viewController.parentViewControllerHeight =
-      self.baseViewController.view.frame.size.height;
   _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _viewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    [_viewController preferredHeightDetent],
+    [UISheetPresentationControllerDetent mediumDetent]
+  ];
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
