@@ -253,7 +253,7 @@ public class TabGroupListBottomSheetTest {
     private static void assertTabGroupsExist(CtaPageStation pageStation) {
         int tabGroupCount =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> pageStation.getTabGroupModelFilter().getTabGroupCount());
+                        () -> pageStation.getTabModel().getTabGroupCount());
         assertTrue(tabGroupCount > 0);
     }
 

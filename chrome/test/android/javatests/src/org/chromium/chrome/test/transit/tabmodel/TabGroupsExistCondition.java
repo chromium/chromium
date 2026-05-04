@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit.tabmodel;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,20 +19,18 @@ import java.util.function.Supplier;
 public class TabGroupsExistCondition extends UiThreadCondition {
 
     private final List<Token> mExpectedTabGroups;
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterProvider;
+    private final Supplier<TabModel> mTabModelProvider;
 
     public TabGroupsExistCondition(
-            List<Token> expectedTabGroups,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterProvider) {
+            List<Token> expectedTabGroups, Supplier<TabModel> tabModelProvider) {
         mExpectedTabGroups = expectedTabGroups;
-        mTabGroupModelFilterProvider =
-                dependOnSupplier(tabGroupModelFilterProvider, "TabGroupModelFilter");
+        mTabModelProvider = dependOnSupplier(tabModelProvider, "TabModel");
     }
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        TabGroupModelFilter groupFilter = mTabGroupModelFilterProvider.get();
-        Set<Token> allTabGroupIds = groupFilter.getAllTabGroupIds();
+        TabModel tabModel = mTabModelProvider.get();
+        Set<Token> allTabGroupIds = tabModel.getAllTabGroupIds();
         if (!matchExpectedTabGroups(allTabGroupIds, mExpectedTabGroups)) {
             return notFulfilled(
                     "Expected tab groups are different to actual. Expected: %s, Actual: %s",

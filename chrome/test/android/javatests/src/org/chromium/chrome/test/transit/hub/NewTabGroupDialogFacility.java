@@ -35,7 +35,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
@@ -102,8 +101,7 @@ public class NewTabGroupDialogFacility<
         } else {
             titleInputElement = declareView(createTitleViewSpec(), inDialogOption());
             declareEnterCondition(
-                    new TabGroupExistsCondition(
-                            getHostStation().tabGroupModelFilterElement, mTabIdsToGroup));
+                    new TabGroupExistsCondition(getHostStation().tabModelElement, mTabIdsToGroup));
         }
 
         dialogElement =
@@ -140,15 +138,15 @@ public class NewTabGroupDialogFacility<
     private void initTabGroupCreatedCondition() {
         Element<Token> tabGroupIdElement =
                 declareEnterConditionAsElement(
-                        new TabGroupCreatedCondition(mHostStation.tabGroupModelFilterElement));
+                        new TabGroupCreatedCondition(mHostStation.tabModelElement));
 
         declareElementFactory(
                 tabGroupIdElement,
                 delayedElements -> {
-                    TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.value();
+                    TabModel tabModel = mHostStation.tabModelElement.value();
                     List<Tab> tabsInGroup =
                             runOnUiThreadBlocking(
-                                    () -> filter.getTabsInGroup(tabGroupIdElement.value()));
+                                    () -> tabModel.getTabsInGroup(tabGroupIdElement.value()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
                     titleInputElement =

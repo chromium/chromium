@@ -64,20 +64,18 @@ public class TabGroupsTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabModelObserver mTabGroupModelFilterObserver;
+    @Mock private TabModelObserver mTabModelObserver;
 
     private TabModel mTabModel;
-    private TabGroupModelFilter mTabGroupModelFilter;
     private WebPageStation mPage;
 
     @Before
     public void setUp() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModel = mPage.getTabModel();
-        mTabGroupModelFilter = mPage.getTabGroupModelFilter();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.addObserver(mTabGroupModelFilterObserver);
+                    mTabModel.addObserver(mTabModelObserver);
                 });
     }
 
@@ -85,7 +83,7 @@ public class TabGroupsTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.removeObserver(mTabGroupModelFilterObserver);
+                    mTabModel.removeObserver(mTabModelObserver);
                 });
     }
 
@@ -103,7 +101,7 @@ public class TabGroupsTest {
             }
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                        mTabModel.mergeListOfTabsToGroup(
                                 tabs,
                                 tabs.get(0),
                                 TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
@@ -191,7 +189,7 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
-    public void testTabGroupModelFilterObserverUndoClosure() {
+    public void testTabModelObserverUndoClosure() {
         // Four tabs plus the first blank one.
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
         final List<Tab> tabs = getCurrentTabs();
@@ -214,7 +212,7 @@ public class TabGroupsTest {
         ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
-        InOrder calledInOrder = inOrder(mTabGroupModelFilterObserver);
+        InOrder calledInOrder = inOrder(mTabModelObserver);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Tab tab : tabs) {
@@ -223,15 +221,15 @@ public class TabGroupsTest {
                 });
         // Ensure didSelectTab is called and the call occurs after the tab closure is actually
         // undone.
-        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(0)));
+        calledInOrder.verify(mTabModelObserver).tabClosureUndone(eq(tabs.get(0)));
         calledInOrder
-                .verify(mTabGroupModelFilterObserver)
+                .verify(mTabModelObserver)
                 .didSelectTab(
                         eq(tabs.get(0)), eq(TabSelectionType.FROM_UNDO), /* lastId= */ eq(-1));
-        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(1)));
-        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(2)));
-        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(3)));
-        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(4)));
+        calledInOrder.verify(mTabModelObserver).tabClosureUndone(eq(tabs.get(1)));
+        calledInOrder.verify(mTabModelObserver).tabClosureUndone(eq(tabs.get(2)));
+        calledInOrder.verify(mTabModelObserver).tabClosureUndone(eq(tabs.get(3)));
+        calledInOrder.verify(mTabModelObserver).tabClosureUndone(eq(tabs.get(4)));
 
         // Exit the tab switcher.
         ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());
@@ -255,19 +253,19 @@ public class TabGroupsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(0)));
-                    assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
-                    assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+                    assertFalse(mTabModel.isTabInTabGroup(tabs.get(0)));
+                    assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
+                    assertTrue(mTabModel.isTabInTabGroup(tabs.get(2)));
 
-                    mTabGroupModelFilter
+                    mTabModel
                             .getTabUngrouper()
                             .ungroupTabs(
                                     tabs.subList(1, 3),
                                     /* trailing= */ true,
                                     /* allowDialog= */ false);
 
-                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
-                    assertFalse(mTabGroupModelFilter.isTabInTabGroup(tabs.get(2)));
+                    assertFalse(mTabModel.isTabInTabGroup(tabs.get(1)));
+                    assertFalse(mTabModel.isTabInTabGroup(tabs.get(2)));
                 });
     }
 

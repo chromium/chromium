@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -322,23 +321,19 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // If the new tab is in a different TabModel from the parent tab, don't group them.
         if (TabWindowManagerSingleton.getInstance().getTabModelForTab(sourceTab)
                 == TabWindowManagerSingleton.getInstance().getTabModelForTab(newTab)) {
-            TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(sourceTab);
+            TabModel tabModel = getTabModel(sourceTab);
             // Set notify to false so snackbar to undo the grouping will not be shown.
-            if (tabGroupModelFilter != null
-                    && tabGroupModelFilter.isTabInTabGroup(sourceTab)
-                    && tabGroupModelFilter.isTabModelRestored()) {
-                tabGroupModelFilter.mergeListOfTabsToGroup(
+            if (tabModel != null
+                    && tabModel.isTabInTabGroup(sourceTab)
+                    && tabModel.isTabModelRestored()) {
+                tabModel.mergeListOfTabsToGroup(
                         Arrays.asList(newTab),
                         sourceTab,
                         /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 if (mChromeActivityNativeDelegate != null) {
                     assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
-                    assert tabGroupModelFilter
-                            .getTabsInGroup(newTab.getTabGroupId())
-                            .contains(sourceTab);
-                    assert tabGroupModelFilter
-                            .getTabsInGroup(sourceTab.getTabGroupId())
-                            .contains(newTab);
+                    assert tabModel.getTabsInGroup(newTab.getTabGroupId()).contains(sourceTab);
+                    assert tabModel.getTabsInGroup(sourceTab.getTabGroupId()).contains(newTab);
                 }
             }
         }
@@ -762,8 +757,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         mExclusiveAccessManager.lostPointerLock();
     }
 
-    protected @Nullable TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
-        return TabModelUtils.getTabGroupModelFilterByTab(tab);
+    protected @Nullable TabModel getTabModel(Tab tab) {
+        return TabModelUtils.getTabModelByTab(tab);
     }
 
     protected Tab fromWebContents(WebContents webContents) {

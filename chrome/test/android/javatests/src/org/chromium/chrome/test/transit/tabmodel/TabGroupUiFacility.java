@@ -46,7 +46,7 @@ public class TabGroupUiFacility<HostStationT extends CtaPageStation>
         if (!mTabIds.isEmpty()) {
             // Ensure the number of tabs are in group.
             declareEnterCondition(
-                    new TabGroupExistsCondition(mHostStation.tabGroupModelFilterElement, mTabIds));
+                    new TabGroupExistsCondition(mHostStation.tabModelElement, mTabIds));
         }
     }
 }

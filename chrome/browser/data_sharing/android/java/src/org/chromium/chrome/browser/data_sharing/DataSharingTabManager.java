@@ -37,8 +37,8 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -460,7 +460,7 @@ public class DataSharingTabManager {
         return preview;
     }
 
-    private TabGroupModelFilter getTabGroupModelFilter() {
+    private TabModel getTabModel() {
         return assumeNonNull(mTabModelSelectorSupplier.get()).getModel(/* incognito= */ false);
     }
 
@@ -490,10 +490,10 @@ public class DataSharingTabManager {
         assumeNonNull(syncGroup);
         assumeNonNull(syncGroup.syncId);
 
-        TabGroupModelFilter filter = getTabGroupModelFilter();
+        TabModel tabModel = getTabModel();
         if (syncGroup.localId == null) {
             openTabGroupInLocalAndShow(syncGroup);
-        } else if (TabGroupSyncUtils.isInCurrentWindow(filter, syncGroup.localId)) {
+        } else if (TabGroupSyncUtils.isInCurrentWindow(tabModel, syncGroup.localId)) {
             if (isFromInviteFlow) {
                 DataSharingMetrics.recordJoinActionFlowState(
                         DataSharingMetrics.JoinActionStateAndroid.LOCAL_TAB_GROUP_EXISTS);
@@ -551,7 +551,7 @@ public class DataSharingTabManager {
             @CollaborationServiceShareOrManageEntryPoint int entryPoint,
             Callback<Boolean> createGroupFinishedCallback) {
         if (tab.getTabGroupId() == null) {
-            getTabGroupModelFilter().createSingleTabGroup(tab);
+            getTabModel().createSingleTabGroup(tab);
         }
         createOrManageFlow(
                 EitherGroupId.createLocalId(

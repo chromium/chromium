@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -57,7 +56,6 @@ public class UndoBarControllerTest {
     private WebPageStation mPage;
     private SnackbarManager mSnackbarManager;
     private TabModel mTabModel;
-    private TabGroupModelFilter mTabGroupModelFilter;
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +66,6 @@ public class UndoBarControllerTest {
                     mSnackbarManager.dismissAllSnackbars();
                 });
 
-        mTabGroupModelFilter = mPage.getTabGroupModelFilter();
         mTabModel = mPage.getTabModel();
     }
 
@@ -166,12 +163,11 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
-                    mTabGroupModelFilter.setTabGroupTitle(
-                            mTabModel.getTabAt(0).getTabGroupId(), "My group");
+                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "My group");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -200,8 +196,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.setTabGroupTitle(
-                            mTabModel.getTabAt(0).getTabGroupId(), null);
+                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), null);
                 });
     }
 
@@ -213,12 +208,11 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
-                    mTabGroupModelFilter.setTabGroupTitle(
-                            mTabModel.getTabAt(0).getTabGroupId(), "");
+                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "");
                 });
 
         assertNull(getCurrentSnackbar());
@@ -247,8 +241,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.setTabGroupTitle(
-                            mTabModel.getTabAt(0).getTabGroupId(), null);
+                    mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), null);
                 });
     }
 
@@ -260,7 +253,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -300,7 +293,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(0));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -340,8 +333,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -381,7 +374,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(
                                     mTabModel.getTabAt(0),
                                     mTabModel.getTabAt(1),
@@ -421,8 +414,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -457,8 +450,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
-                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabModel.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -498,7 +491,7 @@ public class UndoBarControllerTest {
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -543,7 +536,7 @@ public class UndoBarControllerTest {
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -592,7 +585,7 @@ public class UndoBarControllerTest {
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -634,7 +627,7 @@ public class UndoBarControllerTest {
         Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabAt(2));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                    mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
                             /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -768,7 +761,7 @@ public class UndoBarControllerTest {
     }
 
     private int getTabGroupCount() {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mTabGroupModelFilter.getTabGroupCount());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mTabModel.getTabGroupCount());
     }
 
     private void closeTabs(TabClosureParams params) {

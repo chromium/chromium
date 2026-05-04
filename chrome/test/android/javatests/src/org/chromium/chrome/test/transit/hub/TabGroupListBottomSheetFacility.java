@@ -70,7 +70,7 @@ public class TabGroupListBottomSheetFacility<
     @Override
     public void declareExtraElements() {
         declareEnterCondition(
-                new TabGroupsExistCondition(mTabGroupIds, mHostStation.tabGroupModelFilterElement));
+                new TabGroupsExistCondition(mTabGroupIds, mHostStation.tabModelElement));
     }
 
     /** Clicks the "New tab group" row to initialize the UI flow for creating a new tab group. */

@@ -71,8 +71,7 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
         menuButtonElement = declareActionButton();
 
         declareEnterCondition(
-                new TabGroupExistsCondition(
-                        mHostStation.tabGroupModelFilterElement, mTabIdsToGroup));
+                new TabGroupExistsCondition(mHostStation.tabModelElement, mTabIdsToGroup));
     }
 
     /** Clicks the group card to open the tab group dialog. */

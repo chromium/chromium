@@ -93,9 +93,7 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
 
         List<Token> allTabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                new ArrayList<>(
-                                        mHostStation.getTabGroupModelFilter().getAllTabGroupIds()));
+                        () -> new ArrayList<>(mHostStation.getTabModel().getAllTabGroupIds()));
         return addTabToGroup
                 .scrollToAndSelectTo()
                 .enterFacility(

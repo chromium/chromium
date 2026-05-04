@@ -11,7 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -22,8 +22,8 @@ final class SyncTestTabGroupHelpers {
     /** Creates a tab group with a single tab and given visual data. */
     @CalledByNative
     private static Token createGroupFromTab(Tab tab) {
-        TabGroupModelFilter tabGroupModelFilter = TabModelUtils.getTabGroupModelFilterByTab(tab);
-        tabGroupModelFilter.createSingleTabGroup(tab);
+        TabModel tabModel = TabModelUtils.getTabModelByTab(tab);
+        tabModel.createSingleTabGroup(tab);
 
         return tab.getTabGroupId();
     }
@@ -38,10 +38,9 @@ final class SyncTestTabGroupHelpers {
     @CalledByNative
     private static void updateGroupVisualData(
             Tab tabInGroup, String title, @TabGroupColorId int color) {
-        TabGroupModelFilter tabGroupModelFilter =
-                TabModelUtils.getTabGroupModelFilterByTab(tabInGroup);
+        TabModel tabModel = TabModelUtils.getTabModelByTab(tabInGroup);
         Token tabGroupId = tabInGroup.getTabGroupId();
-        tabGroupModelFilter.setTabGroupColor(tabGroupId, color);
-        tabGroupModelFilter.setTabGroupTitle(tabGroupId, title);
+        tabModel.setTabGroupColor(tabGroupId, color);
+        tabModel.setTabGroupTitle(tabGroupId, title);
     }
 }

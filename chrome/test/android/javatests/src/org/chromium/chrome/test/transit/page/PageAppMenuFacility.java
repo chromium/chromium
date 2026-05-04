@@ -12,7 +12,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
@@ -130,9 +130,9 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     public TabGroupListBottomSheetFacility<HostPageStationT> selectAddToGroupWithBottomSheet() {
         assertNotNull(mAddToGroup);
 
-        TabGroupModelFilter tabGroupModelFilter = mHostStation.getTabGroupModelFilter();
+        TabModel tabModel = mHostStation.getTabModel();
         Set<Token> tabGroupIds =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabGroupModelFilter.getAllTabGroupIds());
+                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getAllTabGroupIds());
         return mAddToGroup
                 .scrollToAndSelectTo()
                 .enterFacility(

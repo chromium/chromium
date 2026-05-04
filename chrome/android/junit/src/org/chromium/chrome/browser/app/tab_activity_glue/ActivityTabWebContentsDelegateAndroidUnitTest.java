@@ -47,8 +47,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -74,7 +74,7 @@ import java.util.function.Supplier;
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     static class TestActivityTabWebContentsDelegateAndroid
             extends ActivityTabWebContentsDelegateAndroid {
-        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabModel mTabModel;
         private Map<WebContents, Tab> mTabMap;
         private boolean mIsPopup;
         private boolean mIsDocumentPictureInPictureEnabled;
@@ -85,7 +85,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 Tab tab,
                 Activity activity,
                 TabCreatorManager tabCreatorManager,
-                TabGroupModelFilter tabGroupModelFilter) {
+                TabModel tabModel) {
             super(
                     tab,
                     activity,
@@ -98,7 +98,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                     mock(Supplier.class),
                     mock(Supplier.class),
                     null);
-            mTabGroupModelFilter = tabGroupModelFilter;
+            mTabModel = tabModel;
             mTabMap = new HashMap<>();
         }
 
@@ -108,8 +108,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         }
 
         @Override
-        protected TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
-            return mTabGroupModelFilter;
+        protected TabModel getTabModel(Tab tab) {
+            return mTabModel;
         }
 
         public void setTabMap(Map<WebContents, Tab> tabMap) {
@@ -144,7 +144,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock Tab mTab;
     @Mock TabCreatorManager mTabCreatorManager;
     @Mock TabCreator mTabCreator;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
+    @Mock TabModel mTabModel;
     @Mock ActivityManager mActivityManager;
     @Mock AconfigFlaggedApiDelegate mFlaggedApiDelegate;
     @Mock DisplayAndroid mDisplayAndroid;
@@ -171,7 +171,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
-                        mTab, mActivity, mTabCreatorManager, mTabGroupModelFilter);
+                        mTab, mActivity, mTabCreatorManager, mTabModel);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
@@ -217,7 +217,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new WindowFeatures(),
                 false,
                 null);
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
     }
 
     @Test
@@ -230,8 +230,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(newTab)
                 .when(mTabCreator)
                 .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
-        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(any());
-        doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
+        doReturn(true).when(mTabModel).isTabInTabGroup(any());
+        doReturn(true).when(mTabModel).isTabModelRestored();
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
@@ -243,7 +243,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new WindowFeatures(),
                 false,
                 null);
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         Arrays.asList(newTab), parentTab, MergeNotificationType.DONT_NOTIFY);
     }

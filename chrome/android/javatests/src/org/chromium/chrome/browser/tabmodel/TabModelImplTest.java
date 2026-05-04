@@ -354,9 +354,9 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testDuplicateTab_InsideTabGroup() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        TabModel tabModel = mPage.getTabModel();
         // 0:Tab0 | Group0: 1:Tab1 (tabToDuplicate), 2:Tab2, 3:Tab3
-        createTabGroup(3, filter);
+        createTabGroup(3, tabModel);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -546,11 +546,11 @@ public class TabModelImplTest {
                 });
 
         // Group tabs and add another tab.
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
+        TabModel tabModel = mPage.getTabModel();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<Tab> group0 = mTabModelJni.getAllTabs();
-                    filter.mergeListOfTabsToGroup(
+                    tabModel.mergeListOfTabsToGroup(
                             group0,
                             group0.get(0),
                             TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
@@ -579,7 +579,7 @@ public class TabModelImplTest {
                 });
 
         // Add a group with 2 tabs.
-        createTabGroup(2, filter);
+        createTabGroup(2, tabModel);
         // 0:Tab3 | Group0: 1:Tab1, 2:Tab0, 3:Tab2 | Group1: 4:Tab4, 5:Tab5
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -629,8 +629,8 @@ public class TabModelImplTest {
     @SmallTest
     public void testMoveTabToIndex_InsideTabGroup() {
         // Programmatically set up the tab state (PT is flaky)
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(3, filter);
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(3, tabModel);
         createTab();
         // 0:Tab0 | Group0: 1:Tab1, 2:Tab2, 3:Tab3 | 4:Tab4
 
@@ -670,9 +670,9 @@ public class TabModelImplTest {
     @SmallTest
     public void testMoveTabToIndex_TabGroupOf1() {
         // Programmatically set up the tab state (PT is flaky)
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(1, filter);
-        createTabGroup(1, filter);
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(1, tabModel);
+        createTabGroup(1, tabModel);
         createTab();
 
         // 0:Tab0 | Group0: 1:Tab1 | Group1: 2:Tab2 | 3:Tab3
@@ -719,10 +719,10 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testMoveGroupToIndex() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        List<Tab> g0 = createTabGroup(3, filter); // 1 2 3
+        TabModel tabModel = mPage.getTabModel();
+        List<Tab> g0 = createTabGroup(3, tabModel); // 1 2 3
         createTab(); // 4
-        List<Tab> g1 = createTabGroup(2, filter); // 5 6
+        List<Tab> g1 = createTabGroup(2, tabModel); // 5 6
         // 0:Tab0 | G0(1:Tab1, 2:Tab2, 3:Tab3) | 4:Tab4 | G1(5:Tab5, 6:Tab6)
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -775,10 +775,10 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testMoveGroupToIndex_TabGroupOf1() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        List<Tab> g0 = createTabGroup(1, filter); // 1
+        TabModel tabModel = mPage.getTabModel();
+        List<Tab> g0 = createTabGroup(1, tabModel); // 1
         createTab(); // 2
-        List<Tab> g1 = createTabGroup(3, filter); // 3 4 5
+        List<Tab> g1 = createTabGroup(3, tabModel); // 3 4 5
         // 0:Tab0 | G0(1:Tab1) | 2:Tab2 | G1(3:Tab3, 4:Tab4, 5:Tab5)
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -899,8 +899,8 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testAddTabsToGroup_existingGroup() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(2, filter);
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(2, tabModel);
         Tab tab3 = createTab();
         // 0:Tab0 | Group0: 1:Tab1, 2:Tab2 | 3:Tab3
 
@@ -928,8 +928,8 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testAddTabsToGroup_existingGroup_someTabsAlreadyInGroup() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(2, filter);
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(2, tabModel);
         Tab tab3 = createTab();
         // 0:Tab0 | Group0: 1:Tab1, 2:Tab2 | 3:Tab3
 
@@ -951,16 +951,16 @@ public class TabModelImplTest {
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertEquals(groupId, tab3.getTabGroupId());
-                    assertEquals(3, filter.getTabCountForGroup(groupId));
+                    assertEquals(3, tabModel.getTabCountForGroup(groupId));
                 });
     }
 
     @Test
     @SmallTest
     public void testAddTabsToGroup_existingGroup_someTabsInAnotherGroup() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(2, filter); // Group A: Tab1, Tab2
-        createTabGroup(2, filter); // Group B: Tab3, Tab4
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(2, tabModel); // Group A: Tab1, Tab2
+        createTabGroup(2, tabModel); // Group B: Tab3, Tab4
         // 0:Tab0 | GroupA: 1:Tab1, 2:Tab2 | GroupB: 3:Tab3, 4:Tab4
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -983,8 +983,8 @@ public class TabModelImplTest {
 
                     assertEquals(groupAId, tab3.getTabGroupId());
                     assertEquals(groupBId, tab4.getTabGroupId());
-                    assertEquals(3, filter.getTabCountForGroup(groupAId));
-                    assertEquals(1, filter.getTabCountForGroup(groupBId));
+                    assertEquals(3, tabModel.getTabCountForGroup(groupAId));
+                    assertEquals(1, tabModel.getTabCountForGroup(groupBId));
                 });
     }
 
@@ -1017,8 +1017,8 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testUngroup() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(2, filter);
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(2, tabModel);
         // 0:Tab0 | Group0: 1:Tab1, 2:Tab2
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1898,12 +1898,12 @@ public class TabModelImplTest {
         }
     }
 
-    private List<Tab> createTabGroup(int numberOfTabs, TabGroupModelFilter filter) {
+    private List<Tab> createTabGroup(int numberOfTabs, TabModel tabModel) {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < numberOfTabs; i++) tabs.add(createTab());
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        filter.mergeListOfTabsToGroup(
+                        tabModel.mergeListOfTabsToGroup(
                                 tabs,
                                 tabs.get(0),
                                 TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY));
@@ -1992,8 +1992,8 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     public void testPinTabInGroup_ActionListener_Accept() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(1, filter); // Group with 1 tab.
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(1, tabModel); // Group with 1 tab.
         // 0:Tab0 | Group0: 1:Tab1
 
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelJni.getTabAt(1));
@@ -2028,8 +2028,8 @@ public class TabModelImplTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // crbug.com/503008051
     public void testPinTabInGroup_ActionListener_Reject() {
-        TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
-        createTabGroup(1, filter); // Group with 1 tab.
+        TabModel tabModel = mPage.getTabModel();
+        createTabGroup(1, tabModel); // Group with 1 tab.
         // 0:Tab0 | Group0: 1:Tab1
 
         Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelJni.getTabAt(1));
@@ -2045,8 +2045,6 @@ public class TabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModel tabModel =
-                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
                     verify(mTabModelActionListener)
                             .onConfirmationDialogResult(
                                     eq(TabModelActionListener.DialogType.SYNC),

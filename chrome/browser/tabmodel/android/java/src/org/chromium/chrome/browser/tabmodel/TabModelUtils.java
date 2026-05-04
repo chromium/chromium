@@ -248,10 +248,10 @@ public class TabModelUtils {
     }
 
     /**
-     * @param tab The {@link Tab} to find the {@link TabGroupModelFilter} for.
-     * @return the associated {@link TabGroupModelFilter} if found or null.
+     * @param tab The {@link Tab} to find the {@link TabModel} for.
+     * @return the associated {@link TabModel} if found or null.
      */
-    public static @Nullable TabGroupModelFilter getTabGroupModelFilterByTab(Tab tab) {
+    public static @Nullable TabModel getTabModelByTab(Tab tab) {
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return null;
 

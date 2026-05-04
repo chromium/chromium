@@ -8,7 +8,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,21 +18,19 @@ import java.util.function.Supplier;
 /** Check that the tab group represented by the card exists in the tab model. */
 public class TabGroupExistsCondition extends UiThreadCondition {
 
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<TabModel> mTabModelSupplier;
     private final List<Integer> mTabIdsToGroup;
 
     public TabGroupExistsCondition(
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
-            List<Integer> tabIdsToGroup) {
-        mTabGroupModelFilterSupplier =
-                dependOnSupplier(tabGroupModelFilterSupplier, "TabGroupModelFilter");
+            Supplier<TabModel> tabModelSupplier, List<Integer> tabIdsToGroup) {
+        mTabModelSupplier = dependOnSupplier(tabModelSupplier, "TabModel");
         mTabIdsToGroup = tabIdsToGroup;
     }
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        TabGroupModelFilter groupFilter = mTabGroupModelFilterSupplier.get();
-        List<Tab> relatedTabs = groupFilter.getRelatedTabList(mTabIdsToGroup.get(0));
+        TabModel tabModel = mTabModelSupplier.get();
+        List<Tab> relatedTabs = tabModel.getRelatedTabList(mTabIdsToGroup.get(0));
         if (relatedTabs.isEmpty()) {
             return notFulfilled("relatedTabIds is empty");
         }
