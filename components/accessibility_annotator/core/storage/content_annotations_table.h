@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace os_crypt_async {
@@ -22,11 +22,6 @@ class Database;
 }  // namespace sql
 
 namespace accessibility_annotator {
-
-// TODO(crbug.com/501429617): Remove this alias once ContentAnnotationsData is
-// refactored out of the backend.
-using ContentAnnotationsData =
-    AccessibilityAnnotatorBackend::ContentAnnotationsData;
 
 // This class manages the table storing content annotations for visits to URLs
 // It expects the following schema:

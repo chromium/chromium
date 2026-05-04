@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"

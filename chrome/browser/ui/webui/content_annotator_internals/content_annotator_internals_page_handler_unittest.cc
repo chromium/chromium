@@ -18,6 +18,7 @@
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_types.h"
@@ -103,8 +104,7 @@ class ContentAnnotatorInternalsPageHandlerTest
 
   void SetContentAnnotationsData(
       history::VisitID visit_id,
-      accessibility_annotator::AccessibilityAnnotatorBackend::
-          ContentAnnotationsData data) {
+      accessibility_annotator::ContentAnnotationsData data) {
     accessibility_annotator::AccessibilityAnnotatorBackend* backend =
         AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
     ASSERT_TRUE(backend);
@@ -162,8 +162,7 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   auto* order = content_annotation.mutable_structured_data()->add_orders();
   order->set_id("order_123");
 
-  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
-      data;
+  accessibility_annotator::ContentAnnotationsData data;
   data.page_title = "Title";
   data.tab_id = 123;
   data.url = GURL("https://example.com");
@@ -209,8 +208,7 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
 }
 
 TEST_P(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotations) {
-  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
-      data;
+  accessibility_annotator::ContentAnnotationsData data;
   data.page_title = "Title";
   data.url = GURL("https://example.com");
   SetContentAnnotationsData(static_cast<history::VisitID>(1), std::move(data));
@@ -253,14 +251,12 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotations) {
 
 TEST_P(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
   // Add two entries.
-  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
-      data1;
+  accessibility_annotator::ContentAnnotationsData data1;
   data1.page_title = "Title 1";
   data1.url = GURL("https://example.com/1");
   SetContentAnnotationsData(static_cast<history::VisitID>(1), std::move(data1));
 
-  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
-      data2;
+  accessibility_annotator::ContentAnnotationsData data2;
   data2.page_title = "Title 2";
   data2.url = GURL("https://example.com/2");
   SetContentAnnotationsData(static_cast<history::VisitID>(2), std::move(data2));
@@ -325,8 +321,7 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest,
                                          .Set("visit_id", "123"))))))
         .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
 
-    accessibility_annotator::AccessibilityAnnotatorBackend::
-        ContentAnnotationsData data;
+    accessibility_annotator::ContentAnnotationsData data;
     data.page_title = "Title 1";
     data.url = GURL("https://example.com/1");
     SetContentAnnotationsData(static_cast<history::VisitID>(123),
@@ -352,8 +347,7 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest,
                                         .Set("title", "Title 2"))))))
         .WillOnce([&](const base::Value& content) { run_loop.Quit(); });
 
-    accessibility_annotator::AccessibilityAnnotatorBackend::
-        ContentAnnotationsData data;
+    accessibility_annotator::ContentAnnotationsData data;
     data.page_title = "Title 2";
     data.url = GURL("https://example.com/2");
     SetContentAnnotationsData(static_cast<history::VisitID>(456),
@@ -397,8 +391,7 @@ TEST_P(ContentAnnotatorInternalsPageHandlerTest,
 
 TEST_P(ContentAnnotatorInternalsPageHandlerTest,
        OnContentAnnotationsClearedPushesToUI) {
-  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
-      data;
+  accessibility_annotator::ContentAnnotationsData data;
   data.page_title = "Title";
   data.url = GURL("https://example.com");
 

@@ -4,6 +4,8 @@
 
 source_set("content_annotator") {
   sources = [
+    "content_annotations_data.cc",
+    "content_annotations_data.h",
     "content_annotator_classifier_rules_parser.cc",
     "content_annotator_classifier_rules_parser.h",
     "content_annotator_rule_based_classifier.cc",

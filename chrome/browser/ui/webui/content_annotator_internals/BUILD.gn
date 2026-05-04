@@ -24,6 +24,7 @@ source_set("content_annotator_internals") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/content_annotator_internals:resources",
     "//chrome/common",
+    "//components/accessibility_annotator/core/content_annotator",
     "//components/accessibility_annotator/core/storage",
   ]
 }
@@ -37,6 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/accessibility_annotator",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/core/content_annotator",
     "//components/accessibility_annotator/core/logging:mojo_bindings",
     "//components/accessibility_annotator/core/storage",
     "//components/os_crypt/async/browser",

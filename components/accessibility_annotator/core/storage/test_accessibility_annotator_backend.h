@@ -23,8 +23,7 @@ class MockAccessibilityAnnotatorBackendObserver
 
   MOCK_METHOD(void,
               OnContentAnnotationsAdded,
-              (history::VisitID,
-               const AccessibilityAnnotatorBackend::ContentAnnotationsData&),
+              (history::VisitID, const ContentAnnotationsData&),
               (override));
   MOCK_METHOD(void,
               OnContentAnnotationsDeleted,

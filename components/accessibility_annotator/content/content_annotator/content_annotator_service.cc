@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "components/history/core/browser/history_service.h"
@@ -286,7 +287,7 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
     *page_context.mutable_annotated_page_content() =
         complete_data.annotated_page_content->data;
 
-    AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+    ContentAnnotationsData data;
     data.page_title = complete_data.page_title.value();
     data.url = complete_data.url;
     data.tab_id = complete_data.tab_id;
@@ -301,7 +302,7 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     history::VisitID visit_id,
-    AccessibilityAnnotatorBackend::ContentAnnotationsData data) {
+    ContentAnnotationsData data) {
   if (visit_id == history::kInvalidVisitID) {
     return;
   }
@@ -321,7 +322,7 @@ void ContentAnnotatorService::GenerateAnnotations(
 
 void ContentAnnotatorService::HandleModelExecutionResult(
     history::VisitID visit_id,
-    AccessibilityAnnotatorBackend::ContentAnnotationsData data,
+    ContentAnnotationsData data,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (visit_id == history::kInvalidVisitID) {

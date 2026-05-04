@@ -9,6 +9,7 @@
 
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
@@ -34,8 +35,7 @@ ContentAnnotatorInternalsPageHandler::~ContentAnnotatorInternalsPageHandler() =
 
 void ContentAnnotatorInternalsPageHandler::OnContentAnnotationsAdded(
     history::VisitID visit_id,
-    const accessibility_annotator::AccessibilityAnnotatorBackend::
-        ContentAnnotationsData& annotation_data) {
+    const accessibility_annotator::ContentAnnotationsData& annotation_data) {
   NotifyPageWithAnnotations();
 }
 

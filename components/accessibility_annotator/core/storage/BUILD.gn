@@ -6,7 +6,6 @@ source_set("storage") {
   sources = [
     "accessibility_annotation_sync_bridge.cc",
     "accessibility_annotation_sync_bridge.h",
-    "accessibility_annotator_backend.cc",
     "accessibility_annotator_backend.h",
     "accessibility_annotator_backend_impl.cc",
     "accessibility_annotator_backend_impl.h",
@@ -21,6 +20,7 @@ source_set("storage") {
   public_deps = [
     "//base",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/content_annotator",
     "//components/accessibility_annotator/core/data_models",
     "//components/database_utils",
     "//components/history/core/browser",

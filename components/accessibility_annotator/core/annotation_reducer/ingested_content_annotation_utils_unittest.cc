@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/annotation_reducer/ingested_content_annotation.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
@@ -16,7 +17,7 @@ namespace accessibility_annotator {
 namespace {
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertOrder) {
-  AccessibilityAnnotatorBackend::ContentAnnotationsData annotation_data;
+  ContentAnnotationsData annotation_data;
   annotation_data.visit_id = 123;
   annotation_data.url = GURL("https://example.com");
   annotation_data.navigation_timestamp =
@@ -74,7 +75,7 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertOrder) {
 }
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertShipment) {
-  AccessibilityAnnotatorBackend::ContentAnnotationsData annotation_data;
+  ContentAnnotationsData annotation_data;
   annotation_data.visit_id = 456;
   annotation_data.url = GURL("https://example.com/shipment");
   annotation_data.navigation_timestamp =
@@ -114,7 +115,7 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertShipment) {
 }
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertFlightReservation) {
-  AccessibilityAnnotatorBackend::ContentAnnotationsData annotation_data;
+  ContentAnnotationsData annotation_data;
   annotation_data.visit_id = 789;
   annotation_data.url = GURL("https://example.com/flight");
   annotation_data.navigation_timestamp =
@@ -175,7 +176,7 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertFlightReservation) {
 }
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertEmptyStructuredData) {
-  AccessibilityAnnotatorBackend::ContentAnnotationsData annotation_data;
+  ContentAnnotationsData annotation_data;
   annotation_data.visit_id = 999;
   auto ingested_annotation = ConvertIngestedContentAnnotation(annotation_data);
 

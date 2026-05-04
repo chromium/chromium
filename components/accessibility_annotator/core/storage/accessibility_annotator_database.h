@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/storage/content_annotations_table.h"
 #include "components/accessibility_annotator/core/storage/intent_table.h"
 #include "components/history/core/browser/history_types.h"
@@ -23,11 +23,6 @@ class Database;
 }  // namespace sql
 
 namespace accessibility_annotator {
-
-// TODO(crbug.com/501429617): Remove this alias once ContentAnnotationsData is
-// refactored out of the backend.
-using ContentAnnotationsData =
-    AccessibilityAnnotatorBackend::ContentAnnotationsData;
 
 // The database manager for the AccessibilityAnnotator.
 class AccessibilityAnnotatorDatabase {

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
@@ -583,11 +584,9 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
                                    /*log_entry=*/nullptr));
 
   // 6. Verify that the data is cached in the backend.
-  base::optional_ref<
-      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
-      cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
-              static_cast<history::VisitID>(1));
+  base::optional_ref<const ContentAnnotationsData> cached_data =
+      accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+          static_cast<history::VisitID>(1));
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->content_annotation.description(), "Test description");
   EXPECT_EQ(cached_data->content_annotation.status(),
@@ -786,11 +785,9 @@ TEST_F(ContentAnnotatorServiceTest, TestOnVisitsDeleted_CancelsInProgressWork) {
                                    /*log_entry=*/nullptr));
 
   // 6. Verify that the data is NOT cached in the backend.
-  base::optional_ref<
-      const AccessibilityAnnotatorBackend::ContentAnnotationsData>
-      cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
-              static_cast<history::VisitID>(1));
+  base::optional_ref<const ContentAnnotationsData> cached_data =
+      accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+          static_cast<history::VisitID>(1));
   EXPECT_FALSE(cached_data.has_value());
 }
 

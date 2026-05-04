@@ -9,9 +9,9 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
-#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 
 namespace accessibility_annotator {
@@ -118,8 +118,7 @@ FlightReservation ConvertFlightReservation(
 }  // namespace
 
 IngestedContentAnnotation ConvertIngestedContentAnnotation(
-    const AccessibilityAnnotatorBackend::ContentAnnotationsData&
-        content_annotation_data) {
+    const ContentAnnotationsData& content_annotation_data) {
   if (!content_annotation_data.content_annotation.has_structured_data()) {
     return IngestedContentAnnotation();
   }

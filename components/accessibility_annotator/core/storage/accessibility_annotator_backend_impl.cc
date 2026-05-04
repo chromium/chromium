@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_database.h"
 #include "components/history/core/browser/history_service.h"
@@ -289,7 +290,7 @@ void AccessibilityAnnotatorBackendImpl::OnHistoryServiceLoaded(
   // TODO(crbug.com/489690454): Query the history service for historical data.
 }
 
-base::optional_ref<const AccessibilityAnnotatorBackend::ContentAnnotationsData>
+base::optional_ref<const ContentAnnotationsData>
 AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
     history::VisitID visit_id) const {
   auto it = content_annotations_cache_.Peek(visit_id);
@@ -573,9 +574,8 @@ void AccessibilityAnnotatorBackendImpl::GetContentAnnotation(
   // TODO (crbug.com/496386554): Remove after cache is no longer used.
   if (!base::FeatureList::IsEnabled(
           features::kAccessibilityAnnotatorDatabaseStorage)) {
-    base::optional_ref<
-        const AccessibilityAnnotatorBackend::ContentAnnotationsData>
-        ref = GetContentAnnotationsCacheData(visit_id);
+    base::optional_ref<const ContentAnnotationsData> ref =
+        GetContentAnnotationsCacheData(visit_id);
     std::move(callback).Run(ref.has_value() ? std::make_optional(ref->Clone())
                                             : std::nullopt);
     return;
