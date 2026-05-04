@@ -570,7 +570,6 @@ static_library("constants") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//components/bookmarks/common",
     "//components/offline_pages/buildflags",
     "//components/policy/core/common:policy_path_constants",
     "//content/public/common:buildflags",

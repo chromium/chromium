@@ -48,8 +48,6 @@ static_library("test_stubs") {
   ]
 }
 
-# We should move chrome_result_codes.h to another target which does not bring
-# in the world.
 shared_library("chrome_elf") {
   sources = [
     "chrome_elf.def",
@@ -60,15 +58,11 @@ shared_library("chrome_elf") {
   deps = [
     ":chrome_elf_manifest",
     ":chrome_elf_resources",
-    ":constants",
-    ":crash",
-    ":nt_registry",
     ":security",
     ":third_party_dlls",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crash/core/app:crash_export_thunks",
-    "//sandbox/policy:win_hook_util",
   ]
 
   configs += [ "//build/config/win:windowed" ]
@@ -102,19 +96,16 @@ static_library("crash") {
   sources = [
     "../app/chrome_crash_reporter_client_win.cc",
     "../app/chrome_crash_reporter_client_win.h",
-    "../common/chrome_result_codes.h",
     "crash/crash_helper.cc",
     "crash/crash_helper.h",
   ]
   deps = [
     ":constants",
     "//base",  # This needs to go.  DEP of app, crash_keys, client.
-    "//base:base_static",  # pe_image
     "//chrome/install_static:install_static_util",
     "//components/crash/core/app",
     "//components/crash/core/common",  # crash_keys
     "//components/version_info:channel",
-    "//content/public/common:result_codes",
     "//sandbox/policy:win_hook_util",
     "//third_party/crashpad/crashpad/client",  # DumpWithoutCrash
   ]
