@@ -2867,15 +2867,6 @@ void Browser::CapturePaintPreviewOfSubframe(
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// Browser, DesktopBrowserWindowCapabilitiesDelegate implementation:
-
-void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
-                                    bool blocked) {
-  BrowserWindowModalDialogDelegate::From(this)->SetWebContentsBlocked(
-      web_contents, blocked);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Browser, BookmarkTabHelperObserver implementation:
 
 void Browser::URLStarredChanged(content::WebContents* web_contents,

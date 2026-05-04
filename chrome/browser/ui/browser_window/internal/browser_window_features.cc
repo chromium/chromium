@@ -569,7 +569,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   desktop_browser_window_capabilities_ =
       GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
-          *browser, browser, browser->window(),
+          *browser, browser_window_modal_dialog_delegate_.get(),
+          unload_controller_.get(), browser->window(),
           browser->GetUnownedUserDataHost());
 
   if (WebUIBrowserWindow* webui_browser_window =
@@ -1046,7 +1047,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   upgrade_notification_controller_.reset();
   memory_saver_opt_in_iph_controller_.reset();
   ai_overlay_dialog_controller_.reset();
-  unload_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   initial_web_ui_manager_.reset();
   tab_search_toolbar_button_controller_.reset();

@@ -4,20 +4,24 @@
 
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
+#include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/web_modal/browser_window_modal_dialog_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(DesktopBrowserWindowCapabilities);
 
 DesktopBrowserWindowCapabilities::DesktopBrowserWindowCapabilities(
-    DesktopBrowserWindowCapabilitiesDelegate* delegate,
+    BrowserWindowModalDialogDelegate* modal_dialog_delegate,
+    UnloadController* unload_controller,
     BrowserWindow* browser_window,
     ui::UnownedUserDataHost& host)
-    : delegate_(delegate),
-      browser_window_(browser_window),
+    : modal_dialog_delegate_(CHECK_DEREF(modal_dialog_delegate)),
+      unload_controller_(CHECK_DEREF(unload_controller)),
+      browser_window_(CHECK_DEREF(browser_window)),
       scoped_data_holder_(host, *this) {}
 
 DesktopBrowserWindowCapabilities::~DesktopBrowserWindowCapabilities() = default;
@@ -39,7 +43,7 @@ bool DesktopBrowserWindowCapabilities::IsVisibleOnScreen() const {
 }
 
 bool DesktopBrowserWindowCapabilities::IsAttemptingToCloseBrowser() const {
-  return delegate_->IsAttemptingToCloseBrowser();
+  return unload_controller_->is_attempting_to_close_browser();
 }
 
 gfx::Size DesktopBrowserWindowCapabilities::GetContentsSize() const {
@@ -49,7 +53,7 @@ gfx::Size DesktopBrowserWindowCapabilities::GetContentsSize() const {
 void DesktopBrowserWindowCapabilities::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
-  return delegate_->SetWebContentsBlocked(web_contents, blocked);
+  return modal_dialog_delegate_->SetWebContentsBlocked(web_contents, blocked);
 }
 
 bool DesktopBrowserWindowCapabilities::AllowKeyboardLockForInnerContents(

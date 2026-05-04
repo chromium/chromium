@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_DESKTOP_BROWSER_WINDOW_CAPABILITIES_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/size.h"
 
 class BrowserWindowInterface;
 class BrowserWindow;
-class DesktopBrowserWindowCapabilitiesDelegate;
+class BrowserWindowModalDialogDelegate;
+class UnloadController;
 
 namespace ui {
 class UnownedUserDataHost;
@@ -29,7 +31,8 @@ class DesktopBrowserWindowCapabilities {
   DECLARE_USER_DATA(DesktopBrowserWindowCapabilities);
 
   DesktopBrowserWindowCapabilities(
-      DesktopBrowserWindowCapabilitiesDelegate* delegate,
+      BrowserWindowModalDialogDelegate* modal_dialog_delegate,
+      UnloadController* unload_controller,
       BrowserWindow* browser_window,
       ui::UnownedUserDataHost& host);
   ~DesktopBrowserWindowCapabilities();
@@ -68,13 +71,13 @@ class DesktopBrowserWindowCapabilities {
       content::WebContents* web_contents) const;
 
  private:
-  // The associated delegate. Must outlive this class.
-  raw_ptr<DesktopBrowserWindowCapabilitiesDelegate> delegate_ = nullptr;
+  const raw_ref<BrowserWindowModalDialogDelegate> modal_dialog_delegate_;
+  const raw_ref<UnloadController> unload_controller_;
 
   // The corresponding BrowserWindow. This should be valid for the lifetime of
   // this class, since this is constructed by BrowserWindowFeatures after
   // Browser creation and destroyed before Browser teardown.
-  raw_ptr<BrowserWindow> browser_window_ = nullptr;
+  const raw_ref<BrowserWindow> browser_window_;
 
   ui::ScopedUnownedUserData<DesktopBrowserWindowCapabilities>
       scoped_data_holder_;
