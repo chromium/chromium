@@ -26711,6 +26711,24 @@
             ]
         }
     ],
+    "ZeroSuggestPrefetchingForComposebox": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ZeroSuggestPrefetchingForComposebox"
+                    ]
+                }
+            ]
+        }
+    ],
     "ZstdForCrossSiteSpeculationRulesPrefetch": [
         {
             "platforms": [
