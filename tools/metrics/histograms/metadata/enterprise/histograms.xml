@@ -3413,6 +3413,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.RemoveLocalAuthFactorsScreen.Shown" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Recorded whenever the RemoveLocalAuthFactors screen is shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RemoveLocalAuthFactorsScreen.Success"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>fahadmansoor@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Tracks the result of the local auth factor removal process. Recorded as true
+    when all local auth factors are successfully removed, and false if any part
+    of the removal process fails.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ReportingEvent.{EventType}.UploadSize" units="B"
     expires_after="2026-10-04">
   <owner>domfc@chromium.org</owner>

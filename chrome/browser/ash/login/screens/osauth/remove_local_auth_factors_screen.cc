@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -58,6 +59,8 @@ RemoveLocalAuthFactorsScreen::RemoveLocalAuthFactorsScreen(
 RemoveLocalAuthFactorsScreen::~RemoveLocalAuthFactorsScreen() = default;
 
 void RemoveLocalAuthFactorsScreen::ShowImpl() {
+  base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Shown",
+                            true);
   if (!view_) {
     return;
   }
@@ -92,6 +95,8 @@ void RemoveLocalAuthFactorsScreen::OnGetAuthFactorsConfiguration(
                << error->get_cryptohome_error();
     context()->user_context = std::move(user_context);
     context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Success",
+                              false);
     exit_callback_.Run(Result::kError);
     return;
   }
@@ -130,6 +135,8 @@ void RemoveLocalAuthFactorsScreen::RemoveLocalAuthFactors(
   online_password_.reset();
   if (result != auth::mojom::ConfigureResult::kSuccess) {
     context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Success",
+                              false);
     exit_callback_.Run(Result::kError);
     LOG(ERROR) << "Could not set online password";
     return;
@@ -142,6 +149,8 @@ void RemoveLocalAuthFactorsScreen::RemoveLocalAuthFactors(
     LOG(WARNING) << "No pin configured, showing success.";
     context()->knowledge_factor_setup.modified_factors.Put(
         AshAuthFactor::kGaiaPassword);
+    base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Success",
+                              true);
     ShowRemoveLocalAuthFactorsSucess();
     return;
   }
@@ -163,6 +172,8 @@ void RemoveLocalAuthFactorsScreen::OnPinRemoved(
     // We still let the user login, to make sure that they do not get locked out
     // of their account due to any cryptohome related issue with removing the
     // pin.
+    base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Success",
+                              false);
     exit_callback_.Run(Result::kSuccess);
     return;
   }
@@ -170,6 +181,8 @@ void RemoveLocalAuthFactorsScreen::OnPinRemoved(
 
   context()->knowledge_factor_setup.modified_factors.Put(
       AshAuthFactor::kCryptohomePin);
+  base::UmaHistogramBoolean("Enterprise.RemoveLocalAuthFactorsScreen.Success",
+                            true);
   ShowRemoveLocalAuthFactorsSucess();
 }
 

@@ -1608,6 +1608,13 @@ void FakeUserDataAuthClient::RemoveAuthFactor(
     RemoveAuthFactorCallback callback) {
   ::user_data_auth::RemoveAuthFactorReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kRemoveAuthFactor>(request);
+
+  if (auto error = TakeOperationError(Operation::kRemoveAuthFactor);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    return;
+  }
 
   auto error = cryptohome::ErrorWrapper::success();
   auto* session =
