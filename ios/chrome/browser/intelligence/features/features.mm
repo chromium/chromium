@@ -593,12 +593,27 @@ BASE_FEATURE_PARAM(bool,
                    kActorToolsPageStabilityParam,
                    false);
 
+// This mirrors the desktop equivalent at:
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc;l=317;drc=b8690fd8da7ae2367f4060dbb4bb35a43adcebed
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kObservationDelayTimeout,
+                   &kActorTools,
+                   base::Seconds(10));
+
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
 }
 
 bool IsPageStabilityEnabled() {
   return kPageStabilityEnabled.Get();
+}
+
+base::TimeDelta GetActorObservationDelayTimeout() {
+  // This CHECK is safe since this param is only accessed by the page stability
+  // logic for the ActorTools feature.
+  // TODO(crbug.com/498991756): remove when the feature is launched.
+  CHECK(IsPageStabilityEnabled());
+  return kObservationDelayTimeout.Get();
 }
 
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {

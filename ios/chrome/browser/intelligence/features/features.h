@@ -307,6 +307,7 @@ BASE_DECLARE_FEATURE(kActorTools);
 bool IsActorEnabled();
 extern const char kActorToolsPageStabilityParam[];
 bool IsPageStabilityEnabled();
+base::TimeDelta GetActorObservationDelayTimeout();
 
 // Returns true if the specified tool is disabled via the "DisabledTools"
 // feature parameter of the `kActorTools` feature.
