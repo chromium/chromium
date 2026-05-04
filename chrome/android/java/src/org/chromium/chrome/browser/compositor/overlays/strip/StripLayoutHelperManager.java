@@ -1855,9 +1855,7 @@ public class StripLayoutHelperManager
         // to create a larger gap between buttons to meet touch target size requirements.
         float trailingButtonsTouchTargetSize =
                 isTrailingButtonsVisible
-                        ? (mTrailingButtonsCoordinator.getTrailingButtonsWidthWithEndPadding()
-                                + mTrailingButtonsCoordinator
-                                        .getTrailingButtonsStartPaddingForTouchTarget())
+                        ? mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding()
                         : 0.0f;
         float msbTouchTargetSize =
                 isMsbVisible

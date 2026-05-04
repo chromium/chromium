@@ -60,18 +60,15 @@ public class StripLayoutTrailingButtonsCoordinator {
 
     // TODO(crbug.com/505850223): Move Glic (+ MSB) constants to a dimens.xml
     // Glic button constants.
-    private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 5.f;
-    private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 28.f;
-    private static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 28.f;
+    private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
+    private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 42.f;
+    private static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.30f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.20f;
     private static final float GLIC_BUTTON_UNFOCUSED_OPACITY = 0.65f;
-    private static final float GLIC_BUTTON_CLICK_SLOP_DP =
-            (StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE
-                            - GLIC_BUTTON_BACKGROUND_WIDTH_DP)
-                    / 2;
-    // Total vertical margin (Tab Strip Height(40dp) - Glic Background Height(28dp) = 12dp).
-    public static final float GLIC_BUTTON_MARGIN_HEIGHT_DP = 12.f;
+    private static final float GLIC_BUTTON_CLICK_SLOP_DP = 8.f;
+    // Total vertical margin (Tab Strip Height(40dp) - Glic Background Height(32dp) = 8dp).
+    public static final float GLIC_BUTTON_MARGIN_HEIGHT_DP = 8.f;
     public static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
     private static final float GLIC_ICON_WIDTH_DP = 16.f;
     public static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
@@ -84,12 +81,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                     / 2;
     public static final float GLIC_BUTTON_CORNER_RADIUS = 10.f;
     public static final float GLIC_BUTTON_INNER_CORNER_RADIUS = 2.f;
-    // 2dp accounts for the smaller Glic background and aligns it with the toolbar buttons
-    private static final float GLIC_ALIGNMENT_OFFSET_DP =
-            (StripLayoutHelperManager.MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP
-                            - GLIC_BUTTON_BACKGROUND_WIDTH_DP)
-                    / 2;
     private static final float GLIC_ACTOR_BUTTON_GAP_DP = 2.f;
+
     private static final int ANIM_BUTTONS_FADE_MS = 150;
 
     // Core Dependencies
@@ -538,8 +531,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mGlicActorButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
 
         if (!LocalizationUtils.isLayoutRtl()) {
-            float rightSideAnchor =
-                    mWidth - mRightPadding - mStripEndPadding - GLIC_ALIGNMENT_OFFSET_DP;
+            float rightSideAnchor = mWidth - mRightPadding - mStripEndPadding;
             if (mIsMsbVisible) {
                 rightSideAnchor -= StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE;
             }
@@ -555,7 +547,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                                 - GLIC_DISMISS_ICON_WIDTH_DP);
             }
         } else {
-            float leftSideAnchor = mLeftPadding + mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
+            float leftSideAnchor = mLeftPadding + mStripEndPadding;
             if (mIsMsbVisible) {
                 leftSideAnchor += StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE;
             }
@@ -585,8 +577,8 @@ public class StripLayoutTrailingButtonsCoordinator {
         mGlicActorButton.setOpacity(isUnfocusedInDw ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f);
     }
 
-    /** Returns the total width used by the trailing buttons including end padding. */
-    public float getTrailingButtonsWidthWithEndPadding() {
+    /** Returns the total width used by the trailing buttons including padding. */
+    public float getTrailingButtonsWidthWithPadding() {
         float width = 0.0f;
         if (isGlicButtonVisible()) {
             width += mGlicButton.getWidth();
@@ -597,17 +589,10 @@ public class StripLayoutTrailingButtonsCoordinator {
             width += mGlicActorButton.getWidth();
         }
         if (width > 0.0f) {
-            width += mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
+            // Add end padding and start slop to meet touch target requirements.
+            width += mStripEndPadding + GLIC_BUTTON_CLICK_SLOP_DP;
         }
         return width;
-    }
-
-    /** Returns the start padding required for the trailing buttons touch target. */
-    public float getTrailingButtonsStartPaddingForTouchTarget() {
-        if (isGlicButtonVisible() || isGlicActorButtonVisible()) {
-            return mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
-        }
-        return 0.0f;
     }
 
     /**
