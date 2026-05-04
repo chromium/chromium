@@ -49,6 +49,9 @@
 /// The remaining capacity for attachments.
 @property(nonatomic, assign) NSUInteger remainingAttachmentCapacity;
 
+/// The remaining number of images allowed.
+@property(nonatomic, assign) NSUInteger remainingNumberOfImagesAllowed;
+
 /// Whether the model picker is allowed to be shown.
 @property(nonatomic, assign) BOOL allowModelPicker;
 

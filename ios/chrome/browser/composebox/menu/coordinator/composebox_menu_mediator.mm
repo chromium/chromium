@@ -45,8 +45,8 @@
     return YES;
   }
 
-  // TODO(crbug.com/506956060): Take current attachments into account.
-  return YES;
+  CHECK(_inputState);
+  return _inputState.remainingAttachmentCapacity > 0;
 }
 
 - (void)processFileURLs:(NSArray<NSURL*>*)urls {
@@ -70,8 +70,8 @@
 }
 
 - (NSUInteger)remainingNumberOfImagesAllowed {
-  // TODO(crbug.com/506956765): Implement.
-  return 5;
+  CHECK(_inputState);
+  return _inputState.remainingNumberOfImagesAllowed;
 }
 
 - (void)setConsumer:(id<ComposeboxMenuConsumer>)consumer {
