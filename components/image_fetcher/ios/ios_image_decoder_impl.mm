@@ -15,6 +15,9 @@
 #include "ios/web/public/thread/web_thread.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_skia_util_ios.h"
 
 namespace image_fetcher {
 
@@ -52,7 +55,22 @@ void IOSImageDecoderImpl::DecodeImage(const std::string& image_data,
   UIImage* ui_image = [UIImage imageWithData:data scale:1];
   gfx::Image gfx_image;
   if (ui_image) {
-    gfx_image = gfx::Image(ui_image);
+    // Create an ImageSkia representation matching the scale of the decoded
+    // image. This avoids the default conversion path in
+    // gfx::Image::ToSkBitmap() which would upscale the image to the device's
+    // max supported scale factor, causing memory and cache inflation.
+    gfx::ImageSkiaRep rep =
+        gfx::ImageSkiaRepOfScaleFromUIImage(ui_image, ui_image.scale);
+
+    gfx::ImageSkia image_skia;
+    if (!rep.is_null()) {
+      image_skia.AddRepresentation(rep);
+      // Create the gfx::Image from the ImageSkia directly.
+      gfx_image = gfx::Image(image_skia);
+    } else {
+      // Fall back to the default behavior.
+      gfx_image = gfx::Image(ui_image);
+    }
   }
   std::move(callback).Run(gfx_image);
 }

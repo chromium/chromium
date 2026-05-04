@@ -6,12 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace {
 
@@ -94,6 +98,37 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
   scoped_task_evironment_.RunUntilIdle();
 
   EXPECT_FALSE(decoded_image_.IsEmpty());
+}
+
+// Verifies that the decoded image retains a 1.0x scale factor.
+TEST_F(IOSImageDecoderImplTest, DecodedImageScale) {
+  ASSERT_TRUE(decoded_image_.IsEmpty());
+
+  std::string image_data =
+      std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
+
+  ios_image_decoder_impl_->DecodeImage(
+      image_data, gfx::Size(), /*data_decoder=*/nullptr,
+      base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
+                     base::Unretained(this)));
+
+  scoped_task_evironment_.RunUntilIdle();
+
+  EXPECT_FALSE(decoded_image_.IsEmpty());
+
+  gfx::ImageSkia image_skia = decoded_image_.AsImageSkia();
+  std::vector<gfx::ImageSkiaRep> reps = image_skia.image_reps();
+
+  ASSERT_FALSE(reps.empty());
+  // Verify that the representation has a scale of 1.0.
+  EXPECT_EQ(reps[0].scale(), 1.0f);
+
+  // If the device has a scale factor > 1.0, verify that we did not
+  // create a representation at that scale.
+  CGFloat screen_scale = [UIScreen mainScreen].scale;
+  if (screen_scale > 1.0f) {
+    EXPECT_FALSE(image_skia.HasRepresentation(screen_scale));
+  }
 }
 
 }  // namespace image_fetcher
