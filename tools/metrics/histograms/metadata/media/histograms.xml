@@ -3085,16 +3085,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.Controls.PlaybackSpeed"
-    enum="MediaControlsPlaybackSpeed" expires_after="2023-11-12">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Record the playback speed selected by the user in the list of playback
-    speeds on the media controls.
-  </summary>
-</histogram>
-
 <histogram name="Media.CrosGlobalMediaControls.PinAction" enum="BooleanPinned"
     expires_after="2027-03-31">
   <owner>yrw@chromium.org</owner>
