@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -100,6 +101,8 @@ class ContentAnnotatorServiceFactoryTest : public testing::Test {
                       testing::NiceMock<TestAccessibilityAnnotatorBackend>>();
                 },
                 temp_dir_.GetPath()));
+    HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        browser_context, HistoryServiceFactory::GetDefaultFactory());
   }
 
   content::BrowserTaskEnvironment task_environment_;

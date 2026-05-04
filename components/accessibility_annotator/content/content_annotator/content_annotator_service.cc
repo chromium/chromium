@@ -17,10 +17,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -80,6 +82,7 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
         optimization_guide_remote_model_executor,
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+    history::HistoryService* history_service,
     passage_embeddings::Embedder* embedder,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     PrefService* pref_service) {
@@ -91,8 +94,8 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
   return base::WrapUnique(new ContentAnnotatorService(
       page_content_annotations_service, page_content_extraction_service,
       optimization_guide_remote_model_executor, page_embeddings_service,
-      accessibility_annotator_backend, embedder, embedder_metadata_provider,
-      std::move(content_classifier)));
+      accessibility_annotator_backend, history_service, embedder,
+      embedder_metadata_provider, std::move(content_classifier)));
 }
 
 ContentAnnotatorService::ContentAnnotatorService(
@@ -104,6 +107,7 @@ ContentAnnotatorService::ContentAnnotatorService(
         optimization_guide_remote_model_executor,
     page_content_annotations::PageEmbeddingsService& page_embeddings_service,
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+    history::HistoryService* history_service,
     passage_embeddings::Embedder* embedder,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     std::unique_ptr<ContentClassifier> content_classifier)
@@ -116,6 +120,7 @@ ContentAnnotatorService::ContentAnnotatorService(
       join_entries_(features::kContentAnnotatorMaxPendingUrls.Get()),
       content_classifier_(std::move(content_classifier)) {
   CHECK(content_classifier_);
+  CHECK(history_service);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
   page_content_extraction_service_observation_.Observe(
@@ -124,11 +129,16 @@ ContentAnnotatorService::ContentAnnotatorService(
   if (embedder_metadata_provider) {
     embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
+  history_service_observation_.Observe(history_service);
 }
 
 ContentAnnotatorService::~ContentAnnotatorService() {
   page_content_annotations_service_->RemoveObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
+}
+
+void ContentAnnotatorService::Shutdown() {
+  history_service_observation_.Reset();
 }
 
 void ContentAnnotatorService::OnPageContentAnnotated(
@@ -140,8 +150,6 @@ void ContentAnnotatorService::OnPageContentAnnotated(
   CacheIterator it = GetOrCreateJoinEntry(visit.url);
   // Invert the visibility score to get a sensitivity score.
   it->second.sensitivity_score = 1.0 - result.GetContentVisibilityScore();
-  it->second.navigation_timestamp = visit.nav_entry_timestamp;
-  it->second.visit_id = visit.visit_id;
   MaybeAnnotate(it);
 }
 
@@ -294,6 +302,11 @@ void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
     history::VisitID visit_id,
     AccessibilityAnnotatorBackend::ContentAnnotationsData data) {
+  if (visit_id == history::kInvalidVisitID) {
+    return;
+  }
+  in_progress_annotations_.insert(visit_id);
+
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
 
@@ -312,6 +325,12 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (visit_id == history::kInvalidVisitID) {
+    return;
+  }
+
+  // If the visit id is not in progress, we can return early as it means the
+  // visit was deleted from history.
+  if (in_progress_annotations_.erase(visit_id) == 0) {
     return;
   }
 
@@ -336,6 +355,58 @@ void ContentAnnotatorService::HandleModelExecutionResult(
           visit_id, std::move(data), base::DoNothing());
     }
   }
+}
+
+void ContentAnnotatorService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (deletion_info.IsAllHistory()) {
+    join_entries_.Clear();
+    in_progress_annotations_.clear();
+    return;
+  }
+
+  const std::set<history::VisitID>& deleted_visit_ids =
+      deletion_info.deleted_visit_ids();
+  if (deleted_visit_ids.empty()) {
+    return;
+  }
+
+  // Note: If multiple visits to the same URL occur in a small span of time, the
+  // entry's visit_id will reflect the *latest* visit, causing us to potentially
+  // keep entries matched with older language/page content.
+  for (CacheIterator it = join_entries_.begin(); it != join_entries_.end();) {
+    if (it->second.visit_id.has_value() &&
+        deleted_visit_ids.contains(it->second.visit_id.value())) {
+      it = join_entries_.Erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  for (history::VisitID visit_id : deleted_visit_ids) {
+    in_progress_annotations_.erase(visit_id);
+  }
+}
+
+void ContentAnnotatorService::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ignore synced visits from other devices.
+  if (!visited_url_info.visit_row.originator_cache_guid.empty()) {
+    return;
+  }
+
+  // OnPageContentAnnotated relies on data from this function to populate
+  // the visit_id and timestamp.
+  CacheIterator it = GetOrCreateJoinEntry(visited_url_info.url_row.url());
+  it->second.visit_id = visited_url_info.visit_row.visit_id;
+  it->second.navigation_timestamp = visited_url_info.visit_row.visit_time;
+  MaybeAnnotate(it);
 }
 
 }  // namespace accessibility_annotator

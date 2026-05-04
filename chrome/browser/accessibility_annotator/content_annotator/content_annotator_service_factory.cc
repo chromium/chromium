@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 
 // static
@@ -46,6 +48,7 @@ ContentAnnotatorServiceFactory::ContentAnnotatorServiceFactory()
   DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
   DependsOn(
       passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 ContentAnnotatorServiceFactory::~ContentAnnotatorServiceFactory() = default;
@@ -92,13 +95,20 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (!history_service) {
+    return nullptr;
+  }
+
   auto* passage_embeddings_service_controller =
       passage_embeddings::ChromePassageEmbeddingsServiceController::Get();
 
   return accessibility_annotator::ContentAnnotatorService::Create(
       *page_content_annotations_service, *page_content_extraction_service,
       *optimization_guide_service, *page_embeddings_service,
-      *accessibility_annotator_backend,
+      *accessibility_annotator_backend, history_service,
       passage_embeddings_service_controller->GetEmbedder(),
       passage_embeddings_service_controller, profile->GetPrefs());
 }

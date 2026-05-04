@@ -16,15 +16,23 @@
 #include "base/sequence_checker.h"
 #include "components/accessibility_annotator/core/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 class PrefService;
+
+namespace history {
+class DeletionInfo;
+class HistoryService;
+struct VisitedURLInfo;
+}  // namespace history
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -46,7 +54,8 @@ class ContentAnnotatorService
           PageContentAnnotationsObserver,
       public page_content_annotations::PageContentExtractionService::Observer,
       public page_content_annotations::PageEmbeddingsService::Observer,
-      public passage_embeddings::EmbedderMetadataObserver {
+      public passage_embeddings::EmbedderMetadataObserver,
+      public history::HistoryServiceObserver {
  public:
   static std::unique_ptr<ContentAnnotatorService> Create(
       page_content_annotations::PageContentAnnotationsService&
@@ -57,14 +66,17 @@ class ContentAnnotatorService
           optimization_guide_remote_model_executor,
       page_content_annotations::PageEmbeddingsService& page_embeddings_service,
       AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+      history::HistoryService* history_service,
       passage_embeddings::Embedder* embedder,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       PrefService* pref_service);
 
-  ~ContentAnnotatorService() override;
-
   ContentAnnotatorService(const ContentAnnotatorService&) = delete;
   ContentAnnotatorService& operator=(const ContentAnnotatorService&) = delete;
+  ~ContentAnnotatorService() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // page_content_annotations::PageContentAnnotationsService::
   //     PageContentAnnotationsObserver:
@@ -95,6 +107,12 @@ class ContentAnnotatorService
   void EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata metadata) override;
 
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::VisitedURLInfo& visited_url_info) override;
+
  protected:
   ContentAnnotatorService(
       page_content_annotations::PageContentAnnotationsService&
@@ -105,11 +123,13 @@ class ContentAnnotatorService
           optimization_guide_remote_model_executor,
       page_content_annotations::PageEmbeddingsService& page_embeddings_service,
       AccessibilityAnnotatorBackend& accessibility_annotator_backend,
+      history::HistoryService* history_service,
       passage_embeddings::Embedder* embedder,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       std::unique_ptr<ContentClassifier> content_classifier);
 
  private:
+ // TODO(crbug.com/508751383): Rekey the cache by GURL and timestamp.
   using CacheIterator =
       base::LRUCache<GURL, ContentClassificationInput>::iterator;
 
@@ -175,6 +195,14 @@ class ContentAnnotatorService
 
   // The metadata for the passage embedder.
   passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0};
+
+  // Tracks visits that are currently being annotated by the model.
+  absl::flat_hash_set<history::VisitID> in_progress_annotations_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
