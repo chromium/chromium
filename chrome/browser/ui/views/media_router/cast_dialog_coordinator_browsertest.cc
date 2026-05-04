@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(CastDialogCoordinatorTest, ShowAndHideDialog) {
   EXPECT_CALL(controller_, AddObserver(_));
   cast_dialog_coordinator_.ShowDialogCenteredForBrowserWindow(
       &controller_, browser(), base::Time::Now(),
-      MediaRouterDialogActivationLocation::PAGE);
+      MediaRouterDialogActivationLocation::PAGE, base::DoNothing());
   EXPECT_TRUE(cast_dialog_coordinator_.IsShowing());
   EXPECT_NE(nullptr, cast_dialog_coordinator_.GetCastDialogWidget());
   views::test::WidgetDestroyedWaiter waiter(

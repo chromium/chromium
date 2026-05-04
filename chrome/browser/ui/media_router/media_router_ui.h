@@ -139,6 +139,8 @@ class MediaRouterUI : public CastDialogController,
     return media_route_starter()->GetWebContents();
   }
 
+  base::WeakPtr<MediaRouterUI> GetWeakPtr();
+
  private:
   friend class MediaRouterViewsUITest;
   friend class MediaRouterCastUiForTest;

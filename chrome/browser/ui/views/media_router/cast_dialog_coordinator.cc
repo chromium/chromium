@@ -25,24 +25,56 @@
 
 namespace media_router {
 
+CastDialogCoordinator::CastDialogCoordinator() = default;
+CastDialogCoordinator::~CastDialogCoordinator() = default;
+
 void CastDialogCoordinator::ShowDialogWithToolbarAction(
-    CastDialogController* controller,
+    base::WeakPtr<CastDialogController> controller,
     BrowserWindowInterface* browser,
     const base::Time& start_time,
-    MediaRouterDialogActivationLocation activation_location) {
+    MediaRouterDialogActivationLocation activation_location,
+    AfterShownCallback after_shown_callback) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  auto anchor = browser_view->toolbar_button_provider()
-                    ->GetPinnedToolbarActions()
-                    ->GetBubbleAnchor(kActionRouteMedia);
-  DCHECK(!anchor.IsNull());
-  auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionRouteMedia, browser->GetActions()->root_action_item());
-  Show(anchor, views::BubbleBorder::TOP_RIGHT, controller,
-       browser->GetProfile(), start_time, activation_location, action_item);
+  browser_view->toolbar_button_provider()
+      ->GetPinnedToolbarActions()
+      ->GetBubbleAnchorAsync(
+          kActionRouteMedia,
+          base::BindOnce(&CastDialogCoordinator::OnBubbleAnchorVisible,
+                         weak_ptr_factory_.GetWeakPtr(), controller,
+                         browser->GetWeakPtr(), start_time, activation_location,
+                         std::move(after_shown_callback)));
+}
 
-  if (action_item &&
-      activation_location == MediaRouterDialogActivationLocation::TOOLBAR) {
-    action_item->SetIsShowingBubble(true);
+void CastDialogCoordinator::OnBubbleAnchorVisible(
+    base::WeakPtr<CastDialogController> controller,
+    base::WeakPtr<BrowserWindowInterface> browser,
+    const base::Time& start_time,
+    MediaRouterDialogActivationLocation activation_location,
+    AfterShownCallback after_shown_callback,
+    base::expected<views::BubbleAnchor, GetAnchorFailureReason> anchor) {
+  if (!controller) {
+    std::move(after_shown_callback).Run(ShowCastDialogStatus::kCastCanceled);
+    return;
+  }
+  if (!browser) {
+    std::move(after_shown_callback).Run(ShowCastDialogStatus::kWindowClosed);
+    return;
+  }
+  if (anchor.has_value()) {
+    auto* action_item = actions::ActionManager::Get().FindAction(
+        kActionRouteMedia, browser->GetActions()->root_action_item());
+    Show(anchor.value(), views::BubbleBorder::TOP_RIGHT, controller.get(),
+         browser->GetProfile(), start_time, activation_location, action_item,
+         std::move(after_shown_callback));
+
+    if (action_item &&
+        activation_location == MediaRouterDialogActivationLocation::TOOLBAR) {
+      action_item->SetIsShowingBubble(true);
+    }
+  } else {
+    ShowDialogCenteredForBrowserWindow(controller.get(), browser.get(),
+                                       start_time, activation_location,
+                                       std::move(after_shown_callback));
   }
 }
 
@@ -50,11 +82,13 @@ void CastDialogCoordinator::ShowDialogCenteredForBrowserWindow(
     CastDialogController* controller,
     BrowserWindowInterface* browser,
     const base::Time& start_time,
-    MediaRouterDialogActivationLocation activation_location) {
+    MediaRouterDialogActivationLocation activation_location,
+    AfterShownCallback after_shown_callback) {
   Show(views::BubbleAnchor(
            BrowserView::GetBrowserViewForBrowser(browser)->top_container()),
        views::BubbleBorder::TOP_CENTER, controller, browser->GetProfile(),
-       start_time, activation_location);
+       start_time, activation_location, nullptr,
+       std::move(after_shown_callback));
 }
 
 void CastDialogCoordinator::ShowDialogCentered(
@@ -62,9 +96,11 @@ void CastDialogCoordinator::ShowDialogCentered(
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
-    MediaRouterDialogActivationLocation activation_location) {
+    MediaRouterDialogActivationLocation activation_location,
+    AfterShownCallback after_shown_callback) {
   Show(views::BubbleAnchor(), views::BubbleBorder::TOP_CENTER, controller,
-       profile, start_time, activation_location);
+       profile, start_time, activation_location, nullptr,
+       std::move(after_shown_callback));
   GetCastDialogView()->SetAnchorRect(bounds);
 }
 
@@ -88,7 +124,8 @@ void CastDialogCoordinator::Show(
     Profile* profile,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location,
-    actions::ActionItem* action_item) {
+    actions::ActionItem* action_item,
+    AfterShownCallback after_shown_callback) {
   DCHECK(!start_time.is_null());
   // Hide the previous dialog instance if it exists, since there can only be one
   // instance at a time.
@@ -100,6 +137,7 @@ void CastDialogCoordinator::Show(
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(cast_dialog_view));
   widget->Show();
+  std::move(after_shown_callback).Run(ShowCastDialogStatus::kSuccess);
 }
 
 CastDialogView* CastDialogCoordinator::GetCastDialogView() {

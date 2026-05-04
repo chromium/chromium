@@ -98,6 +98,10 @@ class MediaRouterDialogControllerViews
   // toolbar action. It's owned by MediaRouterUIService and it may be nullptr.
   CastToolbarButtonController* GetActionController();
 
+  // Called after the dialog is created to complete post-creation steps.
+  void OnDialogCreated(MediaRouterDialogActivationLocation activation_location,
+                       ShowCastDialogStatus status);
+
   MediaRouterUI* ui() { return ui_.get(); }
 
   // Responsible for notifying the dialog view of dialog model updates and

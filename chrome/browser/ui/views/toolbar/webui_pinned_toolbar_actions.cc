@@ -27,6 +27,30 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
+struct WebUIPinnedToolbarActions::PendingAnchorRequest {
+  PendingAnchorRequest(
+      actions::ActionId id,
+      base::OnceCallback<
+          void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)> cb,
+      ui::ElementTracker::Subscription sub);
+  ~PendingAnchorRequest();
+  const actions::ActionId action_id;
+  base::OnceCallback<void(
+      base::expected<views::BubbleAnchor, GetAnchorFailureReason>)>
+      callback;
+  const ui::ElementTracker::Subscription subscription;
+};
+
+WebUIPinnedToolbarActions::PendingAnchorRequest::PendingAnchorRequest(
+    actions::ActionId id,
+    base::OnceCallback<
+        void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)> cb,
+    ui::ElementTracker::Subscription sub)
+    : action_id(id), callback(std::move(cb)), subscription(std::move(sub)) {}
+
+WebUIPinnedToolbarActions::PendingAnchorRequest::~PendingAnchorRequest() =
+    default;
+
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
     WebUIToolbarWebView* webui_toolbar_web_view)
     : webui_toolbar_web_view_(webui_toolbar_web_view),
@@ -188,16 +212,57 @@ ToolbarButton* WebUIPinnedToolbarActions::GetDownloadButton() {
 views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
   if (IsActionPinnedOrPoppedOut(action_id)) {
-    // TODO(https://crbug.com/493870881): Add support for cases where the button
-    // was very recently pinned or popped out and the WebUI hasn't had a chance
-    // to call TrackedElementHandler::TrackedElementVisibilityChanged(), so the
-    // code below will return nullptr.
-    return views::BubbleAnchor(
+    ui::TrackedElement* element =
         BrowserElements::From(webui_toolbar_web_view_->browser_)
-            ->GetElement(
-                webui_toolbar::ActionIdToElementIdentifier(action_id)));
+            ->GetElement(webui_toolbar::ActionIdToElementIdentifier(action_id));
+    DCHECK(element);
+    return views::BubbleAnchor(element);
   }
   return views::BubbleAnchor();
+}
+
+void WebUIPinnedToolbarActions::GetBubbleAnchorAsync(
+    actions::ActionId action_id,
+    base::OnceCallback<void(base::expected<views::BubbleAnchor,
+                                           GetAnchorFailureReason>)> callback) {
+  auto element_id = webui_toolbar::ActionIdToElementIdentifier(action_id);
+  if (!element_id || !IsActionPinnedOrPoppedOut(action_id)) {
+    std::move(callback).Run(
+        base::unexpected(GetAnchorFailureReason::kAnchorNotFound));
+    return;
+  }
+
+  ui::TrackedElement* element =
+      BrowserElements::From(webui_toolbar_web_view_->browser_)
+          ->GetElement(element_id);
+  if (element) {
+    std::move(callback).Run(views::BubbleAnchor(element));
+    return;
+  }
+
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          element_id,
+          BrowserElements::From(webui_toolbar_web_view_->browser_)
+              ->GetContext(),
+          base::BindRepeating(&WebUIPinnedToolbarActions::OnElementShown,
+                              base::Unretained(this), action_id));
+
+  pending_anchor_requests_.push_back(std::make_unique<PendingAnchorRequest>(
+      action_id, std::move(callback), std::move(subscription)));
+}
+
+void WebUIPinnedToolbarActions::OnElementShown(actions::ActionId action_id,
+                                               ui::TrackedElement* element) {
+  auto it = pending_anchor_requests_.begin();
+  while (it != pending_anchor_requests_.end()) {
+    if ((*it)->action_id == action_id) {
+      std::move((*it)->callback).Run(views::BubbleAnchor(element));
+      it = pending_anchor_requests_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 PinnedActionToolbarButton* WebUIPinnedToolbarActions::GetChromeLabsButton() {

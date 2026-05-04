@@ -85,16 +85,21 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
 
   BrowserView* browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+  CastDialogCoordinator::AfterShownCallback callback =
+      base::BindOnce(&MediaRouterDialogControllerViews::OnDialogCreated,
+                     weak_ptr_factory_.GetWeakPtr(), activation_location);
   if (browser_view) {
     // Show the Cast dialog anchored to the Cast toolbar button.
     if (browser_view->toolbar_button_provider()
             ->GetPinnedToolbarActions()
             ->IsActionPinnedOrPoppedOut(kActionRouteMedia)) {
       cast_dialog_coordinator_.ShowDialogWithToolbarAction(
-          ui_.get(), browser, dialog_creation_time, activation_location);
+          ui_->GetWeakPtr(), browser, dialog_creation_time, activation_location,
+          std::move(callback));
     } else {
       cast_dialog_coordinator_.ShowDialogCenteredForBrowserWindow(
-          ui_.get(), browser, dialog_creation_time, activation_location);
+          ui_.get(), browser, dialog_creation_time, activation_location,
+          std::move(callback));
     }
   } else {
     // Show the Cast dialog anchored to the top of the web contents.
@@ -102,10 +107,19 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
     // Set the height to 0 so that the dialog gets anchored to the top of the
     // window.
     anchor_bounds.set_height(0);
-    cast_dialog_coordinator_.ShowDialogCentered(anchor_bounds, ui_.get(),
-                                                profile, dialog_creation_time,
-                                                activation_location);
+    cast_dialog_coordinator_.ShowDialogCentered(
+        anchor_bounds, ui_.get(), profile, dialog_creation_time,
+        activation_location, std::move(callback));
   }
+}
+
+void MediaRouterDialogControllerViews::OnDialogCreated(
+    MediaRouterDialogActivationLocation activation_location,
+    ShowCastDialogStatus status) {
+  if (status != ShowCastDialogStatus::kSuccess) {
+    return;
+  }
+
   scoped_widget_observations_.AddObservation(
       cast_dialog_coordinator_.GetCastDialogWidget());
 

@@ -154,7 +154,8 @@ class CastDialogViewTest : public ChromeViewsTestBase {
     cast_dialog_coordinator_.Show(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
         views::BubbleBorder::TOP_RIGHT, &controller_, &profile_,
-        base::Time::Now(), MediaRouterDialogActivationLocation::PAGE);
+        base::Time::Now(), MediaRouterDialogActivationLocation::PAGE, nullptr,
+        base::DoNothing());
 
     dialog_ = cast_dialog_coordinator_.GetCastDialogView();
     dialog_->OnModelUpdated(model);

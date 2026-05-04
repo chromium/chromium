@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/media_router/browser/media_router.h"
@@ -134,6 +135,10 @@ CastToolbarButtonController* CastBrowserController::GetActionController()
 }
 
 ToolbarButton* CastBrowserController::GetToolbarButton() const {
+  // If the Cast button is WebUI, it's not a ToolbarButton.
+  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+    return nullptr;
+  }
   // if the browser view is missing for the given browser, then there's no view
   // to update.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);

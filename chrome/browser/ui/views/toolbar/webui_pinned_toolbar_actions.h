@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
 
+#include <list>
 #include <map>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 
 class PinnedActionToolbarButtonMenuModel;
 class WebUIToolbarWebView;
@@ -48,6 +50,11 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
   ToolbarButton* GetDownloadButton() override;
   views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
+  void GetBubbleAnchorAsync(
+      actions::ActionId action_id,
+      base::OnceCallback<
+          void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)>
+          callback) override;
   PinnedActionToolbarButton* GetChromeLabsButton() override;
   void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) override;
 
@@ -77,6 +84,10 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   // PinnedToolbarActionsModel::Observer:
   void OnActionsChanged() override;
 
+  void OnElementShown(actions::ActionId action_id, ui::TrackedElement* element);
+
+  struct PendingAnchorRequest;
+
   // Parent toolbar.
   const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   // The model whose state we use to populate this view.
@@ -95,6 +106,8 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   // Note: This is unset initially, and is not cleared when the menu closes.
   // It should only be evaluated when `menu_runner_->IsRunning()` is true.
   std::optional<actions::ActionId> active_context_menu_action_;
+  // Pending requests for bubble anchors.
+  std::list<std::unique_ptr<PendingAnchorRequest>> pending_anchor_requests_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_

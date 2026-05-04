@@ -717,4 +717,8 @@ MediaRouter* MediaRouterUI::GetMediaRouter() const {
   return router_;
 }
 
+base::WeakPtr<MediaRouterUI> MediaRouterUI::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace media_router

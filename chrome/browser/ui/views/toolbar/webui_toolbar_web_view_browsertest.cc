@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -2844,8 +2845,42 @@ class WebUIPinnedToolbarActionsBrowserTest
       EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
     }
     EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+    bool missing_anchor = false;
+    pinned_actions->GetBubbleAnchorAsync(
+        action_id, base::BindLambdaForTesting(
+                       [&](base::expected<views::BubbleAnchor,
+                                          GetAnchorFailureReason> anchor) {
+                         EXPECT_FALSE(anchor.has_value());
+                         EXPECT_EQ(anchor.error(),
+                                   GetAnchorFailureReason::kAnchorNotFound);
+                         missing_anchor = true;
+                       }));
+    EXPECT_TRUE(missing_anchor);
 
     model_->UpdatePinnedState(action_id, true);
+    // Test async anchor fetching.
+    base::RunLoop run_loop;
+    pinned_actions->GetBubbleAnchorAsync(
+        action_id, base::BindLambdaForTesting(
+                       [&](base::expected<views::BubbleAnchor,
+                                          GetAnchorFailureReason> anchor) {
+                         EXPECT_TRUE(anchor.has_value());
+                         EXPECT_FALSE(anchor.value().IsNull());
+                         run_loop.Quit();
+                       }));
+    run_loop.Run();
+    // Test sync anchor fetching.
+    EXPECT_FALSE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+    bool found_anchor = false;
+    pinned_actions->GetBubbleAnchorAsync(
+        action_id, base::BindLambdaForTesting(
+                       [&](base::expected<views::BubbleAnchor,
+                                          GetAnchorFailureReason> anchor) {
+                         EXPECT_TRUE(anchor.has_value());
+                         EXPECT_FALSE(anchor.value().IsNull());
+                         found_anchor = true;
+                       }));
+    EXPECT_TRUE(found_anchor);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
 
@@ -2861,11 +2896,6 @@ class WebUIPinnedToolbarActionsBrowserTest
         return BrowserElements::From(browser())->GetElement(id) != nullptr;
       }));
     }
-    // Once pinned, GetBubbleAnchor() should eventually return a non-null
-    // BubbleAnchor.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return !pinned_actions->GetBubbleAnchor(action_id).IsNull();
-    }));
   }
 
   void UnpinAction(actions::ActionId action_id,
