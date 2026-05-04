@@ -58,7 +58,13 @@ extra_input_roots = [
 ]
 
 [crate.core]
-extra_input_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
+extra_input_roots = [
+  '**/*.md',
+  '../../portable-simd/crates/core_simd/src/core_simd_docs.md',
+  '../../portable-simd/crates/core_simd/src/**/*.rs',
+  '../../stdarch/crates/core_arch/src/core_arch_docs.md',
+  '../../stdarch/crates/core_arch/src/**/*.rs',
+]
 
 [crate.core.extra_kv]
 # Dependencies of profiler_builtins must have instrumentation disabled
@@ -98,33 +104,8 @@ extra_kv = { include_coverage = false }
 [crate.std]
 extra_input_roots = [
   '../../backtrace/src',
-  '../../core/src/autodiff.md',
-  '../../core/src/error.md',
-  '../../core/src/ffi/c_char.md',
-  '../../core/src/ffi/c_double.md',
-  '../../core/src/ffi/c_float.md',
-  '../../core/src/ffi/c_int.md',
-  '../../core/src/ffi/c_long.md',
-  '../../core/src/ffi/c_longlong.md',
-  '../../core/src/ffi/c_schar.md',
-  '../../core/src/ffi/c_short.md',
-  '../../core/src/ffi/c_uchar.md',
-  '../../core/src/ffi/c_uint.md',
-  '../../core/src/ffi/c_ulong.md',
-  '../../core/src/ffi/c_ulonglong.md',
-  '../../core/src/ffi/c_ushort.md',
-  '../../core/src/ffi/c_void.md',
-  '../../core/src/fmt/fmt_trait_method_doc.md',
-  '../../core/src/macros/panic.md',
+  '../../core/**/*.md',
   '../../core/src/primitive_docs.rs',
-  '../../core/src/ptr/docs/INFO.md',
-  '../../core/src/ptr/docs/add.md',
-  '../../core/src/ptr/docs/addr.md',
-  '../../core/src/ptr/docs/as_ref.md',
-  '../../core/src/ptr/docs/as_uninit_ref.md',
-  '../../core/src/ptr/docs/as_uninit_slice.md',
-  '../../core/src/ptr/docs/is_null.md',
-  '../../core/src/ptr/docs/offset.md',
   '../../portable-simd/crates/core_simd/src/core_simd_docs.md',
   '../../portable-simd/crates/std_float/src',
   '../../stdarch/crates/core_arch/src/core_arch_docs.md',

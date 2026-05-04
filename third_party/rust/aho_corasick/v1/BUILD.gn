@@ -48,7 +48,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/src/util/search.rs",
     "//third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/src/util/special.rs",
   ]
-  inputs = [ "//third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/src/packed/teddy/README.md" ]
+  inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"

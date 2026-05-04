@@ -41,7 +41,8 @@
 #   the crate's `src` directory (these need to be added to `sources` in the
 #   generated `BUILD.gn`).  An example scenario that needs `extra_input_roots` is
 #   when a crate uses generated code via `include!("../generated/foo.rs")`.
-#   Paths are relative to the crate root.
+#   Paths are relative to the crate root and can include wildcards - e.g.
+#   `../docs/**/*.md`.
 #
 # group: One of 'safe', 'sandbox', or 'test. This indicates where the library
 #   is allowed to be used and where its GN rules will be written.
@@ -257,9 +258,10 @@ remove_deps = ['cc', 'link-cplusplus']
 remove_build_rs = true
 
 [crate.cxxbridge-cmd]
-shipped = false
-bin_targets = ["cxxbridge"]
+bin_targets = ['cxxbridge']
+extra_input_roots = ['**/*.h']
 extra_kv = { allow_unsafe = false }
+shipped = false
 
 [crate.cxxbridge-flags.extra_kv]
 allow_unsafe = false
@@ -793,8 +795,9 @@ extra_kv = { allow_unsafe = false }
 [crate.thiserror-impl]
 extra_kv = { allow_unsafe = false }
 
-[crate.timezone_provider.extra_kv]
-allow_unsafe = true
+[crate.timezone_provider]
+extra_input_roots = ["**/*.data"]
+extra_kv = { allow_unsafe = true }
 
 [crate.tinystr.extra_kv]
 allow_unsafe = true
@@ -864,15 +867,15 @@ visibility = ['//build/rust/tests/windows_sys_test:*']
 allow_unsafe = false
 
 [crate.windows_aarch64_msvc]
-native_libs_roots = ['../lib']
+native_libs_roots = ['../lib/**/*.lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.windows_i686_msvc]
-native_libs_roots = ['../lib']
+native_libs_roots = ['../lib/**/*.lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.windows_x86_64_msvc]
-native_libs_roots = ['../lib']
+native_libs_roots = ['../lib/**/*.lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.writeable.extra_kv]
@@ -916,5 +919,6 @@ extra_kv = { allow_unsafe = true }
 [crate.zmij]
 extra_kv = { allow_unsafe = true }
 
-[crate.zoneinfo64.extra_kv]
-allow_unsafe = true
+[crate.zoneinfo64]
+extra_input_roots = ["data/zoneinfo64.res"]
+extra_kv = { allow_unsafe = true }

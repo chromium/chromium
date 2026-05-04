@@ -37,7 +37,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/text_metadata.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/traits.rs",
   ]
-  inputs = [ "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter/optimization-notes.md" ]
+  inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"

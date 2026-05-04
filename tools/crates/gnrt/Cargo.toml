@@ -17,6 +17,7 @@ anyhow = "1"
 cargo-platform = "0.2"
 clap = { version = "4", features = ["derive"] }
 flate2 = "1"
+glob = "0.3.3"
 guppy = "0.17.18"
 handlebars = "6.3.2"
 itertools = "0.14"

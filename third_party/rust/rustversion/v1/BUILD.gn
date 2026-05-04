@@ -44,7 +44,7 @@ cargo_crate("lib") {
 
   build_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-v1/build/build.rs"
   build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-v1/build/build.rs" ]
-  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-v1/src/../../rustversion-v1/build/rustc.rs" ]
+  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-v1/src/../build/rustc.rs" ]
   build_script_outputs = [ "version.expr" ]
 
   # Only for usage from third-party crates. Add the crate to

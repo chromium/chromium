@@ -59,10 +59,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/tokenizer_json.rs",
     "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/tokenparser.rs",
   ]
-  inputs = [
-    "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/json/README.md",
-    "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/src/lark/README.md",
-  ]
+  inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"

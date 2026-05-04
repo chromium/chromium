@@ -833,11 +833,6 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/wtf8.rs",
   ]
   inputs = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/examples/README.md",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/examples/dot_product.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/examples/matrix_inversion.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/examples/nbody.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/examples/spectral_norm.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/alias.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/cast.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/core_simd_docs.md",
@@ -873,42 +868,6 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/vendor/wasm32.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/vendor/x86.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/src/vendor.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/autoderef.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/cast.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/f32_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/f64_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/i16_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/i32_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/i64_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/i8_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/isize_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/layout.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mask16.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mask32.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mask64.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mask8.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mask_macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/masksize.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/mask_ops_impl/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/masked_load_store.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/masks.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/ops_macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/pointers.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/round.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/swizzle.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/swizzle_dyn.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/to_bytes.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/try_from_slice.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/u16_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/u32_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/u64_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/u8_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/tests/usize_ops.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../portable-simd/crates/core_simd/webdriver.json",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/MISSING.md",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/README.md",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/missing-x86.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/aarch64/mod.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/aarch64/mte.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/../../stdarch/crates/core_arch/src/aarch64/neon/generated.rs",
@@ -2371,7 +2330,7 @@ cargo_crate("rustc_std_workspace_core") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core/lib.rs"
   sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core/lib.rs" ]
-  inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core/README.md" ]
+  inputs = []
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -2412,7 +2371,7 @@ cargo_crate("rustc_std_workspace_std") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-std/lib.rs"
   sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-std/lib.rs" ]
-  inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-std/README.md" ]
+  inputs = []
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -3189,7 +3148,6 @@ cargo_crate("std") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/core_simd/src/core_simd_docs.md",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../portable-simd/crates/std_float/src/lib.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/../../stdarch/crates/core_arch/src/core_arch_docs.md",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/sys/pal/windows/c/README.md",
   ]
   no_std = true
 
