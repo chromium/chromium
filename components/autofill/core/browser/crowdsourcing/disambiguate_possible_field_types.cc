@@ -8,7 +8,6 @@
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -39,20 +38,6 @@ bool IsNameType(const AutofillField& field) {
     }
   }
   return types_to_keep;
-}
-
-// If a field was autofilled on form submission and the value was accepted, set
-// possible types to the autofilled type.
-[[nodiscard]] FieldTypeSet OverridePossibleTypesToAutofilledTypeIfAvailable(
-    const AutofillField& field,
-    FieldTypeSet possible_types) {
-  if (field.last_modifier() == FieldModifier::kAutofill &&
-      field.autofilled_type() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillDisambiguateContradictingFieldTypes)) {
-    return {*field.autofilled_type()};
-  }
-  return possible_types;
 }
 
 // Disambiguates name types from mixed field type groups when the name exists in
@@ -142,14 +127,6 @@ std::vector<PossibleTypes> DisambiguatePossibleFieldTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     std::vector<PossibleTypes> possible_types) {
   for (size_t i = 0; i < fields.size(); ++i) {
-    if (possible_types[i].types.size() <= 1) {
-      continue;
-    }
-    // Setting possible types to an autofilled value that was accepted by the
-    // user should have the highest priority among disambiguation methods
-    // because it represents user intent the most.
-    possible_types[i].types = OverridePossibleTypesToAutofilledTypeIfAvailable(
-        *fields[i], possible_types[i].types);
     if (possible_types[i].types.size() <= 1) {
       continue;
     }

@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,8 +60,6 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillDisambiguateContradictingFieldTypes};
 };
 
 // Name disambiguation.
@@ -193,16 +190,6 @@ TEST_F(DisambiguatePossibleFieldTypesTest,
                   UnorderedElementsAre(NAME_LAST, CREDIT_CARD_NAME_LAST,
                                        NAME_LAST_SECOND),
                   UnorderedElementsAre(ADDRESS_HOME_CITY)));
-}
-
-TEST_F(DisambiguatePossibleFieldTypesTest,
-       AutofilledFieldDisambiguatesToAutofilledType) {
-  const std::vector<TestFieldData> kTestFields = {
-      {ADDRESS_HOME_LINE1,
-       {CREDIT_CARD_EXP_4_DIGIT_YEAR, NAME_FULL, COMPANY_NAME},
-       true}};
-  EXPECT_THAT(GetDisambiguatedPossibleFieldTypes(kTestFields),
-              ElementsAre(UnorderedElementsAre(ADDRESS_HOME_LINE1)));
 }
 
 }  // namespace autofill
