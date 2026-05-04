@@ -120,7 +120,7 @@
     "import constraints": [],
     "merge constraints": [],
     "strike keys": [],
-    "disambiguation order": [ "Merchant name", "Date" ],
+    "disambiguation order": [ "Merchant name", "Product names", "Date" ],
     "experiment feature": "AutofillAiOrder",
     "read only": true
   },
