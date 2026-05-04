@@ -176,7 +176,7 @@ BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos,
 // instead of jumping straight to CVC or biometric auth.
 BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_IOS)
+    BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -216,7 +216,7 @@ BASE_FEATURE(kAutofillEnablePayNowPayLaterTabs,
 // authentication to autofill payment methods, we will trigger a device
 // authentication on ChromeOS.
 BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauthChromeOs,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, risk data is prefetched during payments autofill flows to
