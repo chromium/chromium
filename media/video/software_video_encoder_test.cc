@@ -103,7 +103,7 @@ class SoftwareVideoEncoderTest
 
     if (codec_ == VideoCodec::kH264) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-      decoder_ = std::make_unique<FFmpegVideoDecoder>(&media_log_);
+      decoder_ = std::make_unique<FFmpegVideoDecoder>(media_log_.Clone());
 #endif
     } else if (codec_ == VideoCodec::kVP8 || codec_ == VideoCodec::kVP9) {
 #if BUILDFLAG(ENABLE_LIBVPX)

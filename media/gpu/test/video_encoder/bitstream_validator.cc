@@ -53,7 +53,7 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   if (!decoder) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     *media_log = std::make_unique<NullMediaLog>();
-    decoder = std::make_unique<FFmpegVideoDecoder>(media_log->get());
+    decoder = std::make_unique<FFmpegVideoDecoder>((*media_log)->Clone());
 #endif
   }
 

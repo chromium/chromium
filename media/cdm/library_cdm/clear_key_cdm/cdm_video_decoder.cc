@@ -327,7 +327,7 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   if (!video_decoder)
-    video_decoder = std::make_unique<FFmpegVideoDecoder>(media_log);
+    video_decoder = std::make_unique<FFmpegVideoDecoder>(media_log->Clone());
 #endif
 
   if (!video_decoder)

@@ -146,7 +146,8 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 #endif
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  video_decoders->push_back(std::make_unique<FFmpegVideoDecoder>(media_log));
+  video_decoders->push_back(
+      std::make_unique<FFmpegVideoDecoder>(media_log->Clone()));
 #endif
 }
 

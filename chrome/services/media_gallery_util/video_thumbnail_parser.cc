@@ -37,7 +37,6 @@ namespace {
 // Return the video frame back to browser process. A valid |config| is
 // needed for deserialization.
 void OnSoftwareVideoFrameDecoded(
-    std::unique_ptr<media::MediaLog>,
     std::unique_ptr<media::VideoThumbnailDecoder>,
     MediaParser::ExtractVideoFrameCallback video_frame_callback,
     const media::VideoDecoderConfig& config,
@@ -66,15 +65,13 @@ void OnEncodedVideoFrameExtracted(
     return;
   }
 
-  std::unique_ptr<media::MediaLog> log;
   std::unique_ptr<media::VideoDecoder> software_decoder;
   if (media::IsDecoderBuiltInVideoCodec(config.codec())) {
     switch (config.codec()) {
       case media::VideoCodec::kH264:
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-        log = std::make_unique<media::NullMediaLog>();
-        software_decoder =
-            std::make_unique<media::FFmpegVideoDecoder>(log.get());
+        software_decoder = std::make_unique<media::FFmpegVideoDecoder>(
+            std::make_unique<media::NullMediaLog>());
         break;
 #else
         // IsDecoderBuiltInVideoCodec(H264) should never return true if
@@ -122,9 +119,9 @@ void OnEncodedVideoFrameExtracted(
       std::move(software_decoder), config, std::move(data));
 
   auto* const thumbnail_decoder_ptr = thumbnail_decoder.get();
-  thumbnail_decoder_ptr->Start(base::BindOnce(
-      &OnSoftwareVideoFrameDecoded, std::move(log),
-      std::move(thumbnail_decoder), std::move(video_frame_callback), config));
+  thumbnail_decoder_ptr->Start(
+      base::BindOnce(&OnSoftwareVideoFrameDecoded, std::move(thumbnail_decoder),
+                     std::move(video_frame_callback), config));
 }
 
 void ExtractVideoFrameOnMediaThread(

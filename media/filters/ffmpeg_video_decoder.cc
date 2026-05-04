@@ -121,8 +121,8 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
   return codec == VideoCodec::kH264 && IsDecoderBuiltInVideoCodec(codec);
 }
 
-FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
-    : media_log_(media_log) {
+FFmpegVideoDecoder::FFmpegVideoDecoder(std::unique_ptr<MediaLog> media_log)
+    : media_log_(std::move(media_log)) {
   DVLOG(1) << __func__;
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

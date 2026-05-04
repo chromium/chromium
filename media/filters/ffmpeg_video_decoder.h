@@ -33,7 +33,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
  public:
   static bool IsCodecSupported(VideoCodec codec);
 
-  explicit FFmpegVideoDecoder(MediaLog* media_log);
+  explicit FFmpegVideoDecoder(std::unique_ptr<MediaLog> media_log);
 
   FFmpegVideoDecoder(const FFmpegVideoDecoder&) = delete;
   FFmpegVideoDecoder& operator=(const FFmpegVideoDecoder&) = delete;
@@ -77,7 +77,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<MediaLog, DanglingUntriaged> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 
