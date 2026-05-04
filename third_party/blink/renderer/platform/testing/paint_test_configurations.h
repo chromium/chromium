@@ -74,10 +74,21 @@ class PaintTestConfigurations
 #define PAINT_TEST_SUITE_P_VALUES \
   0, kRasterInducingScroll, kSpeculativeImageDecodes
 
-#define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(All, test_class,        \
-                           ::testing::Values(PAINT_TEST_SUITE_P_VALUES))
-
+#define INSTANTIATE_PAINT_TEST_SUITE_P(test_class)                    \
+  INSTANTIATE_TEST_SUITE_P(                                           \
+      All, test_class, ::testing::Values(PAINT_TEST_SUITE_P_VALUES),  \
+      [](const testing::TestParamInfo<test_class::ParamType>& info) { \
+        switch (info.param) {                                         \
+          case 0:                                                     \
+            return std::string("Baseline");                           \
+          case kRasterInducingScroll:                                 \
+            return std::string("RasterInducingScroll");               \
+          case kSpeculativeImageDecodes:                              \
+            return std::string("SpeculativeImageDecodes");            \
+          default:                                                    \
+            return std::string("Unknown");                            \
+        }                                                             \
+      })
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_PAINT_TEST_CONFIGURATIONS_H_
