@@ -225,7 +225,7 @@ public class NewTabPageTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mNtp.getNewTabPageCoordinator()
-                                .getSearchBoxCoordinatorForTesting()
+                                .getNtpSearchBoxForTesting()
                                 .setIsFuseboxEligible(false));
         ScrimManager scrimManager =
                 mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
@@ -246,7 +246,7 @@ public class NewTabPageTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mNtp.getNewTabPageCoordinator()
-                                .getSearchBoxCoordinatorForTesting()
+                                .getNtpSearchBoxForTesting()
                                 .setIsFuseboxEligible(true));
         ScrimManager scrimManager =
                 mActivityTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimManager();
