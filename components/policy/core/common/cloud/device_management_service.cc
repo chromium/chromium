@@ -355,39 +355,222 @@ JobConfigurationBase::GetUrlLoaderFactory() {
 
 net::NetworkTrafficAnnotationTag
 JobConfigurationBase::GetTrafficAnnotationTag() {
-  return net::DefineNetworkTrafficAnnotation("device_management_service", R"(
-    semantics {
-      sender: "Cloud Policy"
-      description:
-        "Communication with the Cloud Policy backend, used to check for "
-        "the existence of cloud policy for the signed-in account, and to "
-        "load/update cloud policy if it exists.  Also used to send reports, "
-        "both desktop batch reports and real-time reports."
-      trigger:
-        "Sign in to Chrome, enroll for Chrome Browser Cloud Management, "
-        "periodic refreshes."
-      data:
-        "During initial signin or device enrollment, auth data is sent up "
-        "as part of registration. After initial signin/enrollment, if the "
-        "session or device is managed, a unique device or profile ID is "
-        "sent with every future request. Other diagnostic information can be "
-        "sent up for managed sessions, including which users have used the "
-        "device, device hardware status, connected networks, CPU usage, etc."
-      destination: GOOGLE_OWNED_SERVICE
-    }
-    policy {
-      cookies_allowed: YES
-      cookies_store: "user"
-      setting:
-        "This feature cannot be controlled by Chrome settings, but users "
-        "can sign out of Chrome to disable it."
-      chrome_policy {
-        SigninAllowed {
-          policy_options {mode: MANDATORY}
-          SigninAllowed: false
+  switch (type_) {
+    case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_CERT_BASED_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::TYPE_BROWSER_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_TOKEN_BASED_DEVICE_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
+    case DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION:
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE:
+      return net::DefineNetworkTrafficAnnotation("device_management_enrollment",
+                                                 R"(
+        semantics {
+          sender: "Cloud Policy"
+          description:
+            "Communication with the Cloud Policy backend to enroll/unenroll "
+            "the browser or device or a specific profile for management. This "
+            "establishes the trust relationship and fetches the initial "
+            "management tokens."
+          trigger:
+            "User signs into a managed account, an enrollment token is "
+            "present on the machine, or a managed profile flow is initiated."
+          data:
+            "Machine name, OS details (version, architecture), browser "
+            "version, enrollment or authentication tokens, and a unique "
+            "Client/Device ID."
+          user_data {
+            type: ACCESS_TOKEN
+            type: DEVICE_ID
+            type: HW_OS_INFO
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-04-29"
+          internal {
+            contacts {
+              email: "cbe-eng@google.com"
+            }
+          }
         }
-      }
-    })");
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be controlled by Chrome settings, but users "
+            "can sign out of Chrome to prevent signin-based management."
+          policy_exception_justification:
+            "Must be configured explicitly by the admin."
+        })");
+
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS:
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT:
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_REAL_TIME_REPORT:
+    case DeviceManagementService::JobConfiguration::TYPE_REQUEST_SAML_URL:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_ENCRYPTED_REPORT:
+      return net::DefineNetworkTrafficAnnotation("device_management_reporting",
+                                                 R"(
+        semantics {
+          sender: "Cloud Policy"
+          description:
+            "Sends status reports, inventory data, and telemetry from the "
+            "managed browser to the Cloud Policy backend. This includes both "
+            "periodic inventory and real-time security events."
+          trigger:
+            "Periodic inventory timers (e.g., every 24 hours) or immediate "
+            "triggers from security events (e.g., data loss prevention or "
+            "malware detection triggers)."
+          data:
+            "Browser inventory (extension IDs, versions), security event "
+            "metadata (URLs, file hashes, user names), and basic system "
+            "telemetry (CPU/RAM usage)."
+          user_data {
+            type: ACCESS_TOKEN
+            type: DEVICE_ID
+            type: PROFILE_DATA
+            type: USAGE_AND_PERFORMANCE_METRICS
+            type: SENSITIVE_URL
+            type: FILE_DATA
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-04-29"
+          internal {
+            contacts {
+              email: "cbe-eng@google.com"
+            }
+          }
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be controlled by Chrome settings, but users "
+            "can sign out of Chrome to prevent signin-based management."
+          policy_exception_justification:
+            "Must be configured explicitly by the admin."
+        })");
+
+    case DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS:
+      return net::DefineNetworkTrafficAnnotation(
+          "device_management_remote_commands", R"(
+        semantics {
+          sender: "Cloud Policy"
+          description:
+            "Communication used to receive and report results for remote "
+            "management commands issued by administrators, such as clearing "
+            "browsing data or forcing extension updates."
+          trigger:
+            "Periodic polling by the client or a push notification 'nudge' "
+            "from the server."
+          data:
+            "The result and status of executing the remote command (e.g., "
+            "success or failure with error details)."
+          user_data {
+            type: ACCESS_TOKEN
+            type: DEVICE_ID
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-04-29"
+          internal {
+            contacts {
+              email: "cbe-eng@google.com"
+            }
+          }
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature cannot be controlled by Chrome settings, but users "
+            "can sign out of Chrome to disable it."
+          chrome_policy {
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+
+    // TODO: crbug.com/507736506 - Separate these into granular annotations.
+    case DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_POLICY_VALIDATION_REPORT:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
+    case DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+    case DeviceManagementService::JobConfiguration::TYPE_GCM_ID_UPDATE:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
+    case DeviceManagementService::JobConfiguration::TYPE_INVALID:
+    // TODO: crbug.com/507736506 - These are platform-specific
+    // (ChromeOS/Android) and should be annotated appropriately.
+    case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
+    case DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ATTRIBUTE_UPDATE_PERMISSION:
+    case DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ANDROID_MANAGEMENT_CHECK:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL:
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_CERT_PROVISIONING_REQUEST:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_PSM_HAS_DEVICE_STATE_REQUEST:
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_POLICY_AGENT_REGISTRATION:
+      return net::DefineNetworkTrafficAnnotation("device_management_service",
+                                                 R"(
+        semantics {
+          sender: "Cloud Policy"
+          description:
+            "Communication with the Cloud Policy backend, used to check for "
+            "the existence of cloud policy for the signed-in account, and to "
+            "load/update cloud policy if it exists. Also used to register "
+            "for push notifications and for various other management tasks."
+          trigger:
+            "Sign in to Chrome, enroll for Chrome Browser Cloud Management, "
+            "periodic refreshes, or when push notification tokens change."
+          data:
+            "Authentication tokens, device identifiers, push notification "
+            "tokens, and other diagnostic information."
+          user_data {
+            type: ACCESS_TOKEN
+            type: DEVICE_ID
+            type: HW_OS_INFO
+          }
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-04-29"
+          internal {
+            contacts {
+              email: "cbe-eng@google.com"
+            }
+          }
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "This feature cannot be controlled by Chrome settings, but users "
+            "can sign out of Chrome to disable it."
+          chrome_policy {
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+  }
 }
 
 std::unique_ptr<network::ResourceRequest>

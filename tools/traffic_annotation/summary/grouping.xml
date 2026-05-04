@@ -400,6 +400,9 @@ after discussions on the right group.
       <annotation id="multistep_filter_server_requests"/>
       <annotation id="glic_private_api_prompt_fetcher"/>
       <annotation id="finds_model_execution"/>
+      <annotation id="device_management_enrollment"/>
+      <annotation id="device_management_reporting"/>
+      <annotation id="device_management_remote_commands"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
