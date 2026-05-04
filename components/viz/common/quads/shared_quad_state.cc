@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace viz {
@@ -22,8 +23,9 @@ SharedQuadState& SharedQuadState::operator=(const SharedQuadState& other) =
     default;
 
 SharedQuadState::~SharedQuadState() {
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
-                                     "viz::SharedQuadState", this);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("viz.quads"), "viz::SharedQuadState:deleted",
+      perfetto::TerminatingFlow::FromPointer(this, "SharedQuadState"));
 }
 
 bool SharedQuadState::Equals(const SharedQuadState& other) const {

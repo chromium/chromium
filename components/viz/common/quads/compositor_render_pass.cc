@@ -30,6 +30,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace viz {
 
@@ -57,9 +58,10 @@ CompositorRenderPass::CompositorRenderPass(size_t shared_quad_state_list_size,
     : RenderPassInternal(shared_quad_state_list_size, quad_list_size) {}
 
 CompositorRenderPass::~CompositorRenderPass() {
-  TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("viz.quads"), "CompositorRenderPass",
-      reinterpret_cast<void*>(static_cast<uint64_t>(id)));
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
+                      "CompositorRenderPass:deleted",
+                      perfetto::TerminatingFlow::ProcessScoped(
+                          id.GetUnsafeValue(), "CompositorRenderPass"));
 }
 
 void CompositorRenderPass::SetNew(
