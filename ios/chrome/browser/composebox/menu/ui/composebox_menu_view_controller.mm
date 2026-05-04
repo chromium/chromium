@@ -209,10 +209,12 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       continue;
     }
     if (![_inputState isToolHidden:mode]) {
-      [toolsItems addObject:[[ComposeboxMenuItem alloc]
-                                initWithTitle:[strings menuLabelForTool:mode]
-                                        image:IconForTool(mode)
-                                         type:MenuItemTypeForTool(mode)]];
+      [toolsItems
+          addObject:[[ComposeboxMenuItem alloc]
+                        initWithTitle:[strings menuLabelForTool:mode]
+                                image:IconForTool(mode)
+                                 type:MenuItemTypeForTool(mode)
+                             disabled:[_inputState isToolDisabled:mode]]];
     }
   }
 
@@ -237,7 +239,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
           addObject:[[ComposeboxMenuItem alloc]
                         initWithTitle:[strings menuLabelForModel:option]
                                 image:IconForModel(option)
-                                 type:MenuItemTypeForModel(option)]];
+                                 type:MenuItemTypeForModel(option)
+                             disabled:[_inputState isModelDisabled:option]]];
     }
   }
 
@@ -329,26 +332,35 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 #pragma mark - Private
 
 - (NSArray<ComposeboxMenuItem*>*)availableAttachmentItems {
+  CHECK(_inputState);
   ComposeboxMenuItem* tabsItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
               image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                                kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kAttachmentTabs];
+               type:ComposeboxMenuItemType::kAttachmentTabs
+           disabled:[_inputState
+                        isAttachmentDisabled:ComposeboxAttachmentOption::kTab]];
   ComposeboxMenuItem* cameraItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
               image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
                                                kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kAttachmentCamera];
+               type:ComposeboxMenuItemType::kAttachmentCamera
+           disabled:[_inputState isAttachmentDisabled:
+                                     ComposeboxAttachmentOption::kCamera]];
   ComposeboxMenuItem* galleryItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
               image:DefaultSymbolWithPointSize(kPhotoOnRectangleAngled,
                                                kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kAttachmentGallery];
+               type:ComposeboxMenuItemType::kAttachmentGallery
+           disabled:[_inputState isAttachmentDisabled:
+                                     ComposeboxAttachmentOption::kGallery]];
   ComposeboxMenuItem* filesItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
               image:DefaultSymbolWithPointSize(kFolderSymbol,
                                                kSymbolActionPointSize)
-               type:ComposeboxMenuItemType::kAttachmentFiles];
+               type:ComposeboxMenuItemType::kAttachmentFiles
+           disabled:[_inputState isAttachmentDisabled:
+                                     ComposeboxAttachmentOption::kFile]];
 
   return @[ tabsItem, cameraItem, galleryItem, filesItem ];
 }
@@ -360,7 +372,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   [collectionView deselectItemAtIndexPath:indexPath animated:YES];
 
   ComposeboxMenuItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
-  if (!item) {
+  if (!item || item.disabled) {
     return;
   }
 
@@ -492,8 +504,20 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [cell defaultContentConfiguration];
   configuration.text = item.title;
   configuration.image = item.image;
-  configuration.imageProperties.tintColor =
-      [UIColor colorNamed:kTextPrimaryColor];
+
+  if (item.disabled) {
+    configuration.textProperties.color =
+        [UIColor colorNamed:kTextSecondaryColor];
+    configuration.imageProperties.tintColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    cell.userInteractionEnabled = NO;
+  } else {
+    configuration.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
+    configuration.imageProperties.tintColor =
+        [UIColor colorNamed:kTextPrimaryColor];
+    cell.userInteractionEnabled = YES;
+  }
+
   cell.contentConfiguration = configuration;
 
   BOOL isSelected = NO;
@@ -521,8 +545,17 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [[ComposeboxMenuAttachmentView alloc] init];
   attachmentView.translatesAutoresizingMaskIntoConstraints = NO;
   attachmentView.title = item.title;
-  attachmentView.image = SymbolWithPalette(
-      item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+  if (item.disabled) {
+    attachmentView.image = SymbolWithPalette(
+        item.image, @[ [UIColor colorNamed:kTextSecondaryColor] ]);
+    attachmentView.alpha = 0.5;
+    cell.userInteractionEnabled = NO;
+  } else {
+    attachmentView.image = SymbolWithPalette(
+        item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+    attachmentView.alpha = 1.0;
+    cell.userInteractionEnabled = YES;
+  }
 
   attachmentView.userInteractionEnabled = NO;
   attachmentView.accessibilityLabel = item.title;
