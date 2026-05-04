@@ -50,8 +50,12 @@
         img2.src = "https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png";
         await Promise.all([loadPromise1, loadPromise2]);
 
+        // Wait for the window to have a non-zero size.
+        while (window.innerWidth == 0) {
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+
         await waitForCanvasPaint(canvas);
-        assert_not_equals(window.innerWidth, 0, "Window should have a non-zero width");
         const context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
 
