@@ -17,7 +17,8 @@ class MockDelegate : public EmailOneTimeTokenFetchCoordinator::Delegate {
  public:
   MOCK_METHOD(void,
               OnCanSendNetworkRequest,
-              (const OneTimeTokenBackendNotification& notification),
+              (const OneTimeTokenBackendNotification& notification,
+               base::TimeTicks trigger_time),
               (override));
 };
 
@@ -39,9 +40,10 @@ MATCHER_P(OneTimeTokenNotificationMatches, expected_reference, "") {
 
 // Tests that the coordinator signals the delegate when a request is needed.
 TEST_F(EmailOneTimeTokenFetchCoordinatorTest, SignalNetworkRequestNeeded) {
-  EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(
-                  OneTimeTokenNotificationMatches("test_reference")));
+  EXPECT_CALL(
+      mock_delegate_,
+      OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("test_reference"),
+                              testing::_));
 
   coordinator_.SignalNetworkRequestNeeded(OneTimeTokenBackendNotification(
       EncryptedMessageReference("test_reference")));
@@ -66,16 +68,21 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, EnforcesConcurrencyLimit) {
   // Only the first 3 should be allowed immediately as kMaxConcurrentRequests
   // is 3.
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")))
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4"),
+                                      testing::_))
       .Times(0);
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref5")))
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref5"),
+                                      testing::_))
       .Times(0);
 
   coordinator_.SignalNetworkRequestNeeded(notification1);
@@ -103,9 +110,10 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesIncomingTickles) {
       EncryptedMessageReference("test_reference"));
 
   // Only 1 request lifecycle should be started even if multiple tickles arrive.
-  EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(
-                  OneTimeTokenNotificationMatches("test_reference")))
+  EXPECT_CALL(
+      mock_delegate_,
+      OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("test_reference"),
+                              testing::_))
       .Times(1);
 
   coordinator_.SignalNetworkRequestNeeded(notification);
@@ -130,9 +138,10 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest,
       base::Time::FromTimeT(200));
 
   // Only 1 request lifecycle should be started.
-  EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(
-                  OneTimeTokenNotificationMatches("test_reference")))
+  EXPECT_CALL(
+      mock_delegate_,
+      OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("test_reference"),
+                              testing::_))
       .Times(1);
 
   coordinator_.SignalNetworkRequestNeeded(notification1);
@@ -151,11 +160,14 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, ProcessesQueueOnCompletion) {
       EncryptedMessageReference("ref4"));
 
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3"),
+                                      testing::_));
 
   coordinator_.SignalNetworkRequestNeeded(notification1);
   coordinator_.SignalNetworkRequestNeeded(notification2);
@@ -164,7 +176,8 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, ProcessesQueueOnCompletion) {
 
   // Finishing notification1 should trigger notification4.
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4"),
+                                      testing::_));
   coordinator_.InformOfNetworkRequestFinished(notification1);
 }
 
@@ -180,11 +193,14 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesPendingRequests) {
       EncryptedMessageReference("ref4"));
 
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3"),
+                                      testing::_));
 
   coordinator_.SignalNetworkRequestNeeded(notification1);
   coordinator_.SignalNetworkRequestNeeded(notification2);
@@ -198,7 +214,8 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesPendingRequests) {
 
   // Finishing notification1 should trigger notification4 only once.
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")))
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4"),
+                                      testing::_))
       .Times(1);
   coordinator_.InformOfNetworkRequestFinished(notification1);
 }
@@ -216,17 +233,21 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, RecordsQueueLatency) {
 
   // Max concurrent requests is 3. The first 3 should be dispatched immediately.
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref1"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref2"),
+                                      testing::_));
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref3"),
+                                      testing::_));
 
   coordinator_.SignalNetworkRequestNeeded(notification1);
   coordinator_.SignalNetworkRequestNeeded(notification2);
   coordinator_.SignalNetworkRequestNeeded(notification3);
 
   // The 4th notification is queued.
+  base::TimeTicks entry_time = base::TimeTicks::Now();
   coordinator_.SignalNetworkRequestNeeded(notification4);
 
   // Fast-forward time by 500ms to simulate the notification waiting in the
@@ -235,7 +256,8 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, RecordsQueueLatency) {
 
   // Finish the first request to free up a slot for the 4th.
   EXPECT_CALL(mock_delegate_,
-              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4")));
+              OnCanSendNetworkRequest(OneTimeTokenNotificationMatches("ref4"),
+                                      testing::Eq(entry_time)));
   coordinator_.InformOfNetworkRequestFinished(notification1);
 
   // Validate the histogram is recorded with the exact latency.

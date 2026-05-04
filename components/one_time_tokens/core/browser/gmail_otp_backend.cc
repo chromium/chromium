@@ -64,12 +64,14 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
 }
 
 void GmailOtpBackendImpl::OnCanSendNetworkRequest(
-    const OneTimeTokenBackendNotification& notification) {
-  RetrieveGmailOtp(notification);
+    const OneTimeTokenBackendNotification& notification,
+    base::TimeTicks trigger_time) {
+  RetrieveGmailOtp(notification, trigger_time);
 }
 
 void GmailOtpBackendImpl::RetrieveGmailOtp(
-    const OneTimeTokenBackendNotification& notification) {
+    const OneTimeTokenBackendNotification& notification,
+    base::TimeTicks trigger_time) {
   if (subscription_manager_.GetNumberSubscribers() == 0) {
     coordinator_->InformOfNetworkRequestFinished(notification);
     return;
@@ -83,16 +85,26 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
       url_loader_factory_, *identity_manager_,
       notification.encrypted_message_reference.value());
 
-  it->second->Start(
-      base::BindOnce(&GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,
-                     weakptr_factory_.GetWeakPtr(), notification));
+  it->second->Start(base::BindOnce(
+      &GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,
+      weakptr_factory_.GetWeakPtr(), notification, trigger_time));
 }
 
 void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
     const OneTimeTokenBackendNotification& notification,
+    base::TimeTicks trigger_time,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
   base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
                             reply.has_value());
+
+  if (reply.has_value()) {
+    base::UmaHistogramTimes(
+        "Autofill.OneTimeTokens.Backend.Gmail.SuccessLatency",
+        base::TimeTicks::Now() - trigger_time);
+  } else {
+    base::UmaHistogramTimes("Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency",
+                            base::TimeTicks::Now() - trigger_time);
+  }
 
   active_fetchers_.erase(notification.encrypted_message_reference);
   coordinator_->InformOfNetworkRequestFinished(notification);

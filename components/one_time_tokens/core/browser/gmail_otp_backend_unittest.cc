@@ -70,6 +70,9 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
       GURL("https://onetimetoken.pa.googleapis.com/v1/"
            "onetimetokens:fetchEmail"),
       "encryptedMessageReference", encoded_reference);
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
   test_url_loader_factory_.AddResponse(url.spec(),
                                        response.SerializeAsString());
 
@@ -85,6 +88,9 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OneTimeTokens.Backend.Gmail.Success", true, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.SuccessLatency",
+      base::Milliseconds(500), 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
 }
@@ -113,6 +119,8 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetTokenFailure) {
            "onetimetokens:fetchEmail"),
       "encryptedMessageReference", encoded_reference);
 
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+
   // Return an HTTP 500 to simulate a network error
   test_url_loader_factory_.AddResponse(url.spec(), "",
                                        net::HTTP_INTERNAL_SERVER_ERROR);
@@ -124,6 +132,9 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetTokenFailure) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OneTimeTokens.Backend.Gmail.Success", false, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency",
+      base::Milliseconds(500), 1);
 }
 
 // Tests no backend calls are issued when there are no subscribers.

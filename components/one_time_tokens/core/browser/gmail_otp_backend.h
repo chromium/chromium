@@ -79,15 +79,18 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
       const OneTimeTokenBackendNotification& notification) override;
 
   void OnCanSendNetworkRequest(
-      const OneTimeTokenBackendNotification& notification) override;
+      const OneTimeTokenBackendNotification& notification,
+      base::TimeTicks trigger_time) override;
 
  private:
   void ProcessCachedNotifications();
 
-  void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification);
+  void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification,
+                        base::TimeTicks trigger_time);
 
   void OnResponseFromGmailOtpBackend(
       const OneTimeTokenBackendNotification& notification,
+      base::TimeTicks trigger_time,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

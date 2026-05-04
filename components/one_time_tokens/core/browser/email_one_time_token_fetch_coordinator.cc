@@ -72,7 +72,7 @@ void EmailOneTimeTokenFetchCoordinator::ProcessQueue() {
         {queued_item.notification.encrypted_message_reference,
          std::move(queued_item.notification)});
     if (inserted) {
-      delegate_->OnCanSendNetworkRequest(it->second);
+      delegate_->OnCanSendNetworkRequest(it->second, queued_item.entry_time);
     }
 
     // Check if the delegate callback destroyed this object.

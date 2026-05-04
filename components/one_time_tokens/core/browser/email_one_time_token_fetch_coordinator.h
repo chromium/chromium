@@ -27,7 +27,8 @@ class EmailOneTimeTokenFetchCoordinator {
 
     // Called when the coordinator authorizes a network request to be sent.
     virtual void OnCanSendNetworkRequest(
-        const OneTimeTokenBackendNotification& notification) = 0;
+        const OneTimeTokenBackendNotification& notification,
+        base::TimeTicks trigger_time) = 0;
   };
 
   explicit EmailOneTimeTokenFetchCoordinator(Delegate& delegate);
