@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
@@ -327,6 +328,14 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
   ContentAutofillDriver* autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!autofill_driver || !autofill_driver->CanShowAutofillUi()) {
+    return;
+  }
+
+  if (autofill_driver->GetAutofillManager()
+          .client()
+          .GetAccessibilityAnnotatorEnablementState() ==
+      accessibility_annotator::RemoteAnnotatorEnablementState::
+          kDisabledNotEligible) {
     return;
   }
 
