@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "components/account_id/account_id.h"
-#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -113,8 +112,6 @@ class BocaAppHandler : public mojom::PageHandler,
                          mojom::Permission permission,
                          mojom::PermissionSetting setting,
                          SetSitePermissionCallback callback) override;
-  void CloseTab(const SessionID::id_type tab_id,
-                CloseTabCallback callback) override;
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void RefreshWorkbook(RefreshWorkbookCallback callback) override;
   void GetSpeechRecognitionInstallationStatus(

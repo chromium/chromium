@@ -382,9 +382,6 @@ interface PageHandler {
   // Set the permission of a site.
   SetSitePermission(string url, Permission permission, PermissionSetting
     setting) => (bool success);
-  // Close a tab with the tab_id.
-  // NOTE: Ensure the param type is the same as SessionID::id_type.
-  CloseTab(int32 tab_id) => (bool success);
   // Request from the Boca SWA to open the ChromeOS feedback dialog.
   OpenFeedbackDialog() => ();
   // Refresh the workbook for students.

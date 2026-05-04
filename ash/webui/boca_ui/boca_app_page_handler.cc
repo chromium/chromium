@@ -59,7 +59,6 @@
 #include "chromeos/ui/wm/constants.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -713,25 +712,6 @@ void BocaAppHandler::SetSitePermission(const std::string& url,
   const bool success = content_settings_handler_->SetContentSettingForOrigin(
       url, permission, setting);
   std::move(callback).Run(success);
-}
-
-void BocaAppHandler::CloseTab(const SessionID::id_type tab_id,
-                              CloseTabCallback callback) {
-  if (!system_web_app_manager_) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  const SessionID window_id =
-      system_web_app_manager_->GetActiveSystemWebAppWindowID();
-  const SessionID id = SessionID::FromSerializedValue(tab_id);
-  if (!window_id.is_valid() || !id.is_valid()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  system_web_app_manager_->RemoveTabsWithTabIds(window_id, {id});
-  std::move(callback).Run(true);
 }
 
 void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {

@@ -338,9 +338,6 @@ export class ClientDelegateFactory {
                     url, permission.valueOf(), setting.valueOf()))
             .success;
       },
-      closeTab: async (tabId: number) => {
-        return (await pageHandler.closeTab(tabId)).success;
-      },
       openFeedbackDialog: async () => {
         await pageHandler.openFeedbackDialog();
       },
