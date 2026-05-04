@@ -44,8 +44,10 @@ void RecentlyClosedTabsProvider::Start(const AutocompleteInput& input,
                                             base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
   match.description_class = ClassifyTermMatches({}, match.description.length(),
-                                                0, ACMatchClassification::NONE);
-  match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
+                                                ACMatchClassification::NONE,
+                                                ACMatchClassification::NONE);
+  match.contents_class = ClassifyTermMatches({}, match.contents.length(),
+                                             ACMatchClassification::NONE,
                                              ACMatchClassification::URL);
   matches_.push_back(match);
 }
