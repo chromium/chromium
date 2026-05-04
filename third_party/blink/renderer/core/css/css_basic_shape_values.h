@@ -157,7 +157,15 @@ class CSSBasicShapePolygonValue final : public CSSValue {
 
 class CSSBasicShapeInsetValue final : public CSSValue {
  public:
-  CSSBasicShapeInsetValue() : CSSValue(kBasicShapeInsetClass) {}
+  CSSBasicShapeInsetValue(CSSValue* top,
+                          CSSValue* right,
+                          CSSValue* bottom,
+                          CSSValue* left)
+      : CSSValue(kBasicShapeInsetClass),
+        top_(top),
+        right_(right),
+        bottom_(bottom),
+        left_(left) {}
 
   CSSValue* Top() const { return top_.Get(); }
   CSSValue* Right() const { return right_.Get(); }
@@ -170,35 +178,6 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   CSSValuePair* BottomLeftRadius() const { return bottom_left_radius_.Get(); }
 
   // TODO(sashab): Remove these and pass them as arguments in the constructor.
-  void SetTop(CSSValue* top) { top_ = top; }
-  void SetRight(CSSValue* right) { right_ = right; }
-  void SetBottom(CSSValue* bottom) { bottom_ = bottom; }
-  void SetLeft(CSSValue* left) { left_ = left; }
-
-  void UpdateShapeSize4Values(CSSValue* top,
-                              CSSValue* right,
-                              CSSValue* bottom,
-                              CSSValue* left) {
-    SetTop(top);
-    SetRight(right);
-    SetBottom(bottom);
-    SetLeft(left);
-  }
-
-  void UpdateShapeSize1Value(CSSValue* value1) {
-    UpdateShapeSize4Values(value1, value1, value1, value1);
-  }
-
-  void UpdateShapeSize2Values(CSSValue* value1, CSSValue* value2) {
-    UpdateShapeSize4Values(value1, value2, value1, value2);
-  }
-
-  void UpdateShapeSize3Values(CSSValue* value1,
-                              CSSValue* value2,
-                              CSSValue* value3) {
-    UpdateShapeSize4Values(value1, value2, value3, value2);
-  }
-
   void SetTopLeftRadius(CSSValuePair* radius) { top_left_radius_ = radius; }
   void SetTopRightRadius(CSSValuePair* radius) { top_right_radius_ = radius; }
   void SetBottomRightRadius(CSSValuePair* radius) {

@@ -546,16 +546,15 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
     case BasicShape::kBasicShapeInsetType: {
       const BasicShapeInset* inset = To<BasicShapeInset>(basic_shape);
       cssvalue::CSSBasicShapeInsetValue* inset_value =
-          MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>();
-
-      inset_value->SetTop(CSSPrimitiveValue::CreateFromLength(
-          inset->Top(), style.EffectiveZoom()));
-      inset_value->SetRight(CSSPrimitiveValue::CreateFromLength(
-          inset->Right(), style.EffectiveZoom()));
-      inset_value->SetBottom(CSSPrimitiveValue::CreateFromLength(
-          inset->Bottom(), style.EffectiveZoom()));
-      inset_value->SetLeft(CSSPrimitiveValue::CreateFromLength(
-          inset->Left(), style.EffectiveZoom()));
+          MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>(
+              CSSPrimitiveValue::CreateFromLength(inset->Top(),
+                                                  style.EffectiveZoom()),
+              CSSPrimitiveValue::CreateFromLength(inset->Right(),
+                                                  style.EffectiveZoom()),
+              CSSPrimitiveValue::CreateFromLength(inset->Bottom(),
+                                                  style.EffectiveZoom()),
+              CSSPrimitiveValue::CreateFromLength(inset->Left(),
+                                                  style.EffectiveZoom()));
 
       InitializeBorderRadius(inset_value, style, inset);
       return inset_value;

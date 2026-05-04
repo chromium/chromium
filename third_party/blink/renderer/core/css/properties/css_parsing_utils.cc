@@ -617,34 +617,23 @@ cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
     CSSParserTokenStream& args,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
-  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>();
-  CSSPrimitiveValue* top = ConsumeLengthOrPercent(
-      args, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
-  if (!top) {
+  std::array<CSSValue*, 4> sides{};
+
+  for (size_t index = 0; index < 4; ++index) {
+    CSSPrimitiveValue* value = ConsumeLengthOrPercent(
+        args, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value) {
+      break;
+    }
+    sides[index] = value;
+  }
+  if (!sides[0]) {
     return nullptr;
   }
-  CSSPrimitiveValue* right = ConsumeLengthOrPercent(
-      args, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
-  CSSPrimitiveValue* bottom = nullptr;
-  CSSPrimitiveValue* left = nullptr;
-  if (right) {
-    bottom = ConsumeLengthOrPercent(args, context, local_context,
-                                    CSSPrimitiveValue::ValueRange::kAll);
-    if (bottom) {
-      left = ConsumeLengthOrPercent(args, context, local_context,
-                                    CSSPrimitiveValue::ValueRange::kAll);
-    }
-  }
-  if (left) {
-    shape->UpdateShapeSize4Values(top, right, bottom, left);
-  } else if (bottom) {
-    shape->UpdateShapeSize3Values(top, right, bottom);
-  } else if (right) {
-    shape->UpdateShapeSize2Values(top, right);
-  } else {
-    shape->UpdateShapeSize1Value(top);
-  }
+  Complete4Sides(sides);
 
+  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>(
+      sides[0], sides[1], sides[2], sides[3]);
   if (!ConsumeBorderRadiusCommon(args, context, local_context, shape)) {
     return nullptr;
   }
