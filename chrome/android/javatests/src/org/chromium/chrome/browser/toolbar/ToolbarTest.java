@@ -307,7 +307,6 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisabledTest(message = "crbug.com/507245181")
     public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
         // Simulate availability of a hardware keyboard.
         mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
