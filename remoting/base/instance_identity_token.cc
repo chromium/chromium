@@ -30,16 +30,16 @@ std::optional<InstanceIdentityToken> InstanceIdentityToken::Create(
   //   1) Base64 encoded JSON header
   //   2) Base64 encoded JSON payload
   //   3) Signature bytes
-  auto parts =
-      base::SplitString(jwt, ".", base::WhitespaceHandling::KEEP_WHITESPACE,
-                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> parts = base::SplitStringPiece(
+      jwt, ".", base::WhitespaceHandling::KEEP_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
   // Return early if the token is malformed or missing the signature.
   if (parts.size() != 3) {
     LOG(WARNING) << "Invalid instance identity token: " << jwt;
     return std::nullopt;
   }
   // Parse and validate the header.
-  auto encoded_header = parts[0];
+  std::string_view encoded_header = parts[0];
   std::string decoded_header;
   if (!base::Base64Decode(encoded_header, &decoded_header,
                           base::Base64DecodePolicy::kForgiving)) {
@@ -61,7 +61,7 @@ std::optional<InstanceIdentityToken> InstanceIdentityToken::Create(
   }
 
   // Parse and validate the payload.
-  auto encoded_payload = parts[1];
+  std::string_view encoded_payload = parts[1];
   std::string decoded_payload;
   if (!base::Base64Decode(encoded_payload, &decoded_payload,
                           base::Base64DecodePolicy::kForgiving)) {
