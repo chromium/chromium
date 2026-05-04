@@ -132,6 +132,18 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
       return;
     }
 
+    // Use the average line height to calculate a multi-line window if the
+    // window should not adapt to the line heights.
+    if (!this.model_.getAdaptMultiLineWindow() && this.style_.lines > 1) {
+      const center = this.model_.getMaxY() / 2;
+      const averageHeight =
+          (bounds.at(-1)!.bottom - bounds.at(0)!.y) / bounds.length;
+      const windowHeight = averageHeight * this.style_.lines;
+      this.model_.setTop(center - (windowHeight / 2));
+      this.model_.setWindowHeight(windowHeight);
+      return;
+    }
+
     const currentLineIndex = this.model_.getCurrentLineIndex() ??
         getRectIndexAtY(this.model_.getFocalPoint(),
                         this.model_.getTextBounds(), true);

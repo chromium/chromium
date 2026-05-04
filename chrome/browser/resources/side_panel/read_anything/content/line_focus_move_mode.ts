@@ -237,6 +237,9 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
 
   onActivated(container: HTMLElement, height: number): void {
     this.setupEnabledMode(container, height);
+    // In static mode, don't adapt the window size to line height to prevent
+    // jarring movement / jitter.
+    this.model_.setAdaptMultiLineWindow(false);
     this.setFocalPoint(this.getCenterY());
   }
 
@@ -283,6 +286,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
   onActivated(container: HTMLElement, height: number): void {
     const wasEnabled = this.model_.isSessionActive();
     this.setupEnabledMode(container, height);
+    this.model_.setAdaptMultiLineWindow(true);
     if (!wasEnabled && this.model_.getTextBounds().length > 0) {
       this.initializeSnapIndex(/*isForward=*/ true);
     } else {

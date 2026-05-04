@@ -27,6 +27,9 @@ export class LineFocusModel {
   // otherwise.
   private windowHeight_: number = 0;
 
+  // Whether a multi-line window focus should adapt to the current line heights.
+  private adaptMultiLineWindow_: boolean = false;
+
   // The current style and move mode strategy instances.
   private currentStyleMode_?: LineFocusStyleMode;
   private currentMoveMode_?: LineFocusMoveMode;
@@ -89,6 +92,14 @@ export class LineFocusModel {
 
   setWindowHeight(height: number): void {
     this.windowHeight_ = height;
+  }
+
+  getAdaptMultiLineWindow(): boolean {
+    return this.adaptMultiLineWindow_;
+  }
+
+  setAdaptMultiLineWindow(adapt: boolean): void {
+    this.adaptMultiLineWindow_ = adapt;
   }
 
   getCurrentStyleMode(): LineFocusStyleMode {
@@ -169,5 +180,6 @@ export class LineFocusModel {
     this.lastScrollTop_ = 0;
     this.initiatedScroll_ = false;
     this.isSessionActive_ = false;
+    this.adaptMultiLineWindow_ = false;
   }
 }

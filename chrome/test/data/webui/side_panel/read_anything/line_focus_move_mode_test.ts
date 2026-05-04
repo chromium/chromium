@@ -112,6 +112,12 @@ suite('LineFocusMoveMode', () => {
       assertEquals(styleMode.getStyle(), model.getLastEnabledLineFocusStyle());
     });
 
+    test('onActivated should not adapt multi-line window', () => {
+      const container = document.createElement('div');
+      mode.onActivated(container, defaultHeight);
+      assertFalse(model.getAdaptMultiLineWindow());
+    });
+
     test('onActivated updates positions', () => {
       const container = createShortContainer();
 
@@ -401,6 +407,7 @@ suite('LineFocusMoveMode', () => {
     setup(() => {
       mode = new LineFocusCursorMoveMode(model, styleMode, delegate);
       setDefaultTextBounds();
+      model.setAdaptMultiLineWindow(true);
     });
 
     test('getMovement returns CURSOR', () => {
@@ -418,6 +425,15 @@ suite('LineFocusMoveMode', () => {
       assertTrue(started);
       assertTrue(model.isSessionActive());
       assertEquals(styleMode.getStyle(), model.getLastEnabledLineFocusStyle());
+    });
+
+    test('onActivated should adapt multi-line window', () => {
+      model.setAdaptMultiLineWindow(false);
+      const container = document.createElement('div');
+
+      mode.onActivated(container, defaultHeight);
+
+      assertTrue(model.getAdaptMultiLineWindow());
     });
 
     test('onActivated updates positions', () => {

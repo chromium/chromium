@@ -99,6 +99,7 @@ suite('LineFocusStyleMode', () => {
     setup(() => {
       largeMode = new LineFocusWindowStyleMode(largeStyle, model);
       smallMode = new LineFocusWindowStyleMode(smallStyle, model);
+      model.setAdaptMultiLineWindow(true);
     });
 
     test('updateFocusBounds with empty bounds does nothing', () => {
@@ -110,11 +111,12 @@ suite('LineFocusStyleMode', () => {
       assertEquals(0, model.getWindowHeight());
     });
 
-    test('updateFocusBounds sets top and height', () => {
+    test('updateFocusBounds sets top and height when adapting', () => {
       const rect1 = new DOMRect(0, 10, 100, 20);  // bottom 30
       const rect2 = new DOMRect(0, 30, 100, 20);  // bottom 50
       const rect3 = new DOMRect(0, 50, 100, 20);  // bottom 70
       model.setTextBounds([rect1, rect2, rect3]);
+      model.setAdaptMultiLineWindow(true);
       model.setCurrentLineIndex(1);
 
       largeMode.updateFocusBounds();
@@ -123,6 +125,25 @@ suite('LineFocusStyleMode', () => {
       // Top should be rect1.top = 10.
       assertEquals(10, model.getTop());
       // Height should be rect3.bottom - top = 70 - 10 = 60.
+      assertEquals(60, model.getWindowHeight());
+    });
+
+    test('updateFocusBounds uses average line height when not adapting', () => {
+      const rect1 = new DOMRect(0, 10, 100, 20);
+      const rect2 = new DOMRect(0, 30, 100, 20);
+      const rect3 = new DOMRect(0, 50, 100, 20);
+      const rect4 = new DOMRect(0, 70, 100, 20);
+      const rect5 = new DOMRect(0, 90, 100, 20);
+      model.setTextBounds([rect1, rect2, rect3, rect4, rect5]);
+      model.setAdaptMultiLineWindow(false);
+      model.setMaxY(200);
+
+      largeMode.updateFocusBounds();
+
+      // Average height should be 20. With 3 lines, the total height should be
+      // 60. Since the middle of the viewport is at 100, the top of the focus
+      // area should be at 70 with the bottom at 130 (100 +/- 30).
+      assertEquals(70, model.getTop());
       assertEquals(60, model.getWindowHeight());
     });
 
