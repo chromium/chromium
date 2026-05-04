@@ -715,37 +715,11 @@ TokenResponseType GetTokenResponseType(const base::Value* token,
                                        const std::string* continue_on,
                                        const base::Value* redirect_to,
                                        const base::DictValue* error) {
-  // TODO(crbug.com/474120843): break down the TokenResponseType further so that
-  // we can log the distinction between the continue_on and the redirect_to
-  // cases.
-  bool has_continuation = continue_on || redirect_to;
-  if (token && error && !has_continuation) {
-    return TokenResponseType::
-        kTokenReceivedAndErrorReceivedAndContinueOnNotReceived;
-  } else if (token && !error && !has_continuation) {
-    return TokenResponseType::
-        kTokenReceivedAndErrorNotReceivedAndContinueOnNotReceived;
-  } else if (!token && error && !has_continuation) {
-    return TokenResponseType::
-        kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived;
-  } else if (token && !error && has_continuation) {
-    return TokenResponseType::
-        kTokenReceivedAndErrorNotReceivedAndContinueOnReceived;
-  } else if (token && error && has_continuation) {
-    return TokenResponseType::
-        kTokenReceivedAndErrorReceivedAndContinueOnReceived;
-  } else if (!token && !error && has_continuation) {
-    return TokenResponseType::
-        kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived;
-  } else if (!token && error && has_continuation) {
-    return TokenResponseType::
-        kTokenNotReceivedAndErrorReceivedAndContinueOnReceived;
-  }
-  DCHECK(!token);
-  DCHECK(!error);
-  DCHECK(!has_continuation);
-  return TokenResponseType::
-      kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
+  // Record all combinations of the four signals: token, error, continue_on, and
+  // redirect_to.
+  int type = (token ? 0 : 2) | (error ? 1 : 0) | (continue_on ? 4 : 0) |
+             (redirect_to ? 8 : 0);
+  return static_cast<TokenResponseType>(type);
 }
 
 bool IsOkResponseCode(int response_code) {

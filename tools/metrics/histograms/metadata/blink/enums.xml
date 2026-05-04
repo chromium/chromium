@@ -7231,6 +7231,30 @@ Called by update_permissions_policy_enum.py.-->
              received"/>
   <int value="7"
       label="Token not received and error received and continue_on received"/>
+  <int value="8"
+      label="Token received and error not received and continue_on not
+             received and redirect_to received"/>
+  <int value="9"
+      label="Token received and error received and continue_on not received
+             and redirect_to received"/>
+  <int value="10"
+      label="Token not received and error not received and continue_on not
+             received and redirect_to received"/>
+  <int value="11"
+      label="Token not received and error received and continue_on not
+             received and redirect_to received"/>
+  <int value="12"
+      label="Token received and error not received and continue_on received
+             and redirect_to received"/>
+  <int value="13"
+      label="Token received and error received and continue_on received and
+             redirect_to received"/>
+  <int value="14"
+      label="Token not received and error not received and continue_on
+             received and redirect_to received"/>
+  <int value="15"
+      label="Token not received and error received and continue_on received
+             and redirect_to received"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:FedCmTokenResponseType) -->

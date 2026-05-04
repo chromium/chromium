@@ -211,7 +211,24 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
     kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived = 6,
     kTokenNotReceivedAndErrorReceivedAndContinueOnReceived = 7,
-    kMaxValue = kTokenNotReceivedAndErrorReceivedAndContinueOnReceived
+    kTokenReceivedAndErrorNotReceivedAndContinueOnNotReceivedAndRedirectToReceived =
+        8,
+    kTokenReceivedAndErrorReceivedAndContinueOnNotReceivedAndRedirectToReceived =
+        9,
+    kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceivedAndRedirectToReceived =
+        10,
+    kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceivedAndRedirectToReceived =
+        11,
+    kTokenReceivedAndErrorNotReceivedAndContinueOnReceivedAndRedirectToReceived =
+        12,
+    kTokenReceivedAndErrorReceivedAndContinueOnReceivedAndRedirectToReceived =
+        13,
+    kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceivedAndRedirectToReceived =
+        14,
+    kTokenNotReceivedAndErrorReceivedAndContinueOnReceivedAndRedirectToReceived =
+        15,
+    kMaxValue =
+        kTokenNotReceivedAndErrorReceivedAndContinueOnReceivedAndRedirectToReceived
   };
 
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmTokenResponseType)

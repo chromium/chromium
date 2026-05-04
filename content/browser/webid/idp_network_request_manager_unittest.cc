@@ -2057,7 +2057,38 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
             token_response_type());
 }
 
-//+    kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
+TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToARedirectToUrl) {
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({"redirect_to": "https://idp.test/an-absolute-url-for-redirect"})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus status, TokenResult&& result) {});
+
+  auto on_redirect = base::BindLambdaForTesting(
+      [&](FetchStatus status, blink::mojom::RedirectParams::Tag method,
+          const GURL& url, const std::string& request_body) {
+        // Checks that we got a redirect url event back.
+        EXPECT_EQ("https://idp.test/an-absolute-url-for-redirect", url.spec());
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request", false,
+                            std::move(callback), base::DoNothing(),
+                            std::move(on_redirect),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+  EXPECT_EQ(
+      TokenResponseType::
+          kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceivedAndRedirectToReceived,
+      token_response_type());
+}
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
   net::HttpStatusCode http_status = net::HTTP_OK;
