@@ -60,7 +60,8 @@ namespace content {
 namespace {
 
 std::string GetHeaderIntegrityString(const net::SHA256HashValue& hash) {
-  std::string header_integrity_string = net::HashValue(hash).ToString();
+  std::string header_integrity_string =
+      net::HashValue(net::HashValueTag::HASH_VALUE_SHA256, hash).ToString();
   // Change "sha256/" to "sha256-".
   header_integrity_string[6] = '-';
   return header_integrity_string;
