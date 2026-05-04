@@ -519,6 +519,11 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (IsChromeNextIaEnabled()) {
+    if (self.primaryToolbarViewController.view.hidden) {
+      // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
+      // zero. This is a temporary fix for the pdf bug.
+      return 1.0;
+    }
     if ([self isOmniboxInBottomPosition]) {
       // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
       // zero. This is a temporary fix for the pdf bug.
@@ -541,6 +546,11 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (IsChromeNextIaEnabled()) {
+    if (self.primaryToolbarViewController.view.hidden) {
+      // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
+      // zero. This is a temporary fix for the pdf bug.
+      return 1.0;
+    }
     BOOL isOmniboxInBottomPosition = [self isOmniboxInBottomPosition];
     CGFloat height = 0;
     if (_tabGroupIndicatorCoordinator.viewVisible) {
@@ -649,10 +659,12 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
-  if (IsChromeNextIaEnabled() && CanShowTabStrip(self.traitEnvironment)) {
-    [_topToolbarViewController setScrollProgressForTabletOmnibox:progress];
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarViewController setNTPScrollProgress:progress];
+    [_bottomToolbarViewController setNTPScrollProgress:progress];
     return;
   }
+
   for (id<NewTabPageControllerDelegate> coordinator in self.coordinators) {
     [coordinator setScrollProgressForTabletOmnibox:progress];
   }

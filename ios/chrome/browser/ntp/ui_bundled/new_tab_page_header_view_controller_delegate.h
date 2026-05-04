@@ -7,11 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class NewTabPageHeaderViewController;
+
 // Delegate for the NewTabPageHeaderViewController.
 @protocol NewTabPageHeaderViewControllerDelegate
 
 // Whether the scrollview is scrolled to the omnibox.
 @property(nonatomic, assign, readonly) BOOL scrolledToMinimumHeight;
+
+// Notifies the delegate when the omnibox position is updated in the
+// `viewController`.
+- (void)didChangeOmniboxPosition:
+    (NewTabPageHeaderViewController*)viewController;
 
 @end
 

@@ -218,6 +218,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   return self;
 }
 
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -394,6 +396,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [super viewWillLayoutSubviews];
   [self updateModuleWidth];
 }
+
+#pragma mark - UIContentContainer
 
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
@@ -846,6 +850,14 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)setAIMAllowed:(BOOL)allowed {
   _isAIMAllowed = allowed;
+}
+
+#pragma mark - NewTabPageHeaderViewControllerDelegate
+
+- (void)didChangeOmniboxPosition:
+    (NewTabPageHeaderViewController*)viewController {
+  CHECK_EQ(viewController, self.headerViewController);
+  [self updateFakeOmniboxForScrollPosition];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1390,11 +1402,20 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   if (self.shouldAnimateHeader) {
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
+
+    BOOL animateScrollAnimation = !self.disableScrollAnimation;
+    if (IsChromeNextIaEnabled() && !IsSplitToolbarMode(self) &&
+        !CanShowTabStrip(self)) {
+      /// TODO(crbug.com/508170459): Implement NTP toolbars for split toolbar
+      /// mode.
+      animateScrollAnimation = NO;
+    }
+
     [self.headerViewController
         updateFakeOmniboxForOffset:[self adjustedOffset].y
                        screenWidth:self.collectionView.frame.size.width
                     safeAreaInsets:insets
-            animateScrollAnimation:!self.disableScrollAnimation];
+            animateScrollAnimation:animateScrollAnimation];
   }
 }
 

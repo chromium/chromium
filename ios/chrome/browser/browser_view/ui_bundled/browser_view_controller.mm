@@ -1633,17 +1633,44 @@ bool IsFullscreenNextIAEnabled() {
   [NSLayoutConstraint deactivateConstraints:_NTPConstraints];
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   UIViewController* NTPViewController = self.ntpCoordinator.viewController;
+
+  BOOL canShowTabStrip = CanShowTabStrip(self);
+  BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
+
+  // Logic for pinning the top anchor to the UI view edge instead of the primary
+  // toolbar.
+  BOOL useTopViewEdge = NO;
+  if (IsChromeNextIaEnabled()) {
+    /// TODO(crbug.com/508170459): Implement toolbar visibility logic in split
+    /// toolbar mode and update this to allow using view edges when in split
+    /// toolbar mode.
+    useTopViewEdge =
+        !canShowTabStrip && !isSplitToolbarMode && !_isOffTheRecord;
+  } else {
+    useTopViewEdge = !canShowTabStrip && isSplitToolbarMode && !_isOffTheRecord;
+  }
+
+  // Logic for pinning the bottom anchor.
+  // If ChromeNextIa is disabled, it always pins to the view edge.
+  BOOL useBottomViewEdge = NO;
+  if (IsChromeNextIaEnabled()) {
+    useBottomViewEdge =
+        !canShowTabStrip && !isSplitToolbarMode && !_isOffTheRecord;
+  }
+
   NSLayoutYAxisAnchor* topAnchor =
-      (CanShowTabStrip(self) || !IsSplitToolbarMode(self) || _isOffTheRecord)
-          ? self.self.toolbarCoordinator.primaryToolbarViewController.view
-                .bottomAnchor
-          : self.view.topAnchor;
+      useTopViewEdge ? self.view.topAnchor
+                     : self.toolbarCoordinator.primaryToolbarViewController.view
+                           .bottomAnchor;
+
+  NSLayoutYAxisAnchor* bottomAnchor =
+      useBottomViewEdge ? self.view.bottomAnchor
+                        : self.toolbarCoordinator.secondaryToolbarViewController
+                              .view.topAnchor;
+
   _NTPConstraints = @[
     [NTPViewController.view.topAnchor constraintEqualToAnchor:topAnchor],
-    [NTPViewController.view.bottomAnchor
-        constraintEqualToAnchor:self.toolbarCoordinator
-                                    .secondaryToolbarViewController.view
-                                    .topAnchor],
+    [NTPViewController.view.bottomAnchor constraintEqualToAnchor:bottomAnchor],
     [NTPViewController.view.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [NTPViewController.view.trailingAnchor
@@ -1657,14 +1684,30 @@ bool IsFullscreenNextIAEnabled() {
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
-  viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
 
-  // Add toolbar margin to the frame for every scenario except compact-width
-  // non-otr, as that is the only case where there isn't a primary toolbar.
-  // (see crbug.com/1063173)
-  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self) || _isOffTheRecord) {
+  BOOL canShowTabStrip = CanShowTabStrip(self);
+
+  if (!IsChromeNextIaEnabled() || canShowTabStrip || _isOffTheRecord) {
+    viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
+  }
+
+  BOOL useTopToolbarEdgeAsInset = NO;
+  if (IsChromeNextIaEnabled()) {
+    // Toolbar is always visible when the tab strip can be shown or in
+    // incognito.
+    useTopToolbarEdgeAsInset = canShowTabStrip || _isOffTheRecord;
+  } else {
+    // Add toolbar margin to the frame for every scenario except compact-width
+    // non-otr, as that is the only case where there isn't a primary toolbar.
+    // (see crbug.com/1063173)
+    useTopToolbarEdgeAsInset =
+        canShowTabStrip || !IsSplitToolbarMode(self) || _isOffTheRecord;
+  }
+
+  if (useTopToolbarEdgeAsInset) {
     viewportInsets.top = [self expandedTopToolbarHeight];
   }
+
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
 }
 

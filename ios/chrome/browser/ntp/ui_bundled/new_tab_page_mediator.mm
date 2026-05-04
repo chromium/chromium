@@ -24,6 +24,7 @@
 #import "components/image_fetcher/core/request_metadata.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -73,9 +74,11 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -164,7 +167,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 }  // namespace
 
-@interface NewTabPageMediator () <HomeBackgroundCustomizationServiceObserving,
+@interface NewTabPageMediator () <BooleanObserver,
+                                  HomeBackgroundCustomizationServiceObserving,
                                   IdentityManagerObserverBridgeDelegate,
                                   PlaceholderServiceObserving,
                                   PrefObserverDelegate,
@@ -253,6 +257,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   GURL _pendingBackgroundURL;
   // Sequence number for fetch requests to generate unique flow IDs.
   uint64_t _fetchSequenceNumber;
+  // Holds whether the omnibox should be pinned to the bottom position.
+  PrefBackedBoolean* _bottomOmniboxEnabled;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -331,8 +337,23 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                 [weakSelf updateAIMAvailability];
               }));
     }
+    if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
+      _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:GetApplicationContext()->GetLocalState()
+                     prefName:omnibox::kIsOmniboxInBottomPosition];
+      _bottomOmniboxEnabled.observer = self;
+      [_bottomOmniboxEnabled.observer booleanDidChange:_bottomOmniboxEnabled];
+    }
   }
   return self;
+}
+
+- (void)setHeaderConsumer:(id<NewTabPageHeaderConsumer>)headerConsumer {
+  _headerConsumer = headerConsumer;
+  if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
+    [self.headerConsumer
+        setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
+  }
 }
 
 #pragma mark - NewTabPageMutator
@@ -491,6 +512,17 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       [self isFeedHeaderVisible]) {
     self.discoverFeedService->UpdateFeedViewVisibilityState(
         self.contentCollectionView, currentState, previousState);
+  }
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  CHECK(IsChromeNextIaEnabled());
+  if (observableBoolean == _bottomOmniboxEnabled) {
+    CHECK(IsBottomOmniboxAvailable());
+    [self.headerConsumer
+        setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
   }
 }
 
