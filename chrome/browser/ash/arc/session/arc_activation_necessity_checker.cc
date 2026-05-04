@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -105,8 +107,14 @@ void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
   if (kArcOnDemandActivateOnAppLaunch.Get()) {
     is_app_recently_launched = last_launch.has_value();
   } else if (last_launch.has_value()) {
-    is_app_recently_launched = (base::Time::Now() - last_launch.value()) <
-                               kArcOnDemandInactiveInterval.Get();
+    base::ByteSize ram_size = base::SysInfo::AmountOfTotalPhysicalMemory();
+    bool is_4gb_device = ram_size < base::GiBU(4.5);
+
+    base::TimeDelta inactive_interval =
+        is_4gb_device ? kArcOnDemandInactiveIntervalFor4GiB.Get()
+                      : kArcOnDemandInactiveInterval.Get();
+    is_app_recently_launched =
+        (base::Time::Now() - last_launch.value()) < inactive_interval;
   }
   base::UmaHistogramBoolean("Arc.ArcOnDemandV2.ActivationShouldBeDelayed",
                             !result && !is_app_recently_launched);

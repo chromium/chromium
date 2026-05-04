@@ -19,6 +19,8 @@ BASE_DECLARE_FEATURE(kArcExchangeVersionOnMojoHandshake);
 BASE_DECLARE_FEATURE(kArcOnDemandV2);
 BASE_DECLARE_FEATURE_PARAM(bool, kArcOnDemandActivateOnAppLaunch);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kArcOnDemandInactiveInterval);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kArcOnDemandInactiveIntervalFor4GiB);
 BASE_DECLARE_FEATURE(kArcVmGki);
 BASE_DECLARE_FEATURE(kBlockIoScheduler);
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableDataBlockIoScheduler);
