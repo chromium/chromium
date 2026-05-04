@@ -128,7 +128,7 @@ constexpr char kTrialGroup[] = "scoped_feature_list_trial_group";
 //   [0] FeatureWithStudyGroup("Feature1", "Study1", "Group1",
 //         "Param1/Value1/Param2/Value2")
 //   [1] FeatureWithStudyGroup("Feature2", "Study2", "Group2", "")
-bool ParseEnableFeatures(const std::string& enable_features,
+bool ParseEnableFeatures(std::string_view enable_features,
                          std::vector<ScopedFeatureList::FeatureWithStudyGroup>&
                              parsed_enable_features) {
   for (const auto& enable_feature :
@@ -230,7 +230,7 @@ void OverrideFeatures(
 // |merged_features| should contain the enabled and disabled features passed in
 // to the Init() method, plus any overrides merged as a result of previous
 // calls to this function.
-void OverrideFeatures(const std::string& features_list,
+void OverrideFeatures(std::string_view features_list,
                       FeatureList::OverrideState override_state,
                       ScopedFeatureList::Features* merged_features) {
   std::vector<ScopedFeatureList::FeatureWithStudyGroup> parsed_features;
@@ -403,9 +403,8 @@ void ScopedFeatureList::InitWithFeatureList(
   init_called_ = true;
 }
 
-void ScopedFeatureList::InitFromCommandLine(
-    const std::string& enable_features,
-    const std::string& disable_features) {
+void ScopedFeatureList::InitFromCommandLine(std::string_view enable_features,
+                                            std::string_view disable_features) {
   Features merged_features;
   bool parse_enable_features_result =
       ParseEnableFeatures(enable_features,
