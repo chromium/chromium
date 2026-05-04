@@ -1920,7 +1920,7 @@
       // https://drafts.csswg.org/css-shapes/#shape-outside-property
       // ChromeStatus: https://chromestatus.com/feature/5080980370096128
       name: "CSSShapeOutsidePathAndShapeSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       // rect() and xywh() basic shapes for shape-outside.
