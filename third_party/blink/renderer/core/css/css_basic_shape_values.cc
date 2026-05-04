@@ -150,6 +150,84 @@ void SerializePosition(const CSSValue& center_x,
   }
 }
 
+bool IsZeroPx(const CSSValue& value) {
+  auto* numeric_literal = DynamicTo<CSSNumericLiteralValue>(value);
+  return numeric_literal && numeric_literal->DoubleValue() == 0 &&
+         numeric_literal->GetType() == CSSPrimitiveValue::UnitType::kPixels;
+}
+
+base::span<const CSSValue*> Deduplicate4Sides(
+    const CSSValue& top,
+    const CSSValue& right,
+    const CSSValue& bottom,
+    const CSSValue& left,
+    std::array<const CSSValue*, 4>& values) {
+  const bool show_left = right != left;
+  const bool show_bottom = show_left || bottom != top;
+  const bool show_right = show_bottom || right != top;
+
+  size_t count = 0;
+  values[count++] = &top;
+  if (show_right) {
+    values[count++] = &right;
+  }
+  if (show_bottom) {
+    values[count++] = &bottom;
+  }
+  if (show_left) {
+    values[count++] = &left;
+  }
+  return base::span(values).first(count);
+}
+
+void AppendRoundedCorners(const CSSValuePair* top_left_radius,
+                          const CSSValuePair* top_right_radius,
+                          const CSSValuePair* bottom_right_radius,
+                          const CSSValuePair* bottom_left_radius,
+                          StringBuilder& result) {
+  if (!top_left_radius) {
+    return;
+  }
+  std::array<const CSSValue*, 4> horizontal_radii{};
+  auto horizontal_values =
+      Deduplicate4Sides(top_left_radius->First(), top_right_radius->First(),
+                        bottom_right_radius->First(),
+                        bottom_left_radius->First(), horizontal_radii);
+
+  std::array<const CSSValue*, 4> vertical_radii{};
+  auto vertical_values =
+      Deduplicate4Sides(top_left_radius->Second(), top_right_radius->Second(),
+                        bottom_right_radius->Second(),
+                        bottom_left_radius->Second(), vertical_radii);
+
+  const bool horizontal_and_vertical_equal = std::ranges::equal(
+      horizontal_values, vertical_values,
+      [](const CSSValue* a, const CSSValue* b) { return *a == *b; });
+  const bool are_default_corner_radii = horizontal_and_vertical_equal &&
+                                        horizontal_values.size() == 1 &&
+                                        IsZeroPx(*horizontal_values[0]);
+  if (are_default_corner_radii) {
+    return;
+  }
+
+  result.Append(' ');
+  result.Append("round");
+
+  for (const auto& value : horizontal_values) {
+    result.Append(' ');
+    result.Append(value->CssText());
+  }
+  if (!horizontal_and_vertical_equal) {
+    result.Append(' ');
+    result.Append('/');
+
+    for (const auto& value : vertical_values) {
+      result.Append(' ');
+      result.Append(value->CssText());
+    }
+  }
+}
+
 }  // namespace
 
 String CSSBasicShapeCircleValue::CustomCSSText() const {
@@ -315,198 +393,27 @@ void CSSBasicShapePolygonValue::TraceAfterDispatch(
   CSSValue::TraceAfterDispatch(visitor);
 }
 
-static bool BuildInsetRadii(Vector<String>& radii,
-                            const String& top_left_radius,
-                            const String& top_right_radius,
-                            const String& bottom_right_radius,
-                            const String& bottom_left_radius) {
-  bool show_bottom_left = top_right_radius != bottom_left_radius;
-  bool show_bottom_right =
-      show_bottom_left || (bottom_right_radius != top_left_radius);
-  bool show_top_right =
-      show_bottom_right || (top_right_radius != top_left_radius);
-
-  radii.push_back(top_left_radius);
-  if (show_top_right) {
-    radii.push_back(top_right_radius);
-  }
-  if (show_bottom_right) {
-    radii.push_back(bottom_right_radius);
-  }
-  if (show_bottom_left) {
-    radii.push_back(bottom_left_radius);
-  }
-
-  return radii.size() == 1 && radii[0] == "0px";
-}
-
-static void AppendRoundedCorners(const char* separator,
-                                 const String& top_left_radius_width,
-                                 const String& top_left_radius_height,
-                                 const String& top_right_radius_width,
-                                 const String& top_right_radius_height,
-                                 const String& bottom_right_radius_width,
-                                 const String& bottom_right_radius_height,
-                                 const String& bottom_left_radius_width,
-                                 const String& bottom_left_radius_height,
-                                 StringBuilder& result) {
-  char corners_separator[] = "round";
-  if (!top_left_radius_width.IsNull() && !top_left_radius_height.IsNull()) {
-    Vector<String> horizontal_radii;
-    bool are_default_corner_radii = BuildInsetRadii(
-        horizontal_radii, top_left_radius_width, top_right_radius_width,
-        bottom_right_radius_width, bottom_left_radius_width);
-
-    Vector<String> vertical_radii;
-    are_default_corner_radii &= BuildInsetRadii(
-        vertical_radii, top_left_radius_height, top_right_radius_height,
-        bottom_right_radius_height, bottom_left_radius_height);
-
-    if (!are_default_corner_radii) {
-      result.Append(separator);
-      result.Append(corners_separator);
-
-      for (wtf_size_t i = 0; i < horizontal_radii.size(); ++i) {
-        result.Append(separator);
-        result.Append(horizontal_radii[i]);
-      }
-      if (horizontal_radii != vertical_radii) {
-        result.Append(separator);
-        result.Append('/');
-
-        for (wtf_size_t i = 0; i < vertical_radii.size(); ++i) {
-          result.Append(separator);
-          result.Append(vertical_radii[i]);
-        }
-      }
-    }
-  }
-}
-
-static String BuildRectStringCommon(const char* opening,
-                                    bool show_left_arg,
-                                    const String& top,
-                                    const String& right,
-                                    const String& bottom,
-                                    const String& left,
-                                    const String& top_left_radius_width,
-                                    const String& top_left_radius_height,
-                                    const String& top_right_radius_width,
-                                    const String& top_right_radius_height,
-                                    const String& bottom_right_radius_width,
-                                    const String& bottom_right_radius_height,
-                                    const String& bottom_left_radius_width,
-                                    const String& bottom_left_radius_height) {
-  char separator[] = " ";
-  StringBuilder result;
-  result.Append(opening);
-  result.Append(top);
-  show_left_arg |= !left.IsNull() && left != right;
-  bool show_bottom_arg = !bottom.IsNull() && (bottom != top || show_left_arg);
-  bool show_right_arg = !right.IsNull() && (right != top || show_bottom_arg);
-  if (show_right_arg) {
-    result.Append(separator);
-    result.Append(right);
-  }
-  if (show_bottom_arg) {
-    result.Append(separator);
-    result.Append(bottom);
-  }
-  if (show_left_arg) {
-    result.Append(separator);
-    result.Append(left);
-  }
-
-  AppendRoundedCorners(separator, top_left_radius_width, top_left_radius_height,
-                       top_right_radius_width, top_right_radius_height,
-                       bottom_right_radius_width, bottom_right_radius_height,
-                       bottom_left_radius_width, bottom_left_radius_height,
-                       result);
-
-  result.Append(')');
-
-  return result.ReleaseString();
-}
-
-static String BuildXYWHString(const String& x,
-                              const String& y,
-                              const String& width,
-                              const String& height,
-                              const String& top_left_radius_width,
-                              const String& top_left_radius_height,
-                              const String& top_right_radius_width,
-                              const String& top_right_radius_height,
-                              const String& bottom_right_radius_width,
-                              const String& bottom_right_radius_height,
-                              const String& bottom_left_radius_width,
-                              const String& bottom_left_radius_height) {
-  const char opening[] = "xywh(";
-  char separator[] = " ";
-  StringBuilder result;
-
-  result.Append(opening);
-  result.Append(x);
-
-  result.Append(separator);
-  result.Append(y);
-
-  result.Append(separator);
-  result.Append(width);
-
-  result.Append(separator);
-  result.Append(height);
-
-  AppendRoundedCorners(separator, top_left_radius_width, top_left_radius_height,
-                       top_right_radius_width, top_right_radius_height,
-                       bottom_right_radius_width, bottom_right_radius_height,
-                       bottom_left_radius_width, bottom_left_radius_height,
-                       result);
-
-  result.Append(')');
-
-  return result.ReleaseString();
-}
-
-static inline void UpdateCornerRadiusWidthAndHeight(
-    const CSSValuePair* corner_radius,
-    String& width,
-    String& height) {
-  if (!corner_radius) {
-    return;
-  }
-
-  width = corner_radius->First().CssText();
-  height = corner_radius->Second().CssText();
-}
-
 String CSSBasicShapeInsetValue::CustomCSSText() const {
-  String top_left_radius_width;
-  String top_left_radius_height;
-  String top_right_radius_width;
-  String top_right_radius_height;
-  String bottom_right_radius_width;
-  String bottom_right_radius_height;
-  String bottom_left_radius_width;
-  String bottom_left_radius_height;
+  StringBuilder result;
+  result.Append("inset(");
 
-  UpdateCornerRadiusWidthAndHeight(TopLeftRadius(), top_left_radius_width,
-                                   top_left_radius_height);
-  UpdateCornerRadiusWidthAndHeight(TopRightRadius(), top_right_radius_width,
-                                   top_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomRightRadius(),
-                                   bottom_right_radius_width,
-                                   bottom_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomLeftRadius(), bottom_left_radius_width,
-                                   bottom_left_radius_height);
+  std::array<const CSSValue*, 4> trbl{};
+  auto trbl_values = Deduplicate4Sides(*top_, *right_, *bottom_, *left_, trbl);
 
-  return BuildRectStringCommon(
-      "inset(", false, top_ ? top_->CssText() : String(),
-      right_ ? right_->CssText() : String(),
-      bottom_ ? bottom_->CssText() : String(),
-      left_ ? left_->CssText() : String(), top_left_radius_width,
-      top_left_radius_height, top_right_radius_width, top_right_radius_height,
-      bottom_right_radius_width, bottom_right_radius_height,
-      bottom_left_radius_width, bottom_left_radius_height);
+  bool need_separator = false;
+  for (const auto& value : trbl_values) {
+    if (need_separator) {
+      result.Append(' ');
+    }
+    result.Append(value->CssText());
+    need_separator = true;
+  }
+
+  AppendRoundedCorners(TopLeftRadius(), TopRightRadius(), BottomRightRadius(),
+                       BottomLeftRadius(), result);
+
+  result.Append(')');
+  return result.ReleaseString();
 }
 
 bool CSSBasicShapeInsetValue::Equals(
@@ -536,31 +443,22 @@ void CSSBasicShapeInsetValue::TraceAfterDispatch(
 }
 
 String CSSBasicShapeRectValue::CustomCSSText() const {
-  String top_left_radius_width;
-  String top_left_radius_height;
-  String top_right_radius_width;
-  String top_right_radius_height;
-  String bottom_right_radius_width;
-  String bottom_right_radius_height;
-  String bottom_left_radius_width;
-  String bottom_left_radius_height;
+  StringBuilder result;
+  result.Append("rect(");
 
-  UpdateCornerRadiusWidthAndHeight(TopLeftRadius(), top_left_radius_width,
-                                   top_left_radius_height);
-  UpdateCornerRadiusWidthAndHeight(TopRightRadius(), top_right_radius_width,
-                                   top_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomRightRadius(),
-                                   bottom_right_radius_width,
-                                   bottom_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomLeftRadius(), bottom_left_radius_width,
-                                   bottom_left_radius_height);
+  result.Append(top_->CssText());
+  result.Append(' ');
+  result.Append(right_->CssText());
+  result.Append(' ');
+  result.Append(bottom_->CssText());
+  result.Append(' ');
+  result.Append(left_->CssText());
 
-  return BuildRectStringCommon(
-      "rect(", true, top_->CssText(), right_->CssText(), bottom_->CssText(),
-      left_->CssText(), top_left_radius_width, top_left_radius_height,
-      top_right_radius_width, top_right_radius_height,
-      bottom_right_radius_width, bottom_right_radius_height,
-      bottom_left_radius_width, bottom_left_radius_height);
+  AppendRoundedCorners(TopLeftRadius(), TopRightRadius(), BottomRightRadius(),
+                       BottomLeftRadius(), result);
+
+  result.Append(')');
+  return result.ReleaseString();
 }
 
 bool CSSBasicShapeRectValue::Equals(const CSSBasicShapeRectValue& other) const {
@@ -603,31 +501,22 @@ void CSSBasicShapeRectValue::Validate() const {
 }
 
 String CSSBasicShapeXYWHValue::CustomCSSText() const {
-  String top_left_radius_width;
-  String top_left_radius_height;
-  String top_right_radius_width;
-  String top_right_radius_height;
-  String bottom_right_radius_width;
-  String bottom_right_radius_height;
-  String bottom_left_radius_width;
-  String bottom_left_radius_height;
+  StringBuilder result;
+  result.Append("xywh(");
 
-  UpdateCornerRadiusWidthAndHeight(TopLeftRadius(), top_left_radius_width,
-                                   top_left_radius_height);
-  UpdateCornerRadiusWidthAndHeight(TopRightRadius(), top_right_radius_width,
-                                   top_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomRightRadius(),
-                                   bottom_right_radius_width,
-                                   bottom_right_radius_height);
-  UpdateCornerRadiusWidthAndHeight(BottomLeftRadius(), bottom_left_radius_width,
-                                   bottom_left_radius_height);
+  result.Append(x_->CssText());
+  result.Append(' ');
+  result.Append(y_->CssText());
+  result.Append(' ');
+  result.Append(width_->CssText());
+  result.Append(' ');
+  result.Append(height_->CssText());
 
-  return BuildXYWHString(x_->CssText(), y_->CssText(), width_->CssText(),
-                         height_->CssText(), top_left_radius_width,
-                         top_left_radius_height, top_right_radius_width,
-                         top_right_radius_height, bottom_right_radius_width,
-                         bottom_right_radius_height, bottom_left_radius_width,
-                         bottom_left_radius_height);
+  AppendRoundedCorners(TopLeftRadius(), TopRightRadius(), BottomRightRadius(),
+                       BottomLeftRadius(), result);
+
+  result.Append(')');
+  return result.ReleaseString();
 }
 
 bool CSSBasicShapeXYWHValue::Equals(const CSSBasicShapeXYWHValue& other) const {
