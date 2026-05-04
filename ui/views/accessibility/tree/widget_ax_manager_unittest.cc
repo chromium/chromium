@@ -277,6 +277,29 @@ TEST_F(WidgetAXManagerTest, InitParamsCreatesParentRelationship) {
   child_widget.reset();
 }
 
+TEST_F(WidgetAXManagerTest, ChildWidgetSerializedTreeDataIncludesParentTreeId) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAutoclosePtr parent(CreateTopLevelPlatformWidget());
+  WidgetAXManagerTestApi parent_api(parent->ax_manager());
+  ASSERT_TRUE(parent->ax_manager()->is_enabled());
+
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          parent.get(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetAXManager* child_manager = child_widget->ax_manager();
+  WidgetAXManagerTestApi child_api(child_manager);
+  ASSERT_TRUE(child_manager->is_enabled());
+  ASSERT_NE(child_api.ax_tree_manager(), nullptr);
+
+  EXPECT_EQ(child_api.parent_ax_tree_id(), parent_api.ax_tree_id());
+  EXPECT_EQ(child_api.ax_tree_manager()->GetTreeData().parent_tree_id,
+            parent_api.ax_tree_id());
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
 TEST_F(WidgetAXManagerTest, ReparentWidgetBetweenParents) {
   WidgetAXManagerTestApi parent1_api(manager());
 

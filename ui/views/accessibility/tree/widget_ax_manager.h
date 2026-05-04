@@ -146,6 +146,8 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   void EnableWhenWidgetCreated();
   void Enable();
   void NotifyEnabled();
+  void SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id);
+  void UpdateParentAXTreeIDFromWidget();
 
   void StartObservingFocus();
   ui::AXNodeID GetFocusedViewNodeId() const;

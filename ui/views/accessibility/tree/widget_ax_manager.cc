@@ -204,11 +204,11 @@ void WidgetAXManager::OnChildRemoved(ViewAccessibility& child,
 }
 
 void WidgetAXManager::OnChildManagerAdded(WidgetAXManager& child_manager) {
-  child_manager.parent_ax_tree_id_ = ax_tree_id_;
+  child_manager.SetParentAXTreeID(ax_tree_id_);
 }
 
 void WidgetAXManager::OnChildManagerRemoved(WidgetAXManager& child_manager) {
-  child_manager.parent_ax_tree_id_ = ui::AXTreeID();
+  child_manager.SetParentAXTreeID(ui::AXTreeIDUnknown());
 }
 
 void WidgetAXManager::AddObserver(WidgetAXManagerObserver* observer) {
@@ -506,10 +506,12 @@ void WidgetAXManager::Enable() {
   if (is_enabled_) {
     return;
   }
+  UpdateParentAXTreeIDFromWidget();
   is_enabled_ = true;
   tree_source_ = std::make_unique<ViewAccessibilityAXTreeSource>(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId(), ax_tree_id_,
       cache_.get());
+  tree_source_->SetParentTreeId(parent_ax_tree_id_);
   tree_serializer_ =
       std::make_unique<ViewAccessibilityAXTreeSerializer>(tree_source_.get());
 
@@ -534,6 +536,39 @@ void WidgetAXManager::NotifyEnabled() {
   for (WidgetAXManagerObserver& observer : observers_) {
     observer.OnWidgetAXManagerEnabled();
   }
+}
+
+void WidgetAXManager::SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id) {
+  if (parent_ax_tree_id_ == parent_ax_tree_id) {
+    return;
+  }
+
+  parent_ax_tree_id_ = parent_ax_tree_id;
+  if (!tree_source_) {
+    return;
+  }
+
+  tree_source_->SetParentTreeId(parent_ax_tree_id_);
+  if (is_enabled_) {
+    pending_data_updates_.insert(
+        widget_->GetRootView()->GetViewAccessibility().GetUniqueId());
+    SchedulePendingUpdate();
+  }
+}
+
+void WidgetAXManager::UpdateParentAXTreeIDFromWidget() {
+  if (!widget_) {
+    SetParentAXTreeID(ui::AXTreeIDUnknown());
+    return;
+  }
+
+  Widget* parent = widget_->parent();
+  if (!parent || !parent->ax_manager()) {
+    SetParentAXTreeID(ui::AXTreeIDUnknown());
+    return;
+  }
+
+  SetParentAXTreeID(parent->ax_manager()->ax_tree_id_);
 }
 
 void WidgetAXManager::SendPendingUpdate() {
