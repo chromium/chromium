@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_PROGRESS_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"

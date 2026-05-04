@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -28,13 +29,16 @@ class ProgressDelay {
 
   void DelayComplete();
 
+  static base::AutoReset<std::optional<base::TimeDelta>>
+  SetDurationOverrideForTesting(std::optional<base::TimeDelta> duration);
+
  private:
   void OnTimerTick();
 
   const base::TimeDelta delay_time_;
   const int total_steps_;
   base::RepeatingCallback<void(std::optional<double>)> progress_callback_;
-  int steps_taken_ = 0;
+  int next_step_ = 1;
   base::RepeatingTimer timer_;
   base::WeakPtrFactory<ProgressDelay> weak_ptr_factory_{this};
 };

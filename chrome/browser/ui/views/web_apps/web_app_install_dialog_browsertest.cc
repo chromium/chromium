@@ -61,7 +61,7 @@ int GetTimesToAcceptDialog(const std::string& name, InstallOsType os_type) {
     // skipped on this OS.
     return os_type == InstallOsType::kOther ? 1 : 2;
   } else if (name == "Successful") {
-    return os_type == InstallOsType::kOther ? 2 : 3;
+    return os_type == InstallOsType::kOther ? 1 : 2;
   }
 
   NOTREACHED();
@@ -69,6 +69,16 @@ int GetTimesToAcceptDialog(const std::string& name, InstallOsType os_type) {
 
 // The number of times the dialog could be accepted before the dialog closes.
 const int kAcceptsBeforeClosure = 3;
+
+WebAppInstallFlowView* GetWebAppInstallFlowView(views::Widget* widget) {
+  if (!widget) {
+    return nullptr;
+  }
+  return static_cast<WebAppInstallFlowView*>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          WebAppInstallFlowDialogDelegate::kInstallDialogFlowViewId,
+          views::ElementTrackerViews::GetContextForWidget(widget)));
+}
 
 }  // namespace
 
@@ -176,18 +186,40 @@ class WebAppInstallDialogBrowserTest
         widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
       }
     }
+
+    if (name.contains("Successful")) {
+      // Ensure the mock installation completes so we can reach the Success
+      // step.
+      CompleteInstall(true);
+
+      // Wait for the dialog to reach the Successful step.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        WebAppInstallFlowView* flow_view =
+            GetWebAppInstallFlowView(widget_.get());
+        return flow_view && flow_view->GetCurrentStepForTesting() ==
+                                InstallDialogStep::kSuccessful;
+      }));
+    }
   }
 
-  void OnDialogCompleted(bool accepted,
-                         std::unique_ptr<WebAppInstallInfo> install_info) {
+  void OnDialogCompleted(
+      bool accepted,
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      WebAppInstallationAcceptanceResultCallback result_callback) {
     dialog_accepted_ = accepted;
     dialog_install_info_ = std::move(install_info);
+    install_result_callback_ = std::move(result_callback);
+  }
+
+  void CompleteInstall(bool success) {
+    std::move(install_result_callback_).Run(success, base::DoNothing());
   }
 
  protected:
   InstallOsType GetOsType() { return std::get<0>(GetParam()); }
   std::optional<bool> dialog_accepted_;
   std::unique_ptr<WebAppInstallInfo> dialog_install_info_;
+  WebAppInstallationAcceptanceResultCallback install_result_callback_;
   TestWebAppScreenshotFetcher screenshot_fetcher_;
   base::WeakPtr<views::Widget> widget_ = nullptr;
 
@@ -251,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, CancelInSuccess) {
   views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
   destruction_waiter.Wait();
-  EXPECT_EQ(dialog_accepted_, false);
+  EXPECT_EQ(dialog_accepted_, true);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, Success) {

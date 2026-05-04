@@ -14,18 +14,23 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
@@ -40,7 +45,9 @@ namespace web_app {
 
 class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
  public:
-  WebAppInstallFlowBrowserTest() {
+  WebAppInstallFlowBrowserTest()
+      : progress_delay_override_(ProgressDelay::SetDurationOverrideForTesting(
+            base::Milliseconds(0))) {
     feature_list_.InitAndEnableFeature(features::kWebAppInstallDialog);
   }
 
@@ -51,26 +58,32 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
 
     views::test::WidgetDestroyedWaiter waiter(widget);
 
-    // Step 1: Install Dialog. Accept to move to options.
+    // Step 1: Install Dialog. Accept to move to options or progress.
     dialog_delegate->AcceptDialog();
 
-    // Step 2: Installer Options. Accept to move to progress.
-    dialog_delegate->AcceptDialog();
+    // Step 2: Installer Options. Only present on some OSes (CrOS/Win/Mac).
+    // Check if the options view exists using the ElementTracker.
+    if (ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+            WebAppInstallOptionsView::kViewId)) {
+      dialog_delegate->AcceptDialog();
+    }
 
     // Step 3: Progress. Wait for completion and accept to move to success.
     ASSERT_TRUE(base::test::RunUntil([dialog_delegate, widget]() -> bool {
-      return dialog_delegate->IsDialogButtonEnabled(
-                 ui::mojom::DialogButton::kOk) ||
+      auto* ok_button = dialog_delegate->GetOkButton();
+      return (ok_button && ok_button->GetVisible() &&
+              ok_button->GetText() ==
+                  l10n_util::GetStringUTF16(
+                      IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP)) ||
              widget->IsClosed();
     }));
-    if (!widget->IsClosed()) {
-      dialog_delegate->AcceptDialog();
-    }
 
     // Step 4: Successful. Accept to close the dialog.
     if (!widget->IsClosed()) {
       dialog_delegate->AcceptDialog();
     }
+    // Wait for the widget to be fully destroyed. Destruction is asynchronous
+    // and must be completed before the test finishes to avoid leaks or UAF.
     waiter.Wait();
   }
 
@@ -86,6 +99,7 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::AutoReset<std::optional<base::TimeDelta>> progress_delay_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {

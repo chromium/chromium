@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "ui/base/identifier/unique_identifier.h"
 
 namespace content {
@@ -52,7 +53,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      AppInstallationAcceptanceCallback callback,
+      WebAppInstallationAcceptanceCallback callback,
       PwaInProductHelpState iph_state,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
@@ -66,7 +67,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-      AppInstallationAcceptanceCallback callback,
+      WebAppInstallationAcceptanceCallback callback,
       PwaInProductHelpState iph_state,
       base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
       bool show_initiating_origin,
@@ -84,8 +85,8 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
 
   bool OnOkButtonClicked() override;
 
-  void OnProgress(std::optional<double> percent);
   void OnAccept() override;
+  void OnProgress(std::optional<double> percent);
 
   base::WeakPtr<WebAppInstallFlowDialogDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -101,8 +102,16 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
  private:
   void OnLearnMoreButtonClicked();
   void UpdateDialogTitle(InstallDialogStep step);
+  void UpdateProgressAndMaybeAdvance();
+  void OnInstallResult(bool success, base::OnceClosure reparent_closure);
+  void OnAcceptCallback(bool success,
+                        std::unique_ptr<WebAppInstallInfo> web_app_info);
 
+  WebAppInstallationAcceptanceCallback callback_;
   std::unique_ptr<ProgressDelay> progress_delay_;
+  bool install_success_ = false;
+  std::optional<double> timer_percentage_ = 0.0;
+  base::OnceClosure reparent_closure_;
   base::WeakPtrFactory<WebAppInstallFlowDialogDelegate> weak_ptr_factory_{this};
 };
 

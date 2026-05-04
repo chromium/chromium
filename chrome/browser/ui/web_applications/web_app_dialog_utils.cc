@@ -88,14 +88,9 @@ void OnWebAppInstallShowInstallDialog(
   os_type = InstallOsType::kWin;
 #endif
 
-  // The UI methods below expect a callback that takes only 2 arguments, but
-  // WebAppInstallationAcceptanceCallback now takes 3 arguments. We use this
-  // adapter to pass a dummy result callback.
-  auto launch_app_on_install_success =
-      AdaptToLaunchOnInstallSuccess(std::move(web_app_acceptance_callback));
 
   switch (flow) {
-    case WebAppInstallFlow::kInstallSite:
+    case WebAppInstallFlow::kInstallSite: {
       web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 #if BUILDFLAG(IS_CHROMEOS)
       if (install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
@@ -117,12 +112,17 @@ void OnWebAppInstallShowInstallDialog(
             kProgressDelay, kProgressDelaySteps);
         WebAppInstallFlowDialogDelegate::Show(
             initiator_web_contents, std::move(web_app_info),
-            std::move(install_tracker),
-            std::move(launch_app_on_install_success), iph_state,
-            std::move(screenshot_fetcher), show_initiating_origin, install_type,
-            os_type, std::move(progress_delay));
+            std::move(install_tracker), std::move(web_app_acceptance_callback),
+            iph_state, std::move(screenshot_fetcher), show_initiating_origin,
+            install_type, os_type, std::move(progress_delay));
         return;
       }
+
+      // The UI methods below expect a callback that takes only 2 arguments, but
+      // WebAppInstallationAcceptanceCallback now takes 3 arguments. We use this
+      // adapter to pass a dummy result callback.
+      auto launch_app_on_install_success =
+          AdaptToLaunchOnInstallSuccess(std::move(web_app_acceptance_callback));
 
       if (screenshot_fetcher) {
         ShowWebAppDetailedInstallDialog(
@@ -145,18 +145,22 @@ void OnWebAppInstallShowInstallDialog(
             show_initiating_origin);
         return;
       }
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     case WebAppInstallFlow::kCreateShortcut: {
       webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id());
       metrics::structured::StructuredMetricsClient::Record(
           cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(app_id));
-    }
+
+      auto launch_app_on_install_success =
+          AdaptToLaunchOnInstallSuccess(std::move(web_app_acceptance_callback));
 
       ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),
                                std::move(install_tracker),
                                std::move(launch_app_on_install_success));
       return;
+    }
 #endif
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();

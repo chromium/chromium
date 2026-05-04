@@ -127,22 +127,25 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    AppInstallationAcceptanceCallback callback,
+    WebAppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
     InstallDialogType dialog_type,
     InstallOsType os_type,
     std::unique_ptr<ProgressDelay> progress_delay)
-    : WebAppInstallDialogDelegate(web_contents,
-                                  std::move(install_info),
-                                  std::move(install_tracker),
-                                  std::move(callback),
-                                  iph_state,
-                                  prefs,
-                                  tracker,
-                                  dialog_type),
+    : WebAppInstallDialogDelegate(
+          web_contents,
+          std::move(install_info),
+          std::move(install_tracker),
+          base::BindOnce(&WebAppInstallFlowDialogDelegate::OnAcceptCallback,
+                         base::Unretained(this)),
+          iph_state,
+          prefs,
+          tracker,
+          dialog_type),
       os_type_(os_type),
+      callback_(std::move(callback)),
       progress_delay_(std::move(progress_delay)) {
   CHECK(progress_delay_);
 }
@@ -154,11 +157,7 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
     return false;
   }
 
-  // TODO(crbug.com/380497638): Trigger the installation earlier in the flow.
   if (current_step_ == InstallDialogStep::kSuccessful) {
-    // TODO(b/492657179): Implement the logic to open the newly installed
-    // app in a tab/window.
-    OnAccept();
     return true;
   }
 
@@ -186,7 +185,12 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
 
   // Actions based on the new current_step_
   if (current_step_ == InstallDialogStep::kProgress) {
-    // Start progress delay.
+    // Trigger the installation.
+    // TODO(b/492657179): Implement the logic to open the newly installed
+    // app in a tab/window.
+    // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
+    OnAccept();
+
     progress_delay_->Start(
         base::BindRepeating(&WebAppInstallFlowDialogDelegate::OnProgress,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -195,19 +199,8 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
     dialog_model()->SetVisible(kLearnMoreButtonId, false);
     dialog_model()->SetVisible(kPwaInstallDialogInstallButton, false);
     dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, false);
-  } else if (current_step_ == InstallDialogStep::kSuccessful) {
-    dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
-    dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, true);
   }
 
-  if (flow_view_) {
-    flow_view_->UpdateStepVisibility(current_step_);
-  }
-
-  UpdateDialogTitle(current_step_);
-
-  // Last dialog to show the install button.
-  // TODO(crbug.com/380497638): Trigger the installation earlier in the flow.
   if (current_step_ == InstallDialogStep::kSuccessful) {
     ui::DialogModel::Button* ok_button =
         dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
@@ -222,7 +215,15 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
       dialog_model()->SetButtonLabel(cancel_button,
                                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
+    dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
+    dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, true);
   }
+
+  if (flow_view_) {
+    flow_view_->UpdateStepVisibility(current_step_);
+  }
+
+  UpdateDialogTitle(current_step_);
 
   return false;
 }
@@ -280,20 +281,48 @@ void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
   }
 }
 
+void WebAppInstallFlowDialogDelegate::UpdateProgressAndMaybeAdvance() {
+  if (current_step_ != InstallDialogStep::kProgress) {
+    return;
+  }
+  double percent =
+      timer_percentage_.value_or(1.0) * 0.9 + (install_success_ ? 0.1 : 0);
+  if (progress_view_) {
+    progress_view_->SetProgressValue(percent);
+  }
+
+  if (!timer_percentage_.has_value() && install_success_) {
+    OnOkButtonClicked();
+  }
+}
+
+void WebAppInstallFlowDialogDelegate::OnInstallResult(
+    bool success,
+    base::OnceClosure reparent_closure) {
+  if (!success) {
+    CloseDialogAsIgnored();
+    return;
+  }
+  install_success_ = true;
+  reparent_closure_ = std::move(reparent_closure);
+  UpdateProgressAndMaybeAdvance();
+}
+
+void WebAppInstallFlowDialogDelegate::OnAcceptCallback(
+    bool success,
+    std::unique_ptr<WebAppInstallInfo> web_app_info) {
+  if (callback_) {
+    std::move(callback_).Run(
+        success, std::move(web_app_info),
+        base::BindOnce(&WebAppInstallFlowDialogDelegate::OnInstallResult,
+                       AsWeakPtr()));
+  }
+}
+
 void WebAppInstallFlowDialogDelegate::OnProgress(
     std::optional<double> percent) {
-  if (percent.has_value()) {
-    if (progress_view_) {
-      progress_view_->SetProgressValue(percent.value());
-    }
-  } else {
-    if (dialog_model()) {
-      dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
-      dialog_model()->SetButtonLabel(
-          dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton),
-          u"Next");
-    }
-  }
+  timer_percentage_ = percent;
+  UpdateProgressAndMaybeAdvance();
 }
 
 // Builds and shows an install dialog flow according to the install_type.
@@ -301,7 +330,7 @@ void WebAppInstallFlowDialogDelegate::Show(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
-    AppInstallationAcceptanceCallback callback,
+    WebAppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state,
     base::WeakPtr<WebAppScreenshotFetcher> screenshot_fetcher,
     bool show_initiating_origin,
