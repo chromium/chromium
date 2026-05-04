@@ -829,3 +829,36 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest, InvalidStyleMetrics) {
                 "Blink.CapabilityElement.UserMedia.InvalidStyle.Reason", 1),
             1);
 }
+
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
+                       CapabilityElementAttributesCountMetrics) {
+  WebFeatureHistogramTester histogram_tester;
+  NavigateToURL("/permissions/capability_element_attributes.html");
+
+  // Access all attributes of InPagePermissionMixin and verify they are counted.
+  std::string attributes[] = {
+      "isValid",
+      "invalidReason",
+      "initialPermissionStatus",
+      "permissionStatus",
+      "onpromptaction",
+      "onpromptdismiss",
+      "onvalidationstatuschange",
+  };
+
+  for (const auto& attr : attributes) {
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("document.getElementById('geolocation')[$1]", attr)));
+  }
+
+  histogram_tester.ExpectCounts({
+      {blink::mojom::WebFeature::kCapabilityElementIsValid, 1},
+      {blink::mojom::WebFeature::kCapabilityElementInvalidReason, 1},
+      {blink::mojom::WebFeature::kCapabilityElementInitialPermissionStatus, 1},
+      {blink::mojom::WebFeature::kCapabilityElementPermissionStatus, 1},
+      {blink::mojom::WebFeature::kCapabilityElementOnPromptAction, 1},
+      {blink::mojom::WebFeature::kCapabilityElementOnPromptDismiss, 1},
+      {blink::mojom::WebFeature::kCapabilityElementOnValidationStatusChange, 1},
+  });
+}

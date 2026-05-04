@@ -6528,6 +6528,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5884" label="PreventSvgFilterPaint"/>
   <int value="5885" label="LanguageModel_Prompt_ResponseConstraint"/>
   <int value="5886" label="LanguageModel_Prompt_Prefix"/>
+  <int value="5887" label="CapabilityElementIsValid"/>
+  <int value="5888" label="CapabilityElementInvalidReason"/>
+  <int value="5889" label="CapabilityElementInitialPermissionStatus"/>
+  <int value="5890" label="CapabilityElementPermissionStatus"/>
+  <int value="5891" label="CapabilityElementOnPromptAction"/>
+  <int value="5892" label="CapabilityElementOnPromptDismiss"/>
+  <int value="5893" label="CapabilityElementOnValidationStatusChange"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -5201,6 +5201,13 @@ enum WebFeature {
   kPreventSvgFilterPaint = 5884,
   kLanguageModel_Prompt_ResponseConstraint = 5885,
   kLanguageModel_Prompt_Prefix = 5886,
+  kCapabilityElementIsValid = 5887,
+  kCapabilityElementInvalidReason = 5888,
+  kCapabilityElementInitialPermissionStatus = 5889,
+  kCapabilityElementPermissionStatus = 5890,
+  kCapabilityElementOnPromptAction = 5891,
+  kCapabilityElementOnPromptDismiss = 5892,
+  kCapabilityElementOnValidationStatusChange = 5893,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
