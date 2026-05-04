@@ -372,8 +372,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
   [self addSubview:effectView];
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                                constant:-kSurroundingPadding],
+    [_closeButton.trailingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kSurroundingPadding],
     [_closeButton.widthAnchor
         constraintEqualToConstant:kManualFillCloseButtonWidth],
     [_closeButton.heightAnchor
@@ -994,8 +995,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
                                       constant:kSurroundingPadding]
           .active = YES;
       if (![self isSplitViewActive]) {
-        [self.trailingAnchor constraintEqualToAnchor:effectView.trailingAnchor
-                                            constant:kSurroundingPadding]
+        [self.safeAreaLayoutGuide.trailingAnchor
+            constraintEqualToAnchor:effectView.trailingAnchor
+                           constant:kSurroundingPadding]
             .active = YES;
       }
 
@@ -1005,9 +1007,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         [effectView.widthAnchor constraintEqualToConstant:kSmallAccessoryWidth]
             .active = YES;
       } else {
-        _effectViewLeadingConstraint =
-            [self.leadingAnchor constraintEqualToAnchor:effectView.leadingAnchor
-                                               constant:-kSurroundingPadding];
+        _effectViewLeadingConstraint = [self.safeAreaLayoutGuide.leadingAnchor
+            constraintEqualToAnchor:effectView.leadingAnchor
+                           constant:-kSurroundingPadding];
         _effectViewLeadingConstraint.active = YES;
       }
 
