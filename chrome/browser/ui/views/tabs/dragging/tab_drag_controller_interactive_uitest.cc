@@ -3918,7 +3918,92 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             gfx::Range(0, 2));
 }
 
-// Drags a tab group by the header to a new position toward the left and presses
+// Drags a tab within a tab group and presses escape to revert the drag.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       RevertTabDragWithinGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  AddTabsAndResetBrowser(browser(), 3);
+  tab_groups::TabGroupId group = model->AddToNewGroup({0, 1, 2});
+  StopAnimating(tab_strip);
+  EnsureFocusToTabStrip(tab_strip);
+
+  // Drag the first tab in the group to the end of the group.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(2)));
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      browser()->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
+      false, false));
+  StopAnimating(tab_strip);
+
+  EXPECT_EQ("0 1 2 3", IDString(model));
+  EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
+            gfx::Range(0, 3));
+}
+
+// Drags a tab from a tab group to after the group and presses escape to revert
+// the drag.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       RevertTabDragOutOfGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  AddTabsAndResetBrowser(browser(), 3);
+  tab_groups::TabGroupId group = model->AddToNewGroup({0, 1, 2});
+  StopAnimating(tab_strip);
+  EnsureFocusToTabStrip(tab_strip);
+
+  // Drag the first tab in the group to after the group.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(3)));
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      browser()->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
+      false, false));
+  StopAnimating(tab_strip);
+
+  EXPECT_EQ("0 1 2 3", IDString(model));
+  EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
+            gfx::Range(0, 3));
+}
+
+// Drags multiple tabs from a tab group and presses escape to revert the drag.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       RevertMultipleTabsInGroupDrag) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  AddTabsAndResetBrowser(browser(), 3);
+  tab_groups::TabGroupId group = model->AddToNewGroup({0, 1, 2});
+  StopAnimating(tab_strip);
+  EnsureFocusToTabStrip(tab_strip);
+
+  // Select tabs 0 and 1.
+  ui::ListSelectionModel selection;
+  selection.AddIndexToSelection(0);
+  selection.AddIndexToSelection(1);
+  selection.set_active(0);
+  model->SetSelectionFromModel(selection);
+
+  // Drag the selected tabs to after the group.
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(3)));
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      browser()->window()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
+      false, false));
+  StopAnimating(tab_strip);
+
+  EXPECT_EQ("0 1 2 3", IDString(model));
+  EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
+            gfx::Range(0, 3));
+}
+
 // escape to revert the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragLeft) {
