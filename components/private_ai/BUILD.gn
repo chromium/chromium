@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "connection_unused_timeout_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
+    "websocket_client_unittest.cc",
   ]
   deps = [
     ":private_ai",
