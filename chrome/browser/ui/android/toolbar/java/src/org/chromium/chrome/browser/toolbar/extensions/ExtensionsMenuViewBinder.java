@@ -143,6 +143,11 @@ public class ExtensionsMenuViewBinder {
         } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_LABEL) {
             TextView label = view.findViewById(R.id.extensions_menu_site_settings_toggle_text);
             label.setText(model.get(ExtensionsMenuProperties.SITE_SETTINGS_LABEL));
+        } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP) {
+            View toggleContainer = getSiteSettingsToggleContainer(view);
+            ViewCompat.setTooltipText(
+                    toggleContainer,
+                    model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP));
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER) {
             View.OnClickListener listener =
                     model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER);

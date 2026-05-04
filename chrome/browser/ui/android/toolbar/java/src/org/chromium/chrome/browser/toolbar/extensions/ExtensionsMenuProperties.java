@@ -80,6 +80,9 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_TOGGLE_TOOLTIP =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_CHECKED =
             new WritableBooleanPropertyKey();
 
@@ -111,6 +114,7 @@ class ExtensionsMenuProperties {
                 SITE_SETTINGS_LABEL,
                 SITE_SETTINGS_TOGGLE_CHECKED,
                 SITE_SETTINGS_TOGGLE_CLICK_LISTENER,
+                SITE_SETTINGS_TOGGLE_TOOLTIP,
                 SITE_SETTINGS_TOGGLE_VISIBLE
             };
 }

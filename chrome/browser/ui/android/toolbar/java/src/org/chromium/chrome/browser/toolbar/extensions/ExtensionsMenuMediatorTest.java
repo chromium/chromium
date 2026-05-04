@@ -666,6 +666,8 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
 
         clearInvocations(mMenuPropertyModel);
 
@@ -684,6 +686,8 @@ public class ExtensionsMenuMediatorTest {
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, false);
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_2");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
 
         clearInvocations(mMenuPropertyModel);
 
@@ -703,6 +707,8 @@ public class ExtensionsMenuMediatorTest {
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, false);
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_3");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
     }
 
     @Test
