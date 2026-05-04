@@ -26,6 +26,7 @@
 #include "ui/views/accessibility/tree/widget_ax_manager_observer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_export.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 class BrowserAccessibilityManager;
@@ -50,6 +51,7 @@ using ViewAccessibilityAXTreeSerializer = ui::AXTreeSerializer<
 class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
                                      public ui::AXNodeIdDelegate,
                                      public ui::AXPlatformTreeManagerDelegate,
+                                     public WidgetObserver,
                                      public FocusChangeListener {
  public:
   explicit WidgetAXManager(Widget* widget);
@@ -97,6 +99,10 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
 
+  // WidgetObserver:
+  void OnWidgetCreated(Widget* widget) override;
+  void OnWidgetDestroyed(Widget* widget) override;
+
   // ui::AXNodeIdDelegate:
   ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
       ui::AXNodeID ax_node_id) override;
@@ -137,6 +143,7 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   friend class WidgetAXManagerTestApi;
 
   void InitAXTreeManager();
+  void EnableWhenWidgetCreated();
   void Enable();
   void NotifyEnabled();
 
@@ -173,6 +180,13 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // Automatically unsubscribes from FocusManager on destruction.
   base::ScopedObservation<FocusManager, FocusChangeListener>
       focus_manager_observation_{this};
+
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+
+  // Tracks WidgetObserver::OnWidgetCreated(), which precedes
+  // Widget::IsNativeWidgetInitialized().
+  bool widget_created_ = false;
+  bool enable_on_widget_created_ = false;
 
   // The AXNodeID of the currently focused node in this widget's tree.
   ui::AXNodeID focused_node_id_ = ui::kInvalidAXNodeID;

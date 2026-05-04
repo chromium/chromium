@@ -116,6 +116,10 @@ WidgetAXManager::WidgetAXManager(Widget* widget)
       << "WidgetAXManager should only be created when the "
          "accessibility tree feature is enabled.";
 
+  if (widget_) {
+    widget_created_ = widget_->IsNativeWidgetInitialized();
+    widget_observation_.Observe(widget_);
+  }
   ui::AXPlatform::GetInstance().AddModeObserver(this);
 }
 
@@ -128,7 +132,7 @@ void WidgetAXManager::Init() {
   CHECK(widget_->GetRootView());
   if (ui::AXPlatform::GetInstance().GetMode().has_mode(
           ui::AXMode::kNativeAPIs)) {
-    Enable();
+    EnableWhenWidgetCreated();
   } else {
     if (widget_->is_top_level()) {
       InitAXTreeManager();
@@ -217,8 +221,22 @@ void WidgetAXManager::RemoveObserver(WidgetAXManagerObserver* observer) {
 
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
+    EnableWhenWidgetCreated();
+  }
+}
+
+void WidgetAXManager::OnWidgetCreated(Widget* widget) {
+  CHECK_EQ(widget_, widget);
+  widget_created_ = true;
+  if (enable_on_widget_created_) {
+    enable_on_widget_created_ = false;
     Enable();
   }
+}
+
+void WidgetAXManager::OnWidgetDestroyed(Widget* widget) {
+  DCHECK_EQ(widget_, widget);
+  widget_observation_.Reset();
 }
 
 gfx::NativeViewAccessible WidgetAXManager::GetNativeViewAccessibleForId(
@@ -464,6 +482,24 @@ void WidgetAXManager::InitAXTreeManager() {
 
   ax_tree_manager_.reset(
       ui::BrowserAccessibilityManager::Create(update, *this, this));
+}
+
+void WidgetAXManager::EnableWhenWidgetCreated() {
+  if (!widget_) {
+    return;
+  }
+
+  if (!widget_created_) {
+    // WidgetAXManager can be attached after OnWidgetCreated() has already fired.
+    widget_created_ = widget_->IsNativeWidgetInitialized();
+  }
+
+  if (widget_created_) {
+    Enable();
+    return;
+  }
+
+  enable_on_widget_created_ = true;
 }
 
 void WidgetAXManager::Enable() {

@@ -179,6 +179,24 @@ TEST_F(WidgetAXManagerTest, InitEnablesWhenMultipleAXModeFlagsSet) {
   EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
 }
 
+TEST_F(WidgetAXManagerTest, InitWithAXModeOnTracksFocusAfterWidgetCreated) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  WidgetAXManager* manager = widget->ax_manager();
+
+  ASSERT_TRUE(manager->is_enabled());
+
+  View* view = widget->GetRootView()->AddChildView(std::make_unique<View>());
+  view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  widget->Show();
+  view->RequestFocus();
+
+  EXPECT_EQ(manager->GetFocusedNodeId(),
+            view->GetViewAccessibility().GetUniqueId());
+}
+
 TEST_F(WidgetAXManagerTest, Init_DoesNotInitAXTreeManagerForNonTopLevel) {
   std::unique_ptr<Widget> child_widget =
       base::WrapUnique(CreateChildNativeWidgetWithParent(
