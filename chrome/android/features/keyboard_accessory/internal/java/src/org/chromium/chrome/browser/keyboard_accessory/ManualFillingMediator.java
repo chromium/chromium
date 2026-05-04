@@ -1243,25 +1243,15 @@ class ManualFillingMediator
     }
 
     private @Px int getBarHeightWithoutShadow() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-            return mActivity
-                    .getResources()
-                    .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
-        }
-        return mActivity.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_height);
+        return mActivity
+                .getResources()
+                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
     }
 
     private @Px int getHeaderHeight() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-            return mActivity
-                    .getResources()
-                    .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow_redesign);
-        }
         return mActivity
                 .getResources()
-                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow);
+                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow_redesign);
     }
 
     private @Px int getIdealSheetHeight() {

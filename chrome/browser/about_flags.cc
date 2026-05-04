@@ -12141,15 +12141,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillPrioritizeSaveCardOverMandatoryReauth)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-keyboard-accessory-chip-redesign",
-     flag_descriptions::kAutofillEnableKeyboardAccessoryChipRedesignName,
-     flag_descriptions::kAutofillEnableKeyboardAccessoryChipRedesignDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableKeyboardAccessoryChipRedesign)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"trusted-web-activity-contacts-delegation",
      flag_descriptions::kTrustedWebActivityContactsDelegationName,
      flag_descriptions::kTrustedWebActivityContactsDelegationDescription,
@@ -12264,17 +12255,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(syncer::kSyncGeminiThread)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-keyboard-accessory-chip-width-adjustment",
-     flag_descriptions::kAutofillEnableKeyboardAccessoryChipWidthAdjustmentName,
-     flag_descriptions::
-         kAutofillEnableKeyboardAccessoryChipWidthAdjustmentDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableKeyboardAccessoryChipWidthAdjustment)},
-#endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     {"use-unexportable-key-service-in-browser-process",

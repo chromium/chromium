@@ -80,7 +80,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -130,7 +129,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressWarnings("DoNotMock") // Mocks GURL
-@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
 public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
     private static final Bitmap TEST_CARD_ART_IMAGE =
@@ -314,27 +312,6 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     public void testAccessoryDimensions() throws InterruptedException {
-        assertNull(mKeyboardAccessoryView.poll());
-        // After setting the visibility to true, the view should exist and be visible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(VISIBLE, true);
-                });
-        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-
-        LinearLayout barContents = view.findViewById(R.id.accessory_bar_contents);
-        assertThat(
-                barContents.getMinimumHeight(),
-                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
-        LinearLayout.LayoutParams params =
-                (LinearLayout.LayoutParams) barContents.getLayoutParams();
-        assertThat(params.height, is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
-    public void testAccessoryDimensionsWithRedesign() throws InterruptedException {
         assertNull(mKeyboardAccessoryView.poll());
         // After setting the visibility to true, the view should exist and be visible.
         ThreadUtils.runOnUiThreadBlocking(

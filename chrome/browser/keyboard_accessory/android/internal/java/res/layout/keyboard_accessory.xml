@@ -30,8 +30,8 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/accessory_bar_contents"
         android:layout_width="match_parent"
-        android:minHeight="@dimen/keyboard_accessory_height"
-        android:layout_height="@dimen/keyboard_accessory_height"
+        android:minHeight="@dimen/keyboard_accessory_height_redesign"
+        android:layout_height="@dimen/keyboard_accessory_height_redesign"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
         android:background="@macro/default_bg_color">

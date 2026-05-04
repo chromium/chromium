@@ -200,16 +200,11 @@ class KeyboardAccessoryViewBinder {
                             null,
                             0,
                             selectStyleForSuggestion(parent.getContext(), barItemType)));
-            // TODO: crbug.com/385172647 - Move height parameters to the xml file once the feature
-            // is launched.
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                itemView.setMinimumHeight(
-                        parent.getContext()
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.keyboard_accessory_chip_min_height_redesign));
-            }
+            itemView.setMinimumHeight(
+                    parent.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.keyboard_accessory_chip_min_height_redesign));
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;
@@ -318,50 +313,24 @@ class KeyboardAccessoryViewBinder {
 
         private static @StyleRes int selectStyleForSuggestion(
                 Context context, @BarItem.Type int barItemType) {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                switch (barItemType) {
-                    case BarItem.Type.LOYALTY_CARD_SUGGESTION:
-                        // Loyalty cards suggestions have round icons.
-                        return useLargeChips(context)
-                                ? R.style.KeyboardAccessoryLoyaltyCardLargeTwoLineChip
-                                : R.style.KeyboardAccessoryLoyaltyCardTwoLineChip;
-                    case BarItem.Type.HOME_AND_WORK_SUGGESTION:
-                        return useLargeChips(context)
-                                ? R.style.KeyboardAccessoryHomeAndWorkLargeTwoLineChip
-                                : R.style.KeyboardAccessoryHomeAndWorkTwoLineChip;
-                    case BarItem.Type.PAYMENTS_SUGGESTION:
-                        return useLargeChips(context)
-                                ? R.style.KeyboardAccessoryPaymentsLargeTwoLineChip
-                                : R.style.KeyboardAccessoryPaymentsTwoLineChip;
-                    case BarItem.Type.SUGGESTION:
-                        return useLargeChips(context)
-                                ? R.style.KeyboardAccessoryLargeTwoLineChip
-                                : R.style.KeyboardAccessoryTwoLineChip;
-                    case BarItem.Type.ACTION_CHIP:
-                    case BarItem.Type.DISMISS_CHIP:
-                    case BarItem.Type.TAB_LAYOUT:
-                    case BarItem.Type.ACTION_BUTTON:
-                    default:
-                        assert false : "Only suggestion chips have custom styles";
-                        return 0;
-                }
-            }
             switch (barItemType) {
                 case BarItem.Type.LOYALTY_CARD_SUGGESTION:
                     // Loyalty cards suggestions have round icons.
                     return useLargeChips(context)
-                            ? R.style.KeyboardAccessoryLoyaltyCardLargeChip
-                            : R.style.KeyboardAccessoryLoyaltyCardChip;
+                            ? R.style.KeyboardAccessoryLoyaltyCardLargeTwoLineChip
+                            : R.style.KeyboardAccessoryLoyaltyCardTwoLineChip;
                 case BarItem.Type.HOME_AND_WORK_SUGGESTION:
                     return useLargeChips(context)
-                            ? R.style.KeyboardAccessoryHomeAndWorkLargeChip
-                            : R.style.KeyboardAccessoryHomeAndWorkChip;
-                case BarItem.Type.SUGGESTION:
+                            ? R.style.KeyboardAccessoryHomeAndWorkLargeTwoLineChip
+                            : R.style.KeyboardAccessoryHomeAndWorkTwoLineChip;
                 case BarItem.Type.PAYMENTS_SUGGESTION:
                     return useLargeChips(context)
-                            ? R.style.KeyboardAccessoryLargeChip
-                            : R.style.KeyboardAccessoryChip;
+                            ? R.style.KeyboardAccessoryPaymentsLargeTwoLineChip
+                            : R.style.KeyboardAccessoryPaymentsTwoLineChip;
+                case BarItem.Type.SUGGESTION:
+                    return useLargeChips(context)
+                            ? R.style.KeyboardAccessoryLargeTwoLineChip
+                            : R.style.KeyboardAccessoryTwoLineChip;
                 case BarItem.Type.ACTION_CHIP:
                 case BarItem.Type.DISMISS_CHIP:
                 case BarItem.Type.TAB_LAYOUT:
@@ -407,12 +376,6 @@ class KeyboardAccessoryViewBinder {
             Resources resources = textView.getContext().getResources();
             switch (mBarItemType) {
                 case BarItem.Type.ACTION_BUTTON:
-                    if (!ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                        params.setMarginEnd(
-                                resources.getDimensionPixelSize(
-                                        R.dimen.keyboard_accessory_bar_item_padding));
-                    }
                     break;
                 case BarItem.Type.DISMISS_CHIP:
                     params.setMarginEnd(
@@ -429,13 +392,9 @@ class KeyboardAccessoryViewBinder {
                 Context context, @BarItem.Type int barItemType) {
             switch (barItemType) {
                 case BarItem.Type.ACTION_BUTTON:
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                        return useLargeChips(context)
-                                ? R.style.KeyboardAccessoryLargeTwoLineActionButtonThemeOverlay
-                                : R.style.KeyboardAccessoryTwoLineActionButtonThemeOverlay;
-                    }
-                    return R.style.KeyboardAccessoryActionButtonThemeOverlay;
+                    return useLargeChips(context)
+                            ? R.style.KeyboardAccessoryLargeTwoLineActionButtonThemeOverlay
+                            : R.style.KeyboardAccessoryTwoLineActionButtonThemeOverlay;
                 case BarItem.Type.DISMISS_CHIP:
                     return R.style.KeyboardAccessoryDismissButtonThemeOverlay;
                 default:
@@ -466,15 +425,9 @@ class KeyboardAccessoryViewBinder {
         }
 
         private static @StyleRes int selectStyle(Context context) {
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                return useLargeChips(context)
-                        ? R.style.KeyboardAccessoryLargeTwoLineChip
-                        : R.style.KeyboardAccessoryTwoLineChip;
-            }
             return useLargeChips(context)
-                    ? R.style.KeyboardAccessoryLargeChip
-                    : R.style.KeyboardAccessoryChip;
+                    ? R.style.KeyboardAccessoryLargeTwoLineChip
+                    : R.style.KeyboardAccessoryTwoLineChip;
         }
     }
 

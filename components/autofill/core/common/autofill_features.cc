@@ -554,21 +554,6 @@ BASE_FEATURE(kAutofillEnableImportOfUnchangedValuesForCountryAndState,
 BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Controls if Chrome Keyboard Accessory on Android displays 2 line chips.
-// TODO: crbug.com/385172647 - Clean up after the feature is launched.
-BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-// Controls if Chrome Keyboard Accessory limits the width of the first chip or
-// the first 2 chips to display a part of the next one on the screen.
-// TODO: crbug.com/385172647 - Clean up after the feature is launched.
-BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, Autofill will help users fill in non-affiliated loyalty cards
 // on loyalty card only fields.
 BASE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling,

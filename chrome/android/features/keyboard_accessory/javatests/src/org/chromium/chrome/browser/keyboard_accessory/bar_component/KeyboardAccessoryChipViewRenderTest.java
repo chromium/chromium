@@ -38,7 +38,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -83,7 +82,6 @@ import java.util.List;
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
     ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK,
-    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN
 })
 public class KeyboardAccessoryChipViewRenderTest {
 
@@ -162,20 +160,6 @@ public class KeyboardAccessoryChipViewRenderTest {
         } catch (Exception e) {
             // Activity was already closed (e.g. due to last test tearing down the suite).
         }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
-    public void renderSuggestions() throws Exception {
-        // All suggestion types are rendered in the same test to minimize the number of render
-        // tests.
-        runOnUiThreadBlocking(
-                () -> {
-                    layoutViews();
-                });
-        mRenderTestRule.render(mContentView, "keyboard_accessory_suggestions");
     }
 
     @Test

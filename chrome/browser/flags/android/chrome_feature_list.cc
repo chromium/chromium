@@ -128,8 +128,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillDeepLinkAutofillOptions,
     &autofill::features::kAutofillEnableAiBasedAmountExtraction,
     &autofill::features::kAutofillEnableBuyNowPayLater,
-    &autofill::features::kAutofillEnableKeyboardAccessoryChipRedesign,
-    &autofill::features::kAutofillEnableKeyboardAccessoryChipWidthAdjustment,
     &autofill::features::kAutofillEnableNewCardBenefitsToggleText,
     &autofill::features::kAutofillEnableNewFopDisplayAndroid,
     &autofill::features::kAutofillEnableSecurityTouchEventFilteringAndroid,

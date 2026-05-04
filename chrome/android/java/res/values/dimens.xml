@@ -69,7 +69,6 @@ found in the LICENSE file.
     <dimen name="address_prompt_edit_button_padding">12dp</dimen>
 
     <!-- Autofill keyboard accessory dimensions -->
-    <dimen name="keyboard_accessory_height_with_shadow">56dp</dimen>
     <dimen name="keyboard_accessory_sheet_height">330dp</dimen>
 
     <!-- Password manager illustration dialogs -->

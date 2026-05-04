@@ -981,23 +981,6 @@ inline constexpr char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
     "When enabled, in-product help UI will be shown the first time a card "
     "added outside of Chrome appears in Autofill card suggestions.";
 
-inline constexpr char kAutofillEnableKeyboardAccessoryChipRedesignName[] =
-    "Enable 2 line chips in the Chrome Keyboard Accessory";
-inline constexpr char
-    kAutofillEnableKeyboardAccessoryChipRedesignDescription[] =
-        "When enabled, Autofill information is displayed on 2 lines in the "
-        "Chrome "
-        "KeyboardAccessory";
-
-inline constexpr char
-    kAutofillEnableKeyboardAccessoryChipWidthAdjustmentName[] =
-        "Enable Keyboard Accessory chip width adjustment";
-inline constexpr char
-    kAutofillEnableKeyboardAccessoryChipWidthAdjustmentDescription[] =
-        "When enabled, Keyboard accessory limits the width of the first chip "
-        "or "
-        "the first 2 chips to display a part of the next chip.";
-
 inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
     "Enable new American Express network art";
 inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =

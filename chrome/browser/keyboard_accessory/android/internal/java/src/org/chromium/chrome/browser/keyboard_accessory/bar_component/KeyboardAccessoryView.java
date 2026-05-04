@@ -11,7 +11,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -224,23 +223,6 @@ class KeyboardAccessoryView extends LinearLayout {
         TraceEvent.begin("KeyboardAccessoryView#onFinishInflate");
         super.onFinishInflate();
 
-        // TODO: crbug.com/385172647 - Move height parameters to the xml file once the feature is
-        // launched.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-            LinearLayout barContents = findViewById(R.id.accessory_bar_contents);
-            barContents.setMinimumHeight(
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign));
-
-            LinearLayout.LayoutParams layoutParams =
-                    (LinearLayout.LayoutParams) barContents.getLayoutParams();
-            layoutParams.height =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
-            barContents.setLayoutParams(layoutParams);
-        }
-
         mBarItemsView = findViewById(R.id.bar_items_view);
         initializeHorizontalRecyclerView(mBarItemsView);
         mFixedBarItemsView = findViewById(R.id.fixed_bar_items_view);
@@ -367,8 +349,6 @@ class KeyboardAccessoryView extends LinearLayout {
 
         if (isDynamicPositioningEnabled) {
             // For the dynamic positioning the notch is displayed by outlining a background.
-            // This code path can be used only when AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN
-            // flag is enabled.
             setBackgroundResource(R.color.default_bg_color_baseline);
             @Px
             int notchHeight =
@@ -386,14 +366,6 @@ class KeyboardAccessoryView extends LinearLayout {
             // For the static positioning the rounded background is implemented using a static
             // drawable.
             setBackgroundResource(R.drawable.keyboard_accessory_shadow_shape);
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
-                GradientDrawable background = (GradientDrawable) getBackground();
-                background.setCornerRadius(
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.keyboard_accessory_corner_radius_redesign));
-            }
         }
         @Px
         int elevation = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_elevation);

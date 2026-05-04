@@ -585,11 +585,7 @@ class KeyboardAccessoryMediator
     }
 
     private boolean shouldLimitSuggestionWidth() {
-        return !showFloatingKeyboardAccessory()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT);
+        return !showFloatingKeyboardAccessory();
     }
 
     void addObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
