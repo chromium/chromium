@@ -24,6 +24,9 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.Collection;
+import java.util.Set;
+
 /** A utility class that has helper methods for Android view. */
 @NullMarked
 public final class ViewUtils {
@@ -292,5 +295,28 @@ public final class ViewUtils {
                 makeMeasureSpec(view.getMeasuredWidth(), EXACTLY),
                 makeMeasureSpec(view.getMeasuredHeight(), EXACTLY));
         view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+    }
+
+    /**
+     * Recursively collects all descendants of a View, excluding specific IDs and their entire
+     * subtrees.
+     *
+     * @param view The starting View.
+     * @param outCollection The collection to populate with descendants.
+     * @param excludedIds A Set of view IDs (R.id.name) to ignore.
+     */
+    public static void getAllDescendants(
+            View view, Collection<View> outCollection, Set<Integer> excludedIds) {
+        if (view instanceof ViewGroup viewGroup) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+
+                // If the ID is in the exclusion set, skip this child AND its descendants
+                if (excludedIds.contains(child.getId())) continue;
+
+                outCollection.add(child);
+                getAllDescendants(child, outCollection, excludedIds);
+            }
+        }
     }
 }
