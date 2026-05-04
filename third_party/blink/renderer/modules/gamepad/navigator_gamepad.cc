@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_macros.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -167,6 +168,8 @@ void NavigatorGamepad::SampleGamepads() {
       gamepad->UpdateFromDeviceState(device_gamepad,
                                      cross_origin_isolated_capability);
       gamepads_back_[i] = gamepad;
+      raw_input_change_event_timestamps_[i] =
+          base::TimeTicks() + base::Microseconds(device_gamepad.timestamp);
     } else {
       gamepads_back_[i] = nullptr;
     }
@@ -270,6 +273,7 @@ NavigatorGamepad::NavigatorGamepad(Navigator& navigator)
   }
 
   vibration_actuators_.resize(device::Gamepads::kItemsLengthCap);
+  raw_input_change_event_timestamps_.resize(device::Gamepads::kItemsLengthCap);
 }
 
 NavigatorGamepad::~NavigatorGamepad() = default;
@@ -293,7 +297,8 @@ void NavigatorGamepad::DidAddEventListener(LocalDOMWindow*,
     has_connection_event_listener_ = true;
   }
 
-  if (RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled() &&
+  if (RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled(
+          GetExecutionContext()) &&
       IsGamepadRawInputChangedEvent(event_type)) {
     has_input_changed_event_listener_ = true;
     if (DomWindow()) {
@@ -320,7 +325,8 @@ void NavigatorGamepad::DidRemoveEventListener(LocalDOMWindow* window,
     has_connection_event_listener_ = HasConnectionChangedEventListeners(window);
   }
 
-  if (RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled() &&
+  if (RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled(
+          GetExecutionContext()) &&
       IsGamepadRawInputChangedEvent(event_type)) {
     has_input_changed_event_listener_ = HasInputChangedEventListeners(window);
   }
@@ -447,6 +453,18 @@ void NavigatorGamepad::DispatchGamepadRawInputChangedEvent(
   CHECK(processing_events_);
   CHECK(has_input_changed_event_listener_);
   CHECK(gamepads_[index]);
+  CHECK(raw_input_change_event_timestamps_[index].has_value());
+  base::TimeTicks event_dispatch_time = base::TimeTicks::Now();
+  // Only record cross-process latency when TimeTicks is consistent across
+  // processes. The raw_input_change_event_timestamps_ originate from the
+  // browser process, so comparing them with renderer-side TimeTicks::Now()
+  // is only valid on platforms where the clock is shared.
+  if (base::TimeTicks::IsConsistentAcrossProcesses()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Gamepad.RawInputChangeEventDelay",
+        event_dispatch_time - raw_input_change_event_timestamps_[index].value(),
+        base::Microseconds(1), base::Seconds(10), 50);
+  }
   DomWindow()->DispatchEvent(*GamepadRawInputChangeEvent::Create(
       event_type_names::kGamepadrawinputchanged, Event::Bubbles::kNo,
       Event::Cancelable::kYes, gamepads_[index],
@@ -455,6 +473,10 @@ void NavigatorGamepad::DispatchGamepadRawInputChangedEvent(
       compare_result.GetButtonsPressed(index),
       compare_result.GetButtonsReleased(index),
       compare_result.GetChangedTouches(index)));
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Gamepad.RawInputChangeEventTimeToHandle",
+      base::TimeTicks::Now() - event_dispatch_time, base::Microseconds(1),
+      base::Seconds(10), 50);
 }
 
 void NavigatorGamepad::PageVisibilityChanged() {

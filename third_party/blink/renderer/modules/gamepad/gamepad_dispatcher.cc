@@ -76,7 +76,8 @@ void GamepadDispatcher::DidDisconnectGamepad(uint32_t index,
 void GamepadDispatcher::DidChangeGamepadRawInput(
     uint32_t index,
     const device::Gamepad& gamepad) {
-  if (!RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled()) {
+  if (!RuntimeEnabledFeatures::GamepadRawInputChangeEventEnabled(
+          execution_context_)) {
     // Return early to avoid unnecessary work.
     return;
   }

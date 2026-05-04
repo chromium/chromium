@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace device {
 template <class T>
@@ -165,6 +166,9 @@ class MODULES_EXPORT NavigatorGamepad final
 
   // True while processing gamepad events.
   bool processing_events_ = false;
+
+  // Store the timestamps of raw input change events for UMA metrics.
+  Vector<std::optional<base::TimeTicks>> raw_input_change_event_timestamps_;
 
   Member<GamepadDispatcher> gamepad_dispatcher_;
 };

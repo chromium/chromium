@@ -4600,6 +4600,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gamepad.RawInputChangeEventDelay" units="microseconds"
+    expires_after="2026-09-09">
+  <owner>mattreynolds@google.com</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    Records the elapsed time in microseconds between the gamepad's last hardware
+    update (as reported by the gamepad timestamp) and the moment before the
+    gamepadrawinputchanged event starts dispatching. This measures the total
+    end-to-end delay from input to event delivery.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.RawInputChangeEventTimeToHandle" units="microseconds"
+    expires_after="2026-09-09">
+  <owner>mattreynolds@google.com</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    Records the elapsed time in microseconds spent dispatching a single
+    gamepadrawinputchanged event, measured from just before DispatchEvent is
+    called to just after it returns. This reflects the time taken to run all
+    registered event listeners for the event.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Gamepad.ReadContentionCount" units="Contentions"
     expires_after="2024-05-12">
   <owner>mattreynolds@google.com</owner>
