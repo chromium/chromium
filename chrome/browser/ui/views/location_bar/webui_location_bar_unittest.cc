@@ -68,7 +68,7 @@ class WebUILocationBarTest : public testing::Test {
 
     // Assign directly instead of calling Init() to avoid initializing heavy
     // web UI popups that require fully attached widgets and profiles.
-    location_bar_->toolbar_view_ = toolbar_view_.get();
+    location_bar_->toolbar_delegate_ = toolbar_view_.get();
 
     fetcher_ = toolbar_view_->GetNavigationControlsStateFetcher();
   }

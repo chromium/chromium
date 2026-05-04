@@ -19,13 +19,13 @@ namespace views {
 class Widget;
 }  // namespace views
 
-class WebUIToolbarWebView;
+class WebUIToolbarControlDelegate;
 
 // A WebUI-based implementation of the Back/Forward control.
 // This class manages the communication with the WebUI via Mojo.
 class WebUIBackForwardControl {
  public:
-  WebUIBackForwardControl(WebUIToolbarWebView* webui_toolbar_web_view,
+  WebUIBackForwardControl(WebUIToolbarControlDelegate* delegate,
                           BackForwardButton::Direction direction);
   WebUIBackForwardControl(const WebUIBackForwardControl&) = delete;
   WebUIBackForwardControl& operator=(const WebUIBackForwardControl&) = delete;
@@ -54,7 +54,7 @@ class WebUIBackForwardControl {
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
                            PressAndDragDown);
 
-  const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
+  const raw_ptr<WebUIToolbarControlDelegate> delegate_;
   const BackForwardButton::Direction direction_;
   BackForwardMenuModel menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;

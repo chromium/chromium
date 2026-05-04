@@ -14,9 +14,9 @@
 #include "ui/base/models/image_model.h"
 
 WebUIAvatarToolbarButton::WebUIAvatarToolbarButton(
-    WebUIToolbarWebView* webui_toolbar_web_view,
+    WebUIToolbarControlDelegate* delegate,
     Browser* browser)
-    : webui_toolbar_web_view_(webui_toolbar_web_view) {
+    : delegate_(delegate) {
   if (browser) {
     state_manager_ =
         std::make_unique<AvatarToolbarButtonStateManager>(*this, browser);
@@ -27,7 +27,7 @@ WebUIAvatarToolbarButton::WebUIAvatarToolbarButton(
 WebUIAvatarToolbarButton::~WebUIAvatarToolbarButton() = default;
 
 void WebUIAvatarToolbarButton::Initialize() {
-  if (webui_toolbar_web_view_->GetWidget()) {
+  if (delegate_->GetView()->GetWidget()) {
     CHECK(!is_initialized_);
     is_initialized_ = true;
     UpdateState();
@@ -35,13 +35,13 @@ void WebUIAvatarToolbarButton::Initialize() {
 }
 
 void WebUIAvatarToolbarButton::UpdateIcon() {
-  if (webui_toolbar_web_view_->GetWidget()) {
+  if (delegate_->GetView()->GetWidget()) {
     UpdateState();
   }
 }
 
 void WebUIAvatarToolbarButton::UpdateText() {
-  if (webui_toolbar_web_view_->GetWidget()) {
+  if (delegate_->GetView()->GetWidget()) {
     UpdateState();
   }
 }
@@ -77,7 +77,7 @@ void WebUIAvatarToolbarButton::RemoveObserver(
 }
 
 void WebUIAvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     state_manager_->HandleButtonPressed(is_source_accelerator);
   }
 }
@@ -87,7 +87,7 @@ base::ScopedClosureRunner WebUIAvatarToolbarButton::SetExplicitButtonState(
     std::optional<std::u16string> accessibility_label,
     std::optional<base::RepeatingCallback<void(bool is_source_accelerator)>>
         explicit_action) {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     return state_manager_->SetExplicitState(
         text, std::move(accessibility_label), std::move(explicit_action));
   }
@@ -99,20 +99,20 @@ bool WebUIAvatarToolbarButton::HasExplicitButtonState() const {
 }
 
 void WebUIAvatarToolbarButton::MaybeShowProfileSwitchIPH() {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     state_manager_->MaybeShowProfileSwitchIPH();
   }
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void WebUIAvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     state_manager_->MaybeShowSupervisedUserSignInIPH();
   }
 }
 
 void WebUIAvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     state_manager_->MaybeShowSignInBenefitsIPH();
   }
 }
@@ -140,14 +140,14 @@ bool WebUIAvatarToolbarButton::
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void WebUIAvatarToolbarButton::NotifyIPHPromoChanged(bool has_promo) {
-  if (state_manager_ && webui_toolbar_web_view_->GetWidget()) {
+  if (state_manager_ && delegate_->GetView()->GetWidget()) {
     state_manager_->NotifyIPHPromoChanged(has_promo);
   }
 }
 
 void WebUIAvatarToolbarButton::UpdateState() {
   if (!state_manager_ || !is_initialized_ ||
-      !webui_toolbar_web_view_->GetWidget()) {
+      !delegate_->GetView()->GetWidget()) {
     return;
   }
   // TODO(crbug.com/470045174): Implement Mojo state push once API is added.
