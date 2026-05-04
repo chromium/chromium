@@ -93,7 +93,7 @@ class DriveFileUploader {
   // through `completion_callback`.
   virtual void SearchSaveToDriveFolder(
       NSString* folder_name,
-      DriveFolderCompletionCallback completion_callback) = 0;
+      DriveFolderCompletionCallback completion_callback) {}
 
   // Creates the destination Drive folder. The name of the created folder is
   // `folder_name` and a custom property is added in the folder's metadata to
@@ -102,7 +102,7 @@ class DriveFileUploader {
   // through `completion_callback`.
   virtual void CreateSaveToDriveFolder(
       NSString* folder_name,
-      DriveFolderCompletionCallback completion_callback) = 0;
+      DriveFolderCompletionCallback completion_callback) {}
 
   // Gets or creates the destination Drive folder as a client folder. The name
   // of the created folder is `folder_name`. The result, including possible

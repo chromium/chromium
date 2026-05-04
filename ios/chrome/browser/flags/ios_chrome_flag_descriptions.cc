@@ -953,10 +953,6 @@ const char kIOSProvidesAppNotificationSettingsName[] =
 const char kIOSProvidesAppNotificationSettingsDescription[] =
     "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
-const char kIOSSaveToDriveClientFolderName[] = "Save to Drive client folder";
-const char kIOSSaveToDriveClientFolderDescription[] =
-    "Enables a feature to use a client folder API for Save to Drive on iOS.";
-
 const char kIOSSaveToDriveSignedOutName[] = "Save to Drive Signed Out";
 const char kIOSSaveToDriveSignedOutDescription[] =
     "Enables the Save to Drive feature to signed out users.";

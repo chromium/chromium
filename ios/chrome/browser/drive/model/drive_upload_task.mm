@@ -152,11 +152,7 @@ void DriveUploadTask::Start() {
   upload_result_.reset();
   SetState(State::kInProgress);
   number_of_attempts_++;
-  if (base::FeatureList::IsEnabled(kIOSSaveToDriveClientFolder)) {
-    FetchClientFolderThenUploadFile();
-  } else {
-    SearchFolderThenCreateFolderOrDirectlyUploadFile();
-  }
+  FetchClientFolderThenUploadFile();
 }
 
 void DriveUploadTask::Cancel() {
@@ -204,49 +200,6 @@ NSError* DriveUploadTask::GetError() const {
 }
 
 #pragma mark - Private
-
-void DriveUploadTask::SearchFolderThenCreateFolderOrDirectlyUploadFile() {
-  // Search a destination Drive folder using
-  // `SearchSaveToDriveFolder(folder_name, ...)`;
-  uploader_->SearchSaveToDriveFolder(
-      base::SysUTF8ToNSString(folder_name_),
-      base::BindOnce(&DriveUploadTask::CreateFolderOrDirectlyUploadFile,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DriveUploadTask::CreateFolderOrDirectlyUploadFile(
-    const DriveFolderResult& folder_search_result) {
-  // Record folder search success histogram.
-  base::UmaHistogramBoolean(kDriveSearchFolderResultSuccessful,
-                            !folder_search_result.error);
-  // If folder search failed, update state and result with the error object.
-  if (folder_search_result.error) {
-    base::UmaHistogramSparse(kDriveSearchFolderResultErrorCode,
-                             folder_search_result.error.code);
-    upload_result_ =
-        DriveFileUploadResult({.error = folder_search_result.error});
-    SetState(State::kFailed);
-    return;
-  }
-  // If the first step returned an existing folder, upload file directly.
-  if (folder_search_result.folder_identifier) {
-    UploadFile(folder_search_result);
-    return;
-  }
-  // Otherwise, create a destination Drive folder using
-  // `CreateSaveToDriveFolder(folder_name, ...)`;
-  auto record_result_successful_callback = base::BindOnce(
-      RecordDriveFolderResultSuccessful, kDriveCreateFolderResultSuccessful);
-  auto record_result_error_code_callback = base::BindOnce(
-      RecordDriveFolderResultErrorCode, kDriveCreateFolderResultErrorCode);
-  auto upload_file_callback = base::BindOnce(&DriveUploadTask::UploadFile,
-                                             weak_ptr_factory_.GetWeakPtr());
-  uploader_->CreateSaveToDriveFolder(
-      base::SysUTF8ToNSString(folder_name_),
-      std::move(record_result_successful_callback)
-          .Then(std::move(record_result_error_code_callback))
-          .Then(std::move(upload_file_callback)));
-}
 
 void DriveUploadTask::FetchClientFolderThenUploadFile() {
   // Get or create a destination Drive folder using

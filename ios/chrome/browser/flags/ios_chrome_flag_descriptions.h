@@ -601,9 +601,6 @@ extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 
-extern const char kIOSSaveToDriveClientFolderName[];
-extern const char kIOSSaveToDriveClientFolderDescription[];
-
 extern const char kIOSSaveToDriveSignedOutName[];
 extern const char kIOSSaveToDriveSignedOutDescription[];
 

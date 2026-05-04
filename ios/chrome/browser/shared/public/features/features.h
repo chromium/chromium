@@ -183,9 +183,6 @@ BASE_DECLARE_FEATURE(kIOSDateToCalendarSignedOut);
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 
-// Feature flag enabling the client folder implementation of Save to Drive.
-BASE_DECLARE_FEATURE(kIOSSaveToDriveClientFolder);
-
 // Feature flag enabling the save to drive feature for signed out users.
 BASE_DECLARE_FEATURE(kIOSSaveToDriveSignedOut);
 
