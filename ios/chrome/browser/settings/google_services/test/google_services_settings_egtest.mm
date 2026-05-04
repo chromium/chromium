@@ -149,10 +149,16 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests the Google Services settings.
 - (void)testOpeningServices {
   [self openGoogleServicesSettings];
-  [self
-      assertCellWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
-               detailTextID:
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL];
+  constexpr int textID = IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT;
+  constexpr int detailID =
+      IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL;
+  if ([GoogleServicesSettingsAppInterface shouldUseMetricsConsentRestructure]) {
+    [[EarlGrey selectElementWithMatcher:[self cellMatcherWithTitleID:textID
+                                                        detailTextID:detailID]]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [self assertCellWithTitleID:textID detailTextID:detailID];
+  }
   [self
       assertCellWithTitleID:
           IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT

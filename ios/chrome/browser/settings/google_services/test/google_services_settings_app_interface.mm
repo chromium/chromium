@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/settings/google_services/test/google_services_settings_app_interface.h"
 
+#import "components/metrics/metrics_reporting_choice_service.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -45,6 +47,12 @@ class NavigationBlockerDecider
 + (void)unblockAllNavigationRequestsForCurrentWebState {
   NavigationBlockerDecider::RemoveFromWebState(
       chrome_test_util::GetCurrentWebState());
+}
+
++ (BOOL)shouldUseMetricsConsentRestructure {
+  return metrics::MetricsReportingChoiceService::
+      ShouldUseMetricsConsentRestructure(
+          GetApplicationContext()->GetLocalState());
 }
 
 @end

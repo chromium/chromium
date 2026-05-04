@@ -16,6 +16,9 @@
 // Unblocks all navigation requests to be loaded in Chrome.
 + (void)unblockAllNavigationRequestsForCurrentWebState;
 
+// Returns whether the metrics consent restructure feature is enabled.
++ (BOOL)shouldUseMetricsConsentRestructure;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_TEST_GOOGLE_SERVICES_SETTINGS_APP_INTERFACE_H_
