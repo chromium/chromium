@@ -501,7 +501,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   at_memory_controller_.OnPopupShown(trigger_source_,
                                      CreateUpdateSuggestionsCallback());
 
-  manager_->DidShowSuggestions(suggestions, query_form_,
+  manager_->DidShowSuggestions(suggestions, query_form_.global_id(),
                                query_field_.global_id(),
                                CreateUpdateSuggestionsCallback());
 }

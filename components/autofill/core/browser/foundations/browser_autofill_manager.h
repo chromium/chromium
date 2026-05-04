@@ -212,7 +212,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& trigger_field);
 
   void DidShowSuggestions(base::span<const Suggestion> suggestions,
-                          const FormData& form,
+                          const FormGlobalId& form_id,
                           const FieldGlobalId& field_id,
                           AutofillExternalDelegate::UpdateSuggestionsCallback
                               update_suggestions_callback);

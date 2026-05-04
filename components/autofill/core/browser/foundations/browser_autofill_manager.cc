@@ -2200,7 +2200,7 @@ void BrowserAutofillManager::RequestRefillImpl(const FillId& fill_id) {
 
 void BrowserAutofillManager::DidShowSuggestions(
     base::span<const Suggestion> suggestions,
-    const FormData& form,
+    const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillExternalDelegate::UpdateSuggestionsCallback
         update_suggestions_callback) {
@@ -2220,7 +2220,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   const bool has_cached_form_and_field = GetCachedFormAndField(
-      form.global_id(), field_id, &form_structure, &autofill_field);
+      form_id, field_id, &form_structure, &autofill_field);
 
   if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
       ai_manager && has_cached_form_and_field &&

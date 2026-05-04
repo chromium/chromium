@@ -409,7 +409,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   base::HistogramTester histogram_tester;
 
-  autofill_manager().DidShowSuggestions(generated_suggestions, form,
+  autofill_manager().DidShowSuggestions(generated_suggestions, form.global_id(),
                                         form.fields()[0].global_id(), {});
 
   ResetAutofillDriver(autofill_driver());
@@ -450,7 +450,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
 
   base::HistogramTester histogram_tester;
 
-  autofill_manager().DidShowSuggestions(generated_suggestions, form,
+  autofill_manager().DidShowSuggestions(generated_suggestions, form.global_id(),
                                         form.fields()[0].global_id(), {});
 
   ResetAutofillDriver(autofill_driver());
