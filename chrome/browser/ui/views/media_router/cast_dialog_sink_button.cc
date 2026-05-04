@@ -44,6 +44,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/widget/widget.h"
 
 namespace media_router {
 
@@ -188,14 +189,13 @@ void CastDialogSinkButton::UpdateTitleTextStyle() {
 
 void CastDialogSinkButton::RequestFocus() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  static bool requesting_focus = false;
-  if (requesting_focus) {
-    // TODO(crbug.com/1291739): Figure out why this happens.
-    DLOG(ERROR) << "Recursive call to RequestFocus\n"
-                << base::debug::StackTrace();
+
+  // Prevent recursive calls to RequestFocus() while the widget is being
+  // shown and is not yet active. See crbug.com/155642655.
+  if (GetWidget() && !GetWidget()->IsActive()) {
     return;
   }
-  requesting_focus = true;
+
   if (GetEnabled()) {
     HoverButton::RequestFocus();
   } else {
@@ -203,7 +203,6 @@ void CastDialogSinkButton::RequestFocus() {
     // want focus.
     icon_view()->RequestFocus();
   }
-  requesting_focus = false;
 }
 
 void CastDialogSinkButton::OnFocus() {

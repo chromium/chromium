@@ -145,4 +145,24 @@ TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
   EXPECT_EQ(button.subtitle()->GetText(), status1);
 }
 
+TEST_F(CastDialogSinkButtonTest, RequestFocus) {
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
+  sink.state = UIMediaSinkState::AVAILABLE;
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* button = widget->SetContentsView(std::make_unique<CastDialogSinkButton>(
+      views::Button::PressedCallback(), sink));
+
+  // When widget is inactive, RequestFocus() should be ignored.
+  EXPECT_FALSE(widget->IsActive());
+  button->RequestFocus();
+  EXPECT_FALSE(button->HasFocus());
+
+  // When widget is active, RequestFocus() should succeed.
+  widget->Show();
+  EXPECT_TRUE(widget->IsActive());
+  button->RequestFocus();
+  EXPECT_TRUE(button->HasFocus());
+}
+
 }  // namespace media_router
