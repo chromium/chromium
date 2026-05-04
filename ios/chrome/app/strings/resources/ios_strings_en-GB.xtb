@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="3838985624086228724">Price drop on your tracked product, from <ph name="PREVIOUS_PRICE" /> to <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Back</translation>
-<translation id="3850952228519377137">Hide 'Track prices from your tabs'</translation>
 <translation id="3851938967634752633">Passwords for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> and <ph name="NUMBER_OF_ACCOUNTS" /> others will be deleted. Your accounts won't be deleted.</translation>
 <translation id="3853162385423733133">Keep using and saving the passwords in your Google Account <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Import</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
 <translation id="4326912346867677256">Tap 'Use password' to sign in securely.</translation>
-<translation id="4327017157997423717">Track price on <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">My Drive</translation>
 <translation id="4331177082088332784">You can manage this in BEGIN_LINK Content settings END_LINK</translation>
 <translation id="4334428914252001502">One unread article.</translation>
@@ -1522,7 +1520,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6321526113093607004">Add to bookmarks</translation>
 <translation id="6327249202318869726">Gemini is turned off for your account. Contact your admin for more information.</translation>
 <translation id="6331836477476466332">A safer, more powerful browser for you</translation>
-<translation id="6335744088476213315">This card shows products that you've recently viewed and may be interested in tracking to get price drop alerts</translation>
 <translation id="6337234675334993532">Encryption</translation>
 <translation id="6337313937331295309">Gemini Apps Privacy Notice</translation>
 <translation id="633809752005859102">Something went really wrong. We'll work on that.</translation>

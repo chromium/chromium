@@ -4329,7 +4329,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />, ആരംഭിക്കണോ?</translation>
 <translation id="3942420633017001071">പ്രശ്‌നനിർണ്ണയം</translation>
-<translation id="3942558231079086184">ഈ സൈറ്റിന് JavaScript ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്. കൂടുതൽ മികച്ച പ്രകടനത്തിനായി പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="3943582379552582368">&amp;പിന്നോട്ട്</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="3945513714196326460">ചെറിയ പേര് പരീക്ഷിക്കുക</translation>
@@ -5961,7 +5960,6 @@
 <translation id="5101683448725092498">നിങ്ങളുടെ ഫയലുകൾ ബാക്കപ്പ് ചെയ്യുക</translation>
 <translation id="5101839224773798795">കഴ്‌സർ നിൽക്കുമ്പോൾ സ്വയമേവ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5102244391872941183">ലൊക്കേഷൻ അനുമതിയുള്ള ആപ്പുകൾ, വെബ്സൈറ്റുകൾ എന്നിവയ്ക്കും സിസ്റ്റം സേവനങ്ങൾക്കും നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാനാകും</translation>
-<translation id="510258712519612658">ഞങ്ങളുടെ ടോപ് പിക്കുകൾ</translation>
 <translation id="5103311607312269661">ഡിസ്‌പ്ലേ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ഗ്രൂപ്പ് ഇല്ലാതാക്കുക}other{ഗ്രൂപ്പുകൾ ഇല്ലാതാക്കുക}}</translation>
 <translation id="5106350808162641062">നീക്കം ചെയ്യുക</translation>

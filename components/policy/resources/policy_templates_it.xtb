@@ -123,7 +123,6 @@ Se il criterio viene impostato su 1 - DisabledForBrowser, il processo del browse
 
 Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Attiva la ricezione di sondaggi di Navigazione sicura</translation>
-<translation id="1069651607236021905">Forza la priorità in primo piano per origini specifiche</translation>
 <translation id="107045325503547419">Dipende dal processo di implementazione della funzionalità.</translation>
 <translation id="1073983258515362346">Consente di segnalare informazioni sulla retroilluminazione del dispositivo.
 
@@ -5394,17 +5393,6 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
           Questa policy viene applicata per processo del renderer, con il valore più recente dell'impostazione della policy attivo all'inizio di un processo del renderer. È necessario un riavvio completo per garantire che tutte le schede caricate ricevano un'impostazione della policy coerente. I processi possono essere eseguiti in sicurezza con valori diversi di questa policy.
           </translation>
 <translation id="4578265298946081589">Non riavviare all'uscita dell'utente.</translation>
-<translation id="4580711645933054901">Questa policy consente di specificare un elenco di pattern URL. I contenuti web in background corrispondenti a questi pattern verranno eseguiti con priorità in primo piano.
-
-Se la policy <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> viene attivata, questo elenco viene ignorato perché tutte le schede verranno forzate con priorità in primo piano.
-
-Se <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> è disattivato o non è impostato, verranno forzati solo i contenuti corrispondenti ai pattern in questo elenco.
-
-Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso o parametro di query nel pattern viene ignorato. Sono supportati schema, host e porta.
-
-Se questo elenco è vuoto o non viene impostato, nessun contenuto in background viene forzato con priorità in primo piano.</translation>
 <translation id="4581507927311097234">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene disattivato.</translation>
 <translation id="4582027661281685066">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="PRIVATE_NETWORK_ACCESS" />.
 

@@ -4339,7 +4339,6 @@ Quer pará-lo?</translation>
 
   Quer iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
-<translation id="3942558231079086184">A otimização do JavaScript está desativada para este site. Ative-a para um melhor desempenho.</translation>
 <translation id="3943582379552582368">&amp;Anterior</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente utilizar um nome mais curto</translation>
@@ -5971,7 +5970,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5101683448725092498">Faça uma cópia de segurança dos seus itens</translation>
 <translation id="5101839224773798795">Clicar automaticamente quando o cursor parar</translation>
 <translation id="5102244391872941183">As apps e os Websites com a autorização de acesso à localização, bem como os serviços do sistema, podem usar a sua localização</translation>
-<translation id="510258712519612658">As nossas principais escolhas</translation>
 <translation id="5103311607312269661">aumente o brilho do ecrã</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Eliminar grupo}other{Eliminar grupos}}</translation>
 <translation id="5106350808162641062">Remover</translation>

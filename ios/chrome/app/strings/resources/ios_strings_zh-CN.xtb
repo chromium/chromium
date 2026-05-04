@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">检查您已保存的密码，让您在上网时更安全、更安心</translation>
 <translation id="3838985624086228724">您跟踪的商品降价了，原价为 <ph name="PREVIOUS_PRICE" />，现价为 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3850952228519377137">隐藏“跟踪标签页上的价格”</translation>
 <translation id="3851938967634752633">用于登录 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 个网站的密码将被删除。您的相关账号不会被删除。</translation>
 <translation id="3853162385423733133">继续使用 Google 账号 <ph name="EMAIL" /> 中的密码和将密码保存到其中</translation>
 <translation id="3853873210696342070">导入</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">开启通知</translation>
 <translation id="4326912346867677256">点按“使用密码”安全登录。</translation>
-<translation id="4327017157997423717">跟踪<ph name="PRODUCT_NAME" />的价格，<ph name="PRICE" />，<ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">我的云端硬盘</translation>
 <translation id="4331177082088332784">您可以在BEGIN_LINK内容设置END_LINK中管理此设置</translation>
 <translation id="4334428914252001502">有 1 篇未读文章。</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">添加到书签</translation>
 <translation id="6327249202318869726">您的账号已停用 Gemini。如需了解详情，请与管理员联系。</translation>
 <translation id="6331836477476466332">更安全、更强大的浏览器</translation>
-<translation id="6335744088476213315">此卡片会显示您最近看过并可能想跟踪以获取降价提醒的商品</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="6337313937331295309">Gemini 应用隐私权声明</translation>
 <translation id="633809752005859102">出错了，我们马上处理。</translation>

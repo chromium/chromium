@@ -4349,7 +4349,6 @@
 
   ਕੀ ਤੁਸੀਂ <ph name="CONTROL_PANEL_APPLET_NAME" /> ਨੂੰ ਸ਼ੁਰੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3942420633017001071">ਤਸ਼ਖੀਸ</translation>
-<translation id="3942558231079086184">ਇਸ ਸਾਈਟ ਲਈ JavaScript ਸੁਯੋਗਕਰਨ ਬੰਦ ਹੈ। ਬਿਹਤਰ ਕਾਰਗੁਜ਼ਾਰੀ ਲਈ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3943582379552582368">&amp;ਪਿੱਛੇ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
 <translation id="3945513714196326460">ਕੋਈ ਛੋਟਾ ਨਾਮ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
@@ -5980,7 +5979,6 @@
 <translation id="5101683448725092498">ਆਪਣੀ ਸਮੱਗਰੀ ਦਾ ਬੈਕਅੱਪ ਲਓ</translation>
 <translation id="5101839224773798795">ਕਰਸਰ ਦੇ ਰੁਕਣ 'ਤੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5102244391872941183">ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਨਾਲ ਹੀ ਸਿਸਟਮ ਸੇਵਾਵਾਂ, ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
-<translation id="510258712519612658">ਸਾਡੀਆਂ ਪ੍ਰਮੁੱਖ ਚੋਣਾਂ</translation>
 <translation id="5103311607312269661">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ਗਰੁੱਪ ਮਿਟਾਓ}one{ਗਰੁੱਪ ਮਿਟਾਓ}other{ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਓ}}</translation>
 <translation id="5106350808162641062">ਹਟਾਓ</translation>

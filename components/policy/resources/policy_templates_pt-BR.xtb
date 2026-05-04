@@ -125,7 +125,6 @@ Se a política for definida como "1", DisabledForBrowser, o processo do navegado
 
 Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Ativar o recebimento de pesquisas da Navegação segura</translation>
-<translation id="1069651607236021905">Forçar a prioridade de primeiro plano para origens específicas</translation>
 <translation id="107045325503547419">Depende do processo de lançamento do recurso.</translation>
 <translation id="1073983258515362346">Envia informações sobre as luzes de fundo de um dispositivo.
 
@@ -5501,17 +5500,6 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
           diferentes desta política.
           </translation>
 <translation id="4578265298946081589">Não é reinicializado quando o usuário sai.</translation>
-<translation id="4580711645933054901">Esta política permite especificar uma lista de padrões de URL. O conteúdo da web em segundo plano que corresponder a esses padrões será forçado a ser executado com prioridade de primeiro plano.
-
-Se a política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> for ativada, esta lista será ignorada, porque todas as guias serão forçadas a ter prioridade de primeiro plano.
-
-Se a política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> for desativada ou não for definida, apenas o conteúdo que corresponder aos padrões nesta lista será forçado.
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Esta política só considera as origens, por isso, os caminhos ou parâmetros de consulta no padrão são ignorados. Esquema, host e porta são aceitos.
-
-Se a lista estiver vazia ou não for definida, nenhum conteúdo em segundo plano será forçado a ter prioridade de primeiro plano.</translation>
 <translation id="4581507927311097234">O tempo, em milissegundos, sem entrada do usuário até que a tela seja desligada.</translation>
 <translation id="4582027661281685066">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="PRIVATE_NETWORK_ACCESS" />.
 

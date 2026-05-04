@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Перевірте збережені паролі, щоб посилити захист і подбати про свою безпеку в Інтернеті</translation>
 <translation id="3838985624086228724">Зниження ціни на відстежуваний товар із <ph name="PREVIOUS_PRICE" /> до <ph name="PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN" />)</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3850952228519377137">Сховати опцію "Відстежуйте ціни на вкладках"</translation>
 <translation id="3851938967634752633">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і ще кількох облікових записів (<ph name="NUMBER_OF_ACCOUNTS" />) буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="3853162385423733133">Продовжуйте використовувати й зберігати паролі в обліковому записі Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Імпортувати</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Увімкнути сповіщення</translation>
 <translation id="4326912346867677256">Щоб безпечно ввійти в обліковий запис, натисніть "Використати пароль".</translation>
-<translation id="4327017157997423717">Відстежувати ціну на товар <ph name="PRODUCT_NAME" /> (<ph name="PRICE" />) на сайті <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Мій диск</translation>
 <translation id="4331177082088332784">Ви можете змінити цей параметр у BEGIN_LINK налаштуваннях контенту END_LINK</translation>
 <translation id="4334428914252001502">1 непрочитана стаття.</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6327249202318869726">Gemini вимкнено для вашого облікового запису. Щоб дізнатися більше, зверніться до свого адміністратора.</translation>
 <translation id="6331836477476466332">Безпечніший і потужніший вебпереглядач</translation>
-<translation id="6335744088476213315">На цій картці показуються товари, які ви нещодавно переглядали й можете захотіти відстежувати, щоб отримувати сповіщення про зниження цін</translation>
 <translation id="6337234675334993532">Шифрування</translation>
 <translation id="6337313937331295309">Примітка про конфіденційність додатків Gemini</translation>
 <translation id="633809752005859102">Сталася помилка. Ми виправимо її.</translation>

@@ -123,7 +123,6 @@ Si cette règle est définie sur 1 - DisabledForBrowser, le processus de navig
 
 Remarque : pour en savoir plus sur les règles d'atténuation des risques liés aux processus, consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Activer la réception d'enquêtes sur la navigation sécurisée</translation>
-<translation id="1069651607236021905">Forcer la priorité au premier plan pour des origines spécifiques</translation>
 <translation id="107045325503547419">Dépendre du processus de lancement de la fonctionnalité.</translation>
 <translation id="1073983258515362346">Transmettre les informations concernant le rétroéclairage d'un appareil.
 
@@ -5322,17 +5321,6 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://ch
           est sans danger.
           </translation>
 <translation id="4578265298946081589">Ne pas redémarrer en cas de déconnexion de l'utilisateur.</translation>
-<translation id="4580711645933054901">Cette règle vous permet de spécifier une liste de formats d'URL. Le contenu Web en arrière-plan correspondant à ces formats sera forcé de s'exécuter avec la priorité au premier plan.
-
-Si la règle <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est activée, cette liste est ignorée, car tous les onglets seront forcés en priorité au premier plan.
-
-Si <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est désactivée ou n'est pas définie, seul le contenu correspondant aux formats de cette liste sera forcé.
-
-Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès ou paramètre de requête dans le format est ignoré. Le schéma, l'hôte et le port sont pris en charge.
-
-Si cette liste est vide ou n'est pas définie, aucun contenu en arrière-plan n'est forcé en priorité au premier plan.</translation>
 <translation id="4581507927311097234">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est éteint.</translation>
 <translation id="4582027661281685066">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="PRIVATE_NETWORK_ACCESS" />.
 

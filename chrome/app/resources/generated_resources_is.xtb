@@ -4348,7 +4348,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 
   Viltu ræsa <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Greining</translation>
-<translation id="3942558231079086184">Slökkt er á fínstillingu JavaScript fyrir þetta vefsvæði. Kveiktu á þessu til að auka afköst.</translation>
 <translation id="3943582379552582368">Til &amp;baka</translation>
 <translation id="3943857333388298514">Líma</translation>
 <translation id="3945513714196326460">Prófaðu styttra heiti</translation>
@@ -5980,7 +5979,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5101683448725092498">Taktu afrit af efninu þínu</translation>
 <translation id="5101839224773798795">Smella sjálfkrafa þegar bendillinn stoppar</translation>
 <translation id="5102244391872941183">Forrit og vefsvæði með staðsetningarheimild og kerfisþjónustur geta notað staðsetninguna þína</translation>
-<translation id="510258712519612658">Efni sérvalið af okkur</translation>
 <translation id="5103311607312269661">auka birtustig skjás</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Eyða hópi}one{Eyða hópum}other{Eyða hópum}}</translation>
 <translation id="5106350808162641062">Fjarlægja</translation>

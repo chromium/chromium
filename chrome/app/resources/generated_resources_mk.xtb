@@ -4348,7 +4348,6 @@
 
   Дали сакате да стартувате <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
-<translation id="3942558231079086184">Оптимизацијата на JavaScript е исклучена за сајтов. Овозможете за подобра изведба.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3945513714196326460">Обидете се со пократко име</translation>
@@ -5980,7 +5979,6 @@
 <translation id="5101683448725092498">Направете бекап од вашите работи</translation>
 <translation id="5101839224773798795">Кликни автоматски кога покажувачот ќе запре</translation>
 <translation id="5102244391872941183">Апликациите и веб-сајтовите со дозволата за локација, како и системските услуги, може да ја користат локацијата</translation>
-<translation id="510258712519612658">Наш најдобар избор</translation>
 <translation id="5103311607312269661">зголемување на осветленоста на екранот</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Избриши ја групата}one{Избриши ги групите}other{Избриши ги групите}}</translation>
 <translation id="5106350808162641062">Отстрани</translation>

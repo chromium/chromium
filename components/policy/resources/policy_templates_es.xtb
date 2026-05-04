@@ -123,7 +123,6 @@ Si se le asigna el valor 1 (DisabledForBrowser), se impedirá que el proceso del
 
 Nota: Consulta más información sobre las políticas de mitigación de procesos en la página https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas sobre Navegación segura</translation>
-<translation id="1069651607236021905">Forzar la prioridad de primer plano para orígenes concretos</translation>
 <translation id="107045325503547419">Depender del proceso de lanzamiento de la función.</translation>
 <translation id="1073983258515362346">Enviar información sobre la retroiluminación de un dispositivo.
 
@@ -5337,17 +5336,6 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
           de forma negativa.
           </translation>
 <translation id="4578265298946081589">No reiniciar cuando el usuario cierre sesión.</translation>
-<translation id="4580711645933054901">Esta política te permite especificar una lista de patrones de URL. El contenido web en segundo plano que coincida con estos patrones se forzará a ejecutarse con prioridad de primer plano.
-
-Si se habilita la política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />, se ignorará esta lista, ya que se forzará que todas las pestañas tengan prioridad de primer plano.
-
-Si se inhabilita <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> o no se define, solo se forzará el contenido que coincida con los patrones de esta lista.
-
-Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta o parámetro de consulta del patrón. Se admiten esquemas, hosts y puertos.
-
-Si esta lista está vacía o no se define, no se forzará la prioridad de primer plano para ningún contenido en segundo plano.</translation>
 <translation id="4581507927311097234">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se apague la pantalla</translation>
 <translation id="4582027661281685066">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de <ph name="PRIVATE_NETWORK_ACCESS" />.
 

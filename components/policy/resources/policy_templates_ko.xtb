@@ -123,7 +123,6 @@
 
 참고: 프로세스 완화 정책(https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies)에 관해 자세히 알아보세요.</translation>
 <translation id="1068801725746725727">세이프 브라우징 설문조사 수신 허용</translation>
-<translation id="1069651607236021905">특정 출처에 포그라운드 우선순위 강제 적용</translation>
 <translation id="107045325503547419">기능 출시 프로세스에 따라 달라집니다.</translation>
 <translation id="1073983258515362346">기기의 백라이트에 관한 정보를 보고합니다.
 
@@ -5390,17 +5389,6 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
           어떠한 문제도 없습니다.
           </translation>
 <translation id="4578265298946081589">사용자 로그아웃 시 재부팅하지 않습니다.</translation>
-<translation id="4580711645933054901">이 정책을 사용하면 URL 패턴 목록을 지정할 수 있습니다. 해당 패턴과 일치하는 백그라운드 웹 콘텐츠는 포그라운드 우선순위로 강제 실행됩니다.
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> 정책이 사용 설정되면 모든 탭이 포그라운드 우선순위로 강제 적용되므로 이 목록은 무시됩니다.
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> 정책이 사용 중지되거나 설정되지 않은 경우, 이 목록의 패턴과 일치하는 콘텐츠만 강제 적용됩니다.
-
-유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://support.google.com/chrome/a?p=url_blocklist_filter_format을 참고하세요.
-
-이 정책은 출처만을 기준으로 일치 여부를 판단하므로 패턴의 경로 또는 쿼리 매개변수는 무시됩니다. 스키마, 호스트, 포트가 지원됩니다.
-
-이 목록이 비어 있거나 설정되지 않은 경우 백그라운드 콘텐츠가 포그라운드 우선순위로 강제 적용되지 않습니다.</translation>
 <translation id="4581507927311097234">사용자 입력이 없어서 화면이 꺼지기까지 걸리는 시간(밀리초)입니다.</translation>
 <translation id="4582027661281685066">URL 패턴 목록입니다. 일치하는 출처에 의해 게재된 웹사이트에서 시작한 요청은 <ph name="PRIVATE_NETWORK_ACCESS" /> 확인 대상이 아닙니다.
 

@@ -4332,7 +4332,6 @@
 
   Запусціць <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
-<translation id="3942558231079086184">Аптымізацыя JavaScript выключана для гэтага сайта. Уключыце яе, каб павысіць прадукцыйнасць.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
@@ -5964,7 +5963,6 @@
 <translation id="5101683448725092498">Рэзервовае капіраванне даных</translation>
 <translation id="5101839224773798795">Аўтаматычна націскаць, калі курсор спыняецца</translation>
 <translation id="5102244391872941183">Геаданыя могуць выкарыстоўвацца праграмамі і вэб-сайтамі, якія маюць на гэта дазвол, а таксама сістэмнымі службамі</translation>
-<translation id="510258712519612658">Нашы фаварыты</translation>
 <translation id="5103311607312269661">павялічыць яркасць дысплэя</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Выдаліць групу}one{Выдаліць групы}few{Выдаліць групы}many{Выдаліць групы}other{Выдаліць групы}}</translation>
 <translation id="5106350808162641062">Выдаліць</translation>

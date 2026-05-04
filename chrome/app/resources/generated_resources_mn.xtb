@@ -4344,7 +4344,6 @@
 
 Та <ph name="CONTROL_PANEL_APPLET_NAME" />-ийг эхлүүлэхийг хүсэж байна уу?</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
-<translation id="3942558231079086184">Энэ сайтын хувьд JavaScript-н оновчлол унтраалттай байна. Гүйцэтгэлийг сайжруулахын тулд идэвхжүүлнэ үү.</translation>
 <translation id="3943582379552582368">&amp; Буцах</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="3945513714196326460">Илүү богино нэр оруулж үзнэ үү</translation>
@@ -5976,7 +5975,6 @@
 <translation id="5101683448725092498">Зүйлсээ хуулбарлах</translation>
 <translation id="5101839224773798795">Курсор зогссон үед автоматаар товших</translation>
 <translation id="5102244391872941183">Байршлын зөвшөөрөлтэй апп, вебсайтаас гадна системийн үйлчилгээ таны байршлыг ашиглах боломжтой</translation>
-<translation id="510258712519612658">Бидний шилдэг сонголтууд</translation>
 <translation id="5103311607312269661">дэлгэцийн гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Бүлгийг устгах}other{Бүлгүүдийг устгах}}</translation>
 <translation id="5106350808162641062">Хасах</translation>

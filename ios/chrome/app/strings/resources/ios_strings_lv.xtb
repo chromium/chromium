@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Pārbaudiet saglabātās paroles, lai uzlabotu savu drošību un uzturētu drošību tiešsaistē.</translation>
 <translation id="3838985624086228724">Cenas kritums izsekotajam produktam no <ph name="PREVIOUS_PRICE" /> uz <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Atpakaļ</translation>
-<translation id="3850952228519377137">Paslēpt sadaļu “Cenu izsekošana no jūsu cilnēm”</translation>
 <translation id="3851938967634752633">Tiks dzēstas paroles vietnēm <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> un citām vietnēm (vēl <ph name="NUMBER_OF_ACCOUNTS" />). Jūsu konti netiks dzēsti.</translation>
 <translation id="3853162385423733133">Turpiniet izmantot un saglabāt paroles savā Google kontā (<ph name="EMAIL" />)</translation>
 <translation id="3853873210696342070">Importēt</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Ieslēgt paziņojumus</translation>
 <translation id="4326912346867677256">Lai pierakstītos droši, pieskarieties vienumam “Izmantot paroli”.</translation>
-<translation id="4327017157997423717">Produkta cenas izsekošana: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mans disks</translation>
 <translation id="4331177082088332784">To varat pārvaldīt sadaļā BEGIN_LINK Satura iestatījumi END_LINK.</translation>
 <translation id="4334428914252001502">1 nelasīts raksts.</translation>
@@ -1522,7 +1520,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6321526113093607004">Pievienot grāmatzīmēm</translation>
 <translation id="6327249202318869726">Gemini ir izslēgts jūsu kontam. Lai iegūtu plašāku informāciju, sazinieties ar administratoru.</translation>
 <translation id="6331836477476466332">Jums ir pieejams drošāks un efektīvāks pārlūks</translation>
-<translation id="6335744088476213315">Šajā kartītē tiek rādīti produkti, kurus nesen esat skatījis un kuru izsekošana varētu jūs interesēt, lai saņemtu paziņojumus par cenu kritumu.</translation>
 <translation id="6337234675334993532">Šifrēšana</translation>
 <translation id="6337313937331295309">Gemini Apps konfidencialitātes paziņojums</translation>
 <translation id="633809752005859102">Radās problēma. Mēs centīsimies to atrisināt.</translation>

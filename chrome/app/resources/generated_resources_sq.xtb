@@ -4331,7 +4331,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 
   Dëshiron që ta nisësh <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
-<translation id="3942558231079086184">Optimizimi i JavaScript është joaktiv për këtë sajt. Aktivizoje për performancë më të mirë.</translation>
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3945513714196326460">Provo një emër më të shkurtër</translation>
@@ -5962,7 +5961,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5101683448725092498">Rezervo gjërat e tua</translation>
 <translation id="5101839224773798795">Kliko automatikisht kur kursori ndalon</translation>
 <translation id="5102244391872941183">Aplikacionet dhe uebsajtet me lejen për vendndodhjen, si dhe shërbimet e sistemit, mund të përdorin vendndodhjen tënde.</translation>
-<translation id="510258712519612658">Zgjedhjet tona kryesore</translation>
 <translation id="5103311607312269661">ngritja e ndriçimit të ekranit</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Fshi grupin}other{Fshi grupet}}</translation>
 <translation id="5106350808162641062">Hiq</translation>

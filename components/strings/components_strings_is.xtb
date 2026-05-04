@@ -2221,7 +2221,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4419287616181386201">Hægt er að eyða aðgangsorðum í umsjónarstillingum þeirra</translation>
 <translation id="4424024547088906515">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chrome treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="4425750422187370446">Íþróttafatnaður</translation>
-<translation id="443008484043213881">Verkfæri</translation>
 <translation id="443121186588148776">Raðtengi</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> samþykkti ekki innskráningarvottorðið þitt eða það var ekki gefið upp.</translation>
 <translation id="4432792777822557199">Síður á málinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" /></translation>
@@ -4629,7 +4628,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8175796834047840627">Chrome býður þér að vista kortin þín á Google-reikningnum vegna þess að þú ert innskráð(ur). Þú getur breytt þessu í stillingunum.</translation>
 <translation id="8176440868214972690">Stjórnandi tækisins hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="817820454357658398">Hreinlætisvörur fyrir konur</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Efni frá greiðslusíðunni er deilt með Google til að bjóða upp á þessa valkosti.<ph name="END_BOLD" /> Greiðsluáætlanir eru háðar gjaldgengi. Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til að fela valkosti greiðslufrests</translation>
 <translation id="818254048113802060">{0,plural, =1{Lokað var á <ph name="FILE_NAME" /> vegna efnis}one{Lokað var á <ph name="FILE_COUNT" /> skrá vegna efnis}other{Lokað var á <ph name="FILE_COUNT" /> skrár vegna efnis}}</translation>
 <translation id="8183800802493617952">Fjölskylduvænir leikir og afþreying</translation>
 <translation id="8184538546369750125">Nota altækt sjálfgildi (leyfa)</translation>

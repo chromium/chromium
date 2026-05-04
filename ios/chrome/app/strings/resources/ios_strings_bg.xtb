@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Проверете запазените си пароли, за да подобрите сигурността си и да бъдете по-защитени онлайн</translation>
 <translation id="3838985624086228724">Цената на проследения от вас продукт <ph name="PRODUCT_NAME" /> е понижена от <ph name="PREVIOUS_PRICE" /> на <ph name="PRICE" /> в сайта <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3850952228519377137">Скриване на „Проследяване на цените от разделите ви“</translation>
 <translation id="3851938967634752633">Паролите за <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и още <ph name="NUMBER_OF_ACCOUNTS" /> сайта ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="3853162385423733133">Продължете да използвате и запазвате паролите в профила си в Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Импортиране</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Включване на известията</translation>
 <translation id="4326912346867677256">Докоснете „Използване на паролата“, за да влезете в профила си по сигурен начин.</translation>
-<translation id="4327017157997423717">Проследяване на цената на <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Моят диск</translation>
 <translation id="4331177082088332784">Можете да управлявате тази функция в BEGIN_LINKнастройките за съдържаниетоEND_LINK</translation>
 <translation id="4334428914252001502">1 непрочетена статия.</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6327249202318869726">Услугата Gemini е изключена за профила ви. За повече информация се обърнете към администратора си.</translation>
 <translation id="6331836477476466332">По-безопасен и по-мощен браузър за вас</translation>
-<translation id="6335744088476213315">Тази карта показва продукти, които сте прегледали наскоро и за които може да искате да получавате сигнали за понижение на цената</translation>
 <translation id="6337234675334993532">Шифроване</translation>
 <translation id="6337313937331295309">Съобщението за поверителност за приложенията Gemini</translation>
 <translation id="633809752005859102">Нещо сериозно се обърка. Ще работим по него.</translation>

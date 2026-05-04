@@ -3174,7 +3174,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3152356229013609796">Buka, chitha, futhi uphendule izaziso zefoni yakho</translation>
 <translation id="3152545926232662879">Izitshiwe:</translation>
 <translation id="3152596030350326139">Bonisa amathebhu avundlile</translation>
-<translation id="3154754096046236400">Umongo womuntu</translation>
+<translation id="3154754096046236400">Isimo somuntu ngamunye</translation>
 <translation id="3155163173539279776">Phinda uqalise i-Chromium</translation>
 <translation id="3155394504825881014">Guqula Iqembu Lamathebhu libe Ifolda Yamabhukhimakhi</translation>
 <translation id="3156511682997763015">Dlulisela phambili imizuzwana engu-10</translation>
@@ -4346,7 +4346,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 
   Ingabe ungathanda ukuqalisa i-<ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Ukuxilonga</translation>
-<translation id="3942558231079086184">Ukulungiselelwa kweJavaScript kuvaliwe kule sayithi. Vula ukuze kusebenze kangcono.</translation>
 <translation id="3943582379552582368">Emuva</translation>
 <translation id="3943857333388298514">Namathisela</translation>
 <translation id="3945513714196326460">Zama igama elifushane</translation>
@@ -5978,7 +5977,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5101683448725092498">Gcina izinto zakho</translation>
 <translation id="5101839224773798795">Chofoza ngokuzenzakalela uma ikhesa ima</translation>
 <translation id="5102244391872941183">Ama-app namawebhusayithi anemvume yendawo, kanye namasevisi esistimu, angasebenzisa indawo yakho</translation>
-<translation id="510258712519612658">Esikhethayo okuhamba phambili</translation>
 <translation id="5103311607312269661">ukugqama kwesibonisi kuphezulu</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Sula Iqembu}one{Sula Amaqembu}other{Sula Amaqembu}}</translation>
 <translation id="5106350808162641062">Susa</translation>

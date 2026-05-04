@@ -4331,7 +4331,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 
   ¿Quieres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
-<translation id="3942558231079086184">La optimización de JavaScript está desactivada para este sitio. Habilita esta opción para obtener un mejor rendimiento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
@@ -5963,7 +5962,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5101683448725092498">Crea una copia de seguridad de tu contenido</translation>
 <translation id="5101839224773798795">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5102244391872941183">Pueden usar la ubicación los servicios del sistema, además de las apps y los sitios web con el permiso correspondiente</translation>
-<translation id="510258712519612658">Nuestras mejores selecciones</translation>
 <translation id="5103311607312269661">aumenta el brillo de la pantalla</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Borrar grupo}other{Borrar grupos}}</translation>
 <translation id="5106350808162641062">Quitar</translation>

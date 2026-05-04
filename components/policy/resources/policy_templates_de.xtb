@@ -123,7 +123,6 @@ Wenn die Richtlinie auf „1 – DisabledForBrowser“ gesetzt ist, kann der Br
 
 Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
-<translation id="1069651607236021905">Vordergrundpriorität für bestimmte Ursprünge erzwingen</translation>
 <translation id="107045325503547419">Abhängig vom Funktionseinführungsprozess.</translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
@@ -5311,17 +5310,6 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
           Bitte beachte, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn du dafür sorgen möchtest, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein kompletter Neustart nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.
           </translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
-<translation id="4580711645933054901">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen. Für im Hintergrund ausgeführte Webinhalte, die mit diesen Mustern übereinstimmen, wird die Vordergrundpriorität erzwungen.
-
-Wenn die Richtlinie „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ aktiviert ist, wird diese Liste ignoriert, da für alle Tabs die Vordergrundpriorität erzwungen wird.
-
-Wenn „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist, wird die Vordergrundpriorität nur für Inhalte erzwungen, die mit den Mustern in dieser Liste übereinstimmen.
-
-Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade oder Suchparameter im Muster ignoriert. Schema, Host und Port werden unterstützt.
-
-Wenn diese Liste leer oder nicht konfiguriert ist, wird für keine im Hintergrund ausgeführten Inhalte die Vordergrundpriorität erzwungen.</translation>
 <translation id="4581507927311097234">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm ausgeschaltet wird, angegeben in Millisekunden.</translation>
 <translation id="4582027661281685066">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen.
 

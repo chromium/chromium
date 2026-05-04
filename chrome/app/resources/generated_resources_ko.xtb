@@ -4349,7 +4349,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />을(를) 시작하시겠습니까?</translation>
 <translation id="3942420633017001071">진단</translation>
-<translation id="3942558231079086184">이 사이트에서 JavaScript 최적화가 사용 중지되었습니다. 성능 개선을 위해 사용 설정하세요.</translation>
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3945513714196326460">더 짧은 이름을 입력하세요.</translation>
@@ -5979,7 +5978,6 @@
 <translation id="5101683448725092498">데이터 백업하기</translation>
 <translation id="5101839224773798795">커서가 멈추면 자동으로 클릭</translation>
 <translation id="5102244391872941183">위치 정보 액세스 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 위치 정보를 사용할 수 있음</translation>
-<translation id="510258712519612658">Google 추천</translation>
 <translation id="5103311607312269661">디스플레이 밝기 높이기</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{그룹 삭제}other{그룹 삭제}}</translation>
 <translation id="5106350808162641062">삭제</translation>

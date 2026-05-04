@@ -4349,7 +4349,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 
   Would you like to start <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
-<translation id="3942558231079086184">JavaScript optimisation is off for this site. Enable for better performance.</translation>
 <translation id="3943582379552582368">&amp;Back</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3945513714196326460">Try a shorter name</translation>
@@ -5981,7 +5980,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5101683448725092498">Back up your stuff</translation>
 <translation id="5101839224773798795">Automatically click when the cursor stops</translation>
 <translation id="5102244391872941183">Apps and websites with location permission, as well as system services, can use your location</translation>
-<translation id="510258712519612658">Our top picks</translation>
 <translation id="5103311607312269661">Display brightness up</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Delete group}other{Delete groups}}</translation>
 <translation id="5106350808162641062">Remove</translation>

@@ -4331,7 +4331,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> abiarazi nahi duzu?</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
-<translation id="3942558231079086184">JavaScript-en optimizazioa desaktibatuta dago webgune honetan. Gai ezazu errendimendu hobea lortzeko.</translation>
 <translation id="3943582379552582368">&amp;Atzera</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3945513714196326460">Idatzi izen laburrago bat</translation>
@@ -5962,7 +5961,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5101683448725092498">Egin zure gauzen babeskopiak</translation>
 <translation id="5101839224773798795">Egin klik automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5102244391872941183">Kokapena erabiltzeko baimena duten aplikazio eta webguneek erabil dezakete kokapena, baita sistemaren zerbitzuek ere</translation>
-<translation id="510258712519612658">Gure aukerarik onenak</translation>
 <translation id="5103311607312269661">pantailaren distira handitzeko tekla</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Ezabatu taldea}other{Ezabatu taldeak}}</translation>
 <translation id="5106350808162641062">Kendu</translation>

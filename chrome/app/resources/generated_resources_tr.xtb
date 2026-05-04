@@ -4330,7 +4330,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 
 <ph name="CONTROL_PANEL_APPLET_NAME" /> aracını başlatmak ister misiniz?</translation>
 <translation id="3942420633017001071">Teşhis</translation>
-<translation id="3942558231079086184">JavaScript optimizasyonu bu site için devre dışı. Daha iyi performans için etkinleştirin.</translation>
 <translation id="3943582379552582368">&amp;Geri</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="3945513714196326460">Daha kısa bir ad girin</translation>
@@ -5962,7 +5961,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5101683448725092498">Bilgilerinizi yedekleyin</translation>
 <translation id="5101839224773798795">İmleç durduğunda otomatik olarak tıkla</translation>
 <translation id="5102244391872941183">Konum izni olan uygulamalar ile web sitelerinin yanı sıra sisteme ait hizmetler de konumunuzu kullanabilir</translation>
-<translation id="510258712519612658">En popüler seçimlerimiz</translation>
 <translation id="5103311607312269661">ekran parlaklığını artır</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Grubu sil}other{Grupları sil}}</translation>
 <translation id="5106350808162641062">Kaldır</translation>

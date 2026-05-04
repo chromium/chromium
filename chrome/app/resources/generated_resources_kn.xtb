@@ -4339,7 +4339,6 @@
 
   ನೀವು <ph name="CONTROL_PANEL_APPLET_NAME" /> ಪ್ರಾರಂಭಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
-<translation id="3942558231079086184">ಈ ಸೈಟ್‌ಗಾಗಿ JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಆಫ್ ಆಗಿದೆ. ಉತ್ತಮ ಪರ್ಫಾರ್ಮೆನ್ಸ್‌ಗಾಗಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="3943582379552582368">&amp;ಹಿಂದೆ</translation>
 <translation id="3943857333388298514">ಅಂಟಿಸು</translation>
 <translation id="3945513714196326460">ಚಿಕ್ಕದಾದ ಹೆಸರನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -5971,7 +5970,6 @@
 <translation id="5101683448725092498">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
 <translation id="5101839224773798795">ಕರ್ಸರ್ ನಿಂತಾಗ, ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5102244391872941183">ಸ್ಥಳ ಅನುಮತಿಯಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಅಷ್ಟೇ ಅಲ್ಲದೇ ಸಿಸ್ಟಂ ಸರ್ವಿಸ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸಬಹುದು</translation>
-<translation id="510258712519612658">ನಮ್ಮ ಟಾಪ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="5103311607312269661">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ಗುಂಪನ್ನು ಅಳಿಸಿ}one{ಗುಂಪುಗಳನ್ನು ಅಳಿಸಿ}other{ಗುಂಪುಗಳನ್ನು ಅಳಿಸಿ}}</translation>
 <translation id="5106350808162641062">ತೆಗೆದುಹಾಕಿ</translation>

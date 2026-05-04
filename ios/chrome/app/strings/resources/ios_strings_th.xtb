@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อเสริมความปลอดภัยในโลกออนไลน์ให้มากยิ่งขึ้น</translation>
 <translation id="3838985624086228724">ราคาต่ำลงในสินค้าที่ติดตาม จาก <ph name="PREVIOUS_PRICE" /> เป็น <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">กลับ</translation>
-<translation id="3850952228519377137">ซ่อน "ติดตามราคาจากแท็บ"</translation>
 <translation id="3851938967634752633">ระบบจะลบรหัสผ่านสําหรับ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> และอีก <ph name="NUMBER_OF_ACCOUNTS" /> บัญชี โดยระบบจะไม่ลบบัญชีของคุณ</translation>
 <translation id="3853162385423733133">ใช้และบันทึกรหัสผ่านในบัญชี Google <ph name="EMAIL" /> ต่อไป</translation>
 <translation id="3853873210696342070">นำเข้า</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">เปิดการแจ้งเตือน</translation>
 <translation id="4326912346867677256">แตะ "ใช้รหัสผ่าน" เพื่อลงชื่อเข้าใช้อย่างปลอดภัย</translation>
-<translation id="4327017157997423717">ติดตามราคาใน <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">ไดรฟ์ของฉัน</translation>
 <translation id="4331177082088332784">คุณจัดการตัวเลือกนี้ได้ในBEGIN_LINKการตั้งค่าเนื้อหาEND_LINK</translation>
 <translation id="4334428914252001502">บทความที่ยังไม่ได้อ่าน 1 รายการ</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">เพิ่มลงในบุ๊กมาร์ก</translation>
 <translation id="6327249202318869726">Gemini ปิดใช้งานอยู่สำหรับบัญชีของคุณ โปรดสอบถามข้อมูลเพิ่มเติมจากผู้ดูแลระบบ</translation>
 <translation id="6331836477476466332">เบราว์เซอร์ที่ปลอดภัยและทรงพลังมากขึ้นสำหรับคุณ</translation>
-<translation id="6335744088476213315">การ์ดนี้แสดงผลิตภัณฑ์ที่คุณดูล่าสุดและอาจสนใจติดตามเพื่อรับการแจ้งเตือนเมื่อราคาต่ำลง</translation>
 <translation id="6337234675334993532">การเข้ารหัส</translation>
 <translation id="6337313937331295309">ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของแอป Gemini</translation>
 <translation id="633809752005859102">มีบางสิ่งผิดปกติอย่างมาก เราจะแก้ไขปัญหานี้</translation>

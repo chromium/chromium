@@ -2220,7 +2220,6 @@
 <translation id="4419287616181386201">密碼可以在相應的管理設定中刪除</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4425750422187370446">運動服裝</translation>
-<translation id="443008484043213881">工具</translation>
 <translation id="443121186588148776">序列連接埠</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登入憑證，或您尚未提供登入憑證。</translation>
 <translation id="4432792777822557199">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" /></translation>
@@ -4629,7 +4628,6 @@
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="817820454357658398">女性衛生產品</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />系統會與 Google 分享結帳頁面內容，以提供這些選項。<ph name="END_BOLD" />付款計劃須符合資格條件。如要隱藏「稍後付款」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{「<ph name="FILE_NAME" />」因內容而被封鎖}other{<ph name="FILE_COUNT" /> 個檔案因內容而被封鎖}}</translation>
 <translation id="8183800802493617952">家庭遊戲和活動</translation>
 <translation id="8184538546369750125">使用全域預設值 (允許)</translation>

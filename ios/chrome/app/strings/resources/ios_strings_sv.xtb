@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Kontrollera dina sparade lösenord och öka säkerheten online</translation>
 <translation id="3838985624086228724">Prissänkning på den bevakade produkten, från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Föregående</translation>
-<translation id="3850952228519377137">Dölj Bevaka priser från dina flikar</translation>
 <translation id="3851938967634752633">Lösenorden för <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> och <ph name="NUMBER_OF_ACCOUNTS" /> till raderas. Dina konton raderas inte.</translation>
 <translation id="3853162385423733133">Fortsätt använda och spara lösenorden i Google-kontot <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importera</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktivera aviseringar</translation>
 <translation id="4326912346867677256">Tryck på Använd lösenord för att logga in säkert.</translation>
-<translation id="4327017157997423717">Bevaka priset på <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Min enhet</translation>
 <translation id="4331177082088332784">Du kan hantera detta i BEGIN_LINK innehållsinställningarna END_LINK</translation>
 <translation id="4334428914252001502">1 oläst artikel.</translation>
@@ -1522,7 +1520,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
 <translation id="6327249202318869726">Gemini har inaktiverats för ditt konto. Kontakta administratören om du vill ha mer information.</translation>
 <translation id="6331836477476466332">En säkrare och kraftfullare webbläsare för dig</translation>
-<translation id="6335744088476213315">Det här kortet visar produkter som du har tittat på nyligen och som du kanske vill bevaka för att få aviseringar om prissänkningar</translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="6337313937331295309">Integritetsmeddelande för Gemini-apparna</translation>
 <translation id="633809752005859102">Någonting gick fel. Vi jobbar på det.</translation>

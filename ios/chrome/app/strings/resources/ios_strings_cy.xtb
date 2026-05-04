@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Gwiriwch eich cyfrineiriau sydd wedi'u cadw i gryfhau eich diogelwch ac i aros yn fwy diogel ar-lein</translation>
 <translation id="3838985624086228724">Gostyngiad pris ar eich cynnyrch wedi'i olrhain, o <ph name="PREVIOUS_PRICE" /> i <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Nôl</translation>
-<translation id="3850952228519377137">Cuddio "Olrhain prisiau o'ch tabiau"</translation>
 <translation id="3851938967634752633">Bydd y cyfrineiriau ar gyfer <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, a <ph name="NUMBER_OF_ACCOUNTS" /> arall yn cael eu dileu. Ni fydd eich cyfrifon yn cael eu dileu.</translation>
 <translation id="3853162385423733133">Parhewch i ddefnyddio a chadw'r cyfrineiriau yn eich Cyfrif Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Mewnforio</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Troi hysbysiadau ymlaen</translation>
 <translation id="4326912346867677256">Tapiwch "Defnyddio Cyfrinair" i fewngofnodi'n ddiogel.</translation>
-<translation id="4327017157997423717">Olrhain y pris ar <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">My Drive</translation>
 <translation id="4331177082088332784">Gallwch reoli hyn yn y BEGIN_LINK Gosodiadau Cynnwys END_LINK</translation>
 <translation id="4334428914252001502">Mae 1 erthygl sydd heb ei darllen.</translation>
@@ -1522,7 +1520,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6321526113093607004">Ychwanegu at Nodau Tudalen</translation>
 <translation id="6327249202318869726">Mae Gemini wedi'i ddiffodd ar gyfer eich cyfrif. Cysylltwch â’ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="6331836477476466332">Porwr mwy diogel, mwy pwerus i chi</translation>
-<translation id="6335744088476213315">Mae'r cerdyn hwn yn dangos cynhyrchion rydych wedi'u gweld yn ddiweddar ac a allai fod â diddordeb mewn olrhain i gael rhybuddion gostyngiad mewn prisiau</translation>
 <translation id="6337234675334993532">Amgryptio</translation>
 <translation id="6337313937331295309">Hysbysiad Preifatrwydd Apiau Gemini</translation>
 <translation id="633809752005859102">Aeth rhywbeth o'i le yn ddifrifol. Byddwn yn gweithio ar hynny.</translation>

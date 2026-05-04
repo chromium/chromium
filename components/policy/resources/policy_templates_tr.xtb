@@ -123,7 +123,6 @@ Politika, 1 - DisabledForBrowser değerine ayarlanırsa <ph name="PRODUCT_NAME" 
 
 Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Güvenli Tarama anketlerini almayı etkinleştir</translation>
-<translation id="1069651607236021905">Belirli kaynaklar için ön plan önceliğini zorla</translation>
 <translation id="107045325503547419">Özelliğin kullanıma sunulma sürecine göre değişir.</translation>
 <translation id="1073983258515362346">Bir cihazın arka ışıkları ile ilgili bilgileri rapor edin.
 
@@ -5426,17 +5425,6 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
           Politikanın oluşturucu işlemi başına uygulandığını ve bir oluşturucu işlemi başladığında geçerli olan politika ayarının en son değerinin kullanıldığını unutmayın. Tüm yüklenen sekmelerin tutarlı bir politika ayarı almasını sağlamak için tam bir yeniden başlatma gereklidir. İşlemlerin bu politikanın farklı değerleriyle çalışması zararlı değildir.
           </translation>
 <translation id="4578265298946081589">Kullanıcı oturumu kapatıldığında cihazı yeniden başlatma.</translation>
-<translation id="4580711645933054901">Bu politika, URL kalıpları listesi belirtmenize olanak tanır. Bu kalıplarla eşleşen arka plandaki web içeriği, ön plan önceliğinde çalışmaya zorlanır.
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> politikası etkinleştirilirse tüm sekmeler ön plan önceliğine zorlanacağından bu liste yoksayılır.
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> devre dışı bırakılır veya ayarlanmazsa yalnızca bu listedeki kalıplarla eşleşen içerik zorunlu kılınır.
-
-Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakabilirsiniz.
-
-Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, kalıptaki yollar veya sorgu parametreleri yoksayılır. Şema, ana makine ve bağlantı noktası desteklenir.
-
-Bu liste boşsa veya ayarlanmamışsa hiçbir arka plan içeriği ön plan önceliğine zorlanmaz.</translation>
 <translation id="4581507927311097234">Ekran kapatılmadan önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="4582027661281685066">URL kalıpları listesi Eşleşen kaynakların sunduğu web sitelerinden başlatılan istekler <ph name="PRIVATE_NETWORK_ACCESS" /> kontrollerine tabi değildir.
 

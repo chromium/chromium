@@ -4334,7 +4334,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 
   Wil je <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3942420633017001071">Diagnose</translation>
-<translation id="3942558231079086184">JavaScript-optimalisatie staat uit voor deze site. Zet dit aan voor betere prestaties.</translation>
 <translation id="3943582379552582368">&amp;Vorige</translation>
 <translation id="3943857333388298514">Plakken</translation>
 <translation id="3945513714196326460">Probeer een kortere naam</translation>
@@ -5964,7 +5963,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5101683448725092498">Back-up maken</translation>
 <translation id="5101839224773798795">Automatisch klikken wanneer de cursor stopt</translation>
 <translation id="5102244391872941183">Zowel apps en websites met locatierechten als systeemservices kunnen je locatie gebruiken</translation>
-<translation id="510258712519612658">Onze favorieten</translation>
 <translation id="5103311607312269661">helderheid van scherm verhogen</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Groep verwijderen}other{Groepen verwijderen}}</translation>
 <translation id="5106350808162641062">Verwijderen</translation>

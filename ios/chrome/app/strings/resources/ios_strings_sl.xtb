@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Samodejno izpolni številko kartice, ki se konča z <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Ustvarjeno: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Fotografije iz naprav</translation>
+<translation id="3746269120925354434">Podatki so shranjeni v Google Denarnici</translation>
 <translation id="3750225824417196283">Stran z novim anonimnim zavihkom</translation>
 <translation id="3751873026576444885">Ustavitev iskanja po zaslonu z Googlom Lens</translation>
 <translation id="3753408171347588045">Poteka spremljanje cen</translation>
@@ -788,7 +789,6 @@
 <translation id="3838691874161539578">Preverite shranjena gesla, da izboljšate svojo varnost in poskrbite za večjo varnost v spletu.</translation>
 <translation id="3838985624086228724">Znižanje cene za spremljan izdelek s cene <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Nazaj</translation>
-<translation id="3850952228519377137">Skrij »Spremljanje cen na zavihkih«</translation>
 <translation id="3851938967634752633">Gesla za <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> in še druga (<ph name="NUMBER_OF_ACCOUNTS" />) bodo izbrisana. Vaši računi ne bodo izbrisani.</translation>
 <translation id="3853162385423733133">Še naprej uporabljajte in shranjujte gesla v računu Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Uvoz</translation>
@@ -936,7 +936,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Vklop obvestil</translation>
 <translation id="4326912346867677256">Dotaknite se »Uporabi geslo«, če se želite varno prijaviti.</translation>
-<translation id="4327017157997423717">Spremljanje cene izdelka <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Moj disk</translation>
 <translation id="4331177082088332784">To lahko upravljate v BEGIN_LINK nastavitvah vsebine END_LINK</translation>
 <translation id="4334428914252001502">1 neprebran članek.</translation>
@@ -1522,7 +1521,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6321526113093607004">Dodaj med zaznamke</translation>
 <translation id="6327249202318869726">Gemini je za vaš račun izklopljen. Za več informacij se obrnite na skrbnika.</translation>
 <translation id="6331836477476466332">Varnejši in zmogljivejši brskalnik za vas</translation>
-<translation id="6335744088476213315">Ta kartica prikazuje izdelke, ki ste si jih nedavno ogledali in jih morda želite spremljati zaradi prejemanja opozoril o znižanju cen</translation>
 <translation id="6337234675334993532">Šifriranje</translation>
 <translation id="6337313937331295309">Obvestilo o zasebnosti za aplikacije Gemini</translation>
 <translation id="633809752005859102">Prišlo je do resne napake. Poskusili jo bomo odpraviti.</translation>
@@ -2175,6 +2173,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8533670235862049797">Varno brskanje je vklopljeno</translation>
 <translation id="8534481786647257214">Objava v Googlu+ je dokončana.</translation>
 <translation id="8535368836838588657">Prikaži geslo</translation>
+<translation id="8540426897269305488">Prijava s poverilnico <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Preverite nastavitve privzetega brskalnika</translation>
 <translation id="854938212724803178">Imate 1 ogroženo geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="8551311254462607218">V naslovni vrstici se dotaknite ikone fotoaparata za Google Lens</translation>

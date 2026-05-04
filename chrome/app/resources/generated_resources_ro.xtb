@@ -4334,7 +4334,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 
   Doriți să porniți <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
-<translation id="3942558231079086184">Optimizarea JavaScript este dezactivată pentru acest site. Activeaz-o pentru performanțe mai bune.</translation>
 <translation id="3943582379552582368">&amp;Înapoi</translation>
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="3945513714196326460">Încearcă un nume mai scurt</translation>
@@ -5965,7 +5964,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5101683448725092498">Fă backup conținutului</translation>
 <translation id="5101839224773798795">Se dă clic automat când cursorul se oprește</translation>
 <translation id="5102244391872941183">Aplicațiile și site-urile care au permisiunea pentru locație, precum și serviciile de sistem, îți pot folosi locația</translation>
-<translation id="510258712519612658">Alegerile noastre cele mai populare</translation>
 <translation id="5103311607312269661">creșterea luminozității ecranului</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Șterge grupul}few{Șterge grupurile}other{Șterge grupurile}}</translation>
 <translation id="5106350808162641062">Elimină</translation>

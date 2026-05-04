@@ -4336,7 +4336,6 @@
 
   Запустить компонент "<ph name="CONTROL_PANEL_APPLET_NAME" />"?</translation>
 <translation id="3942420633017001071">Диагностика</translation>
-<translation id="3942558231079086184">Оптимизация JavaScript для этого сайта отключена. Включите ее, чтобы повысить скорость работы.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="3945513714196326460">Сократите название.</translation>
@@ -5967,7 +5966,6 @@
 <translation id="5101683448725092498">Сохраните резервную копию данных</translation>
 <translation id="5101839224773798795">Автоматически регистрировать нажатие кнопки мыши, когда указатель останавливается</translation>
 <translation id="5102244391872941183">Приложения, сайты и системные службы с этим разрешением могут получить доступ к данным о вашем местоположении</translation>
-<translation id="510258712519612658">Самое лучшее</translation>
 <translation id="5103311607312269661">Увеличить яркость экрана</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Удалить группу}one{Удалить группы}few{Удалить группы}many{Удалить группы}other{Удалить группы}}</translation>
 <translation id="5106350808162641062">Удалить</translation>

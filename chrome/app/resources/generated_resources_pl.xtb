@@ -4313,7 +4313,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 
   Uruchomić aplet <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
-<translation id="3942558231079086184">Optymalizacja JavaScriptu jest wyłączona w tej witrynie. Włącz, aby zwiększyć wydajność.</translation>
 <translation id="3943582379552582368">&amp;Wstecz</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3945513714196326460">Podaj krótszą nazwę</translation>
@@ -5944,7 +5943,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5101683448725092498">Utwórz kopię zapasową swoich danych</translation>
 <translation id="5101839224773798795">Automatyczne kliknięcie po zatrzymaniu kursora</translation>
 <translation id="5102244391872941183">Z Twojej lokalizacji mogą korzystać aplikacje i strony, które mają dostęp do lokalizacji, oraz usługi systemowe</translation>
-<translation id="510258712519612658">Nasze najlepsze propozycje</translation>
 <translation id="5103311607312269661">zwiększanie jasności wyświetlacza</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Usuń grupę}few{Usuń grupy}many{Usuń grupy}other{Usuń grupy}}</translation>
 <translation id="5106350808162641062">Usuń</translation>

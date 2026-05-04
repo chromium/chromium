@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Skontrolujte si uložené heslá a posilnite tak svoje zabezpečenie a bezpečnosť na internete</translation>
 <translation id="3838985624086228724">Pokles ceny sledovaného výrobku z <ph name="PREVIOUS_PRICE" /> na <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Späť</translation>
-<translation id="3850952228519377137">Skryť „Sledovať ceny z vašich kariet“</translation>
 <translation id="3851938967634752633">Heslá pre <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a ďalšie (<ph name="NUMBER_OF_ACCOUNTS" />) budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="3853162385423733133">Naďalej používajte a ukladajte heslá vo svojom účte Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importovať</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Zapnúť upozornenia</translation>
 <translation id="4326912346867677256">Klepnite na Použiť heslo a bezpečne sa prihláste.</translation>
-<translation id="4327017157997423717">Sledovať cenu výrobku <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Môj disk</translation>
 <translation id="4331177082088332784">Môžete to spravovať v BEGIN_LINK nastaveniach obsahu END_LINK</translation>
 <translation id="4334428914252001502">1 neprečítaný článok.</translation>
@@ -1522,7 +1520,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6321526113093607004">Pridať medzi záložky</translation>
 <translation id="6327249202318869726">Aplikácia je pre váš účet vypnutá. Bližšie informácie vám poskytne správca.</translation>
 <translation id="6331836477476466332">Bezpečnejší a výkonnejší prehliadač pre vás</translation>
-<translation id="6335744088476213315">Na tejto karte sú výrobky, ktoré ste si nedávno zobrazili a ktoré by ste možno chceli sledovať, aby ste mohli dostávať upozornenia na pokles ceny</translation>
 <translation id="6337234675334993532">Šifrovanie</translation>
 <translation id="6337313937331295309">oznámenie o ochrane súkromia v aplikáciách Gemini</translation>
 <translation id="633809752005859102">Niečo sa vážne pokazilo. Na riešení pracujeme.</translation>

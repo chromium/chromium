@@ -763,6 +763,7 @@
 <translation id="372676576864368480">I-autofill ang numero ng card na nagtatapos sa <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Ginawa noong <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Camera Roll</translation>
+<translation id="3746269120925354434">Na-save ang impormasyon sa Google Wallet</translation>
 <translation id="3750225824417196283">Bagong page ng tab na Incognito</translation>
 <translation id="3751873026576444885">Ihinto ang paghahanap sa iyong screen gamit ang Google Lens</translation>
 <translation id="3753408171347588045">Tina-track ang mga presyo</translation>
@@ -788,7 +789,6 @@
 <translation id="3838691874161539578">Tingnan ang iyong mga naka-save na password para mapaigting ang seguridad mo at manatiling mas ligtas online</translation>
 <translation id="3838985624086228724">May pagbaba ng presyo sa iyong tracked product, <ph name="PRICE" /> na dating <ph name="PREVIOUS_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Bumalik</translation>
-<translation id="3850952228519377137">Itago ang "Subaybayan ang mga presyo mula sa iyong mga tab"</translation>
 <translation id="3851938967634752633">Made-delete ang mga password para sa <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, at <ph name="NUMBER_OF_ACCOUNTS" /> (na) iba pa. Hindi made-delete ang iyong mga account.</translation>
 <translation id="3853162385423733133">Patuloy na gamitin at i-save ang mga password sa iyong Google Account <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">I-import</translation>
@@ -936,7 +936,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">I-on ang mga notification</translation>
 <translation id="4326912346867677256">I-tap ang "Gamitin ang Password" para secure na mag-sign in.</translation>
-<translation id="4327017157997423717">Subaybayan ang presyo sa <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Aking Drive</translation>
 <translation id="4331177082088332784">Puwede mo itong pamahalaan sa BEGIN_LINK Mga Setting ng Content END_LINK</translation>
 <translation id="4334428914252001502">1 hindi pa nababasang artikulo.</translation>
@@ -1522,7 +1521,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6321526113093607004">Idagdag sa Mga Bookmark</translation>
 <translation id="6327249202318869726">Naka-off ang Gemini para sa iyong account. Makipag-ugnayan sa iyong admin para sa higit pang impormasyon.</translation>
 <translation id="6331836477476466332">Isang mas ligtas at mas mahusay na browser para sa iyo</translation>
-<translation id="6335744088476213315">Ipinapakita ng card na ito ang mga produktong tiningnan mo kamakailan at baka interesado kang subaybayan para makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
 <translation id="6337313937331295309">Notification ng Privacy sa Mga Gemini App</translation>
 <translation id="633809752005859102">Nagkaroon ng malaking problema. Gagawan namin iyon ng paraan.</translation>
@@ -2175,6 +2173,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8533670235862049797">Naka-on ang Ligtas na Pag-browse</translation>
 <translation id="8534481786647257214">Kumpleto na ang pag-post sa Google+.</translation>
 <translation id="8535368836838588657">Ipakita ang password</translation>
+<translation id="8540426897269305488">Mag-sign in sa pamamagitan ng <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Tingnan ang iyong mga setting ng default browser</translation>
 <translation id="854938212724803178">Mayroon kang 1 nakompromisong password. Ayusin ito ngayon para manatiling ligtas.</translation>
 <translation id="8551311254462607218">Sa address bar, i-tap ang icon na camera ng Google Lens</translation>

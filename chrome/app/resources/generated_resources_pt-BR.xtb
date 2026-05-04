@@ -4352,7 +4352,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 
   Quer iniciar o <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
-<translation id="3942558231079086184">A otimização do JavaScript está desativada para este site. Ative para melhorar o desempenho.</translation>
 <translation id="3943582379552582368">&amp;Voltar</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente um nome menor</translation>
@@ -5984,7 +5983,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5101683448725092498">Faça backup dos seus dados</translation>
 <translation id="5101839224773798795">Clicar automaticamente quando o cursor parar</translation>
 <translation id="5102244391872941183">Apps e sites com a permissão de localização e serviços do sistema podem usar seu local</translation>
-<translation id="510258712519612658">Nossa principal seleção</translation>
 <translation id="5103311607312269661">aumentar o brilho da tela</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Excluir grupo}one{Excluir grupo}other{Excluir grupos}}</translation>
 <translation id="5106350808162641062">Remover</translation>

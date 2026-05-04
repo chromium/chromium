@@ -4323,7 +4323,6 @@
 
   要启动“<ph name="CONTROL_PANEL_APPLET_NAME" />”吗？</translation>
 <translation id="3942420633017001071">诊断</translation>
-<translation id="3942558231079086184">此网站已关闭 JavaScript 优化功能。启用后可提升性能。</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3945513714196326460">请尝试缩短名称</translation>
@@ -5954,7 +5953,6 @@
 <translation id="5101683448725092498">备份您的资料</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5102244391872941183">具有位置信息权限的应用和网站以及系统服务可以使用您的位置信息</translation>
-<translation id="510258712519612658">精选推荐技能</translation>
 <translation id="5103311607312269661">调高显示屏亮度</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{删除分组}other{删除分组}}</translation>
 <translation id="5106350808162641062">移除</translation>

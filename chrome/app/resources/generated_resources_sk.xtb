@@ -4336,7 +4336,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 
   Chcete spustiť aplet <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">Optimalizácia JavaScriptu je pre tento web vypnutá. Ak chcete dosiahnuť lepšiu výkonnosť, zapnite ju.</translation>
 <translation id="3943582379552582368">&amp;Naspäť</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3945513714196326460">Vyskúšajte kratší názov</translation>
@@ -5967,7 +5966,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5101683448725092498">Zálohujte si obsah</translation>
 <translation id="5101839224773798795">Automaticky kliknúť po zastavení kurzora</translation>
 <translation id="5102244391872941183">Aplikácie a weby s povoleným prístupom k polohe a systémové služby môžu používať vašu polohu</translation>
-<translation id="510258712519612658">Najobľúbenejšie</translation>
 <translation id="5103311607312269661">zvýšenie jasu obrazovky</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Odstrániť skupinu}few{Odstrániť skupiny}many{Delete Groups}other{Odstrániť skupiny}}</translation>
 <translation id="5106350808162641062">Odstrániť</translation>

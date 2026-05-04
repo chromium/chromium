@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">ደህንነትዎን ለማጠናከር የተቀመጡ የይለፍ ቃላትዎን ይፈትሹ እና በመስመር ላይ በደህንነት ይቆዩ</translation>
 <translation id="3838985624086228724">ክትትል በሚደረግበት ምርትዎ ላይ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="PRICE" /> የዋጋ ቅነሳ፣ <ph name="PRODUCT_NAME" />፣ <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">ተመለስ</translation>
-<translation id="3850952228519377137">«ዋጋዎችን ከትርዎ ይከታተሉ» የሚለውን ደብቅ</translation>
 <translation id="3851938967634752633">የ<ph name="WEBSITE" />፣ <ph name="SECOND_WEBSITE" /> እና የ<ph name="NUMBER_OF_ACCOUNTS" /> ሌሎች የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
 <translation id="3853162385423733133">በእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ የይለፍ ቃላትን መጠቀም እና ማስቀመጥ ይቀጥሉ።</translation>
 <translation id="3853873210696342070">አምጣ</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID።</translation>
 <translation id="4324735664183300693">ማሳወቂያዎችን አብራ</translation>
 <translation id="4326912346867677256">ደህንነቱ በተጠበቀ ሁኔታ ለመግባት «የይለፍ ቃል ተጠቀም» ላይ መታ ያድርጉ።</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> ላይ ዋጋ ይከታተሉ፣ <ph name="PRICE" />፣ <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">የእኔ Drive</translation>
 <translation id="4331177082088332784">ይህን BEGIN_LINK የይዘት ቅንብሮች END_LINK ውስጥ ማስተዳደር ይችላሉ</translation>
 <translation id="4334428914252001502">1 ያልተነበበ ጽሁፍ።</translation>
@@ -1522,7 +1520,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6321526113093607004">ወደ ዕልባቶች አክል</translation>
 <translation id="6327249202318869726">Gemini ለመለያዎ ጠፍቷል። ተጨማሪ መረጃ ለማግኘት አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="6331836477476466332">ይበልጥ ደህንነቱ የተጠበቀ የበለጠ ኃይል ያለው አሳሽ ለእርስዎ</translation>
-<translation id="6335744088476213315">ይህ ካርድ በቅርቡ የተመለከቷቸውን እና የዋጋ ቅነሳ ማንቂያዎችን ለማግኘት መከታተል የሚፈልጓቸውን ምርቶች ያሳያል</translation>
 <translation id="6337234675334993532">ምስጠራ</translation>
 <translation id="6337313937331295309">የGemini መተግበሪያ የግላዊነት ማስታወቂያ</translation>
 <translation id="633809752005859102">የሆነ ከበድ ያለ ችግር ተፈጥሯል። ችግሩን ለመቅረፍ እየሰራን ነው።</translation>

@@ -2222,7 +2222,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4419287616181386201">Salasanat voi poistaa niiden hallinta-asetuksista</translation>
 <translation id="4424024547088906515">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; Chrome ei luota sen suojausvarmenteeseen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="4425750422187370446">Urheiluvaatteet</translation>
-<translation id="443008484043213881">Työkalut</translation>
 <translation id="443121186588148776">Sarjaportti</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ei hyväksynyt kirjautumisvarmennettasi, tai varmennetta ei annettu.</translation>
 <translation id="4432792777822557199">Kielellä <ph name="SOURCE_LANGUAGE" /> kirjoitetut sivut käännetään tästä lähtien kielelle <ph name="TARGET_LANGUAGE" />.</translation>
@@ -4631,7 +4630,6 @@ Lisätietoja:
 <translation id="8175796834047840627">Chrome tarjoaa korttien tallentamista Google-tilillesi, koska olet kirjautuneena sisään. Voit muuttaa tätä koska tahansa asetuksista.</translation>
 <translation id="8176440868214972690">Laitteen järjestelmänvalvoja on lähettänyt seuraaville verkkosivustoille joitakin tietoja, esim. asetuksia tai käytäntöjä.</translation>
 <translation id="817820454357658398">Naisten hygieniatuotteet</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Kassasivun sisältö jaetaan Googlelle näiden vaihtoehtojen tarjoamiseksi.<ph name="END_BOLD" /> Maksusopimukset edellyttävät kelpoisuutta. Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LINK" />maksuasetuksiin<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> estetty sisällön vuoksi}other{<ph name="FILE_COUNT" /> tiedostoa estetty sisällön vuoksi}}</translation>
 <translation id="8183800802493617952">Perhepelit ja ‑harrastukset</translation>
 <translation id="8184538546369750125">Käytä yleistä oletusasetusta (salli)</translation>

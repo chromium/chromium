@@ -4332,7 +4332,6 @@
 
   คุณต้องการเริ่มต้น <ph name="CONTROL_PANEL_APPLET_NAME" /> ไหม</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
-<translation id="3942558231079086184">การเพิ่มประสิทธิภาพ JavaScript ปิดอยู่สำหรับเว็บไซต์นี้ เปิดใช้เพื่อประสิทธิภาพที่ดียิ่งขึ้น</translation>
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
@@ -5963,7 +5962,6 @@
 <translation id="5101683448725092498">สำรองข้อมูล</translation>
 <translation id="5101839224773798795">คลิกอัตโนมัติเมื่อเคอร์เซอร์หยุด</translation>
 <translation id="5102244391872941183">แอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงตำแหน่ง ตลอดจนบริการของระบบจะใช้ตำแหน่งของคุณได้</translation>
-<translation id="510258712519612658">รายการคัดสรรยอดนิยมของเรา</translation>
 <translation id="5103311607312269661">เพิ่มความสว่างของหน้าจอ</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ลบกลุ่ม}other{ลบกลุ่ม}}</translation>
 <translation id="5106350808162641062">นำออก</translation>

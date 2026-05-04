@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">يُرجى التحقّق من كلمات المرور المحفوظة لتعزيز مستوى الحماية وتصفُّح الإنترنت بأمان.</translation>
 <translation id="3838985624086228724">انخفاض في سعر المنتج "<ph name="PRODUCT_NAME" />" الذي يتم تتبُّعه، من ‫<ph name="PREVIOUS_PRICE" /> إلى ‫<ph name="PRICE" />، على النطاق <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">رجوع</translation>
-<translation id="3850952228519377137">إخفاء "تتبُّع الأسعار من علامات التبويب"</translation>
 <translation id="3851938967634752633">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> وكلمات المرور في حسابات أخرى يبلغ عددها <ph name="NUMBER_OF_ACCOUNTS" />. لن يتم حذف حساباتك.</translation>
 <translation id="3853162385423733133">‏يُرجى مواصلة استخدام كلمات المرور وحفظها في حسابك على Google: <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">استيراد</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">.OID</translation>
 <translation id="4324735664183300693">تفعيل الإشعارات</translation>
 <translation id="4326912346867677256">انقر على "استخدام كلمة المرور" لتسجيل الدخول بأمان.</translation>
-<translation id="4327017157997423717">تتبُّع سعر المنتج "<ph name="PRODUCT_NAME" />"، ‫<ph name="PRICE" />، على النطاق <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">ملفاتي</translation>
 <translation id="4331177082088332784">‏يمكنك إدارة هذه المعلومات من خلال BEGIN_LINK إعدادات المحتوى END_LINK.</translation>
 <translation id="4334428914252001502">مقالة واحدة غير مقروءة</translation>
@@ -1520,7 +1518,6 @@
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="6327249202318869726">‏تم إيقاف Gemini في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
-<translation id="6335744088476213315">تعرض هذه البطاقة المنتجات التي اطّلعت عليها مؤخرًا والتي قد يهمّك تتبُّعها لتلقّي تنبيهات بشأن انخفاض أسعارها</translation>
 <translation id="6337234675334993532">التشفير</translation>
 <translation id="6337313937331295309">‏إشعار الخصوصية في "تطبيقات Gemini"</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>

@@ -4334,7 +4334,6 @@
 
   გსურთ გაუშვათ <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
-<translation id="3942558231079086184">ამ საიტისთვის გამორთულია JavaScript-ის ოპტიმიზაცია. ჩართეთ, რათა გაზარდოთ ეფექტურობა.</translation>
 <translation id="3943582379552582368">&amp;უკან</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3945513714196326460">სცადეთ უფრო მოკლე სახელის გამოყენება</translation>
@@ -5966,7 +5965,6 @@
 <translation id="5101683448725092498">შექმენით თქვენი კონტენტის სარეზერვო ასლები</translation>
 <translation id="5101839224773798795">ავტომატური დაწკაპუნება კურსორის გაჩერებისას</translation>
 <translation id="5102244391872941183">აპები და ვებსაიტები, რომლებიც საჭიროებს მდებარეობის ნებართვას, ასევე, სისტემის სერვისები, გამოიყენებს თქვენს მდებარეობას</translation>
-<translation id="510258712519612658">ჩვენი საუკეთესო არჩევანი</translation>
 <translation id="5103311607312269661">ეკრანის სიკაშკაშის მომატება</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ჯგუფის წაშლა}other{ჯგუფების წაშლა}}</translation>
 <translation id="5106350808162641062">წაშლა</translation>

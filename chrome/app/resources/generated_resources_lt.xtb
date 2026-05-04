@@ -4350,7 +4350,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 
 Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">Šioje svetainėje „JavaScript“ optimizavimas išjungtas. Įgalinkite, kad našumas būtų geresnis.</translation>
 <translation id="3943582379552582368">&amp;Grįžti</translation>
 <translation id="3943857333388298514">Įklijuoti</translation>
 <translation id="3945513714196326460">Išbandykite trumpesnį pavadinimą</translation>
@@ -5982,7 +5981,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5101683448725092498">Atsarginės turinio kopijos kūrimas</translation>
 <translation id="5101839224773798795">Automatiškai spustelėti sustojus žymekliui</translation>
 <translation id="5102244391872941183">Programos ir svetainės, turinčios leidimą pasiekti vietovės duomenis, bei sistemos paslaugos gali naudoti jūsų vietovės informaciją</translation>
-<translation id="510258712519612658">Mūsų geriausi pasirinkimai</translation>
 <translation id="5103311607312269661">padidinti ekrano šviesumą</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Ištrinti grupę}one{Ištrinti grupes}few{Ištrinti grupes}many{Ištrinti grupes}other{Ištrinti grupes}}</translation>
 <translation id="5106350808162641062">Pašalinti</translation>

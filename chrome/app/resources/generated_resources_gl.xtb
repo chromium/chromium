@@ -4336,7 +4336,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 
   Queres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
-<translation id="3942558231079086184">A optimización de JavaScript está desactivada para este sitio. Actívaa para mellorar o rendemento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Proba cun nome máis curto</translation>
@@ -5968,7 +5967,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5101683448725092498">Fai unha copia de seguranza dos teus datos</translation>
 <translation id="5101839224773798795">Facer clic automaticamente cando se deteña o cursor</translation>
 <translation id="5102244391872941183">As aplicacións e sitios web co permiso correspondente, así como os servizos do sistema, poden utilizar a túa localización</translation>
-<translation id="510258712519612658">As nosa selección favorita</translation>
 <translation id="5103311607312269661">aumentar o brillo da pantalla</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Eliminar grupo}other{Eliminar grupos}}</translation>
 <translation id="5106350808162641062">Quitar</translation>

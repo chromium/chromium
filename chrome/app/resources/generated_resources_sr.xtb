@@ -4332,7 +4332,6 @@
 
   Желите ли одмах да покренете <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
-<translation id="3942558231079086184">Оптимизација JavaScript-а је искључена за овај сајт. Омогућите ради бољег учинка.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3945513714196326460">Пробајте са краћим називом</translation>
@@ -5964,7 +5963,6 @@
 <translation id="5101683448725092498">Правите резервне копије садржаја</translation>
 <translation id="5101839224773798795">Аутоматски кликни када се курсор заустави</translation>
 <translation id="5102244391872941183">Апликације и веб-сајтови са дозволом за локацију, као и системске услуге, могу да користе локацију</translation>
-<translation id="510258712519612658">Најбоље по нашем мишљењу</translation>
 <translation id="5103311607312269661">повећавање осветљености екрана</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Избриши групу}one{Избриши групе}few{Избриши групе}other{Избриши групе}}</translation>
 <translation id="5106350808162641062">Уклони</translation>

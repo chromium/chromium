@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Tjek dine gemte adgangskoder for at forbedre sikkerheden og beskytte dig selv online</translation>
 <translation id="3838985624086228724">Prisfald på det produkt, du holder øje med, fra <ph name="PREVIOUS_PRICE" /> til <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Tilbage</translation>
-<translation id="3850952228519377137">Skjul "Overvåg priser på dine faner"</translation>
 <translation id="3851938967634752633">Adgangskoderne til <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Dine konti slettes ikke.</translation>
 <translation id="3853162385423733133">Fortsæt med at bruge og gemme adgangskoder på din Google-konto <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importér</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktivér notifikationer</translation>
 <translation id="4326912346867677256">Tryk på "Brug adgangskode" for at logge ind på en sikker måde.</translation>
-<translation id="4327017157997423717">Overvåg prisen på <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mit drev</translation>
 <translation id="4331177082088332784">Du kan administrere dette under BEGIN_LINKIndstillinger for indholdEND_LINK</translation>
 <translation id="4334428914252001502">1 ulæst artikel.</translation>
@@ -1522,7 +1520,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6327249202318869726">Gemini er deaktiveret for din konto. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="6331836477476466332">En mere sikker og effektiv browser til dig</translation>
-<translation id="6335744088476213315">Dette kort viser produkter, du har kigget på for nylig, og som du muligvis er interesseret i at holde øje med for at få notifikationer om prisfald</translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="6337313937331295309">Privatlivsmeddelelse for Gemini-apps</translation>
 <translation id="633809752005859102">Der gik noget helt galt. Vi arbejder på sagen.</translation>

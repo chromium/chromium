@@ -4347,7 +4347,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> ஐத் தொடங்க வேண்டுமா?</translation>
 <translation id="3942420633017001071">கண்டறிதல்</translation>
-<translation id="3942558231079086184">இந்தத் தளத்திற்கு JavaScript மேம்பாடு ஆஃப் செய்யப்பட்டுள்ளது. சிறந்த செயல்திறனுக்கு ஆன் செய்யவும்.</translation>
 <translation id="3943582379552582368">&amp;முந்தைய பக்கம்</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3945513714196326460">சிறிய பெயரை வழங்கவும்</translation>
@@ -5979,7 +5978,6 @@
 <translation id="5101683448725092498">உங்கள் உள்ளடக்கத்தைக் காப்புப் பிரதி எடுக்கலாம்</translation>
 <translation id="5101839224773798795">கர்சர் நிற்கும் போது தானாகக் கிளிக் செய்</translation>
 <translation id="5102244391872941183">இருப்பிட அனுமதியைக் கொண்டுள்ள ஆப்ஸும் இணையதளங்களும், சிஸ்டம் சேவைகளும் உங்கள் இருப்பிட விவரத்தைப் பயன்படுத்தலாம்</translation>
-<translation id="510258712519612658">எங்களது சிறந்த தேர்வுகள்</translation>
 <translation id="5103311607312269661">டிஸ்ப்ளேயின் ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{குழுவை நீக்கு}other{குழுக்களை நீக்கு}}</translation>
 <translation id="5106350808162641062">அகற்று</translation>

@@ -4331,7 +4331,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> іске қосқыңыз келе ме?</translation>
 <translation id="3942420633017001071">Диагностика</translation>
-<translation id="3942558231079086184">Бұл сайтта JavaScript оңтайландыру әдісі өшірілген. Өнімділікті арттыру үшін қосыңыз.</translation>
 <translation id="3943582379552582368">&amp;Артқа</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3945513714196326460">Атты қысқартыңыз.</translation>
@@ -5962,7 +5961,6 @@
 <translation id="5101683448725092498">Ақпаратыңыздың сақтық көшірмесін жасаңыз</translation>
 <translation id="5101839224773798795">Курсор тоқтағанда автоматты түрде басу</translation>
 <translation id="5102244391872941183">Локацияны пайдалану рұқсаты бар қолданбалар мен веб-сайттар, сондай-ақ жүйелік қызметтер локацияңызды пайдалана алады.</translation>
-<translation id="510258712519612658">Үздік таңдауларымыз</translation>
 <translation id="5103311607312269661">дисплей жарықтығын арттыру</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Топты жою}other{Топтарды жою}}</translation>
 <translation id="5106350808162641062">Өшіру</translation>

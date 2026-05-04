@@ -4344,7 +4344,6 @@
 
   آیا می‌خواهید <ph name="CONTROL_PANEL_APPLET_NAME" /> را شروع کنید؟</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
-<translation id="3942558231079086184">بهینه‌سازی جاوا اسکریپت برای این سایت خاموش است. برای عملکرد بهتر، آن را فعال کنید.</translation>
 <translation id="3943582379552582368">&amp;برگشت</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3945513714196326460">نام کوتاه‌تری را امتحان کنید</translation>
@@ -5976,7 +5975,6 @@
 <translation id="5101683448725092498">از محتوایتان پشتیبان بگیرید</translation>
 <translation id="5101839224773798795">کلیک خودکار با توقف مکان‌نما</translation>
 <translation id="5102244391872941183">برنامه‌ها و وب‌سایت‌های دارای اجازه مکان، و همچنین خدمات سیستم می‌توانند از مکان شما استفاده کنند</translation>
-<translation id="510258712519612658">برترین انتخاب‌های ما</translation>
 <translation id="5103311607312269661">افزایش روشنایی نمایشگر</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{گروه را حذف می‌کنم}one{گروه را حذف می‌کنم}other{گروه‌ها را حذف می‌کنم}}</translation>
 <translation id="5106350808162641062">برداشتن</translation>

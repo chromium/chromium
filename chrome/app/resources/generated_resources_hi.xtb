@@ -4349,7 +4349,6 @@
 
   क्या आप <ph name="CONTROL_PANEL_APPLET_NAME" /> को शुरू करना चाहते हैं?</translation>
 <translation id="3942420633017001071">निदान</translation>
-<translation id="3942558231079086184">इस साइट के लिए, JavaScript ऑप्टिमाइज़ेशन की सुविधा बंद है. बेहतर परफ़ॉर्मेंस के लिए इसे चालू करें.</translation>
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3945513714196326460">इससे छोटा नाम डालें</translation>
@@ -5980,7 +5979,6 @@
 <translation id="5101683448725092498">अपने कॉन्टेंट का बैक अप लें</translation>
 <translation id="5101839224773798795">कर्सर के रुक जाने पर अपने आप क्लिक होने की सुविधा</translation>
 <translation id="5102244391872941183">सिस्टम की सेवाओं के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास जगह की जानकारी इस्तेमाल करने की अनुमति है वे आपकी जगह की जानकारी को ऐक्सेस कर सकती हैं</translation>
-<translation id="510258712519612658">हमारी चुनी गई टॉप स्किल</translation>
 <translation id="5103311607312269661">डिसप्ले की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ग्रुप मिटाएं}one{ग्रुप मिटाएं}other{ग्रुप मिटाएं}}</translation>
 <translation id="5106350808162641062">हटाएं</translation>

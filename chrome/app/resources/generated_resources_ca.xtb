@@ -4326,7 +4326,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 
   Voleu iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
-<translation id="3942558231079086184">L'optimització de JavaScript està desactivada per a aquest lloc web. Activa-la per millorar el rendiment.</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3945513714196326460">Prova un nom més curt</translation>
@@ -5954,7 +5953,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5101683448725092498">Crea una còpia de seguretat de les teves coses</translation>
 <translation id="5101839224773798795">Fes clic automàticament quan el cursor s'aturi</translation>
 <translation id="5102244391872941183">Les aplicacions i els llocs web amb permís per accedir a la ubicació, així com els serveis del sistema, poden utilitzar la teva ubicació</translation>
-<translation id="510258712519612658">Les nostres millors seleccions</translation>
 <translation id="5103311607312269661">augmenta la brillantor de la pantalla</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Suprimeix el grup}other{Suprimeix els grups}}</translation>
 <translation id="5106350808162641062">Suprimeix</translation>

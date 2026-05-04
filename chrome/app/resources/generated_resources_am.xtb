@@ -4343,7 +4343,6 @@
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />ን መጀመር ይፈልጋሉ?</translation>
 <translation id="3942420633017001071">ምርመራ</translation>
-<translation id="3942558231079086184">የጃቫስክሪፕት ማትባት ለዚህ ጣቢያ ጠፍቷል። ለተሻለ አፈጻጸም ያንቁ።</translation>
 <translation id="3943582379552582368">&amp;ተመለስ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3945513714196326460">አጠር ያለ ስም ይሞክሩ</translation>
@@ -5973,7 +5972,6 @@
 <translation id="5101683448725092498">የእርስዎን ነገሮች ምትኬ ያስቀምጡ</translation>
 <translation id="5101839224773798795">ጠቋሚ ሲያቆም በራስሰር ጠቅ አድርግ</translation>
 <translation id="5102244391872941183">የአካባቢ ፈቃድ ያላቸው መተግበሪያዎች እና ድር ጣቢያዎች እንዲሁም የሥርዓት አገልግሎቶች የእርስዎን አካባቢ መጠቀም ይችላሉ</translation>
-<translation id="510258712519612658">የእኛ ከፍተኛ ምርጫዎች</translation>
 <translation id="5103311607312269661">የማሳያ ብሩህነት መጨመሪያ</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ቡድን ሰርዝ}one{ቡድን ሰርዝ}other{ቡድኖችን ሰርዝ}}</translation>
 <translation id="5106350808162641062">አስወግድ</translation>

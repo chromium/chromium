@@ -4344,7 +4344,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 
 Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
-<translation id="3942558231079086184">A JavaScript-optimalizálás ki van kapcsolva ennél a webhelynél. A jobb teljesítmény érdekében engedélyezze.</translation>
 <translation id="3943582379552582368">&amp;Előző</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
 <translation id="3945513714196326460">Próbálkozzon rövidebb név megadásával</translation>
@@ -5976,7 +5975,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5101683448725092498">Tartalmak biztonsági mentése</translation>
 <translation id="5101839224773798795">Automatikus kattintás, amikor a kurzor megáll</translation>
 <translation id="5102244391872941183">A helymeghatározási jogosultsággal rendelkező alkalmazások és webhelyek, valamint a rendszerszolgáltatások használhatják a helyadatokat</translation>
-<translation id="510258712519612658">A mi kedvenceink</translation>
 <translation id="5103311607312269661">kijelző fényerejének növelése</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Csoport törlése}other{Csoportok törlése}}</translation>
 <translation id="5106350808162641062">Eltávolítás</translation>

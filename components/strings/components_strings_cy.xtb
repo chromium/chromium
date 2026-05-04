@@ -2221,7 +2221,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4419287616181386201">Gellir dileu cyfrineiriau yn eu gosodiadau rheoli</translation>
 <translation id="4424024547088906515">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw Chrome yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="4425750422187370446">Dillad Athletaidd</translation>
-<translation id="443008484043213881">Offer</translation>
 <translation id="443121186588148776">Porth cyfresol</translation>
 <translation id="4432688616882109544">Ni dderbyniodd <ph name="HOST_NAME" /> eich tystysgrif mewngofnodi, neu mae'n bosib na ddarparwyd un.</translation>
 <translation id="4432792777822557199">Bydd tudalennau yn <ph name="SOURCE_LANGUAGE" /> yn cael eu cyfieithu i <ph name="TARGET_LANGUAGE" /> o hyn ymlaen</translation>
@@ -4629,7 +4628,6 @@ Manylion ychwanegol:
 <translation id="8175796834047840627">Mae Chrome yn cynnig cadw eich cardiau yn eich Cyfrif Google oherwydd eich bod wedi mewngofnodi. Gallwch newid yr ymddygiad hwn yn y gosodiadau.</translation>
 <translation id="8176440868214972690">Mae gweinyddwr y ddyfais hon wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="817820454357658398">Cynnyrch Hylendid i Fenywod</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Mae cynnwys o'r dudalen dalu yn cael ei rannu â Google i gynnig yr opsiynau hyn.<ph name="END_BOLD" /> Mae cynlluniau talu yn amodol ar gymhwysedd. I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiadau talu<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{Cafodd <ph name="FILE_NAME" /> ei rhwystro oherwydd y cynnwys}zero{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}two{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}few{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}many{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}other{Cafodd <ph name="FILE_COUNT" /> ffeil eu rhwystro oherwydd y cynnwys}}</translation>
 <translation id="8183800802493617952">Gemau a Gweithgareddau Teuluol</translation>
 <translation id="8184538546369750125">Defnyddio'r gosodiad diofyn cyffredinol (Caniatáu)</translation>

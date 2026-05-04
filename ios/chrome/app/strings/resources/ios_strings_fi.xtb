@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Tarkista tallentamasi salasanat tietoturvan parantamiseksi ja selataksesi turvallisemmin</translation>
 <translation id="3838985624086228724">Seuraamassasi tuotteessa on hinnanlasku, vanha hinta <ph name="PREVIOUS_PRICE" />, nyt <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Takaisin</translation>
-<translation id="3850952228519377137">Piilota "Seuraa hintoja välilehdillä"</translation>
 <translation id="3851938967634752633">Näiden salasanat poistetaan: <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja <ph name="NUMBER_OF_ACCOUNTS" /> muuta. Tilejäsi ei poisteta.</translation>
 <translation id="3853162385423733133">Jatka Google-tilisi (<ph name="EMAIL" />) salasanojen käyttöä ja tallentamista</translation>
 <translation id="3853873210696342070">Tuo</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Laita ilmoitukset päälle</translation>
 <translation id="4326912346867677256">Kirjaudu turvallisesti sisään valitsemalla "Käytä salasanaa".</translation>
-<translation id="4327017157997423717">Seuraa hintaa: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Oma Drive</translation>
 <translation id="4331177082088332784">Voit hallita tätä BEGIN_LINK Sisältöasetuksissa END_LINK</translation>
 <translation id="4334428914252001502">1 lukematon artikkeli</translation>
@@ -1522,7 +1520,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6321526113093607004">Lisää kirjanmerkkeihin</translation>
 <translation id="6327249202318869726">Gemini on laitettu pois päältä tililläsi. Pyydä lisätietoja järjestelmänvalvojalta.</translation>
 <translation id="6331836477476466332">Turvallisempi ja tehokkaampi selain</translation>
-<translation id="6335744088476213315">Tässä kortissa näkyvät tuotteet, joita olet äskettäin katsonut ja joiden hintaa saatat haluta seurata saadaksesi ilmoituksia hinnanlaskusta</translation>
 <translation id="6337234675334993532">Salaus</translation>
 <translation id="6337313937331295309">Gemini-sovellusten tietosuojailmoitus</translation>
 <translation id="633809752005859102">Jotain meni pahasti vikaan. Pyrimme korjaamaan tilanteen.</translation>

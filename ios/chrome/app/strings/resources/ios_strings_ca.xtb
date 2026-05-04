@@ -787,7 +787,6 @@
 <translation id="3838691874161539578">Comprova les contrasenyes desades per reforçar la seguretat i protegir-te en línia</translation>
 <translation id="3838985624086228724">Baixada de preu al producte que segueixes, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Enrere</translation>
-<translation id="3850952228519377137">Amaga l'opció Fes un seguiment dels preus des de les teves pestanyes</translation>
 <translation id="3851938967634752633">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="NUMBER_OF_ACCOUNTS" /> més se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="3853162385423733133">Continua utilitzant i desant les contrasenyes al teu Compte de Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importa</translation>
@@ -935,7 +934,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Activa les notificacions</translation>
 <translation id="4326912346867677256">Per iniciar la sessió de manera segura, toca Fes servir la contrasenya.</translation>
-<translation id="4327017157997423717">Fes un seguiment del preu a <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">La meva unitat</translation>
 <translation id="4331177082088332784">Pots gestionar aquesta opció a BEGIN_LINKConfiguració del contingutEND_LINK</translation>
 <translation id="4334428914252001502">Un article no llegit.</translation>
@@ -1521,7 +1519,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
 <translation id="6327249202318869726">Gemini està desactivat per al teu compte. Contacta amb el teu administrador per obtenir més informació.</translation>
 <translation id="6331836477476466332">Un navegador més segur i potent per a tu</translation>
-<translation id="6335744088476213315">Aquesta targeta mostra productes que has vist recentment i que potser t'interessaria seguir per rebre alertes de baixada de preu</translation>
 <translation id="6337234675334993532">Encriptació</translation>
 <translation id="6337313937331295309">Avís de privadesa de les aplicacions de Gemini</translation>
 <translation id="633809752005859102">S'ha produït un error. Estem treballant per solucionar-lo.</translation>

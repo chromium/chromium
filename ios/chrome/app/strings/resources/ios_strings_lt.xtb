@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Patikrinkite išsaugotus slaptažodžius, kad būtumėte geriau apsaugoti internete</translation>
 <translation id="3838985624086228724">Sumažinta stebimo produkto kaina: iš <ph name="PREVIOUS_PRICE" /> į <ph name="PRICE" />, „<ph name="PRODUCT_NAME" />“, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Atgal</translation>
-<translation id="3850952228519377137">Slėpti parinktį „Stebėkite kainas skirtukuose“</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir kitų (dar <ph name="NUMBER_OF_ACCOUNTS" />) slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="3853162385423733133">Toliau naudokite ir išsaugokite slaptažodžius „Google“ paskyroje <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importuoti</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Įjungti pranešimus</translation>
 <translation id="4326912346867677256">Palieskite „Naudoti slaptažodį“, kad prisijungtumėte saugiai.</translation>
-<translation id="4327017157997423717">Stebėkite kainą: „<ph name="PRODUCT_NAME" />“, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mano Diskas</translation>
 <translation id="4331177082088332784">Tai galite valdyti skiltyje BEGIN_LINK„Turinio nustatymai“END_LINK</translation>
 <translation id="4334428914252001502">1 neskaitytas straipsnis.</translation>
@@ -1522,7 +1520,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6321526113093607004">Pridėti prie žymių</translation>
 <translation id="6327249202318869726">„Gemini“ jūsų paskyroje išjungta. Daugiau informacijos galite gauti susisiekę su administratoriumi.</translation>
 <translation id="6331836477476466332">Saugesnė ir galingesnė naršyklė jums</translation>
-<translation id="6335744088476213315">Šioje kortelėje rodomi produktai, kuriuos neseniai peržiūrėjote ir kuriuos galbūt norėtumėte stebėti, kad gautumėte įspėjimus apie sumažintas kainas</translation>
 <translation id="6337234675334993532">Šifruotė</translation>
 <translation id="6337313937331295309">„Gemini Apps“ privatumo pranešimas</translation>
 <translation id="633809752005859102">Kažkas tikrai nepavyko. Pasistengsime tai ištaisyti.</translation>

@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Autoisi nombor kad yang berakhir dengan <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Gulungan Kamera</translation>
+<translation id="3746269120925354434">Maklumat disimpan pada Google Wallet</translation>
 <translation id="3750225824417196283">Halaman tab Inkognito baharu</translation>
 <translation id="3751873026576444885">Berhenti membuat carian skrin anda dengan Google Lens</translation>
 <translation id="3753408171347588045">Menjejaki harga</translation>
@@ -788,7 +789,6 @@
 <translation id="3838691874161539578">Semak kata laluan anda yang disimpan untuk mengukuhkan keselamatan anda dan kekal lebih selamat dalam talian</translation>
 <translation id="3838985624086228724">Penurunan harga pada produk yang dijejaki, daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Kembali</translation>
-<translation id="3850952228519377137">Sembunyikan "Jejaki harga daripada tab anda"</translation>
 <translation id="3851938967634752633">Kata laluan untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />dan <ph name="NUMBER_OF_ACCOUNTS" /> yang lain akan dipadamkan. Akaun anda tidak akan dipadamkan.</translation>
 <translation id="3853162385423733133">Kekal menggunakan dan menyimpan kata laluan dalam Google Account anda <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Import</translation>
@@ -936,7 +936,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Hidupkan pemberitahuan</translation>
 <translation id="4326912346867677256">Ketik "Gunakan Kata laluan" untuk log masuk dengan selamat.</translation>
-<translation id="4327017157997423717">Jejaki harga bagi <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Drive Saya</translation>
 <translation id="4331177082088332784">Anda boleh mengurus tetapan ini dalam BEGIN_LINK Tetapan Kandungan END_LINK</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
@@ -1522,7 +1521,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6321526113093607004">Tambahkan pada Penanda Halaman</translation>
 <translation id="6327249202318869726">Gemini dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="6331836477476466332">Penyemak imbas yang lebih selamat dan berkuasa untuk anda</translation>
-<translation id="6335744088476213315">Kad ini memaparkan produk yang telah anda lihat baru-baru ini dan anda mungkin berminat untuk menjejaki produk tersebut untuk mendapatkan makluman penurunan harga</translation>
 <translation id="6337234675334993532">Penyulitan</translation>
 <translation id="6337313937331295309">Notis Privasi Apl Gemini</translation>
 <translation id="633809752005859102">Ada sesuatu yang tidak kena. Kami akan membetulkannya.</translation>
@@ -2175,6 +2173,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8533670235862049797">Penyemakan Imbas Selamat dihidupkan</translation>
 <translation id="8534481786647257214">Catatan Google+ selesai.</translation>
 <translation id="8535368836838588657">Dedahkan kata laluan</translation>
+<translation id="8540426897269305488">Log masuk dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Semak tetapan penyemak imbas anda</translation>
 <translation id="854938212724803178">Anda mempunyai 1 kata laluan yang terjejas. Betulkan sekarang untuk kekal selamat.</translation>
 <translation id="8551311254462607218">Dalam bar alamat, ketik ikon kamera Google Lens</translation>

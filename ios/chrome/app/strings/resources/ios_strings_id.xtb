@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Periksa sandi tersimpan untuk memperkuat keamanan Anda dan tetap aman saat online</translation>
 <translation id="3838985624086228724">Penurunan harga pada produk yang dipantau, dari <ph name="PREVIOUS_PRICE" /> menjadi <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Kembali</translation>
-<translation id="3850952228519377137">Sembunyikan "Pantau harga dari tab Anda"</translation>
 <translation id="3851938967634752633">Sandi untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, dan <ph name="NUMBER_OF_ACCOUNTS" /> lainnya akan dihapus. Akun Anda tidak akan dihapus.</translation>
 <translation id="3853162385423733133">Tetap gunakan dan simpan sandi di Akun Google Anda <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Impor</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktifkan notifikasi</translation>
 <translation id="4326912346867677256">Ketuk "Gunakan Sandi" untuk login dengan aman.</translation>
-<translation id="4327017157997423717">Pantau harga <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Drive Saya</translation>
 <translation id="4331177082088332784">Anda dapat mengelolanya di BEGIN_LINK Setelan Konten END_LINK</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
@@ -1522,7 +1520,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
 <translation id="6327249202318869726">Gemini dinonaktifkan untuk akun Anda. Hubungi admin untuk mengetahui informasi selengkapnya.</translation>
 <translation id="6331836477476466332">Browser yang lebih aman dan canggih untuk Anda</translation>
-<translation id="6335744088476213315">Kartu ini menampilkan produk yang baru-baru ini Anda lihat dan mungkin ingin Anda pantau untuk mendapatkan notifikasi penurunan harga</translation>
 <translation id="6337234675334993532">Enkripsi</translation>
 <translation id="6337313937331295309">Pemberitahuan Privasi Aplikasi Gemini</translation>
 <translation id="633809752005859102">Terjadi error. Kami akan mengatasinya.</translation>

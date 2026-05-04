@@ -2217,7 +2217,6 @@
 <translation id="4419287616181386201">密码可在相应管理设置中删除</translation>
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4425750422187370446">运动服装</translation>
-<translation id="443008484043213881">工具</translation>
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登录证书，或者您可能没有提供登录证书。</translation>
 <translation id="4432792777822557199">从现在开始，源语言为<ph name="SOURCE_LANGUAGE" />的网页一律会被翻译成<ph name="TARGET_LANGUAGE" /></translation>
@@ -4625,7 +4624,6 @@
 <translation id="8175796834047840627">Chrome 会主动询问是否要将您的卡保存到您的 Google 账号中，因为您已登录。您可在“设置”中更改此行为。</translation>
 <translation id="8176440868214972690">此设备的管理员已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="817820454357658398">女性卫生产品</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />系统会将结账页中的内容分享给 Google，以便提供这些选项。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{由于内容原因，<ph name="FILE_NAME" /> 已被屏蔽}other{由于内容原因，<ph name="FILE_COUNT" /> 个文件已被屏蔽}}</translation>
 <translation id="8183800802493617952">面向家庭的游戏和活动</translation>
 <translation id="8184538546369750125">使用全局默认设置（允许）</translation>

@@ -4338,7 +4338,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 
   <ph name="CONTROL_PANEL_APPLET_NAME" />’ni ochasizmi?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">Bu sayt uchun JavaScript optimallash yoqilmagan. Unumdorlikni oshirish uchun yoqing.</translation>
 <translation id="3943582379552582368">&amp;Orqaga</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3945513714196326460">Qisqaroq nom bering</translation>
@@ -5969,7 +5968,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5101683448725092498">Kerakli narsalaringizni zaxiralang</translation>
 <translation id="5101839224773798795">Kursor harakati toʻxtaganda avtomatik klik bosilsin</translation>
 <translation id="5102244391872941183">Ruxsat olgan ilova va saytlar hamda tizim xizmatlari joylashuv axborotidan foydalanishi mumkin</translation>
-<translation id="510258712519612658">Eng yaxshilari</translation>
 <translation id="5103311607312269661">Displey yorqinligini oshirish</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Guruhni oʻchirish}other{Guruhlarni oʻchirish}}</translation>
 <translation id="5106350808162641062">Olib tashlash</translation>

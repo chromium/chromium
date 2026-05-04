@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Comprueba tus contraseñas guardadas para reforzar tu seguridad y mejorar tu protección online</translation>
 <translation id="3838985624086228724">Bajada de precio en tu producto seguido, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Volver</translation>
-<translation id="3850952228519377137">Ocultar Seguir precios de tus pestañas</translation>
 <translation id="3851938967634752633">Se eliminarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="NUMBER_OF_ACCOUNTS" /> cuentas más. Tus cuentas no se eliminarán.</translation>
 <translation id="3853162385423733133">Sigue usando y guardando las contraseñas en tu cuenta de Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importar</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
 <translation id="4326912346867677256">Toca Usar contraseña para iniciar sesión de forma segura.</translation>
-<translation id="4327017157997423717">Seguir precio de <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mi unidad</translation>
 <translation id="4331177082088332784">Puedes gestionar esto en BEGIN_LINKConfiguración de contenidoEND_LINK</translation>
 <translation id="4334428914252001502">1 artículo no leído.</translation>
@@ -1522,7 +1520,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6321526113093607004">Añadir a marcadores</translation>
 <translation id="6327249202318869726">Gemini está desactivado en tu cuenta. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="6331836477476466332">Un navegador más seguro y potente para ti</translation>
-<translation id="6335744088476213315">Esta tarjeta muestra los productos que has visto recientemente y que te podría interesar seguir para recibir alertas de bajadas de precio</translation>
 <translation id="6337234675334993532">Cifrado</translation>
 <translation id="6337313937331295309">Aviso de Privacidad de las apps de Gemini</translation>
 <translation id="633809752005859102">Se ha producido un problema grave. Lo investigaremos para solucionarlo.</translation>

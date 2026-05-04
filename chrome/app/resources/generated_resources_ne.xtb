@@ -4332,7 +4332,6 @@
 
 के तपाईं <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरु गर्न चाहनुहुन्छ?</translation>
 <translation id="3942420633017001071">निदान</translation>
-<translation id="3942558231079086184">यो साइटका हकमा JavaScript अप्टिमाइजेसन अफ गरिएको छ। अझ राम्रो पर्फर्मेन्स प्राप्त गर्न यसलाई अन गर्नुहोस्।</translation>
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
@@ -5964,7 +5963,6 @@
 <translation id="5101683448725092498">आफ्ना सामग्री ब्याकअप गर्नुहोस्</translation>
 <translation id="5101839224773798795">कर्सर रोकिँदा स्वतः क्लिक गर्नुहोस्</translation>
 <translation id="5102244391872941183">लोकेसन प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइटका साथै सिस्टमका सेवाहरू तपाईंको डिभाइसको लोकेसन प्रयोग गर्न सक्छन्</translation>
-<translation id="510258712519612658">हाम्रा शीर्ष रोजाइहरू</translation>
 <translation id="5103311607312269661">डिस्प्लेको चमक बढाउने की</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{समूह मेटाउनुहोस्}other{समूहहरू मेटाउनुहोस्}}</translation>
 <translation id="5106350808162641062">हटाउनुहोस्</translation>

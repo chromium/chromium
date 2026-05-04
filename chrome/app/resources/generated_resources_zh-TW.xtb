@@ -4330,7 +4330,6 @@
 
   是否要開啟「<ph name="CONTROL_PANEL_APPLET_NAME" />」？</translation>
 <translation id="3942420633017001071">診斷</translation>
-<translation id="3942558231079086184">這個網站已關閉 JavaScript 最佳化功能。啟用可提高效能。</translation>
 <translation id="3943582379552582368">上一頁(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3945513714196326460">請縮短名稱</translation>
@@ -5958,7 +5957,6 @@
 <translation id="5101683448725092498">備份資料</translation>
 <translation id="5101839224773798795">游標停止時自動點擊</translation>
 <translation id="5102244391872941183">系統服務和具有位置存取權的應用程式與網站可使用你的位置資訊</translation>
-<translation id="510258712519612658">編輯嚴選</translation>
 <translation id="5103311607312269661">調高螢幕亮度</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{刪除群組}other{刪除群組}}</translation>
 <translation id="5106350808162641062">移除</translation>

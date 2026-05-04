@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">ກວດລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານເພື່ອເພີ່ມທະວີຄວາມປອດໄພຂອງທ່ານ ແລະ ອອນລາຍຢ່າງປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="3838985624086228724">ລາຄາສິນຄ້າທີ່ທ່ານຕິດຕາມຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
-<translation id="3850952228519377137">ເຊື່ອງ "ຕິດຕາມລາຄາຈາກແຖບຂອງທ່ານ"</translation>
 <translation id="3851938967634752633">ລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ແລະ <ph name="NUMBER_OF_ACCOUNTS" /> ບັນຊີອື່ນໆຈະຖືກລຶບ. ບັນຊີຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="3853162385423733133">ໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ Google <ph name="EMAIL" /> ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="3853873210696342070">ນຳເຂົ້າ</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">ເປີດການແຈ້ງເຕືອນ</translation>
 <translation id="4326912346867677256">ແຕະ "ໃຊ້ລະຫັດຜ່ານ" ເພື່ອເຂົ້າສູ່ລະບົບຢ່າງປອດໄພ.</translation>
-<translation id="4327017157997423717">ຕິດຕາມລາຄາ <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">ໄດຣຟ໌ຂອງຂ້ອຍ</translation>
 <translation id="4331177082088332784">ທ່ານສາມາດຈັດການສິ່ງນີ້ໄດ້ໃນ BEGIN_LINK ການຕັ້ງຄ່າເນື້ອຫາ END_LINK</translation>
 <translation id="4334428914252001502">ມີ 1 ບົດຄວາມທີ່ຍັງບໍ່ໄດ້ອ່ານ.</translation>
@@ -1522,7 +1520,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6321526113093607004">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="6327249202318869726">Gemini ຖືກປິດໄວ້ສຳລັບບັນຊີຂອງທ່ານ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="6331836477476466332">ໂປຣແກຣມທ່ອງເວັບທີ່ປອດໄພ ແລະ ຊົງພະລັງຍິ່ງຂຶ້ນສຳລັບທ່ານ</translation>
-<translation id="6335744088476213315">ບັດນີ້ສະແດງສິນຄ້າທີ່ທ່ານເບິ່ງເມື່ອບໍ່ດົນມານີ້ ແລະ ອາດຈະມີຄວາມສົນໃຈໃນການຕິດຕາມເພື່ອຮັບການແຈ້ງເຕືອນລາຄາລົງ</translation>
 <translation id="6337234675334993532">ການເຂົ້າລະຫັດ</translation>
 <translation id="6337313937331295309">ປະກາດຄວາມເປັນສ່ວນຕົວແອັບ Gemini</translation>
 <translation id="633809752005859102">ມີ​ບາງ​ອັນ​ຜິດ​ພາດ​ແທ້ໆ. ພວກ​ເຮົາ​ຈະ​ເຮັດ​ວຽກ​ກັບ​ອັນ​ນັ້ນ.</translation>

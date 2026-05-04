@@ -4337,7 +4337,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> funksiyasına başlamaq istəyirsiniz?</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
-<translation id="3942558231079086184">Bu sayt üçün JavaScript optimallaşdırılması deaktivdir. Daha yaxşı performans üçün aktivləşdirin.</translation>
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
@@ -5967,7 +5966,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5101683448725092498">Elementlərinizi yedəkləyin</translation>
 <translation id="5101839224773798795">Kursor dayandıqda avtomatik klikləyin</translation>
 <translation id="5102244391872941183">Məkan icazəsi olan tətbiq və veb-saytlar, eləcə də sistem xidmətləri məkandan istifadə edə bilər</translation>
-<translation id="510258712519612658">Populyar seçimlərimiz</translation>
 <translation id="5103311607312269661">displey parlaqlığını artırın</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Qrupu silin}other{Qrupları silin}}</translation>
 <translation id="5106350808162641062">Silin</translation>

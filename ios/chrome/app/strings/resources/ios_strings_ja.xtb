@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">保存したパスワードをチェックしてセキュリティを強化し、ウェブを安全に利用できるようにしましょう</translation>
 <translation id="3838985624086228724">トラッキングしている商品の値下げ情報、<ph name="PREVIOUS_PRICE" /> から <ph name="PRICE" />、<ph name="PRODUCT_NAME" />、<ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">戻る</translation>
-<translation id="3850952228519377137">[タブから価格をトラッキング] を非表示にする</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" />、その他 <ph name="NUMBER_OF_ACCOUNTS" /> 件のパスワードが削除されます。アカウントは削除されません。</translation>
 <translation id="3853162385423733133">Google アカウント（<ph name="EMAIL" />）のパスワードを引き続き使用して保存してください</translation>
 <translation id="3853873210696342070">インポート</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">通知をオンにする</translation>
 <translation id="4326912346867677256">[パスワードを使用] をタップして、安全にログインします。</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> の価格のトラッキング、<ph name="PRICE" />、<ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">マイドライブ</translation>
 <translation id="4331177082088332784">この設定は、BEGIN_LINKコンテンツの設定END_LINKで管理できます</translation>
 <translation id="4334428914252001502">1 件の未読記事があります。</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6327249202318869726">お使いのアカウントでは Gemini が無効になっています。詳しくは管理者にお問い合わせください。</translation>
 <translation id="6331836477476466332">より安全で強力なブラウザ</translation>
-<translation id="6335744088476213315">このカードには、最近閲覧した商品の値下げアラートが表示されます</translation>
 <translation id="6337234675334993532">暗号化</translation>
 <translation id="6337313937331295309">Gemini アプリのプライバシーに関するお知らせ</translation>
 <translation id="633809752005859102">エラーが発生しました。原因を調査します。</translation>

@@ -4347,7 +4347,6 @@
 
   तुम्ही <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरुवात करू इच्छिता?</translation>
 <translation id="3942420633017001071">निदान</translation>
-<translation id="3942558231079086184">या साइटसाठी JavaScript ऑप्टिमायझेशन बंद आहे. आणखी चांगल्या परफॉर्मन्ससाठी सुरू करा.</translation>
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3945513714196326460">संक्षिप्त नाव वापरून पहा</translation>
@@ -5977,7 +5976,6 @@
 <translation id="5101683448725092498">तुमच्या आशयाचा बॅक अप घ्या</translation>
 <translation id="5101839224773798795">कर्सर थांबल्यावर आपोआप क्लिक करा</translation>
 <translation id="5102244391872941183">स्थान परवानगी असणारी अ‍ॅप्स आणि वेबसाइट, त्याचप्रमाणे सिस्टीम सेवा तुमचे स्थान वापरू शकतात</translation>
-<translation id="510258712519612658">आमच्या सर्वोत्तम निवडी</translation>
 <translation id="5103311607312269661">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{गट हटवा}other{गट हटवा}}</translation>
 <translation id="5106350808162641062">काढून टाका</translation>

@@ -2219,7 +2219,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4419287616181386201">Paroles var dzēst to pārvaldības iestatījumos.</translation>
 <translation id="4424024547088906515">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu pārlūkā Chrome. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="4425750422187370446">Sporta apģērbs</translation>
-<translation id="443008484043213881">Rīki</translation>
 <translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nepieņēma jūsu pieteikšanās sertifikātu, vai arī pieteikšanās sertifikāts netika iesniegts.</translation>
 <translation id="4432792777822557199">Turpmāk lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /> tiks tulkotas šādā valodā: <ph name="TARGET_LANGUAGE" />.</translation>
@@ -4628,7 +4627,6 @@ Papildu informācija:
 <translation id="8175796834047840627">Pārlūkprogrammā Chrome tiek piedāvāts saglabāt jūsu kartes Google kontā, jo esat pierakstījies. Varat mainīt šo darbību iestatījumos.</translation>
 <translation id="8176440868214972690">Šīs ierīces administrators ir nosūtījis informāciju, piemēram, iestatījumus vai politikas, uz tālāk norādītajām vietnēm.</translation>
 <translation id="817820454357658398">Menstruālās higiēnas produkti</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Lai piedāvātu šīs iespējas, ar Google tiek kopīgots saturs no norēķināšanās lapas.<ph name="END_BOLD" /> Uz maksājumu plāniem attiecas piemērotības prasības. Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LINK" />maksājumu iestatījumiem<ph name="END_LINK" />.</translation>
 <translation id="818254048113802060">{0,plural, =1{Fails “<ph name="FILE_NAME" />” tika bloķēts satura dēļ}zero{<ph name="FILE_COUNT" /> faili tika bloķēti satura dēļ}one{<ph name="FILE_COUNT" /> fails tika bloķēts satura dēļ}other{<ph name="FILE_COUNT" /> faili tika bloķēti satura dēļ}}</translation>
 <translation id="8183800802493617952">Ģimenei paredzētas spēles un aktivitātes</translation>
 <translation id="8184538546369750125">Izmantot globālo noklusējumu (Atļaut)</translation>

@@ -123,7 +123,6 @@ Als je het beleid instelt op 1 - DisabledForBrowser, wordt voorkomen dat het bro
 
 Let op: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Ontvangst van Safe Browsing-enquêtes aanzetten</translation>
-<translation id="1069651607236021905">Voorgrondprioriteit afdwingen voor specifieke herkomsten</translation>
 <translation id="107045325503547419">Afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="1073983258515362346">Informatie rapporteren over de schermverlichting van een apparaat.
 
@@ -5306,17 +5305,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
           Houd er rekening mee dat het beleid wordt toegepast per weergaveprogrammaproces en dat de meest recente waarde van de beleidsinstelling van kracht is als een weergaveprogrammaproces wordt gestart. Volledig opnieuw opstarten is vereist om ervoor te zorgen dat op alle geladen tabbladen een consistente beleidsinstelling wordt toegepast. Dit heeft geen negatieve invloed op processen die met andere waarden van dit beleid worden uitgevoerd.
           </translation>
 <translation id="4578265298946081589">Niet opnieuw opstarten na uitloggen gebruiker.</translation>
-<translation id="4580711645933054901">Met dit beleid kun je een lijst met URL-patronen instellen. Webcontent op de achtergrond die overeenkomt met deze patronen, wordt gedwongen uitgevoerd met prioriteit op de voorgrond.
-
-Als je het beleid <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> toepast, wordt deze lijst genegeerd omdat alle tabbladen prioriteit op de voorgrond krijgen.
-
-Als <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> uitstaat of niet is ingesteld, wordt alleen content die overeenkomt met de patronen in deze lijst geforceerd.
-
-Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.
-
-Dit beleid zoekt alleen overeenkomsten op basis van de oorsprong, dus elk pad of elke queryparameter in het patroon wordt genegeerd. Schema, host en poort worden ondersteund.
-
-Als deze lijst leeg is of niet is ingesteld, wordt er geen achtergrondcontent uitgevoerd met prioriteit op de voorgrond.</translation>
 <translation id="4581507927311097234">De tijdsduur zonder gebruikersinvoer waarna het scherm uitgaat (in milliseconden)</translation>
 <translation id="4582027661281685066">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="PRIVATE_NETWORK_ACCESS" />-controles.
 

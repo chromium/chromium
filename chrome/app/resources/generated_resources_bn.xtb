@@ -4347,7 +4347,6 @@
 
 আপনি কি <ph name="CONTROL_PANEL_APPLET_NAME" /> শুরু করতে চান?</translation>
 <translation id="3942420633017001071">ডায়গনিস্টিক</translation>
-<translation id="3942558231079086184">এই সাইটের জন্য জাভাস্ক্রিপ্ট অপ্টিমাইজেশনের সুবিধা বন্ধ করা আছে। আরও ভালো পারফর্ম্যান্সের জন্য চালু করুন।</translation>
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3945513714196326460">আরও ছোট নাম লিখে দেখুন</translation>
@@ -5980,7 +5979,6 @@
 <translation id="5101683448725092498">আপনার জিনিসের ব্যাক-আপ নিন</translation>
 <translation id="5101839224773798795">মাউস কার্সার বন্ধ হয়ে গেলে অটোমেটিক ক্লিক হবে</translation>
 <translation id="5102244391872941183">সিস্টেম সার্ভিসের পাশাপাশি যেসব অ্যাপ ও ওয়েবসাইটের লোকেশন অ্যাক্সেস করার অনুমতি আছে, সেগুলি আপনার লোকেশন ব্যবহার করতে পারবে</translation>
-<translation id="510258712519612658">আমাদের সেরা বাছাই</translation>
 <translation id="5103311607312269661">ডিসপ্লের উজ্জ্বলতা বাড়ানো</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{গ্রুপ মুছুন}one{গ্রুপ মুছুন}other{গ্রুপ মুছুন}}</translation>
 <translation id="5106350808162641062">সরান</translation>

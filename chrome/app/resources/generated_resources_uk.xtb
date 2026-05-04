@@ -4350,7 +4350,6 @@
 
   Запустити міні-додаток <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Діагностика</translation>
-<translation id="3942558231079086184">Для цього сайту вимкнено оптимізацію JavaScript. Увімкніть її, щоб підвищити продуктивність.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3945513714196326460">Введіть коротшу назву</translation>
@@ -5981,7 +5980,6 @@
 <translation id="5101683448725092498">Створіть резервну копію даних</translation>
 <translation id="5101839224773798795">Автоматично натискати, коли курсор зупиняється</translation>
 <translation id="5102244391872941183">Ваші дані про місцезнаходження можуть використовувати додатки й вебсайти, які мають дозвіл на доступ до геоданих, а також системні сервіси</translation>
-<translation id="510258712519612658">Найкраще на наш вибір</translation>
 <translation id="5103311607312269661">збільшення яскравості екрана</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Видалити групу}one{Видалити групи}few{Видалити групи}many{Видалити групи}other{Видалити групи}}</translation>
 <translation id="5106350808162641062">Вилучити</translation>

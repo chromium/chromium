@@ -4343,7 +4343,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3938708596383910944">Tekoälyä hyödyntävät historiatulokset sisältävät vain sivustot, joilla käyt tämän ominaisuuden päälle laittamisen jälkeen</translation>
 <translation id="3941565636838060942">Jos haluat piilottaa tämän ohjelman käyttöoikeuden, sinun on poistettava sen asennus käyttämällä sovelmaa <ph name="CONTROL_PANEL_APPLET_NAME" /> ohjauspaneelissa. Haluatko käynnistää sovelman <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
-<translation id="3942558231079086184">JavaScript-optimointi on pois päältä tällä sivustolla. Ota käyttöön, niin saat parempia tuloksia.</translation>
 <translation id="3943582379552582368">&amp;Edellinen</translation>
 <translation id="3943857333388298514">Liitä</translation>
 <translation id="3945513714196326460">Kokeile lyhyempää nimeä</translation>
@@ -5975,7 +5974,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5101683448725092498">Varmuuskopioi sisältösi</translation>
 <translation id="5101839224773798795">Klikkaa automaattisesti, kun osoitin pysähtyy</translation>
 <translation id="5102244391872941183">Sovellukset ja verkkosivustot, joilla on sijaintilupa, sekä järjestelmäpalvelut voivat käyttää sijaintiasi.</translation>
-<translation id="510258712519612658">Meidän valintamme</translation>
 <translation id="5103311607312269661">lisää näytön kirkkautta</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Poista ryhmä}other{Poista ryhmät}}</translation>
 <translation id="5106350808162641062">Poista</translation>

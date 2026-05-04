@@ -2217,7 +2217,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4419287616181386201">Pasahitzak haiek kudeatzeko ezarpenetan ezaba daitezke</translation>
 <translation id="4424024547088906515">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chrome ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4425750422187370446">Arropa atletikoa</translation>
-<translation id="443008484043213881">Tresnak</translation>
 <translation id="443121186588148776">Serieko ataka</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> webguneak ez du onartu edo jaso saioa hasteko ziurtagiria.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> darabilten orriak <ph name="TARGET_LANGUAGE" /> hizkuntzara itzuliko dira</translation>
@@ -4624,7 +4623,6 @@ Xehetasun gehiago:
 <translation id="8175796834047840627">Saioa hasita duzunez, txartelak Google-ko kontuan gordetzeko aukera ematen dizu Chrome-k. Aukera hori aldatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8176440868214972690">Gailuaren administratzaileak ezarpenei eta gidalerroei buruzko informazioa bidali du, besteak beste, jarraian ageri diren webguneetara.</translation>
 <translation id="817820454357658398">Hilekoaren higienerako produktuak</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Ordainketa-orriaren edukia Google-rekin partekatzen da aukera horiek eskaintzeko.<ph name="END_BOLD" /> Ordainketa-planak baldintza batzuk betetzen dituztenentzat daude erabilgarri. Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa-ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> blokeatu da, edukia dela eta}other{<ph name="FILE_COUNT" /> fitxategi blokeatu dira, edukia dela eta}}</translation>
 <translation id="8183800802493617952">Familientzako jokoak eta jarduerak</translation>
 <translation id="8184538546369750125">Erabili lehenespen globala (Baimendu)</translation>

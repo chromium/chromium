@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">మీ సెక్యూరిటీని బలపరచడానికి, ఆన్‌లైన్‌లో సురక్షితంగా ఉండటానికి మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="3838985624086228724">మీరు ట్రాక్ చేస్తోన్న ప్రోడక్ట్ ధర <ph name="PREVIOUS_PRICE" /> నుండి <ph name="PRICE" />‌కు తగ్గింది, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">వెనుకకు</translation>
-<translation id="3850952228519377137">"మీ ట్యాబ్‌ల నుండి ధరలను ట్రాక్ చేయి"ని దాచండి</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, మరో <ph name="NUMBER_OF_ACCOUNTS" /> URLలకు సంబంధించిన పాస్‌వర్డ్‌లు తొలగించబడతాయి. మీ ఖాతాలు తొలగించబడవు.</translation>
 <translation id="3853162385423733133">మీ Google ఖాతా <ph name="EMAIL" />‌లో ఉన్న పాస్‌వర్డ్‌లను ఉపయోగించడం, దానిలో పాస్‌వర్డ్‌లను సేవ్ చేయడం కొనసాగించండి</translation>
 <translation id="3853873210696342070">దిగుమతి చేయండి</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="4326912346867677256">సురక్షితంగా సైన్ ఇన్ చేయడానికి "పాస్‌వర్డ్‌ను ఉపయోగించండి" ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> ధరను ట్రాక్ చేయండి, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">నా డ్రైవ్</translation>
 <translation id="4331177082088332784">మీరు దీన్ని BEGIN_LINK కంటెంట్ సెట్టింగ్‌ల END_LINKలో మేనేజ్ చేయవచ్చు</translation>
 <translation id="4334428914252001502">1 చదవని కథనం ఉంది.</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="6327249202318869726">మీ ఖాతాకు Gemini ఆఫ్ చేయబడింది. మరింత సమాచారం కోసం మీ అడ్మిన్‌ను కాంటాక్ట్ చేయండి.</translation>
 <translation id="6331836477476466332">మీ కోసం సురక్షితమైన, మరింత శక్తివంతమైన బ్రౌజర్</translation>
-<translation id="6335744088476213315">ఈ కార్డ్ మీరు ఇటీవల చూసిన ప్రోడక్ట్‌లను చూపుతుంది, ధర తగ్గుదల అలర్ట్‌లను పొందడానికి ట్రాకింగ్ చేయడానికి ఆసక్తి చూపవచ్చు</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
 <translation id="6337313937331295309">Gemini యాప్స్ గోప్యతా ప్రకటన</translation>
 <translation id="633809752005859102">వాస్తవంగా ఏదో తప్పు జరిగింది. మేము దానిపై పని చేస్తాము.</translation>

@@ -2223,7 +2223,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4419287616181386201">Lösenord kan raderas i hanteringsinställningarna</translation>
 <translation id="4424024547088906515">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chrome inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="4425750422187370446">Sportkläder</translation>
-<translation id="443008484043213881">Verktyg</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> godkände inte inloggningscertifikatet eller så har inget inloggningscertifikat angetts.</translation>
 <translation id="4432792777822557199">Sidor på <ph name="SOURCE_LANGUAGE" /> översätts till <ph name="TARGET_LANGUAGE" /> från och med nu</translation>
@@ -4632,7 +4631,6 @@ Mer information.
 <translation id="8175796834047840627">Du erbjuds av Chrome att spara dina kort i Google-kontot eftersom du är inloggad. Du kan ändra detta i inställningarna.</translation>
 <translation id="8176440868214972690">Administratören för enheten har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>
 <translation id="817820454357658398">Hygienprodukter för kvinnor</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Innehåll från kassasidan delas med Google för att erbjuda dessa alternativ.<ph name="END_BOLD" /> Kvalificering krävs för betalningsplaner. Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> har blockerats på grund av innehåll}other{<ph name="FILE_COUNT" /> filer har blockerats på grund av innehåll}}</translation>
 <translation id="8183800802493617952">Familjevänliga spel och aktiviteter</translation>
 <translation id="8184538546369750125">Använd global standardinställning (Tillåt)</translation>

@@ -2075,6 +2075,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2402226831639195063">Nada</translation>
 <translation id="2405887402346713222">Nombor Siri Peranti dan Komponen</translation>
 <translation id="2406153734066939945">Padamkan profil dan data profil ini?</translation>
+<translation id="2406942743794219791">Sahkan enjin carian lalai yang anda mahukan</translation>
 <translation id="2407671304279211586">Pilih penyedia DNS</translation>
 <translation id="2408018932941436077">Menyimpan kad</translation>
 <translation id="2408742686124047357">Sematkan Google Lens pada bar alat anda untuk akses mudah selepas ini</translation>
@@ -3056,6 +3057,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3046892784550338476">Versi <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Haaman Web, Lengkap</translation>
 <translation id="304747341537320566">Enjin Pertuturan</translation>
+<translation id="3047618804758101928">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar tetapan anda</translation>
 <translation id="3047678109605649715">Tiada suara <ph name="LANGUAGE" /> pada peranti anda. Kosongkan ruang pada peranti anda dan cuba lagi.</translation>
 <translation id="3048336643003835855">Peranti HID daripada vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Main (k)</translation>
@@ -4349,7 +4351,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 
   Adakah anda ingin memulakan <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
-<translation id="3942558231079086184">Pengoptimuman JavaScript dimatikan untuk laman ini. Dayakan untuk mendapatkan prestasi yang lebih baik.</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3945513714196326460">Cuba nama yang lebih pendek</translation>
@@ -5981,7 +5982,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5101683448725092498">Sandarkan bahan anda</translation>
 <translation id="5101839224773798795">Klik secara automatik apabila kursor berhenti</translation>
 <translation id="5102244391872941183">Apl dan laman web dengan kebenaran lokasi serta perkhidmatan sistem, boleh menggunakan lokasi anda</translation>
-<translation id="510258712519612658">Pilihan popular kami</translation>
 <translation id="5103311607312269661">tingkatkan kecerahan paparan</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Padamkan Kumpulan}other{Padamkan Kumpulan}}</translation>
 <translation id="5106350808162641062">Alih keluar</translation>
@@ -10016,6 +10016,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7939062555109487992">Pilihan lanjutan</translation>
 <translation id="793923212791838">Peranti anda tidak boleh digunakan dengan laman ini</translation>
 <translation id="7939328347457537652">Urus sijil peranti</translation>
+<translation id="7939918959917132075">Ditukar kepada nilai ini oleh sambungan</translation>
 <translation id="7940087892955752820">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder akan dinyahkongsi apabila <ph name="SPECIFIC_NAME" /> ditutup selepas ini.</translation>
 <translation id="7940265372707990269">Isih mengikut <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Kesediaan Penambatan:</translation>

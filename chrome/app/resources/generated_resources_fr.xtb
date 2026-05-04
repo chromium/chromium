@@ -4333,7 +4333,6 @@ au moyen de <ph name="CONTROL_PANEL_APPLET_NAME" /> dans le panneau de configura
 
 Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
-<translation id="3942558231079086184">L'optimisation JavaScript est désactivée pour ce site. Activez-la pour améliorer les performances.</translation>
 <translation id="3943582379552582368">R&amp;etour</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3945513714196326460">Saisissez un nom plus court</translation>
@@ -5964,7 +5963,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5101683448725092498">Sauvegarder vos contenus</translation>
 <translation id="5101839224773798795">Cliquer automatiquement à l'arrêt du curseur</translation>
 <translation id="5102244391872941183">Les applis et sites Web ayant l'autorisation d'accéder à la position, ainsi que les services système, peuvent utiliser votre position</translation>
-<translation id="510258712519612658">Notre top du moment</translation>
 <translation id="5103311607312269661">augmenter la luminosité de l'écran</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Supprimer le groupe}one{Supprimer le groupe}other{Supprimer les groupes}}</translation>
 <translation id="5106350808162641062">Supprimer</translation>

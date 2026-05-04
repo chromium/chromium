@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Təhlükəsizliyi gücləndirmək və onlayn olarkən təhlükəsiz qalmaq üçün yadda saxlanmış parolları yoxlayın</translation>
 <translation id="3838985624086228724">İzlənilən məhsulda qiymət <ph name="PREVIOUS_PRICE" /> məbləğindən <ph name="PRICE" /> məbləğinə düşdü: <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Geri</translation>
-<translation id="3850952228519377137">"Tablardan qiymətləri izlədin" seçimini gizlədin</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> və digər <ph name="NUMBER_OF_ACCOUNTS" /> hesab üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="3853162385423733133">Parolları Google Hesabınızda (<ph name="EMAIL" />) istifadə etməyə və yadda saxlamağa davam edin</translation>
 <translation id="3853873210696342070">İmport edin</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Bildirişləri aktiv edin</translation>
 <translation id="4326912346867677256">Təhlükəsiz daxil olmaq üçün "Paroldan istifadə edin" seçiminə toxunun.</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> üzrə qiyməti izləyin: <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Diskim</translation>
 <translation id="4331177082088332784">Bunu BEGIN_LINK Kontent ayarlarında END_LINK idarə etmək olar</translation>
 <translation id="4334428914252001502">1 oxunmamış məqalə.</translation>
@@ -1522,7 +1520,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
 <translation id="6327249202318869726">Gemini hesabınız üçün deaktiv edilib. Ətraflı məlumat üçün admininizlə əlaqə saxlayın.</translation>
 <translation id="6331836477476466332">Sizin üçün daha təhlükəsiz, daha güclü brauzer</translation>
-<translation id="6335744088476213315">Bu kart yaxın vaxtlarda baxdığınız məhsulları göstərir. Qiymət endirimi xəbərdarlığı almaq üçün onu izləmək istəyə bilərsiniz</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
 <translation id="6337313937331295309">Gemini Tətbiqi üzrə Məxfilik Bildirişi</translation>
 <translation id="633809752005859102">Nəsə həqiqətən yanlış oldu. Üzərində işləyəcik.</translation>

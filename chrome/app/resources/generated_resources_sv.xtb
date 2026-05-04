@@ -4349,7 +4349,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 
   Vill du starta <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
-<translation id="3942558231079086184">JavaScript-optimering är inaktiverat för den här webbplatsen. Aktivera för bättre prestanda.</translation>
 <translation id="3943582379552582368">&amp;Bakåt</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3945513714196326460">Ange ett kortare namn</translation>
@@ -5981,7 +5980,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5101683448725092498">Säkerhetskopiera</translation>
 <translation id="5101839224773798795">Klicka automatiskt när pekaren stannar</translation>
 <translation id="5102244391872941183">Appar och webbplatser med platsbehörighet och systemtjänster kan använda din plats</translation>
-<translation id="510258712519612658">Populärast</translation>
 <translation id="5103311607312269661">tangenten som ökar skärmens ljusstyrka</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Radera gruppen}other{Radera grupperna}}</translation>
 <translation id="5106350808162641062">Ta bort</translation>

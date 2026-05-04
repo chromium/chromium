@@ -4332,7 +4332,6 @@
 
   Ցանկանո՞ւմ եք անցնել <ph name="CONTROL_PANEL_APPLET_NAME" />:</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
-<translation id="3942558231079086184">JavaScript-ի օպտիմալացումն անջատված է այս կայքի համար։ Միացրեք՝ արդյունավետությունը բարելավելու համար։</translation>
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3945513714196326460">Մուտքագրեք ավելի կարճ անվանում</translation>
@@ -5964,7 +5963,6 @@
 <translation id="5101683448725092498">Պահուստավորեք ձեր տվյալները</translation>
 <translation id="5101839224773798795">Ավտոմատ սեղմել, երբ մկնիկի նշորդը կանգնում է</translation>
 <translation id="5102244391872941183">Տեղորոշման թույլտվություն ունեցող հավելվածներն ու կայքերը, ինչպես նաև համակարգային ծառայությունները կարող են օգտագործել ձեր տեղադրության տվյալները</translation>
-<translation id="510258712519612658">Լավագույնների մեր ընտրանին</translation>
 <translation id="5103311607312269661">ավելացնել էկրանի պայծառությունը</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Ջնջել խումբը}one{Ջնջել խումբը}other{Ջնջել խմբերը}}</translation>
 <translation id="5106350808162641062">Հեռացնել</translation>

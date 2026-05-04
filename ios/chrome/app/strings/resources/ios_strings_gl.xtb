@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Comproba os contrasinais que tes gardados para reforzar a túa seguranza e protexerte en liña</translation>
 <translation id="3838985624086228724">Baixada de prezo do produto seguido, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Atrás</translation>
-<translation id="3850952228519377137">Ocultar Facer un seguimento dos prezos das túas pestanas</translation>
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3853162385423733133">Sigue utilizando e gardando contrasinais na túa Conta de Google (<ph name="EMAIL" />)</translation>
 <translation id="3853873210696342070">Importar</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Activar notificacións</translation>
 <translation id="4326912346867677256">Toca Usar contrasinal para iniciar sesión de maneira segura.</translation>
-<translation id="4327017157997423717">Facer un seguimento do prezo de <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">A miña unidade</translation>
 <translation id="4331177082088332784">Podes xestionalo en BEGIN_LINK Configuración de contido END_LINK</translation>
 <translation id="4334428914252001502">1 artigo non lido.</translation>
@@ -1522,7 +1520,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6321526113093607004">Engadir aos marcadores</translation>
 <translation id="6327249202318869726">Non podes acceder a Gemini coa túa conta. Fala con quen a administra se necesitas máis información.</translation>
 <translation id="6331836477476466332">Un navegador máis seguro e potente para ti</translation>
-<translation id="6335744088476213315">Nesta tarxeta móstranse os produtos que viches recentemente e dos que pode que che interese facer un seguimento para recibir alertas de baixada de prezo</translation>
 <translation id="6337234675334993532">Encriptado</translation>
 <translation id="6337313937331295309">Aviso de privacidade das aplicacións Gemini</translation>
 <translation id="633809752005859102">Produciuse un erro. Trataremos de solucionalo.</translation>

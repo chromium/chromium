@@ -119,7 +119,6 @@
 
 注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="1068801725746725727">セーフ ブラウジングに関するアンケートの受け取りを有効にする</translation>
-<translation id="1069651607236021905">フォアグラウンドの優先度を強制的に適用するオリジンを指定する</translation>
 <translation id="107045325503547419">機能のリリース プロセスに準拠する。</translation>
 <translation id="1073983258515362346">デバイスのバックライトに関する情報を報告します。
 
@@ -5187,17 +5186,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
           問題はありません。
           </translation>
 <translation id="4578265298946081589">ユーザーのログアウト時に再起動しません。</translation>
-<translation id="4580711645933054901">このポリシーでは、URL パターンのリストを指定できます。これらのパターンに一致するバックグラウンドのウェブ コンテンツには、フォアグラウンドの優先度が強制的に適用されます。
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> ポリシーを有効にしている場合、すべてのタブにフォアグラウンドの優先度が強制的に適用されるため、このリストは無視されます。
-
-<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> を無効にするか未設定のままにしている場合、このリストのパターンに一致するコンテンツにのみ、フォアグラウンドの優先度が強制的に適用されます。
-
-有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。
-
-このポリシーでは、オリジンのみが照合されるため、パターンでパスやクエリ パラメータを指定した場合は無視されます。スキーム、ホスト、ポートが照合対象となります。
-
-リストを空白にするか未設定のままにした場合、バックグラウンドのコンテンツにフォアグラウンドの優先度が強制的に適用されることはありません。</translation>
 <translation id="4581507927311097234">ユーザー入力が行われなくなってから画面をオフにするまでの時間（ミリ秒）</translation>
 <translation id="4582027661281685066">URL パターンのリストを指定します。このリストのパターンと一致するオリジンのウェブサイトから送信されたリクエストは、<ph name="PRIVATE_NETWORK_ACCESS" />　のチェック対象外となります。
 

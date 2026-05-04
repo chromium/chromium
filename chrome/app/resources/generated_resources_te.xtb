@@ -4346,7 +4346,6 @@
 
   మీరు <ph name="CONTROL_PANEL_APPLET_NAME" />ను ప్రారంభించాలనుకుంటున్నారా?</translation>
 <translation id="3942420633017001071">నిర్ధారణలు</translation>
-<translation id="3942558231079086184">ఈ సైట్‌కు JavaScript ఆప్టిమైజేషన్ ఆఫ్‌లో ఉంది. మెరుగైన పనితీరు కోసం ఎనేబుల్ చేయండి.</translation>
 <translation id="3943582379552582368">&amp;వెనుకకు</translation>
 <translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
 <translation id="3945513714196326460">చిన్న పేరును ట్రై చేయండి</translation>
@@ -5978,7 +5977,6 @@
 <translation id="5101683448725092498">మీ కంటెంట్‌ను బ్యాకప్ చేసుకోండి</translation>
 <translation id="5101839224773798795">కర్సర్ ఆపినప్పుడు ఆటోమేటిక్‌గా క్లిక్ అవుతుంది</translation>
 <translation id="5102244391872941183">లొకేషన్ అనుమతి, అలాగే సిస్టమ్ సర్వీస్‌లు గల యాప్‌లు, వెబ్‌సైట్‌లు మీ లొకేషన్‌ను ఉపయోగించగలవు</translation>
-<translation id="510258712519612658">మా టాప్ ఎంపికలు</translation>
 <translation id="5103311607312269661">డిస్‌ప్లే బ్రైట్‌నెస్ పెంపు</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{గ్రూప్‌ను తొలగించండి}other{గ్రూప్‌లను తొలగించండి}}</translation>
 <translation id="5106350808162641062">తీసివేయండి</translation>

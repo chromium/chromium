@@ -4347,7 +4347,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 
   <ph name="CONTROL_PANEL_APPLET_NAME" /> баштай бересизби?</translation>
 <translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
-<translation id="3942558231079086184">Бул сайтта Javascript'ти оптималдаштыруу өчүк. Майнаптуулукту жакшыртуу үчүн иштетиңиз.</translation>
 <translation id="3943582379552582368">&amp;Артка</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3945513714196326460">Кыскараак аталышты жазып көрүңүз</translation>
@@ -5979,7 +5978,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5101683448725092498">Бардык нерселердин камдык көчүрмөлөрүн сактап коюңуз</translation>
 <translation id="5101839224773798795">Курсор токтогондо, автоматтык түрдө чыкылдатылсын</translation>
 <translation id="5102244391872941183">Жайгашкан жерди аныктоого уруксаты бар колдонмолор жана вебсайттар, ошондой эле системдик кызматтар жайгашкан жериңизди колдоно алышат</translation>
-<translation id="510258712519612658">Мыктылар</translation>
 <translation id="5103311607312269661">дисплейдин жарыктыгын көбөйтүү</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Топту өчүрүү}other{Топторду өчүрүү}}</translation>
 <translation id="5106350808162641062">Өчүрүү</translation>

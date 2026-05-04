@@ -4346,7 +4346,6 @@
 
  ທ່ານຕ້ອງການເລີ່ມຕົ້ນ <ph name="CONTROL_PANEL_APPLET_NAME" /> ບໍ?</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
-<translation id="3942558231079086184">ການເພີ່ມປະສິດທິພາບ JavaScript ປິດຢູ່ສຳລັບເວັບໄຊນີ້. ເປີດການນຳໃຊ້ເພື່ອປະສິດທິພາບທີ່ດີຍິ່ງຂຶ້ນ.</translation>
 <translation id="3943582379552582368">ກັບ​ຄືນ​</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3945513714196326460">ກະລຸນາລອງໃຊ້ຊື່ທີ່ສັ້ນລົງ</translation>
@@ -5978,7 +5977,6 @@
 <translation id="5101683448725092498">ສຳຮອງຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="5101839224773798795">ຄລິກອັດຕະໂນມັດເມື່ອເຄີເຊີຢຸດ</translation>
 <translation id="5102244391872941183">ແອັບ ແລະ ເວັບໄຊທີ່ມີການອະນຸຍາດສະຖານທີ່, ຮວມທັງບໍລິການລະບົບ, ສາມາດໃຊ້ສະຖານທີ່ຂອງທ່ານໄດ້</translation>
-<translation id="510258712519612658">ລາຍການຄັດສັນຍອດນິຍົມຂອງພວກເຮົາ</translation>
 <translation id="5103311607312269661">ເພີ່ມຄວາມສະຫວ່າງຂອງການສະແດງຜົນ</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{ລຶບກຸ່ມ}other{ລຶບກຸ່ມ}}</translation>
 <translation id="5106350808162641062">ລຶບອອກ</translation>

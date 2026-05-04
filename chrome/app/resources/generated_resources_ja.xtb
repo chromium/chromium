@@ -4327,7 +4327,6 @@
 
 <ph name="CONTROL_PANEL_APPLET_NAME" /> を開きますか？</translation>
 <translation id="3942420633017001071">診断</translation>
-<translation id="3942558231079086184">このサイトでは JavaScript の最適化がオフになっています。オンにするとパフォーマンスが向上します。</translation>
 <translation id="3943582379552582368">戻る(&amp;B)</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3945513714196326460">名前を短くしてください</translation>
@@ -5956,7 +5955,6 @@
 <translation id="5101683448725092498">データをバックアップする</translation>
 <translation id="5101839224773798795">カーソルの停止時に自動的にクリックする</translation>
 <translation id="5102244391872941183">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスは位置情報を使用できます</translation>
-<translation id="510258712519612658">Google のおすすめ</translation>
 <translation id="5103311607312269661">ディスプレイの明るさを上げる</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{グループを削除}other{グループを削除}}</translation>
 <translation id="5106350808162641062">削除</translation>

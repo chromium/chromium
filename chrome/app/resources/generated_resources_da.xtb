@@ -4351,7 +4351,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 
 Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
-<translation id="3942558231079086184">JavaScript-optimering er deaktiveret for dette website. Aktivér for at opnå bedre ydeevne.</translation>
 <translation id="3943582379552582368">&amp;Tilbage</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
@@ -5983,7 +5982,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5101683448725092498">Sikkerhedskopiér dit indhold</translation>
 <translation id="5101839224773798795">Klik automatisk, når markøren stopper</translation>
 <translation id="5102244391872941183">Apps og websites, der har lokationstilladelse, samt systemtjenester kan bruge din lokation</translation>
-<translation id="510258712519612658">Vores udvalgte</translation>
 <translation id="5103311607312269661">Skru op for skærmens lysstyrke</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Slet gruppe}one{Slet gruppe}other{Slet grupper}}</translation>
 <translation id="5106350808162641062">Fjern</translation>

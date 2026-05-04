@@ -4339,7 +4339,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3941565636838060942">Hvis du vil skjule tilgangen til dette programmet, må du avinstallere det ved hjelp av  <ph name="CONTROL_PANEL_APPLET_NAME" /> i kontrollpanelet.
   Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostikk</translation>
-<translation id="3942558231079086184">JavaScript-optimalisering er av for dette nettstedet. Slå på for å få bedre ytelse.</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
@@ -5970,7 +5969,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5101683448725092498">Sikkerhetskopier tingene dine</translation>
 <translation id="5101839224773798795">Klikk automatisk når pekeren stopper</translation>
 <translation id="5102244391872941183">Apper og nettsteder med posisjonstillatelse, samt systemtjenester, kan bruke posisjonen din</translation>
-<translation id="510258712519612658">Toppvalgene våre</translation>
 <translation id="5103311607312269661">skjermlysstyrke opp</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Slett gruppen}other{Slett gruppene}}</translation>
 <translation id="5106350808162641062">Fjern</translation>

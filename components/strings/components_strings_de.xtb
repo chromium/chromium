@@ -2219,7 +2219,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4419287616181386201">Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425750422187370446">Sportbekleidung</translation>
-<translation id="443008484043213881">Tools</translation>
 <translation id="443121186588148776">Serieller Port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> hat dein Anmeldezertifikat nicht akzeptiert oder es wurde keines bereitgestellt.</translation>
 <translation id="4432792777822557199">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt</translation>
@@ -4628,7 +4627,6 @@ Weitere Details:
 <translation id="8175796834047840627">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern.</translation>
 <translation id="8176440868214972690">Der Administrator dieses Geräts hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>
 <translation id="817820454357658398">Intimpflegeprodukte</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Inhalte von der Zahlungsseite werden an Google weitergegeben, um diese Optionen anzubieten.<ph name="END_BOLD" /> Die Verfügbarkeit von Ratenzahlungen hängt von der Erfüllung bestimmter Voraussetzungen ab. Du kannst die Option „Später bezahlen“ in den <ph name="BEGIN_LINK" />Zahlungseinstellungen<ph name="END_LINK" /> ausblenden.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> wurde aufgrund des Inhalts blockiert}other{<ph name="FILE_COUNT" /> Dateien wurden aufgrund des Inhalts blockiert}}</translation>
 <translation id="8183800802493617952">Spiele und Aktivitäten für Familien</translation>
 <translation id="8184538546369750125">Globalen Standard verwenden (Zulassen)</translation>

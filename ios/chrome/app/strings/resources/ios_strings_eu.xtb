@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Egiaztatu gordetako pasahitzak segurtasuna areagotzeko eta sarean babestuago egoteko.</translation>
 <translation id="3838985624086228724">prezio-jaitsiera izan du jarraipena egindako produktuak, <ph name="PREVIOUS_PRICE" /> kostatzetik <ph name="PRICE" /> kostatzera, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Atzera</translation>
-<translation id="3850952228519377137">Ezkutatu "Egin fitxetako prezioen jarraipena"</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta beste <ph name="NUMBER_OF_ACCOUNTS" /> webgunetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="3853162385423733133">Jarraitu Google-ko <ph name="EMAIL" /> kontuko pasahitzak erabiltzen eta gordetzen</translation>
 <translation id="3853873210696342070">Inportatu</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Aktibatu jakinarazpenak</translation>
 <translation id="4326912346867677256">Saioa modu seguruan hasteko, sakatu "Erabili pasahitza".</translation>
-<translation id="4327017157997423717">Egin prezioaren jaraipena: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Nire unitatea</translation>
 <translation id="4331177082088332784">Aukera hori kudeatzeko, joan BEGIN_LINK edukiaren ezarpenetara END_LINK</translation>
 <translation id="4334428914252001502">Irakurri gabeko artikulu bat.</translation>
@@ -1522,7 +1520,6 @@
 <translation id="6321526113093607004">Gehitu Laster-markak atalean</translation>
 <translation id="6327249202318869726">Gemini desaktibatuta dago zure kontuan. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="6331836477476466332">Zuretzako arakatzaile seguruago eta ahaltsuago bat</translation>
-<translation id="6335744088476213315">Txartel honek duela gutxi ikusi dituzun produktuak erakusten ditu, agian haien jarraipena egitea eta haiei buruzko prezio-jaitsieren alertak jasotzea interesatuko zaizulakoan</translation>
 <translation id="6337234675334993532">Enkriptatzea</translation>
 <translation id="6337313937331295309">Gemini-ren aplikazioen Pribatutasun-oharra</translation>
 <translation id="633809752005859102">Arazo bat izan da. Konpontzen saiatuko gara.</translation>

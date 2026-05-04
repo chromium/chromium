@@ -789,7 +789,6 @@
 <translation id="3838691874161539578">Saqlangan parollarni xavfsizlikni kuchaytirish va onlaynda xavfsiz qolish maqsadlarida tekshiring</translation>
 <translation id="3838985624086228724">Kuzatuvdagi mahsulot narxi pasaydi: <ph name="PREVIOUS_PRICE" />dan <ph name="PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Orqaga</translation>
-<translation id="3850952228519377137">“Sahifalaringizdagi narxlar kuzatuvi” chiqmasin</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> va <ph name="NUMBER_OF_ACCOUNTS" /> ta hisob parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="3853162385423733133">Parollarni Google hisobingizda (<ph name="EMAIL" />) saqlab, ulardan foydalanishda davom eting</translation>
 <translation id="3853873210696342070">Import qilish</translation>
@@ -937,7 +936,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Bildirishnomalarni yoqish</translation>
 <translation id="4326912346867677256">Xavfsiz kirish uchun “Parol ishlatish” bandini tanlang.</translation>
-<translation id="4327017157997423717">Narx kuzatuvi: <ph name="PRODUCT_NAME" />, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Mening diskim</translation>
 <translation id="4331177082088332784">Buni BEGIN_LINK Kontent sozlamalari END_LINK orqali boshqarish mumkin</translation>
 <translation id="4334428914252001502">1 ta maqola ochilmagan.</translation>
@@ -1523,7 +1521,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6321526113093607004">Bukmarklash</translation>
 <translation id="6327249202318869726">Hisobingiz uchun Gemini faolsizlantirilgan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
 <translation id="6331836477476466332">Siz uchun yanada xavfsiz va foydali brauzer</translation>
-<translation id="6335744088476213315">Bu kartochkada yaqinda ochilgan mahsulotlar chiqadi. Ularni kuzatish va narxi pasayganda xabar olish mumkin</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
 <translation id="6337313937331295309">Gemini ilovalari Maxfiylik eslatmasi</translation>
 <translation id="633809752005859102">Xatolik yuz berdi. Uni bartaraf etishga harakat qilamiz.</translation>

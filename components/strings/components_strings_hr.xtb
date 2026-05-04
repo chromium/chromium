@@ -2220,7 +2220,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4419287616181386201">Zaporke se mogu izbrisati u postavkama za upravljanje</translation>
 <translation id="4424024547088906515">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chrome smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="4425750422187370446">Odjeća za sport</translation>
-<translation id="443008484043213881">Alati</translation>
 <translation id="443121186588148776">Serijski priključak</translation>
 <translation id="4432688616882109544">Host <ph name="HOST_NAME" /> nije prihvatio vaš certifikat za prijavu ili certifikat nije poslan.</translation>
 <translation id="4432792777822557199">Odsada će se <ph name="SOURCE_LANGUAGE" /> prevoditi na <ph name="TARGET_LANGUAGE" /></translation>
@@ -4629,7 +4628,6 @@ Dodatne pojedinosti:
 <translation id="8175796834047840627">Chrome vam nudi spremanje vaših kartica na vaš Google račun jer ste prijavljeni. To ponašanje možete promijeniti u postavkama.</translation>
 <translation id="8176440868214972690">Administrator uređaja poslao je neke podatke, poput postavki ili pravila, sljedećim web-lokacijama.</translation>
 <translation id="817820454357658398">Proizvodi za žensku higijenu</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Sadržaj stranice za naplatu dijeli se s Googleom kako bi Google ponudio te opcije<ph name="END_BOLD" />. Planovi plaćanja ovise o ispunjavanju kriterija. Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />postavke plaćanja<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> blokirana je zbog sadržaja}one{<ph name="FILE_COUNT" /> datoteka blokirana je zbog sadržaja}few{<ph name="FILE_COUNT" /> datoteke blokirane su zbog sadržaja}other{<ph name="FILE_COUNT" /> datoteka blokirano je zbog sadržaja}}</translation>
 <translation id="8183800802493617952">Igre i aktivnosti usmjerene na obitelj</translation>
 <translation id="8184538546369750125">Upotrijebi globalnu zadanu vrijednost (dopusti)</translation>

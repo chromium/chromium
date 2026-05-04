@@ -4334,7 +4334,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 
 ¿Quieres iniciar <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
-<translation id="3942558231079086184">La optimización de JavaScript está desactivada en este sitio. Habilítalo para mejorar el rendimiento.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto</translation>
@@ -5965,7 +5964,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5101683448725092498">Crea una copia de seguridad de tus cosas</translation>
 <translation id="5101839224773798795">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5102244391872941183">Las aplicaciones y los sitios web que tengan el permiso de ubicación, así como los servicios del sistema, pueden usar tu ubicación</translation>
-<translation id="510258712519612658">Nuestras favoritas</translation>
 <translation id="5103311607312269661">aumentar el brillo de la pantalla</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Eliminar grupo}other{Eliminar grupos}}</translation>
 <translation id="5106350808162641062">Quitar</translation>

@@ -4338,7 +4338,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 
   Kas soovite käivitada funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">JavaScripti optimeerimine on selle saidi jaoks välja lülitatud. Parema toimivuse saavutamiseks lubage see.</translation>
 <translation id="3943582379552582368">&amp;Tagasi</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3945513714196326460">Proovige lühemat nime</translation>
@@ -5970,7 +5969,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5101683448725092498">Varundage oma sisu</translation>
 <translation id="5101839224773798795">Automaatne klõpsamine kursori peatumisel</translation>
 <translation id="5102244391872941183">Teie asukohta võivad kasutada asukohale juurdepääsu loaga rakendused ja veebisaidid, aga ka süsteemiteenused</translation>
-<translation id="510258712519612658">Meie populaarseimad valikud</translation>
 <translation id="5103311607312269661">ekraanikuva ereduse suurendamine</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Kustuta grupp}other{Kustuta grupid}}</translation>
 <translation id="5106350808162641062">Eemalda</translation>

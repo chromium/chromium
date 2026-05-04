@@ -4344,7 +4344,6 @@
 
   আপুনি <ph name="CONTROL_PANEL_APPLET_NAME" /> আৰম্ভ কৰিব খোজেনে?</translation>
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
-<translation id="3942558231079086184">এই ছাইটটোৰ বাবে JavaScript অপ্টিমাইজেশ্বন অফ কৰা আছে। উন্নত কাৰ্যদক্ষতাৰ বাবে সক্ষম কৰক।</translation>
 <translation id="3943582379552582368">&amp;উভতি যাওক</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3945513714196326460">এটা চুটি নাম দি চাওক</translation>
@@ -5976,7 +5975,6 @@
 <translation id="5101683448725092498">আপোনাৰ বস্তুবোৰৰ বেকআপ লওক</translation>
 <translation id="5101839224773798795">কাৰ্জৰটো ৰৈ গ’লে স্বয়ংক্ৰিয়ভাৱে ক্লিক কৰক</translation>
 <translation id="5102244391872941183">অৱস্থানৰ অনুমতি থকা এপ্‌ আৰু ৱেবছাইটসমূহৰ লগতে ছিষ্টেম সেৱাসমূহে আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="510258712519612658">আমাৰ শ্ৰেষ্ঠ বাছনিসমূহ</translation>
 <translation id="5103311607312269661">ডিছপ্লে’ৰ উজ্জ্বলতা বঢ়োৱা</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{গোটটো মচক}one{গোটসমূহ মচক}other{গোটসমূহ মচক}}</translation>
 <translation id="5106350808162641062">আঁতৰাওক</translation>

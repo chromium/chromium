@@ -746,6 +746,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="21613918653299710">Galeri Imej Dalam Talian</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2162435186600002085">Logo Pengepala Utama</translation>
+<translation id="2162535140284745414">Dapatkan cadangan masa nyata yang boleh membantu anda menemukan cara baharu untuk menyemak imbas dengan AI.</translation>
 <translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> pada <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Semak jika terdapat kesilapan ejaan dalam <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Akses Penuh Pentadbir</translation>
@@ -1463,6 +1464,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3261488570342242926">Ketahui tentang kad maya</translation>
 <translation id="3262698603497362968">Pilihan pembelian</translation>
 <translation id="3264315627780269177">Tab ini tidak boleh dikongsi</translation>
+<translation id="3264637689694266148">Jika anda mematikan cadangan, tajuk halaman dan URL tab anda mungkin masih diproses untuk ciri Chrome yang lain. Anda boleh mengurus akses penyemak imbas kepada data ini dalam</translation>
 <translation id="3266793032086590337">Nilai (konflik)</translation>
 <translation id="3268451620468152448">Tab Terbuka</translation>
 <translation id="3270041629388773465">Semak keluar lebih pantas apabila CVC anda disimpan</translation>
@@ -2001,6 +2003,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4103249731201008433">Nombor siri peranti tidak sah</translation>
 <translation id="4103592298805904008">Kadbod (Dinding Satu Lapisan)</translation>
 <translation id="4104702906064390950">Menyimpan maklumat IBAN</translation>
+<translation id="4106101218644797743">tetapan penyegerakan</translation>
 <translation id="4106887816571530227">Kandungan terbenam tidak dibenarkan</translation>
 <translation id="4107047499377819067">Pemasangan perkhidmatan latar VPN telah bermula. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="4110642094637545339">Google Pay, logo AfterPay</translation>
@@ -2224,7 +2227,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4419287616181386201">Kata laluan boleh dipadamkan dalam tetapan pengurusan</translation>
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="4425750422187370446">Pakaian Olahraga</translation>
-<translation id="443008484043213881">Alat</translation>
 <translation id="443121186588148776">Port siri</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tidak menerima sijil log masuk anda atau sijil log masuk mungkin tidak diberikan.</translation>
 <translation id="4432792777822557199">Halaman dalam <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan kepada <ph name="TARGET_LANGUAGE" /> bermula dari sekarang</translation>
@@ -2337,6 +2339,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4640225694041297329">Paparkan hasil carian dari 7 hari yang lalu</translation>
 <translation id="4642296966515958616">Untuk menyertai kumpulan tab ini, kemas kinikan Chrome</translation>
 <translation id="464342062220857295">Ciri carian</translation>
+<translation id="4643958597583594452">Chrome memproses tajuk halaman dan URL pada peranti anda atau dalam ruang privasi pada awan</translation>
 <translation id="4644567637638438744">Fail hanya boleh dimuat naik jika anda telah log masuk ke Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Susunan terbalik menghadap ke bawah</translation>
 <translation id="4648262692072505866">Cincangan mestilah dalam format SHA-256.</translation>
@@ -2585,6 +2588,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5019293549442035120">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini akan disimpan dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">penderia gerakan dan cahaya</translation>
 <translation id="5019952743397118625">Dasar <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ditetapkan. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> tidak akan mengawal ketersediaan mod pembangun pada halaman sambungan.</translation>
+<translation id="5020862932518041900">Jika anda memilih atau mengabaikan cadangan, Chrome akan menyesuaikan diri untuk memastikan anda hanya melihat perkara yang berkaitan dengan anda</translation>
 <translation id="5021500396464456616">Hubungi orang yang menghantar pautan ini</translation>
 <translation id="5021557570875267742">Jejaki harga dengan Chrome</translation>
 <translation id="5023310440958281426">Semak dasar pentadbir anda</translation>
@@ -3531,6 +3535,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6451458296329894277">Sahkan Penyerahan Semula Borang</translation>
 <translation id="6452429044474066211">Aktiviti Menyelam &amp; Dalam Air</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Tajuk halaman dan URL tab anda yang terbuka digunakan untuk memberi anda cadangan yang berkaitan</translation>
 <translation id="6455632609396391811">Insurans Kesihatan</translation>
 <translation id="6456955391422100996">Iklan dialih keluar.</translation>
 <translation id="6457206614190510200">Jahitan pelana</translation>
@@ -4426,6 +4431,7 @@ Butiran tambahan:
 <translation id="7819605256207059717">Disekat oleh organisasi anda</translation>
 <translation id="7822611063308883975">Konsol Permainan Pegangan Tangan</translation>
 <translation id="7825558994363763489">Ketuhar gelombang mikro</translation>
+<translation id="7827688884439021871">Dapatkan cadangan masa nyata yang boleh membantu anda menemukan cara baharu untuk menyemak imbas dengan AI</translation>
 <translation id="782886543891417279">Wi-Fi yang anda gunakan (<ph name="WIFI_NAME" />) mungkin memerlukan anda melawat halaman log masuknya.</translation>
 <translation id="7831993212387676366">Apakah itu Senarai beli-belah?</translation>
 <translation id="7840103971441592723">Tangkapan skrin telah bermula</translation>
@@ -4633,7 +4639,6 @@ Butiran tambahan:
 <translation id="8175796834047840627">Chrome menawarkan penyimpanan kad dalam Google Account anda kerana anda log masuk. Anda boleh menukar gelagat ini dalam tetapan.</translation>
 <translation id="8176440868214972690">Pentadbir peranti ini telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="817820454357658398">Produk Kebersihan Wanita</translation>
-<translation id="8182470873445638343"><ph name="BEGIN_BOLD" />Kandungan daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini.<ph name="END_BOLD" /> Pelan pembayaran tertakluk pada kelayakan. Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetapan pembayaran<ph name="END_LINK" /></translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> disekat disebabkan oleh kandungan}other{<ph name="FILE_COUNT" /> fail disekat disebabkan oleh kandungan}}</translation>
 <translation id="8183800802493617952">Permainan &amp; Aktiviti Berorientasikan Keluarga</translation>
 <translation id="8184538546369750125">Gunakan lalai global (Benarkan)</translation>
@@ -4718,6 +4723,7 @@ Butiran tambahan:
 <translation id="8289355894181816810">Hubungi pentadbir rangkaian anda jika anda tidak pasti apa yang dimaksudkan ini.</translation>
 <translation id="8291367150570302588">Kad ID</translation>
 <translation id="829335040383910391">bunyi</translation>
+<translation id="8294425747071240447">Cadangan, dikuasakan oleh AI</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8297545700510100061">Kuki dan data laman lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua laman, lihat <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi yang anda gunakan (<ph name="WIFI_NAME" />) mungkin memerlukan anda untuk melawat <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

@@ -2077,6 +2077,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2402226831639195063">Toni</translation>
 <translation id="2405887402346713222">Serijske številke naprav in komponent</translation>
 <translation id="2406153734066939945">Želite izbrisati ta profil in podatke v njem?</translation>
+<translation id="2406942743794219791">Potrdite želeni privzeti iskalnik</translation>
 <translation id="2407671304279211586">Izbira ponudnika DNS-ja</translation>
 <translation id="2408018932941436077">Shranjevanje kartice</translation>
 <translation id="2408742686124047357">Google Lens pripnite v orodno vrstico za preprost dostop</translation>
@@ -3057,6 +3058,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3046892784550338476">Različica <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Spletna stran, dokončano</translation>
 <translation id="304747341537320566">Mehanizmi za govor</translation>
+<translation id="3047618804758101928">Razširitev »<ph name="EXTENSION_NAME" />« je spremenila vaše nastavitve</translation>
 <translation id="3047678109605649715">V napravi ni glasov v tem jeziku: <ph name="LANGUAGE" />. Počistite prostor v napravi in poskusite znova.</translation>
 <translation id="3048336643003835855">Naprave HID ponudnika <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Predvajanje (k)</translation>
@@ -4349,7 +4351,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 
   Ali želite zagnati <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">Optimizacija JavaScripta je za to spletno mesto izklopljena. Omogočite jo za boljšo učinkovitost delovanja.</translation>
 <translation id="3943582379552582368">&amp;Nazaj</translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3945513714196326460">Uporabite krajše ime.</translation>
@@ -5981,7 +5982,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5101683448725092498">Varnostno kopirajte svoje podatke</translation>
 <translation id="5101839224773798795">Samodejni klik, ko se kazalec ustavi</translation>
 <translation id="5102244391872941183">Vašo lokacijo lahko uporabljajo aplikacije in spletna mesta, ki imajo dovoljenje za lokacijo, in sistemske storitve</translation>
-<translation id="510258712519612658">Naš izbor</translation>
 <translation id="5103311607312269661">povečanje svetlosti zaslona</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Izbriši skupino}one{Izbriši skupine}two{Izbriši skupine}few{Izbriši skupine}other{Izbriši skupine}}</translation>
 <translation id="5106350808162641062">Odstrani</translation>
@@ -10023,6 +10023,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7939062555109487992">Dodatne možnosti</translation>
 <translation id="793923212791838">Naprave ni mogoče uporabljati s tem spletnim mestom</translation>
 <translation id="7939328347457537652">Upravljanje potrdil v napravi</translation>
+<translation id="7939918959917132075">Razširitev je spremenila v to</translation>
 <translation id="7940087892955752820">Skupne rabe mape ni bilo mogoče preklicati, ker jo uporablja določena aplikacija. Skupna raba mape bo preklicana ob naslednji zaustavitvi sistema <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Razvrsti glede na to: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pripravljenost za povezavo računalnika z internetom prek mobilnega telefona:</translation>

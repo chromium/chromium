@@ -3172,7 +3172,7 @@
 <translation id="3152356229013609796">הרשאה להציג את ההתראות שבטלפון, לסגור אותן ולהשיב להן</translation>
 <translation id="3152545926232662879">המערכת מתעלמת מהמדיניות</translation>
 <translation id="3152596030350326139">הצגת הכרטיסיות לרוחב</translation>
-<translation id="3154754096046236400">החוויה שלי</translation>
+<translation id="3154754096046236400">הקשר אישי</translation>
 <translation id="3155163173539279776">‏הפעלה מחדש של Chromium</translation>
 <translation id="3155394504825881014">המרת קבוצת הכרטיסיות לתיקיית סימניות</translation>
 <translation id="3156511682997763015">הרצה 10 שניות קדימה</translation>
@@ -4345,7 +4345,6 @@
 
 להפעיל את <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">אבחון</translation>
-<translation id="3942558231079086184">‏האופטימיזציה של JavaScript מושבתת באתר הזה. מומלץ להפעיל אותה כדי לשפר את הביצועים.</translation>
 <translation id="3943582379552582368">&amp;אחורה</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3945513714196326460">יש לנסות שם קצר יותר</translation>
@@ -5978,7 +5977,6 @@
 <translation id="5101683448725092498">גיבוי הפריטים שלך</translation>
 <translation id="5101839224773798795">קליק אוטומטי כשהסמן עוצר</translation>
 <translation id="5102244391872941183">שירותי מערכת וגם אפליקציות ואתרים עם הרשאת מיקום יכולים להשתמש במיקום שלך</translation>
-<translation id="510258712519612658">המיומנויות הנבחרות שלנו</translation>
 <translation id="5103311607312269661">הגברה של בהירות התצוגה</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{מחיקת הקבוצה}one{מחיקת הקבוצות}two{מחיקת הקבוצות}other{מחיקת הקבוצות}}</translation>
 <translation id="5106350808162641062">הסרה</translation>

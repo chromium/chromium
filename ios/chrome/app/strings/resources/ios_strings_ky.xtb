@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Аккаунтуңуздун коопсуздугун бекемдөө жана Интернеттеги коопсуздукту камсыздоо үчүн сакталган сырсөздөрүңүздү текшерип коюңуз</translation>
 <translation id="3838985624086228724">Көз салынган товардын (<ph name="PRODUCT_NAME" />) баасы арзандап, <ph name="PREVIOUS_PRICE" /> ордуна <ph name="PRICE" /> болуп калды, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Артка</translation>
-<translation id="3850952228519377137">"Өтмөктөрдөгү бааларды көзөмөлдөө" модулун жашыруу</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> жана дагы <ph name="NUMBER_OF_ACCOUNTS" /> вебсайттын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="3853162385423733133"><ph name="EMAIL" /> Google аккаунтуңуздагы сырсөздөрдү колдонуп жана сактай бериңиз</translation>
 <translation id="3853873210696342070">Өткөрүп алуу</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Эскертмелерди күйгүзүү</translation>
 <translation id="4326912346867677256">Аккаунтка коопсуз кирүү үчүн "Сырсөздү колдонууну" таптап коюңуз.</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" /> баасына көз салуу, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Менин Drive'ым</translation>
 <translation id="4331177082088332784">Аны BEGIN_LINK Контент параметрлеринен END_LINK тескей аласыз</translation>
 <translation id="4334428914252001502">1 окула элек макала.</translation>
@@ -1522,7 +1520,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6327249202318869726">Аккаунтуңузда Gemini өчүрүлгөн. Кеңири маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="6331836477476466332">Сиз үчүн коопсуз, кыйла кубаттуу серепчи</translation>
-<translation id="6335744088476213315">Бул карта сиз жакында көргөн товарларды көрсөтөт. Баалар төмөндөгөндө кабардар болуу үчүн, аларга көз салып турасызбы?</translation>
 <translation id="6337234675334993532">Шифрлөө</translation>
 <translation id="6337313937331295309">Gemini колдонмолорунун купуялык билдирүүсү</translation>
 <translation id="633809752005859102">Бир жерден олуттуу ката кетти. Ошонун үстүнөн иштейин деп жатабыз.</translation>

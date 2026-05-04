@@ -763,6 +763,7 @@
 <translation id="372676576864368480">自動填入卡號，尾碼係 <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">於 <ph name="DATE" />建立</translation>
 <translation id="3742498336182910186">相機膠卷</translation>
+<translation id="3746269120925354434">資料儲存咗去「Google 錢包」</translation>
 <translation id="3750225824417196283">新無痕式分頁</translation>
 <translation id="3751873026576444885">停止使用「Google 智能鏡頭」搜尋畫面內容</translation>
 <translation id="3753408171347588045">正在追蹤價格</translation>
@@ -788,7 +789,6 @@
 <translation id="3838691874161539578">請檢查已儲存的密碼，以提升安全性，並確保網上安全</translation>
 <translation id="3838985624086228724">你追蹤嘅產品減價，由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3850952228519377137">隱藏「透過已開啟的分頁追蹤價格」</translation>
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除您的帳戶。</translation>
 <translation id="3853162385423733133">請繼續將密碼儲存至 Google 帳戶 (<ph name="EMAIL" />)，或使用帳戶中的密碼</translation>
 <translation id="3853873210696342070">匯入</translation>
@@ -936,7 +936,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">開啟通知</translation>
 <translation id="4326912346867677256">輕按 [使用密碼] 以安全登入。</translation>
-<translation id="4327017157997423717">追蹤<ph name="PRODUCT_NAME" />嘅價格，<ph name="PRICE" />，<ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">我的雲端硬碟</translation>
 <translation id="4331177082088332784">你可前往「BEGIN_LINK內容設定END_LINK」管理此選項</translation>
 <translation id="4334428914252001502">1 篇未讀嘅文章。</translation>
@@ -1522,7 +1521,6 @@
 <translation id="6321526113093607004">新增至「書籤」</translation>
 <translation id="6327249202318869726">你的帳戶已關閉 Gemini。請聯絡管理員瞭解詳情。</translation>
 <translation id="6331836477476466332">更強大、安全的瀏覽器</translation>
-<translation id="6335744088476213315">此資訊卡會顯示你最近瀏覽過的產品，以及你可能有興趣追蹤以接收減價快訊的產品</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="6337313937331295309">Gemini 應用程式私隱聲明</translation>
 <translation id="633809752005859102">發生嚴重錯誤。我們會盡快修正。</translation>
@@ -2175,6 +2173,7 @@
 <translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>
 <translation id="8534481786647257214">已在 Google+ 上發佈。</translation>
 <translation id="8535368836838588657">顯示密碼</translation>
+<translation id="8540426897269305488">用 <ph name="CELL_ACCESSIBILITY_LABEL" /> 登入</translation>
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 個密碼被盜用。請立即修正以確保安全。</translation>
 <translation id="8551311254462607218">輕按網址列中的「Google 智能鏡頭」相機圖示</translation>

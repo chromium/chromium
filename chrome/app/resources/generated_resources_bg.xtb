@@ -4344,7 +4344,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 
 Искате ли да стартирате <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Диагностика</translation>
-<translation id="3942558231079086184">Оптимизирането на JavaScript е изключено за този сайт. Активирайте за по-добра ефективност.</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3945513714196326460">Опитайте с по-кратко име</translation>
@@ -5976,7 +5975,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5101683448725092498">Създавайте резервни копия на нещата си</translation>
 <translation id="5101839224773798795">Автоматично кликване при спиране на курсора</translation>
 <translation id="5102244391872941183">Приложенията и уебсайтовете с разрешение за достъп до местоположението, както и системните услуги могат да използват местоположението ви</translation>
-<translation id="510258712519612658">Най-популярните според нас</translation>
 <translation id="5103311607312269661">увеличаване на яркостта на екрана</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Изтриване на групата}other{Изтриване на групите}}</translation>
 <translation id="5106350808162641062">Премахване</translation>

@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">Turvalisuse ja veebiohutuse suurendamiseks kontrollige oma salvestatud paroole</translation>
 <translation id="3838985624086228724">Jälgitava toote hinnalangus hinnalt <ph name="PREVIOUS_PRICE" /> hinnale <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">Tagasi</translation>
-<translation id="3850952228519377137">Valik „Hindade jälgimine vahelehtedelt” peitmine</translation>
 <translation id="3851938967634752633">Teenuste <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja veel <ph name="NUMBER_OF_ACCOUNTS" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="3853162385423733133">Jätkake oma paroolide kasutamist ja Google'i kontole <ph name="EMAIL" /> salvestamist</translation>
 <translation id="3853873210696342070">Impordi</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Lülita märguanded sisse</translation>
 <translation id="4326912346867677256">Turvaliseks sisselogimiseks puudutage valikut „Kasuta parooli“.</translation>
-<translation id="4327017157997423717">Toote <ph name="PRODUCT_NAME" /> hinna jälgimine, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">Minu ketas</translation>
 <translation id="4331177082088332784">Saate seda hallata menüüs BEGIN_LINK Sisu seaded END_LINK</translation>
 <translation id="4334428914252001502">1 lugemata artikkel.</translation>
@@ -1522,7 +1520,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6321526113093607004">Lisa järjehoidjatesse</translation>
 <translation id="6327249202318869726">Gemini on teie konto jaoks välja lülitatud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="6331836477476466332">Teie turvalisem ja võimsam brauser</translation>
-<translation id="6335744088476213315">Sellel kaardil kuvatakse tooted, mida olete hiljuti vaadanud ning mille jälgimisest ja hinnalanguse märguannetest võite huvitatud olla</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
 <translation id="6337313937331295309">Gemini rakenduste privaatsusteatis</translation>
 <translation id="633809752005859102">Midagi läks väga valesti. Töötame selle kallal.</translation>

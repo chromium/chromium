@@ -123,7 +123,6 @@ Nếu bạn đặt chính sách này thành 1 – DisabledForBrowser, thì quy t
 
 Lưu ý: Hãy đọc thêm về chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="1068801725746725727">Cho phép nhận khảo sát về Duyệt web an toàn</translation>
-<translation id="1069651607236021905">Buộc chạy ở chế độ ưu tiên nền trước đối với các nguồn gốc cụ thể</translation>
 <translation id="107045325503547419">Tuỳ thuộc vào quy trình ra mắt tính năng.</translation>
 <translation id="1073983258515362346">Báo cáo thông tin về đèn nền của thiết bị.
 
@@ -5382,17 +5381,6 @@ Các mẫu URL không được xung đột với <ph name="CONTROLLED_FRAME_BLOC
           khác nhau của chính sách này trong khi chạy sẽ không gây ra vấn đề gì.
           </translation>
 <translation id="4578265298946081589">Không khởi động lại khi đăng xuất người dùng.</translation>
-<translation id="4580711645933054901">Chính sách này cho phép bạn chỉ định danh sách các mẫu URL. Nội dung trên web chạy trong nền khớp với các mẫu này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
-
-Nếu bạn bật chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì danh sách này sẽ bị bỏ qua vì tất cả các thẻ sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
-
-Nếu bạn tắt hoặc không đặt chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì chỉ nội dung khớp với các mẫu trong danh sách này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
-
-Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Chính sách này chỉ đối chiếu dựa trên nguồn gốc, nên mọi đường dẫn hoặc tham số truy vấn trong mẫu sẽ bị bỏ qua. Hỗ trợ tên giao thức, máy chủ và cổng.
-
-Nếu danh sách này trống hoặc bạn không đặt danh sách này, thì không có nội dung chạy nền nào bị buộc phải chạy ở chế độ ưu tiên nền trước.</translation>
 <translation id="4581507927311097234">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình bị tắt</translation>
 <translation id="4582027661281685066">Danh sách mẫu URL. Các yêu cầu bắt nguồn từ trang web do các nguồn gốc trùng khớp phân phát sẽ không phải trải qua bước kiểm tra <ph name="PRIVATE_NETWORK_ACCESS" />.
 

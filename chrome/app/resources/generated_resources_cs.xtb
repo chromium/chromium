@@ -4333,7 +4333,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 
  Chcete spustit aplet <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
-<translation id="3942558231079086184">Pro tenhle web je vypnutá optimalizace JavaScriptu. Zapnutím dosáhnete lepšího výkonu.</translation>
 <translation id="3943582379552582368">&amp;Zpět</translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3945513714196326460">Zkuste kratší název</translation>
@@ -5964,7 +5963,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5101683448725092498">Zálohujte si své věci</translation>
 <translation id="5101839224773798795">Při zastavení kurzoru automaticky kliknout</translation>
 <translation id="5102244391872941183">Aplikace a weby s oprávněním pro přístup k poloze a systémové služby můžou používat vaši polohu</translation>
-<translation id="510258712519612658">Náš nejoblíbenější výběr</translation>
 <translation id="5103311607312269661">zvýšit jas displeje</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Smazat skupinu}few{Smazat skupiny}many{Smazat skupiny}other{Smazat skupiny}}</translation>
 <translation id="5106350808162641062">Odstranit</translation>

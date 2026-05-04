@@ -788,7 +788,6 @@
 <translation id="3838691874161539578">আপনার নিরাপত্তা আরও জোরালো করতে সেভ করা পাসওয়ার্ড চেক করুন এবং অনলাইনে নিরাপদ থাকুন</translation>
 <translation id="3838985624086228724">আপনার ট্র্যাক করা প্রোডাক্টে দাম কমার তথ্য, <ph name="PREVIOUS_PRICE" /> থেকে <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">ফিরুন</translation>
-<translation id="3850952228519377137">"আপনার ট্যাব থেকে দাম ট্র্যাক করুন" বিকল্প আড়াল করুন</translation>
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড এবং অন্য <ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="3853162385423733133">আপনার Google অ্যাকাউন্ট <ph name="EMAIL" />-এ পাসওয়ার্ড ব্যবহার ও সেভ করা চালিয়ে যান</translation>
 <translation id="3853873210696342070">ইমপোর্ট করুন</translation>
@@ -936,7 +935,6 @@
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="4326912346867677256">নিরাপদে সাইন-ইন করতে, "পাসওয়ার্ড ব্যবহার করুন" বিকল্পে ট্যাপ করুন।</translation>
-<translation id="4327017157997423717"><ph name="PRODUCT_NAME" />-এ দাম ট্র্যাক করুন, <ph name="PRICE" />, <ph name="DOMAIN" /></translation>
 <translation id="4328843285884395590">আমার ড্রাইভ</translation>
 <translation id="4331177082088332784">আপনি এটি BEGIN_LINK কন্টেন্ট সেটিংস END_LINK থেকে ম্যানেজ করতে পারবেন</translation>
 <translation id="4334428914252001502">পড়া হয়নি এমন ১টি নিবন্ধ।</translation>
@@ -1523,7 +1521,6 @@
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6327249202318869726">আপনার অ্যাকাউন্টের জন্য Gemini বন্ধ করা আছে। আরও তথ্যের জন্য আপনার অ্যাডমিনের সাথে যোগাযোগ করুন।</translation>
 <translation id="6331836477476466332">আপনার জন্য আরও নিরাপদ ও শক্তিশালী ব্রাউজার</translation>
-<translation id="6335744088476213315">আপনি সম্প্রতি দেখেছেন এই কার্ডে সেইসব প্রোডাক্ট এবং দাম কমা সংক্রান্ত সতর্কতা পেতে কোন প্রোডাক্ট ট্র্যাক করার ক্ষেত্রে আপনার আগ্রহ আছে সেগুলি দেখায়</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
 <translation id="6337313937331295309">Gemini অ্যাপ গোপনীয়তা বিজ্ঞপ্তি</translation>
 <translation id="633809752005859102">সত্যিই কিছু ভুল রয়েছে৷ আমরা এটির উপরে কাজ করব৷</translation>

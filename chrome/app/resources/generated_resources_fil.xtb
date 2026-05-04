@@ -2076,6 +2076,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2402226831639195063">Mga Tone</translation>
 <translation id="2405887402346713222">Mga Serial Number ng Device at Bahagi</translation>
 <translation id="2406153734066939945">I-delete ang profile na ito at ang data nito?</translation>
+<translation id="2406942743794219791">Kumpirmahin ang default na search engine na gusto mo</translation>
 <translation id="2407671304279211586">Pumili ng DNS provider</translation>
 <translation id="2408018932941436077">Sine-save ang card</translation>
 <translation id="2408742686124047357">I-pin ang Google Lens sa iyong toolbar para madali itong ma-access sa susunod</translation>
@@ -3057,6 +3058,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3046892784550338476">Bersyon <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webpage, Kumpleto</translation>
 <translation id="304747341537320566">Mga Engine sa Pagsasalita</translation>
+<translation id="3047618804758101928">Binago ng extension na "<ph name="EXTENSION_NAME" />" ang iyong mga setting</translation>
 <translation id="3047678109605649715">Walang <ph name="LANGUAGE" /> na boses sa iyong device. Magbakante ng space sa iyong device, at subukan ulit.</translation>
 <translation id="3048336643003835855">Mga HID device mula sa vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">I-play (k)</translation>
@@ -4350,7 +4352,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 
   Gusto mo bang simulan ang <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
-<translation id="3942558231079086184">Naka-off ang pag-optimize ng JavaScript para sa site na ito. I-enable para sa mas mahusay na performance.</translation>
 <translation id="3943582379552582368">&amp;Bumalik</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3945513714196326460">Sumubok ng mas maikling pangalan</translation>
@@ -5982,7 +5983,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5101683448725092498">I-back up ang iyong bagay</translation>
 <translation id="5101839224773798795">Awtomatikong mag-click kapag huminto ang cursor</translation>
 <translation id="5102244391872941183">Magagamit ng mga app at website na may pahintulot sa lokasyon, at ng mga serbisyo ng system, ang iyong lokasyon</translation>
-<translation id="510258712519612658">Mga nangungunang pinili namin</translation>
 <translation id="5103311607312269661">taasan ang brightness ng display</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{I-delete ang Grupo}one{I-delete ang Mga Grupo}other{I-delete ang Mga Grupo}}</translation>
 <translation id="5106350808162641062">Alisin</translation>
@@ -10019,6 +10019,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7939062555109487992">Mga advanced na pagpipilian</translation>
 <translation id="793923212791838">Hindi puwedeng gamitin ang iyong device sa site na ito</translation>
 <translation id="7939328347457537652">Pamahalaan ang mga certificate ng device</translation>
+<translation id="7939918959917132075">Ginawa itong ganito ng extension</translation>
 <translation id="7940087892955752820">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Ia-unshare ang folder kapag na-shut down ang <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Pagbukud-bukurin ayon sa <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Kahandaan sa Pag-tether:</translation>
