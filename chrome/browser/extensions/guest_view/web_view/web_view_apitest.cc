@@ -20,9 +20,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/client_hints/browser/client_hints.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -223,17 +228,29 @@ class RenderWidgetHostVisibilityObserver
   bool hidden_observed_ = false;
 };
 
-// Wraps a MockClientHintsControllerDelegate in a KeyedService so that it can be
-// registered with KeyedServiceFactory.
-class TestClientHintsService
-    : public KeyedService,
-      public content::MockClientHintsControllerDelegate {
+// A ClientHints that allows overriding the user agent platform.
+class TestClientHints : public client_hints::ClientHints {
  public:
-  explicit TestClientHintsService(const blink::UserAgentMetadata& ua_metadata)
-      : content::MockClientHintsControllerDelegate(ua_metadata) {}
-  TestClientHintsService(const TestClientHintsService&) = delete;
-  TestClientHintsService& operator=(const TestClientHintsService&) = delete;
-  ~TestClientHintsService() override = default;
+  TestClientHints(Profile* profile, std::string_view ua_platform)
+      : client_hints::ClientHints(
+            profile,
+            g_browser_process->network_quality_tracker(),
+            HostContentSettingsMapFactory::GetForProfile(profile),
+            CookieSettingsFactory::GetForProfile(profile),
+            g_browser_process->local_state()),
+        ua_platform_(ua_platform) {}
+
+  TestClientHints(const TestClientHints&) = delete;
+  TestClientHints& operator=(const TestClientHints&) = delete;
+  ~TestClientHints() override = default;
+
+  // client_hints::ClientHints:
+  blink::UserAgentMetadata GetUserAgentMetadata() override {
+    return blink::UserAgentMetadata{.platform = ua_platform_};
+  }
+
+ private:
+  std::string ua_platform_;
 };
 
 }  // namespace
@@ -946,17 +963,15 @@ class WebViewAPITestUserAgentOverride : public WebViewAPITest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(http://crbug.com/507831013): Re-enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(WebViewAPITestUserAgentOverride,
-                       DISABLED_TestSetUserAgentOverride) {
-  // Set up a test ClientHintsControllerDelegate, wrapped in a KeyedService.
+                       TestSetUserAgentOverride) {
+  // Construct a TestClientHints to override the user agent platform.
   auto callback = base::BindOnce(
       [](content::BrowserContext* context) -> std::unique_ptr<KeyedService> {
-        blink::UserAgentMetadata ua_metadata;
-        ua_metadata.platform = "foobar";
-        return std::make_unique<TestClientHintsService>(ua_metadata);
+        Profile* profile = Profile::FromBrowserContext(context);
+        // The platform "foobar" matches the value in web_view/apitest/main.js.
+        return std::make_unique<TestClientHints>(profile, "foobar");
       });
-  // Make Profile::GetClientHintsControllerDelegate() return our test delegate.
   ClientHintsFactory::GetInstance()->SetTestingFactory(profile(),
                                                        std::move(callback));
 

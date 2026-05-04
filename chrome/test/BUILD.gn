@@ -5081,6 +5081,7 @@ if (!is_android) {
         "//chrome/renderer/controlled_frame",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
         "//components/autofill/core/common:features",
+        "//components/client_hints/browser",
         "//components/content_settings/core/test:test_support",
         "//components/guest_view/browser:test_support",
         "//components/history_clusters/history_clusters_internals/webui",
