@@ -407,7 +407,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   virtual void ClearUnusedResources() = 0;
 
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
+  virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const = 0;
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -446,10 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool current_resource_has_write_access_ = false;
   bool is_software_ = false;
   bool is_cleared_ = false;
-
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |image_pool_| will not rescycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
@@ -537,6 +533,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   ~Canvas2DResourceProviderSharedImage() override;
 
   void ClearUnusedResources() override;
+  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
   bool HasUnusedResourcesForTesting() const;
   bool IsSingleBuffered() const override;
@@ -610,6 +607,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void WillDrawUnaccelerated();
   void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
+  // If this instance is single-buffered or |resource_recycling_enabled_| is
+  // false, |image_pool_| will not recycle resources.
+  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
+
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
@@ -681,6 +682,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   ~CanvasNon2DResourceProviderSharedImage() override;
 
   void ClearUnusedResources() override;
+  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
   bool IsSingleBuffered() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
@@ -774,6 +776,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
+
+  // If this instance is single-buffered or |resource_recycling_enabled_| is
+  // false, |image_pool_| will not recycle resources.
+  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;

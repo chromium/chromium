@@ -952,7 +952,12 @@ void CanvasNon2DResourceProviderSharedImage::EndExternalWrite(
 }
 
 gpu::SharedImageUsageSet
-CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
+Canvas2DResourceProviderSharedImage::GetSharedImageUsageFlags() const {
+  return image_pool_->GetImageInfo().usage;
+}
+
+gpu::SharedImageUsageSet
+CanvasNon2DResourceProviderSharedImage::GetSharedImageUsageFlags() const {
   return image_pool_->GetImageInfo().usage;
 }
 
