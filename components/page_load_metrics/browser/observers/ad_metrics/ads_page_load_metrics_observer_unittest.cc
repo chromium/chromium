@@ -61,6 +61,8 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -446,6 +448,21 @@ class FrameRemoteTester : public content::FakeLocalFrame {
   std::string last_message_;
   base::OnceClosure on_empty_report_callback_;
   mojo::AssociatedReceiverSet<blink::mojom::LocalFrame> receivers_;
+};
+
+class TestAdsPageLoadMetricsObserver : public AdsPageLoadMetricsObserver {
+ public:
+  using AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver;
+  void OnMainFrameRectChanged(const gfx::Rect& main_frame_rect) override {
+    AdsPageLoadMetricsObserver::OnMainFrameRectChanged(main_frame_rect);
+    on_main_frame_rect_changed_called_ = true;
+  }
+  bool on_main_frame_rect_changed_called() const {
+    return on_main_frame_rect_changed_called_;
+  }
+
+ private:
+  bool on_main_frame_rect_changed_called_ = false;
 };
 
 }  // namespace
@@ -882,6 +899,10 @@ class AdsPageLoadMetricsObserverTest
 
   bool WithFencedFrames() { return GetParam(); }
 
+  TestAdsPageLoadMetricsObserver* GetAdsObserver() const {
+    return static_cast<TestAdsPageLoadMetricsObserver*>(ads_observer_.get());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
 
@@ -895,7 +916,7 @@ class AdsPageLoadMetricsObserverTest
   }
 
   void RegisterObservers(PageLoadTracker* tracker) {
-    auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
+    auto observer = std::make_unique<TestAdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr,
         /*history_service=*/nullptr,
         base::BindRepeating([]() { return std::string("en-US"); }),
@@ -957,6 +978,54 @@ TEST_P(AdsPageLoadMetricsObserverTest, PageWithNoAds) {
   // Verify that other UMA wasn't written.
   histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate.Total", 0);
+}
+
+// Regression test for https://crbug.com/502327205.
+// Verifies that `OnTimingUpdated` messages containing outermost main frame
+// metadata (e.g., `main_frame_rect`) are rejected if they originate from a
+// fenced frame. This simulates a compromised renderer attempting to spoof
+// metadata that should only be reported by the outermost main frame. We verify
+// that a bad message is reported and that the observer is not notified.
+TEST_P(AdsPageLoadMetricsObserverTest,
+       CompromisedRendererSendsMainFrameMetadataFromFencedFrame) {
+  if (!WithFencedFrames()) {
+    GTEST_SKIP() << "Test requires fenced frames";
+  }
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_frame);
+  RenderFrameHost* fenced_frame = rfh_tester->AppendFencedFrame();
+  fenced_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kNonAdUrl), fenced_frame);
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(2);
+
+  // Simulate a compromised renderer's message from a fenced frame that sets the
+  // main frame rectangle.
+  mojom::FrameMetadata metadata;
+  metadata.main_frame_rect = gfx::Rect(100, 100);
+
+  tester_->metrics_web_contents_observer()->OnTimingUpdated(
+      fenced_frame, timing.Clone(), metadata.Clone(), {},
+      std::vector<mojom::ResourceDataUpdatePtr>(),
+      mojom::FrameRenderDataUpdate::New(), mojom::CpuTiming::New(),
+      std::vector<mojom::EventTimingPtr>(), std::nullopt,
+      std::vector<mojom::SoftNavigationMetricsPtr>(),
+      std::vector<mojom::LargestContentfulPaintTimingPtr>(),
+      std::vector<mojom::CustomUserTimingMarkPtr>());
+
+  // Verify that a bad message was received.
+  EXPECT_TRUE(!bad_message_observer.WaitForBadMessage().empty());
+
+  // Verify that the observer was not notified of the main frame rect change.
+  EXPECT_FALSE(GetAdsObserver()->on_main_frame_rect_changed_called());
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, PageWithAds) {

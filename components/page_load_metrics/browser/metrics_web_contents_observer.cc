@@ -1166,6 +1166,17 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     std::vector<mojom::LargestContentfulPaintTimingPtr>
         soft_largest_contentful_paint,
     std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
+  if (metadata &&
+      (metadata->main_frame_rect || metadata->main_frame_viewport_rect ||
+       !metadata->main_frame_ad_rects.empty()) &&
+      render_frame_host &&
+      render_frame_host->GetOutermostMainFrame() != render_frame_host) {
+    mojo::ReportBadMessage(
+        "Unexpected outermost main frame metadata from a non-outermost main "
+        "frame.");
+    return;
+  }
+
   if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host)) {
     tracker->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),

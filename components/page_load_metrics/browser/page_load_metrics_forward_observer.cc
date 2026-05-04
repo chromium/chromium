@@ -339,27 +339,15 @@ void PageLoadMetricsForwardObserver::MediaStartedPlaying(
   parent_observer_->MediaStartedPlaying(video_type, render_frame_host);
 }
 
+// The following rectangle events are exclusive to the outermost main frame.
+// They may be received from a prerendered main frame, but we should not forward
+// them to the parent observer.
 void PageLoadMetricsForwardObserver::OnMainFrameRectChanged(
-    const gfx::Rect& main_frame_rect) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnMainFrameRectChanged(main_frame_rect);
-}
-
+    const gfx::Rect& main_frame_rect) {}
 void PageLoadMetricsForwardObserver::OnMainFrameViewportRectChanged(
-    const gfx::Rect& main_frame_viewport_rect) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
-}
-
+    const gfx::Rect& main_frame_viewport_rect) {}
 void PageLoadMetricsForwardObserver::OnMainFrameAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
-  if (!parent_observer_) {
-    return;
-  }
-  parent_observer_->OnMainFrameAdRectsChanged(main_frame_ad_rects);
-}
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {}
 
 // Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they
 // are dispatched to all trackers.

@@ -582,12 +582,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateFrameCpuTiming(
 void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
     content::RenderFrameHost* render_frame_host,
     mojom::FrameMetadataPtr subframe_metadata) {
-  if (subframe_metadata->main_frame_viewport_rect) {
-    mojo::ReportBadMessage(
-        "Unexpected main_frame_viewport_rect set for a subframe.");
-    return;
-  }
-
   // Merge the subframe loading behavior flags with any we've already observed,
   // possibly from other subframes.
   subframe_metadata_->behavior_flags |= subframe_metadata->behavior_flags;
