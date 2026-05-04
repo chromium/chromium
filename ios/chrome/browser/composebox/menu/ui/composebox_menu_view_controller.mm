@@ -46,6 +46,12 @@ const CGFloat kHeaderLabelVerticalPadding = 10.0f;
 // Font size for the header label.
 const CGFloat kHeaderLabelFontSize = 16.0f;
 
+// Vertical padding for the separator.
+const CGFloat kSeparatorVerticalPadding = 10.0f;
+
+// Height of the separator line.
+const CGFloat kSeparatorHeight = 1.0f;
+
 // Maps a menu item type to its corresponding attachment option.
 std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     ComposeboxMenuItemType type) {
@@ -130,6 +136,31 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 }
 
 }  // namespace
+
+@interface ComposeboxMenuSeparatorFooter : UICollectionReusableView
+@end
+
+@implementation ComposeboxMenuSeparatorFooter
+
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    UIView* separator = [[UIView alloc] init];
+    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+    separator.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:separator];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [separator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+      [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
+    ]];
+  }
+  return self;
+}
+
+@end
 
 @interface ComposeboxMenuViewController () <UICollectionViewDelegate>
 @end
@@ -322,6 +353,24 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     section.contentInsets = kAttachmentSectionInsets;
     section.orthogonalScrollingBehavior =
         UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
+
+    if (_sections.count > 1) {
+      NSCollectionLayoutSize* footerSize = [NSCollectionLayoutSize
+          sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                     fractionalWidthDimension:1.0]
+                 heightDimension:
+                     [NSCollectionLayoutDimension
+                         absoluteDimension:2 * kSeparatorVerticalPadding +
+                                           kSeparatorHeight]];
+      NSCollectionLayoutBoundarySupplementaryItem* footer =
+          [NSCollectionLayoutBoundarySupplementaryItem
+              boundarySupplementaryItemWithLayoutSize:footerSize
+                                          elementKind:
+                                              UICollectionElementKindSectionFooter
+                                            alignment:NSRectAlignmentBottom];
+      section.boundarySupplementaryItems = @[ footer ];
+    }
+
     return section;
   } else {
     UICollectionLayoutListConfiguration* listConfig =
@@ -426,6 +475,19 @@ UIImage* IconForModel(ComposeboxModelOption option) {
                                             atIndexPath:indexPath];
                         }];
 
+  UICollectionViewSupplementaryRegistration* footerRegistration =
+      [UICollectionViewSupplementaryRegistration
+          registrationWithSupplementaryClass:[ComposeboxMenuSeparatorFooter
+                                                 class]
+                                 elementKind:
+                                     UICollectionElementKindSectionFooter
+                        configurationHandler:^(
+                            ComposeboxMenuSeparatorFooter* view,
+                            NSString* elementKind, NSIndexPath* indexPath){
+                            // The view handles its own configuration in
+                            // initWithFrame:.
+                        }];
+
   _dataSource = [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_collectionView
                 cellProvider:^UICollectionViewCell*(
@@ -455,6 +517,12 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       return [collectionView
           dequeueConfiguredReusableSupplementaryViewWithRegistration:
               headerRegistration
+                                                        forIndexPath:indexPath];
+    }
+    if ([elementKind isEqualToString:UICollectionElementKindSectionFooter]) {
+      return [collectionView
+          dequeueConfiguredReusableSupplementaryViewWithRegistration:
+              footerRegistration
                                                         forIndexPath:indexPath];
     }
     return nil;
