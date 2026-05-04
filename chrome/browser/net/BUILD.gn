@@ -102,10 +102,6 @@ source_set("net") {
     ]
   }
 
-  if (is_mac) {
-    public += [ "chrome_mojo_proxy_resolver_mac.h" ]
-  }
-
   if (use_nss_certs) {
     public += [
       "nss_service.h",
@@ -256,10 +252,6 @@ source_set("impl") {
       "//ui/shell_dialogs",
       "//ui/views",
     ]
-  }
-
-  if (is_mac) {
-    sources += [ "chrome_mojo_proxy_resolver_mac.cc" ]
   }
 
   if (chrome_root_store_cert_management_ui) {

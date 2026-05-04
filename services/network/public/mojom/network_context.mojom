@@ -363,7 +363,7 @@ struct NetworkContextParams {
   // Handles all proxy resolution logic if the current proxy config comes from
   // the operating system. Otherwise, or if this is not populated, proxy
   // resolution is handled by Chrome as normal.
-  [EnableIf=is_win|is_mac]
+  [EnableIf=is_win]
   pending_remote<proxy_resolver.mojom.SystemProxyResolver>?
       system_proxy_resolver;
 

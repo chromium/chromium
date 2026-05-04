@@ -337,13 +337,6 @@ component("network_service") {
     ]
   }
 
-  if (is_mac) {
-    sources += [
-      "mac_system_proxy_resolver_mojo.cc",
-      "mac_system_proxy_resolver_mojo.h",
-    ]
-  }
-
   if (is_linux) {
     sources += [
       "network_change_notifier_passive_factory.cc",
@@ -602,10 +595,6 @@ source_set("tests") {
       "brokered_udp_client_socket_unittest.cc",
       "windows_system_proxy_resolver_mojo_unittest.cc",
     ]
-  }
-
-  if (is_mac) {
-    sources += [ "mac_system_proxy_resolver_mojo_unittest.cc" ]
   }
 
   if (enable_device_bound_sessions) {

@@ -16,9 +16,6 @@
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
 #include "services/network/windows_system_proxy_resolver_mojo.h"
-#elif BUILDFLAG(IS_MAC)
-#include "net/proxy_resolution/mac/mac_system_proxy_resolution_service.h"
-#include "services/network/mac_system_proxy_resolver_mojo.h"
 #elif BUILDFLAG(IS_CHROMEOS)
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
 #endif
@@ -35,13 +32,14 @@ void URLRequestContextBuilderMojo::SetMojoProxyResolverFactory(
   mojo_proxy_resolver_factory_ = std::move(mojo_proxy_resolver_factory);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-void URLRequestContextBuilderMojo::SetMojoSystemProxyResolver(
+#if BUILDFLAG(IS_WIN)
+void URLRequestContextBuilderMojo::SetMojoWindowsSystemProxyResolver(
     mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
-        mojo_system_proxy_resolver) {
-  mojo_system_proxy_resolver_ = std::move(mojo_system_proxy_resolver);
+        mojo_windows_system_proxy_resolver) {
+  mojo_windows_system_proxy_resolver_ =
+      std::move(mojo_windows_system_proxy_resolver);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 void URLRequestContextBuilderMojo::SetDhcpWpadUrlClient(
@@ -79,24 +77,14 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
   // TODO(crbug.com/40111093): Support both ProxyResolutionService
   // implementations so that they can be swapped around at runtime based on
   // proxy config.
-  if (mojo_system_proxy_resolver_) {
+  if (mojo_windows_system_proxy_resolver_) {
     std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service =
         net::WindowsSystemProxyResolutionService::Create(
             std::make_unique<WindowsSystemProxyResolverMojo>(
-                std::move(mojo_system_proxy_resolver_)),
+                std::move(mojo_windows_system_proxy_resolver_)),
             net_log);
     if (proxy_resolution_service)
       return proxy_resolution_service;
-  }
-#elif BUILDFLAG(IS_MAC)
-  if (mojo_system_proxy_resolver_) {
-    std::unique_ptr<net::ProxyResolutionService> proxy_resolution_service =
-        net::MacSystemProxyResolutionService::Create(
-            std::make_unique<MacSystemProxyResolverMojo>(
-                std::move(mojo_system_proxy_resolver_)));
-    if (proxy_resolution_service) {
-      return proxy_resolution_service;
-    }
   }
 #endif
 
