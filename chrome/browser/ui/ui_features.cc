@@ -396,6 +396,11 @@ bool IsWebUIPinnedToolbarActionsEnabled() {
          base::FeatureList::IsEnabled(features::kWebUIPinnedToolbarActions);
 }
 
+bool IsWebUIExtensionsContainerEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUIExtensionsContainer);
+}
+
 bool IsWebUISplitTabsButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
@@ -415,7 +420,8 @@ bool IsWebUIToolbarEnabled() {
   return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
          IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
          IsWebUIBackForwardButtonEnabled() ||
-         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled() ||
+         IsWebUIPinnedToolbarActionsEnabled() ||
+         IsWebUIExtensionsContainerEnabled() || IsWebUIAvatarButtonEnabled() ||
          IsWebUIAppMenuButtonEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

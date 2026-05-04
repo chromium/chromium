@@ -317,6 +317,8 @@ bool IsWebUIBackForwardButtonEnabled();
 
 bool IsWebUIPinnedToolbarActionsEnabled();
 
+bool IsWebUIExtensionsContainerEnabled();
+
 bool IsWebUISplitTabsButtonEnabled();
 
 // Controls whether the WebUI version of the Avatar Button is used.

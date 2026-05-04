@@ -93,6 +93,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIPinnedToolbarActionsEnabled());
   source->AddBoolean("enableAvatarButton",
                      features::IsWebUIAvatarButtonEnabled());
+  source->AddBoolean("enableExtensionsContainer",
+                     features::IsWebUIExtensionsContainerEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());
