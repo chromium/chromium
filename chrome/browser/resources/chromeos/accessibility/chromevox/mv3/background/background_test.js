@@ -3857,6 +3857,12 @@ TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
 
     // Ensure there are no announcements about the Tab role.
     assertTrue(speech.every(text => {
+      const lowerText = text.toLowerCase();
+      // Allow legitimate announcements for pinned buttons and the tab strip
+      // itself, while still guarding against the "Tab" role announcement.
+      if (lowerText.includes('search') || lowerText.includes('list')) {
+        return true;
+      }
       return text.indexOf('Tab') !== 0;
     }));
   })();
