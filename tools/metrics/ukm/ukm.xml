@@ -23763,26 +23763,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="ThirdPartyCookies.TopLevelDeprecationTrial">
-  <owner>3pcd-core@google.com</owner>
-  <owner>jdh@chromium.org</owner>
-  <summary>
-    Recorded when there is a change in the status of the TopLevelTpcd
-    deprecation trial.
-  </summary>
-  <metric name="Enabled" enum="Boolean">
-    <summary>
-      True if the trial was enabled. False if the trial was disabled.
-    </summary>
-  </metric>
-  <metric name="MatchSubdomains" enum="Boolean">
-    <summary>
-      True iff the token used to enable the trial is/was valid for subdomains of
-      the origin store in the token.
-    </summary>
-  </metric>
-</event>
-
 <event name="TopToolbar.Share">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
@@ -23842,27 +23822,6 @@ be describing additional metrics about the same event.
       is not reported). Used to compare the times when automated submission is
       enabled and disabled. Thus, we measure the time saved for a user. Recorded
       when the password manager detects that the login was successful.
-    </summary>
-  </metric>
-</event>
-
-<event name="Tpcd.Mitigations.Dt.FirstParty.Deployment2">
-  <owner>njeunje@google.com</owner>
-  <owner>tpcd-mitigations-team@google.com</owner>
-  <summary>
-    Recorded on a page load cadance for every third party cookie accessed.
-  </summary>
-  <metric name="Deployed" enum="Boolean">
-    <summary>
-      Indicates when an origin deployed its 1P (AKA First Party, top-level) DT
-      Token and thus was granted cookie access.
-    </summary>
-  </metric>
-  <metric name="Source" enum="FirstPartyMetadataSource">
-    <summary>
-      The source of the metadata rule that grants this cookie access. This is
-      logged for every page load with third-party cookies allowed due to a
-      global metadata or heuristics rule.
     </summary>
   </metric>
 </event>

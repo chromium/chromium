@@ -72,7 +72,6 @@ chromium-metrics-reviews@google.com.
   <variant name="FromNone"/>
   <variant name="FromOsJavascriptOptimizer"/>
   <variant name="FromPolicy"/>
-  <variant name="FromSourceTpcdGrant"/>
   <variant name="FromSupervised"/>
   <variant name="FromUser"/>
 </variants>

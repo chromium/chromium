@@ -4058,17 +4058,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="FirstPartyMetadataSource">
-  <int value="0" label="None"/>
-  <int value="1" label="FirstPartyDt"/>
-  <int value="2" label="ThirdPartyDt"/>
-  <int value="3" label="CriticalSector"/>
-  <int value="4" label="CriticalSectorTld"/>
-  <int value="5" label="Cuj"/>
-  <int value="6" label="OtherMetadata"/>
-  <int value="7" label="Heuristics"/>
-</enum>
-
 <enum name="FirstPartySetsDatabaseInitStatus">
   <int value="0" label="Unattempted"/>
   <int value="1" label="Success"/>
