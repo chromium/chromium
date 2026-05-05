@@ -31,6 +31,8 @@ component("sqlite_vfs") {
 
     sources = [
       "constants.h",
+      "file_system_id.cc",
+      "file_system_id.h",
       "lock_state.h",
       "metrics_util.cc",
       "metrics_util.h",
@@ -39,11 +41,8 @@ component("sqlite_vfs") {
       "shared_locks.cc",
       "shared_locks.h",
       "sqlite_database_vfs_file_set.cc",
-      "sqlite_database_vfs_file_set.h",
       "sqlite_sandboxed_vfs.cc",
-      "sqlite_sandboxed_vfs.h",
       "vfs_utils.cc",
-      "vfs_utils.h",
     ]
 
     deps = [ "//third_party/sqlite" ]
@@ -74,6 +73,7 @@ source_set("unit_tests") {
   # Cross-process file locks are not available on Fuchsia.
   if (!is_fuchsia) {
     sources = [
+      "file_system_id_unittest.cc",
       "sandboxed_file_unittest.cc",
       "shared_locks_unittest.cc",
       "sqlite_database_vfs_file_set_unittest.cc",
