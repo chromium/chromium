@@ -22,7 +22,9 @@ BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
 UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
-SYSTEM_COLORS_PATTERN = r'\[UIColor (?!white|black|clear)[a-z][a-zA-Z]*Color\]|UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color'
+SYSTEM_COLORS_PATTERN = (
+    r'\[UIColor (?!white|black|clear)[a-z][a-zA-Z]*Color\]|'
+    r'UIColor\.(?!white|black|clear)[a-z][a-zA-Z]*Color')
 
 # Color management constants
 COLOR_SHARED_DIR = 'ios/chrome/common/ui/colors/'
@@ -591,6 +593,110 @@ def _CheckUsageOfSystemColors(input_api, output_api):
     return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 
+def _CheckLargeImagesets(input_api, output_api):
+    """Checks that no large (> 100pt) PDF or SVG files are added to
+    .imageset directories.
+    """
+    import re
+
+    def get_svg_dimensions(file_contents):
+        try:
+            import xml.etree.ElementTree as ET
+            if isinstance(file_contents, bytes):
+                text = file_contents.decode('utf-8', errors='ignore')
+            else:
+                text = file_contents
+
+            root = ET.fromstring(text)
+            w_str = root.attrib.get('width', '')
+            h_str = root.attrib.get('height', '')
+            viewbox_str = (root.attrib.get('viewBox', '') or
+                           root.attrib.get('viewbox', ''))
+
+            def parse_val(v):
+                if not v:
+                    return 0.0
+                m = re.match(r'^([\d.]+)', str(v).strip())
+                return float(m.group(1)) if m else 0.0
+
+            w, h = parse_val(w_str), parse_val(h_str)
+            if (w == 0.0 or h == 0.0) and viewbox_str:
+                parts = re.split(r'[\s,]+', viewbox_str.strip())
+                if len(parts) >= 4:
+                    w = parse_val(parts[2])
+                    h = parse_val(parts[3])
+            return w, h
+        except Exception:
+            return 0.0, 0.0
+
+    def get_pdf_dimensions(file_contents):
+        try:
+            if isinstance(file_contents, str):
+                file_bytes = file_contents.encode('latin-1', errors='ignore')
+            else:
+                file_bytes = file_contents
+
+            # The PDF spec specifies that MediaBox can have whitespace or
+            # newlines.
+            pattern = re.compile(
+                rb'/MediaBox\s*\[\s*(-?[\d.]+)\s+(-?[\d.]+)\s+'
+                rb'(-?[\d.]+)\s+(-?[\d.]+)\s*\]')
+            match = pattern.search(file_bytes)
+            if match:
+                llx = float(match.group(1))
+                lly = float(match.group(2))
+                urx = float(match.group(3))
+                ury = float(match.group(4))
+                return abs(urx - llx), abs(ury - lly)
+        except Exception:
+            pass
+        return 0.0, 0.0
+
+    errors = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        if f.Action() != 'A':
+            continue
+        local_path = f.LocalPath()
+        lower_path = local_path.lower()
+        if '.imageset/' not in lower_path:
+            continue
+
+        if lower_path.endswith('.svg'):
+            is_svg = True
+        elif lower_path.endswith('.pdf'):
+            is_svg = False
+        else:
+            continue
+
+        try:
+            with open(f.AbsoluteLocalPath(), 'rb') as fp:
+                file_contents = fp.read()
+        except (IOError, OSError):
+            file_contents = input_api.ReadFile(
+                f.AbsoluteLocalPath(), mode='rb')
+
+        if is_svg:
+            w, h = get_svg_dimensions(file_contents)
+        else:
+            w, h = get_pdf_dimensions(file_contents)
+
+        if w > 100.0 or h > 100.0:
+            errors.append('%s (%.1fx%.1f pt)' % (local_path, w, h))
+
+    if not errors:
+        return []
+
+    warning_message = (
+        'Large vector assets (> 100pt) found in .imageset directories.\n'
+        'Apple actool rasterizes these at compile time into uncompressed\n'
+        '32-bit ARGB bitmaps, which severely bloats the Assets.car binary\n'
+        'size. Please use @2x and @3x PNGs instead.\n'
+        'Files:\n'
+    )
+
+    return [output_api.PresubmitError(warning_message, items=errors)]
+
+
 def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -611,6 +717,7 @@ def CheckChange(input_api, output_api):
     results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
     results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
     results.extend(_CheckUsageOfSystemColors(input_api, output_api))
+    results.extend(_CheckLargeImagesets(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):
