@@ -14,17 +14,19 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
 
-static const char kChromeExtensionOrigin[] =
+constexpr char kChromeExtensionOrigin[] =
     "chrome-extension://gclcddgeeaknflkijpcbplmhbkonmlij/";
-static const char kChromeExtensionId[] = "gclcddgeeaknflkijpcbplmhbkonmlij";
-static const char kChromeNotificationId[] =
-    "gclcddgeeaknflkijpcbplmhbkonmlij-id1";
+constexpr char kChromeExtensionId[] = "gclcddgeeaknflkijpcbplmhbkonmlij";
+constexpr char kChromeNotificationId[] = "gclcddgeeaknflkijpcbplmhbkonmlij-id1";
 
 class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
  public:
@@ -52,9 +54,8 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
  private:
   ExtensionId extension_id_;
   std::string event_name_;
-  size_t param_count_;
+  size_t param_count_ = 0;
 };
-}  // namespace
 
 class ExtensionNotificationHandlerTest : public testing::Test {
  public:
@@ -65,7 +66,6 @@ class ExtensionNotificationHandlerTest : public testing::Test {
 };
 
 TEST_F(ExtensionNotificationHandlerTest, CloseHandler) {
-  EXPECT_TRUE(true);
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
@@ -77,7 +77,6 @@ TEST_F(ExtensionNotificationHandlerTest, CloseHandler) {
 }
 
 TEST_F(ExtensionNotificationHandlerTest, ClickHandler) {
-  EXPECT_TRUE(true);
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
@@ -89,7 +88,6 @@ TEST_F(ExtensionNotificationHandlerTest, ClickHandler) {
 }
 
 TEST_F(ExtensionNotificationHandlerTest, ClickHandlerButton) {
-  EXPECT_TRUE(true);
   TestingProfile::Builder builder;
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
@@ -101,4 +99,5 @@ TEST_F(ExtensionNotificationHandlerTest, ClickHandlerButton) {
                   std::nullopt /* reply */, base::DoNothing());
 }
 
+}  // namespace
 }  // namespace extensions
