@@ -12,7 +12,7 @@
                 "crossbench_name": "loadline-tablet-fast",
                 "arguments": [
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         },
@@ -24,7 +24,7 @@
                 "crossbench_name": "motionmark_1.3",
                 "arguments": [
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             }
         },
@@ -42,7 +42,7 @@
                 "arguments": [
                     "--fileserver",
                     "--debug",
-                    "--enable-field-trials"
+                    "--disable-field-trials"
                 ]
             },
             "web_tests_cuj": {
