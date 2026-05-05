@@ -1700,7 +1700,7 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForCustomUi(
             feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
-            kToolbarAppMenuButtonElementId,
+            kToolbarAvatarButtonElementId,
             user_education::CreateCustomHelpBubbleViewFactoryCallback(
                 base::BindRepeating(
                     &IOSPromoBubbleView::Create,
