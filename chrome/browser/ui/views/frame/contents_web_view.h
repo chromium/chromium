@@ -44,6 +44,8 @@ class ContentsWebView : public views::WebView,
   const gfx::RoundedCornersF& GetBackgroundRadii() const;
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
+  void SetIsAnimatingBounds(bool is_animating);
+
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -65,6 +67,7 @@ class ContentsWebView : public views::WebView,
   std::unique_ptr<WebContentsCloseHandler> web_contents_close_handler_;
 
   bool background_visible_ = true;
+  bool is_animating_bounds_ = false;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };
