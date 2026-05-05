@@ -230,7 +230,9 @@ export class SelectionController {
       return;
     }
     this.scrollingOnSelection_ = true;
-    anchorElement.scrollIntoViewIfNeeded();
+    requestAnimationFrame(() => {
+      anchorElement.scrollIntoViewIfNeeded();
+    });
   }
 
   private getNewSelection_(container: Node): ReadOnlySelection|null {
