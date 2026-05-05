@@ -116,6 +116,7 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
         // Keep directories corresponding to packages from the dependency tree.
         dirs_to_remove.remove(crate_path.as_os_str());
 
+        let is_forced = args.force.as_ref().is_some_and(|glob| glob.matches(p.name()));
         let is_already_right_version =
             get_package_id_from_vendored_dir(&crate_path).is_some_and(|vendored| {
                 let expected_name = p.name();
@@ -127,7 +128,7 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             let vendored_is_placeholder = is_placeholder_crate(&crate_path);
             expecting_placeholder == vendored_is_placeholder
         };
-        if is_already_right_version && is_already_right_placeholder_status {
+        if !is_forced && is_already_right_version && is_already_right_placeholder_status {
             if !is_removed(p.id()) {
                 remove_vendored_files(p.name(), p.version(), &config, paths)?;
             }

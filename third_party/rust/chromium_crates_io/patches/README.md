@@ -73,6 +73,15 @@ The recommended procedure to create such patches is:
 5. Add the patch files in a new, third, commit
 6. Squash them, or rely on `git cl upload` doing so
 
+## Verifying if patches apply
+
+To force `gnrt` to re-vendor a crate (and re-apply patches) use the `--force`
+flag - e.g.:
+
+```
+$ tools/crates/run_gnrt.py vendor --force 'cxx*'
+```
+
 ## Recovering from patching errors
 
 If `gnrt vendor` fails to apply a patch for a crate, it will cancel the download of that

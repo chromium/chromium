@@ -95,6 +95,15 @@ struct VendorCommandArgs {
         engine input and write it to files named `gnrt-template-input.json`."
     )]
     dump_template_input: bool,
+    #[arg(
+        long,
+        name = "CRATE_WILDCARD",
+        help = "\
+        Force re-vendoring of crates matching <CRATE_WILDCARD>
+        (without this flag crates where `Cargo.toml` already specifies
+        the expected version would not be re-vendored)."
+    )]
+    force: Option<glob::Pattern>,
 }
 
 fn main() -> Result<()> {
