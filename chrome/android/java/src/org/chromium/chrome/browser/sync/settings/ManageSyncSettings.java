@@ -37,6 +37,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
@@ -145,6 +146,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE =
             "account_section_settings_toggle";
+
+    @VisibleForTesting
+    public static final String PREF_ACCOUNT_SECTION_THEMES_TOGGLE = "account_section_themes_toggle";
 
     @VisibleForTesting
     public static final String PREF_GOOGLE_ACTIVITY_CONTROLS = "google_activity_controls";
@@ -393,6 +397,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mSyncTypeSwitchPreferencesMap.put(
                 UserSelectableType.READING_LIST,
                 findPreference(PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
+
+        ChromeSwitchPreference themesToggle =
+                (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_THEMES_TOGGLE);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)) {
+            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.THEMES, themesToggle);
+        } else {
+            themesToggle.setVisible(false);
+        }
 
         mSyncTypeSwitchPreferencesMap
                 .values()
@@ -893,6 +905,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     var frag = ManageSyncSettings.class.getName();
                     if (!shouldShowExtensionsItem(profile)) {
                         indexData.removeEntryForKey(frag, PREF_ACCOUNT_SECTION_EXTENSIONS_TOGGLE);
+                    }
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)) {
+                        indexData.removeEntryForKey(frag, PREF_ACCOUNT_SECTION_THEMES_TOGGLE);
                     }
                     if (!shouldShowSignOutPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SIGN_OUT);

@@ -168,7 +168,10 @@ public class ManageSyncSettingsTest {
                             ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE),
                     entry(
                             UserSelectableType.PREFERENCES,
-                            ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE),
+                    entry(
+                            UserSelectableType.THEMES,
+                            ManageSyncSettings.PREF_ACCOUNT_SECTION_THEMES_TOGGLE));
 
     private SettingsActivity mSettingsActivity;
 
@@ -302,6 +305,30 @@ public class ManageSyncSettingsTest {
         scrollToAndVerifyPresence(R.string.manage_your_google_account);
 
         scrollToAndVerifyPresence(R.string.account_android_device_accounts);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @org.chromium.base.test.util.Features.EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testThemesToggleVisible() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        scrollToAndVerifyPresence(R.string.account_section_themes_toggle);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
+    public void testThemesToggleHidden() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        onView(withText(R.string.account_section_themes_toggle)).check(doesNotExist());
     }
 
     @Test
@@ -1401,6 +1428,11 @@ public class ManageSyncSettingsTest {
             // EXTENSIONS are only available in the desktop Android build.
             if (accountUiDataType.getKey() == UserSelectableType.EXTENSIONS
                     && !shouldShowExtensionsItem()) {
+                continue;
+            }
+            if (accountUiDataType.getKey() == UserSelectableType.THEMES
+                    && !ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)) {
                 continue;
             }
             Integer selectedType = accountUiDataType.getKey();

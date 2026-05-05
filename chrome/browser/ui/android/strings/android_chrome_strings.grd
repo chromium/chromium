@@ -2432,6 +2432,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_SECTION_SETTINGS_TOGGLE" desc="Settings, one of the data types that we allow syncing. Shown on next to the toggle that controls whether Settings should be saved in the Google Account and synced across devices.">
         Settings
       </message>
+      <message name="IDS_ACCOUNT_SECTION_THEMES_TOGGLE" desc="Themes, one of the data types that we allow syncing. Shown on next to the toggle that controls whether Themes should be saved in the Google Account and synced across devices.">
+        Themes
+      </message>
       <message name="IDS_ACCOUNT_SECTION_FOOTER" desc="Footer below a section with toggles to control which types of data users can use and save in their Google Account (as opposed to saving them only on the device).">
         When on, use and save data in your Google Account. When off, data is saved only to this device.
       </message>
