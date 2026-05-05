@@ -124,6 +124,28 @@ suite('ContextualTasksAppTest', function() {
     assertFalse(appElement.hasAttribute('is-zero-state_'));
   });
 
+  test('host initialized from URL parameter', async () => {
+    const forcedHost = 'test.host.com';
+    window.history.replaceState({}, '', `?chrome_host=${forcedHost}`);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    assertEquals(forcedHost, (appElement as any).host_);
+  });
+
+  test('host initialized from loadTimeData when URL param absent', async () => {
+    const forcedHost = 'default.host.com';
+    loadTimeData.overrideValues({chrome_host: forcedHost});
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    assertEquals(forcedHost, (appElement as any).host_);
+  });
+
 
   test('restores thread if task param set', async () => {
     window.history.replaceState({}, '', '?chrome_task_id=123');
