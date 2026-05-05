@@ -21,8 +21,6 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
  public:
   explicit ToolbarGlicButton(
       BrowserWindowInterface* browser_window_interface,
-      base::RepeatingClosure hovered_callback,
-      base::RepeatingClosure mouse_down_callback,
       base::RepeatingClosure expansion_animation_done_callback,
       const std::u16string& tooltip,
       PressedCallback pressed_callback);

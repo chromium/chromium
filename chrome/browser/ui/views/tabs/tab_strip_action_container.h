@@ -158,8 +158,6 @@ class TabStripActionContainer : public views::View,
   std::unique_ptr<glic::TabStripGlicButton> CreateGlicButton();
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();
-  void OnGlicButtonHovered();
-  void OnGlicButtonMouseDown();
   void OnGlicButtonAnimationEnded();
 
   std::unique_ptr<glic::TabStripGlicActorTaskIcon> CreateGlicActorTaskIcon();

@@ -20,6 +20,7 @@ source_set("glic") {
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/private_ai",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui/color:color_headers",

@@ -69,15 +69,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
-#include "chrome/browser/private_ai/private_ai_service.h"
-#include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "components/private_ai/client.h"
-#include "components/private_ai/features.h"
-#include "components/private_ai/status_code.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -95,26 +89,6 @@ constexpr int kOutsideBorderAroundGlicButtons = 11;
 constexpr int kLargeSpaceBetweenSeparatorRight = 8;
 constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
-#if !BUILDFLAG(IS_ANDROID)
-void EstablishPrivateAiConnection(Profile* profile) {
-  if (!profile) {
-    return;
-  }
-  if (base::FeatureList::IsEnabled(private_ai::kPrivateAi) &&
-      base::FeatureList::IsEnabled(glic::kZeroStateSuggestionsUsePrivateAi)) {
-    private_ai::PrivateAiService* private_ai_service =
-        private_ai::PrivateAiServiceFactory::GetForProfile(profile);
-    if (private_ai_service) {
-      private_ai::Client* client = private_ai_service->GetClient();
-      if (client) {
-        // Eagerly establish the connection.
-        client->EstablishConnection();
-      }
-    }
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 using TaskIconAnimationMode = glic::AnimationMode;
 }  // namespace
 
@@ -658,10 +632,6 @@ TabStripActionContainer::CreateGlicButton() {
   std::unique_ptr<glic::TabStripGlicButton> glic_button =
       std::make_unique<glic::TabStripGlicButton>(
           browser_window_interface_,
-          base::BindRepeating(&TabStripActionContainer::OnGlicButtonHovered,
-                              base::Unretained(this)),
-          base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
-                              base::Unretained(this)),
           base::BindRepeating(
               &TabStripActionContainer::OnGlicButtonAnimationEnded,
               base::Unretained(this)),
@@ -724,40 +694,6 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
-}
-
-void TabStripActionContainer::OnGlicButtonHovered() {
-  Profile* const profile = browser_window_interface_->GetProfile();
-#if !BUILDFLAG(IS_ANDROID)
-  EstablishPrivateAiConnection(profile);
-#endif  // !BUILDFLAG(IS_ANDROID)
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  if (auto* instance =
-          glic_service->GetInstanceForActiveTab(browser_window_interface_)) {
-    instance->host().instance_delegate().PrepareForOpen();
-  }
-}
-
-void TabStripActionContainer::OnGlicButtonMouseDown() {
-  Profile* const profile = browser_window_interface_->GetProfile();
-  if (!glic::GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
-    // Do not do this optimization if user has not consented to GLIC.
-    return;
-  }
-  auto* glic_service = glic::GlicKeyedService::Get(profile);
-
-  // TODO(crbug.com/445934142): Create the instance here so that suggestions can
-  // be fetched, but don't show it yet.
-  if (auto* instance =
-          glic_service->GetInstanceForActiveTab(browser_window_interface_)) {
-    // This prefetches the results and allows the underlying implementation to
-    // cache the results for future calls. Which is why the callback does
-    // nothing.
-    instance->host().instance_delegate().FetchZeroStateSuggestions(
-        /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
-        base::DoNothing());
-  }
 }
 
 void TabStripActionContainer::OnGlicButtonAnimationEnded() {

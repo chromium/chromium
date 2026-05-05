@@ -507,39 +507,3 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "Actor.Ui.TaskNudge.NeedsAttention.Click"));
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-class TabStripActionContainerPrivateAiBrowserTest
-    : public TabStripActionContainerBrowserTest {
- public:
-  TabStripActionContainerPrivateAiBrowserTest() {
-    private_ai_feature_list_.InitWithFeaturesAndParameters(
-        {{private_ai::kPrivateAi,
-          {{private_ai::kPrivateAiApiKey.name, "test-api-key"}}},
-         {glic::kZeroStateSuggestionsUsePrivateAi, {}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList private_ai_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerPrivateAiBrowserTest,
-                       EstablishesPrivateAiConnectionOnGlicButtonHover) {
-  auto* private_ai_service = private_ai::PrivateAiServiceFactory::GetForProfile(
-      browser()->GetProfile());
-  ASSERT_TRUE(private_ai_service);
-  auto mock_client =
-      std::make_unique<testing::StrictMock<private_ai::MockPrivateAiClient>>();
-  auto* mock_client_ptr = mock_client.get();
-  private_ai_service->SetClientForTesting(std::move(mock_client));
-
-  EXPECT_CALL(*mock_client_ptr, EstablishConnection());
-
-  // Hover over the glic button.
-  ui::MouseEvent mouse_enter(ui::EventType::kMouseEntered, gfx::Point(),
-                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
-  GlicNudgeButton()->OnMouseEntered(mouse_enter);
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)

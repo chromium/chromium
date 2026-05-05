@@ -78,15 +78,11 @@ gfx::Insets GetIconMargins(bool label_shown) {
 
 TabStripGlicButton::TabStripGlicButton(
     BrowserWindowInterface* browser_window_interface,
-    base::RepeatingClosure hovered_callback,
-    base::RepeatingClosure mouse_down_callback,
     base::RepeatingClosure expansion_animation_done_callback,
     const std::u16string& tooltip,
     PressedCallback pressed_callback,
     PressedCallback close_pressed_callback)
     : GlicButton<TabStripNudgeButton>(browser_window_interface,
-                                      hovered_callback,
-                                      mouse_down_callback,
                                       expansion_animation_done_callback,
                                       tooltip,
                                       kIconSize,
