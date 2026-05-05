@@ -47,71 +47,67 @@ namespace blink {
 
 namespace {
 
-struct RoundedPolygonVertex {
-  gfx::PointF entry;
-  gfx::PointF exit;
-  float radius = 0;
-};
-
 // Minimum length (in pixels) for edges and rounding radii below which rounding
 // is skipped. Values smaller than this won't produce visually noticeable
 // rounding (sub-pixel), so we avoid the computation entirely.
 constexpr float kMinRoundingThreshold = 0.5f;
 
-RoundedPolygonVertex ComputeRoundedPolygonVertex(const gfx::PointF& previous,
-                                                 const gfx::PointF& current,
-                                                 const gfx::PointF& next,
-                                                 float requested_radius) {
-  DCHECK_GT(requested_radius, 0);
-  RoundedPolygonVertex vertex{.entry = current, .exit = current, .radius = 0};
+struct RoundedPolygonEdge {
+  gfx::Vector2dF unit;
+  float length = 0.0f;
+  bool is_valid_for_rounding = false;
 
-  const gfx::Vector2dF incoming = current - previous;
-  const gfx::Vector2dF outgoing = next - current;
-  const float incoming_length = incoming.Length();
-  const float outgoing_length = outgoing.Length();
-  if (incoming_length <= kMinRoundingThreshold ||
-      outgoing_length <= kMinRoundingThreshold) {
-    return vertex;
+  RoundedPolygonEdge(const gfx::PointF& p1, const gfx::PointF& p2) {
+    gfx::Vector2dF vector = p2 - p1;
+    length = vector.Length();
+    if (length > kMinRoundingThreshold) {
+      is_valid_for_rounding = true;
+      unit = vector;
+      unit.InvScale(length);
+    }
+  }
+};
+
+float GetRoundedPolygonRadius(const RoundedPolygonEdge& incoming,
+                              const RoundedPolygonEdge& outgoing,
+                              float requested_radius) {
+  if (requested_radius <= 0 || !incoming.is_valid_for_rounding ||
+      !outgoing.is_valid_for_rounding) {
+    return 0.0f;
   }
 
-  gfx::Vector2dF incoming_unit = incoming;
-  incoming_unit.InvScale(incoming_length);
-  gfx::Vector2dF outgoing_unit = outgoing;
-  outgoing_unit.InvScale(outgoing_length);
   // The interior angle at the vertex: the angle between the vectors pointing
-  // from the vertex toward the previous and next vertices.  Since incoming_unit
+  // from the vertex toward the previous and next vertices. Since incoming.unit
   // points INTO the vertex, negate it to get the outward direction.
   const double cos_interior =
-      std::clamp(-gfx::DotProduct(incoming_unit, outgoing_unit), -1.0, 1.0);
+      std::clamp(-gfx::DotProduct(incoming.unit, outgoing.unit), -1.0, 1.0);
   const double interior_angle = std::acos(cos_interior);
+
   if (interior_angle <= std::numeric_limits<double>::epsilon() ||
       std::abs(interior_angle - kPiDouble) <=
           std::numeric_limits<double>::epsilon()) {
-    return vertex;
+    return 0.0f;
   }
 
   const double tan_half_interior = std::tan(interior_angle / 2.0);
   if (!std::isfinite(tan_half_interior) ||
       tan_half_interior <= std::numeric_limits<double>::epsilon()) {
-    return vertex;
+    return 0.0f;
   }
 
   // The spec clamps the radius so it never exceeds
   // tan(interior_angle/2) × segment / 2 for either adjacent segment.
   // Spec: https://www.w3.org/TR/css-shapes-1/#funcdef-basic-shape-polygon
-  const double max_radius = std::min(tan_half_interior * incoming_length * 0.5,
-                                     tan_half_interior * outgoing_length * 0.5);
+  const double max_radius = std::min(tan_half_interior * incoming.length * 0.5,
+                                     tan_half_interior * outgoing.length * 0.5);
   const double radius =
       std::min(static_cast<double>(requested_radius), max_radius);
+
   if (radius <= std::numeric_limits<double>::epsilon()) {
-    return vertex;
+    return 0.0f;
   }
 
-  const float tangent_distance = ClampTo<float>(radius / tan_half_interior);
-  vertex.entry = current - gfx::ScaleVector2d(incoming_unit, tangent_distance);
-  vertex.exit = current + gfx::ScaleVector2d(outgoing_unit, tangent_distance);
-  vertex.radius = ClampTo<float>(radius);
-  return vertex;
+  return ClampTo<float>(radius);
 }
 
 }  // namespace
@@ -252,25 +248,43 @@ Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box,
     return builder.Finalize();
   }
 
-  Vector<RoundedPolygonVertex> rounded_vertices(points.size());
+  // Start the path at the midpoint between the last and first vertices,
+  // rather than exactly at points.front(). This achieves two things:
+  // 1. Tangent Generation: The underlying Skia implementation of arcTo(SkPoint
+  //    p1, SkPoint p2, SkScalar radius) requires an existing path coordinate
+  //    to construct the incoming tangent ray.
+  // 2. Correctness: To prevent the final close() command from drawing backwards
+  //    across the last rounded corner, AND to prevent the first arcTo() from
+  //    drawing backwards because the initial position overshot the arc's start,
+  //    the path's starting position must be outside the radii of both arcs.
+  //    It must also be collinear with the original edge. Because the CSS spec
+  //    clamps rounding radii to never consume more than 50% of an adjacent
+  //    segment, the segment's midpoint is the only point guaranteed to satisfy
+  //    all these conditions.
+  //
+  //    https://www.w3.org/TR/css-shapes-1/#funcdef-basic-shape-polygon
+  const gfx::PointF& p_last = points.back();
+  const gfx::PointF& p_first = points.front();
+  builder.MoveTo(gfx::PointF(0.5f * p_last.x() + 0.5f * p_first.x(),
+                             0.5f * p_last.y() + 0.5f * p_first.y()));
+  RoundedPolygonEdge incoming_edge(p_last, p_first);
   for (wtf_size_t i = 0; i < points.size(); ++i) {
-    rounded_vertices[i] = ComputeRoundedPolygonVertex(
-        points.at((i + points.size() - 1) % points.size()), points.at(i),
-        points.at((i + 1) % points.size()), requested_radius);
+    const gfx::PointF& current = points[i];
+    const gfx::PointF& next = points[(i + 1) % points.size()];
+
+    RoundedPolygonEdge outgoing_edge(current, next);
+
+    float radius =
+        GetRoundedPolygonRadius(incoming_edge, outgoing_edge, requested_radius);
+
+    if (radius > 0.0f) {
+      builder.ArcTo(current, next, radius);
+    } else {
+      builder.LineTo(current);
+    }
+    incoming_edge = outgoing_edge;
   }
 
-  builder.MoveTo(rounded_vertices.front().entry);
-  for (wtf_size_t i = 0; i < rounded_vertices.size(); ++i) {
-    const RoundedPolygonVertex& vertex = rounded_vertices.at(i);
-    if (vertex.radius > 0) {
-      builder.ArcTo(points[i], vertex.exit, vertex.radius);
-    } else {
-      builder.LineTo(points[i]);
-    }
-    if (i + 1 < rounded_vertices.size()) {
-      builder.LineTo(rounded_vertices.at(i + 1).entry);
-    }
-  }
   builder.Close();
   return builder.Finalize();
 }
