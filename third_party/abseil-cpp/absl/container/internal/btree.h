@@ -53,6 +53,7 @@
 #include <functional>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -2489,7 +2490,7 @@ auto btree<P>::operator=(const btree &other) -> btree & {
     clear();
 
     *mutable_key_comp() = other.key_comp();
-    if (absl::allocator_traits<
+    if (std::allocator_traits<
             allocator_type>::propagate_on_container_copy_assignment::value) {
       *mutable_allocator() = other.allocator();
     }
@@ -2505,7 +2506,7 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
     clear();
 
     using std::swap;
-    if (absl::allocator_traits<
+    if (std::allocator_traits<
             allocator_type>::propagate_on_container_move_assignment::value) {
       swap(root_, other.root_);
       // Note: `rightmost_` also contains the allocator and the key comparator.
@@ -2681,7 +2682,7 @@ void btree<P>::clear() {
 template <typename P>
 void btree<P>::swap(btree &other) {
   using std::swap;
-  if (absl::allocator_traits<
+  if (std::allocator_traits<
           allocator_type>::propagate_on_container_swap::value) {
     // Note: `rightmost_` also contains the allocator and the key comparator.
     swap(rightmost_, other.rightmost_);

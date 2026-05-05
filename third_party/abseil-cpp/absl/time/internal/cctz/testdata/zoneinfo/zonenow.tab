@@ -58,6 +58,9 @@ XX	-2504-13005	Pacific/Pitcairn	Pitcairn
 # -08/-07 - PST/PDT (North America DST)
 XX	+340308-1181434	America/Los_Angeles	Pacific (PST/PDT) - US & Canada; Mexico near US border
 #
+# -08/-07 - PST/PDT (North America DST) until 2026-11-01 02:00; then MST
+XX	+4916-12307	America/Vancouver	MST - BC (most areas)
+#
 # -07 - MST
 XX	+332654-1120424	America/Phoenix	Mountain Standard (MST) - Arizona; western Mexico; Yukon
 #

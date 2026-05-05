@@ -195,7 +195,7 @@ TEST(RawPtrTest, Zero) {
 }
 
 TEST(ShareUniquePtrTest, Share) {
-  auto up = absl::make_unique<int>();
+  auto up = std::make_unique<int>();
   int* rp = up.get();
   auto sp = absl::ShareUniquePtr(std::move(up));
   EXPECT_EQ(sp.get(), rp);

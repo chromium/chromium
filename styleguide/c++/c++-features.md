@@ -2403,16 +2403,18 @@ substantial code size increase. Until this problem can be resolved the use of
 these containers is banned. Use the standard library containers instead.
 ***
 
-### bind_front <sup>[banned]</sup>
+### bind_back and bind_front <sup>[banned]</sup>
 
 ```c++
+absl::bind_back
 absl::bind_front
 ```
 
-**Description:** Binds the first N arguments of an invocable object and stores
-them by value.
+**Description:** Binds the first (bind_front) or the last (bind_back) N arguments
+of an invocable object and stores them by value.
 
 **Documentation:**
+*   [bind_back.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_back.h)
 *   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
 *   [Avoid std::bind](https://abseil.io/tips/108)
 

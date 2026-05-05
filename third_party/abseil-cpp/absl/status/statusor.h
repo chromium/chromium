@@ -416,9 +416,9 @@ class StatusOr : private internal_statusor::OperatorBase<T>,
   // Constructs the inner value `T` in-place using the provided args, using the
   // `T(args...)` constructor.
   template <typename... Args>
-  explicit StatusOr(absl::in_place_t, Args&&... args);
+  explicit StatusOr(std::in_place_t, Args&&... args);
   template <typename U, typename... Args>
-  explicit StatusOr(absl::in_place_t, std::initializer_list<U> ilist,
+  explicit StatusOr(std::in_place_t, std::initializer_list<U> ilist,
                     Args&&... args);
 
   // Constructs the inner value `T` in-place using the provided args, using the
@@ -430,29 +430,29 @@ class StatusOr : private internal_statusor::OperatorBase<T>,
   // `J` is convertible to `T`.
   template <typename U = T,
             std::enable_if_t<internal_statusor::IsConstructionValid<
-                                  false, T, U, false>::value,
-                              int> = 0>
+                                 false, T, U, false>::value,
+                             int> = 0>
   StatusOr(U&& u)  // NOLINT
-      : StatusOr(absl::in_place, std::forward<U>(u)) {}
+      : StatusOr(std::in_place, std::forward<U>(u)) {}
   template <typename U = T,
             std::enable_if_t<internal_statusor::IsConstructionValid<
-                                  false, T, U, true>::value,
-                              int> = 0>
+                                 false, T, U, true>::value,
+                             int> = 0>
   StatusOr(U&& u ABSL_ATTRIBUTE_LIFETIME_BOUND)  // NOLINT
-      : StatusOr(absl::in_place, std::forward<U>(u)) {}
+      : StatusOr(std::in_place, std::forward<U>(u)) {}
 
   template <typename U = T,
             std::enable_if_t<internal_statusor::IsConstructionValid<
-                                  true, T, U, false>::value,
-                              int> = 0>
+                                 true, T, U, false>::value,
+                             int> = 0>
   explicit StatusOr(U&& u)  // NOLINT
-      : StatusOr(absl::in_place, std::forward<U>(u)) {}
+      : StatusOr(std::in_place, std::forward<U>(u)) {}
   template <typename U = T,
             std::enable_if_t<
                 internal_statusor::IsConstructionValid<true, T, U, true>::value,
                 int> = 0>
   explicit StatusOr(U&& u ABSL_ATTRIBUTE_LIFETIME_BOUND)  // NOLINT
-      : StatusOr(absl::in_place, std::forward<U>(u)) {}
+      : StatusOr(std::in_place, std::forward<U>(u)) {}
 
   // StatusOr<T>::ok()
   //
@@ -747,14 +747,14 @@ inline void StatusOr<T>::Assign(StatusOr<U>&& other) {
 }
 template <typename T>
 template <typename... Args>
-StatusOr<T>::StatusOr(absl::in_place_t, Args&&... args)
-    : Base(absl::in_place, std::forward<Args>(args)...) {}
+StatusOr<T>::StatusOr(std::in_place_t, Args&&... args)
+    : Base(std::in_place, std::forward<Args>(args)...) {}
 
 template <typename T>
 template <typename U, typename... Args>
-StatusOr<T>::StatusOr(absl::in_place_t, std::initializer_list<U> ilist,
+StatusOr<T>::StatusOr(std::in_place_t, std::initializer_list<U> ilist,
                       Args&&... args)
-    : Base(absl::in_place, ilist, std::forward<Args>(args)...) {}
+    : Base(std::in_place, ilist, std::forward<Args>(args)...) {}
 
 template <typename T>
 const Status& StatusOr<T>::status() const& {

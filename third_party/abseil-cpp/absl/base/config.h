@@ -882,16 +882,16 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 #ifdef __EMSCRIPTEN__
 #include <emscripten/version.h>
-#ifdef __EMSCRIPTEN_major__
-#if __EMSCRIPTEN_minor__ >= 1000
-#error __EMSCRIPTEN_minor__ is too big to fit in ABSL_INTERNAL_EMSCRIPTEN_VERSION
+#ifdef __EMSCRIPTEN_MAJOR__
+#if __EMSCRIPTEN_MINOR__ >= 1000
+#error __EMSCRIPTEN_MINOR__ is too big to fit in ABSL_INTERNAL_EMSCRIPTEN_VERSION
 #endif
-#if __EMSCRIPTEN_tiny__ >= 1000
-#error __EMSCRIPTEN_tiny__ is too big to fit in ABSL_INTERNAL_EMSCRIPTEN_VERSION
+#if __EMSCRIPTEN_TINY__ >= 1000
+#error __EMSCRIPTEN_TINY__ is too big to fit in ABSL_INTERNAL_EMSCRIPTEN_VERSION
 #endif
 #define ABSL_INTERNAL_EMSCRIPTEN_VERSION                              \
-  ((__EMSCRIPTEN_major__) * 1000000 + (__EMSCRIPTEN_minor__) * 1000 + \
-   (__EMSCRIPTEN_tiny__))
+  ((__EMSCRIPTEN_MAJOR__) * 1000000 + (__EMSCRIPTEN_MINOR__) * 1000 + \
+   (__EMSCRIPTEN_TINY__))
 #endif
 #endif
 

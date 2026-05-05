@@ -128,7 +128,7 @@ struct Generator<std::tuple<Ts...>> {
 template <class T>
 struct Generator<std::unique_ptr<T>> {
   std::unique_ptr<T> operator()() const {
-    return absl::make_unique<T>(Generator<T>()());
+    return std::make_unique<T>(Generator<T>()());
   }
 };
 

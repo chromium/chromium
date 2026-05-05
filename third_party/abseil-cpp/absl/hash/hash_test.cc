@@ -365,7 +365,7 @@ TEST(HashValueTest, SmartPointers) {
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
       std::forward_as_tuple(&i, nullptr,                    //
                             unique1, unique2, unique_null,  //
-                            absl::make_unique<int>(),       //
+                            std::make_unique<int>(),        //
                             shared1, shared2, shared_null,  //
                             std::make_shared<int>()),
       SmartPointerEq{}));

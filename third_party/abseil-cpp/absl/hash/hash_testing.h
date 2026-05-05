@@ -20,6 +20,7 @@
 #include <string>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -131,7 +132,7 @@ ABSL_NAMESPACE_BEGIN
 //   }
 //   friend bool operator==(Bad4 x, Bad4 y) {
 //    // Compare two ranges for equality. C++14 code can instead use std::equal.
-//     return absl::equal(x.p, x.p + x.size, y.p, y.p + y.size);
+//     return std::equal(x.p, x.p + x.size, y.p, y.p + y.size);
 //   }
 // };
 //
@@ -321,12 +322,12 @@ struct ContainerAsVector<std::tuple<T...>> {
   using Out = std::vector<V>;
 
   template <size_t... I>
-  static Out DoImpl(const std::tuple<T...>& tuple, absl::index_sequence<I...>) {
+  static Out DoImpl(const std::tuple<T...>& tuple, std::index_sequence<I...>) {
     return Out{&std::get<I>(tuple)...};
   }
 
   static Out Do(const std::tuple<T...>& values) {
-    return DoImpl(values, absl::index_sequence_for<T...>());
+    return DoImpl(values, std::index_sequence_for<T...>());
   }
 };
 

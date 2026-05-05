@@ -115,7 +115,7 @@ class CopyNoAssign {
 
 absl::StatusOr<std::unique_ptr<int>> ReturnUniquePtr() {
   // Uses implicit constructor from T&&
-  return absl::make_unique<int>(0);
+  return std::make_unique<int>(0);
 }
 
 TEST(StatusOr, ElementType) {
@@ -358,7 +358,7 @@ struct Foo {
 };
 
 TEST(StatusOr, InPlaceConstruction) {
-  EXPECT_THAT(absl::StatusOr<Foo>(absl::in_place, 10),
+  EXPECT_THAT(absl::StatusOr<Foo>(std::in_place, 10),
               IsOkAndHolds(Field(&Foo::x, 10)));
 }
 
@@ -370,8 +370,8 @@ struct InPlaceHelper {
 };
 
 TEST(StatusOr, InPlaceInitListConstruction) {
-  absl::StatusOr<InPlaceHelper> status_or(absl::in_place, {10, 11, 12},
-                                          absl::make_unique<int>(13));
+  absl::StatusOr<InPlaceHelper> status_or(std::in_place, {10, 11, 12},
+                                          std::make_unique<int>(13));
   EXPECT_THAT(status_or, IsOkAndHolds(AllOf(
                              Field(&InPlaceHelper::x, ElementsAre(10, 11, 12)),
                              Field(&InPlaceHelper::y, Pointee(13)))));
@@ -390,9 +390,9 @@ TEST(StatusOr, Emplace) {
 }
 
 TEST(StatusOr, EmplaceInitializerList) {
-  absl::StatusOr<InPlaceHelper> status_or(absl::in_place, {10, 11, 12},
-                                          absl::make_unique<int>(13));
-  status_or.emplace({1, 2, 3}, absl::make_unique<int>(4));
+  absl::StatusOr<InPlaceHelper> status_or(std::in_place, {10, 11, 12},
+                                          std::make_unique<int>(13));
+  status_or.emplace({1, 2, 3}, std::make_unique<int>(4));
   EXPECT_THAT(status_or,
               IsOkAndHolds(AllOf(Field(&InPlaceHelper::x, ElementsAre(1, 2, 3)),
                                  Field(&InPlaceHelper::y, Pointee(4)))));
@@ -400,7 +400,7 @@ TEST(StatusOr, EmplaceInitializerList) {
   EXPECT_FALSE(status_or.ok());
   EXPECT_EQ(status_or.status().code(), absl::StatusCode::kInvalidArgument);
   EXPECT_EQ(status_or.status().message(), "msg");
-  status_or.emplace({1, 2, 3}, absl::make_unique<int>(4));
+  status_or.emplace({1, 2, 3}, std::make_unique<int>(4));
   EXPECT_THAT(status_or,
               IsOkAndHolds(AllOf(Field(&InPlaceHelper::x, ElementsAre(1, 2, 3)),
                                  Field(&InPlaceHelper::y, Pointee(4)))));
@@ -711,7 +711,7 @@ TEST(StatusOr, ImplicitConstructionFromInitliazerList) {
 
 TEST(StatusOr, UniquePtrImplicitConstruction) {
   auto status_or = absl::implicit_cast<absl::StatusOr<std::unique_ptr<Base1>>>(
-      absl::make_unique<Derived>());
+      std::make_unique<Derived>());
   EXPECT_THAT(status_or, IsOkAndHolds(Ne(nullptr)));
 }
 
@@ -903,7 +903,7 @@ TEST(StatusOr, ImplicitCastFromInitializerList) {
 
 TEST(StatusOr, UniquePtrImplicitAssignment) {
   absl::StatusOr<std::unique_ptr<Base1>> status_or;
-  status_or = absl::make_unique<Derived>();
+  status_or = std::make_unique<Derived>();
   EXPECT_THAT(status_or, IsOkAndHolds(Ne(nullptr)));
 }
 
@@ -1398,14 +1398,14 @@ TEST(StatusOr, ValueOrDefault) {
 }
 
 TEST(StatusOr, MoveOnlyValueOrOk) {
-  EXPECT_THAT(absl::StatusOr<std::unique_ptr<int>>(absl::make_unique<int>(0))
-                  .value_or(absl::make_unique<int>(-1)),
+  EXPECT_THAT(absl::StatusOr<std::unique_ptr<int>>(std::make_unique<int>(0))
+                  .value_or(std::make_unique<int>(-1)),
               Pointee(0));
 }
 
 TEST(StatusOr, MoveOnlyValueOrDefault) {
   EXPECT_THAT(absl::StatusOr<std::unique_ptr<int>>(absl::CancelledError())
-                  .value_or(absl::make_unique<int>(-1)),
+                  .value_or(std::make_unique<int>(-1)),
               Pointee(-1));
 }
 

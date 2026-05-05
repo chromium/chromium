@@ -552,14 +552,14 @@ struct FlatHashSetPolicy {
 
   template <class Allocator, class... Args>
   static void construct(Allocator* alloc, slot_type* slot, Args&&... args) {
-    absl::allocator_traits<Allocator>::construct(*alloc, slot,
-                                                 std::forward<Args>(args)...);
+    std::allocator_traits<Allocator>::construct(*alloc, slot,
+                                                std::forward<Args>(args)...);
   }
 
   // Return std::true_type in case destroy is trivial.
   template <class Allocator>
   static auto destroy(Allocator* alloc, slot_type* slot) {
-    absl::allocator_traits<Allocator>::destroy(*alloc, slot);
+    std::allocator_traits<Allocator>::destroy(*alloc, slot);
     return IsDestructionTrivial<Allocator, slot_type>();
   }
 

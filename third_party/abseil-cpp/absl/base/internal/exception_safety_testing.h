@@ -837,7 +837,7 @@ template <typename T>
 class DefaultFactory {
  public:
   explicit DefaultFactory(const T& t) : t_(t) {}
-  std::unique_ptr<T> operator()() const { return absl::make_unique<T>(t_); }
+  std::unique_ptr<T> operator()() const { return std::make_unique<T>(t_); }
 
  private:
   T t_;
@@ -1056,7 +1056,7 @@ class ExceptionSafetyTestBuilder {
       typename NewOperation,
       typename = EnableIfTestable<sizeof...(Contracts), Factory, NewOperation>>
   testing::AssertionResult Test(const NewOperation& new_operation) const {
-    return TestImpl(new_operation, absl::index_sequence_for<Contracts...>());
+    return TestImpl(new_operation, std::index_sequence_for<Contracts...>());
   }
 
   /*
@@ -1092,7 +1092,7 @@ class ExceptionSafetyTestBuilder {
 
   template <typename SelectedOperation, size_t... Indices>
   testing::AssertionResult TestImpl(SelectedOperation selected_operation,
-                                    absl::index_sequence<Indices...>) const {
+                                    std::index_sequence<Indices...>) const {
     return ExceptionSafetyTest<FactoryElementType<Factory>>(
                factory_, selected_operation, std::get<Indices>(contracts_)...)
         .Test();

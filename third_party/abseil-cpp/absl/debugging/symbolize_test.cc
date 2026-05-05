@@ -136,7 +136,7 @@ static const char *TrySymbolizeWithLimit(void *pc, int limit) {
       << "try_symbolize_buffer is too small";
 
   // Use the heap to facilitate heap and buffer sanitizer tools.
-  auto heap_buffer = absl::make_unique<char[]>(sizeof(try_symbolize_buffer));
+  auto heap_buffer = std::make_unique<char[]>(sizeof(try_symbolize_buffer));
   bool found = absl::Symbolize(pc, heap_buffer.get(), limit);
   if (found) {
     CHECK_LT(static_cast<int>(

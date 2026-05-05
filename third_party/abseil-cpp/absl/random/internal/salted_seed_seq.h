@@ -49,11 +49,11 @@ class SaltedSeedSeq {
   using inner_sequence_type = SSeq;
   using result_type = typename SSeq::result_type;
 
-  SaltedSeedSeq() : seq_(absl::make_unique<SSeq>()) {}
+  SaltedSeedSeq() : seq_(std::make_unique<SSeq>()) {}
 
   template <typename Iterator>
   SaltedSeedSeq(Iterator begin, Iterator end)
-      : seq_(absl::make_unique<SSeq>(begin, end)) {}
+      : seq_(std::make_unique<SSeq>(begin, end)) {}
 
   template <typename T>
   SaltedSeedSeq(std::initializer_list<T> il)

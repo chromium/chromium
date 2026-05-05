@@ -16,9 +16,9 @@
 // variant.h
 // -----------------------------------------------------------------------------
 //
-// Historical note: Abseil once provided an implementation of `absl::variant`
+// Historical note: Abseil once provided an implementation of `std::variant`
 // as a polyfill for `std::variant` prior to C++17. Now that C++17 is required,
-// `absl::variant` is an alias for `std::variant`.
+// `std::variant` is an alias for `std::variant`.
 
 #ifndef ABSL_TYPES_VARIANT_H_
 #define ABSL_TYPES_VARIANT_H_
@@ -57,23 +57,23 @@ struct ConversionVisitor {
 
 // ConvertVariantTo()
 //
-// Helper functions to convert an `absl::variant` to a variant of another set of
+// Helper functions to convert an `std::variant` to a variant of another set of
 // types, provided that the alternative type of the new variant type can be
 // converted from any type in the source variant.
 //
 // Example:
 //
-//   absl::variant<name1, name2, float> InternalReq(const Req&);
+//   std::variant<name1, name2, float> InternalReq(const Req&);
 //
 //   // name1 and name2 are convertible to name
-//   absl::variant<name, float> ExternalReq(const Req& req) {
-//     return absl::ConvertVariantTo<absl::variant<name, float>>(
+//   std::variant<name, float> ExternalReq(const Req& req) {
+//     return absl::ConvertVariantTo<std::variant<name, float>>(
 //              InternalReq(req));
 //   }
 template <typename To, typename Variant>
 To ConvertVariantTo(Variant&& variant) {
-  return absl::visit(variant_internal::ConversionVisitor<To>{},
-                     std::forward<Variant>(variant));
+  return std::visit(variant_internal::ConversionVisitor<To>{},
+                    std::forward<Variant>(variant));
 }
 
 ABSL_NAMESPACE_END

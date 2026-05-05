@@ -58,7 +58,7 @@ ABSL_NAMESPACE_BEGIN
 //   std::unique_ptr<X> x(NewX(1, 2));
 //
 // While `absl::WrapUnique` is useful for capturing the output of a raw
-// pointer factory, prefer 'absl::make_unique<T>(args...)' over
+// pointer factory, prefer 'std::make_unique<T>(args...)' over
 // 'absl::WrapUnique(new T(args...))'.
 //
 //   auto x = WrapUnique(new X(1, 2));  // works, but nonideal.
@@ -117,7 +117,7 @@ struct MakeUniqueResult<T[N]> {
 
 // These are make_unique_for_overwrite variants modeled after
 // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1973r1.pdf
-// Unlike absl::make_unique, values are default initialized rather than value
+// Unlike std::make_unique, values are default initialized rather than value
 // initialized.
 //
 // `absl::make_unique_for_overwrite` overload for non-array types.
@@ -167,7 +167,7 @@ inline std::nullptr_t RawPtr(std::nullptr_t) { return nullptr; }
 //
 // Example:
 //
-//     auto up = absl::make_unique<int>(10);
+//     auto up = std::make_unique<int>(10);
 //     auto sp = absl::ShareUniquePtr(std::move(up));  // shared_ptr<int>
 //     CHECK_EQ(*sp, 10);
 //     CHECK(up == nullptr);

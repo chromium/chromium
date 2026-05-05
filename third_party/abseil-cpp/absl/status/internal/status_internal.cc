@@ -81,7 +81,7 @@ std::optional<absl::Cord> StatusRep::GetPayload(
 
 void StatusRep::SetPayload(absl::string_view type_url, absl::Cord payload) {
   if (payloads_ == nullptr) {
-    payloads_ = absl::make_unique<status_internal::Payloads>();
+    payloads_ = std::make_unique<status_internal::Payloads>();
   }
 
   std::optional<size_t> index =
@@ -223,7 +223,7 @@ StatusRep* absl_nonnull StatusRep::CloneAndUnref() const {
   }
   std::unique_ptr<status_internal::Payloads> payloads;
   if (payloads_) {
-    payloads = absl::make_unique<status_internal::Payloads>(*payloads_);
+    payloads = std::make_unique<status_internal::Payloads>(*payloads_);
   }
   auto* new_rep = new StatusRep(code_, message_, std::move(payloads));
   new_rep->source_locations_ = source_locations_;

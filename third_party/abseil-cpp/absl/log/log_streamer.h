@@ -84,7 +84,7 @@ class LogStreamer final {
       : severity_(severity),
         line_(line),
         file_(file),
-        stream_(absl::in_place, &buf_) {
+        stream_(std::in_place, &buf_) {
     // To match `LOG`'s defaults:
     stream_->setf(std::ios_base::showbase | std::ios_base::boolalpha);
   }

@@ -62,7 +62,7 @@ struct DistributionCaller {
     ResultT result;
     if (!RandomMockingAccess::InvokeMock<URBG>(urbg, FastTypeId<KeyT>(),
                                                &arg_tuple, &result)) {
-      auto dist = absl::make_from_tuple<DistrT>(arg_tuple);
+      auto dist = std::make_from_tuple<DistrT>(arg_tuple);
       result = dist(*urbg);
     }
     return result;

@@ -604,7 +604,7 @@ AbslHashValue(H hash_state, const std::pair<T1, T2>& p) {
 // Helper function for hashing a tuple. The third argument should
 // be an index_sequence running from 0 to tuple_size<Tuple> - 1.
 template <typename H, typename Tuple, size_t... Is>
-H hash_tuple(H hash_state, const Tuple& t, absl::index_sequence<Is...>) {
+H hash_tuple(H hash_state, const Tuple& t, std::index_sequence<Is...>) {
   return H::combine(std::move(hash_state), std::get<Is>(t)...);
 }
 
@@ -619,7 +619,7 @@ typename std::enable_if<std::conjunction<is_hashable<Ts>...>::value, H>::type
 #endif  // _MSC_VER
 AbslHashValue(H hash_state, const std::tuple<Ts...>& t) {
   return hash_internal::hash_tuple(std::move(hash_state), t,
-                                   absl::make_index_sequence<sizeof...(Ts)>());
+                                   std::make_index_sequence<sizeof...(Ts)>());
 }
 
 // -----------------------------------------------------------------------------

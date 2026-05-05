@@ -79,6 +79,7 @@ class UnscaledCycleClock {
   friend class base_internal::CycleClock;
   friend class time_internal::UnscaledCycleClockWrapperForGetCurrentTime;
   friend class base_internal::UnscaledCycleClockWrapperForInitializeFrequency;
+  friend class gloop_do_not_use::UnscaledCycleClockWrapperForPerCpuTest;
 };
 
 #if defined(__x86_64__)

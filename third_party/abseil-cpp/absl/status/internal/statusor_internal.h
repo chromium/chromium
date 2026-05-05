@@ -117,7 +117,7 @@ using IsDirectInitializationValid = std::disjunction<
         std::negation<std::disjunction<
             std::is_same<absl::StatusOr<T>, absl::remove_cvref_t<U>>,
             std::is_same<absl::Status, absl::remove_cvref_t<U>>,
-            std::is_same<absl::in_place_t, absl::remove_cvref_t<U>>,
+            std::is_same<std::in_place_t, absl::remove_cvref_t<U>>,
             IsDirectInitializationAmbiguous<T, U>>>>>;
 
 // This trait detects whether `StatusOr<T>::operator=(U&&)` is ambiguous, which
@@ -149,7 +149,7 @@ using IsForwardingAssignmentValid = std::disjunction<
     std::negation<std::disjunction<
         std::is_same<absl::StatusOr<T>, absl::remove_cvref_t<U>>,
         std::is_same<absl::Status, absl::remove_cvref_t<U>>,
-        std::is_same<absl::in_place_t, absl::remove_cvref_t<U>>,
+        std::is_same<std::in_place_t, absl::remove_cvref_t<U>>,
         IsForwardingAssignmentAmbiguous<T, U>>>>;
 
 template <bool Value, typename T>
@@ -194,7 +194,7 @@ template <bool Explicit, typename T, typename U>
 using IsConstructionFromStatusValid = std::conjunction<
     std::negation<std::is_same<absl::StatusOr<T>, absl::remove_cvref_t<U>>>,
     std::negation<std::is_same<T, absl::remove_cvref_t<U>>>,
-    std::negation<std::is_same<absl::in_place_t, absl::remove_cvref_t<U>>>,
+    std::negation<std::is_same<std::in_place_t, absl::remove_cvref_t<U>>>,
     Equality<!Explicit, std::is_convertible<U, absl::Status>>,
     std::is_constructible<absl::Status, U>,
     std::negation<HasConversionOperatorToStatusOr<T, U>>>;
@@ -325,7 +325,7 @@ class StatusOrData {
   }
 
   template <typename... Args>
-  explicit StatusOrData(absl::in_place_t, Args&&... args)
+  explicit StatusOrData(std::in_place_t, Args&&... args)
       : data_(std::forward<Args>(args)...) {
     MakeStatus();
   }

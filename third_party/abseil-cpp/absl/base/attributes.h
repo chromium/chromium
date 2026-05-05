@@ -541,7 +541,8 @@
 // The clang-tidy check bugprone-use-after-move allows member functions of types
 // marked with this attribute to be called on objects that have been moved from;
 // without the attribute, this would result in a use-after-move warning.
-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate) && defined(__clang__) && \
+    __clang_major__ >= 12
 #define ABSL_ATTRIBUTE_NULL_AFTER_MOVE                       \
   [[clang::annotate("clang-tidy", "bugprone-use-after-move", \
                     "null_after_move")]]

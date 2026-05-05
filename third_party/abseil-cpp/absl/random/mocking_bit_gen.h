@@ -106,7 +106,7 @@ class MockingBitGen {
   static auto GetMockFnType(ResultT, std::tuple<Args...>)
       -> ::testing::MockFunction<ResultT(Args...)>;
 
-  // MockFnCaller is a helper method for use with absl::apply to
+  // MockFnCaller is a helper method for use with std::apply to
   // apply an ArgTupleT to a compatible MockFunction.
   // NOTE: MockFnCaller is essentially equivalent to the lambda:
   // [fn](auto... args) { return fn->Call(std::move(args)...)}
@@ -148,7 +148,7 @@ class MockingBitGen {
       // Requires tuple_args to point to a ArgTupleT, which is a
       // std::tuple<Args...> used to invoke the mock function. Requires result
       // to point to a ResultT, which is the result of the call.
-      *static_cast<ResultT*>(result) = absl::apply(
+      *static_cast<ResultT*>(result) = std::apply(
           MockFnCaller<MockFnType, ValidatorT, ResultT, ArgTupleT>{&mock_fn_},
           *static_cast<ArgTupleT*>(args_tuple));
     }
@@ -189,7 +189,7 @@ class MockingBitGen {
         FunctionHolderImpl<WrappedFnType, ValidatorT, ResultT, ArgTupleT>;
     auto& mock = mocks_[type];
     if (!mock) {
-      mock = absl::make_unique<ImplT>();
+      mock = std::make_unique<ImplT>();
     }
     return static_cast<ImplT*>(mock.get())->mock_fn_;
   }

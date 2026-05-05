@@ -389,13 +389,13 @@ struct ValuePolicy {
 
   template <class Allocator, class... Args>
   static void construct(Allocator* alloc, slot_type* slot, Args&&... args) {
-    absl::allocator_traits<Allocator>::construct(*alloc, slot,
-                                                 std::forward<Args>(args)...);
+    std::allocator_traits<Allocator>::construct(*alloc, slot,
+                                                std::forward<Args>(args)...);
   }
 
   template <class Allocator>
   static void destroy(Allocator* alloc, slot_type* slot) {
-    absl::allocator_traits<Allocator>::destroy(*alloc, slot);
+    std::allocator_traits<Allocator>::destroy(*alloc, slot);
   }
 
   template <class Allocator>
@@ -2308,7 +2308,7 @@ TEST(Table, NoThrowMoveAssign) {
       std::is_nothrow_move_assignable<std::equal_to<absl::string_view>>::value);
   ASSERT_TRUE(std::is_nothrow_move_assignable<std::allocator<int>>::value);
   ASSERT_TRUE(
-      absl::allocator_traits<std::allocator<int>>::is_always_equal::value);
+      std::allocator_traits<std::allocator<int>>::is_always_equal::value);
   EXPECT_TRUE(std::is_nothrow_move_assignable<StringTable>::value);
 }
 

@@ -645,23 +645,22 @@ class NodeHashMapPolicy
 
   template <class Allocator, class... Args>
   static value_type* new_element(Allocator* alloc, Args&&... args) {
-    using PairAlloc = typename absl::allocator_traits<
+    using PairAlloc = typename std::allocator_traits<
         Allocator>::template rebind_alloc<value_type>;
     PairAlloc pair_alloc(*alloc);
-    value_type* res =
-        absl::allocator_traits<PairAlloc>::allocate(pair_alloc, 1);
-    absl::allocator_traits<PairAlloc>::construct(pair_alloc, res,
-                                                 std::forward<Args>(args)...);
+    value_type* res = std::allocator_traits<PairAlloc>::allocate(pair_alloc, 1);
+    std::allocator_traits<PairAlloc>::construct(pair_alloc, res,
+                                                std::forward<Args>(args)...);
     return res;
   }
 
   template <class Allocator>
   static void delete_element(Allocator* alloc, value_type* pair) {
-    using PairAlloc = typename absl::allocator_traits<
+    using PairAlloc = typename std::allocator_traits<
         Allocator>::template rebind_alloc<value_type>;
     PairAlloc pair_alloc(*alloc);
-    absl::allocator_traits<PairAlloc>::destroy(pair_alloc, pair);
-    absl::allocator_traits<PairAlloc>::deallocate(pair_alloc, pair, 1);
+    std::allocator_traits<PairAlloc>::destroy(pair_alloc, pair);
+    std::allocator_traits<PairAlloc>::deallocate(pair_alloc, pair, 1);
   }
 
   template <class F, class... Args>

@@ -819,8 +819,8 @@ template <typename C,
           typename Iterator = container_algorithm_internal::ContainerIter<C>>
 ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 Iterator c_rotate(C& sequence,
                                                       Iterator middle) {
-  return absl::rotate(container_algorithm_internal::c_begin(sequence), middle,
-                      container_algorithm_internal::c_end(sequence));
+  return std::rotate(container_algorithm_internal::c_begin(sequence), middle,
+                     container_algorithm_internal::c_end(sequence));
 }
 
 // c_rotate_copy()

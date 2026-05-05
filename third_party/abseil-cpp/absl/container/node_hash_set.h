@@ -548,21 +548,21 @@ struct NodeHashSetPolicy
   template <class Allocator, class... Args>
   static T* new_element(Allocator* alloc, Args&&... args) {
     using ValueAlloc =
-        typename absl::allocator_traits<Allocator>::template rebind_alloc<T>;
+        typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
     ValueAlloc value_alloc(*alloc);
-    T* res = absl::allocator_traits<ValueAlloc>::allocate(value_alloc, 1);
-    absl::allocator_traits<ValueAlloc>::construct(value_alloc, res,
-                                                  std::forward<Args>(args)...);
+    T* res = std::allocator_traits<ValueAlloc>::allocate(value_alloc, 1);
+    std::allocator_traits<ValueAlloc>::construct(value_alloc, res,
+                                                 std::forward<Args>(args)...);
     return res;
   }
 
   template <class Allocator>
   static void delete_element(Allocator* alloc, T* elem) {
     using ValueAlloc =
-        typename absl::allocator_traits<Allocator>::template rebind_alloc<T>;
+        typename std::allocator_traits<Allocator>::template rebind_alloc<T>;
     ValueAlloc value_alloc(*alloc);
-    absl::allocator_traits<ValueAlloc>::destroy(value_alloc, elem);
-    absl::allocator_traits<ValueAlloc>::deallocate(value_alloc, elem, 1);
+    std::allocator_traits<ValueAlloc>::destroy(value_alloc, elem);
+    std::allocator_traits<ValueAlloc>::deallocate(value_alloc, elem, 1);
   }
 
   template <class F, class... Args>

@@ -346,10 +346,10 @@ class LayoutImpl;
 // can compute offsets).
 template <class... Elements, size_t... StaticSizeSeq, size_t... RuntimeSizeSeq,
           size_t... SizeSeq, size_t... OffsetSeq>
-class LayoutImpl<
-    std::tuple<Elements...>, absl::index_sequence<StaticSizeSeq...>,
-    absl::index_sequence<RuntimeSizeSeq...>, absl::index_sequence<SizeSeq...>,
-    absl::index_sequence<OffsetSeq...>> {
+class LayoutImpl<std::tuple<Elements...>, std::index_sequence<StaticSizeSeq...>,
+                 std::index_sequence<RuntimeSizeSeq...>,
+                 std::index_sequence<SizeSeq...>,
+                 std::index_sequence<OffsetSeq...>> {
  private:
   static_assert(sizeof...(Elements) > 0, "At least one field is required");
   static_assert(std::conjunction<IsLegalElementType<Elements>...>::value,
@@ -687,10 +687,9 @@ class LayoutImpl<
 
 template <class StaticSizeSeq, size_t NumRuntimeSizes, class... Ts>
 using LayoutType = LayoutImpl<
-    std::tuple<Ts...>, StaticSizeSeq,
-    absl::make_index_sequence<NumRuntimeSizes>,
-    absl::make_index_sequence<NumRuntimeSizes + StaticSizeSeq::size()>,
-    absl::make_index_sequence<adl_barrier::Min(
+    std::tuple<Ts...>, StaticSizeSeq, std::make_index_sequence<NumRuntimeSizes>,
+    std::make_index_sequence<NumRuntimeSizes + StaticSizeSeq::size()>,
+    std::make_index_sequence<adl_barrier::Min(
         sizeof...(Ts), NumRuntimeSizes + StaticSizeSeq::size() + 1)>>;
 
 template <class StaticSizeSeq, class... Ts>
@@ -793,11 +792,12 @@ class LayoutWithStaticSizes
 // internal_layout::LayoutImpl above. Those types are internal to the library
 // but their methods are public, and they are inherited by `Layout`.
 template <class... Ts>
-class Layout : public internal_layout::LayoutWithStaticSizes<
-                   absl::make_index_sequence<0>, Ts...> {
+class Layout
+    : public internal_layout::LayoutWithStaticSizes<std::make_index_sequence<0>,
+                                                    Ts...> {
  private:
   using Super =
-      internal_layout::LayoutWithStaticSizes<absl::make_index_sequence<0>,
+      internal_layout::LayoutWithStaticSizes<std::make_index_sequence<0>,
                                              Ts...>;
 
  public:

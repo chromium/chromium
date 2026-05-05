@@ -1909,9 +1909,9 @@ class raw_hash_set {
   using value_type = typename PolicyTraits::value_type;
   using reference = value_type&;
   using const_reference = const value_type&;
-  using pointer = typename absl::allocator_traits<
+  using pointer = typename std::allocator_traits<
       allocator_type>::template rebind_traits<value_type>::pointer;
-  using const_pointer = typename absl::allocator_traits<
+  using const_pointer = typename std::allocator_traits<
       allocator_type>::template rebind_traits<value_type>::const_pointer;
 
  private:
@@ -1975,15 +1975,15 @@ class raw_hash_set {
   static_assert(sizeof(key_hash_result) >= sizeof(size_t),
                 "`Hash::operator()` should return a `size_t`");
 
-  using AllocTraits = absl::allocator_traits<allocator_type>;
-  using SlotAlloc = typename absl::allocator_traits<
+  using AllocTraits = std::allocator_traits<allocator_type>;
+  using SlotAlloc = typename std::allocator_traits<
       allocator_type>::template rebind_alloc<slot_type>;
   // People are often sloppy with the exact type of their allocator (sometimes
   // it has an extra const or is missing the pair, but rebinds made it work
   // anyway).
   using CharAlloc =
-      typename absl::allocator_traits<Alloc>::template rebind_alloc<char>;
-  using SlotAllocTraits = typename absl::allocator_traits<
+      typename std::allocator_traits<Alloc>::template rebind_alloc<char>;
+  using SlotAllocTraits = typename std::allocator_traits<
       allocator_type>::template rebind_traits<slot_type>;
 
   static_assert(std::is_lvalue_reference<reference>::value,

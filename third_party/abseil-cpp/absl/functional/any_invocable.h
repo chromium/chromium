@@ -203,14 +203,13 @@ class ABSL_NULLABILITY_COMPATIBLE ABSL_ATTRIBUTE_OWNER AnyInvocable
   // Example:
   //
   //   AnyInvocable<int(int)> func(
-  //       absl::in_place_type<PossiblyImmovableType>, arg1, arg2);
+  //       std::in_place_type<PossiblyImmovableType>, arg1, arg2);
   //
   template <class T, class... Args,
             typename = std::enable_if_t<
                 internal_any_invocable::CanEmplace<Sig, T, Args...>::value>>
-  explicit AnyInvocable(absl::in_place_type_t<T>, Args&&... args)
-      : Impl(absl::in_place_type<std::decay_t<T>>,
-             std::forward<Args>(args)...) {
+  explicit AnyInvocable(std::in_place_type_t<T>, Args&&... args)
+      : Impl(std::in_place_type<std::decay_t<T>>, std::forward<Args>(args)...) {
     static_assert(std::is_same<T, std::decay_t<T>>::value,
                   "The explicit template argument of in_place_type is required "
                   "to be an unqualified object type.");
@@ -220,9 +219,9 @@ class ABSL_NULLABILITY_COMPATIBLE ABSL_ATTRIBUTE_OWNER AnyInvocable
   template <class T, class U, class... Args,
             typename = std::enable_if_t<internal_any_invocable::CanEmplace<
                 Sig, T, std::initializer_list<U>&, Args...>::value>>
-  explicit AnyInvocable(absl::in_place_type_t<T>,
-                        std::initializer_list<U> ilist, Args&&... args)
-      : Impl(absl::in_place_type<std::decay_t<T>>, ilist,
+  explicit AnyInvocable(std::in_place_type_t<T>, std::initializer_list<U> ilist,
+                        Args&&... args)
+      : Impl(std::in_place_type<std::decay_t<T>>, ilist,
              std::forward<Args>(args)...) {
     static_assert(std::is_same<T, std::decay_t<T>>::value,
                   "The explicit template argument of in_place_type is required "

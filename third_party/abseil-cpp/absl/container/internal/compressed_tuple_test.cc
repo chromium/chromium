@@ -337,11 +337,11 @@ TEST(CompressedTupleTest, NoElements) {
 
 TEST(CompressedTupleTest, MoveOnlyElements) {
   CompressedTuple<std::unique_ptr<std::string>> str_tup(
-      absl::make_unique<std::string>("str"));
+      std::make_unique<std::string>("str"));
 
   CompressedTuple<CompressedTuple<std::unique_ptr<std::string>>,
                   std::unique_ptr<int>>
-  x(std::move(str_tup), absl::make_unique<int>(5));
+      x(std::move(str_tup), std::make_unique<int>(5));
 
   EXPECT_EQ(*x.get<0>().get<0>(), "str");
   EXPECT_EQ(*x.get<1>(), 5);
@@ -355,7 +355,7 @@ TEST(CompressedTupleTest, MoveOnlyElements) {
 
 TEST(CompressedTupleTest, MoveConstructionMoveOnlyElements) {
   CompressedTuple<std::unique_ptr<std::string>> base(
-      absl::make_unique<std::string>("str"));
+      std::make_unique<std::string>("str"));
   EXPECT_EQ(*base.get<0>(), "str");
 
   CompressedTuple<std::unique_ptr<std::string>> copy(std::move(base));

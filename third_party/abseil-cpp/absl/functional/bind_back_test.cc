@@ -1,10 +1,10 @@
-// Copyright 2018 The Abseil Authors.
+// Copyright 2026 The Abseil Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      https://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/functional/bind_front.h"
+#include "absl/functional/bind_back.h"
 
 #include <stddef.h>
 
 #include <functional>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -29,17 +30,17 @@ namespace {
 char CharAt(const char* s, size_t index) { return s[index]; }
 
 TEST(BindTest, Basics) {
-  EXPECT_EQ('C', absl::bind_front(CharAt)("ABC", 2));
-  EXPECT_EQ('C', absl::bind_front(CharAt, "ABC")(2));
-  EXPECT_EQ('C', absl::bind_front(CharAt, "ABC", 2)());
+  EXPECT_EQ('C', absl::bind_back(CharAt)("ABC", 2));
+  EXPECT_EQ('C', absl::bind_back(CharAt, 2)("ABC"));
+  EXPECT_EQ('C', absl::bind_back(CharAt, "ABC", 2)());
 }
 
 TEST(BindTest, Lambda) {
   auto lambda = [](int x, int y, int z) { return x + y + z; };
-  EXPECT_EQ(6, absl::bind_front(lambda)(1, 2, 3));
-  EXPECT_EQ(6, absl::bind_front(lambda, 1)(2, 3));
-  EXPECT_EQ(6, absl::bind_front(lambda, 1, 2)(3));
-  EXPECT_EQ(6, absl::bind_front(lambda, 1, 2, 3)());
+  EXPECT_EQ(6, absl::bind_back(lambda)(1, 2, 3));
+  EXPECT_EQ(6, absl::bind_back(lambda, 3)(1, 2));
+  EXPECT_EQ(6, absl::bind_back(lambda, 2, 3)(1));
+  EXPECT_EQ(6, absl::bind_back(lambda, 1, 2, 3)());
 }
 
 struct Functor {
@@ -50,7 +51,7 @@ struct Functor {
 };
 
 TEST(BindTest, PerfectForwardingOfBoundArgs) {
-  auto f = absl::bind_front(Functor());
+  auto f = absl::bind_back(Functor());
   const auto& cf = f;
   EXPECT_EQ("&", f());
   EXPECT_EQ("const&", cf());
@@ -68,10 +69,10 @@ struct ArgDescribe {
 TEST(BindTest, PerfectForwardingOfFreeArgs) {
   ArgDescribe f;
   int i;
-  EXPECT_EQ("&", absl::bind_front(f)(static_cast<int&>(i)));
-  EXPECT_EQ("const&", absl::bind_front(f)(static_cast<const int&>(i)));
-  EXPECT_EQ("&&", absl::bind_front(f)(static_cast<int&&>(i)));
-  EXPECT_EQ("const&&", absl::bind_front(f)(static_cast<const int&&>(i)));
+  EXPECT_EQ("&", absl::bind_back(f)(static_cast<int&>(i)));
+  EXPECT_EQ("const&", absl::bind_back(f)(static_cast<const int&>(i)));
+  EXPECT_EQ("&&", absl::bind_back(f)(static_cast<int&&>(i)));
+  EXPECT_EQ("const&&", absl::bind_back(f)(static_cast<const int&&>(i)));
 }
 
 struct NonCopyableFunctor {
@@ -84,7 +85,7 @@ struct NonCopyableFunctor {
 TEST(BindTest, RefToFunctor) {
   // It won't copy/move the functor and use the original object.
   NonCopyableFunctor ncf;
-  auto bound_ncf = absl::bind_front(std::ref(ncf));
+  auto bound_ncf = absl::bind_back(std::ref(ncf));
   auto bound_ncf_copy = bound_ncf;
   EXPECT_EQ(&ncf, bound_ncf_copy());
 }
@@ -95,7 +96,7 @@ struct Struct {
 
 TEST(BindTest, StoreByCopy) {
   Struct s = {"hello"};
-  auto f = absl::bind_front(&Struct::value, s);
+  auto f = absl::bind_back(&Struct::value, s);
   auto g = f;
   EXPECT_EQ("hello", f());
   EXPECT_EQ("hello", g());
@@ -116,7 +117,7 @@ const std::string& GetNonCopyableValue(const NonCopyable& n) { return n.value; }
 
 TEST(BindTest, StoreByRef) {
   NonCopyable s("hello");
-  auto f = absl::bind_front(&GetNonCopyableValue, std::ref(s));
+  auto f = absl::bind_back(&GetNonCopyableValue, std::ref(s));
   EXPECT_EQ("hello", f());
   EXPECT_EQ(&s.value, &f());
   auto g = std::move(f);  // NOLINT
@@ -128,7 +129,7 @@ TEST(BindTest, StoreByRef) {
 
 TEST(BindTest, StoreByCRef) {
   NonCopyable s("hello");
-  auto f = absl::bind_front(&GetNonCopyableValue, std::cref(s));
+  auto f = absl::bind_back(&GetNonCopyableValue, std::cref(s));
   EXPECT_EQ("hello", f());
   EXPECT_EQ(&s.value, &f());
   auto g = std::move(f);  // NOLINT
@@ -145,7 +146,7 @@ const std::string& GetNonCopyableValueByWrapper(
 
 TEST(BindTest, StoreByRefInvokeByWrapper) {
   NonCopyable s("hello");
-  auto f = absl::bind_front(GetNonCopyableValueByWrapper, std::ref(s));
+  auto f = absl::bind_back(GetNonCopyableValueByWrapper, std::ref(s));
   EXPECT_EQ("hello", f());
   EXPECT_EQ(&s.value, &f());
   auto g = std::move(f);
@@ -157,7 +158,7 @@ TEST(BindTest, StoreByRefInvokeByWrapper) {
 
 TEST(BindTest, StoreByPointer) {
   NonCopyable s("hello");
-  auto f = absl::bind_front(&NonCopyable::value, &s);
+  auto f = absl::bind_back(&NonCopyable::value, &s);
   EXPECT_EQ("hello", f());
   EXPECT_EQ(&s.value, &f());
   auto g = std::move(f);
@@ -165,20 +166,29 @@ TEST(BindTest, StoreByPointer) {
   EXPECT_EQ(&s.value, &g());
 }
 
-int Sink(std::unique_ptr<int> p) {
-  return *p;
+struct MyStruct {
+  int x;
+  int Add(int y) const { return x + y; }
+};
+
+TEST(BindTest, MemberFunctionFreeInstance) {
+  MyStruct s{10};
+  auto f = absl::bind_back(&MyStruct::Add, 5);
+  EXPECT_EQ(f(s), 15);
 }
+
+int Sink(std::unique_ptr<int> p) { return *p; }
 
 std::unique_ptr<int> Factory(int n) { return std::make_unique<int>(n); }
 
 TEST(BindTest, NonCopyableArg) {
-  EXPECT_EQ(42, absl::bind_front(Sink)(std::make_unique<int>(42)));
-  EXPECT_EQ(42, absl::bind_front(Sink, std::make_unique<int>(42))());
+  EXPECT_EQ(42, absl::bind_back(Sink)(std::make_unique<int>(42)));
+  EXPECT_EQ(42, absl::bind_back(Sink, std::make_unique<int>(42))());
 }
 
 TEST(BindTest, NonCopyableResult) {
-  EXPECT_THAT(absl::bind_front(Factory)(42), ::testing::Pointee(42));
-  EXPECT_THAT(absl::bind_front(Factory, 42)(), ::testing::Pointee(42));
+  EXPECT_THAT(absl::bind_back(Factory)(42), ::testing::Pointee(42));
+  EXPECT_THAT(absl::bind_back(Factory, 42)(), ::testing::Pointee(42));
 }
 
 // is_copy_constructible<FalseCopyable<unique_ptr<T>> is true but an attempt to
@@ -186,7 +196,7 @@ TEST(BindTest, NonCopyableResult) {
 // to how standard containers behave.
 template <class T>
 struct FalseCopyable {
-  FalseCopyable() {}
+  FalseCopyable() = default;
   FalseCopyable(const FalseCopyable& other) : m(other.m) {}
   FalseCopyable(FalseCopyable&& other) : m(std::move(other.m)) {}
   T m;
@@ -197,22 +207,22 @@ int GetMember(FalseCopyable<std::unique_ptr<int>> x) { return *x.m; }
 TEST(BindTest, WrappedMoveOnly) {
   FalseCopyable<std::unique_ptr<int>> x;
   x.m = std::make_unique<int>(42);
-  auto f = absl::bind_front(&GetMember, std::move(x));
+  auto f = absl::bind_back(&GetMember, std::move(x));
   EXPECT_EQ(42, std::move(f)());
 }
 
 int Plus(int a, int b) { return a + b; }
 
 TEST(BindTest, ConstExpr) {
-  constexpr auto f = absl::bind_front(CharAt);
+  constexpr auto f = absl::bind_back(CharAt);
   EXPECT_EQ(f("ABC", 1), 'B');
   static constexpr int five = 5;
-  constexpr auto plus5 = absl::bind_front(Plus, five);
+  constexpr auto plus5 = absl::bind_back(Plus, five);
   EXPECT_EQ(plus5(1), 6);
 
   static constexpr char data[] = "DEF";
-  constexpr auto g = absl::bind_front(CharAt, data);
-  EXPECT_EQ(g(1), 'E');
+  constexpr auto g = absl::bind_back(CharAt, 1);
+  EXPECT_EQ(g(data), 'E');
 }
 
 struct ManglingCall {
@@ -221,7 +231,7 @@ struct ManglingCall {
 
 TEST(BindTest, Mangling) {
   // We just want to generate a particular instantiation to see its mangling.
-  absl::bind_front(ManglingCall{}, 1, 3.3)("A");
+  absl::bind_back(ManglingCall{}, 3.3, "A")(1);
 }
 
 }  // namespace

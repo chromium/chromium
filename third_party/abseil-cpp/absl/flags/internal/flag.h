@@ -178,7 +178,7 @@ struct FixedCharArray {
 
   template <size_t... I>
   static constexpr FixedCharArray<N> FromLiteralString(
-      absl::string_view str, absl::index_sequence<I...>) {
+      absl::string_view str, std::index_sequence<I...>) {
     return (void)str, FixedCharArray<N>({{str[I]..., '\0'}});
   }
 };
@@ -186,7 +186,7 @@ struct FixedCharArray {
 template <typename Gen, size_t N = Gen::Value().size()>
 constexpr FixedCharArray<N + 1> HelpStringAsArray(int) {
   return FixedCharArray<N + 1>::FromLiteralString(
-      Gen::Value(), absl::make_index_sequence<N>{});
+      Gen::Value(), std::make_index_sequence<N>{});
 }
 
 template <typename Gen>
