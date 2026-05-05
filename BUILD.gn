@@ -1556,9 +1556,9 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
   group("chromium_builder_asan") {
     testonly = true
 
-    deps = [
+    deps = [ "//third_party/blink/public/mojom:mojom_modules_js" ]
+    data_deps = [
       "//content/shell:content_shell",
-      "//third_party/blink/public/mojom:mojom_modules_js",
       "//v8:d8",
     ]
     if (!is_fuchsia) {
