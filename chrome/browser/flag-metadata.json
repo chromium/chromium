@@ -7004,6 +7004,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "omnibox-ai-mode-space-does-not-activate",
+    "owners": [ "pauladedeji@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-aim-suppress-verbatim-match",
     "owners": [
       "charlesyc@google.com",

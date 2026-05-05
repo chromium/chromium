@@ -2236,11 +2236,15 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_SPACE: {
-      if (!controller()->IsPopupOpen()) {
-        // If the popup is not open and the page action icon has "fake" focus
-        // (see comments in `HandleEarlyTabActions`), have `OmniboxEditModel`
-        // open a `kNoMatch`/`FOCUSED_BUTTON_AIM` selection.
-        if (aim_page_action_icon_has_fake_focus_) {
+      if (aim_page_action_icon_has_fake_focus_) {
+        if (base::FeatureList::IsEnabled(
+                omnibox::kAiModeSpaceDoesNotActivate)) {
+          // Pressing space should add a space to user input, cause AIM button
+          // to lose focus, and move focus back to first suggestion.
+          ApplyFocusRingToAimButton(false);
+          controller()->edit_model()->SetCaretVisibility(true);
+          return false;  // Fallthrough to insert space
+        } else {
           controller()->edit_model()->OpenSelection(
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
@@ -2249,7 +2253,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
               /*via_keyboard=*/true);
           return true;
         }
-      } else if (!control && !alt && !shift) {
+      }
+
+      if (controller()->IsPopupOpen() && !control && !alt && !shift) {
         if (controller()->edit_model()->OnSpacePressed()) {
           return true;
         }
