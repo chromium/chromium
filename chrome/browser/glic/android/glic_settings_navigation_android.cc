@@ -7,12 +7,12 @@
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/glic/android/jni_headers/GlicSettingsNavigation_jni.h"
+#include "chrome/browser/glic/android/jni_headers/GlicNavigationUtils_jni.h"
 
 namespace glic {
 
 void ShowGlicSettings() {
-  Java_GlicSettingsNavigation_showGlicSettings(
+  Java_GlicNavigationUtils_showGlicSettings(
       base::android::AttachCurrentThread());
 }
 

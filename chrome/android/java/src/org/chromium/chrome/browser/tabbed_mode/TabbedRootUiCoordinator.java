@@ -115,6 +115,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
+import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
@@ -1241,6 +1242,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initializeSideUi();
 
         if (ChromeFeatureList.sGlic.isEnabled() && mTabBottomSheetManager != null) {
+            GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
             mActorControlCoordinator =
                     new ActorControlCoordinator(
                             mActivity,

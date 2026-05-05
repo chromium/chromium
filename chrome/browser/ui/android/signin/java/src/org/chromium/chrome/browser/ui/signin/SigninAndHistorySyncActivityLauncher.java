@@ -50,6 +50,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.COLLABORATION_LEAVE_OR_DELETE_TAB_GROUP,
         SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP,
         SigninAccessPoint.SET_UP_LIST,
+        SigninAccessPoint.GLIC_LAUNCH_BUTTON,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}
