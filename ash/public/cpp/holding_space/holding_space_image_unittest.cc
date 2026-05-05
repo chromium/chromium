@@ -154,8 +154,10 @@ class TestImageClient {
     return result;
   }
 
+  void reset() { image_ = nullptr; }
+
  private:
-  const raw_ptr<const HoldingSpaceImage, DanglingUntriaged> image_;
+  raw_ptr<const HoldingSpaceImage> image_;
   base::CallbackListSubscription image_subscription_;
   size_t image_change_count_ = 0;
 };
@@ -532,7 +534,9 @@ TEST_F(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
   EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
-  // Reset the holding space item, and request 2x representation.
+  // Reset the holding space item, and image_client, and request 2x
+  // representation.
+  image_client.reset();
   holding_space_item.reset();
   const SkBitmap bitmap_2x = image.GetRepresentation(2.0f).GetBitmap();
 
@@ -560,7 +564,8 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
   EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
-  // Reset the item, and then simulate image request response.
+  // Reset the item, and image_client, and then simulate image request response.
+  image_client.reset();
   holding_space_item.reset();
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
@@ -589,7 +594,9 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
   EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
-  // Reset the item, and then simulate a failed image request response.
+  // Reset the item, and image_client, and then simulate a failed image request
+  // response.
+  image_client.reset();
   holding_space_item.reset();
   image_generator.FailRequest(0);
 
@@ -624,7 +631,8 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  // Reset the item before image load request completes.
+  // Reset the item, and image_client, before image load request completes.
+  image_client.reset();
   holding_space_item.reset();
   image_generator.FulfillRequest(0, SK_ColorGREEN);
 
