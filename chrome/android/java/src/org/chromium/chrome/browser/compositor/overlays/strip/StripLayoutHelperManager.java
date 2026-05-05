@@ -608,6 +608,7 @@ public class StripLayoutHelperManager
                         mIsTopResumedActivity,
                         glicKeyedService,
                         ChromeAndroidTaskTrackerFactory.getInstance(),
+                        () -> mIsIncognito,
                         this::updateButtonMargins);
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -1812,11 +1813,8 @@ public class StripLayoutHelperManager
 
     private void updateStripButtons() {
         // Use helper methods to calculate new visibility of strip buttons.
-        boolean newGlicVisibility =
-                mTrailingButtonsCoordinator.shouldGlicBeVisible(mIsIncognito, mTabModelSelector);
-        boolean newGlicActorVisibility =
-                mTrailingButtonsCoordinator.shouldGlicActorBeVisible(
-                        mIsIncognito, mTabModelSelector);
+        boolean newGlicVisibility = mTrailingButtonsCoordinator.shouldGlicBeVisible();
+        boolean newGlicActorVisibility = mTrailingButtonsCoordinator.shouldGlicActorBeVisible();
         boolean newMsbVisibility = shouldMsbBeVisible();
 
         // Update model selector button properties.

@@ -83,6 +83,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private TintedCompositorTextButton mGlicButton;
     private TintedCompositorButton mGlicDismissButton;
     private final long mBwiPtr = 123L;
+    private boolean mIsIncognito;
 
     @Before
     public void setUp() {
@@ -118,6 +119,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         /* isTopResumedActivity= */ false,
                         mGlicKeyedService,
                         mTaskTracker,
+                        () -> mIsIncognito,
                         mObserver);
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
@@ -286,5 +288,16 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic button should not be pressed after long press menu is shown.",
                 mGlicButton.isPressed());
         assertTrue("Glic context menu should be showing", mCoordinator.isMenuShowing());
+    }
+
+    @Test
+    public void testGlicButton_HiddenInIncognito() {
+        assertTrue("Glic button should be visible initially.", mCoordinator.shouldGlicBeVisible());
+
+        mIsIncognito = true;
+
+        assertFalse(
+                "Glic button should be hidden when supplier indicates incognito window.",
+                mCoordinator.shouldGlicBeVisible());
     }
 }

@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -49,6 +48,7 @@ import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Coordinator for the trailing buttons on the tab strip. */
 @NullMarked
@@ -121,6 +121,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final @Nullable GlicKeyedService mGlicKeyedService;
     private final @Nullable GlobalShowHideObserver mGlicUiObserver;
     private final @Nullable ChromeAndroidTaskTracker mTaskTracker;
+    private final Supplier<Boolean> mIsIncognitoSupplier;
 
     // Lifecycle & Caching Objects
     private @Nullable Profile mProfile;
@@ -174,6 +175,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean isTopResumedActivity,
             @Nullable GlicKeyedService glicKeyedService,
             @Nullable ChromeAndroidTaskTracker taskTracker,
+            Supplier<Boolean> isIncognitoSupplier,
             StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
         mUpdateHost = updateHost;
@@ -183,6 +185,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mStripEndPadding = stripEndPadding;
         mGlicKeyedService = glicKeyedService;
         mTaskTracker = taskTracker;
+        mIsIncognitoSupplier = isIncognitoSupplier;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;
@@ -366,12 +369,11 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     private void onGlicPrefChanged() {
-        if (mGlicButton == null || mProfile == null) return;
-        boolean isPinned =
-                UserPrefs.get(mProfile).getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+        if (mGlicButton == null) return;
+        boolean shouldGlicBeVisible = shouldGlicBeVisible();
 
-        if (mGlicButton.isVisible() != isPinned) {
-            mGlicButton.setVisible(isPinned);
+        if (mGlicButton.isVisible() != shouldGlicBeVisible) {
+            mGlicButton.setVisible(shouldGlicBeVisible);
             updateGlicButtonPosition();
             mObserver.onTrailingButtonsLayoutStateChanged();
             mUpdateHost.requestUpdate();
@@ -735,32 +737,22 @@ public class StripLayoutTrailingButtonsCoordinator {
     /**
      * Determines whether the Glic button should be visible in the tab strip.
      *
-     * @param isIncognito Whether the current tab model is incognito.
-     * @param tabModelSelector The TabModelSelector to retrieve the current Profile.
      * @return true if the Glic button should be visible.
      */
-    public boolean shouldGlicBeVisible(
-            boolean isIncognito, @Nullable TabModelSelector tabModelSelector) {
-        if (mGlicButton == null
-                || isIncognito
-                || tabModelSelector == null
-                || tabModelSelector.getCurrentModel() == null) {
+    public boolean shouldGlicBeVisible() {
+        if (mGlicButton == null || mIsIncognitoSupplier.get() || mProfile == null) {
             return false;
         }
-        Profile profile = tabModelSelector.getCurrentModel().getProfile();
-        return profile != null && GlicUtils.isButtonPinnedToTabStrip(profile);
+        return GlicUtils.isButtonPinnedToTabStrip(mProfile);
     }
 
     /**
      * Determines whether the Glic actor button should be visible in the tab strip.
      *
-     * @param isIncognito Whether the current tab model is incognito.
-     * @param tabModelSelector The TabModelSelector to retrieve the current Profile.
      * @return true if the Glic actor button should be visible.
      */
-    public boolean shouldGlicActorBeVisible(
-            boolean isIncognito, @Nullable TabModelSelector tabModelSelector) {
-        if (!shouldGlicBeVisible(isIncognito, tabModelSelector) || mGlicActorButton == null) {
+    public boolean shouldGlicActorBeVisible() {
+        if (!shouldGlicBeVisible() || mGlicActorButton == null) {
             return false;
         }
 
