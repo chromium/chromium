@@ -1,6 +1,7 @@
 # Owners of searchbox must ensure no embedder specific references and
 # branching logic are added to the shareable searchbox logic.
 # See: go/chrome-search-componentization
+dhruvkathpalia@google.com
 hannahrogers@google.com
 mahmadi@chromium.org
 pauladedeji@google.com
