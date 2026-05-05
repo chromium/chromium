@@ -7108,6 +7108,24 @@
             ]
         }
     ],
+    "ContextualTasksBackButtonExpandsSidePanel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksBackButtonExpandsSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasksContext": [
         {
             "platforms": [
