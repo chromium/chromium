@@ -46,6 +46,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace autofill {
@@ -1124,7 +1125,11 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
         field_suggestion.predictions().end());
     MaybeMergeServerPredictions(server_predictions);
     field->set_server_predictions(std::move(server_predictions));
-    if (field_suggestion.has_password_requirements()) {
+    if (field_suggestion.has_password_requirements() &&
+        (field->origin().IsSameOriginWith(form.main_frame_origin()) ||
+         net::registry_controlled_domains::SameDomainOrHost(
+             field->origin(), form.main_frame_origin(),
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES))) {
       field->SetPasswordRequirements(field_suggestion.password_requirements());
     }
     if (field_suggestion.has_format_string()) {
