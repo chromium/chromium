@@ -205,9 +205,9 @@ base::FilePath MimeTypesHandler::GetPluginPath() const {
 }
 
 // static
-MimeTypesHandler* MimeTypesHandler::GetHandler(
+const MimeTypesHandler* MimeTypesHandler::GetHandler(
     const extensions::Extension* extension) {
-  MimeTypesHandlerInfo* info = static_cast<MimeTypesHandlerInfo*>(
+  const MimeTypesHandlerInfo* info = static_cast<const MimeTypesHandlerInfo*>(
       extension->GetManifestData(keys::kMimeTypesHandler));
   if (info) {
     return &info->handler_;

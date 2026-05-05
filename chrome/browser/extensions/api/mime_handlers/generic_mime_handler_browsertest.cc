@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   ASSERT_TRUE(extension);
 
   // Verify the extension registered as a generic MIME handler.
-  MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
   ASSERT_TRUE(handler);
   auto* registry =
       MimeHandlerRegistry::Get(chrome_test_utils::GetProfile(this));

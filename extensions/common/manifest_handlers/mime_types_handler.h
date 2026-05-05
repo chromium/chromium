@@ -36,7 +36,8 @@ class MimeTypesHandler {
   // Returns list of MIME types allowed for public (non-allowlisted) extensions.
   static base::span<const std::string_view> GetPublicAllowedMIMETypeList();
 
-  static MimeTypesHandler* GetHandler(const extensions::Extension* extension);
+  static const MimeTypesHandler* GetHandler(
+      const extensions::Extension* extension);
 
   MimeTypesHandler();
   ~MimeTypesHandler();

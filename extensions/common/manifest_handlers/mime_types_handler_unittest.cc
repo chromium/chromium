@@ -79,8 +79,9 @@ TEST_F(MimeTypesHandlerNotAllowedTest, DictFormatWarnsOnDisallowedMimeType) {
       "mime_types_handler: ignoring unsupported MIME type 'text/plain'.");
   ASSERT_TRUE(extension);
 
-  auto* handler = MimeTypesHandler::GetHandler(extension.get());
-  EXPECT_TRUE(handler);
+  const MimeTypesHandler* handler =
+      MimeTypesHandler::GetHandler(extension.get());
+  ASSERT_TRUE(handler);
   EXPECT_FALSE(handler->GetHandlerUrl(kTextPlainMimeType).is_valid());
   EXPECT_TRUE(handler->GetHandlerUrl(kPdfMimeType).is_valid());
   // One warning for the skipped entry.
