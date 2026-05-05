@@ -279,12 +279,14 @@ void ExtensionsMenuDelegateAndroid::OnUserPermissionsSettingsChanged() {
 }
 
 void ExtensionsMenuDelegateAndroid::CloseBubble() {
-  // TODO(crbug.com/473213115)
+  // This method is not needed on Android because menu dismissal is handled
+  // entirely in Java.
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionButtonClicked(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/473213115)
+  // This method is not needed on Android because execution is handled by Java
+  // calling ExecuteAction directly.
 }
 
 void ExtensionsMenuDelegateAndroid::OnAllowExtensionClicked(
@@ -336,12 +338,14 @@ void ExtensionsMenuDelegateAndroid::OnReloadPageButtonClicked(JNIEnv* env) {
 }
 
 void ExtensionsMenuDelegateAndroid::OpenMainPage() {
-  // TODO(crbug.com/473213115)
+  // This method is not needed on Android because menu navigation is handled
+  // entirely in Java.
 }
 
 void ExtensionsMenuDelegateAndroid::OpenSitePermissionsPage(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/473213115)
+  // This method is not needed on Android because menu navigation is handled
+  // entirely in Java.
 }
 
 void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleChanged(
