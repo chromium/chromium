@@ -67,10 +67,10 @@ std::string UiaIdentifierToStringPretty(int32_t id) {
 }  // namespace
 
 // static
-volatile base::subtle::Atomic32 AXEventRecorderWinUia::instantiated_ = 0;
+std::atomic<bool> AXEventRecorderWinUia::instantiated_;
 
 AXEventRecorderWinUia::AXEventRecorderWinUia(const AXTreeSelector& selector) {
-  CHECK(!base::subtle::NoBarrier_AtomicExchange(&instantiated_, 1))
+  CHECK(!instantiated_.exchange(true, std::memory_order_relaxed))
       << "There can be only one instance at a time.";
 
   // Find the root content window
@@ -99,7 +99,7 @@ AXEventRecorderWinUia::~AXEventRecorderWinUia() {
   thread_.SendShutdownSignal();
   WaitForDoneRecording();
 
-  base::subtle::NoBarrier_AtomicExchange(&instantiated_, 0);
+  instantiated_.store(false, std::memory_order_relaxed);
 }
 
 void AXEventRecorderWinUia::WaitForDoneRecording() {

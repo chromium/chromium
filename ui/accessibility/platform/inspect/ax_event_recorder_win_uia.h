@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <wrl/client.h>
 
+#include <atomic>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
 
  private:
   // Used to prevent creation of multiple instances simultaneously
-  static volatile base::subtle::Atomic32 instantiated_;
+  static std::atomic<bool> instantiated_;
 
   // All UIA calls need to be made on a secondary MTA thread to avoid sporadic
   // test hangs / timeouts.
