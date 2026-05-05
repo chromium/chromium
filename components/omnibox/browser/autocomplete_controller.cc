@@ -1862,12 +1862,10 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
     // If this match is in keyword mode (e.g. the user tabbed into a keyword
     // then continued typing), don't attach a keyword chip to it.
-    std::u16string explicit_keyword(
-        match.GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
-    if (!explicit_keyword.empty()) {
+    if (match.IsExplicitlyInvokedKeyword(template_url_service_)) {
       // Also prevent other matches showing a keyword chip for the keyword the
       // user is already in.
-      added_keywords.insert(explicit_keyword);
+      added_keywords.insert(match.keyword);
       continue;
     }
 

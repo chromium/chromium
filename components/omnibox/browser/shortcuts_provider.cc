@@ -528,10 +528,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
   }
 
   const bool match_has_explicit_keyword =
-      !match
-           .GetSubstitutingExplicitlyInvokedKeyword(
-               client_->GetTemplateURLService())
-           .empty();
+      match.IsExplicitlyInvokedKeyword(client_->GetTemplateURLService());
   bool match_from_dsp = default_search_provider &&
                         match.keyword == default_search_provider->keyword();
 

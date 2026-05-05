@@ -1303,7 +1303,7 @@ void AutocompleteMatch::GetKeywordUiState(
       GetTemplateURL(template_url_service), is_history_embeddings_enabled);
   if (associated_keyword.empty()) {
     keyword_out->assign(
-        GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+        IsExplicitlyInvokedKeyword(template_url_service) ? keyword : u"");
     *keyword_state =
         keyword_out->empty() ? KeywordState::kNone : KeywordState::kKeyword;
   } else {
@@ -1312,18 +1312,17 @@ void AutocompleteMatch::GetKeywordUiState(
   }
 }
 
-std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
+bool AutocompleteMatch::IsExplicitlyInvokedKeyword(
     TemplateURLService* template_url_service) const {
-  if (!ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD) ||
+  if (keyword.empty() ||
+      !ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD) ||
       template_url_service == nullptr) {
-    return std::u16string();
+    return false;
   }
 
   const TemplateURL* t_url = GetTemplateURL(template_url_service);
-  return (t_url &&
-          t_url->SupportsReplacement(template_url_service->search_terms_data()))
-             ? keyword
-             : std::u16string();
+  return t_url &&
+         t_url->SupportsReplacement(template_url_service->search_terms_data());
 }
 
 // static

@@ -614,13 +614,10 @@ struct AutocompleteMatch {
                          std::u16string* keyword_out,
                          std::u16string* keyword_placeholder_out) const;
 
-  // Returns |keyword|, but only if it represents a substituting keyword that
-  // the user has explicitly invoked.  If for example this match represents a
-  // search with the default search engine (and the user didn't explicitly
-  // invoke its keyword), this returns the empty string.  The result is that
-  // this function returns a non-empty string in the same cases as when the UI
-  // should show up as being "in keyword mode".
-  std::u16string GetSubstitutingExplicitlyInvokedKeyword(
+  // Returns if this match is in keyword mode. If this match represents a search
+  // with the default search engine (and the user didn't explicitly invoke its
+  // keyword), this returns false even though `keyword` won't be empty.
+  bool IsExplicitlyInvokedKeyword(
       TemplateURLService* template_url_service) const;
 
   // Returns the placeholder text to display for the given starter pack keyword
@@ -1013,7 +1010,7 @@ struct AutocompleteMatch {
   // search provider (so, any match for which we're doing substitution); it
   // doesn't imply (alone) that the UI is going to show a keyword hint or
   // keyword mode.  For that, see `GetKeywordUiState()` or
-  // GetSubstitutingExplicitlyInvokedKeyword().
+  // `IsExplicitlyInvokedKeyword()`.
   //
   // CAUTION: The TemplateURL associated with this keyword may be deleted or
   // modified while the AutocompleteMatch is alive.  This means anyone who
