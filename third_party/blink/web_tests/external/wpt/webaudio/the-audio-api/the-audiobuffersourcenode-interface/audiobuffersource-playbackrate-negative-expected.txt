@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] AudioBufferSourceNode supports negative playbackRate (-1.0)
+  assert_equals: Frame 1 should be 3.0 expected 3 but got 4
+[FAIL] AudioBufferSourceNode supports high negative playbackRate (-2.0)
+  assert_equals: Frame 1 should be 2.0 expected 2 but got 4
+[FAIL] AudioBufferSourceNode supports high negative playbackRate (-5.0)
+  assert_equals: Frame 1 should be 3.0 expected 3 but got 8
+[FAIL] AudioBufferSourceNode supports fractional negative playbackRate
+  assert_equals: Frame 1 should be 1.5 expected 1.5 but got 2
+[FAIL] AudioBufferSourceNode supports very low negative playbackRate (-0.02)
+  assert_approx_equals: Frame 1 expected 3.98 +/- 0.0001 but got 4
+[FAIL] AudioBufferSourceNode enters loop backwards from offset > loopEnd
+  assert_equals: Frame 0 should be 7 expected 7 but got 3
+[FAIL] AudioBufferSourceNode clamps offset to loopStart for playbackRate < 0
+  assert_equals: Frame 0 should be 5 expected 5 but got 3
+[FAIL] AudioBufferSourceNode loops backwards with negative rate (offset in loop)
+  assert_equals: Frame 1 should be 2 expected 2 but got 3
+[FAIL] AudioBufferSourceNode handles offset exactly at duration with negative rate
+  assert_equals: Frame 1 should be 4 expected 4 but got 0
+[FAIL] AudioBufferSourceNode handles out-of-bounds start offset correctly
+  assert_equals: Frame 1 should be 4.0 expected 4 but got 0
+[FAIL] AudioBufferSourceNode performs sub-sample interpolation backwards
+  assert_approx_equals: Frame 0 should be approx 3.5 expected 3.5 +/- 0.0001 but got 4
+Harness: the test ran to completion.
+
