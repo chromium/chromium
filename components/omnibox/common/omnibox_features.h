@@ -186,8 +186,10 @@ BASE_DECLARE_FEATURE(kOmniboxDebugLogs);
 BASE_DECLARE_FEATURE(kThinkingModelIconUpdate);
 
 BASE_DECLARE_FEATURE(kVoiceSearchCoherenceComposeboxes);
-BASE_DECLARE_FEATURE(kVoiceSearchCoherenceSearchbox);
+extern const base::FeatureParam<bool>
+    kVoiceSearchCoherenceComposeboxCobrowsingOnly;
 
+BASE_DECLARE_FEATURE(kVoiceSearchCoherenceSearchbox);
 extern const base::FeatureParam<bool>
     kVoiceSearchCoherenceSearchboxWithLiveTranscription;
 
