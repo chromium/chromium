@@ -354,7 +354,6 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/webstore/features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"  // nogncheck
-#include "components/infobars/core/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -12314,13 +12313,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"infobar-prioritization", flag_descriptions::kInfobarPrioritizationName,
-     flag_descriptions::kInfobarPrioritizationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(infobars::features::kInfobarPrioritization)},
-#endif
 
     {"infobar-refresh", flag_descriptions::kInfobarRefreshName,
      flag_descriptions::kInfobarRefreshDescription, kOsDesktop,

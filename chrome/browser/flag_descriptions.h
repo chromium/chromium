@@ -2715,11 +2715,6 @@ inline constexpr char kImportExportFlagsName[] = "Import and export flags";
 inline constexpr char kImportExportFlagsDescription[] =
     "Enables importing and exporting flags from chrome://flags.";
 
-inline constexpr char kInfobarPrioritizationName[] = "Infobar Prioritization";
-inline constexpr char kInfobarPrioritizationDescription[] =
-    "Shows the infobars by priority starting by critical ones by respecting a "
-    "given caps.";
-
 inline constexpr char kInfobarRefreshName[] = "Infobar Refresh";
 inline constexpr char kInfobarRefreshDescription[] =
     "Renders infobars with a refreshed UI.";
