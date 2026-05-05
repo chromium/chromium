@@ -4061,11 +4061,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-standard-device-bound-session-devtools-debugging",
-    "owners": [ "thefrog@chromium.org", "drubery@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-standard-device-bound-session-google",
     "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 150
