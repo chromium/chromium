@@ -161,14 +161,12 @@ class SearchBoxMediator implements DestroyObserver {
     }
 
     private void updateStartIcon() {
-        boolean isMultimodalInputEnabled = OmniboxFeatures.isMultimodalInputEnabled(mContext);
-        boolean isFuseboxSupportedDeviceType = OmniboxFeatures.isFuseboxSupportedDeviceType();
-
         mModel.set(
                 SearchBoxProperties.PLUS_BUTTON_VISIBILITY,
-                isMultimodalInputEnabled
+                OmniboxFeatures.isMultimodalInputEnabled(mContext)
+                        && OmniboxFeatures.sShowNtpPlusButton.getValue()
                         && mIsFuseboxEligible
-                        && isFuseboxSupportedDeviceType
+                        && OmniboxFeatures.isFuseboxSupportedDeviceType()
                         && mTemplateUrlService.isDefaultSearchEngineGoogle());
     }
 

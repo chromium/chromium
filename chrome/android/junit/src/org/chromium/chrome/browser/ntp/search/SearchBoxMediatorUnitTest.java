@@ -175,11 +175,19 @@ public class SearchBoxMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
     public void testUpdateStartIcon_AllConditionsMet() {
         mMediator.setIsFuseboxEligible(true);
 
         assertTrue(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/false")
+    public void testUpdateStartIcon_ParamDisabled() {
+        mMediator.setIsFuseboxEligible(true);
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
 
     @Test
