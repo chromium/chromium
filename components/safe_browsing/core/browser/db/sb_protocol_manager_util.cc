@@ -217,6 +217,102 @@ std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
       ".%" PRFilePath, file_path.BaseName().RemoveExtension().value().c_str());
 }
 
+PrefixSize GetV5ListPrefixSize(const ListIdentifier& list_identifier) {
+  CHECK(base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
+  switch (list_identifier.sb_threat_type()) {
+    case SBThreatType::SB_THREAT_TYPE_EXTENSION:
+      return 16;
+    case SBThreatType::SB_THREAT_TYPE_BILLING:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
+      return 32;
+    case SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST:
+      return 32;
+    case SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      return 32;
+    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      return 4;
+    case SBThreatType::SB_THREAT_TYPE_UNUSED:
+    case SBThreatType::SB_THREAT_TYPE_SAFE:
+    case SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SBThreatType::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SBThreatType::SB_THREAT_TYPE_API_ABUSE:
+    case SBThreatType::
+        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SBThreatType::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SBThreatType::SB_THREAT_TYPE_AD_SAMPLE:
+    case SBThreatType::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SBThreatType::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      NOTREACHED() << "GetV5ListPrefixSize not supported for SBThreatType: "
+                   << static_cast<std::underlying_type<SBThreatType>::type>(
+                          list_identifier.sb_threat_type());
+  }
+}
+
+std::string GetV5ListName(const ListIdentifier& list_identifier) {
+  CHECK(base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
+  switch (list_identifier.sb_threat_type()) {
+    case SBThreatType::SB_THREAT_TYPE_EXTENSION:
+      return "mcrx-16b";
+    case SBThreatType::SB_THREAT_TYPE_BILLING:
+      return "bi-4b";
+    case SBThreatType::SB_THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST:
+      return "csdda-32b";
+    case SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST:
+      return "csda-32b";
+    case SBThreatType::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      return "gc-32b";
+    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      return "mw-4b";
+    case SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE:
+      return "mwb-4b";
+    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      return "se-4b";
+    case SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      return "srf-4b";
+    case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      return "sus-4b";
+    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      return "uws-4b";
+    case SBThreatType::SB_THREAT_TYPE_UNUSED:
+    case SBThreatType::SB_THREAT_TYPE_SAFE:
+    case SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SBThreatType::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SBThreatType::SB_THREAT_TYPE_API_ABUSE:
+    case SBThreatType::
+        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SBThreatType::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SBThreatType::SB_THREAT_TYPE_AD_SAMPLE:
+    case SBThreatType::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SBThreatType::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SBThreatType::SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      NOTREACHED() << "GetV5ListName not supported for SBThreatType: "
+                   << static_cast<std::underlying_type<SBThreatType>::type>(
+                          list_identifier.sb_threat_type());
+  }
+}
+
 StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,
                                        const HashPrefixStr& hash_prefix)
     : list_id(list_id), hash_prefix(hash_prefix) {}
