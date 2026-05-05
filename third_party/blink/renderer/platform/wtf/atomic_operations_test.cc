@@ -24,9 +24,15 @@ void TestCopyImpl(CopyMethod copy) {
           tgt;
   std::ranges::fill(tgt, 0);
   auto target_span = base::span(tgt);
-  copy(target_span.subspan(sizeof(size_t)).data(), src.data());
+  // SAFETY: `target_span` is constructed from `tgt` which has size `buffer_size
+  // + (2 * sizeof(size_t))`. Therefore, `subspan(sizeof(size_t))` is within
+  // bounds and has at least `buffer_size` elements. The `copy` function will
+  // only access `buffer_size` bytes, which is the size of `src` and is less
+  // than or equal to the size of the target subspan.
+  UNSAFE_BUFFERS(copy(target_span.subspan(sizeof(size_t)).data(), src.data()));
   // Check nothing before the buffer was changed
-  size_t v = *reinterpret_cast<size_t*>(target_span.data());
+  size_t v;
+  base::byte_span_from_ref(v).copy_from(target_span.first(sizeof(size_t)));
   EXPECT_EQ(0u, v);
   // Check buffer was copied correctly
   EXPECT_EQ(src, target_span.subspan(sizeof(size_t), buffer_size));
@@ -127,10 +133,16 @@ void TestAtomicMemzero() {
           buf;
   std::ranges::fill(buf, ~uint8_t{0});
   auto span = base::span(buf);
-  UNSAFE_TODO(AtomicMemzero<buffer_size, alignment>(
+  // SAFETY: `span` is constructed from `buf` which has size `buffer_size + (2 *
+  // sizeof(size_t))`. Therefore, `subspan(sizeof(size_t))` is within bounds and
+  // has at least `buffer_size` elements. `AtomicMemzero` will only zero
+  // `buffer_size` bytes, which is less than or equal to the size of the
+  // subspan.
+  UNSAFE_BUFFERS(AtomicMemzero<buffer_size, alignment>(
       span.subspan(sizeof(size_t)).data()));
   // Check nothing before the buffer was changed
-  size_t v = *reinterpret_cast<size_t*>(span.data());
+  size_t v;
+  base::byte_span_from_ref(v).copy_from(span.first(sizeof(size_t)));
   EXPECT_EQ(~size_t{0}, v);
   // Check buffer was copied correctly
   static const std::array<unsigned char, buffer_size> for_comparison = {};
