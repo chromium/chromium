@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "annotated_page_content_extraction_utils_unittest.mm",
     "dom_node_ids_js_unittest.mm",
     "frame_grafter_unittest.mm",
+    "ios_smart_tab_grouping_request_wrapper_unittest.mm",
     "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
     "page_context_wrapper_config_unittest.mm",
@@ -205,6 +206,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":dom_node_ids_test_ts",
+    ":ios_smart_tab_grouping_proto_wrapper",
     ":metrics_constants",
     ":page_context_extractor_feature",
     ":page_context_metrics",
@@ -222,7 +224,11 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_swift",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
