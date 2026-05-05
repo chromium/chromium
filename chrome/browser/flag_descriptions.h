@@ -4337,13 +4337,6 @@ inline constexpr char kSystemKeyboardLockDescription[] =
     "keyboard shortcuts and have the events routed directly to the website "
     "when in fullscreen mode.";
 
-inline constexpr char kTabModelInitFixesName[] = "Tab Model Init Fixes";
-inline constexpr char kTabModelInitFixesDescription[] =
-    "A grab bag of simple and miscellaneous improvements for tab model "
-    "initialization on Android. Should speed up initialization, as well as "
-    "have better handling for app menu tab model operations during "
-    "initialization.";
-
 inline constexpr char kTabSwitcherDragDropName[] =
     "Tab Drag and Drop via Tab Switcher";
 inline constexpr char kTabSwitcherDragDropDescription[] =

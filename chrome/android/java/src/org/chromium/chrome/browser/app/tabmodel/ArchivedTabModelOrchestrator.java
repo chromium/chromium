@@ -35,7 +35,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -124,13 +123,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     private final TabArchiver.Observer mTabArchiverObserver =
             new TabArchiver.Observer() {
-                @Override
-                public void onDeclutterPassCompleted() {
-                    if (!ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
-                        saveState();
-                    }
-                }
-
                 @Override
                 public void onArchivePersistedTabDataCreated() {
                     assumeNonNull(mTabArchiver);
@@ -653,18 +645,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     @RequiresNonNull("mTabPersistentStore")
     private void resumeSaveTabList(TabbedModeTabModelOrchestrator orchestrator) {
         // Re-enable #saveTabListAsynchronously after running a bulk operation.
-        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
-            // This triggers saves to the backing stores. It's possible we crash/are shutdown after
-            // the first and before the second. For this reason, it's critical that we resume the
-            // archived side before the tabbed side. This will cause tab duplication instead of data
-            // loss. Duplication will be cleaned up and handled on the next restart. While data loss
-            // would not be recoverable.
-            mTabPersistentStore.resumeSaveTabList();
-            orchestrator.getTabPersistentStore().resumeSaveTabList();
-        } else {
-            orchestrator.getTabPersistentStore().resumeSaveTabList();
-            mTabPersistentStore.resumeSaveTabList();
-        }
+        // This triggers saves to the backing stores. It's possible we crash/are shutdown after
+        // the first and before the second. For this reason, it's critical that we resume the
+        // archived side before the tabbed side. This will cause tab duplication instead of data
+        // loss. Duplication will be cleaned up and handled on the next restart. While data loss
+        // would not be recoverable.
+        mTabPersistentStore.resumeSaveTabList();
+        orchestrator.getTabPersistentStore().resumeSaveTabList();
     }
 
     // Testing-specific methods

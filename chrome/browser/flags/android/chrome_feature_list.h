@@ -276,7 +276,6 @@ BASE_DECLARE_FEATURE(kSubmenusInAppMenu);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
-BASE_DECLARE_FEATURE(kTabModelInitFixes);
 BASE_DECLARE_FEATURE(kTabStorageSqlitePrototype);
 BASE_DECLARE_FEATURE(kTabStripAutoSelectOnCloseChange);
 BASE_DECLARE_FEATURE(kTabStripDensityChangeAndroid);

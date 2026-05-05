@@ -216,7 +216,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_MODEL_INIT_FIXES})
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_TabGroupsExist() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
@@ -233,7 +232,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_MODEL_INIT_FIXES})
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_NoTabGroups() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
@@ -250,29 +248,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_MODEL_INIT_FIXES,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
-    public void testBuildMenuItems_NormalMode_WithoutInitFixes() {
-        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-        when(mIncognitoTabModel.getCount()).thenReturn(0);
-        when(mNormalTabModel.getTabGroupCount()).thenReturn(-1);
-        when(mNormalTabModel.isTabModelRestored()).thenReturn(false);
-
-        ModelList items = mCoordinator.buildMenuItems();
-
-        // Close, Divider, New Tab, New Incognito, Add to New Group.
-        assertEquals(5, items.size());
-        // Note this is likely a bug that add_tab_to_group_menu_id is used instead of
-        // add_tab_to_new_group_menu_id because pre-init, the filter claims -1 groups, and -1 != 0.
-        // But this whole path should be deleted after init fixes launches.
-        assertEquals(R.id.add_tab_to_group_menu_id, getMenuItemId(items, 4));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.TAB_MODEL_INIT_FIXES})
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_BeforeTabModelInit() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);

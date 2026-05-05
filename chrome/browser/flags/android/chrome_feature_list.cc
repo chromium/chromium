@@ -445,7 +445,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSuppressToolbarCapturesAtGestureEnd,
     &kTabBottomSheet,
     &kTabClosureMethodRefactor,
-    &kTabModelInitFixes,
     &kTabStorageSqlitePrototype,
     &kTabStripAutoSelectOnCloseChange,
     &kTabStripDensityChangeAndroid,
@@ -804,7 +803,6 @@ BASE_FEATURE(kSubmenusInAppMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabClosureMethodRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTabModelInitFixes, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStorageSqlitePrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStripAutoSelectOnCloseChange, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStripDensityChangeAndroid, base::FEATURE_ENABLED_BY_DEFAULT);

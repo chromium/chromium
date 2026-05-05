@@ -664,7 +664,6 @@ public abstract class ChromeFeatureList {
             "SyncTrustedVaultErrorMessageDuration";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
-    public static final String TAB_MODEL_INIT_FIXES = "TabModelInitFixes";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE =
             "TabStripAutoSelectOnCloseChange";
@@ -727,7 +726,6 @@ public abstract class ChromeFeatureList {
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
-
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
@@ -1146,11 +1144,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
-    public static final CachedFlag sTabModelInitFixes =
-            newCachedFlag(
-                    TAB_MODEL_INIT_FIXES,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStorageSqlitePrototype =
             newCachedFlag(
                     TAB_STORAGE_SQLITE_PROTOTYPE,
@@ -1383,7 +1376,6 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
-                    sTabModelInitFixes,
                     sTabStorageSqlitePrototype,
                     sTabStripDensityChangeAndroid,
                     sTabWindowManagerReportIndicesMismatch,

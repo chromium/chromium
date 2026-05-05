@@ -4043,7 +4043,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (id == R.id.new_tab_menu_id) {
             if (!mTabModelSelector.isTabStateInitialized()) {
                 RecordUserAction.record("MobileMenuNewTab.BeforeTabRestore");
-                if (!ChromeFeatureList.sTabModelInitFixes.isEnabled()) return false;
             }
 
             getTabModelSelector().getModel(false).commitAllTabClosures();
@@ -4058,7 +4057,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         } else if (id == R.id.new_incognito_tab_menu_id) {
             if (!mTabModelSelector.isTabStateInitialized()) {
                 RecordUserAction.record("MobileMenuNewIncognitoTab.BeforeTabRestore");
-                if (!ChromeFeatureList.sTabModelInitFixes.isEnabled()) return false;
             }
 
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();

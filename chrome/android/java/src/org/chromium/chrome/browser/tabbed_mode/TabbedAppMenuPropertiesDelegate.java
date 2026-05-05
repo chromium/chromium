@@ -617,8 +617,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowAddToGroup() {
-        return (!ChromeFeatureList.sTabModelInitFixes.isEnabled()
-                || mTabModelSelector.isTabStateInitialized());
+        return mTabModelSelector.isTabStateInitialized();
     }
 
     private ListItem buildAddToGroupItem(@Nullable Tab currentTab) {

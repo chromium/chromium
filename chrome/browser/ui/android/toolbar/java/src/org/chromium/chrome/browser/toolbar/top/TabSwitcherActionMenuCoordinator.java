@@ -19,7 +19,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -220,12 +219,10 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     private void maybeBuildAddToGroup(ModelList itemList) {
-        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
-            TabModelSelector selector = mTabModelSelectorSupplier.get();
-            if (selector == null || !selector.isTabStateInitialized()) return;
-            TabModel tabModel = selector.getCurrentModel();
-            if (!tabModel.isTabModelRestored()) return;
-        }
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null || !selector.isTabStateInitialized()) return;
+        TabModel tabModel = selector.getCurrentModel();
+        if (!tabModel.isTabModelRestored()) return;
 
         if (doTabGroupsExist()) {
             itemList.add(buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP));

@@ -334,8 +334,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         // Initialization will create the current tab and select it, this isn't a
                         // meaningful change that needs to be saved.
-                        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()
-                                && !mTabModelSelector.isTabStateInitialized()
+                        if (!mTabModelSelector.isTabStateInitialized()
                                 && lastId == TabList.INVALID_TAB_INDEX) {
                             return;
                         }
@@ -356,8 +355,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                             boolean markedForSelection) {
                         // Ignore all tabs being restored as part of init, they're all already on
                         // disk.
-                        if (ChromeFeatureList.sTabModelInitFixes.isEnabled()
-                                && !mTabModelSelector.isTabStateInitialized()
+                        if (!mTabModelSelector.isTabStateInitialized()
                                 && type == TabLaunchType.FROM_RESTORE) {
                             return;
                         }
@@ -433,11 +431,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 int id = tab.getId();
                 boolean incognito = tab.isIncognito();
                 try {
-                    if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
-                        TabStateAttributes attributes = TabStateAttributes.from(tab);
-                        if (attributes != null) {
-                            attributes.clearTabStateDirtiness();
-                        }
+                    TabStateAttributes attributes = TabStateAttributes.from(tab);
+                    if (attributes != null) {
+                        attributes.clearTabStateDirtiness();
                     }
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
@@ -1218,9 +1214,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void resumeSaveTabList(Runnable onSaveTabListRunnable) {
-        boolean shouldTriggerSave =
-                !ChromeFeatureList.sTabModelInitFixes.isEnabled()
-                        || mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_DIRTY;
+        boolean shouldTriggerSave = mMetadataSaveMode == MetadataSaveMode.PAUSED_AND_DIRTY;
         mMetadataSaveMode = MetadataSaveMode.SAVING_ALLOWED;
         if (shouldTriggerSave) {
             addObserver(

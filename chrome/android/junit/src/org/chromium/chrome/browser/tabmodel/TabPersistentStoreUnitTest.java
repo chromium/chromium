@@ -48,7 +48,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -647,46 +646,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @Feature("TabPersistentStore")
-    @DisableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
-    public void testTabModelObserver_withoutInitFeature() {
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
-        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
-        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
-        mPersistentStore =
-                new TabPersistentStoreImpl(
-                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
-                        mPersistencePolicy,
-                        mTabModelSelector,
-                        mTabCreatorManager,
-                        mTabWindowManager,
-                        mCipherFactory,
-                        /* isAuthoritative= */ true,
-                        /* recordLegacyTabCountMetrics= */ true);
-        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
-        mPersistentStore.onNativeLibraryReady();
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
-
-        mTabModelObserverCaptor
-                .getValue()
-                .didSelectTab(mTab, TabSelectionType.FROM_USER, TabModel.INVALID_TAB_INDEX);
-        verify(mSequencedTaskRunner).execute(any(), any());
-        reset(mSequencedTaskRunner);
-
-        mTabModelObserverCaptor
-                .getValue()
-                .didAddTab(
-                        mTab,
-                        TabLaunchType.FROM_RESTORE,
-                        TabCreationState.FROZEN_ON_RESTORE,
-                        /* markedForSelection= */ false);
-        verify(mSequencedTaskRunner).execute(any(), any());
-        reset(mSequencedTaskRunner);
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
     public void testTabModelObserver_beforeAndAfterInit() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
@@ -743,7 +702,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
     public void testTabModelObserver_nonInitEvents() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
@@ -782,47 +740,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @Feature("TabPersistentStore")
-    @DisableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
-    public void testPauseSaveTabList() {
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
-        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
-        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
-        mPersistentStore =
-                new TabPersistentStoreImpl(
-                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
-                        mPersistencePolicy,
-                        mTabModelSelector,
-                        mTabCreatorManager,
-                        mTabWindowManager,
-                        mCipherFactory,
-                        /* isAuthoritative= */ true,
-                        /* recordLegacyTabCountMetrics= */ true);
-        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
-        mPersistentStore.onNativeLibraryReady();
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
-        TabModelObserver observer = mTabModelObserverCaptor.getValue();
-
-        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any(), any());
-        reset(mSequencedTaskRunner);
-
-        mPersistentStore.pauseSaveTabList();
-        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner, never()).execute(any(), any());
-
-        mPersistentStore.resumeSaveTabList(() -> {});
-        verify(mSequencedTaskRunner).execute(any(), any());
-        reset(mSequencedTaskRunner);
-
-        observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any(), any());
-        reset(mSequencedTaskRunner);
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
     public void testPauseSaveTabList_OnlySavesWhenDirty() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
@@ -870,7 +787,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
     public void testSaveState_currentTabDirtyCleared() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
