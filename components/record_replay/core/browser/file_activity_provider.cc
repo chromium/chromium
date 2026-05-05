@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/record_replay/core/browser/annotation_parsing_utils.h"
 #include "components/record_replay/core/browser/parsing_utils.h"
 
 namespace record_replay {
@@ -74,20 +75,15 @@ void FileActivityProvider::OnJsonParsed(std::vector<base::Value> values) {
     if (!item.is_dict()) {
       continue;
     }
-    const auto& dict = item.GetDict();
-    const std::string* url_str = dict.FindString("url");
-    const std::string* title = dict.FindString("title");
-    const std::string* instructions = dict.FindString("instructions");
-    const std::string* anchored_message = dict.FindString("anchored_message");
 
-    if (url_str && title && instructions && anchored_message) {
-      GURL url(*url_str);
-      if (url.is_valid()) {
-        metadata_map_.emplace(url, ActivityDiscoveryService::AutomationMetadata{
-                                       .title = *title,
-                                       .instructions = *instructions,
-                                       .anchored_message = *anchored_message});
-      }
+    auto result = ParseAnnotation(item.GetDict());
+    if (result.has_value()) {
+      const ActivityAnnotation& annotation = result.value();
+      GURL url(annotation.url());
+      metadata_map_.emplace(url, ActivityDiscoveryService::AutomationMetadata{
+                                     .title = annotation.title(),
+                                     .instructions = annotation.description(),
+                                     .anchored_message = ""});
     }
   }
 

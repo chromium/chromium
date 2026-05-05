@@ -6,10 +6,14 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/record_replay/core/common/record_replay_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,6 +71,19 @@ class RecordingDataManagerImplTest : public ::testing::Test {
   void WaitForDatabaseOperations() { task_environment_.RunUntilIdle(); }
 
   RecordingDataManagerImpl& data_manager() { return *data_manager_; }
+
+  void ResetDataManager() {
+    data_manager_.reset();
+    WaitForDatabaseOperations();
+  }
+
+  void RecreateDataManager() {
+    data_manager_ =
+        std::make_unique<RecordingDataManagerImpl>(temp_dir_.GetPath());
+    WaitForDatabaseOperations();
+  }
+
+  base::FilePath profile_path() { return temp_dir_.GetPath(); }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -256,6 +273,86 @@ TEST_F(RecordingDataManagerImplTest, SaveActivityDataWithInvalidIdFails) {
   base::test::TestFuture<bool> save_future;
   data_manager().SaveActivityData(9999, data, save_future.GetCallback());
   EXPECT_FALSE(save_future.Get());
+}
+
+TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
+  ResetDataManager();
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::FilePath seed_file = profile_path().AppendASCII("seed.json");
+  std::string json = R"([
+    {
+      "url": "https://example.com",
+      "title": "Quick Title",
+      "instructions": "Quick Instructions",
+      "anchored_message": "Quick Message"
+    }
+  ])";
+  ASSERT_TRUE(base::WriteFile(seed_file, json));
+
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kActivityMetadataFile, seed_file);
+
+  RecreateDataManager();
+
+  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+      future;
+  data_manager().GetActivityAnnotationsByUrl("https://example.com",
+                                             future.GetCallback());
+  auto annotations = future.Get();
+
+  ASSERT_EQ(annotations.size(), 1u);
+  EXPECT_EQ(annotations[0].second.title(), "Quick Title");
+  EXPECT_EQ(annotations[0].second.description(), "Quick Instructions");
+  ASSERT_EQ(annotations[0].second.steps().size(), 1u);
+  EXPECT_EQ(annotations[0].second.steps().at(1).description(),
+            "Quick Instructions");
+}
+
+TEST_F(RecordingDataManagerImplTest, SeedFromFileDetailedSyntax) {
+  ResetDataManager();
+
+  base::test::ScopedCommandLine scoped_command_line;
+  base::FilePath seed_file = profile_path().AppendASCII("seed_detailed.json");
+  std::string json = R"([
+    {
+      "url": "https://example.com/detailed",
+      "title": "Detailed Title",
+      "instructions": "Top Level Description",
+      "steps": [
+        {
+          "description": "Step 1 Desc",
+          "expected_data_keys": ["key1"]
+        },
+        {
+          "description": "Step 2 Desc",
+          "expected_data_keys": ["key2"]
+        }
+      ],
+      "anchored_message": "Anchored Message"
+    }
+  ])";
+  ASSERT_TRUE(base::WriteFile(seed_file, json));
+
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kActivityMetadataFile, seed_file);
+
+  RecreateDataManager();
+
+  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+      future;
+  data_manager().GetActivityAnnotationsByUrl("https://example.com/detailed",
+                                             future.GetCallback());
+  auto annotations = future.Get();
+
+  ASSERT_EQ(annotations.size(), 1u);
+  EXPECT_EQ(annotations[0].second.title(), "Detailed Title");
+  EXPECT_EQ(annotations[0].second.description(), "Top Level Description");
+  ASSERT_EQ(annotations[0].second.steps().size(), 2u);
+  EXPECT_EQ(annotations[0].second.steps().at(1).description(), "Step 1 Desc");
+  EXPECT_EQ(annotations[0].second.steps().at(1).expected_data_keys(0), "key1");
+  EXPECT_EQ(annotations[0].second.steps().at(2).description(), "Step 2 Desc");
+  EXPECT_EQ(annotations[0].second.steps().at(2).expected_data_keys(0), "key2");
 }
 
 }  // namespace

@@ -5,10 +5,14 @@
 #include "components/record_replay/core/browser/capabilities_database.h"
 
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/record_replay/core/browser/annotation_parsing_utils.h"
 #include "components/record_replay/core/browser/parsing_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -46,16 +50,30 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
+  db_.set_error_callback(base::BindRepeating([](int error,
+                                                sql::Statement* stmt) {
+    DLOG(ERROR) << "CapabilitiesDatabase SQLite Error: " << error
+                << (stmt ? base::StrCat({", SQL: ", stmt->GetSQLStatement()})
+                         : "");
+  }));
+
+  // Open the database file. If this fails, the database remains closed
+  // and subsequent AsyncCalls will fail safely/silently via error callback.
   if (!db_.Open(profile_path.Append(kCapabilitiesDatabaseFileName))) {
+    DLOG(ERROR) << "Failed to open CapabilitiesDatabase at: "
+                << profile_path.value();
     return;
   }
 
+  // Enforce referential integrity by enabling foreign key constraints.
   if (!db_.Execute("PRAGMA foreign_keys = ON")) {
+    DLOG(ERROR) << "Failed to enable PRAGMA foreign_keys.";
     return;
   }
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
+    DLOG(ERROR) << "Failed to begin transaction for schema creation.";
     return;
   }
 
@@ -66,18 +84,24 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
   }
 
   if (!CreateRecordingsTable()) {
+    DLOG(ERROR) << "Failed to create Recordings table.";
     return;
   }
 
   if (!CreateActivityAnnotationsTable()) {
+    DLOG(ERROR) << "Failed to create ActivityAnnotations table.";
     return;
   }
 
   if (!CreateActivityDataTable()) {
+    DLOG(ERROR) << "Failed to create ActivityData table.";
     return;
   }
 
+  // Intent: Apply any necessary migrations to align schema with code
+  // expectations.
   if (!Migrate(GetDatabaseVersion())) {
+    DLOG(ERROR) << "Failed to migrate database.";
     return;
   }
 
@@ -147,33 +171,103 @@ bool CapabilitiesDatabase::IsActivityAnnotationsTableEmpty() {
   return statement.Step() && statement.ColumnInt(0) == 0;
 }
 
-void CapabilitiesDatabase::MaybeSeedAnnotationsFromJson(
+base::expected<std::vector<ActivityAnnotation>, std::string>
+CapabilitiesDatabase::GetSeedAnnotationsFromJson(
     const std::string& json_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsActivityAnnotationsTableEmpty()) {
-    return;
+    return std::vector<ActivityAnnotation>();
   }
 
   std::vector<base::Value> values = ParseJSONListOfDicts(json_string);
-  for (const auto& item : values) {
+  std::vector<ActivityAnnotation> seeded_annotations;
+  int index = 0;
+  for (const base::Value& item : values) {
     if (!item.is_dict()) {
-      continue;
+      return base::unexpected(
+          base::StrCat({"Activity metadata item at index ",
+                        base::NumberToString(index), " is not a dictionary."}));
     }
-    const auto& dict = item.GetDict();
-    const std::string* url = dict.FindString("url");
-    const std::string* title = dict.FindString("title");
-    const std::string* instructions = dict.FindString("instructions");
 
-    if (url && title && instructions) {
-      ActivityAnnotation annotation;
-      annotation.set_url(*url);
-      annotation.set_title(*title);
-      annotation.set_description(*instructions);
-
-      SaveActivityAnnotation(std::nullopt, std::move(annotation), *url,
-                             std::nullopt);
+    // Parse and validate the annotation using modern base::Value::Dict.
+    base::expected<ActivityAnnotation, std::string> result =
+        ParseAnnotation(item.GetDict());
+    if (!result.has_value()) {
+      return base::unexpected(
+          base::StrCat({"Error in item ", base::NumberToString(index), ": ",
+                        result.error()}));
     }
+
+    seeded_annotations.push_back(std::move(result.value()));
+    index++;
+  }
+  return seeded_annotations;
+}
+
+base::expected<std::vector<ActivityAnnotation>, std::string>
+CapabilitiesDatabase::SeedAnnotationsFromFile(const base::FilePath& file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsActivityAnnotationsTableEmpty()) {
+    return std::vector<ActivityAnnotation>();
+  }
+
+  std::string json_string;
+  if (!base::ReadFileToString(file_path, &json_string)) {
+    return base::unexpected(base::StrCat(
+        {"Failed to read activity metadata file: ", file_path.AsUTF8Unsafe()}));
+  }
+
+  return GetSeedAnnotationsFromJson(json_string);
+}
+
+void CapabilitiesDatabase::RunSeeding(base::FilePath file_path,
+                                      std::string feature_json) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Skip if already seeded.
+  if (!IsActivityAnnotationsTableEmpty()) {
+    return;
+  }
+
+  std::string first_error;
+
+  // Try seeding from a local file first to give developer overrides priority.
+  if (!file_path.empty()) {
+    if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
+            SeedAnnotationsFromFile(file_path);
+        result.has_value()) {
+      for (ActivityAnnotation& annotation : result.value()) {
+        std::string url = annotation.url();
+        SaveActivityAnnotation(std::nullopt, std::move(annotation),
+                               std::move(url), std::nullopt);
+      }
+      return;
+    } else {
+      first_error = std::move(result.error());
+    }
+  }
+
+  // Fall back to Finch seeding if the local file was not specified or failed.
+  if (!feature_json.empty()) {
+    if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
+            GetSeedAnnotationsFromJson(feature_json);
+        result.has_value()) {
+      for (ActivityAnnotation& annotation : result.value()) {
+        std::string url = annotation.url();
+        SaveActivityAnnotation(std::nullopt, std::move(annotation),
+                               std::move(url), std::nullopt);
+      }
+      return;
+    } else if (first_error.empty()) {
+      first_error = std::move(result.error());
+    }
+  }
+
+  if (!first_error.empty()) {
+    DLOG(ERROR) << first_error;
+    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -289,11 +383,10 @@ std::optional<ActivityAnnotation> CapabilitiesDatabase::GetActivityAnnotation(
 std::vector<std::pair<int64_t, ActivityAnnotation>>
 CapabilitiesDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string normalized_url = NormalizeUrl(url);
   static constexpr char kSql[] =
       "SELECT annotation_id, proto FROM ActivityAnnotations WHERE target_url=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, normalized_url);
+  statement.BindString(0, NormalizeUrl(url));
 
   std::vector<std::pair<int64_t, ActivityAnnotation>> annotations;
   while (statement.Step()) {

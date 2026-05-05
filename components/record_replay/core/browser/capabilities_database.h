@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "sql/database.h"
@@ -47,11 +48,10 @@ class CapabilitiesDatabase {
                               std::string target_url,
                               std::optional<int64_t> recording_id);
 
-  // Checks if the "ActivityAnnotations" table is empty.
-  bool IsActivityAnnotationsTableEmpty();
-
-  // Reads JSON and seeds the database if empty.
-  void MaybeSeedAnnotationsFromJson(const std::string& json_string);
+  // Attempts to seed from file (if path not empty), then Finch (if json not
+  // empty). Triggers DumpWithoutCrashing if all attempted seeding mechanisms
+  // fail.
+  void RunSeeding(base::FilePath file_path, std::string feature_json);
 
   // Retrieves the annotation for a given ID, if it exists.
   std::optional<ActivityAnnotation> GetActivityAnnotation(
@@ -88,6 +88,17 @@ class CapabilitiesDatabase {
 
   // Creates the "ActivityData" table if it doesn't exist.
   bool CreateActivityDataTable();
+
+  // Reads a file and seeds the database if empty.
+  base::expected<std::vector<ActivityAnnotation>, std::string>
+  SeedAnnotationsFromFile(const base::FilePath& file_path);
+
+  // Checks if the "ActivityAnnotations" table is empty.
+  bool IsActivityAnnotationsTableEmpty();
+
+  // Reads JSON and seeds the database if empty.
+  base::expected<std::vector<ActivityAnnotation>, std::string>
+  GetSeedAnnotationsFromJson(const std::string& json_string);
 
   sql::Database db_;
 

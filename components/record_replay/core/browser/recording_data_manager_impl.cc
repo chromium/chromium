@@ -4,25 +4,47 @@
 
 #include "components/record_replay/core/browser/recording_data_manager_impl.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/values.h"
 #include "components/record_replay/core/browser/capabilities_database.h"
-#include "components/record_replay/core/browser/parsing_utils.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/common/record_replay_features.h"
+#include "components/record_replay/core/common/record_replay_switches.h"
 
 namespace record_replay {
+
+namespace {
+
+base::FilePath GetSeedingFilePath() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kActivityMetadataFile)) {
+    return command_line->GetSwitchValuePath(switches::kActivityMetadataFile);
+  }
+  return base::FilePath();
+}
+
+}  // namespace
 
 RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
     : db_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
+           // CRITICAL: MUST use BLOCK_SHUTDOWN. SQLite database writes and
+           // transactions must complete fully before shutdown to prevent
+           // database corruption. CONTINUE_ON_SHUTDOWN would allow the thread
+           // pool to kill the thread mid-write.
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+  // Intent: Asynchronously initialize the database. Subsequent calls are safely
+  // queued on the same sequenced task runner and will execute after Init
+  // completes.
   db_.AsyncCall(&CapabilitiesDatabase::Init).WithArgs(std::move(profile_path));
-  SeedDatabaseIfEmpty();
+
+  // Trigger asynchronous seeding by retrieving the local file path (if
+  // specified) and the Feature configuration, prioritizing the file.
+  db_.AsyncCall(&CapabilitiesDatabase::RunSeeding)
+      .WithArgs(GetSeedingFilePath(),
+                features::kRecordReplayAnnotationSeed.Get());
 }
 
 RecordingDataManagerImpl::~RecordingDataManagerImpl() = default;
@@ -95,16 +117,6 @@ void RecordingDataManagerImpl::DeleteActivityData(
   db_.AsyncCall(&CapabilitiesDatabase::DeleteActivityData)
       .WithArgs(annotation_id)
       .Then(std::move(callback));
-}
-
-void RecordingDataManagerImpl::SeedDatabaseIfEmpty() {
-  std::string seed_json = features::kRecordReplayAnnotationSeed.Get();
-  if (seed_json.empty()) {
-    return;
-  }
-
-  db_.AsyncCall(&CapabilitiesDatabase::MaybeSeedAnnotationsFromJson)
-      .WithArgs(std::move(seed_json));
 }
 
 }  // namespace record_replay

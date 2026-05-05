@@ -12,6 +12,8 @@ static_library("browser") {
     "activity_discovery_service_impl.h",
     "activity_provider.cc",
     "activity_provider.h",
+    "annotation_parsing_utils.cc",
+    "annotation_parsing_utils.h",
     "capabilities_database.cc",
     "capabilities_database.h",
     "file_activity_provider.cc",
