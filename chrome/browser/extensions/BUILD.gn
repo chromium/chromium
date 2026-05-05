@@ -1898,6 +1898,7 @@ source_set("unit_tests") {
     "updater/extension_updater_unittest.cc",
     "user_script_listener_unittest.cc",
     "user_script_world_configuration_manager_unittest.cc",
+    "zipfile_installer_unittest.cc",
   ]
 
   deps = [
@@ -1942,6 +1943,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/search_engines",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/content",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
@@ -2024,7 +2027,6 @@ source_set("unit_tests") {
       "update_install_gate_unittest.cc",
       "warning_badge_service_unittest.cc",
       "webstore_installer_unittest.cc",
-      "zipfile_installer_unittest.cc",
     ]
 
     deps += [
@@ -2043,7 +2045,6 @@ source_set("unit_tests") {
       "//components/password_manager/content/browser",
       "//components/password_manager/core/browser/sharing",
       "//components/password_manager/core/browser/sharing:test_support",
-      "//components/services/unzip:in_process",
       "//components/webauthn/core/browser:test_support",
       "//extensions/browser:webstore_installer",
       "//ui/base/clipboard:clipboard_test_support",
