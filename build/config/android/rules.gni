@@ -1009,7 +1009,6 @@ if (!is_robolectric && enable_java_templates) {
               "assetres",
               "header",
               "host",
-              "validate",
             ]) {
       group("${target_name}__$_group_name") {
         deps = []
@@ -1328,7 +1327,6 @@ if (!is_robolectric && enable_java_templates) {
         ":$_build_config_target_name",
         ":${_java_binary_target_name}__host",
         ":${_java_binary_target_name}__java_binary_script",
-        ":${_java_binary_target_name}__validate",
         "//third_party/robolectric:robolectric_runtime_jars",
       ]
       if (_enable_resources) {
@@ -3332,9 +3330,9 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       # Include unstripped native libraries so tests can symbolize stacks.
-      data_deps += _all_native_libs_deps + [ ":${_java_target_name}__validate" ]
+      data_deps += _all_native_libs_deps
       if (_enable_lint) {
-        data_deps += [ ":${target_name}__lint" ]
+        validations = [ ":${target_name}__lint" ]
       }
 
       if (_uses_static_library) {
@@ -5278,10 +5276,7 @@ if (!is_robolectric && enable_java_templates) {
         public_deps += [ ":$_size_info_target" ]
       }
       if (_enable_lint) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
-        data_deps += [ ":${target_name}__lint" ]
+        validations = [ ":${target_name}__lint" ]
       }
     }
 

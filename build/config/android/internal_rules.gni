@@ -215,8 +215,8 @@ template("write_build_config") {
   }
 
   if (current_toolchain == default_toolchain) {
-    # Ensure targets match naming patterns so that __assetres, __header, __host,
-    # and __validate targets work properly.
+    # Ensure targets match naming patterns so that __assetres, __header, __host
+    # targets work properly.
     if (filter_exclude([ _type ], _java_resource_types) == []) {
       if (filter_exclude([ _target_label ], java_resource_patterns) != []) {
         assert(false, "Invalid java resource target name: $_target_label")
@@ -1197,8 +1197,7 @@ if (enable_java_templates) {
 
   template("trace_references") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             TESTONLY_AND_VISIBILITY + [ "public_deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/tracereferences.py"
       inputs = java_paths_for_inputs + [
                  _r8_path,
@@ -1418,16 +1417,22 @@ if (enable_java_templates) {
           args += [ "--fail-on-expectations" ]
         }
       }
+
+      # Use deps rather than validations for expectations so that our trybot
+      # will fail as early as possible.
       _deps += [ ":$_expectations_target" ]
     }
 
     if (_enable_checks) {
       _tracerefs_json = "$target_gen_dir/$target_name.tracerefs.json"
-      _proguard_target_name = "${target_name}__r8"
-    } else {
-      _proguard_target_name = target_name
+      _tracerefs_target_name = "${target_name}__tracerefs"
+      _main_target_name = target_name
+      trace_references(_tracerefs_target_name) {
+        tracerefs_json = _tracerefs_json
+        deps = [ ":$_main_target_name" ]
+      }
     }
-    action_with_pydeps(_proguard_target_name) {
+    action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
                                "data",
@@ -1449,6 +1454,7 @@ if (enable_java_templates) {
           "--tracerefs-json",
           rebase_path(_tracerefs_json, root_build_dir),
         ]
+        validations = [ ":$_tracerefs_target_name" ]
       }
 
       # http://crbug.com/725224. Fix for bots running out of memory.
@@ -1456,13 +1462,6 @@ if (enable_java_templates) {
         pool = "//build/config/android:java_cmd_pool($default_toolchain)"
       } else {
         pool = "//build/toolchain:link_pool($default_toolchain)"
-      }
-    }
-
-    if (_enable_checks) {
-      trace_references(target_name) {
-        tracerefs_json = _tracerefs_json
-        public_deps = [ ":$_proguard_target_name" ]
       }
     }
   }
@@ -2968,48 +2967,49 @@ if (enable_java_templates) {
   # [1] https://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html
   #
   template("compile_java") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    _build_config = invoker.build_config
-
-    _processor_args = []
-    if (defined(invoker.processor_args_javac)) {
-      _processor_args = invoker.processor_args_javac
-    }
-
-    _additional_jar_files = []
-    if (defined(invoker.additional_jar_files)) {
-      _additional_jar_files = invoker.additional_jar_files
-    }
-
-    _srcjar_deps = []
-    if (defined(invoker.srcjar_deps)) {
-      _srcjar_deps = invoker.srcjar_deps
-    }
-
-    if (!invoker.enable_errorprone) {
-      _java_srcjars = []
-      foreach(dep, _srcjar_deps) {
-        _dep_gen_dir = get_label_info(dep, "target_gen_dir")
-        _dep_name = get_label_info(dep, "name")
-        _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
-      }
-      if (defined(invoker.srcjars)) {
-        _java_srcjars += invoker.srcjars
-      }
-
-      # generated_jar_path is an output when use_turbine and an input otherwise.
-      if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
-        _java_srcjars += [ invoker.generated_jar_path ]
-      }
-    }
-
-    _javac_args = []
-    if (defined(invoker.javac_args)) {
-      _javac_args = invoker.javac_args
-    }
-
     action_with_pydeps(target_name) {
+      forward_variables_from(invoker,
+                             [ "validations" ] + TESTONLY_AND_VISIBILITY)
+
+      _build_config = invoker.build_config
+
+      _processor_args = []
+      if (defined(invoker.processor_args_javac)) {
+        _processor_args = invoker.processor_args_javac
+      }
+
+      _additional_jar_files = []
+      if (defined(invoker.additional_jar_files)) {
+        _additional_jar_files = invoker.additional_jar_files
+      }
+
+      _srcjar_deps = []
+      if (defined(invoker.srcjar_deps)) {
+        _srcjar_deps = invoker.srcjar_deps
+      }
+
+      if (!invoker.enable_errorprone) {
+        _java_srcjars = []
+        foreach(dep, _srcjar_deps) {
+          _dep_gen_dir = get_label_info(dep, "target_gen_dir")
+          _dep_name = get_label_info(dep, "name")
+          _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
+        }
+        if (defined(invoker.srcjars)) {
+          _java_srcjars += invoker.srcjars
+        }
+
+        # generated_jar_path is an output when use_turbine and an input otherwise.
+        if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
+          _java_srcjars += [ invoker.generated_jar_path ]
+        }
+      }
+
+      _javac_args = []
+      if (defined(invoker.javac_args)) {
+        _javac_args = invoker.javac_args
+      }
+
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
         inputs = [
@@ -3700,7 +3700,6 @@ if (enable_java_templates) {
     # It would be more ideal to split this into __host and __javac, but we
     # combine the two concepts to save on a group() target.
     _java_host_deps = []  # Processed host .jar + javac .jar.
-    _java_validate_deps = []  # Bytecode checker & errorprone.
 
     foreach(_lib_dep, _lib_deps) {
       # Expand //foo/java -> //foo/java:java
@@ -3708,7 +3707,6 @@ if (enable_java_templates) {
       _java_assetres_deps += [ "${_lib_dep}__assetres" ]
       _java_header_deps += [ "${_lib_dep}__header" ]
       _java_host_deps += [ "${_lib_dep}__host" ]
-      _java_validate_deps += [ "${_lib_dep}__validate" ]
     }
 
     # APK and base module targets are special because:
@@ -3720,13 +3718,11 @@ if (enable_java_templates) {
     if (defined(invoker.apk_under_test)) {
       _java_assetres_deps += [ "${invoker.apk_under_test}__java__assetres" ]
       _java_header_deps += [ "${invoker.apk_under_test}__java__header" ]
-      _java_validate_deps += [ "${invoker.apk_under_test}__java__validate" ]
       _java_host_deps += [ "${invoker.apk_under_test}__compile_java" ]
     }
     if (defined(invoker.base_module_target)) {
       _java_assetres_deps += [ "${invoker.base_module_target}__java__assetres" ]
       _java_header_deps += [ "${invoker.base_module_target}__java__header" ]
-      _java_validate_deps += [ "${invoker.base_module_target}__java__validate" ]
       _java_host_deps += [ "${invoker.base_module_target}__compile_java" ]
       if (defined(invoker.parent_module_target)) {
         assert(
@@ -3735,8 +3731,6 @@ if (enable_java_templates) {
         _java_assetres_deps +=
             [ "${invoker.parent_module_target}__java__assetres" ]
         _java_header_deps += [ "${invoker.parent_module_target}__java__header" ]
-        _java_validate_deps +=
-            [ "${invoker.parent_module_target}__java__validate" ]
         _java_host_deps += [ "${invoker.parent_module_target}__compile_java" ]
       }
     }
@@ -3932,6 +3926,13 @@ if (enable_java_templates) {
       _header_target_name = "${target_name}__header"
     }
 
+    if (_build_host_jar || _build_device_jar) {
+      if ((!defined(invoker.enable_bytecode_checks) ||
+           invoker.enable_bytecode_checks) && !_is_prebuilt &&
+          android_static_analysis != "off" && !_skip_header_jar) {
+        _validate_deps_target_name = "${target_name}__validate_deps"
+      }
+    }
     if (_has_sources) {
       _kt_files = filter_include(_source_files, [ "*.kt" ])
       _java_files = filter_exclude(_source_files, [ "*.kt" ])
@@ -4100,6 +4101,9 @@ if (enable_java_templates) {
           }
         }
       }
+      if (_enable_errorprone) {
+        _errorprone_target_name = "${_main_target_name}__errorprone"
+      }
 
       _compile_java_target = "${_main_target_name}__compile_java"
       compile_java_helper(_compile_java_target) {
@@ -4122,11 +4126,17 @@ if (enable_java_templates) {
         if (_kt_files != []) {
           kotlin_jar_path = _kotlinc_jar_path
         }
+        validations = []
+        if (defined(_errorprone_target_name)) {
+          validations += [ ":$_errorprone_target_name" ]
+        }
+        if (defined(_validate_deps_target_name)) {
+          validations += [ ":$_validate_deps_target_name" ]
+        }
       }
 
       if (_enable_errorprone) {
-        _compile_java_errorprone_target = "${_main_target_name}__errorprone"
-        compile_java_helper(_compile_java_errorprone_target) {
+        compile_java_helper(_errorprone_target_name) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           enable_errorprone = true
           if (defined(invoker.errorprone_args)) {
@@ -4143,7 +4153,6 @@ if (enable_java_templates) {
             header_jar_path = _header_jar_path
           }
         }
-        _java_validate_deps += [ ":$_compile_java_errorprone_target" ]
       }
     }  # _has_sources
 
@@ -4212,14 +4221,8 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _enable_bytecode_checks =
-          (!defined(invoker.enable_bytecode_checks) ||
-           invoker.enable_bytecode_checks) && !_is_prebuilt &&
-          android_static_analysis != "off" && !_skip_header_jar
-      if (_enable_bytecode_checks) {
-        _validate_target_name = "${target_name}__validate"
-
-        check_for_missing_direct_deps(_validate_target_name) {
+      if (defined(_validate_deps_target_name)) {
+        check_for_missing_direct_deps(_validate_deps_target_name) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
           deps = _unprocessed_jar_deps + _header_classpath_deps +
                  [ ":$_build_config_target_name" ]
@@ -4227,10 +4230,6 @@ if (enable_java_templates) {
             # Ensures the filtered classes appear on the classpath.
             deps += [ ":$_header_target_name" ]
             header_jar_path = _header_jar_path
-          }
-          data_deps = _java_validate_deps
-          if (defined(_compile_java_errorprone_target)) {
-            data_deps += [ ":$_compile_java_errorprone_target" ]
           }
 
           include_android_sdk = _requires_android || _requires_robolectric
@@ -4379,15 +4378,6 @@ if (enable_java_templates) {
       }
     }
 
-    if (!defined(_validate_target_name)) {
-      _validate_target_name = "${target_name}__validate"
-
-      # Allow other targets to depend on this __validate one.
-      group(_validate_target_name) {
-        deps = _java_validate_deps
-      }
-    }
-
     group("${target_name}__host") {
       deps = _java_host_deps
       data = []
@@ -4521,11 +4511,6 @@ if (enable_java_templates) {
       }
       if (!defined(data_deps)) {
         data_deps = []
-      }
-      if (defined(_validate_target_name)) {
-        data_deps += [ ":$_validate_target_name" ]
-      } else {
-        data_deps += _java_validate_deps
       }
     }
   }
