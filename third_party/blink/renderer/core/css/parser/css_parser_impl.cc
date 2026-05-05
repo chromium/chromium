@@ -3403,6 +3403,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
        rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kProperty ||
        rule_type == StyleRule::kPositionTry ||
        rule_type == StyleRule::kFontFace ||
+       rule_type == StyleRule::kCounterStyle ||
        rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {
       // If we skipped the relevant Consume*() calls above due to an invalid

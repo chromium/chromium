@@ -523,6 +523,7 @@ experimental domain CSS
         font-face
         font-feature-values
         font-palette-values
+        counter-style
       # Subsection of font-feature-values, if this is a subsection.
       optional enum subsection
         # LINT.IfChange(FontVariantAlternatesFeatureType)

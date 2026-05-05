@@ -15,19 +15,7 @@ namespace blink {
 
 StyleRuleCounterStyle::StyleRuleCounterStyle(const AtomicString& name,
                                              CSSPropertyValueSet* properties)
-    : StyleRuleBase(kCounterStyle),
-      name_(name),
-      system_(properties->GetPropertyCSSValue(CSSPropertyID::kSystem)),
-      negative_(properties->GetPropertyCSSValue(CSSPropertyID::kNegative)),
-      prefix_(properties->GetPropertyCSSValue(CSSPropertyID::kPrefix)),
-      suffix_(properties->GetPropertyCSSValue(CSSPropertyID::kSuffix)),
-      range_(properties->GetPropertyCSSValue(CSSPropertyID::kRange)),
-      pad_(properties->GetPropertyCSSValue(CSSPropertyID::kPad)),
-      fallback_(properties->GetPropertyCSSValue(CSSPropertyID::kFallback)),
-      symbols_(properties->GetPropertyCSSValue(CSSPropertyID::kSymbols)),
-      additive_symbols_(
-          properties->GetPropertyCSSValue(CSSPropertyID::kAdditiveSymbols)),
-      speak_as_(properties->GetPropertyCSSValue(CSSPropertyID::kSpeakAs)) {
+    : StyleRuleBase(kCounterStyle), name_(name), properties_(properties) {
   DCHECK(properties);
 }
 
@@ -36,11 +24,61 @@ StyleRuleCounterStyle::StyleRuleCounterStyle(const StyleRuleCounterStyle&) =
 
 StyleRuleCounterStyle::~StyleRuleCounterStyle() = default;
 
+const CSSValue* StyleRuleCounterStyle::GetSystem() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kSystem);
+}
+const CSSValue* StyleRuleCounterStyle::GetNegative() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kNegative);
+}
+const CSSValue* StyleRuleCounterStyle::GetPrefix() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kPrefix);
+}
+const CSSValue* StyleRuleCounterStyle::GetSuffix() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kSuffix);
+}
+const CSSValue* StyleRuleCounterStyle::GetRange() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kRange);
+}
+const CSSValue* StyleRuleCounterStyle::GetPad() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kPad);
+}
+const CSSValue* StyleRuleCounterStyle::GetFallback() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kFallback);
+}
+const CSSValue* StyleRuleCounterStyle::GetSymbols() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kSymbols);
+}
+const CSSValue* StyleRuleCounterStyle::GetAdditiveSymbols() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kAdditiveSymbols);
+}
+const CSSValue* StyleRuleCounterStyle::GetSpeakAs() const {
+  return properties_->GetPropertyCSSValue(CSSPropertyID::kSpeakAs);
+}
+
+MutableCSSPropertyValueSet& StyleRuleCounterStyle::MutableStyleForInspector() {
+  version_++;
+  return Properties();
+}
+
+MutableCSSPropertyValueSet& StyleRuleCounterStyle::Properties() {
+  if (!properties_->IsMutable()) {
+    properties_ = properties_->MutableCopy();
+  }
+  return *To<MutableCSSPropertyValueSet>(properties_.Get());
+}
+
 bool StyleRuleCounterStyle::HasValidSymbols() const {
+  return HasValidSymbols(GetSystem(), GetSymbols(), GetAdditiveSymbols());
+}
+
+bool StyleRuleCounterStyle::HasValidSymbols(
+    const CSSValue* system_value,
+    const CSSValue* symbols_value,
+    const CSSValue* additive_symbols_value) {
   CounterStyleSystem system =
-      CounterStyle::ToCounterStyleSystemEnum(GetSystem());
-  const auto* symbols = To<CSSValueList>(GetSymbols());
-  const auto* additive_symbols = To<CSSValueList>(GetAdditiveSymbols());
+      CounterStyle::ToCounterStyleSystemEnum(system_value);
+  const auto* symbols = To<CSSValueList>(symbols_value);
+  const auto* additive_symbols = To<CSSValueList>(additive_symbols_value);
   switch (system) {
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
@@ -68,40 +106,12 @@ bool StyleRuleCounterStyle::HasValidSymbols() const {
   }
 }
 
-Member<const CSSValue>& StyleRuleCounterStyle::GetDescriptorReference(
-    AtRuleDescriptorID descriptor_id) {
-  switch (descriptor_id) {
-    case AtRuleDescriptorID::System:
-      return system_;
-    case AtRuleDescriptorID::Negative:
-      return negative_;
-    case AtRuleDescriptorID::Prefix:
-      return prefix_;
-    case AtRuleDescriptorID::Suffix:
-      return suffix_;
-    case AtRuleDescriptorID::Range:
-      return range_;
-    case AtRuleDescriptorID::Pad:
-      return pad_;
-    case AtRuleDescriptorID::Fallback:
-      return fallback_;
-    case AtRuleDescriptorID::Symbols:
-      return symbols_;
-    case AtRuleDescriptorID::AdditiveSymbols:
-      return additive_symbols_;
-    case AtRuleDescriptorID::SpeakAs:
-      return speak_as_;
-    default:
-      NOTREACHED();
-  }
-}
-
 bool StyleRuleCounterStyle::NewValueInvalidOrEqual(
     AtRuleDescriptorID descriptor_id,
     const CSSValue* new_value) {
-  Member<const CSSValue>& original_value =
-      GetDescriptorReference(descriptor_id);
-  if (base::ValuesEquivalent(original_value.Get(), new_value)) {
+  const CSSValue* original_value = properties_->GetPropertyCSSValue(
+      AtRuleDescriptorIDAsCSSPropertyID(descriptor_id));
+  if (base::ValuesEquivalent(original_value, new_value)) {
     return false;
   }
 
@@ -109,16 +119,12 @@ bool StyleRuleCounterStyle::NewValueInvalidOrEqual(
     case AtRuleDescriptorID::System:
       // If the attribute being set is system, and the new value would change
       // the algorithm used, do nothing and abort these steps.
-      return CounterStyle::ToCounterStyleSystemEnum(system_) ==
+      return CounterStyle::ToCounterStyleSystemEnum(GetSystem()) ==
              CounterStyle::ToCounterStyleSystemEnum(new_value);
     case AtRuleDescriptorID::Symbols:
-    case AtRuleDescriptorID::AdditiveSymbols: {
-      // If the returned value would cause the @counter-style rule to become
-      // invalid, do nothing and abort these steps.
-      base::AutoReset<Member<const CSSValue>> auto_reset(&original_value,
-                                                         new_value);
-      return HasValidSymbols();
-    }
+      return HasValidSymbols(GetSystem(), new_value, GetAdditiveSymbols());
+    case AtRuleDescriptorID::AdditiveSymbols:
+      return HasValidSymbols(GetSystem(), GetSymbols(), new_value);
     default:
       return true;
   }
@@ -126,21 +132,12 @@ bool StyleRuleCounterStyle::NewValueInvalidOrEqual(
 
 void StyleRuleCounterStyle::SetDescriptorValue(AtRuleDescriptorID descriptor_id,
                                                const CSSValue* new_value) {
-  GetDescriptorReference(descriptor_id) = new_value;
-  ++version_;
+  MutableStyleForInspector().SetProperty(
+      AtRuleDescriptorIDAsCSSPropertyID(descriptor_id), *new_value);
 }
 
 void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(system_);
-  visitor->Trace(negative_);
-  visitor->Trace(prefix_);
-  visitor->Trace(suffix_);
-  visitor->Trace(range_);
-  visitor->Trace(pad_);
-  visitor->Trace(fallback_);
-  visitor->Trace(symbols_);
-  visitor->Trace(additive_symbols_);
-  visitor->Trace(speak_as_);
+  visitor->Trace(properties_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

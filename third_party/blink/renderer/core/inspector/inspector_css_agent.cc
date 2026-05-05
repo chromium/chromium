@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
+#include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
@@ -147,6 +148,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/list_style_type_data.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
@@ -666,6 +668,10 @@ class InspectorCSSAgent::ModifyRuleAction final
             DynamicTo<CSSFontFeatureValuesRule>(rule)) {
       return style_sheet_->BuildStyleObjectForFontFeatureRule(
           font_feature_values_rule, font_feature_type_);
+    }
+    if (auto* counter_style_rule = DynamicTo<CSSCounterStyleRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(counter_style_rule->Style(),
+                                               nullptr);
     }
     return nullptr;
   }
@@ -1645,6 +1651,16 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     *css_at_rules = std::move(rules);
   }
 
+  if (auto rules = CounterAtRulesForElement(element)) {
+    if (!*css_at_rules) {
+      *css_at_rules = std::move(rules);
+    } else {
+      for (auto& rule : *rules) {
+        (*css_at_rules)->emplace_back(std::move(rule));
+      }
+    }
+  }
+
   auto* parent_layout_node = LayoutTreeBuilderTraversal::LayoutParent(*element);
   if (parent_layout_node) {
     if (int bound_node_id = dom_agent_->BoundNodeId(parent_layout_node)) {
@@ -2117,6 +2133,63 @@ InspectorCSSAgent::FontAtRulesForNodes(HeapVector<Member<Element>>& elements) {
   }
 
   return result;
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>
+InspectorCSSAgent::CounterAtRulesForElement(Element* element) {
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
+    return nullptr;
+  }
+
+  if (!style->ListStyleType()) {
+    return nullptr;
+  }
+
+  AtomicString counter_style_name =
+      style->ListStyleType()->GetCounterStyleName();
+
+  Document& document = element->GetDocument();
+  auto style_sheets = document_to_css_style_sheets_.find(&document);
+  if (style_sheets == document_to_css_style_sheets_.end()) {
+    return nullptr;
+  }
+
+  auto result = std::make_unique<protocol::Array<protocol::CSS::CSSAtRule>>();
+  HashSet<AtomicString> seen_names;
+
+  while (!counter_style_name.IsNull()) {
+    if (seen_names.Contains(counter_style_name)) {
+      break;
+    }
+    seen_names.insert(counter_style_name);
+
+    CSSCounterStyleRule* counter_style_rule =
+        FindCSSRuleInSet<CSSCounterStyleRule>(
+            *style_sheets->value,
+            [&counter_style_name](CSSCounterStyleRule& css_rule) {
+              return css_rule.name() == counter_style_name;
+            });
+
+    if (!counter_style_rule) {
+      break;
+    }
+
+    InspectorStyleSheet* inspector_style_sheet =
+        BindStyleSheet(counter_style_rule->parentStyleSheet());
+    result->emplace_back(
+        inspector_style_sheet->BuildAtRuleObjectForCounterStyleRule(
+            counter_style_rule));
+
+    String fallback_value = counter_style_rule->fallback();
+    if (!fallback_value.IsNull()) {
+      counter_style_name = AtomicString(fallback_value);
+    } else {
+      counter_style_name = g_null_atom;
+    }
+  }
+
+  return result->size() > 0 ? std::move(result) : nullptr;
 }
 
 CSSKeyframesRule*

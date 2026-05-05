@@ -14,6 +14,8 @@ namespace blink {
 
 class ExecutionContext;
 class StyleRuleCounterStyle;
+class StyleRuleCSSStyleDeclaration;
+class CSSStyleDeclaration;
 
 class CORE_EXPORT CSSCounterStyleRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,6 +39,16 @@ class CORE_EXPORT CSSCounterStyleRule final : public CSSRule {
   String speakAs() const;
   String fallback() const;
 
+  // This must be treated as immutable, as layout will not be invalidated
+  // if the style changes.
+  CSSStyleDeclaration* Style();
+  // The inspector will use this to set the CSS text of the rule. Because that
+  // requires invalidating the layout, this updates the version of the
+  // underlying StyleRuleCounterStyle. This pointer should not be held by the
+  // inspector; any style changes using the return value should be made
+  // immediately.
+  CSSStyleDeclaration* MutableStyleForInspector();
+
   void setName(const ExecutionContext*, const String&);
   void setSystem(const ExecutionContext*, const String&);
   void setSymbols(const ExecutionContext*, const String&);
@@ -59,6 +71,7 @@ class CORE_EXPORT CSSCounterStyleRule final : public CSSRule {
                       const String&);
 
   Member<StyleRuleCounterStyle> counter_style_rule_;
+  Member<StyleRuleCSSStyleDeclaration> counter_style_cssom_wrapper_;
 };
 
 template <>

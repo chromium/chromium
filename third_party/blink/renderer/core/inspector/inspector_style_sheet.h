@@ -45,6 +45,7 @@
 
 namespace blink {
 
+class CSSCounterStyleRule;
 class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
@@ -249,6 +250,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   std::unique_ptr<protocol::CSS::CSSAtRule>
   BuildAtRuleObjectForFontFeatureValuesRule(CSSFontFeatureValuesRule*,
                                             StyleRuleFontFeature::FeatureType);
+  std::unique_ptr<protocol::CSS::CSSAtRule>
+  BuildAtRuleObjectForCounterStyleRule(CSSCounterStyleRule*);
   std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(
       CSSPropertyRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(

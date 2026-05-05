@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
+#include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -563,6 +564,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kViewTransition:
       case StyleRule::kFontPaletteValues:
       case StyleRule::kFontFeatureValues:
+      case StyleRule::kCounterStyle:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -639,6 +641,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
     return navigation_rule->cssRules();
   }
 
+  if (auto* counter_style_rule = DynamicTo<CSSCounterStyleRule>(rule)) {
+    return counter_style_rule->cssRules();
+  }
+
   return nullptr;
 }
 
@@ -662,6 +668,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kViewTransitionRule:
       case CSSRule::kFontPaletteValuesRule:
       case CSSRule::kFontFeatureValuesRule:
+      case CSSRule::kCounterStyleRule:
         result->push_back(rule);
         break;
       case CSSRule::kStyleRule:
@@ -1353,7 +1360,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
        !IsA<CSSPropertyRule>(rule) && !IsA<CSSFontPaletteValuesRule>(rule) &&
        !IsA<CSSPositionTryRule>(rule) && !IsA<CSSFontFeatureValuesRule>(rule) &&
-       !IsA<CSSFontFaceRule>(rule))) {
+       !IsA<CSSFontFaceRule>(rule) && !IsA<CSSCounterStyleRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1437,6 +1444,9 @@ CSSRule* InspectorStyleSheet::SetStyleText(
       style = position_try_rule->style();
     } else if (auto* font_face_rule = DynamicTo<CSSFontFaceRule>(rule)) {
       style = font_face_rule->style();
+    } else if (auto* counter_style_rule =
+                   DynamicTo<CSSCounterStyleRule>(rule)) {
+      style = counter_style_rule->MutableStyleForInspector();
     } else {
       style = To<CSSKeyframeRule>(rule)->style();
     }
@@ -2316,6 +2326,30 @@ InspectorStyleSheet::BuildAtRuleObjectForFontPaletteValuesRule(
           .setName(std::move(name_text))
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(values_rule->Style(), nullptr))
+          .build();
+  if (CanBindOrigin() && !Id().empty()) {
+    result->setStyleSheetId(Id());
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSAtRule>
+InspectorStyleSheet::BuildAtRuleObjectForCounterStyleRule(
+    CSSCounterStyleRule* counter_style_rule) {
+  std::unique_ptr<protocol::CSS::Value> name_text =
+      protocol::CSS::Value::create()
+          .setText(counter_style_rule->name())
+          .build();
+  CSSRuleSourceData* source_data = SourceDataForRule(counter_style_rule);
+  if (source_data) {
+    name_text->setRange(BuildSourceRangeObject(source_data->rule_header_range));
+  }
+  std::unique_ptr<protocol::CSS::CSSAtRule> result =
+      protocol::CSS::CSSAtRule::create()
+          .setType(protocol::CSS::CSSAtRule::TypeEnum::CounterStyle)
+          .setName(std::move(name_text))
+          .setOrigin(origin_)
+          .setStyle(BuildObjectForStyle(counter_style_rule->Style(), nullptr))
           .build();
   if (CanBindOrigin() && !Id().empty()) {
     result->setStyleSheetId(Id());

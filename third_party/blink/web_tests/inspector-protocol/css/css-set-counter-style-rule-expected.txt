@@ -1,0 +1,91 @@
+Test that properties of counter-style rules are editable
+At rule:
+{
+    name : {
+        range : {
+            endColumn : 27
+            endLine : 5
+            startColumn : 17
+            startLine : 5
+        }
+        text : --my-style
+    }
+    origin : regular
+    style : {
+        cssProperties : [
+            [0] : {
+                disabled : false
+                implicit : false
+                name : system
+                range : {
+                    endColumn : 19
+                    endLine : 6
+                    startColumn : 4
+                    startLine : 6
+                }
+                text : system: cyclic;
+                value : cyclic
+            }
+            [1] : {
+                disabled : false
+                implicit : false
+                name : symbols
+                range : {
+                    endColumn : 25
+                    endLine : 7
+                    startColumn : 4
+                    startLine : 7
+                }
+                text : symbols: 'a' 'b' 'c';
+                value : 'a' 'b' 'c'
+            }
+            [2] : {
+                name : system
+                value : cyclic
+            }
+            [3] : {
+                name : symbols
+                value : "a" "b" "c"
+            }
+        ]
+        cssText :      system: cyclic;     symbols: 'a' 'b' 'c';   
+        range : {
+            endColumn : 2
+            endLine : 8
+            startColumn : 29
+            startLine : 5
+        }
+        shorthandEntries : [
+        ]
+        styleSheetId : <string>
+    }
+    styleSheetId : <string>
+    type : counter-style
+}
+Edit:
+{
+    range : {
+        endColumn : 2
+        endLine : 8
+        startColumn : 29
+        startLine : 5
+    }
+    styleSheetId : <string>
+    text :      system: fixed;     symbols: 'x' 'y' 'z'; 
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                ]
+                shorthandEntries : [
+                ]
+            }
+        ]
+    }
+    sessionId : <string>
+}
+

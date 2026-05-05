@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
+#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -284,8 +285,25 @@ void CSSCounterStyleRule::setFallback(const ExecutionContext* execution_context,
   SetterInternal(execution_context, AtRuleDescriptorID::Fallback, text);
 }
 
+CSSStyleDeclaration* CSSCounterStyleRule::Style() {
+  if (!counter_style_cssom_wrapper_) {
+    counter_style_cssom_wrapper_ =
+        MakeGarbageCollected<StyleRuleCSSStyleDeclaration>(
+            counter_style_rule_->Properties(), this);
+  }
+  return counter_style_cssom_wrapper_;
+}
+
+CSSStyleDeclaration* CSSCounterStyleRule::MutableStyleForInspector() {
+  // We cannot keep this wrapper around, because we need to request a new one
+  // so that the inner style can invalidate layout.
+  return MakeGarbageCollected<StyleRuleCSSStyleDeclaration>(
+      counter_style_rule_->MutableStyleForInspector(), this);
+}
+
 void CSSCounterStyleRule::Trace(Visitor* visitor) const {
   visitor->Trace(counter_style_rule_);
+  visitor->Trace(counter_style_cssom_wrapper_);
   CSSRule::Trace(visitor);
 }
 
