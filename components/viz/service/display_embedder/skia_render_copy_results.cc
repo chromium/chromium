@@ -64,10 +64,12 @@ ReadPixelsContext::ReadPixelsContext(
     std::unique_ptr<CopyOutputRequest> request,
     const gfx::Rect& result_rect,
     const gfx::ColorSpace& color_space,
+    const TrackedElementRects& tracked_element_rects,
     base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu)
     : request(std::move(request)),
       result_rect(result_rect),
       color_space(color_space),
+      tracked_element_rects(tracked_element_rects),
       impl_on_gpu(impl_on_gpu) {}
 
 ReadPixelsContext::~ReadPixelsContext() = default;
@@ -110,6 +112,7 @@ void CopyOutputResultSkiaRGBA::OnReadbackDone(
   auto result = std::make_unique<CopyOutputResultSkiaRGBA>(
       impl_on_gpu, context->result_rect, std::move(async_result),
       context->color_space);
+  result->SetTrackedElementRects(context->tracked_element_rects);
   context->request->SendResult(std::move(result));
 }
 

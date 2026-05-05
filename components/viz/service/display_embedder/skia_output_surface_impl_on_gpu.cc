@@ -866,9 +866,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
       geometry.result_selection.width(), geometry.result_selection.height(),
       color_type, kPremul_SkAlphaType, sk_color_space);
   std::unique_ptr<ReadPixelsContext> context =
-      std::make_unique<ReadPixelsContext>(std::move(request),
-                                          geometry.result_selection,
-                                          dest_color_space, weak_ptr_);
+      std::make_unique<ReadPixelsContext>(
+          std::move(request), geometry.result_selection, dest_color_space,
+          geometry.tracked_element_rects, weak_ptr_);
   // Skia readback could be synchronous. Incremement counter in case
   // ReadbackCompleted is called immediately.
   num_readbacks_pending_++;
@@ -1768,7 +1768,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
                         geometry.result_selection.height());
       auto context = std::make_unique<ReadPixelsContext>(
           std::move(request), geometry.result_selection, color_space,
-          weak_ptr_);
+          geometry.tracked_element_rects, weak_ptr_);
       // Skia readback could be synchronous. Incremement counter in case
       // ReadbackCompleted is called immediately.
       num_readbacks_pending_++;

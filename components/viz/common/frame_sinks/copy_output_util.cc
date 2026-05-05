@@ -82,6 +82,15 @@ gfx::Rect ComputeResultRect(const gfx::Rect& area,
 }
 
 RenderPassGeometry::RenderPassGeometry() = default;
+
+RenderPassGeometry::RenderPassGeometry(const RenderPassGeometry&) = default;
+RenderPassGeometry& RenderPassGeometry::operator=(const RenderPassGeometry&) =
+    default;
+
+RenderPassGeometry::RenderPassGeometry(RenderPassGeometry&&) = default;
+RenderPassGeometry& RenderPassGeometry::operator=(RenderPassGeometry&&) =
+    default;
+
 RenderPassGeometry::~RenderPassGeometry() = default;
 
 }  // namespace copy_output

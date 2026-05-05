@@ -414,7 +414,8 @@ class ReadbackPixelTest : public VizPixelTest {
 
       renderer_->DrawFrame(
           &pass_list, 1.0f, gfx::Size(bitmap.width(), bitmap.height()),
-          gfx::DisplayColorSpaces(), std::move(surface_damage_rect_list));
+          gfx::DisplayColorSpaces(), std::move(surface_damage_rect_list),
+          TrackedElementRects());
       // Call SwapBuffersSkipped(), so the renderer can have a chance to release
       // resources.
       renderer_->SwapBuffersSkipped();

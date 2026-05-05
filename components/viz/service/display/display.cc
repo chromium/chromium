@@ -977,7 +977,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     overlay_processor_->SetIsPageFullscreen(frame.page_fullscreen_mode);
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
-                         std::move(frame.surface_damage_rect_list_));
+                         std::move(frame.surface_damage_rect_list_),
+                         frame.tracked_element_rects);
     TRACE_EVENT_END("viz,benchmark", perfetto::Track(display_trace_id));
   } else {
     TRACE_EVENT_INSTANT("viz", "Draw skipped.");

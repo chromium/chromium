@@ -4286,5 +4286,95 @@ INSTANTIATE_TEST_SUITE_P(,
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestColorConversion);
 
+TEST_P(RendererPixelTest, CopyOutputRequestTrackedElements) {
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+  // Create a child pass at (20, 20) with size (150, 150).
+  AggregatedRenderPassId child_pass_id{2};
+  gfx::Rect child_pass_rect(0, 0, 150, 150);
+  gfx::Transform child_transform_to_root;
+  child_transform_to_root.Translate(20, 20);
+  auto child_pass = CreateTestRenderPass(child_pass_id, child_pass_rect,
+                                         child_transform_to_root);
+
+  // Add a green quad to the child pass.
+  SharedQuadState* child_shared_state =
+      CreateTestSharedQuadState(gfx::Transform(), child_pass_rect,
+                                child_pass.get(), gfx::MaskFilterInfo());
+  auto* child_color_quad =
+      child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  child_color_quad->SetNew(child_shared_state, child_pass_rect, child_pass_rect,
+                           SkColors::kGreen, false);
+
+  // Add the child pass to the root pass.
+  SharedQuadState* root_shared_state =
+      CreateTestSharedQuadState(child_transform_to_root, child_pass_rect,
+                                root_pass.get(), gfx::MaskFilterInfo());
+  CreateTestRenderPassDrawQuad(root_shared_state, child_pass_rect,
+                               child_pass_id, root_pass.get());
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  TrackedElementId id1 = base::Token::CreateRandom();
+  TrackedElementId id2 = base::Token::CreateRandom();
+  TrackedElementId id3 = base::Token::CreateRandom();
+
+  // Define the initial tracked element rects in root space.
+  this->initial_tracked_element_rects_
+      [TrackedElementFeature::kTrackedElementFeatureMax] = {
+      {id1, gfx::Rect(40, 40, 20, 20)},  // Fully inside capture area.
+      {id2, gfx::Rect(20, 20, 20, 20)},  // Partially inside capture area.
+      {id3, gfx::Rect(20, 20, 5, 5)},    // Fully outside capture area.
+  };
+
+  // The capture rect will be relative to the child pass.
+  gfx::Rect capture_rect(10, 10, 100, 100);
+
+  // Run with copy request on the child pass.
+  EXPECT_TRUE(this->RunPixelTestWithCopyOutputRequestAndArea(
+      &pass_list, pass_list.front().get(),
+      base::FilePath(FILE_PATH_LITERAL("green_small.png")),
+      cc::AlphaDiscardingExactPixelComparator(), &capture_rect));
+
+  // Verify results.
+  const auto& results = this->result_tracked_element_rects_;
+  ASSERT_TRUE(
+      results.contains(TrackedElementFeature::kTrackedElementFeatureMax));
+  const auto& rect_list =
+      results.at(TrackedElementFeature::kTrackedElementFeatureMax);
+
+  // Root pass is (0, 0, 200, 200)
+  // Child pass is at (20, 20, 150, 150) - relative to root pass.
+  // Capture area is at (10, 10, 100, 100) - relative to child pass.
+
+  // id1
+  // Root space: (40, 40, 20, 20)
+  // Child pass space: (20, 20, 20, 20)
+  // Capture space: (10, 10, 20, 20)
+
+  // id2
+  // Root space: (20, 20, 20, 20)
+  // Child pass space: (0, 0, 20, 20)
+  // Capture space: (0, 0, 10, 10)
+
+  // id3
+  // Root space: (20, 20, 5, 5)
+  // Child pass space: (0, 0, 5, 5)
+  // Does not intersect with capture area, should be dropped.
+
+  ASSERT_EQ(rect_list.size(), 2u);
+
+  EXPECT_EQ(rect_list[0].id, id1);
+  EXPECT_EQ(rect_list[0].visible_bounds, gfx::Rect(10, 10, 20, 20));
+
+  EXPECT_EQ(rect_list[1].id, id2);
+  EXPECT_EQ(rect_list[1].visible_bounds, gfx::Rect(0, 0, 10, 10));
+}
+
 }  // namespace
 }  // namespace viz

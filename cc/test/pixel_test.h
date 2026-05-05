@@ -35,7 +35,7 @@ class CopyOutputResult;
 class DirectRenderer;
 class DisplayResourceProvider;
 class GpuServiceImpl;
-}
+}  // namespace viz
 
 namespace cc {
 class FakeOutputSurfaceClient;
@@ -124,6 +124,12 @@ class PixelTest : public testing::Test {
   std::unique_ptr<viz::DirectRenderer> renderer_;
   raw_ptr<viz::SoftwareRenderer> software_renderer_ = nullptr;
   std::unique_ptr<SkBitmap> result_bitmap_;
+  // The tracked element rects that will be passed into renderer_->DrawFrame().
+  // They should be in the coordinate space of the root render pass.
+  viz::TrackedElementRects initial_tracked_element_rects_;
+  // The tracked element rects that are returned in the CopyOutputResult. They
+  // should be in the coordinate space of the output bitmap.
+  viz::TrackedElementRects result_tracked_element_rects_;
 
   void SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin);
   void SetUpSoftwareRenderer();

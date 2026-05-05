@@ -763,8 +763,10 @@ void SoftwareRenderer::CopyDrawnRenderPass(
   // Note: The CopyOutputSkBitmapResult already implies that results are
   // returned in system memory and automatically provides I420 format
   // conversion, if needed.
-  request->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
-      request->result_format(), geometry.result_selection, std::move(bitmap)));
+  auto result = std::make_unique<CopyOutputSkBitmapResult>(
+      request->result_format(), geometry.result_selection, std::move(bitmap));
+  result->SetTrackedElementRects(geometry.tracked_element_rects);
+  request->SendResult(std::move(result));
 }
 
 void SoftwareRenderer::DidChangeVisibility() {

@@ -134,7 +134,8 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
                        display_color_spaces_,
-                       std::move(surface_damage_rect_list_));
+                       std::move(surface_damage_rect_list_),
+                       initial_tracked_element_rects_);
 
   if (use_copy_request) {
     // Call SwapBuffersSkipped(), so the renderer can have a chance to release
@@ -236,9 +237,13 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
   EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   EXPECT_EQ(result->destination(),
             viz::CopyOutputResult::Destination::kSystemMemory);
-  auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+  auto scoped_sk_bitmap_and_metadata =
+      result->ScopedAccessSkBitmap().GetOutScopedBitmapAndMetadata();
+  ASSERT_TRUE(scoped_sk_bitmap_and_metadata.has_value());
   result_bitmap_ =
-      std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
+      std::make_unique<SkBitmap>(scoped_sk_bitmap_and_metadata->bitmap);
+  result_tracked_element_rects_ =
+      std::move(scoped_sk_bitmap_and_metadata->tracked_element_rects);
   EXPECT_TRUE(result_bitmap_->readyToDraw());
   std::move(quit_run_loop).Run();
 }

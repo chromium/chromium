@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -195,7 +196,8 @@ void DirectRenderer::DrawFrame(
     float device_scale_factor,
     const gfx::Size& device_viewport_size,
     const gfx::DisplayColorSpaces& display_color_spaces,
-    SurfaceDamageRectList surface_damage_rect_list) {
+    SurfaceDamageRectList surface_damage_rect_list,
+    const TrackedElementRects& tracked_element_rects) {
   DCHECK(visible_);
   TRACE_EVENT0("viz,benchmark", "DirectRenderer::DrawFrame");
 
@@ -412,7 +414,7 @@ void DirectRenderer::DrawFrame(
   for (const auto& pass : *render_passes_in_draw_order) {
     if (pass.get() == root_render_pass)
       break;
-    DrawRenderPassAndExecuteCopyRequests(pass.get());
+    DrawRenderPassAndExecuteCopyRequests(pass.get(), tracked_element_rects);
   }
 
   bool skip_drawing_root_render_pass =
@@ -432,7 +434,8 @@ void DirectRenderer::DrawFrame(
   }
 
   if (!skip_drawing_root_render_pass) {
-    DrawRenderPassAndExecuteCopyRequests(root_render_pass);
+    DrawRenderPassAndExecuteCopyRequests(root_render_pass,
+                                         tracked_element_rects);
   }
 
   // Displays 4k in size or greater are relatively common.
@@ -591,7 +594,8 @@ void DirectRenderer::FlushPolygons(
 }
 
 void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
-    AggregatedRenderPass* render_pass) {
+    AggregatedRenderPass* render_pass,
+    const TrackedElementRects& tracked_element_rects) {
   base::AutoReset<raw_ptr<const AggregatedRenderPass>> current_render_pass(
       &current_frame()->current_render_pass, render_pass);
 
@@ -641,6 +645,47 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
         MoveFromDrawToWindowSpace(geometry.result_selection +
                                   output_rect.OffsetFromOrigin())
             .OffsetFromOrigin();
+
+    // Tracked element rects should be transformed to the coordinate space of
+    // the result bitmap from the CopyOutputRequest.
+    if (!tracked_element_rects.empty()) {
+      // Initial transform that maps from the root target space to the render
+      // pass space.
+      gfx::Transform root_to_pass;
+      if (render_pass->transform_to_root_target.GetInverse(&root_to_pass)) {
+        // Secondary transform that maps from the render pass space to the
+        // coordinate space of the result bitmap.
+        gfx::Transform pass_to_result;
+        pass_to_result.Translate(-geometry.result_selection.OffsetFromOrigin());
+        if (request->is_scaled()) {
+          pass_to_result.Scale(static_cast<float>(request->scale_to().x()) /
+                                   request->scale_from().x(),
+                               static_cast<float>(request->scale_to().y()) /
+                                   request->scale_from().y());
+        }
+        pass_to_result.Translate(-output_rect.OffsetFromOrigin());
+
+        // Combined transform that maps from the root target space to the
+        // coordinate space of the result bitmap.
+        gfx::Transform root_to_result = pass_to_result * root_to_pass;
+        gfx::Rect result_rect(geometry.result_selection.size());
+
+        for (const auto& [feature, rect_list] : tracked_element_rects) {
+          for (const auto& tracked_rect : rect_list) {
+            gfx::Rect rect_in_result =
+                gfx::ToEnclosingRect(root_to_result.MapRect(
+                    gfx::RectF(tracked_rect.visible_bounds)));
+            rect_in_result.Intersect(result_rect);
+            if (!rect_in_result.IsEmpty()) {
+              TrackedElementRect transformed_rect = tracked_rect;
+              transformed_rect.visible_bounds = rect_in_result;
+              geometry.tracked_element_rects[feature].push_back(
+                  std::move(transformed_rect));
+            }
+          }
+        }
+      }
+    }
 
     CopyDrawnRenderPass(geometry, std::move(request));
   }

@@ -84,7 +84,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                  float device_scale_factor,
                  const gfx::Size& device_viewport_size,
                  const gfx::DisplayColorSpaces& display_color_spaces,
-                 SurfaceDamageRectList surface_damage_rect_list);
+                 SurfaceDamageRectList surface_damage_rect_list,
+                 const TrackedElementRects& tracked_element_rects);
 
   // The renderer might expand the damage (e.g: HW overlays were used,
   // invalidation rects on previous buffers). This function returns a
@@ -247,7 +248,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       base::circular_deque<std::unique_ptr<DrawPolygon>>* poly_list,
       const gfx::Rect& render_pass_scissor,
       bool use_render_pass_scissor);
-  void DrawRenderPassAndExecuteCopyRequests(AggregatedRenderPass* render_pass);
+  void DrawRenderPassAndExecuteCopyRequests(
+      AggregatedRenderPass* render_pass,
+      const TrackedElementRects& tracked_element_rects);
   void DrawRenderPass(const AggregatedRenderPass* render_pass);
   // Returns true if it detects that we do not need to draw the render pass.
   // This may be because the RenderPass is already cached, or because it is

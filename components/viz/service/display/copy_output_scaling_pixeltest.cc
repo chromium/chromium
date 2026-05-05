@@ -160,9 +160,9 @@ class CopyOutputScalingPixelTest
       list.back()->copy_requests.push_back(std::move(request));
 
       SurfaceDamageRectList surface_damage_rect_list;
-      renderer()->DrawFrame(&list, 1.0f, viewport_size,
-                            gfx::DisplayColorSpaces(),
-                            std::move(surface_damage_rect_list));
+      renderer()->DrawFrame(
+          &list, 1.0f, viewport_size, gfx::DisplayColorSpaces(),
+          std::move(surface_damage_rect_list), TrackedElementRects());
       // Call SwapBuffersSkipped(), so the renderer can release related
       // resources.
       renderer()->SwapBuffersSkipped();
