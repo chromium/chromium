@@ -121,9 +121,6 @@ class TestBrowserWindow : public BrowserWindow,
   void TabDraggingStatusChanged(bool is_dragging) override {}
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override {}
   void FocusAppMenu() override {}
-  void FocusInactivePopupForAccessibility() override {}
-  void RotatePaneFocus(bool forwards) override {}
-  void FocusWebContentsPane() override {}
   void ShowAppMenu() override {}
   void PreHandleDragUpdate(const content::DropData& drop_data,
                            const gfx::PointF& point) override {}

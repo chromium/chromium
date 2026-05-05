@@ -42,6 +42,7 @@ class BrowserElements;
 class BrowserInstantController;
 class BrowserLiveTabContext;
 class BrowserLocationBarModelDelegate;
+class BrowserFocusController;
 class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
 class BrowserView;
@@ -688,6 +689,8 @@ class BrowserWindowFeatures {
       shared_tab_group_feedback_controller_;
 
   std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
+
+  std::unique_ptr<BrowserFocusController> browser_focus_controller_;
 
   std::unique_ptr<TabSearchToolbarButtonController>
       tab_search_toolbar_button_controller_;

@@ -106,9 +106,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override;
   void FocusAppMenu() override;
   void OnFocusBookmarksToolbar() override;
-  void FocusInactivePopupForAccessibility() override;
-  void RotatePaneFocus(bool forwards) override;
-  void FocusWebContentsPane() override;
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() override;
   bool IsToolbarVisible() const override;

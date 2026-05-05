@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -827,7 +828,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   EXPECT_FALSE(bubble->GetWidget()->IsActive());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  browser_view->FocusInactivePopupForAccessibility();
+  BrowserFocusController::From(browser_view->browser())
+      ->FocusInactivePopupForAccessibility();
   EXPECT_TRUE(bubble->GetWidget()->IsActive());
 }
 
@@ -880,10 +882,10 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   EXPECT_FALSE(bubble->GetWidget()->IsActive());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  browser_view->RotatePaneFocus(true);
+  BrowserFocusController::From(browser_view->browser())->RotatePaneFocus(true);
   // Rotate pane focus is expected to keep the bubble focused until the user
   // deals with it, so a second call should have no effect.
-  browser_view->RotatePaneFocus(true);
+  BrowserFocusController::From(browser_view->browser())->RotatePaneFocus(true);
   EXPECT_TRUE(bubble->GetWidget()->IsActive());
 }
 

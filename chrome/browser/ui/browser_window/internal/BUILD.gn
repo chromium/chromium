@@ -84,6 +84,7 @@ source_set("internal") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/focus",
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",

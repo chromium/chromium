@@ -11418,6 +11418,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/exclusive_access:interactive_ui_tests",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar:interactive_ui_tests",
+      "//chrome/browser/ui/focus",
       "//chrome/browser/ui/hung_renderer:interactive_ui_tests",
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",

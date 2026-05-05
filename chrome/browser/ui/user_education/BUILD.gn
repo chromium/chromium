@@ -43,6 +43,7 @@ source_set("impl") {
   deps = [
     ":user_education",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/focus",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tabs_public",

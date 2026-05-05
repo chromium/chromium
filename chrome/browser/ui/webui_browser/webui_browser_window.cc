@@ -782,18 +782,6 @@ void WebUIBrowserWindow::OnFocusBookmarksToolbar() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::FocusInactivePopupForAccessibility() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void WebUIBrowserWindow::RotatePaneFocus(bool forwards) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void WebUIBrowserWindow::FocusWebContentsPane() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 bool WebUIBrowserWindow::IsTabStripEditable() const {
   return true;
 }

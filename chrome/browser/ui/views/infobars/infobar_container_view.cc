@@ -10,6 +10,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
@@ -27,6 +28,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -84,6 +86,7 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
     : infobars::InfoBarContainerWithPriority(delegate),
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
+  SetProperty(views::kElementIdentifierKey, kInfoBarContainerElementId);
   AddChildViewRaw(content_shadow_.get());
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
                                         kColorToolbar);

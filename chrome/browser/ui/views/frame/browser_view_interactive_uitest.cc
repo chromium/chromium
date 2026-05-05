@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -429,7 +430,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
   EXPECT_TRUE(widget->IsVisible());
   EXPECT_FALSE(widget->IsActive());
 
-  browser_view()->FocusInactivePopupForAccessibility();
+  BrowserFocusController::From(browser_view()->browser())
+      ->FocusInactivePopupForAccessibility();
   views::test::WaitForWidgetActive(widget, true);
 
   // Ensure the bubble's widget refreshed appropriately.

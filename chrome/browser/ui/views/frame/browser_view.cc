@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -2709,15 +2710,7 @@ void BrowserView::OnFocusBookmarksToolbar() {
   }
 }
 
-void BrowserView::FocusInactivePopupForAccessibility() {
-  if (ActivateFirstInactiveBubbleForAccessibility()) {
-    return;
-  }
 
-  if (!infobar_container_->children().empty()) {
-    infobar_container_->SetPaneFocusAndFocusDefault();
-  }
-}
 
 void BrowserView::FocusAppMenu() {
   // Chrome doesn't have a traditional menu bar, but it has a menu button in the
@@ -2735,97 +2728,7 @@ void BrowserView::FocusAppMenu() {
   }
 }
 
-void BrowserView::RotatePaneFocus(bool forwards) {
-  GetFocusManager()->RotatePaneFocus(
-      forwards ? views::FocusManager::Direction::kForward
-               : views::FocusManager::Direction::kBackward,
-      views::FocusManager::FocusCycleWrapping::kEnabled);
-}
 
-void BrowserView::FocusWebContentsPane() {
-  GetActiveContentsWebView()->RequestFocus();
-}
-
-bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
-  auto* const user_education =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (user_education && user_education->help_bubble_factory_registry()
-                            .ToggleFocusForAccessibility(GetElementContext())) {
-    // Record that the user successfully used the accelerator to focus the
-    // bubble, reducing the need to describe the accelerator the next time a
-    // help bubble is shown.
-    feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
-        ->NotifyEvent(
-            feature_engagement::events::kFocusHelpBubbleAcceleratorPressed);
-    return true;
-  }
-
-  // TODO: this fixes https://crbug.com/40668249 and https://crbug.com/40674460,
-  // but a more general solution should be desirable to find any bubbles
-  // anchored in the views hierarchy.
-  if (toolbar_) {
-    views::DialogDelegate* bubble = nullptr;
-    auto* toolbar_button_provider = ToolbarButtonProvider::From(browser_);
-    if (auto* control = toolbar_button_provider->GetAppMenuControl()) {
-      auto* dialog = control->GetDialogDelegate();
-      if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
-        bubble = dialog;
-      }
-    }
-
-    if (!bubble) {
-      if (auto* avatar = ToolbarButtonProvider::From(browser_)
-                             ->GetAvatarToolbarButtonInterface()) {
-        auto* dialog = avatar->GetDialogDelegate();
-        if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
-          bubble = dialog;
-        }
-      }
-      for (auto* view : std::initializer_list<views::View*>{
-               GetLocationBarView(),
-               toolbar_button_provider->GetDownloadButton(), top_container_}) {
-        if (view) {
-          if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
-              dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
-            bubble = dialog;
-            break;
-          }
-        }
-      }
-    }
-    if (bubble) {
-      CHECK(!user_education::HelpBubbleView::IsHelpBubble(bubble));
-      View* focusable = bubble->GetInitiallyFocusedView();
-
-      // A PermissionPromptBubbleView will explicitly return nullptr due to
-      // https://crbug.com/40084558. In that case, we explicitly focus the
-      // cancel button.
-      if (!focusable) {
-        focusable = bubble->GetCancelButton();
-      }
-
-      if (focusable) {
-        focusable->RequestFocus();
-#if BUILDFLAG(IS_MAC)
-        // TODO(https://crbug.com/40486728): When a view requests focus on other
-        // platforms, its widget is activated. When doing so in FocusManager on
-        // MacOS a lot of interactive tests fail when the widget is destroyed.
-        // Activating the widget here should be safe as this happens only
-        // after explicit user action (focusing inactive dialog or rotating
-        // panes).
-        views::Widget* const widget = bubble->GetWidget();
-        if (widget && widget->IsVisible() && !widget->IsActive()) {
-          DCHECK(browser_->window()->IsActive());
-          widget->Activate();
-        }
-#endif
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
   if (interactive_resize_in_progress_ || last_widget_bounds_ == widget_bounds) {
@@ -4557,7 +4460,8 @@ bool BrowserView::RotatePaneFocusFromView(views::View* focused_view,
   // provide an easy access method to these dialogs without requiring additional
   // keyboard shortcuts or commands. To get back out to pane cycling the dialog
   // needs to be accepted or dismissed.
-  if (ActivateFirstInactiveBubbleForAccessibility()) {
+  if (BrowserFocusController::From(browser())
+          ->ActivateFirstInactiveBubbleForAccessibility()) {
     // We only want to signal that we have performed a rotation once for an
     // accessibility bubble. This is important for ChromeOS because the result
     // of this operation is used to determine whether or not we should rotate

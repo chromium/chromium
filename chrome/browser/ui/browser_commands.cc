@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -2319,22 +2320,22 @@ void FocusBookmarksToolbar(BrowserWindowInterface* browser) {
 
 void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusInactivePopupForAccessibility"));
-  browser->GetBrowserForMigrationOnly()->window()->FocusInactivePopupForAccessibility();
+  BrowserFocusController::From(browser)->FocusInactivePopupForAccessibility();
 }
 
 void FocusNextPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusNextPane"));
-  browser->GetBrowserForMigrationOnly()->window()->RotatePaneFocus(true);
+  BrowserFocusController::From(browser)->RotatePaneFocus(true);
 }
 
 void FocusPreviousPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusPreviousPane"));
-  browser->GetBrowserForMigrationOnly()->window()->RotatePaneFocus(false);
+  BrowserFocusController::From(browser)->RotatePaneFocus(false);
 }
 
 void FocusWebContentsPane(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusWebContentsPane"));
-  browser->GetBrowserForMigrationOnly()->window()->FocusWebContentsPane();
+  BrowserFocusController::From(browser)->FocusWebContentsPane();
 }
 
 void ToggleDevToolsWindow(BrowserWindowInterface* browser,

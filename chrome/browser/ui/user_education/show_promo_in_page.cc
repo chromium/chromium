@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -121,7 +122,8 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
                 help_bubble_->AsA<user_education::HelpBubbleWebUI>()) {
           if (browser_->tab_strip_model()->GetActiveWebContents() ==
               bubble->GetWebContents()) {
-            browser_->window()->FocusWebContentsPane();
+            BrowserFocusController::From(browser_.get())
+                ->FocusWebContentsPane();
           }
         }
       }

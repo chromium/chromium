@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
@@ -62,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
   focus_manager->ClearFocus();
   EXPECT_FALSE(bubble_focused_view->HasFocus());
 
-  browser_view->FocusInactivePopupForAccessibility();
+  BrowserFocusController::From(browser_view->browser())
+      ->FocusInactivePopupForAccessibility();
   EXPECT_TRUE(bubble_focused_view->HasFocus());
 }
 
@@ -87,10 +89,10 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
   focus_manager->ClearFocus();
   EXPECT_FALSE(bubble_focused_view->HasFocus());
 
-  browser_view->RotatePaneFocus(true);
+  BrowserFocusController::From(browser_view->browser())->RotatePaneFocus(true);
   // Rotate pane focus is expected to keep the bubble focused until the user
   // deals with it, so a second call should have no effect.
-  browser_view->RotatePaneFocus(true);
+  BrowserFocusController::From(browser_view->browser())->RotatePaneFocus(true);
   EXPECT_TRUE(bubble_focused_view->HasFocus());
 }
 

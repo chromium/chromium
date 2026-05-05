@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
@@ -112,12 +113,11 @@ TabWebUIHelpBubbleFactoryBrowser::CreateBubble(
     // ensure the contents pane is focused.
     if (const auto* const contents =
             result->AsA<user_education::HelpBubbleWebUI>()->GetWebContents()) {
-      if (const BrowserWindowInterface* browser =
+      if (BrowserWindowInterface* browser =
               GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                   contents)) {
         if (browser->GetTabStripModel()->GetActiveWebContents() == contents) {
-          BrowserView::GetBrowserViewForBrowser(browser)
-              ->FocusWebContentsPane();
+          BrowserFocusController::From(browser)->FocusWebContentsPane();
         }
       }
     }

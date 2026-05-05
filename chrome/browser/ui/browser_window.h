@@ -307,15 +307,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Not used on the Mac, which has a "normal" menu bar.
   virtual void FocusAppMenu() = 0;
 
-  // Focuses a visible but inactive popup for accessibility.
-  virtual void FocusInactivePopupForAccessibility() = 0;
-
-  // Moves keyboard focus to the next pane.
-  virtual void RotatePaneFocus(bool forwards) = 0;
-
-  // Moves keyboard focus directly to the web contents pane.
-  virtual void FocusWebContentsPane() = 0;
-
   // Returns whether the tab strip is editable (for extensions).
   virtual bool IsTabStripEditable() const = 0;
 

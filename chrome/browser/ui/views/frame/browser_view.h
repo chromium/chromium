@@ -555,9 +555,6 @@ class BrowserView : public BrowserWindow,
   void TabDraggingStatusChanged(bool is_dragging) override;
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override;
   void FocusAppMenu() override;
-  void FocusInactivePopupForAccessibility() override;
-  void RotatePaneFocus(bool forwards) override;
-  void FocusWebContentsPane() override;
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() override;
   bool IsToolbarVisible() const override;
@@ -1045,11 +1042,6 @@ class BrowserView : public BrowserWindow,
   // on the context. GetWindowIcon() method should return the same image if
   // this returns false.
   bool CanChangeWindowIcon() const;
-
-  // Searches for inactive bubbles anchored to elements in this browser view
-  // and activates them. It returns true if it succeeded activating a bubble or
-  // false otherwise.
-  bool ActivateFirstInactiveBubbleForAccessibility();
 
   // Notifies that window bounds changed to extensions if needed.
   void TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds);

@@ -524,6 +524,9 @@ TEST_F(BrowserViewTest, TitleAudioIndicators) {
 #endif
 
 TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
+  // Browser widget must be visible for ui::ElementIdentifiers to resolve.
+  browser_view()->GetWidget()->Show();
+
   auto dialog_model = ui::DialogModel::Builder()
                           .SetTitle(u"test")
                           .SetIsAlertDialog()

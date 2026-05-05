@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
@@ -417,6 +418,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   translate_bubble_controller_ =
       GetUserDataFactory().CreateInstance<TranslateBubbleController>(
           *browser, browser, browser_actions_->root_action_item());
+
+  browser_focus_controller_ =
+      std::make_unique<BrowserFocusController>(*browser);
 
   cookie_controls_controller_ =
       std::make_unique<content_settings::CookieControlsController>(
