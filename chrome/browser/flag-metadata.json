@@ -2079,7 +2079,7 @@
     // This flag is intended to be temporary for testing. The enterprise
     // policies should be used instead for permanently configuring this
     // functionality.
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "css-gamut-mapping",
