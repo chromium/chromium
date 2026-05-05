@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.NtpPromos.ShowResult" enum="ShowNtpPromosResult"
-    expires_after="2026-09-01">
+    expires_after="2026-11-01">
   <owner>dfried@chromium.org</owner>
   <owner>cjgrant@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
