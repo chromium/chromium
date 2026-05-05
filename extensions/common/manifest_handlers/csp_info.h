@@ -16,19 +16,19 @@ namespace extensions {
 
 // A structure to hold the Content-Security-Policy information.
 struct CSPInfo : public Extension::ManifestData {
-  explicit CSPInfo(std::string extension_pages_csp);
+  explicit CSPInfo(std::string extension_pages_csp, std::string sandbox_csp);
   ~CSPInfo() override;
 
   // The Content-Security-Policy for an extension. This is applied to an
   // extension's background contexts i.e. its background page, event page and
   // service worker. Extensions can use Content-Security-Policies to mitigate
   // cross-site scripting and other vulnerabilities.
-  std::string extension_pages_csp;
+  const std::string extension_pages_csp;
 
   // Content Security Policy that should be used to enforce the sandbox used
   // by sandboxed pages (guaranteed to have the "sandbox" directive without the
   // "allow-same-origin" token).
-  std::string sandbox_csp;
+  const std::string sandbox_csp;
 
   // Returns the CSP to be used for the extension frames (tabs, popups, iframes)
   // and background contexts, or an empty string if there is no defined CSP.
@@ -88,6 +88,7 @@ class CSPHandler : public ManifestHandler {
   // Parses the content security policy specified in the manifest for extension
   // pages.
   bool ParseExtensionPagesCSP(Extension* extension,
+                              std::string* out_extension_pages_csp,
                               std::u16string* error,
                               std::string_view manifest_key,
                               const base::Value* content_security_policy);
@@ -97,18 +98,16 @@ class CSPHandler : public ManifestHandler {
   // `allow_remote_sources` is true, this allows the extension to specify remote
   // sources in the sandbox CSP.
   bool ParseSandboxCSP(Extension* extension,
+                       std::string* out_sandbox_csp,
                        std::u16string* error,
                        std::string_view manifest_key,
                        const base::Value* sandbox_csp,
                        bool allow_remote_sources);
 
-  // Helper to set the extension pages content security policy manifest data.
-  bool SetExtensionPagesCSP(Extension* extension,
-                            std::string_view manifest_key,
-                            std::string content_security_policy);
-
-  // Helper to set the sandbox content security policy manifest data.
-  void SetSandboxCSP(Extension* extension, std::string sandbox_csp);
+  // Helper to DCHECK() the extension pages content security policy.
+  void ValidateExtensionPagesCSP(const Extension& extension,
+                                 std::string_view manifest_key,
+                                 const std::string& content_security_policy);
 
   // ManifestHandler overrides:
   bool AlwaysParseForType(Manifest::Type type) const override;
