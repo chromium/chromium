@@ -62,7 +62,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -131,7 +130,11 @@ import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.MEDIA_INDICATORS_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+    ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS
+})
 public class TabContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final int TAB_OUTSIDE_OF_GROUP_ID = 2;
@@ -404,7 +407,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         var addToGroupItem = modelList.get(0);
@@ -444,21 +447,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
-        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -469,7 +480,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, NON_URL_TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
         var addToGroupItem = modelList.get(0);
@@ -504,56 +515,15 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_tabOutsideOfGroup() {
-        MultiWindowUtils.setInstanceCountForTesting(1);
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-
-        // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
-
-        // List item 2
-        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
-
-        // List item 3
-        assertEquals(DIVIDER, modelList.get(2).type);
-
-        // List item 4
-        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 5
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
                 R.id.pin_tab_menu_id,
@@ -573,6 +543,63 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
+    public void testListMenuItems_tabOutsideOfGroup() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
+
+        // List item 2
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
+
+        // List item 3
+        assertEquals(DIVIDER, modelList.get(2).type);
+
+        // List item 4
+        assertEquals(R.string.share, modelList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 5
+        assertEquals(
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.duplicate_tab_menu_id,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 6
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -582,7 +609,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -597,21 +624,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -629,7 +664,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -653,7 +688,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1, /* isIncognito= */ true);
@@ -674,7 +709,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -698,21 +733,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
-        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -736,7 +779,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -769,7 +812,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -799,7 +842,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
         // INSTANCE_INFO_INCOGNITO should be shown.
@@ -829,7 +872,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
         // INSTANCE_INFO_2 should be shown.
@@ -860,7 +903,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
         // Other windows should not be filtered out since they can accommodate both incognito and
@@ -891,7 +934,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
         // Other windows should not be filtered out since they can accommodate both incognito and
@@ -920,7 +963,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -939,21 +982,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -968,7 +1019,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -984,21 +1035,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1013,7 +1072,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1024,21 +1083,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 3
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(2).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 4
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                modelList.get(3).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
-        assertEquals(R.string.close, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 6
+        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1051,7 +1118,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList,
                 new AnchorInfo(NON_URL_TAB_ID, Collections.singletonList(NON_URL_TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1066,21 +1133,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.unmute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.unmute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1095,7 +1170,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1128,7 +1203,86 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.duplicate_tab_menu_id,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 5
+        assertEquals(
                 mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 6
+        assertEquals(
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                modelList.get(7).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+    }
+
+    @Test
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testListMenuItems_incognito_multipleTabs() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+
+        // List item 1
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ true);
+
+        // List item 2
+        assertEquals(DIVIDER, modelList.get(2).type);
+        assertEquals(
+                "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
+                        + " incognito mode",
+                R.color.divider_color_light,
+                modelList.get(2).model.get(COLOR_ID));
+
+        // List item 3
+        assertEquals(
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
+                modelList.get(3).model.get(TITLE));
+        assertEquals(
+                R.id.duplicate_tab_menu_id,
+                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                modelList.get(3).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+
+        // List item 4
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
                 R.id.pin_tab_menu_id,
@@ -1152,57 +1306,6 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void testListMenuItems_incognito_multipleTabs() {
-        setupWithIncognito(/* incognito= */ true);
-        initializeCoordinator();
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList,
-                new AnchorInfo(
-                        TAB_OUTSIDE_OF_GROUP_ID,
-                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
-
-        // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(
-                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ true);
-
-        // List item 2
-        assertEquals(DIVIDER, modelList.get(2).type);
-        assertEquals(
-                "Expected divider to have COLOR_ID set to R.color.divider_color_light in"
-                        + " incognito mode",
-                R.color.divider_color_light,
-                modelList.get(2).model.get(COLOR_ID));
-
-        // List item 3
-        assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
-                modelList.get(3).model.get(TITLE));
-        assertEquals(
-                R.id.pin_tab_menu_id,
-                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 5
-        assertEquals(
-                R.id.mute_site_menu_id,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(
-                "Expected text appearance ID to be set to"
-                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
-                    + " incognito",
-                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                modelList.get(5).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-    }
-
-    @Test
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption() {
@@ -1214,7 +1317,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1234,21 +1337,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
-        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1263,7 +1374,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1278,21 +1389,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.pin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.pin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1310,7 +1429,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1330,21 +1449,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
-                R.id.unpin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
+                modelList.get(5).model.get(TITLE));
+        assertEquals(
+                R.id.unpin_tab_menu_id,
                 modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 7
-        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 8
+        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1362,7 +1489,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
         verifyAddToGroupSubmenuForTabOutsideOfGroup(
@@ -1377,21 +1504,29 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 4
         assertEquals(
-                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
+                mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
-                R.id.unpin_tab_menu_id,
+                R.id.duplicate_tab_menu_id,
                 modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 5
         assertEquals(
-                R.id.mute_site_menu_id,
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
+                modelList.get(4).model.get(TITLE));
+        assertEquals(
+                R.id.unpin_tab_menu_id,
                 modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 6
-        assertEquals(R.string.close, modelList.get(5).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.mute_site_menu_id,
+                modelList.get(5).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 7
+        assertEquals(R.string.close, modelList.get(6).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -1754,7 +1889,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         // With only one window and all tabs selected, the "move to window" option should not show.
-        assertEquals("Number of items in the list menu is incorrect.", 7, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect.", 8, modelList.size());
         assertEquals(
                 "Second item should be a divider instead of 'move to window'.",
                 DIVIDER,
@@ -1785,7 +1920,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_ID_2)));
 
         // With only one window and all tabs selected, the "move to window" option should not show.
-        assertEquals("Number of items in the list menu is incorrect.", 5, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect.", 6, modelList.size());
         assertEquals(
                 "Second item should be a divider instead of 'move to window'.",
                 DIVIDER,
@@ -2002,18 +2137,6 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
-    public void testListMenuItems_singleTab_duplicateTab_featureDisabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
-        assertNull(findItemByMenuId(modelList, R.id.duplicate_tab_menu_id));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
     public void testDuplicateTab_singleTab() {
         mOnItemClickedCallback.onClick(
                 R.id.duplicate_tab_menu_id,
@@ -2039,18 +2162,6 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(
                 mActivity.getResources().getString(R.string.duplicate_tab_menu_item),
                 duplicateItem.model.get(ListMenuItemProperties.TITLE));
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    @DisableFeatures({ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS})
-    public void testListMenuItems_multipleTabs_duplicateTabs_featureDisabled() {
-        var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-
-        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
-        assertNull(findItemByMenuId(modelList, R.id.duplicate_tab_menu_id));
     }
 
     @Test
@@ -2285,7 +2396,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
 
         ListItem moveStartItem = modelList.get(2);
         String moveStartTitle =
@@ -2315,7 +2426,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
 
         ListItem moveStartItem = modelList.get(2);
         String moveStartTitle =
@@ -2608,7 +2719,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getCount()).thenReturn(4);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
 
         ListItem moveStartItem = modelList.get(2);
         String moveStartTitle =
@@ -2736,7 +2847,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
         ListItem closeAllTabsItem = findItemByMenuId(modelList, R.id.close_all_tabs_menu_id);
         assertNotNull(closeAllTabsItem);
         assertEquals(R.string.menu_close_all_tabs, closeAllTabsItem.model.get(TITLE_ID));
@@ -2763,7 +2874,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 9, modelList.size());
         ListItem closeAllTabsItem =
                 findItemByMenuId(modelList, R.id.close_all_incognito_tabs_menu_id);
         assertNotNull(closeAllTabsItem);
