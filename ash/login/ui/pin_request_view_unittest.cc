@@ -79,8 +79,9 @@ class PinRequestViewTest : public LoginTestBase,
     ++pin_submitted_;
     last_code_submitted_ = code;
     if (!will_authenticate_) {
-      view_->UpdateState(PinRequestViewState::kError, std::u16string(),
-                         std::u16string());
+      auto* view = GetPinRequestView();
+      view->UpdateState(PinRequestViewState::kError, std::u16string(),
+                        std::u16string());
       return PinRequestView::SubmissionResult::kPinError;
     }
     return PinRequestView::SubmissionResult::kPinAccepted;
@@ -90,16 +91,21 @@ class PinRequestViewTest : public LoginTestBase,
 
   void OnHelp() override { ++help_dialog_opened_; }
 
-  void StartView(std::optional<int> pin_length = 6) {
+  PinRequestView* GetPinRequestView() {
+    return static_cast<PinRequestView*>(widget()->GetContentsView());
+  }
+
+  PinRequestView* StartView(std::optional<int> pin_length = 6) {
     PinRequest request;
     request.help_button_enabled = true;
     request.obscure_pin = false;
     request.pin_length = pin_length;
     request.title = u"Sample Title";
     request.on_pin_request_done = base::DoNothing();
-    view_ = new PinRequestView(std::move(request), this);
+    PinRequestView* view = new PinRequestView(std::move(request), this);
 
-    SetWidget(CreateWidgetWithContent(view_));
+    SetWidget(CreateWidgetWithContent(view));
+    return view;
   }
 
   // Shows pin request widget with the specified |reason|.
@@ -146,7 +152,8 @@ class PinRequestViewTest : public LoginTestBase,
   }
 
   void ExpectTextSelection(int start, int end) {
-    PinRequestView::TestApi test_api(view_);
+    auto* view = GetPinRequestView();
+    PinRequestView::TestApi test_api(view);
     ui::AXNodeData ax_node_data;
     test_api.access_code_view()->GetViewAccessibility().GetAccessibleNodeData(
         &ax_node_data);
@@ -157,7 +164,8 @@ class PinRequestViewTest : public LoginTestBase,
   }
 
   void ExpectTextValue(const std::string& value) {
-    PinRequestView::TestApi test_api(view_);
+    auto* view = GetPinRequestView();
+    PinRequestView::TestApi test_api(view);
     ui::AXNodeData node_data;
     test_api.access_code_view()->GetViewAccessibility().GetAccessibleNodeData(
         &node_data);
@@ -182,16 +190,14 @@ class PinRequestViewTest : public LoginTestBase,
   // Whether the next pin submission will trigger setting an error state.
   bool will_authenticate_ = true;
 
-  raw_ptr<PinRequestView, DanglingUntriaged> view_ =
-      nullptr;  // Owned by test widget view hierarchy.
 };
 
 // Tests that back button works.
 TEST_F(PinRequestViewTest, BackButton) {
   ShowWidget();
   PinRequestWidget* widget = PinRequestWidget::Get();
-  view_ = PinRequestWidget::TestApi(widget).pin_request_view();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = PinRequestWidget::TestApi(widget).pin_request_view();
+  PinRequestView::TestApi test_api(view);
   EXPECT_TRUE(test_api.back_button()->GetEnabled());
   EXPECT_EQ(0, back_action_);
 
@@ -203,8 +209,8 @@ TEST_F(PinRequestViewTest, BackButton) {
 
 // Tests that the code is autosubmitted when input is complete.
 TEST_F(PinRequestViewTest, Autosubmit) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -220,8 +226,8 @@ TEST_F(PinRequestViewTest, Autosubmit) {
 
 // Tests that submit button submits code from code input.
 TEST_F(PinRequestViewTest, SubmitButton) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
   SimulateFailedValidation();
 
@@ -243,9 +249,8 @@ TEST_F(PinRequestViewTest, SubmitButton) {
 
 // Tests that help button opens help app.
 TEST_F(PinRequestViewTest, HelpButton) {
-  StartView();
-
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_TRUE(test_api.help_button()->GetEnabled());
 
   LeftClickOn(test_api.help_button());
@@ -255,8 +260,8 @@ TEST_F(PinRequestViewTest, HelpButton) {
 
 // Tests that access code can be entered with numpad.
 TEST_F(PinRequestViewTest, Numpad) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   for (int i = 0; i < 6; ++i) {
@@ -270,8 +275,8 @@ TEST_F(PinRequestViewTest, Numpad) {
 
 // Tests that access code can be submitted with press of 'enter' key.
 TEST_F(PinRequestViewTest, SubmitWithEnter) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
   SimulateFailedValidation();
@@ -289,8 +294,8 @@ TEST_F(PinRequestViewTest, SubmitWithEnter) {
 
 // Tests that 'enter' key does not submit incomplete code.
 TEST_F(PinRequestViewTest, PressEnterOnIncompleteCode) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
   // Enter incomplete code.
@@ -327,8 +332,8 @@ TEST_F(PinRequestViewTest, PressEnterOnIncompleteCode) {
 
 // Tests that backspace button works.
 TEST_F(PinRequestViewTest, Backspace) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
   SimulateFailedValidation();
@@ -363,8 +368,8 @@ TEST_F(PinRequestViewTest, Backspace) {
 
 // Tests digit-only input with unknown pin length.
 TEST_F(PinRequestViewTest, FlexCodeInput) {
-  StartView(std::nullopt);
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView(std::nullopt);
+  PinRequestView::TestApi test_api(view);
   ui::test::EventGenerator* generator = GetEventGenerator();
   will_authenticate_ = false;
 
@@ -388,8 +393,8 @@ TEST_F(PinRequestViewTest, FlexCodeInput) {
 
 // Tests non-digit input with unknown pin length.
 TEST_F(PinRequestViewTest, FlexCodeInputCharacters) {
-  StartView(std::nullopt);
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView(std::nullopt);
+  PinRequestView::TestApi test_api(view);
   ui::test::EventGenerator* generator = GetEventGenerator();
   will_authenticate_ = false;
 
@@ -422,8 +427,8 @@ TEST_F(PinRequestViewTest, PinKeyboard) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   PinRequestWidget* widget = PinRequestWidget::Get();
-  view_ = PinRequestWidget::TestApi(widget).pin_request_view();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = PinRequestWidget::TestApi(widget).pin_request_view();
+  PinRequestView::TestApi test_api(view);
   LoginPinView::TestApi test_pin_keyboard(test_api.pin_keyboard_view());
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
@@ -437,8 +442,8 @@ TEST_F(PinRequestViewTest, PinKeyboard) {
 
 // Tests that pin keyboard visibility changes upon tablet mode changes.
 TEST_F(PinRequestViewTest, PinKeyboardVisibilityChange) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   LoginPinView::TestApi test_pin_keyboard(test_api.pin_keyboard_view());
   EXPECT_FALSE(test_api.pin_keyboard_view()->GetVisible());
 
@@ -451,8 +456,8 @@ TEST_F(PinRequestViewTest, PinKeyboardVisibilityChange) {
 
 // Tests that error state is shown and cleared when neccesary.
 TEST_F(PinRequestViewTest, ErrorState) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_EQ(PinRequestViewState::kNormal, test_api.state());
 
   // Error should be shown after unsuccessful validation.
@@ -472,8 +477,8 @@ TEST_F(PinRequestViewTest, ErrorState) {
 
 // Tests children views traversal with tab key.
 TEST_F(PinRequestViewTest, TabKeyTraversal) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_TRUE(HasFocusInAnyChildView(test_api.access_code_view()));
 
   SimulateFailedValidation();
@@ -497,8 +502,8 @@ TEST_F(PinRequestViewTest, TabKeyTraversal) {
 
 // Tests children views backwards traversal with tab key.
 TEST_F(PinRequestViewTest, BackwardTabKeyTraversal) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_TRUE(HasFocusInAnyChildView(test_api.access_code_view()));
 
   SimulateFailedValidation();
@@ -528,10 +533,10 @@ TEST_F(PinRequestViewTest, BackwardTabKeyTraversal) {
 }
 
 TEST_F(PinRequestViewTest, AccessibleProperties) {
-  StartView();
+  auto* view = StartView();
   ui::AXNodeData data;
 
-  view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Sample Title");
@@ -618,8 +623,8 @@ TEST_F(PinRequestViewTest, VirtualKeyboardHidden) {
 
 // Tests input value and text selection of the virtual text field used by a11y.
 TEST_F(PinRequestViewTest, VirtualTextFieldForA11y) {
-  StartView();
-  PinRequestView::TestApi test_api(view_);
+  auto* view = StartView();
+  PinRequestView::TestApi test_api(view);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
   // Assert the initial value.
