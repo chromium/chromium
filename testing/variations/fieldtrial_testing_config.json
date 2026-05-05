@@ -14466,8 +14466,7 @@
                         "ImmersiveReadAnything",
                         "ReadAnythingImagesViaAlgorithm",
                         "ReadAnythingReadabilitySelectText",
-                        "ReadAnythingWithReadability",
-                        "ReadAnythingWithReadabilityAllowLinks"
+                        "ReadAnythingWithReadability"
                     ]
                 }
             ]
