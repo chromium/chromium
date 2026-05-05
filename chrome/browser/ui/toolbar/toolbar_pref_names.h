@@ -33,6 +33,10 @@ inline constexpr char kPinnedCastMigrationComplete[] =
 inline constexpr char kTabSearchMigrationComplete[] =
     "toolbar.tab_search_migration_complete";
 
+// Indicates whether tabs from other devices side panel has been auto-pinned.
+inline constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
+    "toolbar.tabs_from_other_devices_auto_pinned_migration";
+
 }  // namespace prefs
 
 namespace toolbar {

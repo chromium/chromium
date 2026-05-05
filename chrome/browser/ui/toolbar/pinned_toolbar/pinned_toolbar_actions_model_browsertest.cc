@@ -466,5 +466,34 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(model()->Contains(kActionSidePanelShowTabsFromOtherDevices));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    PinnedToolbarActionsModelWithTabsFromOtherDevicesPinnedBrowserTest,
+    MigrateActionForExistingProfile) {
+  // Simulate an existing profile by unpinning the action and resetting the
+  // migration pref.
+  model()->UpdatePinnedState(kActionSidePanelShowTabsFromOtherDevices, false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kTabsFromOtherDevicesAutoPinnedMigration, false);
+
+  EXPECT_FALSE(model()->Contains(kActionSidePanelShowTabsFromOtherDevices));
+
+  // Run the migration.
+  model()->MaybeMigrateExistingPinnedStates();
+
+  // Verify it is pinned now.
+  EXPECT_TRUE(model()->Contains(kActionSidePanelShowTabsFromOtherDevices));
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kTabsFromOtherDevicesAutoPinnedMigration));
+
+  // Simulate the user un-pinning the action.
+  model()->UpdatePinnedState(kActionSidePanelShowTabsFromOtherDevices, false);
+
+  // Run the migration a second time.
+  model()->MaybeMigrateExistingPinnedStates();
+
+  // Verify that it did *not* get auto-pinned again.
+  EXPECT_FALSE(model()->Contains(kActionSidePanelShowTabsFromOtherDevices));
+}
+
 // TODO(dljames): Write tests for guest and incognito mode profile that check
 // that we cannot modify the model at all.
