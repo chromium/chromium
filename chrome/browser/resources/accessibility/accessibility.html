@@ -119,6 +119,12 @@ found in the LICENSE file.
         Is the active AT a screen reader:
         <span id="active_at_is_screen_reader"></span>
       </div>
+      <if expr="is_win">
+        <div>
+          UIA clients:
+          <ul id="uia_clients_list"></ul>
+        </div>
+      </if>
 
       <if expr="is_win">
         <h2>Accessible node counters</h2>

@@ -92,6 +92,8 @@ interface InitData {
   detectedATName: string;
   isScreenReaderActive: boolean;
 
+  uiaClientProcessNames?: string[];
+
   // <if expr="is_win">
   dormantCount: string;
   liveCount: string;
@@ -198,9 +200,9 @@ function toggleAccessibility(
 }
 
 function requestTree(
-  data: BrowserData|PageData|WidgetData,
-  element: Element,
-): Promise<void> {
+    data: BrowserData|PageData|WidgetData,
+    element: Element,
+    ): Promise<void> {
   return new Promise((resolve) => {
     const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
     const allowEmpty =
@@ -211,10 +213,10 @@ function requestTree(
     window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
     window.localStorage['chrome-accessibility-filter-deny'] = deny;
 
-  // The calling |element| is a button with an id of the format
-  // <treeId>-<requestType>, where requestType is one of 'showOrRefreshTree',
-  // 'copyTree'. Send the request type to C++ so is calls the corresponding
-  // function with the result.
+    // The calling |element| is a button with an id of the format
+    // <treeId>-<requestType>, where requestType is one of 'showOrRefreshTree',
+    // 'copyTree'. Send the request type to C++ so is calls the corresponding
+    // function with the result.
     const requestType = element.id.split('-')[1] as RequestType;
 
     if (data.type === 'browser') {
@@ -290,6 +292,9 @@ function initialize() {
   getRequiredElement('active_at_name').textContent = data.detectedATName;
   getRequiredElement('active_at_is_screen_reader').textContent =
       data.isScreenReaderActive ? 'Yes' : 'No';
+  if (data.uiaClientProcessNames !== undefined) {
+    updateUiaClientList(data.uiaClientProcessNames);
+  }
 
   getRequiredElement('pages').textContent = '';
 
@@ -383,6 +388,23 @@ function bindDropdown(name: string, options: string[], value: string) {
   });
 }
 
+function updateUiaClientList(processNames: string[]) {
+  const list = getRequiredElement('uia_clients_list');
+  list.textContent = '';
+  if (processNames.length === 0) {
+    const item = document.createElement('li');
+    item.textContent = 'None';
+    list.appendChild(item);
+    return;
+  }
+
+  for (const processName of processNames) {
+    const item = document.createElement('li');
+    item.textContent = processName;
+    list.appendChild(item);
+  }
+}
+
 function addToPagesList(data: PageData) {
   // TODO: iterate through data and pages rows instead
   const id = getIdFromData(data);
@@ -417,8 +439,7 @@ function addToWidgetsList(data: WidgetData) {
   widgets.appendChild(row);
 }
 
-function formatRow(
-    row: HTMLElement, data: BrowserData|PageData|WidgetData) {
+function formatRow(row: HTMLElement, data: BrowserData|PageData|WidgetData) {
   if (!('url' in data)) {
     if ('error' in data) {
       row.appendChild(createErrorMessageElement(data));
@@ -464,8 +485,7 @@ function formatRow(
   row.appendChild(document.createTextNode(' | '));
 
   const hasTree = 'tree' in data;
-  row.appendChild(
-      createShowAccessibilityTreeElement(data, row.id, hasTree));
+  row.appendChild(createShowAccessibilityTreeElement(data, row.id, hasTree));
   if (navigator.clipboard) {
     row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
   }
@@ -608,8 +628,7 @@ function createModeElement(
 }
 
 function createShowAccessibilityTreeElement(
-    data: BrowserData|PageData|WidgetData, id: string,
-    refresh: boolean) {
+    data: BrowserData|PageData|WidgetData, id: string, refresh: boolean) {
   const show = document.createElement('button');
   const textContent =
       refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';

@@ -23,6 +23,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -69,6 +70,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/uia_client_info_source_win.h"
 #endif
 
 static const char kTargetsDataFile[] = "targets-data.json";
@@ -121,6 +123,9 @@ static const char kWeb[] = "web";
 // Screen reader detection.
 static const char kDetectedATName[] = "detectedATName";
 static const char kIsScreenReaderActive[] = "isScreenReaderActive";
+#if BUILDFLAG(IS_WIN)
+static const char kUiaClientProcessNames[] = "uiaClientProcessNames";
+#endif
 
 using ui::AXPropertyFilter;
 
@@ -213,6 +218,36 @@ void SetNodeCounts(const ui::AXPlatformNodeWin::Counts& counts,
   data.Set("dormantCount", base::NumberToString(counts.dormant_nodes));
   data.Set("liveCount", base::NumberToString(counts.live_nodes));
   data.Set("ghostCount", base::NumberToString(counts.ghost_nodes));
+}
+
+base::DictValue AddUiaClientProcessNames(base::DictValue data) {
+  base::ListValue process_names;
+  std::optional<ui::UiaClientInfoSource> client_info_source =
+      ui::UiaClientInfoSource::Create();
+  if (client_info_source) {
+    for (const std::string& process_name :
+         client_info_source->GetConnectedClientProcessNames()) {
+      process_names.Append(process_name);
+    }
+  }
+  data.Set(kUiaClientProcessNames, std::move(process_names));
+  return data;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void SendAccessibilityData(base::DictValue data,
+                           content::WebUIDataSource::GotDataCallback callback) {
+  std::string json_string = base::WriteJson(data).value_or("");
+
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
+}
+
+#if BUILDFLAG(IS_WIN)
+void SendAccessibilityDataWithCallback(
+    content::WebUIDataSource::GotDataCallback callback,
+    base::DictValue data) {
+  SendAccessibilityData(std::move(data), std::move(callback));
 }
 #endif
 
@@ -366,12 +401,13 @@ void HandleAccessibilityRequestCallback(
 
 #if BUILDFLAG(IS_WIN)
   SetNodeCounts(ui::AXPlatformNodeWin::GetCounts(), data);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&AddUiaClientProcessNames, std::move(data)),
+      base::BindOnce(&SendAccessibilityDataWithCallback, std::move(callback)));
+#else
+  SendAccessibilityData(std::move(data), std::move(callback));
 #endif
-
-  std::string json_string = base::WriteJson(data).value_or("");
-
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
 }
 
 std::string RecursiveDumpAXPlatformNodeAsString(
