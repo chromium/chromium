@@ -47,7 +47,9 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // Note: This test is disabled temporarily to track down a memory leak reported
 // by the ASan bots. It will be enabled once the root cause is found.
 // TODO(crbug.com/40904458): Re-enable this test
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/509762371): Re-enable this test on Linux.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_FileChooserInDestroyedSubframe \
   DISABLED_FileChooserInDestroyedSubframe
 #else
