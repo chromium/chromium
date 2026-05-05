@@ -33,6 +33,8 @@ class WebState;
 
 namespace ai {
 
+class EnhancedCalendarServiceImplTest;
+
 class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService,
                                     signin::IdentityManager::Observer {
  public:
@@ -56,6 +58,8 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService,
       signin::IdentityManager* /*unused*/ identity_manager) override;
 
  private:
+  friend class EnhancedCalendarServiceImplTest;
+
   // Handles the generated PageContext proto and executes the Enhanced Calendar
   // request.
   void OnPageContextGenerated(

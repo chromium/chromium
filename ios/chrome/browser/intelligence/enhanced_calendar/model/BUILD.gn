@@ -35,3 +35,28 @@ source_set("config") {
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enhanced_calendar_service_impl_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/model:test_support",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
