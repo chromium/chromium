@@ -725,11 +725,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
-
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
-    registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
-        .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
-  }
+  registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
+      .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
 
   if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
     registry.ForWebUI<ttc::AiOverlayDialogUntrustedUI>()

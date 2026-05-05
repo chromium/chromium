@@ -137,16 +137,14 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     actor_overlay_web_view_ = AddChildView(std::move(actor_overlay_web_view));
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
-    auto glic_selection_overlay_view = std::make_unique<views::WebView>();
-    glic_selection_overlay_view->SetProperty(
-        views::kElementIdentifierKey, kGlicSelectionOverlayViewElementId);
-    glic_selection_overlay_view->SetVisible(false);
-    glic_selection_overlay_view->SetLayoutManager(
-        std::make_unique<views::FillLayout>());
-    glic_selection_overlay_view_ =
-        AddChildView(std::move(glic_selection_overlay_view));
-  }
+  auto glic_selection_overlay_view = std::make_unique<views::WebView>();
+  glic_selection_overlay_view->SetProperty(views::kElementIdentifierKey,
+                                           kGlicSelectionOverlayViewElementId);
+  glic_selection_overlay_view->SetVisible(false);
+  glic_selection_overlay_view->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+  glic_selection_overlay_view_ =
+      AddChildView(std::move(glic_selection_overlay_view));
 
   if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
     glic_border_ = AddChildView(

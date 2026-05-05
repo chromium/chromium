@@ -20,6 +20,7 @@ source_set("selection") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/resources:browser_resources",

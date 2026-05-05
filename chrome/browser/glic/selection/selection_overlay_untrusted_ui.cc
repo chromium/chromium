@@ -10,7 +10,6 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,8 +27,7 @@ namespace glic {
 bool SelectionOverlayUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return GlicEnabling::IsProfileEligible(
-             Profile::FromBrowserContext(browser_context)) &&
-         base::FeatureList::IsEnabled(::features::kGlicRegionSelectionNew);
+      Profile::FromBrowserContext(browser_context));
 }
 
 SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)

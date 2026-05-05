@@ -51,7 +51,7 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
  public:
   SelectionOverlayInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kGlicRegionSelectionNew, ::features::kGlicCaptureRegion,
+        {::features::kGlicCaptureRegion,
          // Only supports multi-instance mode for now.
          ::features::kGlicMultiInstance},
         {});

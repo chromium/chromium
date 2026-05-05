@@ -54,7 +54,6 @@ class GlicEnabling;
 class GlicFreController;
 class GlicMetrics;
 class GlicProfileManager;
-class GlicRegionCaptureController;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicTabFaviconObserver;
@@ -208,13 +207,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  void CaptureRegion(tabs::TabInterface* tab,
-                     mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
-                     mojom::GetTabContextOptionsPtr options = nullptr);
-  void DeleteCapturedRegion(tabs::TabInterface* tab,
-                            const base::UnguessableToken& id);
-#endif
 
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
@@ -225,9 +217,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   AuthController& GetAuthController() { return *auth_controller_; }
 
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  GlicRegionCaptureController& region_capture_controller();
-#endif
 
   void AddPreloadCallback(base::OnceCallback<void()> callback);
 
@@ -323,9 +312,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
-#if !BUILDFLAG(IS_ANDROID)  // Single instance only
-  std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
-#endif
+
   std::unique_ptr<AuthController> auth_controller_;
 
   base::OnceCallback<void()> preload_callback_;
