@@ -196,8 +196,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   // before using its contentSize.
   [self.tableView setNeedsLayout];
   [self.tableView layoutIfNeeded];
+
   CGFloat height = self.tableView.contentSize.height;
-  self.preferredContentSize = CGSize(self.preferredContentSize.width, height);
+  CGFloat width = self.tableView.frame.size.width;
+  self.preferredContentSize = CGSize(width, height);
 }
 
 // Creates a button for the navigation bar.
