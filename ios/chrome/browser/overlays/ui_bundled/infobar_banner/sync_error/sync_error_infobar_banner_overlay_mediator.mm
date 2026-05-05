@@ -77,7 +77,7 @@
   [consumer setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                               SyncErrorInfoBarDelegate::BUTTON_OK))];
 
-  // TODO(crbug.com/408165259): Use a dedicated icon in case when
+  // TODO(crbug.com/509894544): Use a dedicated icon in case when
   // `delegate->DisplayPasswordErrorIcon()` is true.
   [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
                              kSyncErrorSymbol, kInfobarSymbolPointSize)];
