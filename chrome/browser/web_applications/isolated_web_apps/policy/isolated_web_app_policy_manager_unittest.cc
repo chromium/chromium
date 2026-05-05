@@ -78,6 +78,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -1247,6 +1251,13 @@ TEST_F(IsolatedWebAppRetryTest, FirstInstallFailsRetrySucceeds) {
 }
 
 TEST_F(IsolatedWebAppRetryTest, RetryTimeStepsCorrect) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   const std::array<web_package::SignedWebBundleId, 2> kApps = {
       web_bundle_id_1(), web_bundle_id_2()};
 
