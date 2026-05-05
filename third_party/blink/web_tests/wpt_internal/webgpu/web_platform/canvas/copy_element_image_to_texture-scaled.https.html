@@ -2,7 +2,7 @@
 <html class="reftest-wait">
   <title>WebGPU copyElementImageToTexture with scaling</title>
   <meta charset="utf-8" />
-  <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000"/>
+  <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000" />
   <link rel="help" href="https://github.com/WICG/html-in-canvas" />
   <link rel="match" href="copy_element_image_to_texture-scaled-ref.html" />
   <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
@@ -10,19 +10,19 @@
   <script src="/common/reftest-wait.js"></script>
 
   <style>
-   body {
-     display: grid;
-     grid: 256px / 1fr 1fr 1fr;
-     align-items: start;
-   }
-   canvas {
-     width: 256px;
-     height: 256px;
-   }
-   color-grid {
-     width: 100px;
-     height: 100px;
-   }
+    body {
+      display: grid;
+      grid: 256px / 1fr 1fr 1fr;
+      align-items: start;
+    }
+    canvas {
+      width: 256px;
+      height: 256px;
+    }
+    color-grid {
+      width: 100px;
+      height: 100px;
+    }
   </style>
 
   <canvas layoutsubtree>
@@ -55,30 +55,30 @@
     </div>
   </canvas>
 
-<script type="module">
-import { resizeToPixelGrid, copyElementImageToWebGPUCanvas } from "/wpt_internal/resources/canvas-draw-element/util.js";
+  <script type="module">
+    import { resizeToPixelGrid, copyElementImageToWebGPUCanvas } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
-const adapter = await navigator.gpu.requestAdapter();
-const device = await adapter.requestDevice();
-const queue = device.queue;
+    const adapter = await navigator.gpu.requestAdapter();
+    const device = await adapter.requestDevice();
+    const queue = device.queue;
 
-Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
-  await resizeToPixelGrid(cvs);
-  const ctx = cvs.getContext("webgpu");
-  ctx.configure({
-    device: device,
-    format: navigator.gpu.getPreferredCanvasFormat(),
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
-    alphaMode: "premultiplied",
-  });
-  const target = cvs.firstElementChild;
-  if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
-    const scaleX = Number.parseFloat(target.getAttribute("xscale"));
-    const scaleY = Number.parseFloat(target.getAttribute("yscale"));
-    copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY);
-  } else {
-    copyElementImageToWebGPUCanvas(queue, ctx, target);
-  }
-})).then(takeScreenshot);
-</script>
+    Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
+      await resizeToPixelGrid(cvs);
+      const ctx = cvs.getContext("webgpu");
+      ctx.configure({
+        device: device,
+        format: navigator.gpu.getPreferredCanvasFormat(),
+        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+        alphaMode: "premultiplied",
+      });
+      const target = cvs.firstElementChild;
+      if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+        const scaleX = Number.parseFloat(target.getAttribute("xscale"));
+        const scaleY = Number.parseFloat(target.getAttribute("yscale"));
+        copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY);
+      } else {
+        copyElementImageToWebGPUCanvas(queue, ctx, target);
+      }
+    })).then(takeScreenshot);
+  </script>
 </html>

@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-  <title>drawElementImage with scaling.</title>
-  <meta charset="utf-8" />
-  <link rel="help" href="https://github.com/WICG/html-in-canvas" />
-  <link rel="match" href="scale-ref.html" />
-  <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
-  <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
-  <script src="/common/reftest-wait.js"></script>
+<title>drawElementImage with scaling.</title>
+<meta charset="utf-8" />
+<link rel="help" href="https://github.com/WICG/html-in-canvas" />
+<link rel="match" href="scale-ref.html" />
+<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+<script src="/common/reftest-wait.js"></script>
 
 <style>
- body {
-   display: grid;
-   grid: 256px / 1fr 1fr 1fr;
-   align-items: start;
- }
- canvas {
-   width: 256px;
-   height: 256px;
- }
- color-grid {
-   width: 100px;
-   height: 100px;
- }
+  body {
+    display: grid;
+    grid: 256px / 1fr 1fr 1fr;
+    align-items: start;
+  }
+
+  canvas {
+    width: 256px;
+    height: 256px;
+  }
+
+  color-grid {
+    width: 100px;
+    height: 100px;
+  }
 </style>
 
 <canvas layoutsubtree>
@@ -55,21 +57,21 @@
 </canvas>
 
 <script type="module">
-import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+  import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
-Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
-  await resizeToPixelGrid(cvs);
-  await new Promise(setTimeout);
-  const target = cvs.firstElementChild;
-  const ctx = cvs.getContext("2d");
-  if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
-    const scaleX = Number.parseFloat(target.getAttribute("xscale"));
-    const scaleY = Number.parseFloat(target.getAttribute("yscale"));
-    const [destWidth, destHeight] =
-      computeScaledDestinationSize(cvs, target, scaleX, scaleY);
-    ctx.drawElementImage(target, 0, 0, destWidth, destHeight);
-  } else {
-    ctx.drawElementImage(target, 0, 0);
-  }
-})).then(takeScreenshot);
+  Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
+    await resizeToPixelGrid(cvs);
+    await new Promise(setTimeout);
+    const target = cvs.firstElementChild;
+    const ctx = cvs.getContext("2d");
+    if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+      const scaleX = Number.parseFloat(target.getAttribute("xscale"));
+      const scaleY = Number.parseFloat(target.getAttribute("yscale"));
+      const [destWidth, destHeight] =
+        computeScaledDestinationSize(cvs, target, scaleX, scaleY);
+      ctx.drawElementImage(target, 0, 0, destWidth, destHeight);
+    } else {
+      ctx.drawElementImage(target, 0, 0);
+    }
+  })).then(takeScreenshot);
 </script>

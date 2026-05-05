@@ -2,7 +2,7 @@
 <html class="reftest-wait">
   <title>WebGPU copyElementImageToTexture with source rect</title>
   <meta charset="utf-8" />
-  <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000"/>
+  <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000" />
   <link rel="help" href="https://github.com/WICG/html-in-canvas" />
   <link rel="match" href="copy_element_image_to_texture-source-rect-ref.html" />
   <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
@@ -10,25 +10,25 @@
   <script src="/common/reftest-wait.js"></script>
 
   <style>
-   body {
-     display: grid;
-     grid: 256px / 1fr 1fr 1fr;
-     align-items: start;
-   }
-   canvas {
-     width: 256px;
-     height: 256px;
-   }
-   color-grid {
-     width: 100px;
-     height: 100px;
-   }
-   .box-shadow {
-     box-shadow: 10px 20px 0px 30px hotpink;
-   }
-   .outline {
-     outline: 5px solid salmon;
-   }
+    body {
+      display: grid;
+      grid: 256px / 1fr 1fr 1fr;
+      align-items: start;
+    }
+    canvas {
+      width: 256px;
+      height: 256px;
+    }
+    color-grid {
+      width: 100px;
+      height: 100px;
+    }
+    .box-shadow {
+      box-shadow: 10px 20px 0px 30px hotpink;
+    }
+    .outline {
+      outline: 5px solid salmon;
+    }
   </style>
 
   <canvas layoutsubtree>
@@ -61,73 +61,73 @@
     </div>
   </canvas>
 
-<script type="module">
-import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+  <script type="module">
+    import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
-(async () => {
-  const worker = new Worker('webgpu-worker.js', { type: 'module' });
-  for (const cvs of document.querySelectorAll("canvas")) {
-    await resizeToPixelGrid(cvs);
-    await new Promise(setTimeout);
-    const target = cvs.firstElementChild;
-    let args = [];
+    (async () => {
+      const worker = new Worker('webgpu-worker.js', { type: 'module' });
+      for (const cvs of document.querySelectorAll("canvas")) {
+        await resizeToPixelGrid(cvs);
+        await new Promise(setTimeout);
+        const target = cvs.firstElementChild;
+        let args = [];
 
-    let xscale, yscale;
-    if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
-      xscale = Number.parseFloat(target.getAttribute("xscale"));
-      yscale = Number.parseFloat(target.getAttribute("yscale"));
-    }
-    if (target.hasAttribute("outset")) {
-      const outset = Number.parseFloat(target.getAttribute("outset"));
-      const targetStyle = getComputedStyle(target);
-      const targetWidth = Number.parseFloat(targetStyle.width);
-      const targetHeight = Number.parseFloat(targetStyle.height);
-      const sx = -outset;
-      const sy = -outset;
-      const swidth = targetWidth + 2*outset;
-      const sheight = targetHeight + 2*outset;
-      args = [sx, sy, swidth, sheight];
-      if (xscale !== undefined && yscale !== undefined) {
-        const destWidth = swidth * xscale * (cvs.width / cvs.clientWidth);
-        const destHeight = sheight * yscale * (cvs.height / cvs.clientHeight);
-        args = args.concat([destWidth, destHeight]);
-      }
-    } else if (xscale !== undefined && yscale !== undefined) {
-      const [destWidth, destHeight] = computeScaledDestinationSize(cvs, target, xscale, yscale);
-      args = [destWidth, destHeight];
-    }
-
-    const offscreen = cvs.transferControlToOffscreen();
-    worker.postMessage({
-      canvas: offscreen,
-      clientWidth: cvs.clientWidth,
-      clientHeight: cvs.clientHeight
-    }, [offscreen]);
-
-    await new Promise((resolve, reject) => {
-      worker.onmessage = (e) => {
-        if (e.data !== 'done') {
-          console.error(e.data);
-          reject(new Error(e.data));
-        } else {
-          resolve();
+        let xscale, yscale;
+        if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
+          xscale = Number.parseFloat(target.getAttribute("xscale"));
+          yscale = Number.parseFloat(target.getAttribute("yscale"));
         }
-      };
-      worker.onerror = (e) => {
-        console.error(e.message);
-        reject(e);
-      };
-      const elementImage = cvs.captureElementImage(target);
-      worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+        if (target.hasAttribute("outset")) {
+          const outset = Number.parseFloat(target.getAttribute("outset"));
+          const targetStyle = getComputedStyle(target);
+          const targetWidth = Number.parseFloat(targetStyle.width);
+          const targetHeight = Number.parseFloat(targetStyle.height);
+          const sx = -outset;
+          const sy = -outset;
+          const swidth = targetWidth + 2 * outset;
+          const sheight = targetHeight + 2 * outset;
+          args = [sx, sy, swidth, sheight];
+          if (xscale !== undefined && yscale !== undefined) {
+            const destWidth = swidth * xscale * (cvs.width / cvs.clientWidth);
+            const destHeight = sheight * yscale * (cvs.height / cvs.clientHeight);
+            args = args.concat([destWidth, destHeight]);
+          }
+        } else if (xscale !== undefined && yscale !== undefined) {
+          const [destWidth, destHeight] = computeScaledDestinationSize(cvs, target, xscale, yscale);
+          args = [destWidth, destHeight];
+        }
+
+        const offscreen = cvs.transferControlToOffscreen();
+        worker.postMessage({
+          canvas: offscreen,
+          clientWidth: cvs.clientWidth,
+          clientHeight: cvs.clientHeight
+        }, [offscreen]);
+
+        await new Promise((resolve, reject) => {
+          worker.onmessage = (e) => {
+            if (e.data !== 'done') {
+              console.error(e.data);
+              reject(new Error(e.data));
+            } else {
+              resolve();
+            }
+          };
+          worker.onerror = (e) => {
+            console.error(e.message);
+            reject(e);
+          };
+          const elementImage = cvs.captureElementImage(target);
+          worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+        });
+      }
+    })().catch(e => {
+      console.error("Test failed:", e);
+    }).finally(() => {
+      // Wait for the worker thread to update before taking a screenshot.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(takeScreenshot);
+      });
     });
-  }
-})().catch(e => {
-  console.error("Test failed:", e);
-}).finally(() => {
-  // Wait for the worker thread to update before taking a screenshot.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(takeScreenshot);
-  });
-});
-</script>
+  </script>
 </html>

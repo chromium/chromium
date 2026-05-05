@@ -10,30 +10,29 @@
     <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
     <meta name="assert" value="Scaling content via destRect">
     <style>
-     body {
-       display: grid;
-       grid: 256px / 1fr 1fr 1fr;
-       align-items: start;
-       --spread: 30px;
-     }
-     canvas {
-       width: 256px;
-       height: 256px;
-     }
-     color-grid {
-       width: 100px;
-       height: 100px;
-     }
-     .box-shadow {
-       box-shadow: 10px 20px 0px var(--spread) hotpink;
-     }
-     .outline {
-       outline: 5px solid salmon;
-     }
+      body {
+        display: grid;
+        grid: 256px / 1fr 1fr 1fr;
+        align-items: start;
+        --spread: 30px;
+      }
+      canvas {
+        width: 256px;
+        height: 256px;
+      }
+      color-grid {
+        width: 100px;
+        height: 100px;
+      }
+      .box-shadow {
+        box-shadow: 10px 20px 0px var(--spread) hotpink;
+      }
+      .outline {
+        outline: 5px solid salmon;
+      }
     </style>
   </head>
   <body>
-
     <canvas layoutsubtree>
       <div class="draw-element-wrapper box-shadow" outset="50">
         <color-grid></color-grid>
@@ -59,53 +58,53 @@
     </canvas>
 
     <script type="module">
-import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+      import { resizeToPixelGrid, computeExplicitDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
-Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
-  await resizeToPixelGrid(cvs);
-  await new Promise(setTimeout);
-  const target = cvs.firstElementChild;
-  const targetStyle = getComputedStyle(target);
-  const targetWidth = Number.parseFloat(targetStyle.width);
-  const targetHeight = Number.parseFloat(targetStyle.height);
-  const outset = Number.parseFloat(target.getAttribute("outset") || "0");
+      Promise.all(Array.from(document.querySelectorAll("canvas")).map(async cvs => {
+        await resizeToPixelGrid(cvs);
+        await new Promise(setTimeout);
+        const target = cvs.firstElementChild;
+        const targetStyle = getComputedStyle(target);
+        const targetWidth = Number.parseFloat(targetStyle.width);
+        const targetHeight = Number.parseFloat(targetStyle.height);
+        const outset = Number.parseFloat(target.getAttribute("outset") || "0");
 
-  const sx = -outset;
-  const sy = -outset;
-  const swidth = targetWidth + 2*outset;
-  const sheight = targetHeight + 2*outset;
+        const sx = -outset;
+        const sy = -outset;
+        const swidth = targetWidth + 2 * outset;
+        const sheight = targetHeight + 2 * outset;
 
-  const [destWidth, destHeight] = computeExplicitDestinationSize(cvs, 1, 1, swidth, sheight);
+        const [destWidth, destHeight] = computeExplicitDestinationSize(cvs, 1, 1, swidth, sheight);
 
-  const args = [destWidth, destHeight, false, sx, sy, swidth, sheight];
+        const args = [destWidth, destHeight, false, sx, sy, swidth, sheight];
 
-  const worker = new Worker('webgl-worker.js', { type: 'module' });
-  const offscreen = cvs.transferControlToOffscreen();
-  worker.postMessage({ canvas: offscreen }, [offscreen]);
+        const worker = new Worker('webgl-worker.js', { type: 'module' });
+        const offscreen = cvs.transferControlToOffscreen();
+        worker.postMessage({ canvas: offscreen }, [offscreen]);
 
-  return new Promise((resolve, reject) => {
-    worker.onmessage = (e) => {
-      if (e.data !== 'done') {
-        console.error(e.data);
-        reject(new Error(e.data));
-      } else {
-        resolve();
-      }
-    };
-    worker.onerror = (e) => {
-      console.error(e.message);
-      reject(e);
-    };
-    const elementImage = cvs.captureElementImage(target);
-    worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
-  });
-})).catch(e => {
-  console.error("Test failed:", e);
-}).finally(async () => {
-  // Wait for the worker thread to update before taking a screenshot.
-  await waitForCanvasPaint(document.querySelector("canvas"));
-  takeScreenshot();
-});
+        return new Promise((resolve, reject) => {
+          worker.onmessage = (e) => {
+            if (e.data !== 'done') {
+              console.error(e.data);
+              reject(new Error(e.data));
+            } else {
+              resolve();
+            }
+          };
+          worker.onerror = (e) => {
+            console.error(e.message);
+            reject(e);
+          };
+          const elementImage = cvs.captureElementImage(target);
+          worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
+        });
+      })).catch(e => {
+        console.error("Test failed:", e);
+      }).finally(async () => {
+        // Wait for the worker thread to update before taking a screenshot.
+        await waitForCanvasPaint(document.querySelector("canvas"));
+        takeScreenshot();
+      });
     </script>
   </body>
 </html>

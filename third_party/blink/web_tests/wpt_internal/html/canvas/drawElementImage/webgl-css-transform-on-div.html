@@ -27,15 +27,15 @@
   </canvas>
 
   <script type="module">
-import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
+    import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
 
-const canvas = document.querySelector("canvas");
-await resizeToPixelGrid(canvas);
-await new Promise(setTimeout);
-const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
-const target = canvas.firstElementChild;
-prog.render(target);
-takeScreenshot();
+    const canvas = document.querySelector("canvas");
+    await resizeToPixelGrid(canvas);
+    await new Promise(setTimeout);
+    const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
+    const target = canvas.firstElementChild;
+    prog.render(target);
+    takeScreenshot();
   </script>
 </body>
 </html>
