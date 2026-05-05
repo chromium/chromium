@@ -57,6 +57,8 @@ source_set("authentication_flow") {
 
 source_set("internal") {
   sources = [
+    "age_mismatch_capabilities_fetcher.h",
+    "age_mismatch_capabilities_fetcher.mm",
     "authentication_flow_in_profile.h",
     "authentication_flow_in_profile.mm",
     "authentication_flow_in_profile_performer.h",
@@ -82,6 +84,7 @@ source_set("internal") {
     "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:tribool",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",
@@ -152,6 +155,7 @@ source_set("request_helper") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "age_mismatch_capabilities_fetcher_unittest.mm",
     "authentication_flow_in_profile_performer_unittest.mm",
     "authentication_flow_in_profile_unittest.mm",
     "authentication_flow_unittest.mm",
@@ -166,6 +170,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/pref_registry",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
