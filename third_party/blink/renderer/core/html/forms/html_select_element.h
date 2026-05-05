@@ -211,6 +211,8 @@ class CORE_EXPORT HTMLSelectElement final
                                                      HTMLOptionElement*,
                                                      ExceptionState&);
 
+  bool WasOptionInserted() const { return was_option_inserted_; }
+
   void OptGroupInsertedOrRemoved(HTMLOptGroupElement&);
   void HrInsertedOrRemoved(HTMLHRElement&);
 
@@ -542,6 +544,10 @@ class CORE_EXPORT HTMLSelectElement final
   bool uses_menu_list_ = true;
   bool is_multiple_ = false;
   mutable bool should_recalc_list_items_ = false;
+  // was_option_inserted_ is set to true the first time that OptionInserted is
+  // called, and never gets set back to false again. It is used for parsing
+  // <input> in <select>.
+  bool was_option_inserted_ = false;
 
   Member<HTMLOptionElement> active_option_;
 

@@ -6535,6 +6535,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5891" label="CapabilityElementOnPromptAction"/>
   <int value="5892" label="CapabilityElementOnPromptDismiss"/>
   <int value="5893" label="CapabilityElementOnValidationStatusChange"/>
+  <int value="5894" label="InputParsedParentSelectNoOptions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

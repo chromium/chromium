@@ -32,4 +32,22 @@ test(() => {
   assert_true(internals.isUseCounted(document, ancestorSelect),
     'ancestor <select> use counter should be hit after parsing <select><div><input>.');
 }, 'UseCounters for <input> in <select>');
+
+const kInputParsedParentSelectNoOptions = 5894;
+
+test(() => {
+  internals.clearUseCounter(document, kInputParsedParentSelectNoOptions);
+
+  target.innerHTML = '<select><option>option</option><input>';
+  assert_equals(target.innerHTML, '<select><option>option</option></select><input>',
+    '<input> should not be included in <select> after <option>s.');
+  assert_false(internals.isUseCounted(document, kInputParsedParentSelectNoOptions,
+    '<input> in <select> after <option> should not trigger use counter.'));
+
+  target.innerHTML = '<select><input><option>option';
+  assert_equals(target.innerHTML, '<select><input><option>option</option></select>',
+    '<input> should be included in <select> before <option>s.');
+  assert_true(internals.isUseCounted(document, kInputParsedParentSelectNoOptions,
+    '<input> in <select> before <option> should trigger use counter.'));
+}, 'UseCounters and parsing behavior for <input> in <select> before <option>s');
 </script>

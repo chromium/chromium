@@ -904,6 +904,8 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
   SetNeedsValidityCheck();
   select_type_->ClearLastOnChangeSelection();
 
+  was_option_inserted_ = true;
+
   if (!GetDocument().IsActive())
     return;
 

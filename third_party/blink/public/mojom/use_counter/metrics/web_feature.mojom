@@ -5208,6 +5208,7 @@ enum WebFeature {
   kCapabilityElementOnPromptAction = 5891,
   kCapabilityElementOnPromptDismiss = 5892,
   kCapabilityElementOnValidationStatusChange = 5893,
+  kInputParsedParentSelectNoOptions = 5894,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

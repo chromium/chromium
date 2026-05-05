@@ -862,7 +862,8 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       // Per spec https://html.spec.whatwg.org/C/#parsing-main-inbody,
       // section "A start tag whose tag name is "input""
       if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
-        bool parent_select = IsA<HTMLSelectElement>(tree_.CurrentNode());
+        HTMLSelectElement* parent_select =
+            DynamicTo<HTMLSelectElement>(tree_.CurrentNode());
         bool parent_option_optgroup =
             IsA<HTMLOptionElement>(tree_.CurrentNode()) ||
             IsA<HTMLOptGroupElement>(tree_.CurrentNode());
@@ -885,6 +886,16 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
         } else {
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kInputParsedAncestorSelect);
+        }
+
+        if (parent_select && !parent_select->WasOptionInserted()) {
+          if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
+            // <input> tags are allowed inside <select> if they come before any
+            // of the <option>s.
+            add_select_end_tag = false;
+          }
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kInputParsedParentSelectNoOptions);
         }
 
         if (add_select_end_tag) {
