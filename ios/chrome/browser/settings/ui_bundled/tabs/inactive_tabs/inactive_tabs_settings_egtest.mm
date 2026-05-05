@@ -45,7 +45,8 @@
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testInactiveTabsPreferenceChange {
+// TODO(crbug.com/509785308): Fails on iphone-device bot. Re-enable this test.
+- (void)DISABLED_testInactiveTabsPreferenceChange {
   [self openInactiveTabsSettings];
 
   NSArray<NSString*>* inactiveTabsThresholdOptions = @[
