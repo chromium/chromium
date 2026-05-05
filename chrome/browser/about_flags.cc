@@ -12309,10 +12309,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
-    {"infobar-refresh", flag_descriptions::kInfobarRefreshName,
-     flag_descriptions::kInfobarRefreshDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kInfobarRefresh)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"read-anything-immersive-reading-mode",

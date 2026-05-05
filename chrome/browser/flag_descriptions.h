@@ -2715,10 +2715,6 @@ inline constexpr char kImportExportFlagsName[] = "Import and export flags";
 inline constexpr char kImportExportFlagsDescription[] =
     "Enables importing and exporting flags from chrome://flags.";
 
-inline constexpr char kInfobarRefreshName[] = "Infobar Refresh";
-inline constexpr char kInfobarRefreshDescription[] =
-    "Renders infobars with a refreshed UI.";
-
 inline constexpr char kIncognitoScreenshotName[] = "Incognito Screenshot";
 inline constexpr char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
