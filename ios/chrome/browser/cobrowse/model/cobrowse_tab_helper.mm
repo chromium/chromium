@@ -51,9 +51,8 @@ void CobrowseTabHelper::WasShown(web::WebState* web_state) {
     // established before showing the assistant. This avoids crashes during
     // transitions (e.g., from Tab Grid to Browser).
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [scene_handler_ showAssistant];
-        }));
+        FROM_HERE, base::BindOnce(&CobrowseTabHelper::ShowAssistant,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -99,4 +98,8 @@ bool CobrowseTabHelper::ShouldHideAssistantForURL(const GURL& url) {
   }
 
   return false;
+}
+
+void CobrowseTabHelper::ShowAssistant() {
+  [scene_handler_ showAssistant];
 }
