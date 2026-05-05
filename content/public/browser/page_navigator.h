@@ -138,6 +138,9 @@ struct CONTENT_EXPORT OpenURLParams {
   // gesture if the navigation was initiated by the renderer.
   bool user_gesture;
 
+  // Indicates whether this navigation was started by an ad.
+  bool started_by_ad = false;
+
   // Whether the call to OpenURL was triggered by an Event, and what the
   // isTrusted flag of the event was.
   blink::mojom::TriggeringEventInfo triggering_event_info =

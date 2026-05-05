@@ -138,7 +138,8 @@ class CONTENT_EXPORT Navigator {
       const std::string& href_translate,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       const std::optional<blink::Impression>& impression,
-      bool has_rel_opener);
+      bool has_rel_opener,
+      bool started_by_ad);
 
   // Called when a document requests a navigation in another document through a
   // `blink::RemoteFrame`. If `method` is "POST", then `post_body` needs to

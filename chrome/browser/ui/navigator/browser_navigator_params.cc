@@ -80,6 +80,7 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->impression = params.impression;
   this->internal_scroll_to_text_fragment =
       params.internal_scroll_to_text_fragment;
+  this->started_by_ad = params.started_by_ad;
 
   // Implementation notes:
   //   The following NavigateParams don't have an equivalent in OpenURLParams:

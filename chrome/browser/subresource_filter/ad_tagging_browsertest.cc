@@ -1195,6 +1195,69 @@ IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
+                       AnchorClick_FromAdFrameWithRealGesture) {
+  // Load a page that has createFrame defined.
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Make iframes full viewport to ensure the click hits it.
+  EXPECT_TRUE(
+      content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                      "const style = document.createElement('style');"
+                      "style.textContent = 'iframe { position: absolute; "
+                      "height: 100%; width: 100%; top: 0; left: 0; }';"
+                      "document.head.appendChild(style);"));
+
+  GURL popup_url =
+      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
+
+  // Create a same-origin ad iframe covering the full viewport.
+  GURL ad_iframe_url = embedded_test_server()->GetURL(
+      "a.com", "/ad_tagging/page_with_full_viewport_link.html?ad=true");
+  RenderFrameHost* child_rfh = CreateSrcFrame(GetWebContents(), ad_iframe_url);
+  ASSERT_TRUE(child_rfh);
+  EXPECT_TRUE(child_rfh->IsAdFrame());
+
+  // Set the link's href and target in the iframe.
+  EXPECT_TRUE(content::ExecJs(
+      child_rfh, content::JsReplace(
+                     "document.getElementsByTagName('a')[0].href = $1; "
+                     "document.getElementsByTagName('a')[0].target='_blank';",
+                     popup_url)));
+
+  // We should wait for the hit-test data to be ready before sending the click
+  // event below to avoid flakiness.
+  content::WaitForHitTestData(child_rfh);
+
+  content::WebContentsAddedObserver observer;
+  // Click in the center of the viewport, which should hit the full-viewport
+  // link in the ad iframe.
+  content::SimulateMouseClick(web_contents(),
+                              blink::WebInputEvent::kNoModifiers,
+                              blink::WebMouseEvent::Button::kLeft);
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver popup_navigation_observer(new_web_contents);
+  popup_navigation_observer.Wait();
+
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  EXPECT_TRUE(popup_navigation_observer
+                  .last_navigation_started_with_transient_activation());
+
+  // The bit should now be propagated correctly from the ad frame.
+  EXPECT_TRUE(popup_navigation_observer.last_navigation_started_by_ad());
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder_->ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
                        WindowOpen_FromAdIframeWithoutGesture) {
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");

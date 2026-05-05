@@ -1086,7 +1086,8 @@ void Navigator::RequestOpenURL(
     const std::string& href_translate,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     const std::optional<blink::Impression>& impression,
-    bool has_rel_opener) {
+    bool has_rel_opener,
+    bool started_by_ad) {
   // Note: This can be called for subframes (even when OOPIFs are not possible)
   // if the disposition calls for a different window.
 
@@ -1136,6 +1137,7 @@ void Navigator::RequestOpenURL(
   params.initiator_base_url = initiator_base_url;
   params.initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
   params.initiator_process_id = initiator_process_id;
+  params.started_by_ad = started_by_ad;
 
   // RequestOpenURL is used only for local frames, so we can get here only if
   // the navigation is initiated by a frame in the same SiteInstance as this

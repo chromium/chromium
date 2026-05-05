@@ -390,6 +390,9 @@ struct NavigateParams {
   // "text=" in a URL directive), not the "text=" prefix itself.
   std::optional<std::string> internal_scroll_to_text_fragment;
 
+  // Indicates whether this navigation was started by an ad.
+  bool started_by_ad = false;
+
  private:
   NavigateParams();
 };
