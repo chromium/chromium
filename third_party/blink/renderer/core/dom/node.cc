@@ -28,6 +28,7 @@
 
 #include <algorithm>
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
@@ -401,112 +402,50 @@ Node* Node::PseudoAwarePreviousSibling() const {
     return previousSibling();
   }
 
-  // Note the [[fallthrough]] attributes, the order of the cases matters and
-  // corresponds to the ordering of pseudo-elements in a traversal:
-  // ::scroll-marker-group(before), ::marker, ::scroll-marker,
-  // ::scroll-button(), ::checkmark,
-  // ::before, non-pseudo Elements, ::after, ::picker-icon, ::interest-button,
-  // ::scroll-marker-group(after), ::view-transition. The fallthroughs ensure
-  // this ordering by checking for each kind of node in-turn.
-  switch (GetPseudoId()) {
-    case kPseudoIdViewTransition:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-        return previous;
+  PseudoId pseudo_id = GetPseudoId();
+
+  if (pseudo_id == kPseudoIdColumn) {
+    // kPseudoIdColumn is an array of indexed pseudo-elements.  If this node
+    // is one of them (and not the first), find the previous one in the array.
+    auto* column = To<ColumnPseudoElement>(this);
+    if (column->Index() > 0) {
+      return parent->GetColumnPseudoElements()->at(column->Index() - 1u);
+    }
+  }
+
+  auto pseudo_iter = std::ranges::find(kElementChildPseudoOrder, pseudo_id);
+  if (pseudo_iter != kElementChildPseudoOrder.end()) {
+    while (pseudo_iter != kElementChildPseudoOrder.begin()) {
+      --pseudo_iter;
+      switch (*pseudo_iter) {
+        case kPseudoIdColumn:
+          // kPseudoIdColumn is an array of indexed pseudo-elements.  If this
+          // node is after it and the array is present, return its last item.
+          if (const ColumnPseudoElementsVector* columns =
+                  parent->GetColumnPseudoElements();
+              columns && !columns->empty()) {
+            return columns->back();
+          }
+          break;
+        case kPseudoIdNone:
+          if (Node* previous = parent->lastChild()) {
+            return previous;
+          }
+          break;
+        default:
+          if (Node* previous = parent->GetPseudoElement(*pseudo_iter)) {
+            return previous;
+          }
+          break;
       }
-      [[fallthrough]];
-    case kPseudoIdScrollMarkerGroupAfter:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdInterestButton)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdInterestButton:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdAfter)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdAfter:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdExpandIcon:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdPickerIcon:
-      if (Node* previous = parent->lastChild())
-        return previous;
-      [[fallthrough]];
-    case kPseudoIdNone:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdBefore))
-        return previous;
-      [[fallthrough]];
-    case kPseudoIdBefore:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheckMark)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdCheckMark:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockEnd:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineEnd:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineStart:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockStart:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollMarker:
-      if (const ColumnPseudoElementsVector* columns =
-              parent->GetColumnPseudoElements();
-          columns && !columns->empty()) {
-        return columns->back();
-      }
-      [[fallthrough]];
-    case kPseudoIdColumn:
-      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
-        const ColumnPseudoElementsVector* columns =
-            parent->GetColumnPseudoElements();
-        if (column->Index() > 0) {
-          return columns->at(column->Index() - 1u);
-        }
-      }
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdMarker:
-      if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
-        return previous;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollMarkerGroupBefore:
-      return nullptr;
+    }
+    return nullptr;
+  }
+
+  switch (pseudo_id) {
     // The pseudos of the view transition subtree have a known structure and
     // cannot create other pseudos so these are handled separately of the above
-    // fallthrough cases. For details on view-transition pseudo ordering, see
+    // cases. For details on view-transition pseudo ordering, see
     // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/view_transition/README.md#pseudo-element-traversal
     case kPseudoIdViewTransitionNew:
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
@@ -545,102 +484,48 @@ Node* Node::PseudoAwareNextSibling() const {
     return nextSibling();
   }
 
-  // See comments in PseudoAwarePreviousSibling.
-  switch (GetPseudoId()) {
-    case kPseudoIdScrollMarkerGroupBefore:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdMarker)) {
-        return next;
+  PseudoId pseudo_id = GetPseudoId();
+
+  if (pseudo_id == kPseudoIdColumn) {
+    // kPseudoIdColumn is an array of indexed pseudo-elements.  If this node
+    // is one of them (and not the last), find the next one in the array.
+    auto* column = To<ColumnPseudoElement>(this);
+    const ColumnPseudoElementsVector* columns =
+        parent->GetColumnPseudoElements();
+    if (column->Index() + 1u < columns->size()) {
+      return columns->at(column->Index() + 1u);
+    }
+  }
+  auto pseudo_iter = std::ranges::find(kElementChildPseudoOrder, pseudo_id);
+  if (pseudo_iter != kElementChildPseudoOrder.end()) {
+    while (++pseudo_iter != kElementChildPseudoOrder.end()) {
+      switch (*pseudo_iter) {
+        case kPseudoIdColumn:
+          // kPseudoIdColumn is an array of indexed pseudo-elements.  If this
+          // node is before it and the array is present, return its first
+          // item.
+          if (const ColumnPseudoElementsVector* columns =
+                  parent->GetColumnPseudoElements();
+              columns && !columns->empty()) {
+            return columns->front();
+          }
+          break;
+        case kPseudoIdNone:
+          if (parent->HasChildren()) {
+            return parent->firstChild();
+          }
+          break;
+        default:
+          if (Node* next = parent->GetPseudoElement(*pseudo_iter)) {
+            return next;
+          }
+          break;
       }
-      [[fallthrough]];
-    case kPseudoIdMarker:
-      if (const ColumnPseudoElementsVector* columns =
-              parent->GetColumnPseudoElements();
-          columns && !columns->empty()) {
-        return columns->front();
-      }
-      [[fallthrough]];
-    case kPseudoIdColumn:
-      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
-        const ColumnPseudoElementsVector* columns =
-            parent->GetColumnPseudoElements();
-        if (column->Index() + 1u < columns->size()) {
-          return columns->at(column->Index() + 1u);
-        }
-      }
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollMarker:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockStart:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineStart:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonInlineEnd:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollButtonBlockEnd:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdCheckMark:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
-        return next;
-      [[fallthrough]];
-    case kPseudoIdBefore:
-      if (parent->HasChildren())
-        return parent->firstChild();
-      [[fallthrough]];
-    case kPseudoIdNone:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdPickerIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdPickerIcon:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdExpandIcon)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdExpandIcon:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdAfter:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdInterestButton)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdInterestButton:
-      if (Node* next =
-              parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdScrollMarkerGroupAfter:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdViewTransition)) {
-        return next;
-      }
-      [[fallthrough]];
-    case kPseudoIdViewTransition:
-      return nullptr;
+    }
+    return nullptr;
+  }
+
+  switch (pseudo_id) {
     case kPseudoIdViewTransitionOld:
       CHECK_EQ(parent->GetPseudoId(), kPseudoIdViewTransitionImagePair);
       return parent->GetPseudoElement(
@@ -709,64 +594,33 @@ Node* Node::PseudoAwareFirstChild() const {
       return current_element->GetPseudoElement(kPseudoIdViewTransitionGroup,
                                                nested_names.front());
     }
-    if (Node* first = current_element->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
-      return first;
-    if (const ColumnPseudoElementsVector* columns =
-            current_element->GetColumnPseudoElements();
-        columns && !columns->empty()) {
-      if (Node* first = columns->front()) {
-        return first;
+
+    for (PseudoId pseudo_id : kElementChildPseudoOrder) {
+      switch (pseudo_id) {
+        case kPseudoIdColumn:
+          // kPseudoIdColumn is an array of indexed pseudo-elements.  Return
+          // its first item if the array is present.
+          if (const ColumnPseudoElementsVector* columns =
+                  current_element->GetColumnPseudoElements();
+              columns && !columns->empty()) {
+            if (Node* first = columns->front()) {
+              return first;
+            }
+          }
+          break;
+        case kPseudoIdNone:
+          if (Node* first = current_element->firstChild()) {
+            return first;
+          }
+          break;
+        default:
+          if (Node* first = current_element->GetPseudoElement(pseudo_id)) {
+            return first;
+          }
+          break;
       }
     }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(
-            kPseudoIdScrollButtonBlockStart)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(
-            kPseudoIdScrollButtonInlineStart)) {
-      return first;
-    }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-      return first;
-    }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
-      return first;
-    if (Node* first = current_element->firstChild())
-      return first;
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
-      return first;
-    }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdInterestButton)) {
-      return first;
-    }
-    if (Node* first = current_element->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupAfter)) {
-      return first;
-    }
-    return current_element->GetPseudoElement(kPseudoIdViewTransition);
+    return nullptr;
   }
 
   return firstChild();
@@ -810,64 +664,33 @@ Node* Node::PseudoAwareLastChild() const {
       return current_element->GetPseudoElement(kPseudoIdViewTransitionOld,
                                                name);
     }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdViewTransition)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupAfter)) {
-      return last;
-    }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdInterestButton)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdExpandIcon)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
-      return last;
-    }
-    if (Node* last = current_element->lastChild())
-      return last;
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
-      return last;
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
-      return last;
-    }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
-      return last;
-    }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(
-            kPseudoIdScrollButtonInlineStart)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(
-            kPseudoIdScrollButtonBlockStart)) {
-      return last;
-    }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
-      return last;
-    }
-    if (const ColumnPseudoElementsVector* columns =
-            current_element->GetColumnPseudoElements();
-        columns && !columns->empty()) {
-      if (Node* last = columns->back()) {
-        return last;
+
+    for (PseudoId pseudo_id : base::Reversed(kElementChildPseudoOrder)) {
+      switch (pseudo_id) {
+        case kPseudoIdColumn:
+          // kPseudoIdColumn is an array of indexed pseudo-elements.  Return
+          // its last item if the array is present.
+          if (const ColumnPseudoElementsVector* columns =
+                  current_element->GetColumnPseudoElements();
+              columns && !columns->empty()) {
+            if (Node* last = columns->back()) {
+              return last;
+            }
+          }
+          break;
+        case kPseudoIdNone:
+          if (Node* last = current_element->lastChild()) {
+            return last;
+          }
+          break;
+        default:
+          if (Node* last = current_element->GetPseudoElement(pseudo_id)) {
+            return last;
+          }
+          break;
       }
     }
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdMarker)) {
-      return last;
-    }
-    return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+    return nullptr;
   }
 
   return lastChild();
