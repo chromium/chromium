@@ -1395,6 +1395,65 @@ TEST_F(AudioContextStatsTest, PlaybackStatsVisibilityRestriction) {
                                        /*expect_change=*/true);
 }
 
+TEST_F(AudioContextStatsTest, PlaybackStatsVisibilityDataDiscard) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+  FlushPermissionService(audio_context);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // 1. Page is visible by default. Render some baseline audio.
+  RenderAndCheckIfPlaybackStatsChanged(
+      base::Seconds(1), renderer, script_state, /*expect_change=*/true);
+
+  AudioPlaybackStats* playback_stats = audio_context->playbackStats();
+  int glitches_before = playback_stats->underrunEvents(script_state);
+  double duration_before = playback_stats->totalDuration(script_state);
+
+  // 2. Hide the page.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+
+  // 3. Render audio with glitches while hidden.
+  fake_time_now_ += base::Seconds(1);
+  renderer->Render(
+      1000, base::Milliseconds(50),
+      media::AudioGlitchInfo{.duration = base::Milliseconds(10), .count = 1});
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // 4. Make the page visible again.
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+
+  // 5. Render one quantum without glitches to trigger stats update.
+  fake_time_now_ += base::Seconds(1);
+  renderer->Render(1000, base::Milliseconds(50), media::AudioGlitchInfo{});
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  // 6. Verify that stats did NOT increase by the glitches or the duration from
+  // the hidden period.
+  int glitches_after = playback_stats->underrunEvents(script_state);
+  EXPECT_EQ(glitches_before, glitches_after);
+  double duration_after =
+      duration_before + media::AudioTimestampHelper::FramesToTime(
+                            1000, audio_context->sampleRate())
+                            .InSecondsF();
+  // We use EXPECT_NEAR with a 10 microseconds tolerance to allow for
+  // sub-microsecond rounding errors from integer time conversion in
+  // AudioTimestampHelper::FramesToTime. The tolerance is smaller than 1 audio
+  // frame (~20.8 microseconds at 48kHz), ensuring any actually processed frame
+  // would still trigger a failure.
+  EXPECT_NEAR(playback_stats->totalDuration(script_state),
+              duration_after, 0.00001);
+}
+
 TEST_F(AudioContextStatsTest, PlaybackStatsMicrophoneRestrictionStartsDenied) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "AudioContextPlaybackStats", true);

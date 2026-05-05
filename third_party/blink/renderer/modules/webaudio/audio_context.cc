@@ -173,14 +173,13 @@ class AudioContext::StatsUpdateRestrictor {
   StatsUpdateRestrictor() : clock_(base::DefaultTickClock::GetInstance()) {}
 
   // Should only be called from the audio thread.
-  bool StatUpdateAllowed() {
-    // Stats should only be updated if the page is visible or the application
-    // has audio capture permission.
-    if (!(visible_.load(std::memory_order_relaxed) ||
-          has_capture_permission_.load(std::memory_order_relaxed))) {
-      return false;
-    }
+  bool IsVisibleOrHasPermission() const {
+    return visible_.load(std::memory_order_relaxed) ||
+           has_capture_permission_.load(std::memory_order_relaxed);
+  }
 
+  // Should only be called from the audio thread.
+  bool CheckAndConsumeRateLimit() {
     static const base::TimeDelta kMinTimeBetweenStatUpdates = base::Seconds(1);
     base::TimeTicks now_time = clock_->NowTicks();
     if (now_time - last_update_time_ < kMinTimeBetweenStatUpdates) {
@@ -1412,8 +1411,13 @@ bool AudioContext::HandlePreRenderTasks(
     const media::AudioGlitchInfo& glitch_info) {
   DCHECK(IsAudioThread());
 
-  pending_audio_frame_stats_.Update(frames_to_process, sampleRate(),
-                                    playout_delay, glitch_info);
+  bool is_stat_collection_allowed =
+      stats_update_restrictor_->IsVisibleOrHasPermission();
+
+  if (is_stat_collection_allowed) {
+    pending_audio_frame_stats_.Update(frames_to_process, sampleRate(),
+                                      playout_delay, glitch_info);
+  }
 
   // At the beginning of every render quantum, try to update the internal
   // rendering graph state (from main thread changes).  It's OK if the tryLock()
@@ -1440,7 +1444,8 @@ bool AudioContext::HandlePreRenderTasks(
 
     callback_metric_ = *metric;
 
-    if (stats_update_restrictor_->StatUpdateAllowed()) {
+    if (is_stat_collection_allowed &&
+        stats_update_restrictor_->CheckAndConsumeRateLimit()) {
       audio_frame_stats_.Absorb(pending_audio_frame_stats_);
     }
 
