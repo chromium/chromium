@@ -383,7 +383,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     : public CanvasResourceProvider,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
-      public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver,
       public CanvasResourceSharedImage::Client,
       public FlushForImageObserver {
@@ -435,6 +434,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
 
+  virtual void OnContextLost();
+
   const bool is_accelerated_;
 
   // The resource that is currently being used by this provider.
@@ -445,12 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool is_software_ = false;
   bool is_cleared_ = false;
 
-  // `raster_context_provider_` holds a reference on the shared
-  // `RasterContextProvider`, to keep it alive until it notifies us after the
-  // GPU context is lost. Without this, no `CanvasResourceProvider` would get
-  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
-  // recreated.
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
@@ -470,9 +465,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
-  // `viz::ContextLostObserver`:
-  void OnContextLost() final;
-
   // BitmapGpuChannelLostObserver:
   void OnGpuChannelLost() final;
 
@@ -484,7 +476,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
-    : public CanvasResourceProviderSharedImage {
+    : public CanvasResourceProviderSharedImage,
+      public viz::ContextLostObserver {
  public:
   // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
@@ -593,6 +586,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
 
  private:
+  // viz::ContextLostObserver implementation.
+  void OnContextLost() override {
+    CanvasResourceProviderSharedImage::OnContextLost();
+  }
+
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   bool IsResourceUsable(CanvasResourceSharedImage* resource);
@@ -613,6 +611,13 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
+  // `raster_context_provider_` holds a reference on the shared
+  // `RasterContextProvider`, to keep it alive until it notifies us after the
+  // GPU context is lost. Without this, instances of this class would not get
+  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
+  // recreated.
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
@@ -621,7 +626,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
 // * by non-Canvas2D clients.
 class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
-    : public CanvasResourceProviderSharedImage {
+    : public CanvasResourceProviderSharedImage,
+      public viz::ContextLostObserver {
  public:
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
       gfx::Size size,
@@ -765,6 +771,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  // viz::ContextLostObserver implementation.
+  void OnContextLost() override {
+    CanvasResourceProviderSharedImage::OnContextLost();
+  }
+
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void FlushRecording(cc::PaintRecord last_recording);
@@ -782,6 +793,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
+
+  // `raster_context_provider_` holds a reference on the shared
+  // `RasterContextProvider`, to keep it alive until it notifies us after the
+  // GPU context is lost. Without this, instances of this class would not get
+  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
+  // recreated.
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;

@@ -253,16 +253,9 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              color_space,
                              delegate),
       is_accelerated_(is_accelerated),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      raster_context_provider_(
-          base::WrapRefCounted(context_provider_wrapper_->ContextProvider()
-                                   .RasterContextProvider())) {
+      context_provider_wrapper_(std::move(context_provider_wrapper)) {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
-  }
-
-  if (raster_context_provider_) {
-    raster_context_provider_->AddObserver(this);
   }
 }
 
@@ -300,10 +293,6 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
 
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
-  }
-
-  if (raster_context_provider_) {
-    raster_context_provider_->RemoveObserver(this);
   }
 
   GetFlushForImageListener()->RemoveObserver(this);
@@ -2133,6 +2122,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
+    raster_context_provider_ = base::WrapRefCounted(
+        context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
@@ -2142,6 +2133,10 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
       recorder_for_canvas_2d_->DisableLineDrawingAsPaths();
     }
+  }
+
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
   }
 
   if (context_provider_wrapper_) {
@@ -2234,6 +2229,9 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
 }
 
 Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }
@@ -2279,6 +2277,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)) {
   if (context_provider_wrapper_) {
+    raster_context_provider_ = base::WrapRefCounted(
+        context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
@@ -2286,6 +2286,10 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
         gpu::kGpuFeatureStatusEnabled) {
       recorder_for_external_draws_->DisableLineDrawingAsPaths();
     }
+  }
+
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
   }
 
   if (context_provider_wrapper_) {
@@ -2380,6 +2384,9 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() {
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }
