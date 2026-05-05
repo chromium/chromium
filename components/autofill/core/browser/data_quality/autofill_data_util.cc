@@ -541,4 +541,11 @@ std::string GetCountryCodeWithFallback(const autofill::AutofillProfile& profile,
   return country_code;
 }
 
+bool HaveNonConflictingCountryCodes(const AddressCountryCode& country_code1,
+                                    const AddressCountryCode& country_code2) {
+  return country_code1 == country_code2 ||
+         !IsValidCountryCode(country_code1.value()) ||
+         !IsValidCountryCode(country_code2.value());
+}
+
 }  // namespace autofill::data_util

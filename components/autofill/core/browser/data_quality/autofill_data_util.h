@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -125,6 +126,11 @@ bool IsValidCountryCode(std::u16string_view country_code);
 // associated with `app_locale` is used as a fallback.
 std::string GetCountryCodeWithFallback(const AutofillProfile& profile,
                                        std::string_view app_locale);
+
+// Returns true if `country_code1` and `country_code2` are the same, or if at
+// least one of them is invalid.
+bool HaveNonConflictingCountryCodes(const AddressCountryCode& country_code1,
+                                    const AddressCountryCode& country_code2);
 
 }  // namespace data_util
 }  // namespace autofill

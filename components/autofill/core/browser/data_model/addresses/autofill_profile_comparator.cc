@@ -134,6 +134,14 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
   // trigger the loading of locale-specific rules.
   DVLOG(1) << "Comparing profiles:\np1 = " << p1 << "\np2 = " << p2;
 
+  // Do not process `p1` if it is trivially unrelated to `p2` for having
+  // different source country code, for performance reasons.
+  if (!data_util::HaveNonConflictingCountryCodes(p1.GetAddressCountryCode(),
+                                                 p2.GetAddressCountryCode())) {
+    DVLOG(1) << "Different country codes.";
+    return false;
+  }
+
   if (!HaveMergeableCompanyNames(p1, p2)) {
     DVLOG(1) << "Different email company names.";
     return false;
