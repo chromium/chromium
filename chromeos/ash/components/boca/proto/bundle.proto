@@ -7,6 +7,12 @@ package boca;
 
 option optimize_for = LITE_RUNTIME;
 
+enum UrlType {
+  URL_TYPE_UNSPECIFIED = 0;
+  URL_TYPE_GEMINI_REGULAR = 1;
+  URL_TYPE_GEMINI_GUIDED_LEARNING = 2;
+}
+
 message Bundle {
   repeated ContentConfig content_configs = 1;
 
@@ -26,6 +32,8 @@ message ContentConfig {
   string favicon_url = 4;
 
   LockedNavigationOptions locked_navigation_options = 5;
+
+  UrlType url_type = 6;
 }
 
 message ClassroomContent {
