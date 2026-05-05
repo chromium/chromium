@@ -119,15 +119,27 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   using KeyIdMap =
       absl::flat_hash_map<UnexportableKeyId,
                           scoped_refptr<RefCountedUnexportableSigningKey>>;
+  using AllKeysForGarbageCollectionMap =
+      absl::flat_hash_map<UnexportableKeyId,
+                          scoped_refptr<RefCountedUnexportableKey>>;
 
   // Convenience method to create a `WrappedKeyAndTag` from a
-  // `RefCountedUnexportableSigningKey`.
+  // `RefCountedUnexportableKey`.
   static WrappedKeyAndTag GetWrappedKeyAndTag(
-      const RefCountedUnexportableSigningKey& key);
+      const RefCountedUnexportableKey& key);
 
   // Convenience method to create a `WrappedKeyAndTag` from a
   // `WrappedKeyAndTagView`.
   static WrappedKeyAndTag Materialize(WrappedKeyAndTagView view);
+
+  // Returns a pointer to the unexportable key with the given ID, or an error
+  // if it is not found. The returned pointer is guaranteed to be non-null on
+  // success. The returned pointer is only valid for as long as the key is
+  // present in the service (i.e., not deleted and not garbage collected).
+  ServiceErrorOr<const crypto::UnexportableKey*> GetKey(
+      UnexportableKeyId key_id) const;
+  ServiceErrorOr<const crypto::StatefulKey*> GetStatefulKey(
+      UnexportableKeyId key_id) const;
 
   // Removes the key with `key_id` from the in-memory maps.
   // Returns the mapped key on success, or `ServiceError::kKeyNotFound` if the
@@ -138,8 +150,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // Callback for `GetAllKeysForGarbageCollectionSlowlyAsync()`.
   ServiceErrorOr<std::vector<UnexportableKeyId>>
   OnGetAllKeysForGarbageCollectionSlowlyImpl(
-      ServiceErrorOr<
-          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
           keys_or_error);
 
   // Callback for `GenerateSigningKeySlowlyAsync()`.
@@ -188,6 +199,11 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // Stores unexportable signing keys that were created during the current
   // session.
   KeyIdMap key_by_key_id_;
+
+  // Stores all unexportable keys for garbage collection purposes. This map is
+  // disjoint from `key_by_key_id_` and will be overwritten on each call to
+  // `GetAllKeysForGarbageCollection`.
+  AllKeysForGarbageCollectionMap all_gc_keys_by_key_id_;
 
   base::WeakPtrFactory<UnexportableKeyServiceImpl> weak_ptr_factory_{this};
 };

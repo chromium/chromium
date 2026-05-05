@@ -353,54 +353,6 @@ TEST_F(UnexportableKeyServiceImplTest,
   EXPECT_EQ(key_id, from_wrapped_future.Get());
 }
 
-TEST_F(UnexportableKeyServiceImplTest,
-       FromWrappedSigningKeySelectsCorrectKeyWithTag) {
-  // Re-initialize the service with a specific application tag.
-  ResetService(/*config=*/{.application_tag = "TagA"});
-
-  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
-
-  // Mock the provider to return two keys with the same wrapped key but
-  // different tags. This simulates a state where keys from different profiles
-  // (or distinct tags) are present in the underlying storage.
-  auto key_a = std::make_unique<NiceMock<MockUnexportableKey>>();
-  ON_CALL(*key_a, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  ON_CALL(*key_a, GetKeyTag).WillByDefault(Return("TagA"));
-
-  auto key_b = std::make_unique<NiceMock<MockUnexportableKey>>();
-  ON_CALL(*key_b, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  ON_CALL(*key_b, GetKeyTag).WillByDefault(Return("TagB"));
-
-  // Load all keys into the service.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
-      .WillOnce(Return(
-          base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
-              std::move(key_a),
-              std::move(key_b),
-          })));
-
-  base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
-      get_all_future;
-  service().GetAllKeysForGarbageCollectionSlowlyAsync(
-      kTaskPriority, get_all_future.GetCallback());
-  RunBackgroundTasks();
-  ASSERT_OK_AND_ASSIGN(auto ids, get_all_future.Get());
-  // Verify both keys were loaded.
-  ASSERT_THAT(ids, SizeIs(2));
-
-  // Request a key from the wrapped key data.
-  // The service should use its config ("TagA") to find the matching key.
-  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
-      from_wrapped_future;
-  service().FromWrappedSigningKeySlowlyAsync(kWrappedKey, kTaskPriority,
-                                             from_wrapped_future.GetCallback());
-  RunBackgroundTasks();
-  ASSERT_OK_AND_ASSIGN(UnexportableKeyId selected_id,
-                       from_wrapped_future.Get());
-
-  // Verify the selected key is indeed the one with "TagA".
-  EXPECT_THAT(service().GetKeyTag(selected_id), ValueIs("TagA"));
-}
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(
@@ -463,16 +415,30 @@ TEST_F(UnexportableKeyServiceImplTest,
   ASSERT_THAT(key_ids, SizeIs(1));
   UnexportableKeyId key_id = key_ids[0];
 
-  // The key should be available in the service.
-  EXPECT_THAT(service().GetWrappedKey(key_id), ValueIs(kWrappedKey));
+  // The key should be available in the service via sync APIs (checking both
+  // maps).
+  ASSERT_OK(service().GetWrappedKey(key_id));
 
-  // A subsequent `FromWrappedKey` call should return the same ID immediately.
+  // A subsequent `FromWrappedKey` call should return a DIFFERENT ID after
+  // running tasks.
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       from_wrapped_future;
+
+  auto key_for_from_wrapped = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*key_for_from_wrapped, GetWrappedKey)
+      .WillByDefault(Return(kWrappedKey));
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(),
+              FromWrappedSigningKeySlowly(Eq(kWrappedKey)))
+      .WillOnce(Return(std::move(key_for_from_wrapped)));
+
   service().FromWrappedSigningKeySlowlyAsync(kWrappedKey, kTaskPriority,
                                              from_wrapped_future.GetCallback());
+  ASSERT_FALSE(from_wrapped_future.IsReady());
+  RunBackgroundTasks();
   EXPECT_TRUE(from_wrapped_future.IsReady());
-  EXPECT_THAT(from_wrapped_future.Get(), ValueIs(key_id));
+  ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId new_key_id,
+                       from_wrapped_future.Get());
+  EXPECT_NE(new_key_id, key_id);
 }
 
 TEST_F(UnexportableKeyServiceImplTest, FromWrappedSigningKeyBeforeGetAllKeys) {
@@ -509,7 +475,8 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedSigningKeyBeforeGetAllKeys) {
                        from_wrapped_future.Get());
   ASSERT_OK_AND_ASSIGN(std::vector<UnexportableKeyId> key_ids,
                        get_all_keys_future.Get());
-  ASSERT_THAT(key_ids, ElementsAre(key_id));
+  ASSERT_THAT(key_ids, SizeIs(1));
+  EXPECT_NE(key_ids[0], key_id);
 }
 
 TEST_F(UnexportableKeyServiceImplTest, GetAllKeysBeforeFromWrappedSigningKey) {
@@ -546,7 +513,8 @@ TEST_F(UnexportableKeyServiceImplTest, GetAllKeysBeforeFromWrappedSigningKey) {
                        get_all_keys_future.Get());
   ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId key_id,
                        from_wrapped_future.Get());
-  ASSERT_THAT(key_ids, ElementsAre(key_id));
+  ASSERT_THAT(key_ids, SizeIs(1));
+  EXPECT_NE(key_ids[0], key_id);
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
@@ -598,32 +566,21 @@ TEST_F(UnexportableKeyServiceImplTest,
                        get_all_keys_future.Get());
   ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId key_id,
                        from_wrapped_future.Get());
-  ASSERT_THAT(key_ids, ElementsAre(key_id));
-  EXPECT_THAT(service().GetWrappedKey(key_id),
-              ErrorIs(ServiceError::kKeyNotFound));
+  ASSERT_THAT(key_ids, SizeIs(1));
+  EXPECT_NE(key_ids[0], key_id);
+  EXPECT_OK(service().GetWrappedKey(key_id));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
-       GetAllKeysForGarbageCollectionSlowlyAsyncWithKeyCollisions) {
+       GetAllKeysForGarbageCollectionSlowlyAsyncPopulatesGCMap) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
-  const std::string kTag1 = "tag1";
-  const std::string kTag2 = "tag2";
+  auto provider_key = std::make_unique<NiceMock<MockUnexportableKey>>();
+  ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(kWrappedKey));
 
-  // Create two keys with the same wrapped key but different tags.
-  auto key1 = std::make_unique<NiceMock<MockUnexportableKey>>();
-  ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  ON_CALL(*key1, GetKeyTag).WillByDefault(Return(kTag1));
-
-  auto key2 = std::make_unique<NiceMock<MockUnexportableKey>>();
-  ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey));
-  ON_CALL(*key2, GetKeyTag).WillByDefault(Return(kTag2));
-
-  // The provider returns both keys.
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
-              std::move(key1),
-              std::move(key2),
+              std::move(provider_key),
           })));
 
   base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
@@ -633,17 +590,24 @@ TEST_F(UnexportableKeyServiceImplTest,
   RunBackgroundTasks();
 
   ASSERT_OK_AND_ASSIGN(const auto& key_ids, get_all_keys_future.Get());
+  ASSERT_THAT(key_ids, SizeIs(1));
+  UnexportableKeyId key_id = key_ids[0];
 
-  // Verify that both keys were imported and assigned different IDs.
-  ASSERT_THAT(key_ids, SizeIs(2));
-  EXPECT_NE(key_ids[0], key_ids[1]);
+  // The key should be available in the service via sync APIs (checking both
+  // maps).
+  ASSERT_OK(service().GetWrappedKey(key_id));
 
-  // Verify we can access both keys correctly.
-  EXPECT_THAT(service().GetWrappedKey(key_ids[0]), ValueIs(kWrappedKey));
-  EXPECT_THAT(service().GetWrappedKey(key_ids[1]), ValueIs(kWrappedKey));
+  // But it should be available for deletion (ExtractKeyFromMaps should find
+  // it).
+  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteKeysSlowly)
+      .WillOnce(Return(1));
 
-  EXPECT_THAT(service().GetKeyTag(key_ids[0]), ValueIs(kTag1));
-  EXPECT_THAT(service().GetKeyTag(key_ids[1]), ValueIs(kTag2));
+  base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
+  service().DeleteKeysSlowlyAsync({key_id}, kTaskPriority,
+                                  delete_future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_THAT(delete_future.Get(), ValueIs(1u));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
@@ -675,9 +639,10 @@ TEST_F(UnexportableKeyServiceImplTest,
       kTaskPriority, get_all_keys_future.GetCallback());
   RunBackgroundTasks();
 
-  // `GetAllKeys` should return the existing key ID.
+  // `GetAllKeys` should return a DIFFERENT ID for the existing key.
   ASSERT_OK_AND_ASSIGN(const auto& key_ids, get_all_keys_future.Get());
-  ASSERT_THAT(key_ids, ElementsAre(existing_key_id));
+  ASSERT_THAT(key_ids, SizeIs(1));
+  EXPECT_NE(key_ids[0], existing_key_id);
 }
 
 TEST_F(UnexportableKeyServiceImplTest,

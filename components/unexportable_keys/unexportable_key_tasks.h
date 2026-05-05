@@ -26,11 +26,11 @@ namespace unexportable_keys {
 class RefCountedUnexportableKey;
 class RefCountedUnexportableSigningKey;
 
-// A `BackgroundTask` to retrieve all `crypto::UnexportableSigningKey`s from the
+// A `BackgroundTask` to retrieve all `crypto::UnexportableKey`s from the
 // key provider.
 class GetAllKeysTask
     : public internal::BackgroundTaskImpl<ServiceErrorOr<
-          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>> {
+          std::vector<scoped_refptr<RefCountedUnexportableKey>>>> {
  public:
   GetAllKeysTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,

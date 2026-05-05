@@ -65,9 +65,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
       BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
       BackgroundTaskPriority priority,
-      base::OnceCallback<
-          void(ServiceErrorOr<
-               std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>)>
+      base::OnceCallback<void(ServiceErrorOr<std::vector<
+                                  scoped_refptr<RefCountedUnexportableKey>>>)>
           callback);
 
   // Generates a new signing key asynchronously.

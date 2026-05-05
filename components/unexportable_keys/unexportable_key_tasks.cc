@@ -34,9 +34,7 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
       std::move(key), UnexportableSigningKeyId());
 }
 
-// TOOD(crbug.com/501307030): Return the more generic
-// `RefCountedUnexportableKey`.
-ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
 GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
                  void* task_ptr_for_tracing) {
   TRACE_EVENT("browser", "unexportable_keys::GetAllKeysSlowly",
@@ -49,9 +47,11 @@ GetAllKeysSlowly(crypto::UnexportableKeyProvider* key_provider,
           .GetAllKeysSlowly(),
       [] { return ServiceError::kCryptoApiFailed; });
 
-  return base::ToVector(keys, [](auto& key) {
-    return MakeSigningKeyRefCounted(std::move(key)).value();
-  });
+  return base::ToVector<scoped_refptr<RefCountedUnexportableKey>>(
+      std::move(keys),
+      [](std::unique_ptr<crypto::UnexportableSigningKey>& key) {
+        return MakeSigningKeyRefCounted(std::move(key)).value();
+      });
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>

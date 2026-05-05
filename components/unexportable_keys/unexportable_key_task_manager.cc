@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -119,9 +120,8 @@ void UnexportableKeyTaskManager::GetAllKeysForGarbageCollectionSlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,
     BackgroundTaskPriority priority,
-    base::OnceCallback<
-        void(ServiceErrorOr<
-             std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>)>
+    base::OnceCallback<void(
+        ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>)>
         callback) {
   auto callback_wrapper = WrapCallbackWithMetrics(
       BackgroundTaskType::kGetAllKeys, origin, std::move(callback));

@@ -746,8 +746,8 @@ TEST_P(UnexportableKeyTaskManagerTest,
 TEST_P(UnexportableKeyTaskManagerTest,
        GetAllKeysForGarbageCollectionAsyncNoKeys) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+  base::test::TestFuture<
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>>
       future;
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -772,8 +772,8 @@ TEST_P(UnexportableKeyTaskManagerTest,
 TEST_P(UnexportableKeyTaskManagerTest,
        GetAllKeysForGarbageCollectionAsyncOneKey) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+  base::test::TestFuture<
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>>
       future;
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -794,8 +794,8 @@ TEST_P(UnexportableKeyTaskManagerTest,
 TEST_P(UnexportableKeyTaskManagerTest,
        GetAllKeysForGarbageCollectionAsyncProviderFails) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+  base::test::TestFuture<
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>>
       future;
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -817,8 +817,8 @@ TEST_P(UnexportableKeyTaskManagerTest,
 TEST_P(UnexportableKeyTaskManagerTest,
        GetAllKeysForGarbageCollectionAsyncNoProvider) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+  base::test::TestFuture<
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>>
       future;
 
   DisableKeyProvider();
@@ -843,8 +843,8 @@ TEST_P(UnexportableKeyTaskManagerTest,
             nullptr);
 
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<ServiceErrorOr<
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>>
+  base::test::TestFuture<
+      ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>>
       future;
 
   task_manager().GetAllKeysForGarbageCollectionSlowlyAsync(

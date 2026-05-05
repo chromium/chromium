@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <variant>
 
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -260,6 +261,7 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
 void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) {
   key_by_key_id_.clear();
+  all_gc_keys_by_key_id_.clear();
   key_id_by_wrapped_key_and_tag_.clear();
 
   // Invalidate weak pointers to cancel pending key lookup requests.
@@ -273,63 +275,40 @@ void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
 ServiceErrorOr<std::vector<uint8_t>>
 UnexportableKeyServiceImpl::GetSubjectPublicKeyInfo(
     UnexportableKeyId key_id) const {
-  auto it = key_by_key_id_.find(key_id);
-  if (it == key_by_key_id_.end()) {
-    return base::unexpected(ServiceError::kKeyNotFound);
-  }
-  return it->second->key().GetSubjectPublicKeyInfo();
+  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  return key->GetSubjectPublicKeyInfo();
 }
 
 ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyServiceImpl::GetWrappedKey(
     UnexportableKeyId key_id) const {
-  auto it = key_by_key_id_.find(key_id);
-  if (it == key_by_key_id_.end()) {
-    return base::unexpected(ServiceError::kKeyNotFound);
-  }
-  return it->second->key().GetWrappedKey();
+  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  return key->GetWrappedKey();
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
 UnexportableKeyServiceImpl::GetAlgorithm(UnexportableKeyId key_id) const {
-  auto it = key_by_key_id_.find(key_id);
-  if (it == key_by_key_id_.end()) {
-    return base::unexpected(ServiceError::kKeyNotFound);
-  }
-  return it->second->key().Algorithm();
+  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  return key->Algorithm();
 }
 
 ServiceErrorOr<std::string> UnexportableKeyServiceImpl::GetKeyTag(
     UnexportableKeyId key_id) const {
-  auto it = key_by_key_id_.find(key_id);
-  if (it == key_by_key_id_.end()) {
-    return base::unexpected(ServiceError::kKeyNotFound);
-  }
-
-  const crypto::StatefulKey* stateful_key = it->second->key().AsStatefulKey();
-  if (!stateful_key) {
-    return base::unexpected(ServiceError::kOperationNotSupported);
-  }
+  ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
+                   GetStatefulKey(key_id));
   return stateful_key->GetKeyTag();
 }
 
 ServiceErrorOr<base::Time> UnexportableKeyServiceImpl::GetCreationTime(
     UnexportableKeyId key_id) const {
-  auto it = key_by_key_id_.find(key_id);
-  if (it == key_by_key_id_.end()) {
-    return base::unexpected(ServiceError::kKeyNotFound);
-  }
-
-  const crypto::StatefulKey* stateful_key = it->second->key().AsStatefulKey();
-  if (!stateful_key) {
-    return base::unexpected(ServiceError::kOperationNotSupported);
-  }
+  ASSIGN_OR_RETURN(const crypto::StatefulKey* stateful_key,
+                   GetStatefulKey(key_id));
   return stateful_key->GetCreationTime();
 }
 
 // static
 UnexportableKeyServiceImpl::WrappedKeyAndTag
 UnexportableKeyServiceImpl::GetWrappedKeyAndTag(
-    const RefCountedUnexportableSigningKey& key) {
+    const RefCountedUnexportableKey& key) {
   std::string tag;
   if (const crypto::StatefulKey* stateful_key = key.key().AsStatefulKey()) {
     tag = stateful_key->GetKeyTag();
@@ -345,20 +324,48 @@ UnexportableKeyServiceImpl::Materialize(WrappedKeyAndTagView view) {
   return {base::ToVector(wrapped_key), std::string(tag)};
 }
 
+ServiceErrorOr<const crypto::UnexportableKey*>
+UnexportableKeyServiceImpl::GetKey(UnexportableKeyId key_id) const {
+  if (const auto* key = base::FindOrNull(key_by_key_id_, key_id)) {
+    return &(*key)->key();
+  }
+  if (const auto* key = base::FindOrNull(all_gc_keys_by_key_id_, key_id)) {
+    return &(*key)->key();
+  }
+  return base::unexpected(ServiceError::kKeyNotFound);
+}
+
+ServiceErrorOr<const crypto::StatefulKey*>
+UnexportableKeyServiceImpl::GetStatefulKey(UnexportableKeyId key_id) const {
+  ASSIGN_OR_RETURN(const crypto::UnexportableKey* key, GetKey(key_id));
+  if (const crypto::StatefulKey* stateful_key = key->AsStatefulKey()) {
+    return stateful_key;
+  }
+  return base::unexpected(ServiceError::kOperationNotSupported);
+}
+
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableKey>>
 UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
-  auto key_id_it = key_by_key_id_.find(key_id);
-  if (key_id_it == key_by_key_id_.end()) {
+  // Check the garbage collection map first. Ensure the `key_id` can't be
+  // present in both maps.
+  auto gc_key_handle = all_gc_keys_by_key_id_.extract(key_id);
+  if (gc_key_handle) {
+    CHECK(!key_by_key_id_.contains(key_id));
+    return std::move(gc_key_handle.mapped());
+  }
+
+  auto key_handle = key_by_key_id_.extract(key_id);
+  if (!key_handle) {
     return base::unexpected(ServiceError::kKeyNotFound);
   }
 
   scoped_refptr<RefCountedUnexportableSigningKey> key =
-      key_by_key_id_.extract(key_id_it).mapped();
+      std::move(key_handle.mapped());
 
   auto wrapped_key_and_tag_handle =
       key_id_by_wrapped_key_and_tag_.extract(GetWrappedKeyAndTag(*key));
 
-  CHECK(!wrapped_key_and_tag_handle.empty());
+  CHECK(wrapped_key_and_tag_handle);
   MaybePendingUnexportableKeyId& mapped_key_id =
       wrapped_key_and_tag_handle.mapped();
 
@@ -369,45 +376,17 @@ UnexportableKeyServiceImpl::ExtractKeyFromMaps(UnexportableKeyId key_id) {
 
 ServiceErrorOr<std::vector<UnexportableKeyId>>
 UnexportableKeyServiceImpl::OnGetAllKeysForGarbageCollectionSlowlyImpl(
-    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+    ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>
         keys_or_error) {
-  ASSIGN_OR_RETURN(
-      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> keys,
-      std::move(keys_or_error));
+  ASSIGN_OR_RETURN(std::vector<scoped_refptr<RefCountedUnexportableKey>> keys,
+                   std::move(keys_or_error));
 
-  std::vector<UnexportableKeyId> key_ids;
-  key_ids.reserve(keys.size());
-  for (scoped_refptr<RefCountedUnexportableSigningKey>& key : keys) {
-    CHECK(key);
-    UnexportableSigningKeyId key_id(key->id());
-    auto [it, inserted] = key_id_by_wrapped_key_and_tag_.try_emplace(
-        GetWrappedKeyAndTag(*key), key_id);
-
-    if (!inserted) {
-      // If insertion failed, it means that there were pending callbacks
-      // waiting for the key to be created from the wrapped key.
-      MaybePendingUnexportableKeyId& maybe_pending_key_id = it->second;
-
-      if (!maybe_pending_key_id.HasKeyId()) {
-        // If there is no key ID yet, it means there are still
-        // `FromWrappedKey` requests in flight. In this case, we need set
-        // the key ID and run callbacks.
-        maybe_pending_key_id.SetKeyIdAndRunCallbacks(key_id);
-      } else {
-        // Otherwise, this wrapped key has already been assigned to a key
-        // ID, and we need to use the existing key ID.
-        key_id = maybe_pending_key_id.GetKeyId();
-      }
-    }
-
-    if (key_id == key->id()) {
-      // A newly generated key ID must be unique.
-      CHECK(key_by_key_id_.try_emplace(key_id, std::move(key)).second);
-    }
-
-    key_ids.push_back(key_id);
+  auto key_ids = base::ToVector(keys, [](auto& key) { return key->id(); });
+  all_gc_keys_by_key_id_.clear();
+  all_gc_keys_by_key_id_.reserve(keys.size());
+  for (auto& key : keys) {
+    all_gc_keys_by_key_id_.emplace(key->id(), std::move(key));
   }
-
   return key_ids;
 }
 
@@ -447,9 +426,8 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(
   MaybePendingUnexportableKeyId& maybe_pending_callbacks = it->second;
   if (maybe_pending_callbacks.HasKeyId()) {
     // If there is already a key ID for this wrapped key, it means that the key
-    // id has been resolved in the meantime, for example through
-    // `GetAllKeys...`. In this case, there is nothing to do and we can
-    // return immediately.
+    // id has been resolved in the meantime. In this case, there is nothing to
+    // do and we can return immediately.
     return;
   }
 
