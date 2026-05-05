@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_MENU_ICON_LOADER_H_
 
 #include "chrome/browser/extensions/extension_menu_icon_loader.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

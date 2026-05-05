@@ -5,9 +5,12 @@
 #include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 
 #include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

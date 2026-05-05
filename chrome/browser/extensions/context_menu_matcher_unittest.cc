@@ -19,10 +19,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/menus/simple_menu_model.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -40,6 +43,8 @@ class ContextMenuMatcherTest : public testing::Test {
 
   ContextMenuMatcherTest(const ContextMenuMatcherTest&) = delete;
   ContextMenuMatcherTest& operator=(const ContextMenuMatcherTest&) = delete;
+
+  ~ContextMenuMatcherTest() override = default;
 
   // Returns a test item with the given string ID.
   std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,

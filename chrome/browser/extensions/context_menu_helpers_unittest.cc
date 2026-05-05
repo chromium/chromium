@@ -8,17 +8,20 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/url_pattern.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "url/gurl.h"
 
-using extensions::context_menu_helpers::ExtensionContextAndPatternMatch;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
+
+using ::extensions::context_menu_helpers::ExtensionContextAndPatternMatch;
 
 // Generates a ContextMenuParams that matches the specified contexts.
 content::ContextMenuParams CreateParams(int contexts) {
@@ -100,10 +103,11 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
 }  // namespace
 
 class ContextMenuHelpersTest : public testing::Test {
- protected:
+ public:
   ContextMenuHelpersTest() = default;
   ContextMenuHelpersTest(const ContextMenuHelpersTest&) = delete;
   ContextMenuHelpersTest& operator=(const ContextMenuHelpersTest&) = delete;
+  ~ContextMenuHelpersTest() override = default;
 
  private:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
