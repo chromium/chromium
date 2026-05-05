@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
@@ -16,7 +17,7 @@ namespace ash {
 namespace input_method {
 
 bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
-                                    const std::string& engine_id) {
+                                    std::string_view engine_id) {
   if (!IsPhysicalKeyboardPredictiveWritingAllowed(pref_service)) {
     return false;
   }
@@ -31,11 +32,11 @@ bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
 }
 
 bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
-                                        const std::string& engine_id) {
+                                        std::string_view engine_id) {
   return pref_service->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
 }
 
-int GetPrefValue(const std::string& pref_name, Profile& profile) {
+int GetPrefValue(std::string_view pref_name, Profile& profile) {
   ScopedDictPrefUpdate update(profile.GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   auto value = update->FindInt(pref_name);
@@ -46,7 +47,7 @@ int GetPrefValue(const std::string& pref_name, Profile& profile) {
   return *value;
 }
 
-void IncrementPrefValueUntilCapped(const std::string& pref_name,
+void IncrementPrefValueUntilCapped(std::string_view pref_name,
                                    int max_value,
                                    Profile& profile) {
   int value = GetPrefValue(pref_name, profile);

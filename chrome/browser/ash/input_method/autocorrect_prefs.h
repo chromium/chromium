@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_PREFS_H_
 
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "components/prefs/pref_service.h"
@@ -15,17 +16,17 @@ namespace ash::input_method {
 // Returns the user's autocorrect preference for the physical keyboard.
 AutocorrectPreference GetPhysicalKeyboardAutocorrectPref(
     const PrefService& pref_service,
-    const std::string& engine_id);
+    std::string_view engine_id);
 
 // Returns the user's autocorrect preference for the virtual keyboard.
 AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
     const PrefService& pref_service,
-    const std::string& engine_id);
+    std::string_view engine_id);
 
 // Marks the current user as having autocorrect preference enabled by default.
 bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
     PrefService* pref_service,
-    const std::string& engine_id);
+    std::string_view engine_id);
 
 }  // namespace ash::input_method
 

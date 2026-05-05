@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_PREFS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_PREFS_H_
 
-#include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "components/prefs/pref_service.h"
@@ -14,17 +14,17 @@ namespace ash {
 namespace input_method {
 
 bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
-                                    const std::string& engine_id);
+                                    std::string_view engine_id);
 
 bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
-                                        const std::string& engine_id);
+                                        std::string_view engine_id);
 
-int GetPrefValue(const std::string& pref_name, Profile& profile);
+int GetPrefValue(std::string_view pref_name, Profile& profile);
 
 // Increment int value for the given pref_name by 1 every time the function is
 // called. The function has no effect after the int value becomes equal to the
 // max_value.
-void IncrementPrefValueUntilCapped(const std::string& pref_name,
+void IncrementPrefValueUntilCapped(std::string_view pref_name,
                                    int max_value,
                                    Profile& profile);
 
