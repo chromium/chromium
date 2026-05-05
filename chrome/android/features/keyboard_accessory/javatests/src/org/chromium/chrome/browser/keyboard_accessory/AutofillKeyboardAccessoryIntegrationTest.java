@@ -69,6 +69,7 @@ import java.util.function.Supplier;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class AutofillKeyboardAccessoryIntegrationTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

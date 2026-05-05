@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -37,6 +38,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -73,6 +75,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testLaunchIncognitoNewTab() throws TimeoutException {
         IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);
         assertIncognitoTabLaunched(ntp.getActivity(), false);
@@ -82,6 +85,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_thirdParty()
             throws TimeoutException {
         IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);

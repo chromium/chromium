@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -44,6 +47,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP})
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class ManualFillingUiCaptureTest {
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
