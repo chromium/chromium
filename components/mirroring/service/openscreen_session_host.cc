@@ -145,20 +145,6 @@ const std::string ToString(const media::VideoCaptureParams& params) {
       static_cast<int>(params.resolution_change_policy));
 }
 
-void RecordRemotePlaybackSessionLoadTime(std::optional<base::Time> start_time) {
-  if (!start_time) {
-    return;
-  }
-  base::TimeDelta time_delta = base::Time::Now() - start_time.value();
-  base::UmaHistogramTimes("MediaRouter.RemotePlayback.SessionLoadTime",
-                          time_delta);
-}
-
-void RecordRemotePlaybackSessionStartsBeforeTimeout(bool started) {
-  base::UmaHistogramBoolean(
-      "MediaRouter.RemotePlayback.SessionStartsBeforeTimeout", started);
-}
-
 // Returns a message that can be reported alongside an error status. If not a
 // reportable error, returns nullptr.
 const char* AsErrorMessage(OperationalStatus status) {
@@ -442,8 +428,6 @@ void OpenscreenSessionHost::OnNegotiated(
         std::move(senders.video_sender), std::move(audio_config),
         std::move(video_config));
     if (session_params_.is_remote_playback) {
-      RecordRemotePlaybackSessionLoadTime(remote_playback_start_time_);
-      RecordRemotePlaybackSessionStartsBeforeTimeout(true);
       remote_playback_start_timer_.Stop();
     }
     return;
@@ -553,7 +537,6 @@ void OpenscreenSessionHost::OnNegotiated(
       // switch to Remoting.
       PauseCapturingVideo();
       StopCapturingAudio();
-      remote_playback_start_time_ = base::Time::Now();
       remote_playback_start_timer_.Start(
           FROM_HERE, kStartRemotePlaybackTimeOut,
           base::BindOnce(&OpenscreenSessionHost::OnRemotingStartTimeout,
@@ -1186,7 +1169,6 @@ void OpenscreenSessionHost::OnRemotingStartTimeout() {
     return;
   }
   StopSession();
-  RecordRemotePlaybackSessionStartsBeforeTimeout(false);
 }
 
 void OpenscreenSessionHost::StartCapturingAudio() {

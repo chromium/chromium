@@ -21,5 +21,5 @@ source_set("unit_tests") {
     "//components/access_code_cast/common:metrics",
     "//testing/gtest",
   ]
-  data = [ "//tools/metrics/histograms/enums.xml" ]
+  data = [ "//tools/metrics/histograms/metadata/media/enums.xml" ]
 }

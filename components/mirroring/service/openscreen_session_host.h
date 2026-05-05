@@ -379,9 +379,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // before timeout. The timer is stopped when Remoting session successfully
   // starts.
   base::OneShotTimer remote_playback_start_timer_;
-  // Records the time when the streaming session is started and `media_remoter_`
-  // is initialized.
-  std::optional<base::Time> remote_playback_start_time_;
 
   // An optional stats client for fetching quality statistics from an Openscreen
   // casting session.

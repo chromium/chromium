@@ -26,6 +26,75 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccessCodeCastAddSinkResult) -->
+
+<enum name="AccessCodeCastAddSinkResult">
+  <int value="0" label="UNKNOWN_ERROR"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="AUTH_ERROR"/>
+  <int value="3" label="HTTP_RESPONSE_CODE_ERROR"/>
+  <int value="4" label="RESPONSE_MALFORMED"/>
+  <int value="5" label="EMPTY_RESPONSE"/>
+  <int value="6" label="INVALID_ACCESS_CODE"/>
+  <int value="7" label="ACCESS_CODE_NOT_FOUND"/>
+  <int value="8" label="TOO_MANY_REQUESTS"/>
+  <int value="9" label="SERVICE_NOT_PRESENT"/>
+  <int value="10" label="SERVER_ERROR"/>
+  <int value="11" label="SINK_CREATION_ERROR"/>
+  <int value="12" label="CHANNEL_OPEN_ERROR"/>
+  <int value="13" label="PROFILE_SYNC_ERROR"/>
+  <int value="14" label="INTERNAL_MEDIA_ROUTER_ERROR"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastAddSinkResult) -->
+
+<!-- LINT.IfChange(AccessCodeCastCastMode) -->
+
+<enum name="AccessCodeCastCastMode">
+  <int value="0" label="Presentation"/>
+  <int value="1" label="Tab mirroring"/>
+  <int value="2" label="Desktop mirroring"/>
+  <int value="3" label="Remote playback"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastCastMode) -->
+
+<!-- LINT.IfChange(AccessCodeCastDialogCloseReason) -->
+
+<enum name="AccessCodeCastDialogCloseReason">
+  <int value="0" label="Dialog lost focus"/>
+  <int value="1" label="Cancel action"/>
+  <int value="2" label="Successfully began casting"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDialogCloseReason) -->
+
+<!-- LINT.IfChange(AccessCodeCastDialogOpenLocation) -->
+
+<enum name="AccessCodeCastDialogOpenLocation">
+  <int value="0" label="Browser cast menu"/>
+  <int value="1" label="ChromeOS quick settings feature pod"/>
+  <int value="2" label="ChromeOS quick settings cast menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDialogOpenLocation) -->
+
+<!-- LINT.IfChange(AccessCodeCastDiscoveryTypeAndSource) -->
+
+<enum name="AccessCodeCastDiscoveryTypeAndSource">
+  <int value="0" label="Unknown discovery type or source"/>
+  <int value="1" label="Saved device and Presentation source"/>
+  <int value="2" label="Saved device and Tab mirror source"/>
+  <int value="3" label="Saved device and Desktop mirror source"/>
+  <int value="4" label="Saved device and Remote playback source"/>
+  <int value="5" label="New device and Presentation source"/>
+  <int value="6" label="New device and Tab mirror source"/>
+  <int value="7" label="New device and Desktop mirror source"/>
+  <int value="8" label="New device and Remote playback source"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/access_code_cast/common/access_code_cast_metrics.h:AccessCodeCastDiscoveryTypeAndSource) -->
+
 <enum name="ActiveGpuDisplayInfo">
   <int value="0" label="Unknown"/>
   <int value="1" label="Likely Built-in"/>

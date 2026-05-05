@@ -56,8 +56,6 @@ constexpr char kPresentationId[] = "thePresentationId";
 // Metrics constants.
 constexpr char kHistogramSessionLength[] =
     "MediaRouter.CastStreaming.Session.Length";
-constexpr char kHistogramSessionLengthAccessCode[] =
-    "MediaRouter.CastStreaming.Session.Length.AccessCode";
 constexpr char kHistogramSessionLengthDesktop[] =
     "MediaRouter.CastStreaming.Session.Length.Screen";
 constexpr char kHistogramSessionLengthOffscreenTab[] =
@@ -230,7 +228,6 @@ TEST_F(MirroringActivityTest, MirrorDesktop) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
-  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorTab) {
@@ -247,7 +244,6 @@ TEST_F(MirroringActivityTest, MirrorTab) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
-  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
@@ -266,7 +262,6 @@ TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
-  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
@@ -286,7 +281,6 @@ TEST_F(MirroringActivityTest, MirrorOffscreenTab) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 1);
-  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 0);
 }
 
 TEST_F(MirroringActivityTest, MirrorAccessCode) {
@@ -304,7 +298,6 @@ TEST_F(MirroringActivityTest, MirrorAccessCode) {
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthDesktop, 0);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthTab, 1);
   uma_recorder.ExpectTotalCount(kHistogramSessionLengthOffscreenTab, 0);
-  uma_recorder.ExpectTotalCount(kHistogramSessionLengthAccessCode, 1);
 }
 
 TEST_F(MirroringActivityTest, OnError) {

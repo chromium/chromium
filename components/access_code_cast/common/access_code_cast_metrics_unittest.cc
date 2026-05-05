@@ -309,7 +309,7 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
 
   // AddSinkResult
   std::optional<base::HistogramEnumEntryMap> add_sink_results =
-      base::ReadEnumFromEnumsXml("AccessCodeCastAddSinkResult");
+      base::ReadEnumFromEnumsXml("AccessCodeCastAddSinkResult", "media");
   EXPECT_TRUE(add_sink_results->size() ==
       static_cast<int>(AccessCodeCastAddSinkResult::kMaxValue) + 1)
       << "'AccessCodeCastAddSinkResult' enum was changed in "
@@ -318,7 +318,7 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
 
   // CastMode
   std::optional<base::HistogramEnumEntryMap> cast_modes =
-      base::ReadEnumFromEnumsXml("AccessCodeCastCastMode");
+      base::ReadEnumFromEnumsXml("AccessCodeCastCastMode", "media");
   EXPECT_TRUE(cast_modes->size() ==
       static_cast<int>(AccessCodeCastCastMode::kMaxValue) + 1)
       << "'AccessCodeCastCastMode' enum was changed in "
@@ -327,7 +327,7 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
 
   // DialogCloseReason
   std::optional<base::HistogramEnumEntryMap> dialog_close_reasons =
-      base::ReadEnumFromEnumsXml("AccessCodeCastDialogCloseReason");
+      base::ReadEnumFromEnumsXml("AccessCodeCastDialogCloseReason", "media");
   EXPECT_TRUE(dialog_close_reasons->size() ==
       static_cast<int>(AccessCodeCastDialogCloseReason::kMaxValue) + 1)
       << "'AccessCodeCastDialogCloseReason' enum was changed in "
@@ -336,7 +336,7 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
 
   // DialogOpenLocation
   std::optional<base::HistogramEnumEntryMap> dialog_open_locations =
-      base::ReadEnumFromEnumsXml("AccessCodeCastDialogOpenLocation");
+      base::ReadEnumFromEnumsXml("AccessCodeCastDialogOpenLocation", "media");
   EXPECT_TRUE(dialog_open_locations->size() ==
       static_cast<int>(AccessCodeCastDialogOpenLocation::kMaxValue) + 1)
       << "'AccessCodeCastDialogOpenLocation' enum was changed in "
@@ -345,7 +345,8 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
 
   // DiscoveryTypeAndSource
   std::optional<base::HistogramEnumEntryMap> discovery_types_and_sources =
-      base::ReadEnumFromEnumsXml("AccessCodeCastDiscoveryTypeAndSource");
+      base::ReadEnumFromEnumsXml("AccessCodeCastDiscoveryTypeAndSource",
+                                 "media");
   EXPECT_TRUE(
       discovery_types_and_sources->size() ==
       static_cast<int>(AccessCodeCastDiscoveryTypeAndSource::kMaxValue) + 1)
