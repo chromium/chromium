@@ -8730,7 +8730,7 @@
       "crowleso@google.com",
       "chrome-signin-mobile-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "signin-promo-on-avatar-pill",
