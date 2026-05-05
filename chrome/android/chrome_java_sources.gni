@@ -800,6 +800,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderProperties.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderViewBinder.java",
+  "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackConfirmationDialog.java",
   "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationManager.java",

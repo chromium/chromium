@@ -506,6 +506,10 @@ found in the LICENSE file.
     <dimen name="accessibility_annotator_sheet_padding_horizontal">24dp</dimen>
     <dimen name="accessibility_annotator_spacing_large">16dp</dimen>
     <dimen name="accessibility_annotator_spacing_medium">12dp</dimen>
+
     <!-- Toast dimensions -->
     <dimen name="background_tab_toast_y_margin">16dp</dimen>
+
+    <!-- Immersive Playback Confirmation Dialog dimens -->
+    <dimen name="immersive_playback_confirmation_dialog_padding">24dp</dimen>
 </resources>

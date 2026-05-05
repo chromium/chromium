@@ -24,10 +24,13 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.blink.mojom.ImmersivePlaybackConfirmationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.media.immersive_playback.ImmersivePlaybackConfirmationDialog;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
@@ -102,6 +106,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final TabObserver mTabObserver;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
+    private @Nullable ImmersivePlaybackConfirmationDialog mImmersivePlaybackConfirmationDialog;
 
     public ActivityTabWebContentsDelegateAndroid(
             Tab tab,
@@ -591,6 +596,31 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public void requestImmersivePlaybackConfirmation(JniOnceCallback<Integer> callback) {
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        if (!isImmersivePlaybackEnabled() || mActivity == null || modalDialogManager == null) {
+            callback.onResult(ImmersivePlaybackConfirmationStatus.FAILED);
+            return;
+        }
+        if (mImmersivePlaybackConfirmationDialog != null) {
+            mImmersivePlaybackConfirmationDialog.dismiss();
+        }
+
+        mImmersivePlaybackConfirmationDialog =
+                new ImmersivePlaybackConfirmationDialog(
+                        mActivity,
+                        modalDialogManager,
+                        (status, stereoMode, projectionType) -> {
+                            // Pack the results into a single integer:
+                            // status (4 bits) | stereoMode (4 bits) | projectionType (4 bits).
+                            int packedResult = status | (stereoMode << 4) | (projectionType << 8);
+                            callback.onResult(packedResult);
+                            mImmersivePlaybackConfirmationDialog = null;
+                        });
+        mImmersivePlaybackConfirmationDialog.show();
+    }
+
+    @Override
     public void fullscreenStateChangedForTab(
             RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,
@@ -641,6 +671,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // TODO(b/504784078): Once the fullscreen limitation is resolved, we should update this
         // check.
         return mActivity == null || !MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+    }
+
+    @Override
+    protected boolean isImmersivePlaybackEnabled() {
+        return DeviceInfo.isXr()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_XR_IMMERSIVE_PLAYER);
     }
 
     /**
@@ -767,6 +803,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void destroy() {
+        if (mImmersivePlaybackConfirmationDialog != null) {
+            mImmersivePlaybackConfirmationDialog.dismiss();
+            mImmersivePlaybackConfirmationDialog = null;
+        }
         mTab.removeObserver(mTabObserver);
     }
 

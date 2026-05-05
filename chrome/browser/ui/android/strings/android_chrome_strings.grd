@@ -7510,6 +7510,44 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GLIC_ACTOR_TASK_IN_PROGRESS" desc="Snackbar message shown when a Glic actor task is still in progress.">
         Your task is still in progress
       </message>
-</messages>
+
+      <!-- Immersive Playback Confirmation Dialog strings -->
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_TITLE" desc="Title of the dialog asking the user to confirm entering immersive playback mode." translateable="false">
+        Immersive Mode
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the dialog asking the user if they want to view the video in immersive mode." translateable="false">
+        Do you want to view this video in immersive mode?
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_LABEL" desc="Label for the stereo mode selection spinner in the immersive playback confirmation dialog." translateable="false">
+        Stereo Mode:
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_LABEL" desc="Label for the projection type selection spinner in the immersive playback confirmation dialog." translateable="false">
+        Projection Type:
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_MONO" desc="Option for mono (non-stereo) mode in the immersive playback confirmation dialog." translateable="false">
+        Mono
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_SIDE_BY_SIDE" desc="Option for side-by-side stereo mode in the immersive playback confirmation dialog." translateable="false">
+        Side by Side
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_TOP_BOTTOM" desc="Option for top-bottom stereo mode in the immersive playback confirmation dialog." translateable="false">
+        Top-Bottom
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_QUAD" desc="Option for quad (flat) projection in the immersive playback confirmation dialog." translateable="false">
+        Quad
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_SPHERE" desc="Option for spherical (360) projection in the immersive playback confirmation dialog." translateable="false">
+        Sphere
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_HEMISPHERE" desc="Option for hemispherical (180) projection in the immersive playback confirmation dialog." translateable="false">
+        Hemisphere
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CONFIRM" desc="Text for the positive button to confirm entering immersive mode." translateable="false">
+        Yes
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_DECLINE" desc="Text for the negative button to decline entering immersive mode." translateable="false">
+        No
+      </message>
+    </messages>
   </release>
 </grit>
