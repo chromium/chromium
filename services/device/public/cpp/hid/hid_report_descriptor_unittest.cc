@@ -2005,4 +2005,12 @@ TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
   ValidateCollections(base::span(kFourByteLogicalMinMaxDescriptor));
 }
 
+TEST_F(HidReportDescriptorTest, ReportDescriptorTooLarge) {
+  // A large report descriptor where every byte is 0xA0 (start collection).
+  std::vector<uint8_t> large_report_descriptor(65536, 0xA0);
+
+  // Parsing fails to return any collections because the descriptor is too long.
+  ValidateCollections(large_report_descriptor);
+}
+
 }  // namespace device

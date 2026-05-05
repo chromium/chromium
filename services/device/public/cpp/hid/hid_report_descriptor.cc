@@ -14,16 +14,19 @@ namespace device {
 
 namespace {
 
+const size_t kMaxReportDescriptorSizeBytes = 65535;
 const int kBitsPerByte = 8;
 
 }  // namespace
 
 HidReportDescriptor::HidReportDescriptor(base::span<const uint8_t> bytes) {
-  size_t header_index = 0;
-  while (header_index < bytes.size()) {
-    items_.push_back(
-        HidReportDescriptorItem::Create(bytes.subspan(header_index)));
-    header_index += items_.back()->GetSize();
+  if (bytes.size() <= kMaxReportDescriptorSizeBytes) {
+    size_t header_index = 0;
+    while (header_index < bytes.size()) {
+      items_.push_back(
+          HidReportDescriptorItem::Create(bytes.subspan(header_index)));
+      header_index += items_.back()->GetSize();
+    }
   }
   collections_ = HidCollection::BuildCollections(items_);
 }
