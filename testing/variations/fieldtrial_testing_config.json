@@ -11700,9 +11700,29 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithConfirmParam",
+                    "name": "Enabled",
                     "params": {
-                        "confirm_navigation_to_new_origins": "true"
+                        "confirm_navigation_to_new_origins": "true",
+                        "confirm_navigation_to_new_origins_dark_launch": "false"
+                    },
+                    "enable_features": [
+                        "GlicCrossOriginNavigationGating"
+                    ]
+                },
+                {
+                    "name": "Enabled_DarkLaunch",
+                    "params": {
+                        "confirm_navigation_to_new_origins": "true",
+                        "confirm_navigation_to_new_origins_dark_launch": "true"
+                    },
+                    "enable_features": [
+                        "GlicCrossOriginNavigationGating"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "params": {
+                        "confirm_navigation_to_new_origins": "false"
                     },
                     "enable_features": [
                         "GlicCrossOriginNavigationGating"
