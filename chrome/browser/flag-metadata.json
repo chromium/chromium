@@ -414,12 +414,12 @@
   {
     "name": "android-tips-notifications",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "android-tips-notifications-v2",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "android-use-correct-display-work-area",
