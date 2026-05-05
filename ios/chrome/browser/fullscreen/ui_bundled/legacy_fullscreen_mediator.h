@@ -103,6 +103,10 @@ class LegacyFullscreenMediator : public FullscreenModelObserver {
   // Records fullscreen exit entrypoints in a histogram.
   void RecordFullscreenExitMode();
 
+  // Returns whether the mediator has been disconnected from its
+  // controller/model.
+  bool IsDisconnected() const { return !controller_ || !model_; }
+
   // Progress value when scroll event started.
   float start_progress_;
   // The controller.
