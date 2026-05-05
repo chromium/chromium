@@ -68,6 +68,7 @@ void OverrideManifestAssetManagerDelegate::GetFreeDiskSpace(
 void OverrideManifestAssetManagerDelegate::RegisterOnDemandComponent(
     const std::string& public_key_hex,
     const std::string& target_version,
+    const std::string& component_name,
     base::WeakPtr<ManifestAssetManager> manager) {
   std::string key = public_key_hex + ":" + target_version;
   auto it = component_overrides_.find(key);

@@ -526,9 +526,9 @@ void ManifestAssetManager::UpdateRegistrations() {
         context.requested_version() != component->target_version()) {
       context.SetRegistering(component->target_version());
       keys_to_save.push_back(public_key);
-      delegate_->RegisterOnDemandComponent(public_key,
-                                           component->target_version(),
-                                           weak_ptr_factory_.GetWeakPtr());
+      delegate_->RegisterOnDemandComponent(
+          public_key, component->target_version(), context.asset_id(),
+          weak_ptr_factory_.GetWeakPtr());
       continue;
     }
     if (context.state() == ComponentState::kRegistered) {

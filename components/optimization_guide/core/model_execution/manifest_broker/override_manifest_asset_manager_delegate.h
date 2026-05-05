@@ -41,6 +41,7 @@ class OverrideManifestAssetManagerDelegate final
   void RegisterOnDemandComponent(
       const std::string& public_key_hex,
       const std::string& target_version,
+      const std::string& component_name,
       base::WeakPtr<ManifestAssetManager> manager) override;
 
   void Uninstall(const std::string& public_key_hex,
