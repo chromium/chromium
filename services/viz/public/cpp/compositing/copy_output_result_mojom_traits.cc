@@ -242,6 +242,15 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
+const viz::TrackedElementRects&
+StructTraits<viz::mojom::CopyOutputResultDataView,
+             std::unique_ptr<viz::CopyOutputResult>>::
+    tracked_element_rects(
+        const std::unique_ptr<viz::CopyOutputResult>& result) {
+  return result->GetTrackedElementRects();
+}
+
+// static
 bool StructTraits<viz::mojom::CopyOutputResultDataView,
                   std::unique_ptr<viz::CopyOutputResult>>::
     Read(viz::mojom::CopyOutputResultDataView data,
@@ -289,8 +298,14 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
             return false;
           }
 
+          viz::TrackedElementRects tracked_element_rects;
+          if (!data.ReadTrackedElementRects(&tracked_element_rects)) {
+            return false;
+          }
+
           *out_p = std::make_unique<viz::CopyOutputSkBitmapResult>(
               rect, std::move(*bitmap_opt));
+          (*out_p)->SetTrackedElementRects(std::move(tracked_element_rects));
           return true;
         }
 

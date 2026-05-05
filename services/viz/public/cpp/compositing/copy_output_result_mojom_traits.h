@@ -9,10 +9,12 @@
 #include <optional>
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/tracked_element_rects_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_result.mojom-shared.h"
 #include "services/viz/public/mojom/compositing/texture_releaser.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -75,6 +77,9 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::PendingRemote<viz::mojom::TextureReleaser> releaser(
+      const std::unique_ptr<viz::CopyOutputResult>& result);
+
+  static const viz::TrackedElementRects& tracked_element_rects(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static bool Read(viz::mojom::CopyOutputResultDataView data,

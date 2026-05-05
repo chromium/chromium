@@ -209,9 +209,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // Returns the color space of the image data returned by ReadRGBAPlane().
   virtual gfx::ColorSpace GetRGBAColorSpace() const;
 
-  void SetTrackedElementRects(
-      const TrackedElementRects& tracked_element_rects) {
-    tracked_element_rects_ = tracked_element_rects;
+  void SetTrackedElementRects(TrackedElementRects tracked_element_rects) {
+    tracked_element_rects_ = std::move(tracked_element_rects);
   }
 
   const TrackedElementRects& GetTrackedElementRects() const {

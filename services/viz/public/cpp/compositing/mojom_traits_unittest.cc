@@ -1498,9 +1498,13 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kAdobeRGB);
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(7, 8, adobe_rgb));
   bitmap.eraseARGB(123, 213, 77, 33);
+  TrackedElementRects tracked_element_rects;
+  tracked_element_rects[TrackedElementFeature::kTrackedElementFeatureMax] = {
+      {base::Token(1, 1), gfx::Rect(40, 40, 20, 20)}};
   std::unique_ptr<CopyOutputResult> input =
       std::make_unique<CopyOutputSkBitmapResult>(result_rect,
                                                  std::move(bitmap));
+  input->SetTrackedElementRects(tracked_element_rects);
 
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
@@ -1529,6 +1533,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
                      expected_bitmap.computeByteSize())));
   EXPECT_TRUE(SkColorSpace::Equals(expected_bitmap.colorSpace(),
                                    out_bitmap.colorSpace()));
+
+  EXPECT_EQ(output->GetTrackedElementRects(), tracked_element_rects);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_Texture) {

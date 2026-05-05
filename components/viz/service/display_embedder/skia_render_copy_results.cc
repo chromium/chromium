@@ -112,7 +112,7 @@ void CopyOutputResultSkiaRGBA::OnReadbackDone(
   auto result = std::make_unique<CopyOutputResultSkiaRGBA>(
       impl_on_gpu, context->result_rect, std::move(async_result),
       context->color_space);
-  result->SetTrackedElementRects(context->tracked_element_rects);
+  result->SetTrackedElementRects(std::move(context->tracked_element_rects));
   context->request->SendResult(std::move(result));
 }
 
