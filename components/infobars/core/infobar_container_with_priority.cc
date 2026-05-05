@@ -7,28 +7,11 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/infobars/core/features.h"
 #include "components/infobars/core/infobar.h"
 
 namespace infobars {
 
 namespace {
-// Returns the visible cap for a given priority.
-size_t GetInfoBarPriorityCapFor(InfoBarDelegate::InfobarPriority priority) {
-  std::optional<features::InfobarPriorityCaps> caps =
-      features::GetInfobarPriorityCaps();
-  CHECK(caps.has_value());
-  switch (priority) {
-    case InfoBarDelegate::InfobarPriority::kCriticalSecurity:
-      return caps->max_visible_critical;
-    case InfoBarDelegate::InfobarPriority::kDefault:
-      return caps->max_visible_default;
-    case InfoBarDelegate::InfobarPriority::kLow:
-      return caps->max_visible_low;
-  }
-
-  NOTREACHED();
-}
 
 // Helper to get histogram suffix based on priority.
 std::string GetPrioritySuffix(InfoBarDelegate::InfobarPriority priority) {
@@ -51,13 +34,22 @@ InfoBarContainerWithPriority::InfoBarContainerWithPriority(Delegate* delegate)
 
 InfoBarContainerWithPriority::~InfoBarContainerWithPriority() = default;
 
-void InfoBarContainerWithPriority::ChangeInfoBarManager(
-    InfoBarManager* infobar_manager) {
-  if (!features::IsInfobarPrioritizationEnabled()) {
-    InfoBarContainer::ChangeInfoBarManager(infobar_manager);
-    return;
+size_t InfoBarContainerWithPriority::GetInfoBarPriorityCapFor(
+    InfoBarDelegate::InfobarPriority priority) const {
+  switch (priority) {
+    case InfoBarDelegate::InfobarPriority::kCriticalSecurity:
+      return 2;
+    case InfoBarDelegate::InfobarPriority::kDefault:
+      return 1;
+    case InfoBarDelegate::InfobarPriority::kLow:
+      return 1;
   }
 
+  NOTREACHED();
+}
+
+void InfoBarContainerWithPriority::ChangeInfoBarManager(
+    InfoBarManager* infobar_manager) {
   scoped_observation_.Reset();
 
   bool state_changed = !infobars().empty();
@@ -111,11 +103,6 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
 }
 
 void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
-  if (!features::IsInfobarPrioritizationEnabled()) {
-    InfoBarContainer::OnInfoBarAdded(infobar);
-    return;
-  }
-
   const auto priority = infobar->delegate()
                             ? infobar->delegate()->GetPriority()
                             : InfoBarDelegate::InfobarPriority::kDefault;
@@ -124,11 +111,6 @@ void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
 
 void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
                                                     bool animate) {
-  if (!features::IsInfobarPrioritizationEnabled()) {
-    InfoBarContainer::OnInfoBarRemoved(infobar, animate);
-    return;
-  }
-
   // An infobar is being removed from the manager. It could be in our visible
   // list or our pending list. We must remove it from whichever list it's in
   // to prevent holding a dangling pointer.
@@ -158,11 +140,6 @@ void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
 
 void InfoBarContainerWithPriority::OnInfoBarReplaced(InfoBar* old_infobar,
                                                      InfoBar* new_infobar) {
-  if (!features::IsInfobarPrioritizationEnabled()) {
-    InfoBarContainer::OnInfoBarReplaced(old_infobar, new_infobar);
-    return;
-  }
-
   // Track whether the old infobar was actually visible in this container.
   const bool was_visible =
       std::ranges::any_of(visible_, [old_infobar](const VisibleEntry& entry) {

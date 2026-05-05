@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/infobars/core/features.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -73,6 +71,13 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
       : InfoBarContainerWithPriority(delegate) {}
   ~TestPriorityContainer() override = default;
 
+  void SetTestingCaps(size_t critical_cap, size_t default_cap, size_t low_cap) {
+    use_testing_caps_ = true;
+    critical_cap_ = critical_cap;
+    default_cap_ = default_cap;
+    low_cap_ = low_cap;
+  }
+
   size_t add_calls() const { return add_calls_; }
   size_t remove_calls() const { return remove_calls_; }
   size_t visible_count() const { return visible_infobars_.size(); }
@@ -96,10 +101,29 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
     }
   }
 
+  size_t GetInfoBarPriorityCapFor(
+      InfoBarDelegate::InfobarPriority priority) const override {
+    if (use_testing_caps_) {
+      switch (priority) {
+        case InfoBarDelegate::InfobarPriority::kCriticalSecurity:
+          return critical_cap_;
+        case InfoBarDelegate::InfobarPriority::kDefault:
+          return default_cap_;
+        case InfoBarDelegate::InfobarPriority::kLow:
+          return low_cap_;
+      }
+    }
+    return InfoBarContainerWithPriority::GetInfoBarPriorityCapFor(priority);
+  }
+
  private:
   size_t add_calls_ = 0;
   size_t remove_calls_ = 0;
   std::vector<raw_ptr<InfoBar>> visible_infobars_;
+  bool use_testing_caps_ = false;
+  size_t critical_cap_ = 0;
+  size_t default_cap_ = 0;
+  size_t low_cap_ = 0;
 };
 
 class TestManager : public InfoBarManager {
@@ -124,17 +148,6 @@ static TestInfoBar* AddInfoBar(TestManager* test_manager,
           std::make_unique<PriorityDelegate>(priority))));
 }
 
-static void EnableWithCaps(base::test::ScopedFeatureList& feature_list,
-                           int critical_cap,
-                           int default_cap,
-                           int low_cap) {
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kInfobarPrioritization,
-      {{features::kMaxVisibleCritical.name, base::NumberToString(critical_cap)},
-       {features::kMaxVisibleDefault.name, base::NumberToString(default_cap)},
-       {features::kMaxVisibleLow.name, base::NumberToString(low_cap)},
-       {features::kMaxLowQueued.name, "3"}});
-}
 
 class InfoBarContainerWithPriorityTest : public testing::Test {
  protected:
@@ -145,9 +158,6 @@ class InfoBarContainerWithPriorityTest : public testing::Test {
 };
 
 TEST_F(InfoBarContainerWithPriorityTest, DefaultIsSingleVisibleThenFIFO) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -180,9 +190,6 @@ TEST_F(InfoBarContainerWithPriorityTest, DefaultIsSingleVisibleThenFIFO) {
 
 TEST_F(InfoBarContainerWithPriorityTest,
        LowQueuedWhileDefaultVisibleOrPending) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -210,9 +217,6 @@ TEST_F(InfoBarContainerWithPriorityTest,
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, QueueOrderingFIFOWithinPriority) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -241,9 +245,6 @@ TEST_F(InfoBarContainerWithPriorityTest, QueueOrderingFIFOWithinPriority) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, CriticalStacksUpToCap) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -272,9 +273,6 @@ TEST_F(InfoBarContainerWithPriorityTest, CriticalStacksUpToCap) {
 
 TEST_F(InfoBarContainerWithPriorityTest,
        DefaultDoesNotSurfaceWhileCriticalVisibleOrQueued) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -310,9 +308,6 @@ TEST_F(InfoBarContainerWithPriorityTest,
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, QueuedInfoBarsArePromotedInFIFOOrder) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -343,11 +338,9 @@ TEST_F(InfoBarContainerWithPriorityTest, QueuedInfoBarsArePromotedInFIFOOrder) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, CriticalCapOne) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
-                 /*low_cap=*/1);
-
   TestPriorityContainer container(&delegate_);
+  container.SetTestingCaps(/*critical_cap=*/1, /*default_cap=*/1,
+                           /*low_cap=*/1);
   TestManager manager;
   container.ChangeInfoBarManager(&manager);
 
@@ -367,9 +360,6 @@ TEST_F(InfoBarContainerWithPriorityTest, CriticalCapOne) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, LowNeverSurfacesAheadOfQueuedDefault) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -399,9 +389,6 @@ TEST_F(InfoBarContainerWithPriorityTest, LowNeverSurfacesAheadOfQueuedDefault) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, UmaQueueSizeRecorded) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/2, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -437,9 +424,6 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaQueueSizeRecorded) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, ReplaceDoesNotPromoteFromQueue) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -476,9 +460,6 @@ TEST_F(InfoBarContainerWithPriorityTest, ReplaceDoesNotPromoteFromQueue) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, UmaWaitTimeRecorded) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -516,9 +497,6 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaWaitTimeRecorded) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;
@@ -545,9 +523,6 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, NoAnimationOnManagerChange) {
-  base::test::ScopedFeatureList feature_list;
-  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
-                 /*low_cap=*/1);
 
   TestPriorityContainer container(&delegate_);
   TestManager manager;

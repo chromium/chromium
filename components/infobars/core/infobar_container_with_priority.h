@@ -50,6 +50,9 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   void OnInfoBarRemoved(InfoBar* infobar, bool animate) override;
   void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar) override;
 
+  virtual size_t GetInfoBarPriorityCapFor(
+      InfoBarDelegate::InfobarPriority priority) const;
+
  private:
   // Represents the description of an infobar entry in the queue.
   struct PendingInfoBarEntry {
