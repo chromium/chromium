@@ -31,7 +31,9 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (override));
   MOCK_METHOD(void,
               OnWebUIReady,
-              (const base::Uuid& task_id, content::WebContents* web_contents),
+              (BrowserWindowInterface * browser_window_interface,
+               const base::Uuid& task_id,
+               content::WebContents* web_contents),
               (override));
   MOCK_METHOD(void,
               OnWebUIDestroyed,

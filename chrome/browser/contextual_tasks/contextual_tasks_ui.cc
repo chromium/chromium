@@ -323,7 +323,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
     base::Uuid task_id = base::Uuid::ParseLowercase(task_id_str);
     if (task_id.is_valid()) {
       task_id_ = task_id;
-      ui_service_->OnWebUIReady(task_id, web_ui->GetWebContents());
+      ui_service_->OnWebUIReady(GetBrowser(), task_id,
+                                web_ui->GetWebContents());
     }
   }
 

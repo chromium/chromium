@@ -7,6 +7,7 @@
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -35,6 +36,7 @@ void ContextualTasksUiServiceDelegateDesktop::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {}
 
 void ContextualTasksUiServiceDelegateDesktop::OnWebUIReady(
+    BrowserWindowInterface* browser_window_interface,
     const base::Uuid& task_id,
     content::WebContents* web_contents) {}
 

@@ -988,7 +988,7 @@ TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnConstruction) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
 
-  EXPECT_CALL(*service_for_nav_, OnWebUIReady(task_id, _)).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnWebUIReady(_, task_id, _)).Times(1);
   // Expect OnWebUIDestroyed when controller goes out of scope.
   EXPECT_CALL(*service_for_nav_, OnWebUIDestroyed(_, std::optional(task_id)))
       .Times(1);

@@ -1705,13 +1705,14 @@ TEST_F(ContextualTasksUiServiceTest, OnWebUIReady) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
+  MockBrowserWindowInterface browser_window_interface;
 
-  EXPECT_CALL(*delegate_ptr, OnWebUIReady(task_id, web_contents.get()))
+  EXPECT_CALL(*delegate_ptr, OnWebUIReady(&browser_window_interface, task_id,
+                                          web_contents.get()))
       .Times(1);
 
-  service.OnWebUIReady(task_id, web_contents.get());
+  service.OnWebUIReady(&browser_window_interface, task_id, web_contents.get());
 }
-
 TEST_F(ContextualTasksUiServiceTest, OnWebUIDestroyed) {
   auto delegate = std::make_unique<MockContextualTasksUiServiceDelegate>();
   auto* delegate_ptr = delegate.get();
