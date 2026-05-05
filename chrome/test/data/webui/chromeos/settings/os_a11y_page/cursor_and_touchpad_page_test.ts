@@ -20,6 +20,7 @@ import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browse
 import {clearBody} from '../utils.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
+const INVERTED_CURSOR_COLOR = 1;
 const RED_CURSOR_COLOR = 0xd93025;
 
 /**
@@ -133,6 +134,62 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     cursorColorSelectElement.dispatchEvent(new CustomEvent('change'));
     assertEquals(DEFAULT_BLACK_CURSOR_COLOR, cursorColorPref.value);
     assertFalse(cursorColorEnabledPref.value);
+  });
+
+  test('cursor color inverted option visible only with flag', async () => {
+    // Enable the flag.
+    loadTimeData.overrideValues({
+      isAccessibilityInvertedMouseCursorEnabled: true,
+    });
+    await initPage();
+
+    const cursorColorDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#cursorColorDropdown');
+    assert(cursorColorDropdown);
+    await waitAfterNextRender(cursorColorDropdown);
+    const cursorColorSelectElement =
+        cursorColorDropdown.shadowRoot!.querySelector('select');
+    assert(cursorColorSelectElement);
+
+    // Check if inverted option is present.
+    let foundInverted = false;
+    for (let i = 0; i < cursorColorSelectElement.options.length; i++) {
+      if (cursorColorSelectElement.options[i]!.value ===
+          String(INVERTED_CURSOR_COLOR)) {
+        foundInverted = true;
+        break;
+      }
+    }
+    assertTrue(foundInverted);
+
+    // Disable the flag and re-init page.
+    page.remove();
+    prefElement.remove();
+    loadTimeData.overrideValues({
+      isAccessibilityInvertedMouseCursorEnabled: false,
+    });
+    await initPage();
+
+    const cursorColorDropdown2 =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#cursorColorDropdown');
+    assert(cursorColorDropdown2);
+    await waitAfterNextRender(cursorColorDropdown2);
+    const cursorColorSelectElement2 =
+        cursorColorDropdown2.shadowRoot!.querySelector('select');
+    assert(cursorColorSelectElement2);
+
+    // Check if inverted option is NOT present.
+    let foundInverted2 = false;
+    for (let i = 0; i < cursorColorSelectElement2.options.length; i++) {
+      if (cursorColorSelectElement2.options[i]!.value ===
+          String(INVERTED_CURSOR_COLOR)) {
+        foundInverted2 = true;
+        break;
+      }
+    }
+    assertFalse(foundInverted2);
   });
 
   test(

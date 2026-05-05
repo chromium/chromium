@@ -52,8 +52,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
 
   ~CursorWindowController() override;
 
-  void Init();
-
   bool is_cursor_compositing_enabled() const {
     return is_cursor_compositing_enabled_;
   }
@@ -63,6 +61,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
 
   void SetLargeCursorSizeInDip(int large_cursor_size_in_dip);
   void SetCursorColor(SkColor cursor_color);
+  void SetCursorInverted(bool inverted);
 
   // If at least one of the features that use cursor compositing is enabled, it
   // should not be disabled. Future features that require cursor compositing
@@ -106,6 +105,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // Gets the cursor container for testing purposes.
   const aura::Window* GetContainerForTest() const;
   SkColor GetCursorColorForTest() const;
+  bool IsCursorInvertedForTest() const;
   gfx::Rect GetCursorBoundsInScreenForTest() const;
   const aura::Window* GetCursorHostWindowForTest() const;
 
@@ -172,6 +172,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
 
   int large_cursor_size_in_dip_ = kDefaultLargeCursorSize;
   SkColor cursor_color_ = ui::kDefaultCursorColor;
+  bool is_inverted_ = false;
 
   // The display on which the cursor is drawn.
   // For mirroring mode, the display is always the primary display.

@@ -483,6 +483,7 @@ class InvertedCursorWindowControllerTest : public CursorWindowControllerTest {
 
 TEST_F(InvertedCursorWindowControllerTest, InvertedCursorLayers) {
   SetCursorCompositionEnabled(true);
+  cursor_window_controller()->SetCursorInverted(true);
   cursor_window_controller()->SetCursor(CursorType::kPointer);
 
   aura::Window* cursor_window =
@@ -542,6 +543,7 @@ TEST_F(InvertedCursorWindowControllerTest, SeparateCursorBitmap_PureColors) {
 }
 
 TEST_F(InvertedCursorWindowControllerTest, InvertedCursorOutlineColor) {
+  cursor_window_controller()->SetCursorInverted(true);
   SetCursorCompositionEnabled(true);
 
   auto test_cursor_outline = [&](CursorType type) {

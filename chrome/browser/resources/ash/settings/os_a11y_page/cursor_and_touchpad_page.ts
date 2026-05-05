@@ -39,6 +39,7 @@ import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {DisableTouchpadMode} from './disable_touchpad_constants.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
+const INVERTED_CURSOR_COLOR = 1;
 interface Option {
   name: string;
   value: number;
@@ -136,7 +137,7 @@ export class SettingsCursorAndTouchpadPageElement extends
         readOnly: true,
         type: Array,
         value() {
-          return [
+          const options = [
             {
               value: DEFAULT_BLACK_CURSOR_COLOR,
               name: loadTimeData.getString('cursorColorBlack'),
@@ -169,8 +170,15 @@ export class SettingsCursorAndTouchpadPageElement extends
               value: 0xf50057,  // Pink A400
               name: loadTimeData.getString('cursorColorPink'),
             },
-
           ];
+          if (loadTimeData.getBoolean(
+                  'isAccessibilityInvertedMouseCursorEnabled')) {
+            options.push({
+              value: INVERTED_CURSOR_COLOR,
+              name: loadTimeData.getString('cursorColorInverted'),
+            });
+          }
+          return options;
         },
       },
 

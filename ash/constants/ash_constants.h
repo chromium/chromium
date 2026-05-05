@@ -37,6 +37,9 @@ constexpr int kDefaultLargeCursorSize = 64;
 constexpr int kMinLargeCursorSize = 25;
 constexpr int kMaxLargeCursorSize = 128;
 
+// A placeholder color value that indicates the cursor color should be inverted.
+constexpr SkColor kAccessibilityCursorColorInverted = 1;
+
 constexpr int kDefaultCaretBlinkIntervalMs = 500;
 
 // Default notification flash color is yellow.

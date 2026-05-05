@@ -1375,6 +1375,20 @@ TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
   EXPECT_EQ(SK_ColorGREEN, cursor_window_controller->GetCursorColorForTest());
   ExpectSessionDurationMetricCount("CrosCursorColor", 0);
 
+  {
+    // Set cursor color pref to inverted.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        ::features::kAccessibilityInvertedMouseCursor);
+
+    prefs()->SetBoolean(prefs::kAccessibilityCursorColorEnabled, true);
+    prefs()->SetInteger(prefs::kAccessibilityCursorColor,
+                        kAccessibilityCursorColorInverted);
+
+    // Expect cursor to be inverted.
+    EXPECT_TRUE(cursor_window_controller->IsCursorInvertedForTest());
+  }
+
   // Simulate using chrome settings webui to set cursor color to black, which
   // which also turns off the cursor color enabled pref.
   prefs()->SetInteger(prefs::kAccessibilityCursorColor, 0);

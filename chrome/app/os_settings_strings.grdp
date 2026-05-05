@@ -1648,6 +1648,9 @@
   <message name="IDS_SETTINGS_CURSOR_COLOR_PINK" desc="Label for a cursor color option which colors the cursor pink.">
     Pink
   </message>
+  <message name="IDS_SETTINGS_CURSOR_COLOR_INVERTED" desc="Label for a cursor color option which inverts the colors underneath the cursor.">
+    Inverted
+  </message>
   <message name="IDS_SETTINGS_HIGH_CONTRAST_LABEL" desc="Label for checkbox which enables high-contrast UI.">
     Color inversion
   </message>

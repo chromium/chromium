@@ -930,6 +930,7 @@ void AccessibilitySection::AddLoadTimeData(
       {"cursorColorMagenta", IDS_SETTINGS_CURSOR_COLOR_MAGENTA},
       {"cursorColorOptionsLabel", IDS_SETTINGS_CURSOR_COLOR_OPTIONS_LABEL},
       {"cursorColorPink", IDS_SETTINGS_CURSOR_COLOR_PINK},
+      {"cursorColorInverted", IDS_SETTINGS_CURSOR_COLOR_INVERTED},
       {"cursorColorRed", IDS_SETTINGS_CURSOR_COLOR_RED},
       {"cursorColorYellow", IDS_SETTINGS_CURSOR_COLOR_YELLOW},
       {"cursorHighlightLabel",
@@ -1606,6 +1607,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
                           IsAccessibilityFlashNotificationFeatureEnabled());
+
+  html_source->AddBoolean(
+      "isAccessibilityInvertedMouseCursorEnabled",
+      ::features::IsAccessibilityInvertedMouseCursorEnabled());
 
   html_source->AddInteger(
       "defaultBounceKeysDelayMillis",

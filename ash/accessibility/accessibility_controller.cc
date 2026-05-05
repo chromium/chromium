@@ -3046,13 +3046,26 @@ void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
   const bool enabled =
       active_user_prefs_->GetBoolean(prefs::kAccessibilityCursorColorEnabled);
   Shell* shell = Shell::Get();
-  shell->SetCursorColor(
-      enabled
-          // Settings page only sends RGB now. Set alpha as full opaque.
-          ? SkColorSetA(active_user_prefs_->GetInteger(
-                            prefs::kAccessibilityCursorColor),
-                        0xFF)
-          : ui::kDefaultCursorColor);
+
+  const SkColor cursor_color =
+      active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor);
+  if (enabled && cursor_color == kAccessibilityCursorColorInverted) {
+    if (::features::IsAccessibilityInvertedMouseCursorEnabled()) {
+      shell->SetCursorInverted(true);
+    } else {
+      // Use default cursor if inverted cursor is not supported.
+      shell->SetCursorInverted(false);
+      shell->SetCursorColor(ui::kDefaultCursorColor);
+    }
+  } else {
+    shell->SetCursorInverted(false);
+    shell->SetCursorColor(
+        enabled
+            // Settings page only sends RGB now. Set alpha as full opaque.
+            ? SkColorSetA(cursor_color, 0xFF)
+            : ui::kDefaultCursorColor);
+  }
+
   if (notify) {
     NotifyAccessibilityStatusChanged();
   }

@@ -578,6 +578,11 @@ void Shell::SetCursorColor(SkColor cursor_color) {
   cursor_manager_->SetCursorColor(cursor_color);
 }
 
+void Shell::SetCursorInverted(bool inverted) {
+  window_tree_host_manager_->cursor_window_controller()->SetCursorInverted(
+      inverted);
+}
+
 void Shell::UpdateCursorCompositingEnabled() {
   SetCursorCompositingEnabled(
       window_tree_host_manager_->cursor_window_controller()
@@ -1827,7 +1832,6 @@ void Shell::Init(
   window_restore_controller_ = std::make_unique<WindowRestoreController>();
 
   static_cast<CursorManager*>(cursor_manager_.get())->Init();
-  window_tree_host_manager_->cursor_window_controller()->Init();
 
   mojo::PendingRemote<device::mojom::Fingerprint> fingerprint;
   shell_delegate_->BindFingerprint(

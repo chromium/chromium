@@ -402,10 +402,6 @@ CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
 }
 
-void CursorWindowController::Init() {
-  Shell::Get()->UpdateCursorCompositingEnabled();
-}
-
 void CursorWindowController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -443,9 +439,21 @@ void CursorWindowController::SetCursorColor(SkColor cursor_color) {
     UpdateCursorImage();
 }
 
+void CursorWindowController::SetCursorInverted(bool inverted) {
+  if (is_inverted_ == inverted) {
+    return;
+  }
+
+  is_inverted_ = inverted;
+
+  // Reset cursor lottie animation cache when new color needs to be applied.
+  wm::ClearCursorAnimationCache();
+
+  UpdateCursorMode();
+}
+
 bool CursorWindowController::ShouldEnableCursorCompositing() {
-  if (::features::IsAccessibilityInvertedMouseCursorEnabled() &&
-      cursor_color_ == ui::kDefaultCursorColor) {
+  if (::features::IsAccessibilityInvertedMouseCursorEnabled() && is_inverted_) {
     return true;
   }
 
@@ -673,6 +681,10 @@ SkColor CursorWindowController::GetCursorColorForTest() const {
   return cursor_color_;
 }
 
+bool CursorWindowController::IsCursorInvertedForTest() const {
+  return is_inverted_;
+}
+
 gfx::Rect CursorWindowController::GetCursorBoundsInScreenForTest() const {
   if (cursor_view_widget_) {
     gfx::Rect cursor_rect =
@@ -741,8 +753,8 @@ void CursorWindowController::UpdateCursorImage() {
   gfx::Point hot_point_in_physical_pixels;
 
   // Only use inverted mode if no other cursor color was set.
-  bool use_inverted = ::features::IsAccessibilityInvertedMouseCursorEnabled() &&
-                      cursor_color_ == ui::kDefaultCursorColor;
+  bool use_inverted =
+      ::features::IsAccessibilityInvertedMouseCursorEnabled() && is_inverted_;
   SkColor fill_color = use_inverted ? kFillColorForInvert : cursor_color_;
 
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
@@ -873,8 +885,7 @@ const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
 bool CursorWindowController::ShouldUseFastInk() const {
   // If inverted cursor is enabled, we want to use the aura::Window path to
   // support the inverted cursor feature.
-  if (::features::IsAccessibilityInvertedMouseCursorEnabled() &&
-      cursor_color_ == ui::kDefaultCursorColor) {
+  if (::features::IsAccessibilityInvertedMouseCursorEnabled() && is_inverted_) {
     return false;
   }
 

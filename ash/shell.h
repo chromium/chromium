@@ -895,6 +895,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Sets a custom color for the cursor.
   void SetCursorColor(SkColor cursor_color);
 
+  // Sets whether the cursor should be inverted.
+  void SetCursorInverted(bool inverted);
+
   // Updates cursor compositing on/off. Native cursor is disabled when cursor
   // compositing is enabled, and vice versa.
   void UpdateCursorCompositingEnabled();
