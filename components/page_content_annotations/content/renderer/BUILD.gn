@@ -11,6 +11,8 @@ source_set("renderer") {
     "page_stability_monitor.h",
     "page_stability_monitor_delegate.cc",
     "page_stability_monitor_delegate.h",
+    "page_stability_monitor_manager.cc",
+    "page_stability_monitor_manager.h",
     "page_stability_state.cc",
     "page_stability_state.h",
     "paint_stability_monitor.cc",

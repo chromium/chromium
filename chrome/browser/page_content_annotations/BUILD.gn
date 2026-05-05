@@ -210,6 +210,7 @@ if (is_android) {
     sources = [
       "multi_source_page_context_fetcher_browsertest.cc",
       "page_content_annotations_service_browsertest.cc",
+      "page_settled_monitor_chrome_browsertest.cc",
       "page_text_observer_browsertest.cc",
     ]
     deps = [
@@ -221,6 +222,7 @@ if (is_android) {
       "//chrome/browser/history",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/page_content_annotations:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
@@ -278,5 +280,26 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "page_stability_test_utils.cc",
+    "page_stability_test_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//components/page_content_annotations/content/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
   ]
 }

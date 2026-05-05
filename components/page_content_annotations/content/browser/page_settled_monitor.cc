@@ -27,7 +27,9 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace page_content_annotations {
 
@@ -40,6 +42,27 @@ PageSettledMonitor::Delegate::Delegate(
     std::optional<PageSettledMonitor::PageStabilityConfig>
         page_stability_config)
     : page_stability_config_(std::move(page_stability_config)) {}
+
+mojo::PendingRemote<mojom::PageStabilityMonitor>
+PageSettledMonitor::Delegate::CreatePageStabilityMonitor(
+    content::RenderFrameHost* target_frame) {
+  if (!target_frame || !page_stability_config_.has_value()) {
+    return mojo::NullRemote();
+  }
+
+  // Use the component-level PageStabilityMonitorManager to bootstrap the
+  // renderer-side monitor. Using an associated interface here ensures that the
+  // monitor creation is ordered correctly with respect to frame navigations
+  // and other frame-level messages.
+  mojo::AssociatedRemote<mojom::PageStabilityMonitorManager> manager;
+  target_frame->GetRemoteAssociatedInterfaces()->GetInterface(&manager);
+
+  mojo::PendingRemote<mojom::PageStabilityMonitor> remote;
+  manager->CreatePageStabilityMonitor(
+      remote.InitWithNewPipeAndPassReceiver(),
+      page_stability_config_->supports_paint_stability);
+  return remote;
+}
 
 void PageSettledMonitor::Delegate::OnMilestoneReached(
     Milestone milestone,

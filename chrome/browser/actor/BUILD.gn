@@ -371,6 +371,7 @@ source_set("tools_test_support") {
     ":test_support",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/page_content_annotations:test_support",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/zoom",
     "//chrome/test:test_support",

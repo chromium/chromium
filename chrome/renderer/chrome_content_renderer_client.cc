@@ -102,6 +102,7 @@
 #include "components/no_state_prefetch/renderer/no_state_prefetch_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/page_content_annotations/content/renderer/page_stability_monitor_manager.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/paint_preview/buildflags/buildflags.h"
@@ -793,6 +794,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
     WebUIBrowserRendererExtension::Create(render_frame);
   }
 #endif
+
+  // Wire up the PageStabilityMonitorManager to allow components to
+  // request stability monitors for this frame.
+  new page_content_annotations::PageStabilityMonitorManager(render_frame);
 }
 
 void ChromeContentRendererClient::WebViewCreated(

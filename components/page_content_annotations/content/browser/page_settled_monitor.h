@@ -92,7 +92,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
 
     // Creates a renderer-side PageStabilityMonitor.
     virtual mojo::PendingRemote<mojom::PageStabilityMonitor>
-    CreatePageStabilityMonitor(content::RenderFrameHost* target_frame) = 0;
+    CreatePageStabilityMonitor(content::RenderFrameHost* target_frame);
 
     // Called when the monitor transitions to a new internal state.
     virtual void WillMoveToState(State state) {}

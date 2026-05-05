@@ -22,3 +22,21 @@ interface PageStabilityMonitor {
   // monitor for page stability.
   NotifyWhenStable(mojo_base.mojom.TimeDelta observation_delay) => ();
 };
+
+// A frame-level associated interface used to bootstrap page stability
+// monitoring for a specific frame.
+//
+// This manager provides a component-level entry point that allows features to
+// request a PageStabilityMonitor without needing to know about
+// application-level (chrome/-specific) renderer wiring. This interface should
+// be requested via the frame's RemoteAssociatedInterfaces.
+interface PageStabilityMonitorManager {
+  // Binds a new PageStabilityMonitor for this frame.
+  //
+  // `supports_paint_stability`: If true, the monitor will incorporate
+  // visual stability signals (from PaintStabilityMonitor) in addition
+  // to network and main-thread idleness.
+  CreatePageStabilityMonitor(
+      pending_receiver<PageStabilityMonitor> receiver,
+      bool supports_paint_stability);
+};

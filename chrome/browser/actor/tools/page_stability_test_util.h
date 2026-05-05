@@ -5,38 +5,17 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_PAGE_STABILITY_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_PAGE_STABILITY_TEST_UTIL_H_
 
-#include <memory>
-#include <string>
-#include <string_view>
-
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
-#include "chrome/common/actor.mojom-forward.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/platform_browser_test.h"
+#include "chrome/browser/page_content_annotations/page_stability_test_utils.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class GURL;
-
-namespace content {
-
-class RenderFrameHost;
-class WebContents;
-
-}  // namespace content
-
-namespace net::test_server {
-
-class ControllableHttpResponse;
-
-}  // namespace net::test_server
-
 namespace actor {
 
-// TODO(linnan) - Update page_stability_browsertest.cc and
-// observation_delay_controller_browsertest.cc to use this test harness.
-class PageStabilityTest : public PlatformBrowserTest {
+// Actor-specific version of PageStabilityBrowserTestBase that enables
+// relevant features.
+class PageStabilityTest
+    : public page_content_annotations::PageStabilityBrowserTestBase {
  public:
   PageStabilityTest();
   PageStabilityTest(const PageStabilityTest&) = delete;
@@ -46,26 +25,10 @@ class PageStabilityTest : public PlatformBrowserTest {
   void SetUpOnMainThread() override;
 
  protected:
-  void Sleep(base::TimeDelta delta);
-
-  content::WebContents* web_contents();
-  content::RenderFrameHost* main_frame();
-
-  GURL GetPageStabilityTestURL();
-
-  std::string GetOutputText();
-
-  net::test_server::ControllableHttpResponse& fetch_response();
-
-  void InitiateNetworkRequest();
-
-  void Respond(std::string_view text);
-
   mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
   CreatePageStabilityMonitor(bool supports_paint_stability = true);
 
  private:
-  std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -1,6 +1,7 @@
 include_rules = [
     "+components/page_load_metrics/browser",
     "+mojo/public/cpp/bindings",
+    "+third_party/blink/public/common/associated_interfaces",
 ]
 
 specific_include_rules = {
