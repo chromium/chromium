@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -102,16 +103,19 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     return std::get<2>(GetParam());
   }
 
-  // Triggers a manifest update by launching the app or loading the update_url
-  // in a new browser tab as per the manifest update flow being tested.
-  void TriggerManifestUpdateAndAwaitCompletion(const webapps::AppId& app_id,
-                                               GURL update_url) {
+  // Triggers a manifest update by launching the app and waiting for the page
+  // to load and the manifest to be processed.
+  void TriggerManifestUpdateAndAwaitCompletion(const webapps::AppId& app_id) {
     clock_->SetNow(base::Time::Now());
     Browser* app_browser =
         LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
     CHECK(app_browser);
-    test::WaitForLoadCompleteAndMaybeManifestSeen(
-        *app_browser->tab_strip_model()->GetActiveWebContents());
+    GURL expected_url = provider(0).registrar_unsafe().GetAppLaunchUrl(app_id);
+    EXPECT_TRUE(test::WebAppPageWaiter(
+                    app_browser->tab_strip_model()->GetActiveWebContents())
+                    .ExpectUrl(expected_url)
+                    .ExpectManifest()
+                    .WaitAndFlushCommands());
     provider(0).command_manager().AwaitAllCommandsCompleteForTesting();
   }
 
@@ -231,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
   }
 
   // Trigger manifest update, and verify that the icons were updated.
-  TriggerManifestUpdateAndAwaitCompletion(app_id, start_url);
+  TriggerManifestUpdateAndAwaitCompletion(app_id);
 
   // Check icons fixed in time window, provided trusted icons architecture is
   // not enabled. With trusted icons enabled, sync installs always install from

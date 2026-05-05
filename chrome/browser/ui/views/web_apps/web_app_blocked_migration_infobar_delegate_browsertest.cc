@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -185,7 +186,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents();
 
   // Wait for the destination app to also be installed.
-  test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
+  EXPECT_TRUE(test::WebAppPageWaiter(web_contents)
+                  .ExpectUrl(app_url)
+                  .ExpectManifest()
+                  .WaitAndFlushCommands());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
@@ -209,7 +213,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  test::WaitForLoadCompleteAndMaybeManifestSeen(*web_contents);
+  EXPECT_TRUE(test::WebAppPageWaiter(web_contents)
+                  .ExpectUrl(app_url)
+                  .ExpectManifest()
+                  .WaitAndFlushCommands());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
@@ -225,8 +232,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(target_app_browser, no_migration_url));
 
-  test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *target_app_browser->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(test::WebAppPageWaiter(
+                  target_app_browser->tab_strip_model()->GetActiveWebContents())
+                  .ExpectUrl(no_migration_url)
+                  .ExpectManifest()
+                  .WaitAndFlushCommands());
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_FALSE(
