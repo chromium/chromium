@@ -1570,6 +1570,8 @@ static_library("test_support") {
     "chrome_test_extension_loader.h",
     "extension_action_test_util.cc",
     "extension_action_test_util.h",
+    "extension_cookies_test_helper.cc",
+    "extension_cookies_test_helper.h",
     "extension_management_test_util.cc",
     "extension_management_test_util.h",
     "external_testing_loader.cc",
@@ -1612,8 +1614,10 @@ static_library("test_support") {
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser:crx_installer",
+    "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
+    "//url",
   ]
 
   if (enable_extensions) {
