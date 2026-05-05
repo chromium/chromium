@@ -18,6 +18,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -44,6 +45,10 @@
 namespace web_app {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallOptionsView, kViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallOptionsView,
+                                      kCreateShortcutCheckboxId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallOptionsView,
+                                      kPinToTaskbarCheckboxId);
 
 namespace {
 
@@ -217,12 +222,16 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_WEB_APP_INSTALL_CREATE_DESKTOP_SHORTCUT))
                       .SetChecked(true)
-                      .CopyAddressTo(&add_desktop_shortcut_checkbox_),
+                      .CopyAddressTo(&add_desktop_shortcut_checkbox_)
+                      .SetProperty(views::kElementIdentifierKey,
+                                   kCreateShortcutCheckboxId),
                   views::Builder<views::Checkbox>()
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR))
                       .SetChecked(true)
-                      .CopyAddressTo(&pin_to_task_bar_checkbox_))
+                      .CopyAddressTo(&pin_to_task_bar_checkbox_)
+                      .SetProperty(views::kElementIdentifierKey,
+                                   kPinToTaskbarCheckboxId))
               .Build());
       break;
     }
@@ -336,5 +345,8 @@ void WebAppInstallOptionsView::SetPinToTaskBarCheckedForTesting(bool checked) {
 base::WeakPtr<WebAppInstallOptionsView> WebAppInstallOptionsView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+
+BEGIN_METADATA(WebAppInstallOptionsView)
+END_METADATA
 
 }  // namespace web_app

@@ -31,8 +31,12 @@ namespace web_app {
 // A view that presents installation options to the user.
 // The content varies based on the platform (InstallOsType).
 class WebAppInstallOptionsView : public views::View {
+  METADATA_HEADER(WebAppInstallOptionsView, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutCheckboxId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPinToTaskbarCheckboxId);
+
   static std::unique_ptr<WebAppInstallOptionsView> Create(
       InstallOsType os_type,
       const std::u16string& title,
