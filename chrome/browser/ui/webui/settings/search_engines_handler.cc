@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
@@ -28,10 +29,13 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -181,9 +185,15 @@ base::DictValue SearchEnginesHandler::GetCategorizedTemplateUrls() {
       TemplateURLServiceFactory::GetForProfile(profile);
   CHECK(template_url_service);
 
+  bool ai_mode_enabled = OmniboxFieldTrial::IsAimStarterPackEnabled(
+      AimEligibilityServiceFactory::GetForProfile(profile));
+  bool gemini_enabled =
+      base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion) &&
+      profile->GetPrefs()->GetInteger(prefs::kGeminiSettings) == 0;
+
   TemplateURLService::CategorizedTemplateUrls data =
       template_url_service->GetCategorizedTemplateURLs(
-          internal::GetDisabledStarterPackIds(profile));
+          internal::GetDisabledStarterPackIds(ai_mode_enabled, gemini_enabled));
 
   auto transform_urls =
       [&](const TemplateURL::TemplateURLVector& template_urls) {

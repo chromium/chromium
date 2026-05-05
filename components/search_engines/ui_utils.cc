@@ -154,11 +154,12 @@ bool OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically::operator()(
 }
 
 template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
-    bool ai_mode_enabled) {
+    bool ai_mode_enabled,
+    bool gemini_enabled) {
   template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids;
 
   // Skip @gemini if feature disabled.
-  if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
+  if (!gemini_enabled) {
     disabled_starter_pack_ids.Put(
         template_url_starter_pack_data::StarterPackId::kGemini);
   }

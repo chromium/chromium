@@ -671,6 +671,11 @@ bool ChromeAutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+bool ChromeAutocompleteProviderClient::IsGeminiStarterPackEnabled() const {
+  return AutocompleteProviderClient::IsGeminiStarterPackEnabled() &&
+         profile_->GetPrefs()->GetInteger(prefs::kGeminiSettings) == 0;
+}
+
 base::CallbackListSubscription
 ChromeAutocompleteProviderClient::GetLensSuggestInputsWhenReady(
     LensOverlaySuggestInputsCallback callback) const {
