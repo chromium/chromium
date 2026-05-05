@@ -92,6 +92,13 @@
 /// Whether the given model is available (allowed and not disabled).
 - (BOOL)isModelAvailable:(ComposeboxModelOption)option;
 
+/// Returns whether global testing mode for making all tools accessible is
+/// active.
++ (BOOL)allToolsEnabled;
+
+/// Switches the global accessibility override status.
++ (void)setAllToolsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_INPUT_STATE_H_

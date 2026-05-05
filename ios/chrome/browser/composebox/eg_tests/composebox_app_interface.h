@@ -30,6 +30,12 @@
 // `MockIOSContextualSearchService`.
 + (void)setTabUploadAutoSucceed:(BOOL)autoSucceed;
 
+// Enables all tools, making UI input state accessible.
++ (void)enableAllTools;
+
+// Resets testing overrides for all tools accessible.
++ (void)setAllToolsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_EG_TESTS_COMPOSEBOX_APP_INTERFACE_H_

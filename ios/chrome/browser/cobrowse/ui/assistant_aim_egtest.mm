@@ -104,10 +104,12 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 
 - (void)setUp {
   [self addTeardownBlock:^{
+    [ComposeboxAppInterface setAllToolsEnabled:NO];
     [ComposeboxAppInterface setFuseboxEligible:NO];
     [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
   }];
   [super setUp];
+  [ComposeboxAppInterface enableAllTools];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 

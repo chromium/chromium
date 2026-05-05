@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +41,14 @@
       ContextualSearchServiceFactory::GetForProfile(profile);
   static_cast<MockIOSContextualSearchService*>(service)
       ->SetTabUploadAutoSucceed(autoSucceed);
+}
+
++ (void)enableAllTools {
+  [ComposeboxUIInputState setAllToolsEnabled:YES];
+}
+
++ (void)setAllToolsEnabled:(BOOL)enabled {
+  [ComposeboxUIInputState setAllToolsEnabled:enabled];
 }
 
 #pragma mark - Private

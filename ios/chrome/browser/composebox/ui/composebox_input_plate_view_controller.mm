@@ -1417,8 +1417,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   NSMutableArray<UIMenuElement*>* sections =
       [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
   if (_state.allowModelPicker) {
-    CHECK(ShowComposeboxAdditionalAdvancedTools());
-
     BOOL regularHidden =
         [_state isModelHidden:ComposeboxModelOption::kRegular] ||
         ![_state isModelHidden:ComposeboxModelOption::kAuto];
