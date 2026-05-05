@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.DefaultHighlightingResult"
-    enum="BooleanSuccess" expires_after="2026-03-01">
+    enum="BooleanSuccess" expires_after="2026-09-01">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -81,6 +81,9 @@ chromium-metrics-reviews@google.com.
     display on that choice screen. Should be emitted once per profile that show
     the choice screen, even if multiple windows (on desktop) are each showing a
     dialog.
+
+    Warning: this histogram was expired from 2026-03-01 to 2026-05-04; data may
+    be missing.
   </summary>
 </histogram>
 
