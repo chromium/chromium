@@ -861,27 +861,6 @@ public class ContentSettingsResources {
      * @param value The ContentSetting for which we want the resource.
      * @param isOneTime Whether the content setting value has a OneTime session model.
      * @param isApproximateGeolocation Whether the geolocation is approximate.
-     */
-    public static int getCategorySummary(
-            @ContentSettingsType.EnumType int type,
-            @ContentSetting int value,
-            boolean isOneTime,
-            boolean isApproximateGeolocation) {
-        return getCategorySummary(
-                type,
-                value,
-                isOneTime,
-                isApproximateGeolocation,
-                /* isOnlyPreciseLocationBlockedInOs= */ false);
-    }
-
-    /**
-     * Returns the string resource id for a given ContentSetting to show with a permission category.
-     *
-     * @param type The ContentSettingsType for which we want the resource.
-     * @param value The ContentSetting for which we want the resource.
-     * @param isOneTime Whether the content setting value has a OneTime session model.
-     * @param isApproximateGeolocation Whether the geolocation is approximate.
      * @param isOnlyPreciseLocationBlockedInOs Whether only precise location is blocked in the OS
      *     (but coarse is granted).
      */
