@@ -22,6 +22,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
 
 namespace {
 
@@ -37,15 +38,63 @@ class StatusIconWidget : public views::Widget {
 
 }  // namespace
 
-StatusIconButtonLinux::StatusIconButtonLinux()
-    : Button(base::BindRepeating(
-          [](StatusIconButtonLinux* button) { button->delegate_->OnClick(); },
-          base::Unretained(this))) {}
+class StatusIconButtonLinux::StatusIconHoverButton : public views::Button {
+  METADATA_HEADER(StatusIconHoverButton, views::Button)
+
+ public:
+  explicit StatusIconHoverButton(StatusIconButtonLinux* host)
+      : views::Button(base::BindRepeating(
+            [](StatusIconButtonLinux* host) { host->delegate_->OnClick(); },
+            base::Unretained(host))),
+        host_(host) {}
+
+  StatusIconHoverButton(const StatusIconHoverButton&) = delete;
+  StatusIconHoverButton& operator=(const StatusIconHoverButton&) = delete;
+  ~StatusIconHoverButton() override = default;
+
+ protected:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    gfx::ScopedCanvas scoped_canvas(canvas);
+    canvas->UndoDeviceScaleFactor();
+
+    gfx::Rect bounds =
+        host_->widget_->GetNativeWindow()->GetHost()->GetBoundsInPixels();
+    const gfx::ImageSkia& image = host_->delegate_->GetImage();
+
+    // If the image fits in the window, center it.  But if it won't fit,
+    // downscale it preserving aspect ratio.
+    float scale =
+        std::min({1.0f, static_cast<float>(bounds.width()) / image.width(),
+                  static_cast<float>(bounds.height()) / image.height()});
+    float x_offset = (bounds.width() - scale * image.width()) / 2.0f;
+    float y_offset = (bounds.height() - scale * image.height()) / 2.0f;
+
+    gfx::Transform transform;
+    transform.Translate(x_offset, y_offset);
+    transform.Scale(scale, scale);
+    canvas->Transform(transform);
+
+    cc::PaintFlags flags;
+    flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
+    canvas->DrawImageInt(image, 0, 0, image.width(), image.height(), 0, 0,
+                         image.width(), image.height(), true, flags);
+  }
+
+ private:
+  raw_ptr<StatusIconButtonLinux> host_;
+};
+
+BEGIN_METADATA(StatusIconButtonLinux, StatusIconHoverButton)
+END_METADATA
+
+StatusIconButtonLinux::StatusIconButtonLinux() = default;
 
 StatusIconButtonLinux::~StatusIconButtonLinux() = default;
 
 void StatusIconButtonLinux::SetImage(const gfx::ImageSkia& image) {
-  SchedulePaint();
+  if (button_) {
+    button_->SchedulePaint();
+  }
 }
 
 void StatusIconButtonLinux::SetIcon(const gfx::VectorIcon& icon) {
@@ -53,7 +102,9 @@ void StatusIconButtonLinux::SetIcon(const gfx::VectorIcon& icon) {
 }
 
 void StatusIconButtonLinux::SetToolTip(const std::u16string& tool_tip) {
-  SetTooltipText(tool_tip);
+  if (button_) {
+    button_->SetTooltipText(tool_tip);
+  }
 }
 
 void StatusIconButtonLinux::UpdatePlatformContextMenu(ui::MenuModel* model) {
@@ -101,19 +152,20 @@ void StatusIconButtonLinux::OnSetDelegate() {
     return;
   }
 
-  widget_->SetContentsView(this);
-  set_owned_by_client(OwnedByClientPassKey());
+  auto button = std::make_unique<StatusIconHoverButton>(this);
+  button_ = button.get();
 
-  SetBorder(nullptr);
-  SetImage(delegate_->GetImage());
-  SetTooltipText(delegate_->GetToolTip());
-  set_context_menu_controller(this);
+  button_->SetBorder(nullptr);
+  button_->SetTooltipText(delegate_->GetToolTip());
+  button_->set_context_menu_controller(this);
+
+  widget_->SetContentsView(std::move(button));
 
   widget_->Show();
 }
 
 void StatusIconButtonLinux::ShowContextMenuForViewImpl(
-    View* source,
+    views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
   ui::MenuModel* menu = delegate_->GetMenuModel();
@@ -126,32 +178,3 @@ void StatusIconButtonLinux::ShowContextMenuForViewImpl(
   menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
-
-void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::ScopedCanvas scoped_canvas(canvas);
-  canvas->UndoDeviceScaleFactor();
-
-  gfx::Rect bounds = widget_->GetNativeWindow()->GetHost()->GetBoundsInPixels();
-  const gfx::ImageSkia& image = delegate_->GetImage();
-
-  // If the image fits in the window, center it.  But if it won't fit, downscale
-  // it preserving aspect ratio.
-  float scale =
-      std::min({1.0f, static_cast<float>(bounds.width()) / image.width(),
-                static_cast<float>(bounds.height()) / image.height()});
-  float x_offset = (bounds.width() - scale * image.width()) / 2.0f;
-  float y_offset = (bounds.height() - scale * image.height()) / 2.0f;
-
-  gfx::Transform transform;
-  transform.Translate(x_offset, y_offset);
-  transform.Scale(scale, scale);
-  canvas->Transform(transform);
-
-  cc::PaintFlags flags;
-  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
-  canvas->DrawImageInt(image, 0, 0, image.width(), image.height(), 0, 0,
-                       image.width(), image.height(), true, flags);
-}
-
-BEGIN_METADATA(StatusIconButtonLinux)
-END_METADATA
