@@ -127,8 +127,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // floaty to be shown.
   void ShowFloatyIfInvoked(bool animated, gemini::FloatyUpdateSource source);
 
-  // GeminiViewStateChangeHandlerTarget:
-  void OnGeminiViewStateExpanded() override;
+  void OnViewStateChanged(ios::provider::GeminiViewState view_state) override;
+  void OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode processing_status) override;
   void CollapseFloatyIfInvoked() override;
   void SetLastShownViewState(
       ios::provider::GeminiViewState view_state) override;
@@ -143,6 +144,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   explicit GeminiBrowserAgent(Browser* browser);
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
+
+  // Fetches the full context of the active page and feeds it to Gemini.
+  void UpdateGeminiPageContext();
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,

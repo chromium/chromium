@@ -13,8 +13,13 @@ class GeminiViewStateChangeHandlerTarget {
  public:
   virtual ~GeminiViewStateChangeHandlerTarget() = default;
 
-  // Called when the Gemini view state expands.
-  virtual void OnGeminiViewStateExpanded() = 0;
+  // Called when the Gemini view state changes.
+  virtual void OnViewStateChanged(
+      ios::provider::GeminiViewState view_state) = 0;
+
+  // Called when the Gemini processing status updates.
+  virtual void OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode processing_status) = 0;
 
   // Collapses floaty if invoked.
   virtual void CollapseFloatyIfInvoked() = 0;

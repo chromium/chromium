@@ -27,9 +27,7 @@
   if (!_target) {
     return;
   }
-  if (viewState == ios::provider::GeminiViewState::kExpanded) {
-    _target->OnGeminiViewStateExpanded();
-  }
+  _target->OnViewStateChanged(viewState);
   _target->SetLastShownViewState(viewState);
 }
 
@@ -37,7 +35,10 @@
             (ios::provider::GeminiClientMode)processingStatus
                         sessionID:(NSString*)sessionID
                    conversationID:(NSString*)conversationID {
-  // TODO(crbug.com/504758406): Handle processing status updates.
+  if (!_target) {
+    return;
+  }
+  _target->OnProcessingStatusChanged(processingStatus);
 }
 
 - (void)switchToViewState:(ios::provider::GeminiViewState)viewState {

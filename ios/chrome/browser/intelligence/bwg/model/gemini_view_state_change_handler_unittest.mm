@@ -17,14 +17,22 @@ namespace {
 class FakeGeminiViewStateChangeHandlerTarget
     : public GeminiViewStateChangeHandlerTarget {
  public:
-  void OnGeminiViewStateExpanded() override { on_expanded_called_ = true; }
+  void OnViewStateChanged(ios::provider::GeminiViewState view_state) override {
+    last_view_state_changed_ = view_state;
+  }
+  void OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode processing_status) override {
+    last_processing_status_changed_ = processing_status;
+  }
   void SetLastShownViewState(
       ios::provider::GeminiViewState view_state) override {
     last_shown_view_state_ = view_state;
   }
   void CollapseFloatyIfInvoked() override { collapse_floaty_called_ = true; }
 
-  bool on_expanded_called_ = false;
+  std::optional<ios::provider::GeminiViewState> last_view_state_changed_;
+  std::optional<ios::provider::GeminiClientMode>
+      last_processing_status_changed_;
   std::optional<ios::provider::GeminiViewState> last_shown_view_state_;
   bool collapse_floaty_called_ = false;
 };
@@ -43,7 +51,8 @@ class GeminiViewStateChangeHandlerTest : public PlatformTest {
 // switches to expanded.
 TEST_F(GeminiViewStateChangeHandlerTest, TestDidSwitchToViewStateExpanded) {
   [handler_ didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
-  EXPECT_TRUE(target_.on_expanded_called_);
+  EXPECT_THAT(target_.last_view_state_changed_,
+              testing::Optional(ios::provider::GeminiViewState::kExpanded));
   EXPECT_THAT(target_.last_shown_view_state_,
               testing::Optional(ios::provider::GeminiViewState::kExpanded));
 }
@@ -52,9 +61,21 @@ TEST_F(GeminiViewStateChangeHandlerTest, TestDidSwitchToViewStateExpanded) {
 // switching to collapsed.
 TEST_F(GeminiViewStateChangeHandlerTest, TestDidSwitchToViewStateCollapsed) {
   [handler_ didSwitchToViewState:ios::provider::GeminiViewState::kCollapsed];
-  EXPECT_FALSE(target_.on_expanded_called_);
+  EXPECT_THAT(target_.last_view_state_changed_,
+              testing::Optional(ios::provider::GeminiViewState::kCollapsed));
   EXPECT_THAT(target_.last_shown_view_state_,
               testing::Optional(ios::provider::GeminiViewState::kCollapsed));
+}
+
+// Tests that the handler correctly notifies the target when processing status
+// changes.
+TEST_F(GeminiViewStateChangeHandlerTest, TestDidUpdateProcessingStatus) {
+  [handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:@"session_id"
+                 conversationID:@"conversation_id"];
+  EXPECT_THAT(target_.last_processing_status_changed_,
+              testing::Optional(ios::provider::GeminiClientMode::kListening));
 }
 
 // Tests that the handler requests collapsing the floaty when requested to
@@ -90,7 +111,7 @@ TEST_F(GeminiViewStateChangeHandlerTest, TestDisconnect) {
   [handler_ disconnect];
 
   [handler_ didSwitchToViewState:ios::provider::GeminiViewState::kExpanded];
-  EXPECT_FALSE(target_.on_expanded_called_);
+  EXPECT_FALSE(target_.last_view_state_changed_.has_value());
   EXPECT_FALSE(target_.last_shown_view_state_.has_value());
 
   [handler_ switchToViewState:ios::provider::GeminiViewState::kCollapsed];

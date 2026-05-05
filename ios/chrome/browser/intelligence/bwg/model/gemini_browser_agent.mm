@@ -689,26 +689,20 @@ void GeminiBrowserAgent::CancelTimeoutAndUpdateFloatyPageContext(
   UpdateFloatyPageContext(std::move(expected_page_context));
 }
 
-void GeminiBrowserAgent::OnGeminiViewStateExpanded() {
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
-
-  if (tab_helper) {
-    if (CanExtractPageContextForWebState(active_web_state)) {
-      tab_helper->SetupPageContextGeneration(
-          base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
-                              weak_factory_.GetWeakPtr()));
-    } else {
-      GeminiPageContext* gemini_page_context =
-          tab_helper->GetPartialPageContext();
-      ApplyUserPrefsToPageContext(gemini_page_context);
-      ios::provider::UpdatePageContext(gemini_page_context);
-    }
+void GeminiBrowserAgent::OnViewStateChanged(
+    ios::provider::GeminiViewState view_state) {
+  if (view_state == ios::provider::GeminiViewState::kExpanded) {
+    UpdateGeminiPageContext();
   }
-  // Show page attachment UI chip every time the floaty is expanded.
-  ios::provider::RequestUIChange(
-      ios::provider::GeminiUIElementType::kContextAttachment);
+}
+
+void GeminiBrowserAgent::OnProcessingStatusChanged(
+    ios::provider::GeminiClientMode processing_status) {
+  // TODO(crbug.com/504758406): Update context on speaking state when available.
+  if (IsGeminiLiveEnabled() &&
+      processing_status == ios::provider::GeminiClientMode::kListening) {
+    UpdateGeminiPageContext();
+  }
 }
 
 void GeminiBrowserAgent::CollapseFloatyIfInvoked() {
@@ -1097,6 +1091,28 @@ void GeminiBrowserAgent::WillShutDown(FullscreenBrowserAgent* agent) {
 }
 
 #pragma mark - Private
+
+void GeminiBrowserAgent::UpdateGeminiPageContext() {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+
+  if (tab_helper) {
+    if (CanExtractPageContextForWebState(active_web_state)) {
+      tab_helper->SetupPageContextGeneration(
+          base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
+                              weak_factory_.GetWeakPtr()));
+    } else {
+      GeminiPageContext* gemini_page_context =
+          tab_helper->GetPartialPageContext();
+      ApplyUserPrefsToPageContext(gemini_page_context);
+      ios::provider::UpdatePageContext(gemini_page_context);
+    }
+  }
+  // Show page attachment UI chip every time the floaty is expanded.
+  ios::provider::RequestUIChange(
+      ios::provider::GeminiUIElementType::kContextAttachment);
+}
 
 void GeminiBrowserAgent::PrepareFloatyToBeShown() {
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
