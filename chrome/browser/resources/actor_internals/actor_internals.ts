@@ -27,6 +27,7 @@ class ActorEventLog {
   private spanState =
       new Map<number, {collapsed: boolean, parentIds: number[]}>();
   private indentationByTrack = new Map<string, number>();
+  private objectUrls: string[] = [];
 
   constructor() {
     this.table = getRequiredElement<HTMLTableElement>('actor-events-table');
@@ -135,6 +136,7 @@ class ActorEventLog {
       const byteArray = new Uint8Array(entry.screenshot);
       const blob = new Blob([byteArray], { type: 'image/jpeg' });
       const blobUrl = URL.createObjectURL(blob);
+      this.objectUrls.push(blobUrl);
 
       const img = document.createElement('img');
       img.src = blobUrl; // Use the Blob URL for the small image
@@ -245,8 +247,9 @@ class ActorEventLog {
         return;
       }
     }
-    // If we reached the top or table is empty, append after header
-    rows[0]!.after(row);
+    // If we reached the top or table is empty, insert after thead
+    const thead = this.table.querySelector('thead')!;
+    thead.after(row);
   }
 
   /**
@@ -359,7 +362,27 @@ class ActorEventLog {
       }
     }
   }
+
+  /**
+   * Removes all rows from the table and resets internal state to prevent
+   * desynchronization.
+   */
+  clearTable() {
+    this.table.replaceChildren(this.table.querySelector('thead')!);
+    this.activeSpans = [];
+    this.spanState.clear();
+    this.indentationByTrack.clear();
+    this.spanIdCounter = 0;
+
+    // Revoke object URLs to prevent memory leaks
+    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+    this.objectUrls = [];
+
+    // Clear filter input
+    this.clearFilter();
+  }
 }
+
 
 
 function startLogging() {
@@ -388,4 +411,5 @@ window.onload = function() {
   getRequiredElement('stop-logging').onclick = stopLogging;
   getRequiredElement('filter-by-task-id').onclick = () => log.filterByTaskId();
   getRequiredElement('clear-filter').onclick = () => log.clearFilter();
+  getRequiredElement('clear-table').onclick = () => log.clearTable();
 };
