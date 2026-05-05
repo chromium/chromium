@@ -1211,7 +1211,10 @@ class AutocompleteMediator
 
             if (templateUrl == null) return false;
             SiteSearchData data =
-                    new SiteSearchData(templateUrl.getKeyword(), templateUrl.getShortName());
+                    new SiteSearchData(
+                            templateUrl.getKeyword(),
+                            templateUrl.getShortName(),
+                            /* enteredViaSpace= */ true);
             onKeywordModeEntered(data);
             return true;
         }

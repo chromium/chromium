@@ -2067,10 +2067,14 @@ class LocationBarMediator
                         && TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
                     // When in zero prefix keyword mode, pressing backspace should remove current
                     // site search data and restore the keyword as user input.
-                    String keyword = mCurrentInput.getSiteSearchData().keyword;
+                    var siteSearchData = mCurrentInput.getSiteSearchData();
+                    String searchText =
+                            siteSearchData.enteredViaSpace
+                                    ? siteSearchData.keyword + " "
+                                    : siteSearchData.keyword;
                     mCurrentInput.setSiteSearchData(null);
                     mUrlCoordinator.setUrlBarData(
-                            UrlBarData.forNonUrlText(keyword),
+                            UrlBarData.forNonUrlText(searchText),
                             UrlBar.ScrollType.NO_SCROLL,
                             UrlBarData.SELECT_END);
                     return true;

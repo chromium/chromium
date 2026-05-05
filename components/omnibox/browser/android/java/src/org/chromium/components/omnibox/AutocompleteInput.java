@@ -70,10 +70,16 @@ public class AutocompleteInput implements UserData {
     public static class SiteSearchData {
         public final String keyword;
         public final String fullName;
+        public final boolean enteredViaSpace;
 
         public SiteSearchData(String keyword, String fullName) {
+            this(keyword, fullName, false);
+        }
+
+        public SiteSearchData(String keyword, String fullName, boolean enteredViaSpace) {
             this.keyword = keyword;
             this.fullName = fullName;
+            this.enteredViaSpace = enteredViaSpace;
         }
     }
 
