@@ -15,12 +15,12 @@ enum class ComposeboxMode {
   kAIM = 1,
   // Creates an image based on the input.
   kImageGeneration = 2,
-  // Generates a new canvas based on the input query.
-  kCanvas = 3,
   // Helps user with complex research tasks.
-  kDeepSearch = 4,
+  kDeepSearch = 3,
+  // Generates a new canvas based on the input query.
+  kCanvas = 4,
   // The maximum value for iteration.
-  kMaxValue = kDeepSearch,
+  kMaxValue = kCanvas,
 };
 
 // A set of ComposeboxMode values used for iteration.
