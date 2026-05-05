@@ -2818,25 +2818,6 @@
     "expires": "Jun 1, 2026"
   },
   {
-    "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/cookies/samesite/sandbox-allow-same-site-none-cookies-value.tentative.https.html"
-    ],
-    "args": [
-      "--enable-features=AllowSameSiteNoneCookiesInSandbox,ForceThirdPartyCookieBlockingEnabled"
-    ],
-    "expires": "May 1, 2026",
-    "owners": [
-      "anushamuley@chromium.org",
-      "dylancutler@google.com"
-    ]
-  },
-  {
     "prefix": "scalefactor150",
     "platforms": [
       "Linux",
