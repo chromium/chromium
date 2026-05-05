@@ -21,8 +21,6 @@ struct TestCase {
   base::AtExitManager at_exit_manager;
 };
 
-TestCase* test_case = new TestCase();
-
 // Checks that GURL's canonicalization is idempotent. This can help discover
 // issues like https://crbug.com/1128999.
 void CheckIdempotency(const GURL& url) {
@@ -48,6 +46,7 @@ void CheckReplaceComponentsPreservesSpec(const GURL& url) {
 
 // Entry point for LibFuzzer.
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
+  static const base::NoDestructor<TestCase> test_case;
   if (bytes.empty()) {
     return 0;
   }
