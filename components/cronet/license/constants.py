@@ -34,9 +34,11 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
     # Different Apache 2.0 format used in Chromium.
     "Apache-2.0":
     ("APACHE_2_0", LicenseType.NOTICE, "SPDX-license-identifier-Apache-2.0"),
+    "Apache-with-LLVM-Exception":
+    ("APACHE_2_0", LicenseType.NOTICE, "SPDX-license-identifier-Apache-2.0"),
     "MIT": ("MIT", LicenseType.NOTICE, "SPDX-license-identifier-MIT"),
-    "Unicode-3.0":
-    ("UNICODE_3_0", LicenseType.NOTICE, "SPDX-license-identifier-Unicode-3.0"),
+    "Unicode-3.0": ("UNICODE_3_0", LicenseType.NOTICE,
+                    "SPDX-license-identifier-Unicode-3.0"),
     "Unicode-DFS-2016": ("UNICODE", LicenseType.NOTICE,
                          "SPDX-license-identifier-Unicode-DFS-2016"),
     "ICU": ("ICU", LicenseType.NOTICE, "SPDX-license-identifier-ICU"),
@@ -66,8 +68,7 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
 POST_PROCESS_OPERATION = {
     "third_party/apache-portable-runtime/README.chromium":
     create_license_post_processing(
-        Mapper("License",
-               ['Apache-2.0', 'dso', 'Zlib', 'ISC', 'BSD-4-Clause-UC'],
+        Mapper("License", ['Apache-2.0', 'BSD-3-Clause', 'ISC', 'dso', 'Zlib'],
                ["Apache 2.0"])),
     "third_party/compiler-rt/README.chromium":
     create_license_post_processing(
@@ -83,8 +84,6 @@ POST_PROCESS_OPERATION = {
                ["MIT"])),
     "third_party/boringssl/README.chromium":
     create_license_post_processing(
-        Mapper("License", ['MIT', 'BSD-3-Clause', 'OpenSSL', 'ISC', 'SSLeay'],
-               ["BSD"]),
         # TODO(b/360316861): Fix upstream by setting an explicit version to boringssl.
         Mapper("Version", "N/A", None)),
     "net/third_party/quiche/METADATA":
@@ -103,6 +102,10 @@ POST_PROCESS_OPERATION = {
         Mapper("License", [
             'Public Domain: United States Government Work under 17 U.S.C. 105'
         ], ["unencumbered"])),
+    "third_party/fuzztest/README.chromium":
+    create_license_post_processing(
+        Mapper("License", ['dtoa', 'BSD-3-Clause', 'Apache-2.0'],
+               ["Apache 2.0", "BSD-3-Clause"])),
 }
 
 # This is relative to the repo_directory passed in |update_license|
