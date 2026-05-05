@@ -62,7 +62,9 @@ using chrome_test_util::TabGroupCreationView;
 - (void)displayBlockingUI {
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:prefs::kIncognitoAuthenticationSetting];
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // Tests that the TabGrid is correctly updated when the incognito reauth screen
