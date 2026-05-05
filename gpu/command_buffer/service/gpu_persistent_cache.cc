@@ -487,6 +487,13 @@ size_t GpuPersistentCache::LoadData(const void* key,
     }
   }
 
+  // If the buffer size provided is smaller than the data, return 0.
+  // We exclude value_size == 0 because that is used to query the size of the
+  // cached data without reading it.
+  if (value_size > 0 && value_size < discovered_size) {
+    return 0;
+  }
+
   return static_cast<GLsizeiptr>(discovered_size);
 }
 #endif
@@ -545,6 +552,13 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
     // skewing the metrics by generating two cache hit data points, only record
     // a cache hit when there is no buffer provided.
     RecordCacheLoadResultHistogram(result);
+  }
+
+  // If the buffer size provided is smaller than the data, return 0.
+  // We exclude value_size == 0 because that is used to query the size of the
+  // cached data without reading it.
+  if (value_size > 0 && static_cast<size_t>(value_size) < discovered_size) {
+    return 0;
   }
 
   return discovered_size;

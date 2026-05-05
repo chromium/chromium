@@ -38,10 +38,14 @@ size_t MemoryCacheEntry::ReadData(void* value_out, size_t value_size) const {
     return DataSize();
   }
 
-  // Otherwise, verify that the size that is being copied out is identical.
-  DCHECK(value_size == DataSize());
+  // If the buffer size provided is smaller than the data, return 0.
+  // This prevents heap buffer overflow writes.
+  if (value_size < DataSize()) {
+    return 0;
+  }
+
   std::copy(data_.begin(), data_.end(), static_cast<uint8_t*>(value_out));
-  return value_size;
+  return DataSize();
 }
 
 base::span<const uint8_t> MemoryCacheEntry::Data() const {

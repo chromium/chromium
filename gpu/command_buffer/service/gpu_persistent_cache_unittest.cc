@@ -415,6 +415,49 @@ TEST_F(GpuPersistentCacheAsyncTest,
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
 
+// Tests that LoadData returns 0 if the provided buffer is smaller than the
+// data.
+TEST_F(GpuPersistentCacheTest, LoadToPartialBuffer) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+  cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  std::vector<char> buffer(value.size() / 2);
+  size_t loaded_size =
+      cache_->LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+  EXPECT_EQ(loaded_size, 0u);
+}
+
+// Tests that LoadData returns the data size if the provided buffer is larger
+// than the data.
+TEST_F(GpuPersistentCacheTest, LoadToLargerBuffer) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+  cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  std::vector<char> buffer(value.size() * 2);
+  size_t loaded_size =
+      cache_->LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+  EXPECT_EQ(loaded_size, value.size());
+  EXPECT_EQ(std::string(buffer.begin(), buffer.begin() + loaded_size), value);
+}
+
+// Tests that GLBlobCacheGet returns 0 if the provided buffer is smaller than
+// the data.
+TEST_F(GpuPersistentCacheTest, GLBlobCacheGetReadPartialBuffer) {
+  const std::string key = "my_key";
+  const std::string value = "my_value";
+  cache_->StoreData(key.c_str(), key.size(), value.c_str(), value.size());
+
+  std::vector<char> buffer(value.size() / 2);
+  int64_t loaded_size = cache_->GLBlobCacheGet(key.c_str(), key.size(),
+                                               buffer.data(), buffer.size());
+
+  EXPECT_EQ(loaded_size, 0);
+}
+
 // Test that the persistent cache uses the memory backing if no database files
 // are set
 TEST_F(GpuPersistentCacheTest, MemoryBackingOnly) {

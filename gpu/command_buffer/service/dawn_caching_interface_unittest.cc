@@ -56,6 +56,31 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameInterface) {
   UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
+TEST_F(DawnCachingInterfaceTest, LoadPartialData) {
+  auto dawn_caching_interface = factory_.CreateInstance(handle_);
+  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
+                                    kDataSize);
+
+  static constexpr size_t kPartialSize = kDataSize / 2;
+  char buffer[kPartialSize];
+  // Should return 0 because of size mismatch.
+  EXPECT_EQ(0u, dawn_caching_interface->LoadData(kKey.data(), kKeySize, buffer,
+                                                 kPartialSize));
+}
+
+TEST_F(DawnCachingInterfaceTest, LoadLargerBuffer) {
+  auto dawn_caching_interface = factory_.CreateInstance(handle_);
+  dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
+                                    kDataSize);
+
+  static constexpr size_t kLargerSize = kDataSize * 2;
+  char buffer[kLargerSize];
+  // Should return kDataSize and only copy kDataSize bytes.
+  EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
+                                                        buffer, kLargerSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
+}
+
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
   auto store_interface = factory_.CreateInstance(handle_);
   store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
