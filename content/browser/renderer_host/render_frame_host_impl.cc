@@ -10382,6 +10382,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   RenderFrameHostImpl* new_main_rfh =
       new_frame_tree->root()->current_frame_host();
 
+  new_main_rfh->opener_had_user_gesture_ = was_consumed;
   new_main_rfh->virtual_browsing_context_group_ =
       popup_virtual_browsing_context_group;
   new_main_rfh->soap_by_default_virtual_browsing_context_group_ =
@@ -14952,6 +14953,7 @@ std::unique_ptr<NavigationRequest>
 RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
     const GURL& url,
     const url::Origin& origin,
+    const std::optional<url::Origin>& initiator_origin,
     const std::optional<GURL>& initiator_base_url,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,
@@ -15029,11 +15031,12 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
       is_same_document && GetPage().is_overriding_user_agent();
 
   return owner_->CreateNavigationRequestForSynchronousRendererCommit(
-      this, is_same_document, url, origin, initiator_base_url, isolation_info,
-      std::move(referrer), transition, should_replace_current_entry, method,
-      has_user_gesture, is_overriding_user_agent, redirects,
-      original_request_url, std::move(coep_reporter), std::move(dip_reporter),
-      http_status_code, actual_navigation_start);
+      this, is_same_document, url, origin, initiator_origin, initiator_base_url,
+      isolation_info, std::move(referrer), transition,
+      should_replace_current_entry, method, has_user_gesture,
+      is_overriding_user_agent, redirects, original_request_url,
+      std::move(coep_reporter), std::move(dip_reporter), http_status_code,
+      actual_navigation_start);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
@@ -15873,6 +15876,23 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // WebContentsObservers.
     CHECK(is_synchronous_about_blank_commit || is_same_document_navigation);
 
+    // Before the first navigation in a frame, the last committed origin is set
+    // by SetOriginDependentStateOfNewFrame() to an Origin derived from the
+    // opener. Synchronous about blank commits are always the first navigation
+    // in a frame, so the origin for the commit should match unless it has
+    // become opaque.
+    //
+    // Guest views currently don't appear to set the origin correctly for
+    // synchronous new window commits under MPArch.
+    if ((!frame_tree_->is_guest() ||
+         !base::FeatureList::IsEnabled(features::kGuestViewMPArch)) &&
+        !params->origin.opaque() &&
+        !params->origin.CanBeDerivedFrom(last_committed_origin_.GetURL())) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH);
+      return false;
+    }
+
     // Fill the redirect chain for the NavigationRequest. Since this is only for
     // initial empty commits or same-document navigation, we should just push
     // the client-redirect URL (if it is a client redirect) and the final URL.
@@ -15890,9 +15910,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // started by a transient activation. The only way to know this is from the
     // `started_with_transient_activation` value of `same_document_params`
     // (because we don't know anything about this navigation before DidCommit).
+    // If this is the initial synchronous about:blank commit for a new window,
+    // we can look at whether the opener had a user gesture at time of opening.
     bool started_with_transient_activation =
-        (is_same_document_navigation &&
-         same_document_params->started_with_transient_activation);
+        is_same_document_navigation
+            ? same_document_params->started_with_transient_activation
+            : opener_had_user_gesture_;
 
     // If this is a (renderer-initiated) same-document navigation, the renderer
     // will tell us whether the navigation should replace the current entry or
@@ -15909,10 +15932,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // earlier timestamp from the renderer process, rather than the time that
     // the renderer process begins the commit.
     navigation_request = CreateNavigationRequestForSynchronousRendererCommit(
-        params->url, params->origin, params->initiator_base_url,
-        params->referrer.Clone(), params->transition,
-        should_replace_current_entry, started_with_transient_activation,
-        redirects, params->url, is_same_document_navigation,
+        params->url, params->origin, last_committed_origin_,
+        params->initiator_base_url, params->referrer.Clone(),
+        params->transition, should_replace_current_entry,
+        started_with_transient_activation, redirects, params->url,
+        is_same_document_navigation,
         same_document_params &&
             same_document_params->same_document_navigation_type ==
                 blink::mojom::SameDocumentNavigationType::kHistoryApi,

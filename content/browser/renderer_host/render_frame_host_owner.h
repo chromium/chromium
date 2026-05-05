@@ -99,6 +99,7 @@ class RenderFrameHostOwner {
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
+      const std::optional<url::Origin>& initiator_origin,
       const std::optional<GURL>& initiator_base_url,
       const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,

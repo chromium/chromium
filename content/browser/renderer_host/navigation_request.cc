@@ -1512,6 +1512,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
+    const std::optional<url::Origin>& initiator_origin,
     const std::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
@@ -1532,10 +1533,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // copying so many parameters here.
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
-          url,
-          // TODO(nasko): Investigate better value to pass for
-          // |initiator_origin|.
-          origin, initiator_base_url, std::move(referrer), transition,
+          url, initiator_origin, initiator_base_url, std::move(referrer),
+          transition,
           is_same_document ? blink::mojom::NavigationType::SAME_DOCUMENT
                            : blink::mojom::NavigationType::DIFFERENT_DOCUMENT,
           blink::NavigationDownloadPolicy(), should_replace_current_entry,
@@ -11246,6 +11245,10 @@ bool NavigationRequest::IsServedFromBackForwardCache() const {
 bool NavigationRequest::IsPageActivation() const {
   return const_cast<NavigationRequest*>(this)->IsPrerenderedPageActivation() ||
          IsServedFromBackForwardCache();
+}
+
+bool NavigationRequest::IsNavigatingFromInitialEmptyDocument() const {
+  return frame_tree_node_->is_on_initial_empty_document();
 }
 
 std::unique_ptr<NavigationEntryImpl>

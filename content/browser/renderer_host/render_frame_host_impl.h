@@ -3864,6 +3864,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CreateNavigationRequestForSynchronousRendererCommit(
       const GURL& url,
       const url::Origin& origin,
+      const std::optional<url::Origin>& initiator_origin,
       const std::optional<GURL>& initiator_base_url,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
@@ -5627,6 +5628,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `SetOriginDependentStateOfNewFrame()`, for use in tests to verify the
   // pre-commit opaque origin was derived from the expected token.
   std::optional<base::UnguessableToken> last_sandbox_origin_token_for_testing_;
+
+  // True if this rfh was created via a window creation with user activation.
+  bool opener_had_user_gesture_ = false;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

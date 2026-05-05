@@ -378,6 +378,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the BackForwardCache or Prerender).
   virtual bool IsPageActivation() const = 0;
 
+  // Whether this navigation is originating from either the initial empty
+  // document, or a synchronously committed about:blank document at frame
+  // creation. See |is_on_initial_empty_document_| in FrameTreeNode for details.
+  virtual bool IsNavigatingFromInitialEmptyDocument() const = 0;
+
   // Navigation control flow --------------------------------------------------
 
   // The net error code if an error happened prior to commit, or the navigation

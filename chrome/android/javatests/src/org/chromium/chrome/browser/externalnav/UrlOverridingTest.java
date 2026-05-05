@@ -240,6 +240,8 @@ public class UrlOverridingTest {
             BASE_PATH + "subframe_navigation_child.html";
     private static final String NAVIGATION_FROM_RENAVIGATE_FRAME =
             BASE_PATH + "renavigate_frame.html";
+    private static final String NAVIGATION_FROM_RENAVIGATE_FRAME_BLANK =
+            BASE_PATH + "renavigate_frame_blank.html";
     private static final String NAVIGATION_FROM_RENAVIGATE_FRAME_WITH_REDIRECT =
             BASE_PATH + "renavigate_frame_with_redirect.html";
     private static final String NAVIGATION_FROM_WINDOW_REDIRECT =
@@ -665,8 +667,14 @@ public class UrlOverridingTest {
                                                 .OVERRIDE_WITH_EXTERNAL_INTENT));
                     }
                     if (params.expectedFinalUrl == null) return;
-                    Criteria.checkThat(
-                            latestTab.getUrl().getSpec(), Matchers.is(params.expectedFinalUrl));
+                    if (params.createsNewTab && params.shouldLaunchExternalIntent) {
+                        Criteria.checkThat(
+                                sourcePage.getTab().getUrl().getSpec(),
+                                Matchers.is(params.expectedFinalUrl));
+                    } else {
+                        Criteria.checkThat(
+                                latestTab.getUrl().getSpec(), Matchers.is(params.expectedFinalUrl));
+                    }
                 },
                 10000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -2161,11 +2169,26 @@ public class UrlOverridingTest {
         TestParams params =
                 new TestParams(mTestServer.getURL(NAVIGATION_FROM_RENAVIGATE_FRAME), true, false);
         params.createsNewTab = true;
+        params.willNavigateTwice = true;
         params.expectedFinalUrl = finalUrl;
         OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(params, ctaPage);
 
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
         Assert.assertNull(getCurrentExternalNavigationMessage());
+    }
+
+    @Test
+    @LargeTest
+    public void testWindowRenavigation_blankFrame() throws Exception {
+        String finalUrl = mTestServer.getURL(HELLO_PAGE);
+        WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
+
+        TestParams params =
+                new TestParams(
+                        mTestServer.getURL(NAVIGATION_FROM_RENAVIGATE_FRAME_BLANK), true, true);
+        params.createsNewTab = true;
+        params.willNavigateTwice = true;
+        loadUrlAndWaitForIntentUrl(params, ctaPage);
     }
 
     @Test
@@ -2181,6 +2204,7 @@ public class UrlOverridingTest {
                         true,
                         false);
         params.createsNewTab = true;
+        params.willNavigateTwice = true;
         params.expectedFinalUrl = finalUrl;
         OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(params, ctaPage);
 

@@ -16,8 +16,10 @@ import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** This class glues RedirectHandler instances to Tabs. */
@@ -91,6 +93,24 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
 
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+        // The initial about:blank navigation in a new window is synchronously committed by the
+        // renderer, and so is not visible to Navigation Throttles.
+        @Nullable WebContents webContents = mTab.getWebContents();
+        if (webContents != null
+                && navigation.getUrl().getScheme().equals(UrlConstants.ABOUT_SCHEME)
+                && !mRedirectHandler.isOnNavigation()
+                && navigation.isRendererInitiated()
+                && !navigation.isRedirect()
+                && webContents.getNavigationController().getLastCommittedEntryIndex() == 0) {
+            mRedirectHandler.updateNewUrlLoading(
+                    navigation.pageTransition(),
+                    /* isRedirect= */ false,
+                    navigation.hasUserGesture(),
+                    /* lastCommittedEntryIndex= */ 0,
+                    /* isInitialNavigation= */ true,
+                    /* isRendererInitiated= */ true);
+        }
+
         if (navigation.isPageActivation()) {
             // Page Activations (e.g. for back/forward cache or Prerender) don't trigger
             // NavigationThrottles, so the RedirectHandler doesn't have insight into these

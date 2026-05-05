@@ -120,6 +120,7 @@ class MockNavigationHandle : public NavigationHandle {
     return handle->IsPrerenderedPageActivation() ||
            handle->IsServedFromBackForwardCache();
   }
+  MOCK_CONST_METHOD0(IsNavigatingFromInitialEmptyDocument, bool());
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
   }

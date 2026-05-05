@@ -1229,6 +1229,7 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
+    const std::optional<url::Origin>& initiator_origin,
     const std::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
@@ -1244,7 +1245,7 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     int http_response_code,
     base::TimeTicks actual_navigation_start) {
   return NavigationRequest::CreateForSynchronousRendererCommit(
-      this, render_frame_host, is_same_document, url, origin,
+      this, render_frame_host, is_same_document, url, origin, initiator_origin,
       initiator_base_url, isolation_info_for_subresources, std::move(referrer),
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,

@@ -336,6 +336,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
+      const std::optional<url::Origin>& initiator_origin,
       const std::optional<GURL>& initiator_base_url,
       const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,
@@ -514,6 +515,8 @@ class CONTENT_EXPORT NavigationRequest
   bool NeedsUrlLoader() override;
   bool IsInitialWebUISyncNavigation() override;
   bool IsInitialWebUINavigation() override;
+  bool IsPageActivation() const override;
+  bool IsNavigatingFromInitialEmptyDocument() const override;
   // End of NavigationHandle implementation.
 
   // Returns a perfetto Track that represents this navigation, nested under the
@@ -1076,10 +1079,6 @@ class CONTENT_EXPORT NavigationRequest
   // The previous main frame URL. This may be empty if there was no last
   // committed entry.
   const GURL& GetPreviousMainFrameURL() const;
-
-  // Whether this navigation is activating an existing page (e.g. served from
-  // the BackForwardCache or Prerender)
-  bool IsPageActivation() const override;
 
   // Returns whether the navigation type is a restore navigation.
   bool IsRestore() const;

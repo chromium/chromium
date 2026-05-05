@@ -708,11 +708,13 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
     }
   }
 
-  // In most cases, the origin will match the URL's origin.  Tests that need to
-  // check corner cases (like about:blank) should specify the origin and
-  // initiator_base_url params manually.
-  url::Origin origin = url::Origin::Create(url);
-  params->origin = origin;
+  if (url.IsAboutBlank() || is_same_document) {
+    params->origin = GetLastCommittedOrigin();
+  } else {
+    // In most cases, the origin will match the URL's origin.
+    url::Origin origin = url::Origin::Create(url);
+    params->origin = origin;
+  }
 
   params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
       url, params->item_sequence_number, params->document_sequence_number);
