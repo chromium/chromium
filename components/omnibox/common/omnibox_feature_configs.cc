@@ -85,7 +85,7 @@ AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
 
   hide_aim_hint_text_on_ntp_open =
       base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
-                              "HideAimHintTextOnNtpOpen", true)
+                               "HideAimHintTextOnNtpOpen", false)
           .Get();
 
   hide_other_page_actions_on_ntp =
@@ -95,17 +95,17 @@ AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
 
   aim_hint_impression_limit_daily =
       base::FeatureParam<int>(&omnibox::kAiModeOmniboxEntryPoint,
-                              "AimHintImpressionLimitDaily", 1)
+                              "AimHintImpressionLimitDaily", 3)
           .Get();
 
   aim_hint_impression_limit_total =
       base::FeatureParam<int>(&omnibox::kAiModeOmniboxEntryPoint,
-                              "AimHintImpressionLimitTotal", 5)
+                              "AimHintImpressionLimitTotal", 15)
           .Get();
 
   enable_hint_impression_limits =
       base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
-                               "EnableHintImpressionLimits", false)
+                               "EnableHintImpressionLimits", true)
           .Get();
 }
 
