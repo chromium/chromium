@@ -9,6 +9,8 @@ component("capture_mode") {
     "camera_video_frame_handler.cc",
     "camera_video_frame_handler.h",
     "capture_mode_export.h",
+    "capture_mode_util.cc",
+    "capture_mode_util.h",
   ]
 
   defines = [ "CAPTURE_MODE_IMPLEMENTATION" ]

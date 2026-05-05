@@ -13,6 +13,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/system/sys_info.h"
+#include "components/capture_mode/capture_mode_util.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -95,22 +96,6 @@ bool IsFatalError(media::VideoCaptureError error) {
 }
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool IsGpuRasterizationSupported(ui::ContextFactory* context_factory) {
-  DCHECK(context_factory);
-  auto provider = context_factory->SharedMainThreadRasterContextProvider();
-
-  if (!provider) {
-    return false;
-  }
-
-  const auto& gpu_feature_info = provider->GetGpuFeatureInfo();
-  return features::IsUiGpuRasterizationEnabled() &&
-         gpu_feature_info
-                 .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-             gpu::kGpuFeatureStatusEnabled;
-}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 bool IsD3DSharedImageSupported(ui::ContextFactory* context_factory) {
