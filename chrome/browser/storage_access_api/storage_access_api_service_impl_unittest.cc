@@ -23,6 +23,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
@@ -135,6 +139,13 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
@@ -175,6 +186,13 @@ TEST_F(StorageAccessAPIServiceImplTest, PermissionDenial_NotRenewed) {
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant_DailyCache) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   StorageAccessAPIServiceImpl* service =
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
   ASSERT_NE(nullptr, service);
