@@ -63,9 +63,11 @@ class ComposeboxQueryControllerBridge
   AddTabContextFromCache(JNIEnv* env, long tab_id, bool is_suggested_tab);
   void GetAimUrl(JNIEnv* env,
                  GURL url,
+                 const std::string& query_text,
                  const base::android::JavaRef<jobject>& j_callback);
   void GetImageGenerationUrl(JNIEnv* env,
                              GURL url,
+                             const std::string& query_text,
                              const base::android::JavaRef<jobject>& j_callback);
 
   // Builds the URL to use for a navigation, supplementing the passed in URL
@@ -77,6 +79,7 @@ class ComposeboxQueryControllerBridge
   void GetAimUrlFromInputState(
       JNIEnv* env,
       GURL url,
+      const std::string& query_text,
       const base::android::JavaRef<jobject>& j_callback);
   void RemoveAttachment(JNIEnv* env, const std::string& token);
   bool IsFuseboxEligible(JNIEnv* env);
@@ -144,7 +147,7 @@ class ComposeboxQueryControllerBridge
   void OnInputStateChanged(const contextual_search::InputState& state);
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-  CreateSearchUrlRequestInfoFromUrl(GURL url);
+  CreateSearchUrlRequestInfoFromUrl(GURL url, const std::string& query_text);
   void ContextualizeAndCreateSearchUrl(
       std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
           search_url_request_info,

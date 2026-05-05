@@ -839,7 +839,8 @@ public class AutocompleteMediatorUnitTest {
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(PAGE_URL.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
-        verify(mComposeboxQueryControllerBridge, never()).getAimUrlFromInputState(any(), any());
+        verify(mComposeboxQueryControllerBridge, never())
+                .getAimUrlFromInputState(any(), any(), any());
     }
 
     @Test
@@ -1561,12 +1562,12 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
-                            Callback<GURL> cb = invocation.getArgument(1);
+                            Callback<GURL> cb = invocation.getArgument(2);
                             cb.onResult(url);
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
-                .getAimUrl(any(), any());
+                .getAimUrl(any(), any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -1604,12 +1605,12 @@ public class AutocompleteMediatorUnitTest {
         GURL url2 = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
-                            Callback<GURL> cb = invocation.getArgument(1);
+                            Callback<GURL> cb = invocation.getArgument(2);
                             cb.onResult(url2);
                             return null;
                         })
                 .when(mComposeboxQueryControllerBridge)
-                .getImageGenerationUrl(any(), any());
+                .getImageGenerationUrl(any(), any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)

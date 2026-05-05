@@ -168,7 +168,8 @@ public class ContextualTasksFusebox {
         if (bridge == null) {
             loadUrlCallback.onResult(url);
         } else {
-            bridge.submitQueryToAimPage(url);
+            String rawQueryText = mLocationBarCoordinator.getUrlBarData().displayText.toString();
+            bridge.submitQueryToAimPage(rawQueryText);
             mLocationBarCoordinator.setOmniboxEditingText("");
         }
         return true;
