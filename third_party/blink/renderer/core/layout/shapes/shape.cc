@@ -145,26 +145,24 @@ static std::unique_ptr<Shape> CreateInsetShape(const ContouredRect& bounds) {
   return std::make_unique<BoxShape>(bounds);
 }
 
-std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
+std::unique_ptr<Shape> Shape::CreateShape(const BasicShape& basic_shape,
                                           const LogicalSize& logical_box_size,
                                           WritingMode writing_mode,
                                           float margin,
                                           float zoom) {
-  DCHECK(basic_shape);
-
   WritingModeConverter converter({writing_mode, TextDirection::kLtr},
                                  logical_box_size);
   float box_width = converter.OuterSize().width.ToFloat();
   float box_height = converter.OuterSize().height.ToFloat();
   std::unique_ptr<Shape> shape;
 
-  switch (basic_shape->GetType()) {
+  switch (basic_shape.GetType()) {
     case BasicShape::kBasicShapeCircleType: {
-      const BasicShapeCircle* circle = To<BasicShapeCircle>(basic_shape);
+      const auto& circle = To<BasicShapeCircle>(basic_shape);
       gfx::PointF center =
-          PointForCenterCoordinate(circle->CenterX(), circle->CenterY(),
+          PointForCenterCoordinate(circle.CenterX(), circle.CenterY(),
                                    gfx::SizeF(box_width, box_height));
-      float radius = circle->FloatValueForRadiusInBox(
+      float radius = circle.FloatValueForRadiusInBox(
           center, gfx::SizeF(box_width, box_height));
       gfx::PointF logical_center = converter.ToLogical(center);
 
@@ -173,14 +171,14 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
     }
 
     case BasicShape::kBasicShapeEllipseType: {
-      const BasicShapeEllipse* ellipse = To<BasicShapeEllipse>(basic_shape);
+      const auto& ellipse = To<BasicShapeEllipse>(basic_shape);
       gfx::PointF center =
-          PointForCenterCoordinate(ellipse->CenterX(), ellipse->CenterY(),
+          PointForCenterCoordinate(ellipse.CenterX(), ellipse.CenterY(),
                                    gfx::SizeF(box_width, box_height));
-      float radius_x = ellipse->FloatValueForRadiusInBox(ellipse->RadiusX(),
-                                                         center.x(), box_width);
-      float radius_y = ellipse->FloatValueForRadiusInBox(
-          ellipse->RadiusY(), center.y(), box_height);
+      float radius_x = ellipse.FloatValueForRadiusInBox(ellipse.RadiusX(),
+                                                        center.x(), box_width);
+      float radius_y = ellipse.FloatValueForRadiusInBox(ellipse.RadiusY(),
+                                                        center.y(), box_height);
       gfx::PointF logical_center = converter.ToLogical(center);
 
       float inline_radius = radius_x;
@@ -194,16 +192,16 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
     }
 
     case BasicShape::kBasicShapePolygonType: {
-      const BasicShapePolygon* polygon = To<BasicShapePolygon>(basic_shape);
-      if (polygon->HasRoundingRadius()) {
+      const auto& polygon = To<BasicShapePolygon>(basic_shape);
+      if (polygon.HasRoundingRadius()) {
         // When the polygon has a rounding radius, the rounded corners make
         // the shape too complex to represent analytically as a PolygonShape.
         // Instead, rasterize the path into a RasterShape (similar to how
         // image-based shapes are handled).
-        return CreateRasterShapeFromPath(*polygon, box_width, box_height,
+        return CreateRasterShapeFromPath(polygon, box_width, box_height,
                                          writing_mode, margin, zoom);
       }
-      const Vector<Length>& values = polygon->Values();
+      const Vector<Length>& values = polygon.Values();
       wtf_size_t values_size = values.size();
       DCHECK(!(values_size % 2));
       Vector<gfx::PointF> vertices(values_size / 2);
@@ -217,7 +215,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
     }
 
     case BasicShape::kBasicShapeInsetType: {
-      const BasicShapeInset& inset = *To<BasicShapeInset>(basic_shape);
+      const auto& inset = To<BasicShapeInset>(basic_shape);
       float left = FloatValueForLength(inset.Left(), box_width);
       float top = FloatValueForLength(inset.Top(), box_height);
       float right = FloatValueForLength(inset.Right(), box_width);
@@ -246,7 +244,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
 
     case BasicShape::kStylePathType:
     case BasicShape::kStyleShapeType:
-      return CreateRasterShapeFromPath(*basic_shape, box_width, box_height,
+      return CreateRasterShapeFromPath(basic_shape, box_width, box_height,
                                        writing_mode, margin, zoom);
 
     default:

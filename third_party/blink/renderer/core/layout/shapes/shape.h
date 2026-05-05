@@ -78,7 +78,7 @@ class CORE_EXPORT Shape {
     Path shape;
     Path margin_shape;
   };
-  static std::unique_ptr<Shape> CreateShape(const BasicShape*,
+  static std::unique_ptr<Shape> CreateShape(const BasicShape&,
                                             const LogicalSize& logical_box_size,
                                             WritingMode,
                                             float margin,
