@@ -559,7 +559,9 @@
    * When CSB motion tweaks are enabled, show the ghost loader when the
    * searchbox is focused.
    */
-  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+    #searchboxContainer:has(cr-lens-searchbox:not([dropdown-is-visible]))
+    cr-searchbox-ghost-loader {
     display: block;
   }
 
