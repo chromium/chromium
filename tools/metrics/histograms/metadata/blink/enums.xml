@@ -8359,7 +8359,7 @@ Called by update_use_counter_css.py.-->
   <int value="865" label="corner-block-end-shape"/>
   <int value="866" label="corner-inline-start-shape"/>
   <int value="867" label="corner-inline-end-shape"/>
-  <int value="868" label="corners"/>
+  <int value="868" label="corners (obsolete)"/>
   <int value="869" label="border-shape"/>
   <int value="870" label="animation-trigger-behavior (obsolete)"/>
   <int value="871" label="timeline-trigger-name"/>
@@ -8435,6 +8435,7 @@ Called by update_use_counter_css.py.-->
   <int value="941" label="hanging-punctuation"/>
   <int value="942" label="flex-line-count"/>
   <int value="943" label="text-decoration-skip-spaces"/>
+  <int value="944" label="corner"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

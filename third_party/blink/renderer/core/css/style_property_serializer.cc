@@ -808,7 +808,7 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kBorderRadius:
       return BorderRadiusValue();
-    case CSSPropertyID::kCorners:
+    case CSSPropertyID::kCorner:
       return CornersValue();
     case CSSPropertyID::kCornerShape:
       return CornerShapeValue();

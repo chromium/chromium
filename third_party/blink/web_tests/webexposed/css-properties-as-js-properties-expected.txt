@@ -167,6 +167,7 @@ containerType
 content
 contentVisibility
 continue
+corner
 cornerBlockEndShape
 cornerBlockStartShape
 cornerBottomLeftShape
@@ -184,7 +185,6 @@ cornerStartStartShape
 cornerTopLeftShape
 cornerTopRightShape
 cornerTopShape
-corners
 counterIncrement
 counterReset
 counterSet

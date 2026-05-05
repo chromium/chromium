@@ -2112,7 +2112,7 @@ const CSSValue* Container::CSSValueFromComputedStyleInternal(
       style, layout_object, allow_visited_style, value_phase);
 }
 
-const CSSValue* Corners::CSSValueFromComputedStyleInternal(
+const CSSValue* Corner::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
@@ -2150,7 +2150,7 @@ const CSSValue* Corners::CSSValueFromComputedStyleInternal(
   return result;
 }
 
-bool Corners::ParseShorthand(
+bool Corner::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -2174,15 +2174,15 @@ bool Corners::ParseShorthand(
   css_parsing_utils::Complete4Sides(radii);
   css_parsing_utils::Complete4Sides(shapes);
   const StylePropertyShorthand::Properties& shorthand_properties =
-      cornersShorthand().properties();
+      cornerShorthand().properties();
   DCHECK_EQ(shorthand_properties.size(), 8u);
   for (size_t i = 0; i < 4; ++i) {
     AddProperty(shorthand_properties[i * 2]->PropertyID(),
-                CSSPropertyID::kCorners, *radii[i], important,
+                CSSPropertyID::kCorner, *radii[i], important,
                 css_parsing_utils::IsImplicitProperty::kNotImplicit,
                 properties);
     AddProperty(shorthand_properties[i * 2 + 1]->PropertyID(),
-                CSSPropertyID::kCorners, *shapes[i], important,
+                CSSPropertyID::kCorner, *shapes[i], important,
                 css_parsing_utils::IsImplicitProperty::kNotImplicit,
                 properties);
   }
