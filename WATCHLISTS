@@ -1457,6 +1457,9 @@
                   'ios/chrome/browser/experimental_flags\.(h|mm)|'\
                   'ios/chrome/browser/resources/Settings.bundle/Experimental\.plist',
     },
+    'ios_intelligence_actor': {
+      'filepath': 'ios/chrome/browser/intelligence/actor(?!/tools)'
+    },
     'ios_intelligence_actor_tools': {
       'filepath': 'ios/chrome/browser/intelligence/actor/tools'
     },
@@ -3073,6 +3076,7 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_enterprise': ['eic+watch@google.com'],
     'ios_flags': ['noyau+watch@chromium.org'],
+    'ios_intelligence_actor': ['ios-actor-watchlist@google.com'],
     'ios_intelligence_actor_tools': ['bling-ai-foundations-reviews-external@google.com'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_payments_autofill': ['slobodan+watch@chromium.org'],
