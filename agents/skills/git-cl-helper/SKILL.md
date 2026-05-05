@@ -74,6 +74,9 @@ process more granular and flexible:
   the full description of the CL. You can also use `--edit-description` to open
   an editor and modify the description interactively before uploading.
 
+- **Add Reviewers**: `git cl upload -r "reviewer@chromium.org"` Use this to add
+  reviewers when uploading the CL. You can specify this flag multiple times.
+
 - **Squash commits**: `git cl upload --squash` Use this to squash multiple local
   commits into a single CL.
 
@@ -116,4 +119,18 @@ URL such as `https://crrev.com/c/1234567` or
 
 This will print the status (e.g., `STATUS: passed`, `STATUS: failed`,
 `STATUS: running`) and detailed error logs if any presubmit build failed,
-fetched via `bb get`.
+fetched via `bb get`. For more detailed error messages, see the
+`luci-test-results` skill.
+
+### Getting and Replying to Comments
+
+You can use `git cl comments` to view and reply to comments on the CL.
+
+- **View comments**: `git cl comments` Use this to list all comments on the
+  current CL.
+- **View comments in JSON format**: `git cl comments -j -` Use this to get a
+  machine-readable JSON summary of comments, which includes the comment `id`
+  (UUID).
+- **Reply to a comment**:
+  `git cl comments --reply-to <UUID> -a "Your reply message"` Use this to create
+  a draft response to an existing comment.
