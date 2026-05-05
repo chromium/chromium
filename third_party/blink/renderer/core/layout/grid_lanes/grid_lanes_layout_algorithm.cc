@@ -933,6 +933,12 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
                                 start_offset, unplaced_item_span_count)) {
     auto* virtual_item = MakeGarbageCollected<GridItemData>();
 
+    // Eagerly allocate the shared `VirtualItemContributions` so all
+    // translated/auto-placed copies created by `PlaceItemInEveryPosition` will
+    // inherit the same instance when copied, letting us compute contributions
+    // once per group.
+    virtual_item->ResetContributionSizes();
+
     GridSpan span = group_properties.Span();
     wtf_size_t span_size = span.SpanSize();
     CHECK_GT(span_size, 0u);
@@ -1169,7 +1175,7 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       if (needs_intrinsic_track_size && virtual_items->IsEmpty()) {
         auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
         GridSpan single_span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
-        virtual_item->ClearContributionSizes();
+        virtual_item->ResetContributionSizes();
         PlaceItemInEveryPosition(single_span);
 
         if (single_span.EndLine() <= max_end_line) {
