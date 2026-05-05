@@ -31,3 +31,18 @@ component("capture_mode") {
     deps += [ "//media/capture:capture_lib" ]
   }
 }
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "capture_mode_util_unittest.cc" ]
+  deps = [
+    ":capture_mode",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/common",
+    "//components/viz/test:test_support",
+    "//gpu/config",
+    "//testing/gtest",
+    "//ui/base:features",
+    "//ui/compositor",
+  ]
+}
