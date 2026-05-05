@@ -1004,10 +1004,10 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
         break;
     }
   }
-  if (old_style.InheritedVariables() != new_style.InheritedVariables() ||
+  if (invalidate_for_font || DependsOnTreeCounting() ||
+      old_style.InheritedVariables() != new_style.InheritedVariables() ||
       old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
-      old_style.InitialData() != new_style.InitialData() ||
-      DependsOnTreeCounting()) {
+      old_style.InitialData() != new_style.InitialData()) {
     switch (StyleContainerChanged()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;
