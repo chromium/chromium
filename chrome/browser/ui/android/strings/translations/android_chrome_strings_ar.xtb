@@ -943,7 +943,6 @@
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="504456571576643789">ملاحظات مهمّة</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{تم اختيار نافذة واحدة (<ph name="WINDOW_COUNT_ONE" />)}zero{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذة}two{تم اختيار نافذتَين (<ph name="WINDOW_COUNT_NORMAL" />)}few{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نوافذ}many{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذةً}other{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذة}}</translation>
-<translation id="5056587122125565772">إنشاء صورة</translation>
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
 <translation id="5078638979202084724">وضع إشارات على كل علامات التبويب</translation>

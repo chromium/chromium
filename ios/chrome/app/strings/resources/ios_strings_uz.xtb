@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Kerak emas</translation>
 <translation id="1531038290222364269">Varaqlarni koʻratish</translation>
 <translation id="1536390784834419204">Sahifani tarjima qilish</translation>
+<translation id="1539535193627863227">Bu sayt uchun hech qanday parol yoki kirish kaliti topilmadi</translation>
 <translation id="1540800554400757039">Manzil, 1-qator</translation>
 <translation id="154312949627292154">Boshqa qurilmalardan qabul qilingan varaqlarni ekran qulfida ochish.</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
 <translation id="3254806613790954367">Barcha qurilmalarda ochilgan oxirgi sahifa</translation>
 <translation id="325717987950204592">“Maxfiylik va xavfsizlik” bandini tanlang</translation>
+<translation id="3259451381796379533">Bu hisobda Gemini ishlamaydi. Boshqa Google hisobidan kiring.</translation>
 <translation id="3265736395246760288">Istalgan sinxronlangan qurilmangizda hisobga tezroq kiring.</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
 <translation id="3273510436356991673">Bosh ekranni moslashtiring</translation>
@@ -1077,7 +1079,6 @@
 <translation id="4824480232751123840">Tovush balandligi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} va yana 1 ta varaq}other{{domain} va yana {count} ta varaq}}</translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
-<translation id="4828431027673677473">Qiziqishlaringiz asosidagi mahsulotlar</translation>
 <translation id="4829420936835028285">Varaqlar guruhini tahrirlash</translation>
 <translation id="4833786495304741580">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin.</translation>
 <translation id="483689884442613745">Saqlash…</translation>
@@ -1865,6 +1866,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7498234416455752244">Tahrirlashda davom etish</translation>
 <translation id="7500244509706269886">Avtomatik kiritish</translation>
 <translation id="750493650310597496">Hech qanday xatcho‘p tanlanmadi</translation>
+<translation id="7505402981231763928">Gemini ishlatish uchun hisobdan kiring</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">inkognito varaqlarni qulflash uchun Touch ID, Face ID yoki kirish kodini sozlang.</translation>
 <translation id="750886945254958667">Undan foydalanish va unga varaqlar kiritish mumkin. Guruh kerak boʻlmasa, uni tark eting.</translation>
@@ -2106,7 +2108,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="828291969289324795">{count,plural, =1{Varaqni yangi guruhga kiritish}other{Varaqlarni yangi guruhga kiritish}}</translation>
 <translation id="8283172974887967105">Belgilash…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> bildirishnomalari faolsizlantirildi</translation>
-<translation id="8290077367744012649">Sahifalaringizdagi narxlar kuzatuvi</translation>
 <translation id="8292893224181644074">Yuklab olindi</translation>
 <translation id="8299417921174340354">Parollarni ishlatish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="8307481894409578819">Bu faylni yuklash imkonsiz</translation>

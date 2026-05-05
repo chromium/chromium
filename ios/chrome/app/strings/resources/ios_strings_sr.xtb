@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Запремина</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и још 1}one{{domain} и још {count}}few{{domain} и још {count}}other{{domain} и још {count}}}</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
-<translation id="4828431027673677473">Производи на основу интересовања</translation>
 <translation id="4829420936835028285">Измени групу картица</translation>
 <translation id="4833786495304741580">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању.</translation>
 <translation id="483689884442613745">Сачувај…</translation>
@@ -2105,7 +2104,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="828291969289324795">{count,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
 <translation id="8283172974887967105">Подеси…</translation>
 <translation id="8289930144142009940">Обавештења за функцију <ph name="FEATURE_NAME" /> су искључена</translation>
-<translation id="8290077367744012649">Пратите цене са картица</translation>
 <translation id="8292893224181644074">Преузимање је завршено</translation>
 <translation id="8299417921174340354">Да бисте користили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="8307481894409578819">Отпремање овог фајла није успело</translation>

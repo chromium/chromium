@@ -2076,6 +2076,7 @@
 <translation id="2402226831639195063">टोन</translation>
 <translation id="2405887402346713222">डिवाइस और कॉम्पोनेंट के सीरियल नंबर</translation>
 <translation id="2406153734066939945">क्या आप यह प्रोफ़ाइल और इसका डेटा मिटाना चाहते हैं?</translation>
+<translation id="2406942743794219791">पुष्टि करें कि आपको डिफ़ॉल्ट के तौर पर कौनसा सर्च इंजन चाहिए</translation>
 <translation id="2407671304279211586">डीएनएस प्रोवाइडर चुनें</translation>
 <translation id="2408018932941436077">कार्ड को सेव किया जा रहा है</translation>
 <translation id="2408742686124047357">अगली बार आसानी से ऐक्सेस करने के लिए, Google Lens को अपने टूलबार में पिन करें</translation>
@@ -3057,6 +3058,7 @@
 <translation id="3046892784550338476">वर्शन <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">वेबपेज, पूरा हुआ</translation>
 <translation id="304747341537320566">बोली इंजन</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने आपकी सेटिंग बदल दी हैं</translation>
 <translation id="3047678109605649715">आपके डिवाइस पर <ph name="LANGUAGE" /> में आवाज़ों का ऐसेट इंस्टॉल नहीं है. अपने डिवाइस में स्टोरेज खाली करें और फिर से कोशिश करें.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> वेंडर के एचआईडी डिवाइस</translation>
 <translation id="3048589239114571785">चलाएं (k)</translation>
@@ -7294,6 +7296,7 @@
 <translation id="604388835206766544">कॉन्फ़िगरेशन को पार्स नहीं किया जा सका</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>
 <translation id="6045114302329202345">मुख्य TrackPoint बटन</translation>
+<translation id="6045425183320109397">द्वारा</translation>
 <translation id="6047632800149092791">सिंक करने की सुविधा काम नहीं कर रही. साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="6048747414605857443">ChromeVox और 'चुनें और सुनें' सुलभता सुविधा के लिए, लिखाई को बोली में बदलने वाली आवाज़ें चुनें और उन्हें पसंद के मुताबिक बनाएं</translation>
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
@@ -8701,7 +8704,6 @@
 <translation id="701020165009334820">Play Store पर जाकर, Android ऐप्लिकेशन और गेम डाउनलोड किए जा सकते हैं.</translation>
 <translation id="701080569351381435">स्रोत देखें</translation>
 <translation id="7012430956470647760">ऐप्लिकेशन के लिए 'माता-पिता के कंट्रोल' सुविधा</translation>
-<translation id="7013762323294215682">यह पासकी आपके Password Manager में सेव हो जाएगी. जिन लोगों के पास इस पासकी का ऐक्सेस होगा वे इसका इस्तेमाल कर पाएंगे.</translation>
 <translation id="7014174261166285193">स्थापना विफल.</translation>
 <translation id="7014480873681694324">हाइलाइट हटाएं</translation>
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
@@ -10013,6 +10015,7 @@
 <translation id="7939062555109487992">अतिरिक्त सेटिंग</translation>
 <translation id="793923212791838">इस साइट के साथ आपका डिवाइस इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="7939328347457537652">डिवाइस के सर्टिफ़िकेट मैनेज करें</translation>
+<translation id="7939918959917132075">एक्सटेंशन की वजह से यह सेटिंग बदल गई है</translation>
 <translation id="7940087892955752820">शेयर करना बंद नहीं किया जा सका, क्योंकि एक ऐप्लिकेशन इस फ़ोल्डर का इस्तेमाल कर रहा है. जब <ph name="SPECIFIC_NAME" /> अगली बार बंद होगा, तब इस फ़ोल्डर को शेयर करना बंद कर दिया जाएगा.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> के हिसाब से क्रम में लगाएं</translation>
 <translation id="7941179291434537290">टेदरिंग की जा सकती या नहीं:</translation>
@@ -11790,7 +11793,6 @@
 <translation id="9120800848981545750">अपने फ़ोन पर iOS के लिए Chrome डाउनलोड करें, ताकि टैब, बुकमार्क, और पासवर्ड ऐक्सेस किए जा सकें.</translation>
 <translation id="9121814364785106365">छोटे टैब के रूप में खोलें</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को बंद करके ग्रुप मिटाना है?}=1{क्या टैब को बंद करके ग्रुप मिटाना है?}one{क्या टैब को बंद करके ग्रुप मिटाना है?}other{क्या टैब बंद करके ग्रुप मिटाने हैं?}}</translation>
-<translation id="9122788874051694311">क्या आपको गुप्त मोड से बाहर आकर इस पासकी को सेव करना है?</translation>
 <translation id="9123287046453017203">आपका डिवाइस अप-टू-डेट नहीं है</translation>
 <translation id="9125910124977405374">अपने-आप अनुवाद करने की सुविधा में से <ph name="LANGUAGE_NAME" /> को हटाएं</translation>
 <translation id="9125912770834459638">आपका संगठन आपको साइन इन करने की अनुमति नहीं देता है</translation>

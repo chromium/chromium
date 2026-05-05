@@ -2170,6 +2170,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2460826998961521840">I ddefnyddio allweddi sydd wedi'u cadw yn eich Cyfrif Google</translation>
 <translation id="2461550163693930491">Peidio â chaniatáu i wefannau sgrolio a chwyddo tabiau a rennir</translation>
 <translation id="2461593638794842577">Gallwch ddiffodd y gosodiad hwn i gadw'ch cyfrineiriau ar y ddyfais hon yn unig</translation>
+<translation id="2462550463312552298">Crynhoi’r ddogfen hon</translation>
 <translation id="2462724976360937186">Rhif Adnabod Allwedd yr Awdurdod Ardystio</translation>
 <translation id="2462752602710430187">Ychwanegwyd <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Rydych yn gweld ffeiliau a awgrymir i'ch helpu chi i ddychwelyd yn hawdd i'ch gweithgaredd diweddaraf yn Microsoft SharePoint ac OneDrive.
@@ -4326,6 +4327,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3924788966103416622">Mae ap allanol eisiau rheolaeth lawn dros y sesiwn Chrome hon i'w ddadfygio. Mae hyn yn cynnwys mynediad at eich data sydd wedi'u cadw, cwcis a data gwefan, a'r gallu i lywio i unrhyw URL.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Gall defnyddwyr eraill ar y ddyfais hon hefyd ddefnyddio'r rhwydwaith hwn</translation>
+<translation id="3925934852713265455">Gofyn am eich tabiau</translation>
 <translation id="3926002189479431949">Cafodd y ffôn Smart Lock ei newid</translation>
 <translation id="3926410220776569451">Mae mynediad camera wedi'i rwystro</translation>
 <translation id="3927932062596804919">Gwrthod</translation>
@@ -8710,7 +8712,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="701020165009334820">Gallwch lawrlwytho apiau Android a gemau trwy'r Play Store.</translation>
 <translation id="701080569351381435">Gweld y Ffynhonnell</translation>
 <translation id="7012430956470647760">Rheolaethau rhieni ar gyfer apiau</translation>
-<translation id="7013762323294215682">Bydd y cyfrinair hwn yn cael ei gadw i'ch rheolwr cyfrineiriau. Bydd unrhyw un sydd â mynediad ato yn gallu defnyddio'r cyfrinair hwn.</translation>
 <translation id="7014174261166285193">Methwyd â gosod yr eitem.</translation>
 <translation id="7014480873681694324">Tynnu'r Amlygu</translation>
 <translation id="7014741021609395734">Lefel chwyddo</translation>
@@ -11802,7 +11803,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9120800848981545750">Lawrlwythwch Chrome ar gyfer iOS i gael mynediad at eich tabiau, nodau tudalen a chyfrineiriau ar eich ffôn.</translation>
 <translation id="9121814364785106365">Ar agor fel tab a biniwyd</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Cau'r Tab a Dileu'r Grŵp?}=1{Cau'r Tabiau a Dileu'r Grŵp?}two{Cau'r Tabiau a Dileu'r Grwpiau?}few{Cau'r Tabiau a Dileu'r Grwpiau?}many{Cau'r Tabiau a Dileu'r Grwpiau?}other{Cau'r Tabiau a Dileu'r Grwpiau?}}</translation>
-<translation id="9122788874051694311">Cadw'r cod pas hwn y tu allan i'r modd Anhysbys?</translation>
 <translation id="9123287046453017203">Nid yw'ch dyfais yn gyfredol</translation>
 <translation id="9125910124977405374">Tynnu <ph name="LANGUAGE_NAME" /> o'r ieithoedd sy'n cael eu cyfieithu'n awtomatig</translation>
 <translation id="9125912770834459638">Nid yw Eich Sefydliad yn Caniatáu i Chi Fewngofnodi</translation>

@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Tilavuus</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja 1 muu}other{{domain} ja {count} muuta}}</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
-<translation id="4828431027673677473">Kiinnostuksen kohteisiisi perustuvat tuotteet</translation>
 <translation id="4829420936835028285">Muokkaa välilehtiryhmää</translation>
 <translation id="4833786495304741580">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="483689884442613745">Tallenna…</translation>
@@ -2105,7 +2104,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="828291969289324795">{count,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>
 <translation id="8283172974887967105">Valitse…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />: ilmoitukset laitettu pois päältä</translation>
-<translation id="8290077367744012649">Seuraa hintoja välilehdillä</translation>
 <translation id="8292893224181644074">Lataus valmis</translation>
 <translation id="8299417921174340354">Salasanojen käyttöä varten sinun on ensin asetettava laitteellesi tunnuskoodi.</translation>
 <translation id="8307481894409578819">Tiedoston lataaminen epäonnistui</translation>

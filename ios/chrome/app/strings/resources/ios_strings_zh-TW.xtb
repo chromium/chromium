@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
-<translation id="4828431027673677473">依興趣喜好顯示的產品</translation>
 <translation id="4829420936835028285">編輯分頁群組</translation>
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>
 <translation id="483689884442613745">儲存…</translation>
@@ -2105,7 +2104,6 @@
 <translation id="828291969289324795">{count,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8289930144142009940">「<ph name="FEATURE_NAME" />」的通知已關閉</translation>
-<translation id="8290077367744012649">透過已開啟的分頁追蹤價格</translation>
 <translation id="8292893224181644074">下載完成</translation>
 <translation id="8299417921174340354">你必須先在裝置上設定螢幕解鎖密碼才能使用密碼。</translation>
 <translation id="8307481894409578819">無法上傳這個檔案</translation>

@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Həcm</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} və digər 1 tab}other{{domain} və digər {count} tab}}</translation>
 <translation id="4826588772550366629">kamera və mikrofon</translation>
-<translation id="4828431027673677473">Maraqlarınıza əsasən məhsullar</translation>
 <translation id="4829420936835028285">Tab qrupunu redaktə edin</translation>
 <translation id="4833786495304741580">İstifadə statistikası və xəta raportlarını avtomatik Google'a göndərir.</translation>
 <translation id="483689884442613745">Yadda saxlayın…</translation>
@@ -2105,7 +2104,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="828291969289324795">{count,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>
 <translation id="8283172974887967105">Ayarlayın:</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> bildirişləri deaktiv edildi</translation>
-<translation id="8290077367744012649">Tablarınızdan əldə edilən qiymətləri izləyin</translation>
 <translation id="8292893224181644074">Endirilmə tamamlandı</translation>
 <translation id="8299417921174340354">Parollardan istifadə etmək üçün əvvəlcə cihazınızda parol ayarlamalısınız.</translation>
 <translation id="8307481894409578819">Bu fayl yüklənmədi</translation>

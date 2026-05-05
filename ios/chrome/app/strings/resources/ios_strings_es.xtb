@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creado hace <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carrete</translation>
+<translation id="3746269120925354434">Información guardada en Google Wallet</translation>
 <translation id="3750225824417196283">Nueva página de pestaña de Incógnito</translation>
 <translation id="3751873026576444885">Deja de buscar en tu pantalla con Google Lens</translation>
 <translation id="3753408171347588045">Seguimiento de precios</translation>
@@ -1076,7 +1077,6 @@
 <translation id="4824480232751123840">Volumen</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
-<translation id="4828431027673677473">Productos según tus intereses</translation>
 <translation id="4829420936835028285">Editar grupo de pestañas</translation>
 <translation id="4833786495304741580">Envía automáticamente estadísticas de uso e informes sobre fallos a Google.</translation>
 <translation id="483689884442613745">Guardar…</translation>
@@ -2105,7 +2105,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="828291969289324795">{count,plural, =1{Añadir pestaña a nuevo grupo}other{Añadir pestañas a nuevo grupo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Notificaciones de <ph name="FEATURE_NAME" /> desactivadas</translation>
-<translation id="8290077367744012649">Seguir precios de tus pestañas</translation>
 <translation id="8292893224181644074">Descarga completada</translation>
 <translation id="8299417921174340354">Para usar las contraseñas, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="8307481894409578819">No se ha podido subir este archivo</translation>
@@ -2172,6 +2171,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8533670235862049797">Navegación segura está activada</translation>
 <translation id="8534481786647257214">Publicado en Google+</translation>
 <translation id="8535368836838588657">Mostrar contraseña</translation>
+<translation id="8540426897269305488">Iniciar sesión con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Comprueba la configuración predeterminada de tu navegador</translation>
 <translation id="854938212724803178">Tienes 1 contraseña vulnerada. Corrige el problema para protegerte.</translation>
 <translation id="8551311254462607218">En la barra de direcciones, toca el icono de la cámara de Google Lens</translation>

@@ -2153,6 +2153,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2460826998961521840">Google-ko kontuan gordetako sarbide-gakoak erabiltzeko</translation>
 <translation id="2461550163693930491">Ez eman fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko baimena webguneei</translation>
 <translation id="2461593638794842577">Pasahitzak gailu honetan soilik gordetzeko, desaktibatu ezarpena</translation>
+<translation id="2462550463312552298">Egin dokumentu honen laburpena</translation>
 <translation id="2462724976360937186">Ziurtagiri-emailearen gako-identifikatzailea</translation>
 <translation id="2462752602710430187">Gehitu da <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Iradokitako fitxategiak ikusten ari zara, azkenaldiko jardueretara itzultzea errazagoa izan dadin Microsoft SharePoint-en eta OneDrive-n.
@@ -4307,6 +4308,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3924788966103416622">Kanpoko aplikazio batek Chrome-ko saio hau guztiz kontrolatu nahi du, hura arazteko. Gordetako datuak, cookieak eta webguneetako datuak atzitzeko baimena, eta edozein URLra nabigatzeko gaitasuna barne.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Gailu honen beste erabiltzaileek ere erabil dezakete sarea</translation>
+<translation id="3925934852713265455">Egin fitxei buruzko galderak</translation>
 <translation id="3926002189479431949">Aldatu da Smart Lock telefonoa</translation>
 <translation id="3926410220776569451">Kamera erabiltzeko baimena blokeatuta dago</translation>
 <translation id="3927932062596804919">Ukatu</translation>
@@ -8678,7 +8680,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="701020165009334820">Google Play Store bidez, Android-erako aplikazioak eta jokoak deskarga ditzakezu.</translation>
 <translation id="701080569351381435">Ikusi iturburua</translation>
 <translation id="7012430956470647760">Aplikazioetarako guraso-murriztapenak</translation>
-<translation id="7013762323294215682">Sarbide-gakoa Pasahitz-kudeatzailea zerbitzuan gordeko da. Zerbitzu horretarako sarbidea duten guztiek erabili ahal izango dute sarbide-gakoa.</translation>
 <translation id="7014174261166285193">Ezin izan da instalatu.</translation>
 <translation id="7014480873681694324">Kendu nabarmentzea</translation>
 <translation id="7014741021609395734">Zoom-maila</translation>
@@ -11765,7 +11766,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9120800848981545750">Deskargatu iOS-erako Chrome zure fitxa, laster-marka eta pasahitzak telefonoan atzitu ahal izateko.</translation>
 <translation id="9121814364785106365">Ireki fitxa ainguratu gisa</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa itxi, eta taldea ezabatu nahi duzu?}=1{Fitxak itxi, eta taldea ezabatu nahi duzu?}other{Fitxak itxi, eta taldeak ezabatu nahi dituzu?}}</translation>
-<translation id="9122788874051694311">Sarbide-gakoa ezkutuko modutik kanpo gorde nahi duzu?</translation>
 <translation id="9123287046453017203">Gailua ez dago eguneratuta</translation>
 <translation id="9125910124977405374">Kendu <ph name="LANGUAGE_NAME" /> automatikoki itzultzen diren hizkuntzetatik</translation>
 <translation id="9125912770834459638">Erakundeak ez dizu uzten saioa hasten</translation>

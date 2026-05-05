@@ -391,6 +391,7 @@
 <translation id="1595731774593926493">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1597307423671074806">WebM ವೀಡಿಯೊ</translation>
 <translation id="159800670740560023">Chrome ಸಲಹೆ ಲಿಂಕ್, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> ಅನ್ನು ತೆರೆಯಲು Enter ಒತ್ತಿರಿ</translation>
+<translation id="1599079390582151174">ಕಳುಹಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಇನ್ನೊಂದು ಸಾಧನದಲ್ಲಿ Chrome ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1599199147673445968">ಹೊಸ ಕಾರ್ಡ್? <ph name="BEGIN_LINK" />ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">ಸೌಂದರ್ಯ ಮತ್ತು ಫಿಟ್‌ನೆಸ್</translation>
@@ -846,7 +847,6 @@
 <translation id="2302571905116831849">ಆಟೋಫಿಲ್ ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್</translation>
 <translation id="230286397113210245">ಅಜ್ಞಾತ ವಿಂಡೋ ತೆರೆಯಿರಿ ಬಟನ್, ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋವನ್ನು ತೆರೆಯಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2303437270440428119">OpenDocument ಸ್ಪ್ರೆಡ್‌ಶೀಟ್</translation>
-<translation id="2305294852062272447">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2306124309679506798">ತಲ್ಲೀನಗೊಳಿಸುವ ಅನುಭವವನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="2310789833878085574">ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="2312234273148520048">ಕಾಂಡಿಮೆಂಟ್‌ಗಳು ಮತ್ತು ಡ್ರೆಸ್ಸಿಂಗ್‌ಗಳು</translation>
@@ -1140,7 +1140,6 @@
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2742128390261873684">ಮನೆಯ ಯಾಂತ್ರೀಕರಣ</translation>
 <translation id="2743512410823092182">ಡಿಜೆ ಸಂಪನ್ಮೂಲಗಳು ಮತ್ತು ಉಪಕರಣ</translation>
-<translation id="2743934314332613923">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2757727729385895652"><ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು Google Drive ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2759299890026163685">ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ನೀವು ಸ್ಥಿರವಾದ ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
@@ -1204,7 +1203,6 @@
 <translation id="2891963978019740012">Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್</translation>
 <translation id="2893773853358652045">ನಾಲ್ಕನೇ ರೋಲ್</translation>
 <translation id="2894137550885451583">ಇವುಗಳು <ph name="PRODUCT" /> ಉತ್ಪನ್ನದ <ph name="CURRENCY" /> ದರಗಳಾಗಿವೆ</translation>
-<translation id="2894233157216554317">ಪಾಸ್‌ಪೋರ್ಟ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2898398337339787921">Microsoft Excel</translation>
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
 <translation id="2902312830803030883">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
@@ -1301,7 +1299,6 @@
 <translation id="3024663005179499861">ತಪ್ಪಾದ ನೀತಿಯ ಪ್ರಕಾರ</translation>
 <translation id="3027915437837548462">SVG ಚಿತ್ರ</translation>
 <translation id="3030331669969285614">ಈ ಫ್ಲ್ಯಾಗ್‌ಗಳು ಬ್ರೇಕಿಂಗ್ ಬದಲಾವಣೆಯನ್ನು ತಡೆಯುತ್ತದೆ ಅಥವಾ ಪೂರ್ವಸ್ಥಿತಿಗೆ ಮರಳಿಸುತ್ತದೆ ಹಾಗೂ ಸೀಮಿತ ಅವಧಿಗೆ ಮಾತ್ರ ಲಭ್ಯವಿರುತ್ತದೆ.</translation>
-<translation id="3030542417256082866">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="3033200136993730761">ನಿಮ್ಮ ಮನೆ ವಿಳಾಸವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು, ಉದಾಹರಣೆಗೆ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಮತ್ತು Google Maps ನಲ್ಲಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="3033777742142108756">ಮೋಷನ್ ಮತ್ತು ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಸದ್ಯಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3034526003882782781">ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -1634,7 +1631,6 @@
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
 <translation id="3559897352860026926">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ <ph name="CLOUD_PROVIDER" /> ಕಾನ್ಫಿಗರೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಹೇಳಿ.</translation>
 <translation id="3560824484345057728">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
-<translation id="356359327498380603">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="3566021033012934673">ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಲ್ಲ</translation>
 <translation id="3566336457819493938">215 x 315 ಮಿಮೀ</translation>
 <translation id="3566649245868131295">ಆರೋಗ್ಯ ಮತ್ತು ವೈದ್ಯಕೀಯ ಕೆಲಸಗಳು</translation>
@@ -1779,6 +1775,7 @@
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿಲ್ಲದ ಕಾರಣ ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ.</translation>
 <translation id="3754210790023674521">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="3754664361823138853">&amp;ಇತಿಹಾಸ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="3757511311058373406">ಆಟೋಮೆಟಿಕ್ ಬ್ರೌಸ್ ಫಿಲ್ಟರ್‌ಗಳು</translation>
 <translation id="3759461132968374835">ಇತ್ತೀಚೆಗೆ ನೀವು ಯಾವುದೇ ಕ್ರ‍್ಯಾಶ್‌ಗಳನ್ನು ವರದಿ ಮಾಡಿಲ್ಲ. ಕ್ರ‍್ಯಾಶ್‌‌ ಅನ್ನು ವರದಿಮಾಡುವಿಕೆಯನ್ನು ಉಂಟಾಗಿರುವ  ಕ್ರ‍್ಯಾಶ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="3760561303380396507">CVC ಬದಲಿಗೆ Windows Hello ಬಳಸುವಿರಾ?</translation>
 <translation id="3761171036307311438">ಕಾರ್ಡ್‌ನಲ್ಲಿರುವ ಹೆಸರು:</translation>
@@ -1929,7 +1926,6 @@
 <translation id="4014895360827978999">ವ್ಯಾಪಾರಿ ಸೇವೆಗಳು ಮತ್ತು ಪಾವತಿ ಸಿಸ್ಟಂಗಳು</translation>
 <translation id="4018819349042761761">ಸಾರ್ವಜನಿಕ ಕೀ</translation>
 <translation id="4023431997072828269">ಸುರಕ್ಷಿತವಲ್ಲದ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಿ ಈ ಫಾರ್ಮ್ ಅನ್ನು ಸಲ್ಲಿಸುತ್ತಿರುವುದರಿಂದ, ನಿಮ್ಮ ಮಾಹಿತಿಯು ಇತರರಿಗೆ ಗೋಚರಿಸುತ್ತದೆ.</translation>
-<translation id="4024673763872230929">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಫಾರ್ಮ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಭರ್ತಿ ಮಾಡಿ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4025325634010721551">ನೀತಿಗಳನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4025338605225449265">ಕರೆನ್ಸಿಗಳು ಮತ್ತು ವಿದೇಶಿ ವಿನಿಮಯ</translation>
 <translation id="4025777154208238692">ಹಿಮ್ಮುಖ ಕ್ರಮವಾಗಿ</translation>
@@ -2481,7 +2477,6 @@
 <translation id="4877422487531841831"><ph name="TEXT" /> ಹುಡುಕಾಟ</translation>
 <translation id="4877521229462766300">ಎಂಬೆಡ್ ಮಾಡಿದ ಕಂಟೆಂಟ್ ಅನ್ನು ಅನುಮತಿಸಬೇಕೇ?</translation>
 <translation id="4879491255372875719">ಸ್ವಯಂಚಾಲಿತ (ಡಿಫಾಲ್ಟ್)</translation>
-<translation id="4880328155169081699">ಗುರುತಿನ ಚೀಟಿಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4880827082731008257">ಹುಡುಕಾಟ ಇತಿಹಾಸ</translation>
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="4881808915112408168">24 x 31.5 ಇಂಚು</translation>
@@ -2686,7 +2681,6 @@
 <translation id="5191315092027169558">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="519528950056409240">ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು Wallet ಗೆ ಅನುಮತಿಸಿ</translation>
-<translation id="5199121357983849992">ID ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5200063972779787617">ಖಾತೆಯಲ್ಲಿ ವಿಳಾಸವನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5201306358585911203">ಈ ಪುಟದಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾದ ಪುಟವು ಹೀಗೆ ಹೇಳುತ್ತದೆ</translation>
 <translation id="5203716867500274632">ನಿಮ್ಮ ChromeOS ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಹಿಂದಿನ ಮತ್ತು ಪ್ರಸ್ತುತ ಸೆಶನ್‌ಗಳ ನಡುವೆ ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಕೆಳಗಿನವುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ:</translation>
@@ -2702,7 +2696,6 @@
 <translation id="5217759126664161410">ಅಮಾನ್ಯ ಪ್ರೊಟೊಕಾಲ್ ಫಾರ್ಮ್ಯಾಟ್.</translation>
 <translation id="5221377878828867877">ಪಾಸ್‌ವರ್ಡ್‌ ಮರುಬಳಕೆಯನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5222812217790122047">ಇಮೇಲ್ ಅಗತ್ಯವಿದೆ</translation>
-<translation id="5225215474235602477">ಪಾಸ್‌ಪೋರ್ಟ್ ಅನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5228269245420405804">ದೂರ ಶಿಕ್ಷಣ</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">ಶಿಪ್ಪಿಂಗ್ ವಿಳಾಸ</translation>
@@ -2806,7 +2799,6 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದಿದೆ" ಅಥವಾ "ನಿಮ್ಮ ಗಡಿಯಾರ ಮುಂದಿದೆ" ಅಥವಾ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪಡೆಯಲು, ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
-<translation id="5380539543938195166">ಪರಿಚಿತ ಪ್ರಯಾಣಿಕರ ಸಂಖ್ಯೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="5380953781541843508">ಏರಿಕೆ ಕ್ರಮದಲ್ಲಿ</translation>
 <translation id="5381318171304904246">ನೀವು ಮುಂದುವರಿಸಿದಾಗ ನಿಮ್ಮನ್ನು ಬ್ಯಾಂಕ್‌ನ ವೆಬ್‌ಸೈಟ್‌ಗೆ ಕರೆದೊಯ್ಯಲಾಗುತ್ತದೆ. ನೀವು ದೃಢೀಕರಿಸಿದ ನಂತರ, ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮರಳಿ ಕರೆತರಲಾಗುತ್ತದೆ.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ಅವರು ಟ್ಯಾಬ್ “<ph name="WEBSITE_TITLE" />” ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿದ್ದಾರೆ</translation>
@@ -3134,7 +3126,6 @@
 <translation id="5887400589839399685">ಕಾರ್ಡ್ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5887687176710214216">ಕೊನೆಯದಾಗಿ ನಿನ್ನೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="5889251770650310375">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಪಡೆಯಲು, ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಇತಿಹಾಸ ಹಾಗೂ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ. ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಬಹುದು.</translation>
-<translation id="5890248301649767931">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆಯನ್ನು ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5895187275912066135">ರಂದು ನೀಡಲಾಗಿದೆ</translation>
 <translation id="5895694128043506580">Google Chrome ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ</translation>
@@ -3215,7 +3206,6 @@
 <translation id="6014801569448771146">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6014851866995737824">ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ "ಸಕ್ರಿಯಗೊಳಿಸಿ" ಅಥವಾ "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ" ಪಟ್ಟಿಯು ಕಾಣೆಯಾಗಿದೆ.</translation>
 <translation id="6015796118275082299">ವರ್ಷ</translation>
-<translation id="6017028474478839719">ಗುರುತಿನ ಚೀಟಿಯನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
 <translation id="6018650639991193045">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕಿಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6019118530636932154">Google Apps ಸ್ಕ್ರಿಪ್ಟ್‌‌</translation>
@@ -4169,7 +4159,6 @@
 <translation id="746412105358554870">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್‌ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ಗೆ ನೀವು <ph name="TOP_LEVEL_URL" /> ಗೆ ಭೇಟಿ ನೀಡಿದ್ದೀರಿ ಎಂದು ತಿಳಿಯುತ್ತದೆ</translation>
 <translation id="7465963048299965912">10 x 13 ಇಂಚು</translation>
-<translation id="7467332121947433617">ID ಕಾರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7469935732330206581">ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="7470854469646445678">ನಕಲಿಸಿದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="7471007961486718967">ವರ್ಗಾಯಿಸುತ್ತಿರುವುದಕ್ಕಾಗಿ ಕಾರಣವನ್ನು ನೀಡಿ (ಅಗತ್ಯವಿದೆ)</translation>
@@ -4995,7 +4984,6 @@
 <translation id="877348612833018844">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ಸರಿಸಬೇಕೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಬೇಕೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಬೇಕೇ?}}</translation>
 <translation id="8775347646940100151">ಕಾಗದ (ಲೆಟರ್ ಹೆಡ್)</translation>
 <translation id="8775863327608679820">ಕಾಲಾನಂತರದಲ್ಲಿ ಪಾವತಿಸಲು 'ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ' ವಿತರಕರ ಲಭ್ಯವಿರುವ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
-<translation id="8776941011841875705">ಪರಿಚಿತ ಪ್ರಯಾಣಿಕರ ಸಂಖ್ಯೆಯನ್ನು ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">ಪುಟ ಅನುವಾದಿಸಿ ಬಟನ್, Google Translate ಮೂಲಕ ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8785658048882205566">ಮೋಟಾರ್ ಸೈಕಲ್‌ಗಳು</translation>
@@ -5138,7 +5126,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core ಅನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="9027531288681624875">ಫುಲ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
-<translation id="9031426777610376427">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="9035022520814077154">ಭದ್ರತಾ ದೋಷ</translation>
 <translation id="9035824888276246493">ಸೆಕ್ಯೂರಿಟಿ ಕೋಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="9036306139374661733">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಬೇಕೆ?</translation>

@@ -2704,6 +2704,15 @@ Khi chính sách này được đặt thành false hoặc không được địn
 Nếu bạn bật hoặc không đặt chính sách này, thì người dùng có thể thêm tài khoản Kerberos thông qua phần Cài đặt tài khoản Kerberos trên trang Cài đặt Kerberos. Người dùng có toàn quyền kiểm soát các tài khoản mà họ thêm, cũng như có thể sửa đổi hoặc xoá các tài khoản này.
 
 Nếu bạn tắt chính sách này, người dùng sẽ không thể thêm tài khoản Kerberos. Người dùng chỉ có thể thêm tài khoản thông qua chính sách "Định cấu hình các tài khoản Kerberos". Đây là một cách hiệu quả để khoá các tài khoản.</translation>
+<translation id="2771222727845689796">Chính sách này cho phép bạn chỉ định danh sách các mẫu URL. Nội dung trên web chạy trong nền khớp với các mẫu này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Nếu bạn bật chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì danh sách này sẽ bị bỏ qua vì tất cả các thẻ sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Nếu bạn tắt hoặc không đặt chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì chỉ nội dung khớp với các mẫu trong danh sách này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu danh sách này trống hoặc bạn không đặt danh sách này, thì không có nội dung chạy nền nào bị buộc phải chạy ở chế độ ưu tiên nền trước.</translation>
 <translation id="2772231477628401250">Sử dụng HTTP cho các lượt tải bản cập nhật xuống</translation>
 <translation id="2772955711376920612">Nếu bạn bật chính sách này, đồng thời đặt <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> và <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, thì hệ thống sẽ luôn bật chế độ chuyển đổi nguồn điện vào giờ cao điểm nếu được hỗ trợ trên thiết bị. Chính sách quản lý nguồn điện khi chuyển đổi vào giờ cao điểm là một chính sách tiết kiệm điện năng giúp giảm thiểu việc sử dụng dòng điện xoay chiều trong những thời điểm có mức sử dụng cao điểm. Bạn có thể đặt thời gian bắt đầu và thời gian kết thúc để chạy trong chế độ chuyển đổi nguồn điện vào giờ cao điểm cho từng ngày trong tuần. Thiết bị sẽ chạy bằng pin (ngay cả khi được kết nối với dòng điện xoay chiều) trong những thời điểm này miễn là pin ở trên ngưỡng được chỉ định. Sau thời gian kết thúc chỉ định, thiết bị sẽ chạy bằng dòng điện xoay chiều (nếu được kết nối) nhưng sẽ không sạc pin. Thiết bị sẽ hoạt động bình thường trở lại bằng dòng điện xoay chiều và sạc lại pin sau thời gian bắt đầu sạc được chỉ định.
 
@@ -6607,22 +6616,6 @@ Nếu bạn không đặt chính sách này, thì giá trị mặc định là 0
 <translation id="5293285950307241933">Xoá tất cả dữ liệu người dùng cục bộ</translation>
 <translation id="5293619885162445352">Cho phép <ph name="PEPPER_NAME" /> sử dụng bộ giải mã video mới.</translation>
 <translation id="529457411593078576">Bật Điều khoản dịch vụ trong lần chạy đầu tiên của CCT</translation>
-<translation id="529718811410033393">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu không sử dụng giao thức WebSocket.
-
-Để sửa đổi giới hạn yêu cầu sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.
-
-Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
-Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
-
-Giá trị phải bằng hoặc cao hơn 6.
-Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
-Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (32).
-
-Giá trị phải bằng hoặc thấp hơn 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
-Nếu bạn đặt một giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
-Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (32).</translation>
 <translation id="5297873769621042075">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách tên máy chủ hoặc mẫu tên máy chủ (chẳng hạn như
 "[*.]vidu.com") sẽ không được nâng cấp lên HTTPS và sẽ không hiển thị
 khoảng xen kẽ lỗi nếu chế độ Ưu tiên HTTPS được bật. Các tổ chức có thể sử dụng
@@ -8344,6 +8337,7 @@ Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ 
 
       Cho dù bạn có đặt chính sách này hay không thì người dùng cũng không thể thay đổi tùy chọn cài đặt tối ưu hóa WPAD.</translation>
 <translation id="6363485842496031347">Chế độ cài đặt phím tắt Delete sử dụng phím tắt chứa phím bổ trợ alt</translation>
+<translation id="6364336078281746235">Buộc các URL cụ thể chạy ở chế độ ưu tiên nền trước</translation>
 <translation id="6366574325767783825">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ chấp nhận nội dung web được phân phối dưới dạng Signed HTTP Exchanges.
 
       Nếu bạn đặt chính sách này thành False, thì Signed HTTP Exchanges sẽ không tải được.</translation>
@@ -10292,22 +10286,6 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 
       Nếu người dùng sử dụng thiết bị không được quản lý, thì khả năng đặt chính sách này sẽ còn phụ thuộc vào việc người dùng có phải là chủ sở hữu thiết bị hay không.</translation>
 <translation id="7570291542739287032">Chỉ trên đám mây</translation>
-<translation id="7571158727244273239">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu sử dụng giao thức WebSocket.
-
-Để sửa đổi giới hạn yêu cầu không sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.
-
-Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
-Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
-
-Giá trị phải bằng hoặc cao hơn 6.
-Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
-Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (32).
-
-Giá trị phải bằng hoặc thấp hơn 256.
-Nếu bạn đặt giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256.
-Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (32).</translation>
 <translation id="7572641760104970905">Không phức tạp</translation>
 <translation id="757395965347379751">Khi bạn bật cài đặt này, <ph name="PRODUCT_NAME" /> sẽ cho phép các chứng chỉ có chữ ký SHA-1 miễn là các chứng chỉ xác thực thành công và cung cấp đến chứng chỉ CA được cài đặt cục bộ.
 

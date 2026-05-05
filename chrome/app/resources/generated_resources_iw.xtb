@@ -2165,6 +2165,7 @@
 <translation id="2460826998961521840">‏כדי להשתמש במפתחות הגישה ששמורים בחשבון שלך ב-Google</translation>
 <translation id="2461550163693930491">לא לאפשר לאתרים לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="2461593638794842577">אפשר להשבית את ההגדרה הזו כדי שסיסמאות יישמרו רק במכשיר הזה</translation>
+<translation id="2462550463312552298">תסכם את המסמך הזה</translation>
 <translation id="2462724976360937186">מזהה מפתח של רשות אישורים</translation>
 <translation id="2462752602710430187">המדפסת <ph name="PRINTER_NAME" /> נוספה</translation>
 <translation id="2464075479326723132">‏מוצגות לך הצעות לקבצים כדי שיהיה לך קל לחזור לפעילות האחרונה שלך ב-Microsoft SharePoint וב-OneDrive.
@@ -4321,6 +4322,7 @@
 <translation id="3924788966103416622">‏אפליקציה של צד שלישי רוצה לקבל שליטה מלאה בסשן הזה של Chrome כדי לבצע בו ניפוי באגים. ההרשאות האלה כוללות גישה לנתונים השמורים, לקובצי Cookie ולנתונים מאתרים, וגם את היכולת לנווט לכל כתובת URL.</translation>
 <translation id="3925573269917483990">מצלמה:</translation>
 <translation id="3925926055063465902">גם משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
+<translation id="3925934852713265455">יש לך שאלות על הכרטיסיות?</translation>
 <translation id="3926002189479431949">‏הטלפון המשמש ל-Smart Lock הוחלף</translation>
 <translation id="3926410220776569451">הגישה למצלמה חסומה</translation>
 <translation id="3927932062596804919">דחייה</translation>
@@ -7293,6 +7295,7 @@
 <translation id="604388835206766544">ניתוח ההגדרה נכשל</translation>
 <translation id="6043994281159824495">יציאה עכשיו</translation>
 <translation id="6045114302329202345">‏כפתור TrackPoint ראשי</translation>
+<translation id="6045425183320109397">מאת</translation>
 <translation id="6047632800149092791">הסנכרון לא פועל. יש לנסות לצאת ולהיכנס שוב.</translation>
 <translation id="6048747414605857443">‏בחירה והתאמה אישית של הקולות בהמרת טקסט לדיבור בתכונות ChromeVox והקראה</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
@@ -8702,7 +8705,6 @@
 <translation id="701020165009334820">‏אפשר להוריד משחקים ואפליקציות ל-Android מחנות Play.</translation>
 <translation id="701080569351381435">הצגת המקור</translation>
 <translation id="7012430956470647760">אמצעי בקרת הורים לאפליקציות</translation>
-<translation id="7013762323294215682">מפתח הגישה הזה יישמר במנהל הסיסמאות. כל מי שיש לו גישה למנהל הסיסמאות יוכל להשתמש בו.</translation>
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
 <translation id="7014480873681694324">הסרת ההדגשה</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>
@@ -11793,7 +11795,6 @@
 <translation id="9120800848981545750">‏כדאי להוריד את Chrome ל-iOS כדי לגשת לכרטיסיות, לסימניות ולסיסמאות בטלפון.</translation>
 <translation id="9121814364785106365">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
-<translation id="9122788874051694311">לשמור את מפתח הגישה הזה מחוץ למצב הפרטי?</translation>
 <translation id="9123287046453017203">המכשיר שלך לא מעודכן</translation>
 <translation id="9125910124977405374">הסרת השפה ה<ph name="LANGUAGE_NAME" /> מרשימת השפות שמתורגמות באופן אוטומטי</translation>
 <translation id="9125912770834459638">הארגון שלך לא מאפשר לך להיכנס</translation>

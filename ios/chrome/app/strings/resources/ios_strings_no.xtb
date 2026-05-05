@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
-<translation id="4828431027673677473">Produkter basert på interessene dine</translation>
 <translation id="4829420936835028285">Endre fanegruppen</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="483689884442613745">Lagre…</translation>
@@ -2105,7 +2104,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="828291969289324795">{count,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="8283172974887967105">Angi…</translation>
 <translation id="8289930144142009940">Varsler for <ph name="FEATURE_NAME" /> er slått av</translation>
-<translation id="8290077367744012649">Spor priser fra fanene dine</translation>
 <translation id="8292893224181644074">Nedlastingen er fullført</translation>
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8307481894409578819">Kunne ikke laste opp denne filen</translation>

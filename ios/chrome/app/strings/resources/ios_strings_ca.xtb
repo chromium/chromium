@@ -721,6 +721,7 @@
 <translation id="3565012355885596568">No s'han pogut carregar les imatges</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Desa d'altra forma</translation>
+<translation id="3571703298474554279">Una manera més ràpida d'utilitzar l'aplicació</translation>
 <translation id="3572503683475187385">La pestanya actual es comparteix amb Gemini quan inicies un xat nou. Quan comparteixes una pestanya amb Gemini, el contingut i l'URL corresponents s'envien a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Al teu Compte de Google</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
@@ -1075,7 +1076,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i 1 més}other{{domain} i {count} més}}</translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
-<translation id="4828431027673677473">Productes basats en els teus interessos</translation>
 <translation id="4829420936835028285">Edita el grup de pestanyes</translation>
 <translation id="4833786495304741580">Envia automàticament a Google estadístiques d'ús i informes d'error.</translation>
 <translation id="483689884442613745">Desa…</translation>
@@ -1698,6 +1698,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6871397658902960384">Comença a navegar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Desa la contrasenya al compte}other{Desa les contrasenyes al compte}}</translation>
 <translation id="6875166646976836138">També pots veure i gestionar aquests elements a les adreces d'interès, a la llista de lectura o al gestor de contrasenyes.</translation>
+<translation id="6878052248816456143">Accedeix als fitxers de Google Drive en qualsevol moment.</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Desa {COUNT} contrasenya al teu Compte de Google}other{Desa {COUNT} contrasenyes al teu Compte de Google}}</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
@@ -1811,6 +1812,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7345061034321640811">No es permet la importació</translation>
 <translation id="7347998088283246662">Importa les contrasenyes, l'historial, les adreces d'interès i més</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7363497636543208734">Ara és més fàcil moure's per l'aplicació.</translation>
 <translation id="7364796246159120393">Tria un fitxer</translation>
 <translation id="736564850024123010">Canvia la posició de la barra d'adreces per gaudir d'una experiència personalitzada.</translation>
 <translation id="7366909168761621528">Dades de navegació</translation>
@@ -2102,7 +2104,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="828291969289324795">{count,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="8283172974887967105">Estableix…</translation>
 <translation id="8289930144142009940">S'han desactivat les notificacions de <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Fes un seguiment dels preus des de les teves pestanyes</translation>
 <translation id="8292893224181644074">Baixada completada</translation>
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8307481894409578819">Aquest fitxer no s'ha pogut penjar</translation>

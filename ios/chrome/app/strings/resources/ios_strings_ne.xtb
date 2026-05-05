@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
-<translation id="4828431027673677473">तपाईंका रुचिमा आधारित उत्पादनहरू</translation>
 <translation id="4829420936835028285">ट्याब समूह सम्पादन गर्नुहोस्</translation>
 <translation id="4833786495304741580">यसले Google मा प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः पठाउँछ।</translation>
 <translation id="483689884442613745">सेभ गर्नुहोस्…</translation>
@@ -2105,7 +2104,6 @@
 <translation id="828291969289324795">{count,plural, =1{यो ट्याब नयाँ समूहमा हाल्नुहोस्}other{यी ट्याबहरू नयाँ समूहमा हाल्नुहोस्}}</translation>
 <translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अफ गरिएको छ</translation>
-<translation id="8290077367744012649">आफ्ना ट्याबहरूबाटै मूल्यहरू ट्र्याक गर्नुहोस्</translation>
 <translation id="8292893224181644074">डाउनलोड पूरा भयो</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="8307481894409578819">यो फाइल अपलोड गर्न सकिएन</translation>

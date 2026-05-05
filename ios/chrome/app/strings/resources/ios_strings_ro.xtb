@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} și încă una}few{{domain} și încă {count}}other{{domain} și încă {count}}}</translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
-<translation id="4828431027673677473">Produse bazate pe interesele tale</translation>
 <translation id="4829420936835028285">Editează grupul de file</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="483689884442613745">Salvează…</translation>
@@ -2105,7 +2104,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="828291969289324795">{count,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="8283172974887967105">Setează…</translation>
 <translation id="8289930144142009940">Notificări <ph name="FEATURE_NAME" /> dezactivate</translation>
-<translation id="8290077367744012649">Urmărește prețurile din file</translation>
 <translation id="8292893224181644074">Descărcare finalizată</translation>
 <translation id="8299417921174340354">Pentru a folosi parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="8307481894409578819">Acest fișier nu s-a putut încărca</translation>

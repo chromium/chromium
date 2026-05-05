@@ -942,7 +942,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5040262127954254034">Konfidencialitāte</translation>
 <translation id="504456571576643789">Svarīgi apsvērumi</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Atlasīts <ph name="WINDOW_COUNT_ONE" /> logs}zero{Atlasīti <ph name="WINDOW_COUNT_NORMAL" /> logi}one{Atlasīts <ph name="WINDOW_COUNT_NORMAL" /> logs}other{Atlasīti <ph name="WINDOW_COUNT_NORMAL" /> logi}}</translation>
-<translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="506254248375231072">Nav ciļņu</translation>
 <translation id="5075939510584558547">Saglabāšana bez šifrēšanas</translation>
 <translation id="5078638979202084724">Saglabāt visas cilnes kā grāmatzīmes</translation>

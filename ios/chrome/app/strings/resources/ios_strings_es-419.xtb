@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Volumen</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} y 1 más}other{{domain} y {count} más}}</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
-<translation id="4828431027673677473">Productos basados en tus intereses</translation>
 <translation id="4829420936835028285">Editar el grupo de pestañas</translation>
 <translation id="4833786495304741580">Envía automáticamente informes de fallas y estadísticas de uso a Google.</translation>
 <translation id="483689884442613745">Guardar…</translation>
@@ -2105,7 +2104,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="828291969289324795">{count,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8289930144142009940">Se desactivaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Sigue los precios de tus pestañas</translation>
 <translation id="8292893224181644074">Descarga completa</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="8307481894409578819">No se pudo subir este archivo</translation>

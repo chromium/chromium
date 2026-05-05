@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Bolumena</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826588772550366629">kamera eta mikrofonoa</translation>
-<translation id="4828431027673677473">Zure interesetan oinarritutako produktuak</translation>
 <translation id="4829420936835028285">Editatu fitxa taldea</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
 <translation id="483689884442613745">Gorde…</translation>
@@ -2105,7 +2104,6 @@
 <translation id="828291969289324795">{count,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
 <translation id="8283172974887967105">Ezarri…</translation>
 <translation id="8289930144142009940">Desaktibatu dira <ph name="FEATURE_NAME" /> eginbidearen jakinarazpenak</translation>
-<translation id="8290077367744012649">Egin fitxetako prezioen jarraipena</translation>
 <translation id="8292893224181644074">Deskarga osatu da</translation>
 <translation id="8299417921174340354">Pasahitzak erabiltzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="8307481894409578819">Ezin izan da kargatu fitxategia</translation>

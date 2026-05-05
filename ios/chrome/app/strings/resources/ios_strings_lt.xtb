@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Garsumas</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ir dar 1}one{{domain} ir dar {count}}few{{domain} ir dar {count}}many{{domain} ir dar {count}}other{{domain} ir dar {count}}}</translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
-<translation id="4828431027673677473">Produktai pagal jūsų pomėgius</translation>
 <translation id="4829420936835028285">Redaguoti skirtukų grupę</translation>
 <translation id="4833786495304741580">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“.</translation>
 <translation id="483689884442613745">Išsaugoti…</translation>
@@ -2105,7 +2104,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="828291969289324795">{count,plural, =1{Pridėti skirtuką prie naujos grupės}one{Pridėti skirtukų prie naujos grupės}few{Pridėti skirtukų prie naujos grupės}many{Pridėti skirtukų prie naujos grupės}other{Pridėti skirtukų prie naujos grupės}}</translation>
 <translation id="8283172974887967105">Nustatyti…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> pranešimai išjungti</translation>
-<translation id="8290077367744012649">Stebėkite kainas skirtukuose</translation>
 <translation id="8292893224181644074">Atsisiuntimas baigtas</translation>
 <translation id="8299417921174340354">Jei norite naudoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="8307481894409578819">Nepavyksta įkelti šio failo</translation>

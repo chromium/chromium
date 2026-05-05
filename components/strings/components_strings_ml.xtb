@@ -392,6 +392,7 @@
 <translation id="1595731774593926493">റിഡ്രെസ് നമ്പർ ഇല്ലാതാക്കുക</translation>
 <translation id="1597307423671074806">WebM വീഡിയോ</translation>
 <translation id="159800670740560023">Chrome നുറുങ്ങ് ലിങ്ക്, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> തുറക്കാൻ Enter അമർത്തുക</translation>
+<translation id="1599079390582151174">അയച്ചു. നിങ്ങളുടെ മറ്റ് ഉപകരണത്തിൽ Chrome തുറക്കുക.</translation>
 <translation id="1599199147673445968">പുതിയ കാർഡാണോ? <ph name="BEGIN_LINK" />കാർഡ് വിശദാംശങ്ങൾ നൽകുക<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">സൗന്ദര്യവും ശാരീരികക്ഷമതയും</translation>
@@ -847,7 +848,6 @@
 <translation id="2302571905116831849">ലോയൽറ്റി കാർഡ് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="230286397113210245">'അദൃശ്യ വിൻഡോ തുറക്കുക' ബട്ടൺ, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ വിൻഡോ തുറക്കാൻ സജീവമാക്കുക</translation>
 <translation id="2303437270440428119">OpenDocument സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
-<translation id="2305294852062272447">ഡ്രൈവിംഗ് ലൈസൻസ് സംരക്ഷിക്കണോ?</translation>
 <translation id="2306124309679506798">ഇമേഴ്‌സീവ് അനുഭവം അനുവദിക്കണോ?</translation>
 <translation id="2310789833878085574">സംരക്ഷിക്കുക, സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="2312234273148520048">മസാലയും ഡ്രെസ്സിംഗും</translation>
@@ -1140,7 +1140,6 @@
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2742128390261873684">ഹോം ഓട്ടോമേഷൻ</translation>
 <translation id="2743512410823092182">DJ റിസോഴ്‌സുകളും ഉപകരണവും</translation>
-<translation id="2743934314332613923">ഡ്രൈവിംഗ് ലൈസൻസ് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="2757727729385895652">Google Drive-ലേക്ക് <ph name="COUNT" /> ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="2759299890026163685">വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് സ്ഥിരതയുള്ള ഒരു ഇന്റർനെറ്റ് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ആപ്പിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കുക</translation>
@@ -1204,7 +1203,6 @@
 <translation id="2891963978019740012">Chrome-ലെ നിങ്ങളുടെ തിരയൽ യന്ത്രം</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
 <translation id="2894137550885451583"><ph name="PRODUCT" /> ഉൽപ്പന്നത്തിന്റെ <ph name="CURRENCY" /> നിരക്കിലുള്ള തുകയാണിത്</translation>
-<translation id="2894233157216554317">പാസ്‌പോർട്ട് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="2898398337339787921">Microsoft Excel</translation>
 <translation id="2900528713135656174">ഇവന്റ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
@@ -1301,7 +1299,6 @@
 <translation id="3024663005179499861">തെറ്റായ നയ തരം</translation>
 <translation id="3027915437837548462">SVG ചിത്രം</translation>
 <translation id="3030331669969285614">ഈ ഫ്ലാഗ് ചെയ്യലുകൾ ബ്രേക്കിംഗ് ചേഞ്ചിനെ തടയുകയോ പുനഃസ്ഥാപിക്കുകയോ ചെയ്യും, ഇത് പരിമിതമായ സമയത്തേക്ക് മാത്രമേ ലഭ്യമാകൂ.</translation>
-<translation id="3030542417256082866">വാഹനം സംരക്ഷിക്കണോ?</translation>
 <translation id="3033200136993730761">Google Maps-ലെ കൂടുതൽ പ്രസക്തമായ തിരയൽ ഫലങ്ങളും വഴികളും പോലെ, Google സേവനങ്ങളിലുടനീളം കാര്യങ്ങൾ ചെയ്തുതീർക്കാൻ നിങ്ങളുടെ വീട്ടുവിലാസം സഹായിക്കും. <ph name="BEGIN_LINK" />നിങ്ങളുടെ Google Account-ൽ <ph name="ACCOUNT" /><ph name="END_LINK" /> നിങ്ങളുടെ വിലാസം എഡിറ്റ് ചെയ്യാം അല്ലെങ്കിൽ ഇല്ലാതാക്കാം.</translation>
 <translation id="3033777742142108756">മോഷൻ, ലൈറ്റ് സെൻസറുകൾക്ക് ഇപ്പോൾ അനുമതിയുണ്ട്</translation>
 <translation id="3034526003882782781">സ്ക്രോൾ ചെയ്യലും സൂം ചെയ്യലും അനുവദനീയം</translation>
@@ -1635,7 +1632,6 @@
 <translation id="3558573058928565255">പകൽ</translation>
 <translation id="3559897352860026926">നിങ്ങളുടെ അഡ്‌മിനോട് അവരുടെ <ph name="CLOUD_PROVIDER" /> കോൺഫിഗറേഷൻ ക്രമീകരണം പരിശോധിച്ചുറപ്പിക്കാൻ ആവശ്യപ്പെടുക.</translation>
 <translation id="3560824484345057728">അനുബന്ധ സൈറ്റുകൾ കാണുക</translation>
-<translation id="356359327498380603">വാഹനം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="3566021033012934673">നിങ്ങളുടെ കണക്ഷൻ സ്വകാര്യമല്ല</translation>
 <translation id="3566336457819493938">215 x 315 ഇഞ്ച്</translation>
 <translation id="3566649245868131295">ആരോഗ്യ മെഡിക്കൽ ജോലികൾ</translation>
@@ -1781,6 +1777,7 @@
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> സജ്ജീകരിച്ചിട്ടില്ലാത്തതിനാൽ അവഗണിച്ചു.</translation>
 <translation id="3754210790023674521">ചിത്രത്തിനുള്ളിലെ ചിത്രത്തിന് പുറത്ത് കടക്കുക</translation>
 <translation id="3754664361823138853">&amp;ചരിത്ര പേജ് തുറക്കുക</translation>
+<translation id="3757511311058373406">ഓട്ടോ ബ്രൗസ് ഫിൽട്ടറുകൾ</translation>
 <translation id="3759461132968374835">നിങ്ങള്‍ക്ക് സമീപകാലത്ത് റിപ്പോര്‍ട്ട് ചെയ്ത ക്രാഷുകളൊന്നുമില്ല.  ക്രാഷ് റിപ്പോര്‍ട്ട് ചെയ്യുന്ന സമയത്ത് സംഭവിച്ച ക്രാഷുകളെ പ്രവർത്തനരഹിതമാക്കി, ഇവിടെ ദൃശ്യമാകില്ല.</translation>
 <translation id="3760561303380396507">CVC-യ്ക്ക് പകരം Windows Hello ഉപയോഗിക്കണോ?</translation>
 <translation id="3761171036307311438">കാര്‍‌ഡിലെ നാമം:</translation>
@@ -1931,7 +1928,6 @@
 <translation id="4014895360827978999">വ്യാപാരി സേവനങ്ങളും പേയ്മെന്റ് സംവിധാനങ്ങളും</translation>
 <translation id="4018819349042761761">എല്ലാവർക്കുമായുള്ള കീ</translation>
 <translation id="4023431997072828269">സുരക്ഷിതമല്ലാത്ത ഒരു കണക്ഷൻ ഉപയോഗിച്ച് ഈ ഫോം സമർപ്പിക്കുന്നതിനാൽ, നിങ്ങളുടെ വിവരങ്ങൾ മറ്റുള്ളവർക്ക് കാണാനാകും.</translation>
-<translation id="4024673763872230929">നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് ഫോമുകൾ കൂടുതൽ വേഗത്തിൽ പൂരിപ്പിക്കുക. നിങ്ങളുടെ ഉപകരണത്തിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="4025325634010721551">നയങ്ങൾ റീലോഡ് ചെയ്തു</translation>
 <translation id="4025338605225449265">കറൻസികളും വിദേശ വിനിമയവും</translation>
 <translation id="4025777154208238692">വിപരീത ക്രമം</translation>
@@ -2483,7 +2479,6 @@
 <translation id="4877422487531841831"><ph name="TEXT" /> തിരയുക</translation>
 <translation id="4877521229462766300">ഉൾച്ചേർത്ത ഉള്ളടക്കം അനുവദിക്കണോ?</translation>
 <translation id="4879491255372875719">സ്വയമേവ (ഡിഫോൾട്ട്)</translation>
-<translation id="4880328155169081699">ഐഡന്റിറ്റി കാർഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="4880827082731008257">തിരയൽ ചരിത്രം</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="4881808915112408168">24 x 31.5 ഇഞ്ച്</translation>
@@ -2688,7 +2683,6 @@
 <translation id="5191315092027169558">നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />, ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="519528950056409240">ഡാറ്റ പങ്കിടാൻ Wallet-നെ അനുവദിക്കുക</translation>
-<translation id="5199121357983849992">ഐഡി കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="5200063972779787617">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5201306358585911203">ഈ പേജിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
 <translation id="5203716867500274632">ChromeOS ഉപകരണങ്ങളിലുടനീളം നിങ്ങളുടെ മുമ്പത്തേതും നിലവിലുള്ളതുമായ സെഷനുകൾക്കിടയിൽ സമന്വയിപ്പിക്കുന്നതിന്, നിങ്ങളുടെ അഡ്‌മിൻ, ഇനിപ്പറയുന്നത് പ്രവർത്തനക്ഷമമാക്കി:</translation>
@@ -2704,7 +2698,6 @@
 <translation id="5217759126664161410">പ്രോട്ടോക്കോൾ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
 <translation id="5221377878828867877">പാസ്‌വേഡ് വീണ്ടും ഉപയോഗിക്കുന്നത്, നിങ്ങളുടെ ഓർഗനൈസേഷൻ നിരീക്ഷിക്കുന്നു</translation>
 <translation id="5222812217790122047">ഇമെയിൽ ആവശ്യമാണ്</translation>
-<translation id="5225215474235602477">പാസ്‌പോർട്ട് സംരക്ഷിക്കണോ?</translation>
 <translation id="5228269245420405804">വിദൂര പഠനം</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">ഷിപ്പിംഗ് വിലാസം</translation>
@@ -2808,7 +2801,6 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഈ പാസ്‌വേഡ് ലഭിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കൂ</translation>
-<translation id="5380539543938195166">'നോൺ ട്രാവലർ നമ്പർ' അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="5380953781541843508">ആരോഹണക്രമത്തിൽ</translation>
 <translation id="5381318171304904246">തുടരുകയാണെങ്കിൽ, നിങ്ങളെ ബാങ്കിന്റെ വെബ്‌സൈറ്റിലേക്ക് റീഡയറക്റ്റ് ചെയ്യും. പരിശോധിച്ചുറപ്പിച്ചതിന് ശേഷം, വാങ്ങൽ പൂർത്തിയാക്കാൻ നിങ്ങളെ സ്വയമേവ ഇവിടേക്ക് തിരികെ റീഡയറക്റ്റ് ചെയ്യും.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />,“<ph name="WEBSITE_TITLE" />” ടാബ് അപ്‌ഡേറ്റ് ചെയ്തു</translation>
@@ -3136,7 +3128,6 @@
 <translation id="5887400589839399685">കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5887687176710214216">അവസാനം സന്ദർശിച്ചത് ഇന്നലെയാണ്</translation>
 <translation id="5889251770650310375">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ചരിത്രം ലഭിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിച്ച് നിങ്ങളുടെ ചരിത്രവും ടാബുകളും സമന്വയിപ്പിക്കുക. നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ ഏതുസമയത്തും സമന്വയിപ്പിക്കൽ നിർത്താം. നിങ്ങളുടെ ചരിത്രം അടിസ്ഥാനമാക്കി Search-ഉം മറ്റ് സേവനങ്ങളും Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
-<translation id="5890248301649767931">റിഡ്രെസ് നമ്പർ സംരക്ഷിക്കണോ?</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5895187275912066135">ഇനിപ്പറയുന്നദിവസം നല്‍‌കി</translation>
 <translation id="5895694128043506580">സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ കാണിക്കാൻ Google Chrome ശ്രമിക്കുന്നു</translation>
@@ -3217,7 +3208,6 @@
 <translation id="6014801569448771146">നിങ്ങളുടെ പാസ്‍വേഡുകൾ പരിശോധിക്കുക</translation>
 <translation id="6014851866995737824">ലിസ്റ്റ് "പ്രവർത്തനക്ഷമമാക്കുക" അല്ലെങ്കിൽ "പ്രവർത്തനരഹിതമാക്കുക" ഇല്ലാത്തതിനാൽ അവഗണിച്ചു.</translation>
 <translation id="6015796118275082299">വര്‍ഷം</translation>
-<translation id="6017028474478839719">ഐഡന്റിറ്റി കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="6017514345406065928">പച്ച</translation>
 <translation id="6018650639991193045">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും ഇല്ലാതാക്കുക</translation>
 <translation id="6019118530636932154">Google Apps സ്‌ക്രിപ്റ്റ്</translation>
@@ -4170,7 +4160,6 @@
 <translation id="746412105358554870">Javascript ഒപ്റ്റിമൈസേഷനും സുരക്ഷയും</translation>
 <translation id="7465036432780054056">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="7465963048299965912">10 x 13 ഇഞ്ച്</translation>
-<translation id="7467332121947433617">ഐഡി കാർഡ് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="7469935732330206581">ഫോം സുരക്ഷിതമല്ല</translation>
 <translation id="7470854469646445678">പകർത്തുന്നതിനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
 <translation id="7471007961486718967">കൈമാറാനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
@@ -4995,7 +4984,6 @@
 <translation id="877348612833018844">{0,plural, =1{രഹസ്യാത്മക ഫയൽ നീക്കണോ?}other{രഹസ്യാത്മക ഫയലുകൾ നീക്കണോ?}}</translation>
 <translation id="8775347646940100151">പേപ്പർ (ലെറ്റർഹെഡ്)</translation>
 <translation id="8775863327608679820">തവണകളായി പണമടയ്ക്കാനുള്ള 'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' ഇഷ്യൂവർമാരുടെ ലിസ്റ്റ്, പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
-<translation id="8776941011841875705">'നോൺ ട്രാവലർ നമ്പർ' സംരക്ഷിക്കണോ?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">'പേജ് വിവർത്തനം ചെയ്യുക' ബട്ടൺ, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="8785658048882205566">മോട്ടോർസൈക്കിളുകൾ</translation>
@@ -5138,7 +5126,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core പരീക്ഷിക്കൂ</translation>
 <translation id="9027531288681624875">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തിപ്പിടിക്കുക</translation>
-<translation id="9031426777610376427">റിഡ്രെസ് നമ്പർ അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
 <translation id="9035824888276246493">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9036306139374661733">മൈക്രോഫോൺ അനുമതി നൽകണോ?</translation>

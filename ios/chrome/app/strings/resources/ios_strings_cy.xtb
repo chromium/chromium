@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Lefel y sain</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ac 1 arall}two{{domain} a {count} arall}few{{domain} a {count} arall}many{{domain} a {count} arall}other{{domain} a {count} arall}}</translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
-<translation id="4828431027673677473">Cynhyrchion sy'n seiliedig ar eich diddordebau</translation>
 <translation id="4829420936835028285">Golygu Grŵp Tabiau</translation>
 <translation id="4833786495304741580">Yn anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig.</translation>
 <translation id="483689884442613745">Cadw…</translation>
@@ -2105,7 +2104,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="828291969289324795">{count,plural, =1{Ychwanegu'r Tab at Grŵp Newydd}zero{Ychwanegu'r Tabiau at Grŵp Newydd}two{Ychwanegu'r Tabiau at Grŵp Newydd}few{Ychwanegu'r Tabiau at Grŵp Newydd}many{Ychwanegu'r Tabiau at Grŵp Newydd}other{Ychwanegu'r Tabiau at Grŵp Newydd}}</translation>
 <translation id="8283172974887967105">Gosod…</translation>
 <translation id="8289930144142009940">Hysbysiadau <ph name="FEATURE_NAME" /> wedi'u diffodd</translation>
-<translation id="8290077367744012649">Olrhain prisiau o'ch tabiau</translation>
 <translation id="8292893224181644074">Wedi Gorffen Lawrlwytho</translation>
 <translation id="8299417921174340354">I ddefnyddio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="8307481894409578819">Ni ellir lawrlwytho'r ffeil hon</translation>

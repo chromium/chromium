@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Không, cảm ơn</translation>
 <translation id="1531038290222364269">Hiển thị thẻ</translation>
 <translation id="1536390784834419204">Dịch trang</translation>
+<translation id="1539535193627863227">Không tìm thấy mật khẩu hoặc khoá truy cập nào cho trang web này</translation>
 <translation id="1540800554400757039">Địa chỉ 1</translation>
 <translation id="154312949627292154">Mở thẻ nhận được từ các thiết bị khác trên màn hình khoá.</translation>
 <translation id="1545749641540134597">Quét mã QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Không thể lưu thay đổi của bạn.</translation>
 <translation id="3254806613790954367">Thẻ bạn mở gần đây nhất trên tất cả thiết bị</translation>
 <translation id="325717987950204592">Nhấn vào "Quyền riêng tư và bảo mật"</translation>
+<translation id="3259451381796379533">Tài khoản này không dùng được Gemini. Đăng nhập bằng một Tài khoản Google khác.</translation>
 <translation id="3265736395246760288">Đăng nhập nhanh hơn trên mọi thiết bị đã đồng bộ hoá.</translation>
 <translation id="3272527697863656322">Huỷ</translation>
 <translation id="3273510436356991673">Tuỳ chỉnh màn hình chính của bạn</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Tự động điền các số cuối của số thẻ là <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Đã tạo <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Thư viện ảnh</translation>
+<translation id="3746269120925354434">Thông tin đã lưu vào Google Wallet</translation>
 <translation id="3750225824417196283">Trang thẻ ẩn danh mới</translation>
 <translation id="3751873026576444885">Dừng tìm kiếm về nội dung trên màn hình bằng Google Ống kính</translation>
 <translation id="3753408171347588045">Theo dõi giá</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Thể tích</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
-<translation id="4828431027673677473">Các sản phẩm dựa trên mối quan tâm của bạn</translation>
 <translation id="4829420936835028285">Chỉnh sửa nhóm thẻ</translation>
 <translation id="4833786495304741580">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
 <translation id="483689884442613745">Lưu…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Tiếp tục chỉnh sửa</translation>
 <translation id="7500244509706269886">Tự động điền biểu mẫu</translation>
 <translation id="750493650310597496">Đã chọn 0</translation>
+<translation id="7505402981231763928">Bạn cần đăng nhập để sử dụng Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Để khóa các thẻ ẩn danh, hãy thiết lập Touch ID, Face ID hoặc mật mã.</translation>
 <translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm thẻ vào nhóm mới}}</translation>
 <translation id="8283172974887967105">Đặt…</translation>
 <translation id="8289930144142009940">Đã tắt thông báo về <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Theo dõi giá trên thẻ của bạn</translation>
 <translation id="8292893224181644074">Đã tải xuống xong</translation>
 <translation id="8299417921174340354">Để sử dụng mật khẩu, trước tiên, bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="8307481894409578819">Không thể tải tệp này lên</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Tính năng Duyệt web an toàn đang bật</translation>
 <translation id="8534481786647257214">Đã đăng lên Google+.</translation>
 <translation id="8535368836838588657">Tiết lộ mật khẩu</translation>
+<translation id="8540426897269305488">Đăng nhập bằng <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Kiểm tra các chế độ cài đặt mặc định của trình duyệt</translation>
 <translation id="854938212724803178">Bạn đã bị lộ 1 mật khẩu. Hãy khắc phục ngay để giữ an toàn.</translation>
 <translation id="8551311254462607218">Trong thanh địa chỉ, hãy nhấn vào biểu tượng camera của Google Ống kính</translation>

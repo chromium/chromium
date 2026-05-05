@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">体积</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
-<translation id="4828431027673677473">根据您的兴趣推荐的商品</translation>
 <translation id="4829420936835028285">修改标签页分组</translation>
 <translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送给 Google。</translation>
 <translation id="483689884442613745">保存…</translation>
@@ -2105,7 +2104,6 @@
 <translation id="828291969289324795">{count,plural, =1{将标签页添加到新的分组}other{将标签页添加到新的分组}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8289930144142009940">“<ph name="FEATURE_NAME" />”通知已关闭</translation>
-<translation id="8290077367744012649">跟踪标签页上的价格</translation>
 <translation id="8292893224181644074">下载已完成</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8307481894409578819">无法上传此文件</translation>

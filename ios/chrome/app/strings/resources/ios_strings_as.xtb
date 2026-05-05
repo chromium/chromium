@@ -763,6 +763,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" />ৰে শেষ হোৱা আপোনাৰ কাৰ্ড নম্বৰটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="3738428049780661523"><ph name="DATE" />ত সৃষ্টি কৰা হৈছে</translation>
 <translation id="3742498336182910186">কেমেৰা ৰ’ল</translation>
+<translation id="3746269120925354434">Google Walletত তথ্য ছেভ কৰা হ’ল</translation>
 <translation id="3750225824417196283">নতুন ইনক’গনিট’ টেবৰ পৃষ্ঠা</translation>
 <translation id="3751873026576444885">Google Lens ব্যৱহাৰ কৰি আপোনাৰ স্ক্ৰীনত থকা সমলৰ সন্ধান বন্ধ কৰক</translation>
 <translation id="3753408171347588045">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
@@ -1076,7 +1077,6 @@
 <translation id="4824480232751123840">ভলিউম</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} আৰু অন্য ১ টা}one{{domain} আৰু অন্য {count} টা}other{{domain} আৰু অন্য {count} টা}}</translation>
 <translation id="4826588772550366629">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
-<translation id="4828431027673677473">আপোনাৰ আগ্ৰহৰ ভিত্তিত প্ৰ’ডাক্ট</translation>
 <translation id="4829420936835028285">টেবৰ গোট সম্পাদনা কৰক</translation>
 <translation id="4833786495304741580">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়ায়</translation>
 <translation id="483689884442613745">ছেভ কৰক…</translation>
@@ -2111,7 +2111,6 @@
 <translation id="828291969289324795">{count,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="8283172974887967105">ছেট কৰক…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />ৰ জাননী অফ কৰা হ’ল</translation>
-<translation id="8290077367744012649">আপোনাৰ টেবৰ পৰা মূল্য ট্ৰেক কৰক</translation>
 <translation id="8292893224181644074">ডাউনল’ড সম্পূর্ণ হ’ল</translation>
 <translation id="8299417921174340354">পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰিবলৈ আপুনি প্ৰথমে নিজৰ ডিভাইচত এটা পাছক’ড ছেট কৰিবই লাগিব।</translation>
 <translation id="8307481894409578819">এই ফাইলটো আপল’ড কৰিব পৰা নগ’ল</translation>
@@ -2178,6 +2177,7 @@
 <translation id="8533670235862049797">সুৰক্ষিত ব্ৰাউজিং অন আছে</translation>
 <translation id="8534481786647257214">Google+ প’ষ্ট সম্পূৰ্ণ হ’ল৷</translation>
 <translation id="8535368836838588657">পাছৱৰ্ড প্ৰকাশ কৰক</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />ৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="8545276357312221485">আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰৰ ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="854938212724803178">আপোনাৰ ১ টা হেক কৰা পাছৱৰ্ড আছে। সুৰক্ষিত হৈ থাকিবলৈ এইটো এতিয়াই ঠিক কৰক।</translation>
 <translation id="8551311254462607218">ঠিকনাৰ বাৰত, Google Lens কেমেৰাৰ চিহ্নত টিপক</translation>

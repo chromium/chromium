@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
-<translation id="4828431027673677473">Prodotti basati sui tuoi interessi</translation>
 <translation id="4829420936835028285">Modifica gruppo di schede</translation>
 <translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="483689884442613745">Salva…</translation>
@@ -2105,7 +2104,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="828291969289324795">{count,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="8283172974887967105">Imposta…</translation>
 <translation id="8289930144142009940">Notifiche di <ph name="FEATURE_NAME" /> disattivate</translation>
-<translation id="8290077367744012649">Monitora i prezzi dalle tue schede</translation>
 <translation id="8292893224181644074">Download completato</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8307481894409578819">Impossibile caricare il file</translation>

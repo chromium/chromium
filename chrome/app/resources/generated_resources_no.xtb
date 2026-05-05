@@ -2161,6 +2161,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2460826998961521840">for å bruke passnøkler som er lagret i Google-kontoen din</translation>
 <translation id="2461550163693930491">Ikke la nettsteder rulle og zoome på delte faner</translation>
 <translation id="2461593638794842577">Du kan slå av denne innstillingen for å lagre passordene dine kun på denne enheten</translation>
+<translation id="2462550463312552298">Oppsummer dette dokumentet</translation>
 <translation id="2462724976360937186">Nøkkel-ID for sertifiseringsinstans</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> er lagt til</translation>
 <translation id="2464075479326723132">Du ser forslag til filer, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din i Microsoft SharePoint og OneDrive.
@@ -4317,6 +4318,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3924788966103416622">En ekstern app vil ha full kontroll over denne Chrome-økten for å feilsøke den. Dette inkluderer tilgang til de lagrede dataene dine, informasjonskapsler og nettstedsdata samt muligheten til å navigere til hvilken som helst nettadresse.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Andre brukere på denne enheten kan også bruke dette nettverket</translation>
+<translation id="3925934852713265455">Spør om fanene dine</translation>
 <translation id="3926002189479431949">Smart Lock-telefon endret</translation>
 <translation id="3926410220776569451">Kameratilgang er blokkert</translation>
 <translation id="3927932062596804919">Ikke tillat</translation>
@@ -7283,6 +7285,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="604388835206766544">Kunne ikke parse konfigurasjonen</translation>
 <translation id="6043994281159824495">Logg av nå</translation>
 <translation id="6045114302329202345">Primær TrackPoint-knapp</translation>
+<translation id="6045425183320109397">Av</translation>
 <translation id="6047632800149092791">Synkroniseringen fungerer ikke. Prøv å logge ut og inn igjen.</translation>
 <translation id="6048747414605857443">Velg og tilpass tekst til tale-stemmer for ChromeVox og Tekstopplesing</translation>
 <translation id="6050189528197190982">Gråtoner</translation>
@@ -8688,7 +8691,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="701020165009334820">Du kan laste ned Android-apper og -spill via Play-butikken.</translation>
 <translation id="701080569351381435">Se kilde</translation>
 <translation id="7012430956470647760">Foreldrekontroll for apper</translation>
-<translation id="7013762323294215682">Denne passnøkkelen lagres i passordlagringen. Alle som har tilgang til den, kan bruke denne passnøkkelen.</translation>
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7014480873681694324">Fjern markering</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
@@ -11777,7 +11779,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9120800848981545750">Last ned Chrome for iOS for å få tilgang til faner, bokmerker og passord på telefonen.</translation>
 <translation id="9121814364785106365">Åpne som festet fane</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanene og slette gruppen?}other{Vil du lukke fanene og slette gruppene?}}</translation>
-<translation id="9122788874051694311">Vil du lagre denne passnøkkelen utenfor Inkognito?</translation>
 <translation id="9123287046453017203">Enheten er ikke oppdatert</translation>
 <translation id="9125910124977405374">Fjern <ph name="LANGUAGE_NAME" /> fra språkene som oversettes automatisk</translation>
 <translation id="9125912770834459638">Organisasjonen din tillater ikke at du logger på</translation>

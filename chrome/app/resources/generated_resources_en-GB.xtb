@@ -2075,6 +2075,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2402226831639195063">Tones</translation>
 <translation id="2405887402346713222">Device and Component Serial Numbers</translation>
 <translation id="2406153734066939945">Delete this profile and its data?</translation>
+<translation id="2406942743794219791">Confirm the default search engine that you want</translation>
 <translation id="2407671304279211586">Select DNS provider</translation>
 <translation id="2408018932941436077">Saving card</translation>
 <translation id="2408742686124047357">Pin Google Lens to your toolbar for easy access next time</translation>
@@ -3056,6 +3057,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web Page, Complete</translation>
 <translation id="304747341537320566">Speech engines</translation>
+<translation id="3047618804758101928">The extension '<ph name="EXTENSION_NAME" />' changed your settings</translation>
 <translation id="3047678109605649715">There are no <ph name="LANGUAGE" /> voices on your device. Clear space on your device, and try again.</translation>
 <translation id="3048336643003835855">HID devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Play (k)</translation>
@@ -7296,6 +7298,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="604388835206766544">Failed to parse configuration</translation>
 <translation id="6043994281159824495">Sign out now</translation>
 <translation id="6045114302329202345">Primary TrackPoint button</translation>
+<translation id="6045425183320109397">By</translation>
 <translation id="6047632800149092791">Sync isn't working. Try signing out and back in again.</translation>
 <translation id="6048747414605857443">Select and customise text-to-speech voices for ChromeVox and Select to Speak</translation>
 <translation id="6050189528197190982">Greyscale</translation>
@@ -8701,7 +8704,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="701020165009334820">You can download Android apps and games through the Play Store.</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7012430956470647760">Parental controls for apps</translation>
-<translation id="7013762323294215682">This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.</translation>
 <translation id="7014174261166285193">Installation failed.</translation>
 <translation id="7014480873681694324">Remove highlight</translation>
 <translation id="7014741021609395734">Zoom level</translation>
@@ -10014,6 +10016,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7939062555109487992">Advanced options</translation>
 <translation id="793923212791838">Your device can't be used with this site</translation>
 <translation id="7939328347457537652">Manage device certificates</translation>
+<translation id="7939918959917132075">Changed to this by extension</translation>
 <translation id="7940087892955752820">Couldn't unshare because an application is using this folder. The folder will be unshared when <ph name="SPECIFIC_NAME" /> is next shut down.</translation>
 <translation id="7940265372707990269">Sort by <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering readiness:</translation>
@@ -11790,7 +11793,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9120800848981545750">Download Chrome for iOS to access your tabs, bookmarks and passwords on your phone.</translation>
 <translation id="9121814364785106365">Open as pinned tab</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Close tab and delete group?}=1{Close tab and delete group?}other{Close tabs and delete groups?}}</translation>
-<translation id="9122788874051694311">Save this passkey outside Incognito?</translation>
 <translation id="9123287046453017203">Your device is not up to date</translation>
 <translation id="9125910124977405374">Remove <ph name="LANGUAGE_NAME" /> from automatically translated languages</translation>
 <translation id="9125912770834459638">Your organisation doesn't allow you to sign in</translation>

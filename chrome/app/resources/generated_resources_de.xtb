@@ -2151,6 +2151,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2460826998961521840">Um Passkeys aus deinem Google-Konto zu nutzen</translation>
 <translation id="2461550163693930491">Websites dürfen auf geteilten Tabs nicht scrollen und zoomen</translation>
 <translation id="2461593638794842577">Du kannst diese Einstellung deaktivieren, um deine Passwörter nur auf diesem Gerät zu speichern</translation>
+<translation id="2462550463312552298">Fasse dieses Dokument zusammen</translation>
 <translation id="2462724976360937186">Schlüssel-ID der Zertifizierungsstelle</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> hinzugefügt</translation>
 <translation id="2464075479326723132">Dir werden Dateien vorgeschlagen, mit denen du bei Microsoft SharePoint und OneDrive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
@@ -4305,6 +4306,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3924788966103416622">Eine externe App möchte die vollständige Kontrolle über diese Chrome-Sitzung erhalten, um Fehler zu beheben. Dazu gehören der Zugriff auf deine gespeicherten Daten, Cookies und Websitedaten sowie die Möglichkeit, eine beliebige URL aufzurufen.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Andere Nutzer auf diesem Gerät können dieses Netzwerk ebenfalls verwenden</translation>
+<translation id="3925934852713265455">Fragen zu deinen Tabs stellen</translation>
 <translation id="3926002189479431949">Telefon für Smart Lock geändert</translation>
 <translation id="3926410220776569451">Kamerazugriff blockiert</translation>
 <translation id="3927932062596804919">Ablehnen</translation>
@@ -7271,6 +7273,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="604388835206766544">Fehler beim Parsen der Konfiguration</translation>
 <translation id="6043994281159824495">Jetzt abmelden</translation>
 <translation id="6045114302329202345">Primäre TrackPoint-Taste</translation>
+<translation id="6045425183320109397">Von</translation>
 <translation id="6047632800149092791">Synchronisierung funktioniert nicht. Melde dich ab und dann wieder an.</translation>
 <translation id="6048747414605857443">Stimmen für die Sprachausgabe für ChromeVox und die Funktion „Vorlesen“ auswählen und anpassen</translation>
 <translation id="6050189528197190982">Graustufen</translation>
@@ -8676,7 +8679,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="701020165009334820">Du kannst Android-Apps und ‑Spiele über den Play Store herunterladen.</translation>
 <translation id="701080569351381435">Quelltext anzeigen</translation>
 <translation id="7012430956470647760">Jugendschutzeinstellungen für Apps</translation>
-<translation id="7013762323294215682">Dieser Passkey wird in deinem Passwortmanager gespeichert. Jeder, der Zugriff darauf hat, kann diesen Passkey verwenden.</translation>
 <translation id="7014174261166285193">Installation fehlgeschlagen</translation>
 <translation id="7014480873681694324">Markierung entfernen</translation>
 <translation id="7014741021609395734">Zoomstufe</translation>
@@ -11765,7 +11767,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9120800848981545750">Lade Chrome für iOS herunter, um auf deinem Smartphone auf deine Tabs, Lesezeichen und Passwörter zuzugreifen.</translation>
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab schließen und Gruppe löschen?}=1{Tabs schließen und Gruppe löschen?}other{Tabs schließen und Gruppen löschen?}}</translation>
-<translation id="9122788874051694311">Diesen Passkey außerhalb des Inkognitomodus speichern?</translation>
 <translation id="9123287046453017203">Dein Gerät ist nicht auf dem neuesten Stand</translation>
 <translation id="9125910124977405374"><ph name="LANGUAGE_NAME" /> von den Sprachen entfernen, die automatisch übersetzt werden</translation>
 <translation id="9125912770834459638">Deine Organisation lässt deine Anmeldung nicht zu</translation>

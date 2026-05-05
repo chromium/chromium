@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Ruumala</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
-<translation id="4828431027673677473">Teie huvidel põhinevad tooted</translation>
 <translation id="4829420936835028285">Vahelehegrupi muutmine</translation>
 <translation id="4833786495304741580">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="483689884442613745">Salvesta …</translation>
@@ -2105,7 +2104,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="828291969289324795">{count,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="8283172974887967105">Määra …</translation>
 <translation id="8289930144142009940">Kanali <ph name="FEATURE_NAME" /> märguanded on välja lülitatud</translation>
-<translation id="8290077367744012649">Hindade jälgimine vahelehtedelt</translation>
 <translation id="8292893224181644074">Allalaadimine lõpetatud</translation>
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="8307481894409578819">Seda faili ei saanud üles laadida</translation>

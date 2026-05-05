@@ -2151,6 +2151,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2460826998961521840">Për të përdorur çelësat e kalimit nga "Llogaria e Google"</translation>
 <translation id="2461550163693930491">Mos lejo sajtet të lëvizin dhe zmadhojnë skedat e ndara</translation>
 <translation id="2461593638794842577">Mund ta çaktivizosh këtë cilësim për t'i ruajtur fjalëkalimet vetëm në këtë pajisje</translation>
+<translation id="2462550463312552298">Përmblidh këtë dokument</translation>
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
 <translation id="2462752602710430187">U shtua <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Po shikon skedarët e sugjeruar për të të ndihmuar të kthehesh me lehtësi në aktivitetet e tua të fundit në Microsoft SharePoint dhe OneDrive.
@@ -4307,6 +4308,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3924788966103416622">Një aplikacion i jashtëm dëshiron kontroll të plotë mbi këtë seancë të Chrome për ta korrigjuar atë. Kjo përfshin qasjen te të dhënat e tua të ruajtura, kukit dhe të dhënat e sajtit, si dhe aftësinë për të naviguar në çdo URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Përdoruesit e tjerë në këtë pajisje mund ta përdorin po ashtu këtë rrjet</translation>
+<translation id="3925934852713265455">Pyet për skedat e tua</translation>
 <translation id="3926002189479431949">Telefoni i Smart Lock u ndryshua</translation>
 <translation id="3926410220776569451">Qasja te kamera është bllokuar</translation>
 <translation id="3927932062596804919">Refuzo</translation>
@@ -8681,7 +8683,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="701020165009334820">Mund të shkarkosh lojëra dhe aplikacione për Android nëpërmjet "Dyqanit të Play".</translation>
 <translation id="701080569351381435">Shiko burimin</translation>
 <translation id="7012430956470647760">Kontrollet prindërore për aplikacionet</translation>
-<translation id="7013762323294215682">Ky çelës kalimi do të ruhet te menaxheri i fjalëkalimeve. Çdo person që ka qasje në të do të mund ta përdorë këtë çelës kalimi.</translation>
 <translation id="7014174261166285193">Instalimi dështoi.</translation>
 <translation id="7014480873681694324">Hiq theksimin</translation>
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
@@ -11769,7 +11770,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9120800848981545750">Shkarko Chrome për iOS për t'u qasur te skedat, faqeshënuesit dhe fjalëkalimet në telefonin tënd.</translation>
 <translation id="9121814364785106365">Hap si skedë të gozhduar</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Të mbyllet skeda dhe të fshihet grupi?}=1{Të mbyllen skedat dhe të fshihet grupi?}other{Të mbyllen skedat dhe të fshihen grupet?}}</translation>
-<translation id="9122788874051694311">Të ruhet ky çelës kalimi jashtë modalitetit "I fshehtë"?</translation>
 <translation id="9123287046453017203">Pajisja jote nuk është e përditësuar</translation>
 <translation id="9125910124977405374">Hiqe gjuhën <ph name="LANGUAGE_NAME" /> nga gjuhët që përkthehen automatikisht</translation>
 <translation id="9125912770834459638">Organizata jote nuk lejon që të identifikohesh</translation>

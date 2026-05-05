@@ -2051,6 +2051,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2402226831639195063">Tony</translation>
 <translation id="2405887402346713222">Numery seryjne urządzenia i komponentu</translation>
 <translation id="2406153734066939945">Usunąć ten profil i powiązane z nim dane?</translation>
+<translation id="2406942743794219791">Potwierdź domyślną wyszukiwarkę</translation>
 <translation id="2407671304279211586">Wybierz dostawcę DNS</translation>
 <translation id="2408018932941436077">Zapisuję kartę</translation>
 <translation id="2408742686124047357">Przypnij Obiektyw Google do paska narzędzi, aby następnym razem mieć do niego łatwy dostęp</translation>
@@ -2143,6 +2144,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>
 <translation id="2461550163693930491">Nie zezwalaj witrynom na przewijanie ani powiększanie udostępnionych kart</translation>
 <translation id="2461593638794842577">Możesz wyłączyć to ustawienie, aby zapisywać hasła tylko na tym urządzeniu</translation>
+<translation id="2462550463312552298">Podsumuj ten dokument</translation>
 <translation id="2462724976360937186">Identyfikator klucza urzędu certyfikacji</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Widzisz sugerowane pliki, aby łatwiej było Ci wrócić do swojej ostatniej aktywności w Microsoft SharePoint i OneDrive.
@@ -3027,6 +3029,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3046892784550338476">Wersja <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Strona internetowa, kompletna</translation>
 <translation id="304747341537320566">Mechanizmy syntezy mowy</translation>
+<translation id="3047618804758101928">Rozszerzenie „<ph name="EXTENSION_NAME" />” zmieniło Twoje ustawienia</translation>
 <translation id="3047678109605649715">Na urządzeniu nie ma głosów w języku: <ph name="LANGUAGE" />. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="3048336643003835855">Urządzenie HID firmy <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Odtwórz (k)</translation>
@@ -4289,6 +4292,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3924788966103416622">Aplikacja zewnętrzna chce mieć pełną kontrolę nad tą sesją Chrome, aby ją debugować. Obejmuje to dostęp do zapisanych danych, plików cookie i danych witryn oraz możliwość przejścia do dowolnego adresu URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Tej sieci mogą też używać inni użytkownicy tego urządzenia</translation>
+<translation id="3925934852713265455">Zapytaj o karty</translation>
 <translation id="3926002189479431949">Telefon z funkcją Smart Lock został zmieniony</translation>
 <translation id="3926410220776569451">Dostęp do aparatu jest zablokowany</translation>
 <translation id="3927932062596804919">Odmawiaj</translation>
@@ -7257,6 +7261,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="604388835206766544">Nie udało się przeanalizować konfiguracji</translation>
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
 <translation id="6045114302329202345">Podstawowy przycisk TrackPointa</translation>
+<translation id="6045425183320109397">autor:</translation>
 <translation id="6047632800149092791">Synchronizacja nie działa. Wyloguj się i zaloguj ponownie.</translation>
 <translation id="6048747414605857443">Umożliwia wybranie i dostosowanie głosów używanych do zamiany tekstu na mowę przez ChromeVoksa i funkcję Przeczytaj na głos</translation>
 <translation id="6050189528197190982">Skala odcieni szarości</translation>
@@ -8664,7 +8669,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="701020165009334820">Aplikacje i gry na Androida możesz pobierać ze Sklepu Play.</translation>
 <translation id="701080569351381435">Wyświetl źródło</translation>
 <translation id="7012430956470647760">Kontrola rodzicielska w aplikacjach</translation>
-<translation id="7013762323294215682">Ten klucz dostępu zostanie zapisany w Menedżerze haseł. Każdy, kto ma do niego dostęp, będzie mógł użyć tego klucza.</translation>
 <translation id="7014174261166285193">Instalacja nie powiodła się.</translation>
 <translation id="7014480873681694324">Usuń podświetlenie</translation>
 <translation id="7014741021609395734">Poziom powiększenia</translation>
@@ -9976,6 +9980,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7939062555109487992">Opcje zaawansowane</translation>
 <translation id="793923212791838">Twojego urządzenia nie można używać z tą witryną</translation>
 <translation id="7939328347457537652">Zarządzaj certyfikatami urządzenia</translation>
+<translation id="7939918959917132075">Ustawione przez rozszerzenie</translation>
 <translation id="7940087892955752820">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu elementu <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Sortuj według: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Gotowość do obsługi tetheringu:</translation>
@@ -11747,7 +11752,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9120800848981545750">Pobierz Chrome na iOS, aby uzyskać dostęp do kart, zakładek i haseł na telefonie.</translation>
 <translation id="9121814364785106365">Otwórz jako przypiętą kartę</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Zamknąć kartę i usunąć grupę?}=1{Zamknąć kartę i usunąć grupę?}few{Zamknąć karty i usunąć grupy?}many{Zamknąć karty i usunąć grupy?}other{Zamknąć karty i usunąć grupy?}}</translation>
-<translation id="9122788874051694311">Zapisać ten klucz dostępu poza trybem incognito?</translation>
 <translation id="9123287046453017203">Urządzenie używa nieaktualnej wersji oprogramowania</translation>
 <translation id="9125910124977405374">Usuń język <ph name="LANGUAGE_NAME" /> z języków tłumaczonych automatycznie</translation>
 <translation id="9125912770834459638">Twoja organizacja nie zezwala na logowanie się</translation>

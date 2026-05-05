@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Ինքնալրացնել քարտի համարը, որի վերջին թվերն են <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Ստեղծվել է <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Տեսախցիկի ֆոտոալբոմ</translation>
+<translation id="3746269120925354434">Տեղեկությունները պահվեցին Google Wallet-ում</translation>
 <translation id="3750225824417196283">Նոր ինկոգնիտո ներդիրի էջ</translation>
 <translation id="3751873026576444885">Կանգնեցնել Google Տեսապակու միջոցով էկրանի բովանդակության որոնումը</translation>
 <translation id="3753408171347588045">Դուք հետևում եք գներին</translation>
@@ -1076,7 +1077,6 @@
 <translation id="4824480232751123840">Ձայնի ուժգնություն</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
-<translation id="4828431027673677473">Ապրանքներ՝ հիմնված ձեր հետաքրքրությունների վրա</translation>
 <translation id="4829420936835028285">Փոփոխել ներդիրների խումբը</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
 <translation id="483689884442613745">Պահել…</translation>
@@ -2105,7 +2105,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="828291969289324795">{count,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />․ ծանուցումներն անջատվեցին</translation>
-<translation id="8290077367744012649">Հետևեք գներին ձեր ներդիրներից</translation>
 <translation id="8292893224181644074">Ներբեռնումն ավարտված է</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
 <translation id="8307481894409578819">Չհաջողվեց վերբեռնել այս ֆայլը</translation>
@@ -2172,6 +2171,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8534481786647257214">Google+ ցանցում փակցնումն ավարտվեց:</translation>
 <translation id="8535368836838588657">Ցուցադրեք գաղտնաբառը</translation>
+<translation id="8540426897269305488">Մուտք գործել՝ օգտագործելով <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Ստուգեք ձեր կանխադրված դիտարկիչի կարգավորումները</translation>
 <translation id="854938212724803178">Դուք ունեք 1 կոտրված գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
 <translation id="8551311254462607218">Հասցեագոտում հպեք Google Տեսապակու տեսախցիկի պատկերակին</translation>

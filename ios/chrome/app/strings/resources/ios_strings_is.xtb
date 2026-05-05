@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">Hljóðstyrkur</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
 <translation id="4826588772550366629">myndavél og hljóðnema</translation>
-<translation id="4828431027673677473">Vörur sem tengjast áhugasviðunum þínum</translation>
 <translation id="4829420936835028285">Breyta flipahóp</translation>
 <translation id="4833786495304741580">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google.</translation>
 <translation id="483689884442613745">Vista…</translation>
@@ -2105,7 +2104,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="828291969289324795">{count,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
 <translation id="8283172974887967105">Stilla…</translation>
 <translation id="8289930144142009940">Slökkt er á tilkynningum um <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Vaktaðu verð í flipunum þínum</translation>
 <translation id="8292893224181644074">Niðurhali lokið</translation>
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="8307481894409578819">Ekki tókst að hlaða þessari skrá upp</translation>

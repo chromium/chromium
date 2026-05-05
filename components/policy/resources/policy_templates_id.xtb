@@ -2251,7 +2251,7 @@ Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2476249479201711962">Aktifkan akses ke menu konteks penyedia penelusuran default</translation>
-<translation id="2478756867046106663">Izinkan situs dengan pengalaman yang menyesatkan pengguna untuk membuka jendela atau tab baru</translation>
+<translation id="2478756867046106663">Izinkan situs dengan elemen menyesatkan untuk membuka jendela atau tab baru</translation>
 <translation id="2479760962196319822">Kebijakan ini mengontrol apakah pengguna <ph name="PRODUCT_OS_NAME" /> dapat menyimpan data secara lokal atau tidak.
       Jika kebijakan ini disetel ke Salah (False), penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diblokir. Pengguna tidak dapat menyimpan data apa pun secara lokal, dan tidak dapat mengakses direktori lokal.
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, penyimpanan lokal di <ph name="PRODUCT_OS_NAME" /> akan diizinkan. Tidak ada batasan terkait tempat pengguna dapat menyimpan data, atau direktori mana yang dapat diakses pengguna.</translation>
@@ -6121,9 +6121,9 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
 
       Jika ekstensi tidak ada dalam daftar, atau daftar tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
 <translation id="4927563541997547">Keyboard virtual mengubah ukuran area pandang tata letak secara default</translation>
-<translation id="4927797103413916381">Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> tidak Dinonaktifkan, menyetel <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> ke Aktif atau tidak menyetelnya akan mencegah situs dengan pengalaman yang menyesatkan pengguna terbuka di jendela atau tab baru.
+<translation id="4927797103413916381">Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> tidak Dinonaktifkan, menyetel <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> ke Aktif atau tidak menyetelnya akan mencegah situs dengan elemen menyesatkan terbuka di jendela atau tab baru.
 
-       Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> disetel ke Nonaktif, situs dengan pengalaman yang menyesatkan pengguna akan terbuka di jendela dan tab baru.</translation>
+       Jika <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> disetel ke Nonaktif, situs dengan elemen menyesatkan akan terbuka di jendela dan tab baru.</translation>
 <translation id="4929721861648439998">Mengaktifkan fitur aksesibilitas audio mono di layar login.
 
           Dengan fitur ini, Anda dapat mengalihkan mode perangkat dari audio stereo default ke audio mono.
@@ -6769,22 +6769,6 @@ Jika tidak disetel, nilai default adalah 0 derajat dan pengguna dapat mengubahny
 <translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
 <translation id="5293619885162445352">Izinkan <ph name="PEPPER_NAME" /> menggunakan dekoder video baru.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
-<translation id="529718811410033393">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan non-WebSocket akan ditentukan.
-
-Untuk mengubah batas permintaan WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
-
-Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 32, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
-Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
-
-Nilai ini harus sama dengan atau lebih tinggi dari 6.
-Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
-Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
-
-Nilai ini harus sama dengan atau lebih rendah dari 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
-Jika nilai yang ditetapkan di atas batas tersebut, nilai yang akan digunakan adalah 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
-Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="5297873769621042075">Menyetel kebijakan akan menentukan daftar nama host atau pola nama host (seperti
 '[*.]example.com') yang tidak akan diupgrade ke HTTPS dan tidak akan menampilkan
 error interstisial jika Mode HTTPS-First diaktifkan. Organisasi dapat menggunakan
@@ -10565,22 +10549,6 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 
       Jika perangkat pengguna tidak dikelola, kemampuan untuk menyetel kebijakan ini akan tergantung pada apakah pengguna merupakan pemilik perangkat atau bukan.</translation>
 <translation id="7570291542739287032">Khusus Cloud</translation>
-<translation id="7571158727244273239">Jika kebijakan ini disetel, jumlah maksimal koneksi simultan per server proxy untuk permintaan WebSocket akan ditentukan.
-
-Untuk mengubah batas permintaan non-WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
-
-Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet. Jadi, jika Anda menetapkan nilai lebih rendah dari 32, jaringan browser akan macet ketika ada terlalu banyak aplikasi web yang terbuka dengan jaringan macet.
-Beberapa server proxy tidak dapat menangani koneksi serentak per klien dalam jumlah besar. Masalah ini dapat diselesaikan dengan menyetel kebijakan ini ke nilai lebih rendah.
-
-Nilai ini harus sama dengan atau lebih tinggi dari 6.
-Jika nilai yang ditetapkan di bawah batas tersebut, nilai 6 akan digunakan.
-Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
-
-Nilai ini harus sama dengan atau lebih rendah dari 256.
-Jika nilai yang ditetapkan melebihi batas tersebut, nilai yang akan digunakan adalah 256.
-Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="7572641760104970905">Tidak Ada Kompleksitas</translation>
 <translation id="757395965347379751">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> mengizinkan sertifikat bertanda tangan SHA-1 selama sertifikat tersebut berhasil memvalidasi dan mengarah ke sertifikat CA yang terpasang secara lokal.
 
@@ -11514,7 +11482,7 @@ Jika eksperimen <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" 
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> hanya meneruskan URL ke <ph name="PRODUCT_NAME" /> sebagai parameter command line.
 
       Catatan: Jika add-in Dukungan Browser Lama untuk <ph name="IE_PRODUCT_NAME" /> tidak diinstal, kebijakan ini tidak akan berpengaruh.</translation>
-<translation id="8179161412673077784">Cegah situs dengan pengalaman yang menyesatkan pengguna untuk membuka jendela atau tab baru</translation>
+<translation id="8179161412673077784">Cegah situs dengan elemen menyesatkan agar tidak membuka jendela atau tab baru</translation>
 <translation id="8179547841987088070">Menyetel kebijakan akan menentukan apakah perangkat pengguna yang dipilih harus berada di jaringan terkelola agar dapat bergabung ke kelas <ph name="CLASS_TOOLS_NAME" />.
 
 Jika nilai disetel ke benar (true) atau tidak disetel, pengguna harus berada di jaringan terkelola.

@@ -2170,6 +2170,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2460826998961521840">Za uporabo ključev za dostop, shranjenih v računu Google</translation>
 <translation id="2461550163693930491">Spletnim mestom nista dovoljena pomikanje po deljenih zavihkih in njihova povečava/pomanjšava</translation>
 <translation id="2461593638794842577">To nastavitev lahko izklopite, če želite, da se gesla shranjujejo samo v tej napravi</translation>
+<translation id="2462550463312552298">Povzemi ta dokument</translation>
 <translation id="2462724976360937186">ID ključa overitelja potrdil</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v storitvah Microsoft SharePoint in OneDrive.
@@ -4327,6 +4328,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3924788966103416622">Zunanja aplikacija želi imeti popoln nadzor nad to sejo Chroma, da bi odpravila njene napake. To vključuje dostop do shranjenih podatkov, piškotkov in podatkov spletnih mest ter možnost odpiranja katerega koli URL-ja.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Drugi uporabniki v tej napravi lahko tudi uporabljajo to omrežje</translation>
+<translation id="3925934852713265455">Vprašajte o svojih zavihkih</translation>
 <translation id="3926002189479431949">Telefon za Smart Lock spremenjen</translation>
 <translation id="3926410220776569451">Dostop do kamere je blokiran</translation>
 <translation id="3927932062596804919">Ne dovoli</translation>
@@ -7299,6 +7301,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="604388835206766544">Konfiguracije ni bilo mogoče razčleniti</translation>
 <translation id="6043994281159824495">Odjava</translation>
 <translation id="6045114302329202345">Glavni gumb sledilne palčke</translation>
+<translation id="6045425183320109397">Po avtorju:</translation>
 <translation id="6047632800149092791">Sinhronizacija ne deluje. Poskusite se odjaviti in znova prijaviti.</translation>
 <translation id="6048747414605857443">Izberite in prilagodite glasove za pretvorbo besedila v govor za ChromeVox in funkcijo Izberite in poslušajte.</translation>
 <translation id="6050189528197190982">Sivine</translation>
@@ -8710,7 +8713,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="701020165009334820">Aplikacije in igre za Android lahko prenesete iz Trgovine Play.</translation>
 <translation id="701080569351381435">Ogled izvorne kode</translation>
 <translation id="7012430956470647760">Starševski nadzor za aplikacije</translation>
-<translation id="7013762323294215682">Ta ključ za dostop bo shranjen v upravitelju gesel. Ta ključ za dostop bodo lahko uporabljali vsi, ki imajo dostop do njega.</translation>
 <translation id="7014174261166285193">Namestitev ni uspela.</translation>
 <translation id="7014480873681694324">Odstrani označitev</translation>
 <translation id="7014741021609395734">Stopnja povečave</translation>
@@ -11803,7 +11805,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9120800848981545750">Prenesite Chrome za iOS, da boste lahko dostopali do zavihkov, zaznamkov in gesel v telefonu.</translation>
 <translation id="9121814364785106365">Odpri na pripetem zavihku</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite zapreti zavihek in izbrisati skupino?}=1{Želite zapreti zavihke in izbrisati skupino?}one{Želite zapreti zavihke in izbrisati skupine?}two{Želite zapreti zavihke in izbrisati skupine?}few{Želite zapreti zavihke in izbrisati skupine?}other{Želite zapreti zavihke in izbrisati skupine?}}</translation>
-<translation id="9122788874051694311">Želite ta ključ za dostop shraniti zunaj anonimnega načina?</translation>
 <translation id="9123287046453017203">Naprava ni posodobljena</translation>
 <translation id="9125910124977405374">Odstranitev jezika <ph name="LANGUAGE_NAME" /> iz samodejno prevedenih jezikov</translation>
 <translation id="9125912770834459638">Vaša organizacija vam ne dovoli prijave</translation>

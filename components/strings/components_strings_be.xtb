@@ -392,6 +392,7 @@
 <translation id="1595731774593926493">Выдаленне нумара перагляду</translation>
 <translation id="1597307423671074806">Відэа ў фармаце WebM</translation>
 <translation id="159800670740560023">Спасылка "Парада Chrome". Каб адкрыць спасылку "<ph name="IPH_LINK_FOCUSED_LINK_TEXT" />", націсніце Увод.</translation>
+<translation id="1599079390582151174">Адпраўлена. Адкрыйце Chrome на іншай прыладзе.</translation>
 <translation id="1599199147673445968">Новая картка? <ph name="BEGIN_LINK" />Увесці рэквізіты<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Прыгажосць і фітнес</translation>
@@ -847,7 +848,6 @@
 <translation id="2302571905116831849">Картка лаяльнасці з функцыяй аўтазапаўнення</translation>
 <translation id="230286397113210245">Кнопка "Адкрыць акно ў рэжыме інкогніта". Каб адкрыць новае акно ў рэжыме інкогніта для прыватнага прагляду вэб-старонак, націсніце яе.</translation>
 <translation id="2303437270440428119">Электронная табліца ў фармаце OpenDocument</translation>
-<translation id="2305294852062272447">Захаваць вадзіцельскае пасведчанне?</translation>
 <translation id="2306124309679506798">Дазволіць эфект прысутнасці?</translation>
 <translation id="2310789833878085574">Захаваць і запоўніць аўтаматычна</translation>
 <translation id="2312234273148520048">Прыправы і заправы</translation>
@@ -1141,7 +1141,6 @@
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Аўтаматызацыя дома</translation>
 <translation id="2743512410823092182">Рэсурсы і абсталяванне для дыджэяў</translation>
-<translation id="2743934314332613923">Змяніць даныя вадзіцельскага пасведчання?</translation>
 <translation id="2757727729385895652">Ідзе запампоўванне файлаў (<ph name="COUNT" />) на Google Дыск</translation>
 <translation id="2759299890026163685">Забяспечце стабільнае падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="2759825833388495838">ўвесці пароль на сайце <ph name="APP_NAME" /></translation>
@@ -1205,7 +1204,6 @@
 <translation id="2891963978019740012">Ваша пошукавая сістэма ў Chrome</translation>
 <translation id="2893773853358652045">Чацвёрты рулон</translation>
 <translation id="2894137550885451583">Гэта цана ў <ph name="CURRENCY" /> на тавар "<ph name="PRODUCT" />"</translation>
-<translation id="2894233157216554317">Змяніць пашпартныя даныя?</translation>
 <translation id="2898398337339787921">Microsoft Excel</translation>
 <translation id="2900528713135656174">Стварыце падзею</translation>
 <translation id="2902312830803030883">Іншыя дзеянні</translation>
@@ -1302,7 +1300,6 @@
 <translation id="3024663005179499861">Няправільны тып палітыкі</translation>
 <translation id="3027915437837548462">Відарыс у фармаце SVG</translation>
 <translation id="3030331669969285614">Гэтыя эксперыментальныя параметры блакіруюць крытычнае змяненне або аднаўляюць старую версію. Тэрмін іх дзеяння абмежаваны.</translation>
-<translation id="3030542417256082866">Захаваць транспартны сродак?</translation>
 <translation id="3033200136993730761">Ваш хатні адрас можа быць карысным пры выкананні задач у сэрвісах Google, у прыватнасці для большай рэлевантнасці вынікаў пошуку ці пры складанні маршрутаў у Google Картах. Змяніць ці выдаліць адрас можна ва <ph name="BEGIN_LINK" />Уліковым запісе Google (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Выкарыстанне датчыкаў руху і святла зараз дазволена</translation>
 <translation id="3034526003882782781">Змяненне маштабу і прагортванне дазволены</translation>
@@ -1636,7 +1633,6 @@
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="3559897352860026926">Папрасіце адміністратара спраўдзіць налады канфігурацыі воблака "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="3560824484345057728">Паказаць спіс звязаных сайтаў</translation>
-<translation id="356359327498380603">Змяніць інфармацыю пра транспартны сродак?</translation>
 <translation id="3566021033012934673">Падключэнне не з’яўляецца прыватным</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
 <translation id="3566649245868131295">Вакансіі ў сферы аховы здароўя і медыцыны</translation>
@@ -1782,6 +1778,7 @@
 <translation id="3752543821772132562">Праігнаравана: палітыка <ph name="POLICY_NAME" /> не зададзена.</translation>
 <translation id="3754210790023674521">Выйсці з рэжыму "Відарыс у відарысе"</translation>
 <translation id="3754664361823138853">&amp;Адкрыць старонку гісторыі</translation>
+<translation id="3757511311058373406">Фільтры аўтаматычнага прагляду</translation>
 <translation id="3759461132968374835">Няма даных аб нядаўніх збоях.  Інфармацыя пра збоі, якія адбываюцца, калі стварэнне справаздач аб збоях выключана, тут не паказваецца.</translation>
 <translation id="3760561303380396507">Выкарыстоўваць Windows Hello замест CVC?</translation>
 <translation id="3761171036307311438">Імя на картцы:</translation>
@@ -1932,7 +1929,6 @@
 <translation id="4014895360827978999">Гандлёвыя паслугі і плацежныя сістэмы</translation>
 <translation id="4018819349042761761">Адкрыты ключ</translation>
 <translation id="4023431997072828269">З-за таго што форма адпраўляецца праз падключэнне, якое не з’яўляецца бяспечным, вашы звесткі будуць бачныя іншым карыстальнікам.</translation>
-<translation id="4024673763872230929">Захавайце звесткі і запаўняйце формы хутчэй. Звесткі будуць захаваны на прыладзе.</translation>
 <translation id="4025325634010721551">Палітыкі перазагружаны</translation>
 <translation id="4025338605225449265">Абмен валют</translation>
 <translation id="4025777154208238692">У адваротным парадку</translation>
@@ -2484,7 +2480,6 @@
 <translation id="4877422487531841831">Пошук па запыце "<ph name="TEXT" />"</translation>
 <translation id="4877521229462766300">Дазволіць убудаванае змесціва?</translation>
 <translation id="4879491255372875719">Аўтаматычна (стандартна)</translation>
-<translation id="4880328155169081699">Абнавіць пасведчанне асобы?</translation>
 <translation id="4880827082731008257">Гісторыя пошуку</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4881808915112408168">24 x 31,5 цалі</translation>
@@ -2688,7 +2683,6 @@
 <translation id="5191315092027169558">Вашым профілем кіруе <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> запытвае дазвол на спампоўку некалькіх файлаў</translation>
 <translation id="519528950056409240">Дазвол Кашальку абагульваць даныя</translation>
-<translation id="5199121357983849992">Захаваць пасведчанне асобы?</translation>
 <translation id="5200063972779787617">Захаваць адрас ва ўліковым запісе</translation>
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
 <translation id="5203716867500274632">Адміністратар уключыў сінхранізацыю наступных даных паміж папярэднім і бягучым сеансамі на прыладах з ChromeOS:</translation>
@@ -2704,7 +2698,6 @@
 <translation id="5217759126664161410">Няправільны фармат пратакола.</translation>
 <translation id="5221377878828867877">Ваша арганізацыя кантралюе паўторнае выкарыстанне пароляў</translation>
 <translation id="5222812217790122047">Электронны адрас (абавязкова)</translation>
-<translation id="5225215474235602477">Захаваць пашпарт?</translation>
 <translation id="5228269245420405804">Дыстанцыйнае навучанне</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Адрас дастаўкі</translation>
@@ -2808,7 +2801,6 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Каб атрымаць гэты пароль на ўсіх прыладах, пацвердзіце сваю асобу</translation>
-<translation id="5380539543938195166">Змяніць нумар вядомага падарожніка?</translation>
 <translation id="5380953781541843508">па ўзрастанні</translation>
 <translation id="5381318171304904246">Калі вы націснеце "Працягнуць", то будзеце перанакіраваны на вэб-сайт банка. Пасля спраўджання вы аўтаматычна вернецеся сюды, каб завяршыць куплю.</translation>
 <translation id="5381952079334035181">Карыстальнік <ph name="MEMBER_FIRST_NAME" /> змяніў укладку "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3136,7 +3128,6 @@
 <translation id="5887400589839399685">Картка захавана</translation>
 <translation id="5887687176710214216">Апошняе наведванне: учора</translation>
 <translation id="5889251770650310375">Каб мець доступ да гісторыі са сваіх іншых прылад, спраўдзіце сваю асобу і сінхранізуйце гісторыю і ўкладкі. Вы можаце ў любы час спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
-<translation id="5890248301649767931">Захаваць нумар перагляду?</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5895187275912066135">Выдадзены</translation>
 <translation id="5895694128043506580">Google Chrome спрабуе паказаць канфідэнцыяльную інфармацыю</translation>
@@ -3217,7 +3208,6 @@
 <translation id="6014801569448771146">Праверце свае паролі</translation>
 <translation id="6014851866995737824">Ігнаруецца, бо адсутнічае спіс "Уключана" або спіс "Уключана".</translation>
 <translation id="6015796118275082299">Год</translation>
-<translation id="6017028474478839719">Захаваць пасведчанне асобы?</translation>
 <translation id="6017514345406065928">Зялёны</translation>
 <translation id="6018650639991193045">Выдаліць гісторыю прагляду сайтаў, файлы cookie, кэш і іншыя даныя ў наладах Chrome</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
@@ -4172,7 +4162,6 @@
 <translation id="746412105358554870">Аптымізацыя і бяспека JavaScript</translation>
 <translation id="7465036432780054056">Сайт <ph name="EMBEDDED_URL" /> атрымае інфармацыю, што вы наведвалі старонку <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 цаляў</translation>
-<translation id="7467332121947433617">Абнавіць пасведчанне асобы?</translation>
 <translation id="7469935732330206581">Форма не з’яўляецца бяспечнай.</translation>
 <translation id="7470854469646445678">Укажыце, па якой прычыне вы хочаце скапіраваць файл (абавязкова)</translation>
 <translation id="7471007961486718967">Укажыце, па якой прычыне вы хочаце перанесці файл (абавязкова)</translation>
@@ -4997,7 +4986,6 @@
 <translation id="877348612833018844">{0,plural, =1{Перамясціць канфідэнцыяльны файл?}one{Перамясціць канфідэнцыяльныя файлы?}few{Перамясціць канфідэнцыяльныя файлы?}many{Перамясціць канфідэнцыяльныя файлы?}other{Перамясціць канфідэнцыяльныя файлы?}}</translation>
 <translation id="8775347646940100151">Папяровы бланк</translation>
 <translation id="8775863327608679820">Спіс эмітэнтаў, якія прапануюць куплю ў растэрміноўку, адкрыты на палову экрана.</translation>
-<translation id="8776941011841875705">Захаваць нумар вядомага падарожніка?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Кнопка "Перакласці старонку". Каб перакласці гэту старонку ў Google Перакладчыку, націсніце яе.</translation>
 <translation id="8785658048882205566">Матацыклы</translation>
@@ -5140,7 +5128,6 @@
 <translation id="9026253329950610248">Сайты Google</translation>
 <translation id="9027020981272345766">Паспрабуйце Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Каб выйсці з поўнаэкраннага рэжыму, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|</translation>
-<translation id="9031426777610376427">Абнавіць нумар перагляду?</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>
 <translation id="9035824888276246493">Захоўваць коды бяспекі</translation>
 <translation id="9036306139374661733">Дазволіць доступ да мікрафона?</translation>

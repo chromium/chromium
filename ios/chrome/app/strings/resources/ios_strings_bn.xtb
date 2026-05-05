@@ -1076,7 +1076,6 @@
 <translation id="4824480232751123840">ভলিউম</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
-<translation id="4828431027673677473">আপনার আগ্রহের ভিত্তিতে প্রোডাক্ট</translation>
 <translation id="4829420936835028285">ট্যাব গ্রুপ এডিট করুন</translation>
 <translation id="4833786495304741580">Google-কে অটোমেটিক ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠায়।</translation>
 <translation id="483689884442613745">সেভ করুন…</translation>
@@ -2106,7 +2105,6 @@
 <translation id="828291969289324795">{count,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="8283172974887967105">সেট করুন…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> সম্পর্কিত বিজ্ঞপ্তি বন্ধ করুন</translation>
-<translation id="8290077367744012649">আপনার ট্যাব থেকে দাম ট্র্যাক করুন</translation>
 <translation id="8292893224181644074">ডাউনলোড করা হয়ে গেছে</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8307481894409578819">এই ফাইলটি আপলোড করা যায়নি</translation>

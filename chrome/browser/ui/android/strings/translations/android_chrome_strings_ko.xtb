@@ -942,7 +942,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />개 창 선택됨}other{<ph name="WINDOW_COUNT_NORMAL" />개 창 선택됨}}</translation>
-<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>

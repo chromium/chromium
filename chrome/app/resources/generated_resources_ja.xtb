@@ -2057,6 +2057,7 @@
 <translation id="2402226831639195063">通知音</translation>
 <translation id="2405887402346713222">デバイスとコンポーネントのシリアル番号</translation>
 <translation id="2406153734066939945">このプロフィールとデータを削除しますか？</translation>
+<translation id="2406942743794219791">デフォルトで使用する検索エンジンを確認してください</translation>
 <translation id="2407671304279211586">DNS プロバイダを選択</translation>
 <translation id="2408018932941436077">カードを保存しています</translation>
 <translation id="2408742686124047357">ツールバーに Google レンズを固定すると、次から簡単にアクセスできます</translation>
@@ -3037,6 +3038,7 @@
 <translation id="3046892784550338476">バージョン <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
+<translation id="3047618804758101928">拡張機能「<ph name="EXTENSION_NAME" />」によって設定が変更されました</translation>
 <translation id="3047678109605649715">デバイスに <ph name="LANGUAGE" /> の音声がありません。デバイスで容量を確保してから、もう一度お試しください。</translation>
 <translation id="3048336643003835855">ベンダー <ph name="VENDOR_ID" /> の HID デバイス</translation>
 <translation id="3048589239114571785">再生（K）</translation>
@@ -7267,6 +7269,7 @@
 <translation id="604388835206766544">設定を解析処理できませんでした</translation>
 <translation id="6043994281159824495">ログアウト</translation>
 <translation id="6045114302329202345">メインの TrackPoint ボタン</translation>
+<translation id="6045425183320109397">作成:</translation>
 <translation id="6047632800149092791">同期が機能していません。ログアウトして再度ログインしてみてください。</translation>
 <translation id="6048747414605857443">ChromeVox と「選択して読み上げ」のテキスト読み上げ用の音声を選択してカスタマイズします</translation>
 <translation id="6050189528197190982">グレースケール</translation>
@@ -8670,7 +8673,6 @@
 <translation id="701020165009334820">Google Play ストアから Android のアプリやゲームをダウンロードできます。</translation>
 <translation id="701080569351381435">ソースを表示</translation>
 <translation id="7012430956470647760">アプリの保護者による使用制限</translation>
-<translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
 <translation id="7014480873681694324">テキストの選択を解除</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
@@ -9982,6 +9984,7 @@
 <translation id="7939062555109487992">詳細オプション</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
+<translation id="7939918959917132075">拡張機能によってこの検索プロバイダに変更されました</translation>
 <translation id="7940087892955752820">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 <ph name="SPECIFIC_NAME" /> をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
@@ -11758,7 +11761,6 @@
 <translation id="9120800848981545750">Chrome for iOS をダウンロードすると、スマートフォンでタブ、ブックマーク、パスワードにアクセスできます。</translation>
 <translation id="9121814364785106365">固定されたタブとして開く</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{タブを閉じてグループを削除しますか？}=1{タブを閉じてグループを削除しますか？}other{タブを閉じてグループを削除しますか？}}</translation>
-<translation id="9122788874051694311">シークレット モード以外でこのパスキーを保存しますか？</translation>
 <translation id="9123287046453017203">お使いのデバイスは最新の状態ではありません</translation>
 <translation id="9125910124977405374">自動的に翻訳する言語から <ph name="LANGUAGE_NAME" /> を削除します</translation>
 <translation id="9125912770834459638">組織がログインを許可していません</translation>

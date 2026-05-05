@@ -292,6 +292,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="2316129865977710310">Không, cảm ơn</translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
+<translation id="232137538351753795">Vuốt từ mép trái sang để quay lại</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328474416100889417">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời sẽ đều bị vô hiệu hoá</translation>
 <translation id="2330186936255788117">Các dấu trang khác</translation>
@@ -942,7 +943,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5040262127954254034">Quyền riêng tư</translation>
 <translation id="504456571576643789">Những yếu tố cần xem xét</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Đã chọn <ph name="WINDOW_COUNT_ONE" /> cửa sổ}other{Đã chọn <ph name="WINDOW_COUNT_NORMAL" /> cửa sổ}}</translation>
-<translation id="5056587122125565772">Tạo hình ảnh</translation>
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5075939510584558547">Lưu mà không mã hoá</translation>
 <translation id="5078638979202084724">Đánh dấu tất cả các thẻ</translation>
@@ -1676,6 +1676,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7977451675950311423">Cảnh báo bạn nếu bạn sử dụng mật khẩu đã bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì gần đây bạn không truy cập</translation>
 <translation id="799576009106109668">Bạn sẽ duyệt web nhanh hơn vì nội dung được tải chủ động dựa trên trang web bạn đang truy cập</translation>
+<translation id="7997875520309653083">Vuốt từ mép phải sang để quay lại</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8001245658307297681">Bạn đang xem một tệp trên máy</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>

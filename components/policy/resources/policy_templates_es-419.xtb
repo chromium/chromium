@@ -6756,22 +6756,6 @@ Si no la estableces, el valor predeterminado será 0 grados y los usuarios podr�
 <translation id="5293285950307241933">Borrar todos los datos locales del usuario</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de video</translation>
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
-<translation id="529718811410033393">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para solicitudes que no sean de WebSocket.
-
-Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Si no estableces la política, se usará el valor predeterminado de 32.
-
-Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 32 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
-Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
-
-El valor debe ser igual o superior a 6.
-Si estableces un valor por debajo de ese límite, se usará 6.
-Usa un valor menor al valor predeterminado (32) bajo tu responsabilidad.
-
-El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
-Si estableces un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
-Usa un valor mayor al valor predeterminado (32) bajo tu responsabilidad.</translation>
 <translation id="5297873769621042075">Si estableces la política, se especificará una lista de nombres de host o patrones de nombres de host (como
 "[*.]example.com") que no se actualizarán a HTTPS y no mostrarán un
 intersticial de error si se habilita el modo HTTPS primero. Las organizaciones pueden usar esta
@@ -10555,22 +10539,6 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
       Si el dispositivo no está administrado, la disponibilidad de esta funcionalidad también depende de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
-<translation id="7571158727244273239">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para las solicitudes de WebSocket.
-
-Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Si no estableces la política, se usará el valor predeterminado de 32.
-
-Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 32 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
-Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
-
-El valor debe ser igual o superior a 6.
-Si estableces un valor por debajo de ese límite, se usará 6.
-Usa un valor menor al valor predeterminado (32) bajo tu responsabilidad.
-
-El valor debe ser igual o inferior a 256.
-Si estableces un valor superior a ese límite, se usará 256.
-Usa un valor mayor al valor predeterminado (32) bajo tu responsabilidad.</translation>
 <translation id="7572641760104970905">Sin complejidad</translation>
 <translation id="757395965347379751">Cuando se habilita esta configuración, <ph name="PRODUCT_NAME" /> permite los certificados firmados por SHA-1 siempre que estén validados correctamente y vinculados a certificados de CA instalados de forma local.
 

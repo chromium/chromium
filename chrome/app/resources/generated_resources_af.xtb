@@ -2167,6 +2167,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2460826998961521840">Om toegangsleutels te gebruik wat in jou Google-rekening gestoor is</translation>
 <translation id="2461550163693930491">Moenie werwe toelaat om gedeelde oortjies te rollees en te zoem nie</translation>
 <translation id="2461593638794842577">Jy kan hierdie instelling afskakel om jou wagwoorde slegs op hierdie toestel te stoor</translation>
+<translation id="2462550463312552298">Som hierdie dokument op</translation>
 <translation id="2462724976360937186">Sertifiseringoutoriteit se Sleutel-ID</translation>
 <translation id="2462752602710430187">Het <ph name="PRINTER_NAME" /> bygevoeg</translation>
 <translation id="2464075479326723132">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Microsoft SharePoint en OneDrive.
@@ -4323,6 +4324,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3924788966103416622">’n Eksterne app wil volle beheer oor hierdie Chrome-sessie hê om dit te ontfout. Dit sluit toegang tot jou gestoorde data, webkoekies en werfdata in, asook die vermoë om na enige URL te navigeer.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Ander gebruikers op hierdie toestel kan ook hierdie netwerk gebruik</translation>
+<translation id="3925934852713265455">Vra oor jou oortjies</translation>
 <translation id="3926002189479431949">Smart Lock-foon is verander</translation>
 <translation id="3926410220776569451">Kameratoegang is geblokkeer</translation>
 <translation id="3927932062596804919">Weier</translation>
@@ -8700,7 +8702,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="701020165009334820">Jy kan Android-apps en -speletjies deur die Play Winkel aflaai.</translation>
 <translation id="701080569351381435">Bekyk bron</translation>
 <translation id="7012430956470647760">Ouerkontroles vir apps</translation>
-<translation id="7013762323294215682">Hierdie toegangsleutel sal in jou wagwoordbestuurder gestoor word. Enigiemand met toegang daartoe sal hierdie toegangsleutel kan gebruik.</translation>
 <translation id="7014174261166285193">Kon nie installeer nie.</translation>
 <translation id="7014480873681694324">Verwyder kleurmerk</translation>
 <translation id="7014741021609395734">Zoemvlak</translation>
@@ -11788,7 +11789,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9120800848981545750">Laai Chrome vir iOS af om toegang tot jou oortjies, boekmerke en wagwoorde op jou foon te kry.</translation>
 <translation id="9121814364785106365">Maak as 'n vasgespelde oortjie oop</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Maak oortjie toe en vee groep uit?}=1{Maak oortjies toe en vee groep uit?}other{Maak oortjies toe en vee groepe uit?}}</translation>
-<translation id="9122788874051694311">Stoor hierdie toegangsleutel buite Incognito?</translation>
 <translation id="9123287046453017203">Jou toestel is nie bygewerk nie</translation>
 <translation id="9125910124977405374">Verwyder <ph name="LANGUAGE_NAME" /> uit tale wat outomaties vertaal word</translation>
 <translation id="9125912770834459638">Jou organisasie laat jou nie toe om aan te meld nie</translation>

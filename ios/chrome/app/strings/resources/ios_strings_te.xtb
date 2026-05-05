@@ -763,6 +763,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> అంకెలతో ముగిసే కార్డ్ నంబర్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3738428049780661523">క్రియేట్ అయిన సమయం <ph name="DATE" /></translation>
 <translation id="3742498336182910186">కెమెరా రోల్</translation>
+<translation id="3746269120925354434">Google Walletలో సమాచారం సేవ్ అయ్యింది</translation>
 <translation id="3750225824417196283">కొత్త అజ్ఞాత ట్యాబ్ పేజీ</translation>
 <translation id="3751873026576444885">Google Lensతో మీ స్క్రీన్‌ను సెర్చ్ చేయడం ఆపివేయండి</translation>
 <translation id="3753408171347588045">ధరలు ట్రాక్ చేయబడుతున్నాయి</translation>
@@ -1076,7 +1077,6 @@
 <translation id="4824480232751123840">వాల్యూమ్</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, ఇంకా మరో 1}other{{domain}, ఇంకా మరో {count}}}</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
-<translation id="4828431027673677473">మీ ఆసక్తుల ఆధారంగా ప్రోడక్ట్‌లు</translation>
 <translation id="4829420936835028285">ట్యాబ్ గ్రూప్‌ను ఎడిట్ చేయండి</translation>
 <translation id="4833786495304741580">Googleకు ఆటోమేటిక్‌గా వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను పంపుతుంది.</translation>
 <translation id="483689884442613745">సేవ్ చేయండి…</translation>
@@ -2105,7 +2105,6 @@
 <translation id="828291969289324795">{count,plural, =1{ట్యాబ్‌ను కొత్త గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను కొత్త గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="8283172974887967105">సెట్ చేయి…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />‌కు సంబంధించిన నోటిఫికేషన్‌లు ఆఫ్ చేయబడ్డాయి</translation>
-<translation id="8290077367744012649">మీ ట్యాబ్‌ల నుండి ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8292893224181644074">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="8299417921174340354">పాస్‌వర్డ్‌లను ఉపయోగించడానికి, మీరు ముందుగా తప్పనిసరిగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="8307481894409578819">ఈ ఫైల్ అప్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
@@ -2172,6 +2171,7 @@
 <translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="8534481786647257214">Google+ పోస్ట్ పూర్తయింది.</translation>
 <translation id="8535368836838588657">పాస్‌వర్డ్‌ను చూపండి</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />‌తో సైన్ ఇన్ చేయండి</translation>
 <translation id="8545276357312221485">మీ ఆటోమేటిక్ బ్రౌజర్ సెట్టింగ్‌లను చెక్ చేయండి</translation>
 <translation id="854938212724803178">మీ వద్ద 1 చోరీకి గురైన పాస్‌వర్డ్ ఉంది. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.</translation>
 <translation id="8551311254462607218">అడ్రస్ బార్‌లో, Google Lens కెమెరా చిహ్నంపై ట్యాప్ చేయండి</translation>

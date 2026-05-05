@@ -6353,22 +6353,6 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 <translation id="5293285950307241933">清除所有本機使用者資料</translation>
 <translation id="5293619885162445352">允許 <ph name="PEPPER_NAME" /> 使用新版影片解碼器。</translation>
 <translation id="529457411593078576">在第一次執行 CCT 時啟用《服務條款》</translation>
-<translation id="529718811410033393">你可以透過這項政策，指定每個 Proxy 伺服器非 WebSocket 要求的同時連線數量上限。
-
-如要修改 WebSocket 要求的限制，請參閱 <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />。
-
-如果未設定這項政策，預設值為 32。
-
-已知部分網頁應用程式會耗用許多連線處理停滯的 GET 動作，因此如果設定的值低於 32，開啟太多這類網頁應用程式，可能會導致瀏覽器網路當機。
-部分 Proxy 伺服器無法處理單一用戶端的大量並行連線，調降這項政策的值即可解決這個問題。
-
-最小值為 6。
-如果設定的值低於該限制，系統會使用 6。
-請自行承擔低於預設值 (32) 的風險。
-
-最大值為 256 (<ph name="PRODUCT_NAME" /> 147 版和更早版本為 99)。
-如果設定的值超過上限，系統會使用 256 (<ph name="PRODUCT_NAME" /> 147 版和更早版本為 99)。
-請自行承擔高於預設值 (32) 的風險。</translation>
 <translation id="5297873769621042075">你可以透過這項政策建立清單，指定哪些主機名稱或主機名稱模式 (例如「[*.]example.com」) 不會在 HTTPS-First 模式啟用時升級到 HTTPS 及顯示插頁式錯誤訊息。啟用這項政策後，機構可以繼續存取不支援 HTTPS 的伺服器，不必停用 HTTPS 升級和/或 HTTPS-First 模式。
 
 請務必提供標準化的主機名稱：所有 IDN 都必須轉換為單一標籤格式，而且所有 ASCII 字母都必須為小寫。請勿使用主機綜合萬用字元 (即「*」或「[*]」)，而且必須透過特定政策明確停用 HTTPS-First 模式和 HTTPS 升級。
@@ -9852,22 +9836,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
       如果是未受到管理的使用者裝置，這項功能的可用性會根據使用者是否為裝置擁有者而定。</translation>
 <translation id="7570291542739287032">僅限雲端</translation>
-<translation id="7571158727244273239">你可以透過這項政策，指定每個 Proxy 伺服器 WebSocket 要求的同時連線數量上限。
-
-如要修改非 WebSocket 要求的限制，請參閱 <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />。
-
-如果未設定這項政策，預設值為 32。
-
-已知部分網頁應用程式會耗用許多連線處理停滯的 GET 動作，因此如果設定的值低於 32，開啟太多這類網頁應用程式，可能會導致瀏覽器網路當機。
-部分 Proxy 伺服器無法處理單一用戶端的大量並行連線，調降這項政策的值即可解決這個問題。
-
-最小值為 6。
-如果設定的值低於該限制，系統會使用 6。
-請自行承擔低於預設值 (32) 的風險。
-
-值應小於或等於 256。
-如果設定的值超過該上限，系統會使用 256。
-請自行承擔高於預設值 (32) 的風險。</translation>
 <translation id="7572641760104970905">無複雜度要求</translation>
 <translation id="757395965347379751">啟用這項設定時，只要 SHA-1 簽署憑證成功通過驗證並鏈結至本機安裝的 CA 憑證，即可在 <ph name="PRODUCT_NAME" /> 中使用。
 

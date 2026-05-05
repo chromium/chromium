@@ -6633,22 +6633,6 @@ Politika ayarlanmazsa varsayılan değer 0 derece olur ve kullanıcılar bu değ
 <translation id="5293285950307241933">Tüm yerel kullanıcı verilerini sil</translation>
 <translation id="5293619885162445352"><ph name="PEPPER_NAME" /> eklentisinin, yeni video kod çözücüyü kullanmasına izin ver.</translation>
 <translation id="529457411593078576">CCT için ilk çalıştırma sırasında Hizmet Şartları'nı etkinleştirme</translation>
-<translation id="529718811410033393">Politikanın ayarlanması, WebSocket dışı istekler için proxy sunucu başına yapılabilecek maksimum eşzamanlı bağlantı sayısını belirtir.
-
-WebSocket istek sınırlarını değiştirmek için <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" /> bölümüne göz atın.
-
-Politika ayarlanmadan bırakılırsa, varsayılan değer olarak 32 kullanılır.
-
-Bazı web uygulamalarının askıda kalan GET'lerle çok fazla bağlantı kullandığı bilinmektedir. Bu nedenle, 32'den küçük bir değerin ayarlanması, askıda bağlantısı olan çok fazla web uygulamasının açık olması halinde tarayıcı bağlantılarının yavaşlamasına neden olabilir.
-Bazı proxy sunucular istemci başına çok sayıda eşzamanlı bağlantıyı işleyemez. Bu sorun, bu politikanın daha düşük bir değere ayarlanmasıyla çözülür.
-
-Değer, 6 veya daha yüksek olmalıdır.
-Bu sınırın altında bir değer belirlerseniz 6 kullanılır.
-Varsayılanın (32) altında bir değer ayarlarsanız bunun tüm riski size aittir.
-
-Değer, 256'ya (<ph name="PRODUCT_NAME" /> 147 ve önceki sürümlerde 99) eşit veya daha düşük olmalıdır.
-Bu sınırın üzerinde bir değer ayarlanırsa 256 (<ph name="PRODUCT_NAME" /> 147 ve önceki sürümlerde 99) kullanılır.
-Varsayılan değerin (32) üzerinde bir değer ayarlamak tamamen sizin sorumluluğunuzdadır.</translation>
 <translation id="5297873769621042075">Bu politika ayarlanırsa HTTPS'ye yükseltilmeyecek ana makine adlarının veya ana makine
 adı kalıplarının (örneğin, "[*.]example.com") bir listesi belirtilir ve HTTPS öncelikli
 mod etkinse hata ara sayfası gösterilmez. Kuruluşlar, HTTPS yükseltmelerini
@@ -10311,22 +10295,6 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
 
       Kullanıcının cihazı yönetilmiyorsa bu işlevin kullanılabilirliği, ek olarak kullanıcının cihazın sahibi olup olmamasına da bağlıdır.</translation>
 <translation id="7570291542739287032">Yalnızca Cloud</translation>
-<translation id="7571158727244273239">Politikanın ayarlanması, WebSocket istekleri için proxy sunucu başına yapılabilecek maksimum eşzamanlı bağlantı sayısını belirtir.
-
-WebSocket dışı istek sınırlarını değiştirmek için <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> bölümüne göz atın.
-
-Politika ayarlanmadan bırakılırsa, varsayılan değer olarak 32 kullanılır.
-
-Bazı web uygulamalarının askıda kalan GET'lerle çok fazla bağlantı kullandığı bilinmektedir. Bu nedenle, 32'den küçük bir değerin ayarlanması, askıda bağlantısı olan çok fazla web uygulamasının açık olması halinde tarayıcı bağlantılarının yavaşlamasına neden olabilir.
-Bazı proxy sunucular istemci başına çok sayıda eşzamanlı bağlantıyı işleyemez. Bu sorun, bu politikanın daha düşük bir değere ayarlanmasıyla çözülür.
-
-Değer, 6 veya daha yüksek olmalıdır.
-Bu sınırın altında bir değer belirlerseniz 6 kullanılır.
-Varsayılanın (32) altında bir değer ayarlarsanız bunun tüm riski size aittir.
-
-Değer, 256'ya eşit veya 256'dan küçük olmalıdır.
-Bu sınırın üzerinde bir değer belirlerseniz 256 kullanılır.
-Varsayılan değerin (32) üzerinde bir değer ayarlamak tamamen sizin sorumluluğunuzdadır.</translation>
 <translation id="7572641760104970905">Karmaşıklık Yok</translation>
 <translation id="757395965347379751">Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" />, başarılı bir şekilde doğrulanan ve yerel olarak yüklenmiş CA sertifikalarıyla zincirleme bağlantı kuran SHA-1 imzalı sertifikalara izin verir.
 

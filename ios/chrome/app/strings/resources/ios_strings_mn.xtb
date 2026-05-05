@@ -763,6 +763,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" />-р төгссөн картын дугаарыг автоматаар бөглөх</translation>
 <translation id="3738428049780661523"><ph name="DATE" />-д үүсгэсэн</translation>
 <translation id="3742498336182910186">Камераар авсан</translation>
+<translation id="3746269120925354434">Мэдээллийг Google Wallet-д хадгалсан</translation>
 <translation id="3750225824417196283">Шинэ нууцлалтай табын хуудас</translation>
 <translation id="3751873026576444885">Дэлгэцээсээ Google Lens-р хайхаа болих</translation>
 <translation id="3753408171347588045">Үнийг мөшгөж байна</translation>
@@ -1076,7 +1077,6 @@
 <translation id="4824480232751123840">Дууны түвшин</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} болон бусад 1}other{{domain} болон бусад {count}}}</translation>
 <translation id="4826588772550366629">камер, микрофон</translation>
-<translation id="4828431027673677473">Таны сонирхолд тулгуурласан бүтээгдэхүүн</translation>
 <translation id="4829420936835028285">Табын бүлгийг засах</translation>
 <translation id="4833786495304741580">Хэрэглээний статистик мэдээ болон гэмтлийн тайланг Google-д автоматаар илгээдэг.</translation>
 <translation id="483689884442613745">Хадгалах…</translation>
@@ -2105,7 +2105,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="828291969289324795">{count,plural, =1{Табыг шинэ бүлэгт нэмэх}other{Табуудыг шинэ бүлэгт нэмэх}}</translation>
 <translation id="8283172974887967105">Тохируулах…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />-н мэдэгдлийг унтраасан</translation>
-<translation id="8290077367744012649">Табаасаа үнэ мөшгөх</translation>
 <translation id="8292893224181644074">Татаж дууссан</translation>
 <translation id="8299417921174340354">Нууц үгсийг ашиглахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
 <translation id="8307481894409578819">Энэ файлыг байршуулж чадсангүй</translation>
@@ -2172,6 +2171,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>
 <translation id="8534481786647257214">Google+ пост дууссан.</translation>
 <translation id="8535368836838588657">Нууц үгийг ил болгох</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />-р нэвтрэх</translation>
 <translation id="8545276357312221485">Өгөгдмөл хөтчийн тохиргоогоо шалгах</translation>
 <translation id="854938212724803178">Танд алдагдсан 1 нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
 <translation id="8551311254462607218">Хаяг оруулах хэсэгт Google Lens-н камерын дүрс тэмдэг дээр товшино уу</translation>
