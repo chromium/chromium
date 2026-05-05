@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include <array>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -20,7 +21,7 @@
 namespace {
 
 // List of file systems we care about.
-constexpr auto kKnownFileSystems = std::to_array<const char*>({
+constexpr auto kKnownFileSystems = std::to_array<std::string_view>({
     "btrfs",
     "ext2",
     "ext3",
@@ -69,14 +70,14 @@ void MtabWatcherLinux::ReadMtab() const {
 
   MountPointDeviceMap device_map;
   mntent entry;
-  char buf[512];
+  std::array<char, 512> buf;
 
   // We return the same device mounted to multiple locations, but hide
   // devices that have been mounted over.
-  while (getmntent_r(fp, &entry, buf, sizeof(buf))) {
+  while (getmntent_r(fp, &entry, buf.data(), buf.size())) {
     // We only care about real file systems.
-    for (size_t i = 0; i < std::size(kKnownFileSystems); ++i) {
-      if (UNSAFE_TODO(strcmp(kKnownFileSystems[i], entry.mnt_type)) == 0) {
+    for (const auto& fs : kKnownFileSystems) {
+      if (fs == entry.mnt_type) {
         device_map[base::FilePath(entry.mnt_dir)] =
             base::FilePath(entry.mnt_fsname);
         break;
