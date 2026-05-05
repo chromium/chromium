@@ -57,6 +57,11 @@
   --cr-composebox-tool-chip-animation:
     fade-in 100ms cubic-bezier(0, 0, 0, 1) forwards,
     slide-in 350ms cubic-bezier(0.42, 1.67, 0.21, 0.9) forwards;
+  --cancel-button-inline-end: 12px;
+  --context-carousel-inline-start-spacing: 12px;
+  --context-carousel-top-position: 12px;
+  --cr-composebox-text-container-padding-block-start: 12px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 8px;
 }
 
 /* Composebox default colors are for light mode on AIM results. */
@@ -230,6 +235,10 @@
 
 #composebox[show-file-carousel][expanding_]::part(input-container) {
   padding-top: var(--carousel-height, 60px);
+}
+
+:host([energy-effect-enabled_]) #composebox[show-file-carousel][expanding_]::part(input-container) {
+  padding-top: calc(var(--carousel-height, 60px) - 8px);
 }
 
 #composebox::part(icon-container) {
