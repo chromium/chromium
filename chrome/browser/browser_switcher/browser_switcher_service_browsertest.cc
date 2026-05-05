@@ -298,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
                        ExternalFirstFetchFailsButSecondWorks) {
+  // Use a non-zero refresh delay so that the second refresh doesn't finish
+  // before we've had a chance to check the state after the first (failed)
+  // refresh.
+  BrowserSwitcherService::SetRefreshDelayForTesting(base::Milliseconds(500));
+
   SetExternalUrl(kAValidUrl);
 
   int counter = 0;
