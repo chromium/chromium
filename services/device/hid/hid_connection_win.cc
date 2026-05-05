@@ -52,9 +52,6 @@ HidConnectionWin::HidDeviceEntry::HidDeviceEntry(
 HidConnectionWin::HidDeviceEntry::~HidDeviceEntry() = default;
 
 class PendingHidTransfer : public base::win::ObjectWatcher::Delegate {
-  // TODO(https://crbug.com/495999127): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
-
  public:
   typedef base::OnceCallback<void(PendingHidTransfer*, bool)> Callback;
 
