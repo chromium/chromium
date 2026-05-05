@@ -17,9 +17,6 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Centralizes management of NTP background preference data. */
 @NullMarked
 public class NtpBackgroundDataManager {
@@ -38,13 +35,12 @@ public class NtpBackgroundDataManager {
 
     /**
      * Saves the NTP's background types from cross device sync to the shared preference.
+     * TODO(https://crbug.com/488439751): Saves the sync data in a background thread.
      *
-     * @param backgroundDataList The list of background data to save.
-     * @throws JSONException If there is an error converting the data to JSON.
+     * @param backgroundDataGroup The group of background data to save.
      */
-    public void saveRemoteSyncDataToSharedPreference(List<NtpBackgroundDataBase> backgroundDataList)
-            throws JSONException {
-        for (NtpBackgroundDataBase data : backgroundDataList) {
+    public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataGroup backgroundDataGroup) {
+        for (NtpBackgroundDataBase data : backgroundDataGroup) {
             if (data.getPlatformType() <= PlatformType.ANDROID_LOCAL) continue;
             saveRemoteSyncDataToSharedPreference(data);
         }
@@ -58,13 +54,13 @@ public class NtpBackgroundDataManager {
     public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataBase backgroundData) {
         try {
             @PlatformType int platformType = backgroundData.getPlatformType();
-            List<NtpBackgroundDataBase> currentList =
-                    getBackgroundDataListFromSharedPreference(platformType);
-            JSONArray newList = new JSONArray();
+            NtpBackgroundDataGroup currentGroup =
+                    getBackgroundDataGroupFromSharedPreference(platformType);
 
-            if (currentList == null || currentList.isEmpty()) {
+            if (currentGroup.isEmpty()) {
+                JSONArray newList = new JSONArray();
                 newList.put(backgroundData.toJson());
-                writeToShardPreference(newList, platformType);
+                writeToSharedPreference(newList, platformType);
                 return;
             }
 
@@ -72,21 +68,17 @@ public class NtpBackgroundDataManager {
             // If this backgroundData already in the current remote sync data list, moves it to the
             // first one. Otherwise, adds it as the first one on the list and removed the last data
             // of the list if exceeds the maximum allowed size of history data.
-            int index = currentList.indexOf(backgroundData);
+            int index = currentGroup.indexOf(backgroundData);
             if (index != -1) {
-                currentList.remove(index);
+                currentGroup.remove(index);
             } else {
-                int length = currentList.size();
-                if (length >= MAXIMUM_REMOTE_HISTORY) {
-                    currentList.remove(currentList.size() - 1);
+                if (currentGroup.size() >= MAXIMUM_REMOTE_HISTORY) {
+                    currentGroup.remove(currentGroup.size() - 1);
                 }
             }
-            currentList.add(0, backgroundData);
+            currentGroup.add(0, backgroundData);
 
-            for (var data : currentList) {
-                newList.put(data.toJson());
-            }
-            writeToShardPreference(newList, platformType);
+            writeToSharedPreference(currentGroup.toJsonArray(), platformType);
         } catch (JSONException e) {
             Log.i(
                     TAG,
@@ -106,13 +98,13 @@ public class NtpBackgroundDataManager {
             NtpBackgroundDataBase backgroundData) {
         try {
             @PlatformType int platformTypeToSave = PlatformType.ANDROID_LOCAL;
-            List<NtpBackgroundDataBase> currentList =
-                    getBackgroundDataListFromSharedPreference(platformTypeToSave);
-            JSONArray newList = new JSONArray();
+            NtpBackgroundDataGroup currentGroup =
+                    getBackgroundDataGroupFromSharedPreference(platformTypeToSave);
 
-            if (currentList == null || currentList.isEmpty()) {
+            if (currentGroup.isEmpty()) {
+                JSONArray newList = new JSONArray();
                 newList.put(backgroundData.toJson());
-                writeToShardPreference(newList, platformTypeToSave);
+                writeToSharedPreference(newList, platformTypeToSave);
                 return;
             }
 
@@ -123,17 +115,13 @@ public class NtpBackgroundDataManager {
             // from any remote platform.
             int platformTypeOfNewData = backgroundData.getPlatformType();
             if (platformTypeOfNewData != PlatformType.ANDROID_LOCAL) {
-                currentList.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
+                currentGroup.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
             }
-            currentList.add(0, backgroundData);
-            int size = currentList.size();
-            if (size > MAXIMUM_LOCAL_HISTORY) {
-                currentList.remove(size - 1);
+            currentGroup.add(0, backgroundData);
+            if (currentGroup.size() > MAXIMUM_LOCAL_HISTORY) {
+                currentGroup.remove(currentGroup.size() - 1);
             }
-            for (var data : currentList) {
-                newList.put(data.toJson());
-            }
-            writeToShardPreference(newList, platformTypeToSave);
+            writeToSharedPreference(currentGroup.toJsonArray(), platformTypeToSave);
         } catch (JSONException e) {
             Log.i(
                     TAG,
@@ -147,24 +135,38 @@ public class NtpBackgroundDataManager {
      * Returns the saved NTP's background history data of the given platform type as a list of
      * {@link NtpBackgroundDataBase}.
      *
+     * @return The background data for the given platform type.
+     */
+    public NtpBackgroundDataGroup[] getBackgroundDataListFromSharedPreference() {
+        NtpBackgroundDataGroup[] dataList = new NtpBackgroundDataGroup[PlatformType.MAX_COUNT];
+        for (int i = PlatformType.ANDROID_LOCAL; i < PlatformType.MAX_COUNT; i++) {
+            dataList[i] = getBackgroundDataGroupFromSharedPreference(i);
+        }
+        return dataList;
+    }
+
+    /**
+     * Returns the saved NTP's background history data of the given platform type as a {@link
+     * NtpBackgroundDataGroup}.
+     *
      * @param platformType The platform type to get the background data for.
      * @return The background data for the given platform type.
-     * @throws JSONException If the background data is not a valid JSON array.
      */
-    @Nullable List<NtpBackgroundDataBase> getBackgroundDataListFromSharedPreference(
-            @PlatformType int platformType) throws JSONException {
+    NtpBackgroundDataGroup getBackgroundDataGroupFromSharedPreference(
+            @PlatformType int platformType) {
         JSONArray historyDataArray = getJsonArrayFromSharedPreferenceImpl(platformType);
-        if (historyDataArray == null) return null;
-
-        List<NtpBackgroundDataBase> backgroundDataList = new ArrayList<>(historyDataArray.length());
-        for (int i = 0; i < historyDataArray.length(); i++) {
-            NtpBackgroundDataBase data =
-                    NtpBackgroundDataUtils.fromJson(mContext, historyDataArray.getJSONObject(i));
-            if (data != null) {
-                backgroundDataList.add(data);
+        if (historyDataArray != null) {
+            try {
+                return NtpBackgroundDataGroup.fromJson(mContext, historyDataArray);
+            } catch (JSONException e) {
+                Log.i(
+                        TAG,
+                        "Failed to load NTP's sync background data from the SharedPreference:"
+                                + " platform type = %d.",
+                        platformType);
             }
         }
-        return backgroundDataList;
+        return new NtpBackgroundDataGroup();
     }
 
     /**
@@ -173,16 +175,22 @@ public class NtpBackgroundDataManager {
      *
      * @param platformType The platform type to get the background data for.
      * @return The background data for the given platform type.
-     * @throws JSONException If the background data is not a valid JSON array.
      */
-    @Nullable JSONArray getJsonArrayFromSharedPreferenceImpl(@PlatformType int platformType)
-            throws JSONException {
+    @Nullable JSONArray getJsonArrayFromSharedPreferenceImpl(@PlatformType int platformType) {
         String historyData =
                 ChromeSharedPreferences.getInstance()
                         .readString(getSharedPreferenceKey(platformType), null);
         if (historyData == null || historyData.isEmpty()) return null;
-
-        return new JSONArray(historyData);
+        try {
+            return new JSONArray(historyData);
+        } catch (JSONException e) {
+            Log.i(
+                    TAG,
+                    "Failed to convert NTP's sync background data to JSONArray: platform"
+                            + " type = %d.",
+                    platformType);
+            return null;
+        }
     }
 
     /**
@@ -191,7 +199,7 @@ public class NtpBackgroundDataManager {
      * @param current The JSON array to write.
      * @param platformType The platform type associated with the data.
      */
-    private void writeToShardPreference(JSONArray current, @PlatformType int platformType) {
+    private void writeToSharedPreference(JSONArray current, @PlatformType int platformType) {
         String key = getSharedPreferenceKey(platformType);
         ChromeSharedPreferences.getInstance().writeString(key, current.toString());
     }
