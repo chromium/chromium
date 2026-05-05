@@ -116,7 +116,6 @@ class SendTabToSelfBubbleController
   void HandleSendTabToDeviceResult(const GURL& url,
                                    std::string_view device_name,
                                    SendTabToSelfResult result);
-  void OnSendFailed(const GURL& url);
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;

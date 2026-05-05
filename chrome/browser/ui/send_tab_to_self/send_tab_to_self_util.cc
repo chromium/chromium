@@ -11,6 +11,10 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -25,7 +29,11 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
 
 namespace send_tab_to_self {
@@ -105,6 +113,43 @@ void ShowTabSentSuccessToast(content::WebContents* web_contents,
     // handle edge cases like custom-made PCs.
     params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
     toast_controller->MaybeShowToast(std::move(params));
+  }
+}
+
+void ShowTabSentFailure(content::WebContents* web_contents, const GURL& url) {
+  CHECK(web_contents);
+  // If the post-send toast feature is enabled, shows a modern Toast UI.
+  // TODO(crbug.com/492072882): The generic failure string is temporary and
+  // shall be replaced once all final strings are specified.
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
+    ToastController* toast_controller =
+        ToastController::MaybeGetForWebContents(web_contents);
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(
+          ToastParams(ToastId::kSendTabToSelfFailure));
+    }
+  } else {
+    // Fallback to legacy system notification if the toast feature is disabled.
+    GURL notification_url =
+        url.is_empty() ? web_contents->GetLastCommittedURL() : url;
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+    message_center::Notification notification(
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        "shared" + base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        l10n_util::GetStringUTF16(
+            IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE),
+        l10n_util::GetStringUTF16(
+            IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE),
+        ui::ImageModel(), base::UTF8ToUTF16(notification_url.host()),
+        notification_url, message_center::NotifierId(notification_url),
+        message_center::RichNotificationData(),
+        /*delegate=*/nullptr);
+
+    NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+        NotificationHandler::Type::SHARING, notification,
+        /*metadata=*/nullptr);
   }
 }
 

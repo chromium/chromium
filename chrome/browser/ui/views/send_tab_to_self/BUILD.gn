@@ -63,6 +63,7 @@ source_set("impl") {
     "//components/send_tab_to_self",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//components/strings",
     "//components/url_formatter",
     "//content/public/browser",
     "//ui/base",
@@ -80,9 +81,7 @@ source_set("impl") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "send_tab_to_self_bubble_controller_interactive_uitest.cc",
-  ]
+  sources = [ "send_tab_to_self_bubble_controller_interactive_uitest.cc" ]
   deps = [
     ":impl",
     ":send_tab_to_self",

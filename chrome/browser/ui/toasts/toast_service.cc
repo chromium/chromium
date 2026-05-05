@@ -52,6 +52,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/core/browser/resources/vector_icons.h"
@@ -516,6 +517,15 @@ void ToastService::RegisterToasts(
           .AddCloseButton()
           .Build());
 
+  // TODO(crbug.com/492072882): Update design, it is temporary.
+  toast_registry_->RegisterToast(
+      ToastId::kSendTabToSelfFailure,
+      ToastSpecification::Builder(
+          vector_icons::kWarningIcon,
+          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE)
+          .AddGlobalScoped()
+          .AddCloseButton()
+          .Build());
   // Report a scam confirmation toast.
   toast_registry_->RegisterToast(
       ToastId::kReportUnsafeSiteConfirmation,

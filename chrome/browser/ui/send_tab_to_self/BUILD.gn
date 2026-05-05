@@ -41,6 +41,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/send_tab_to_self",
     "//chrome/browser/ui/views/toolbar",
     "//components/send_tab_to_self",
+    "//ui/strings:ui_strings_grit",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

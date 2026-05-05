@@ -58,7 +58,8 @@ enum class ToastId {
   kSendTabToSelfTabsOpenedInBackground = 35,
   kSendTabToSelfSuccess = 36,
   kReportUnsafeSiteConfirmation = 37,
-  kMaxValue = kReportUnsafeSiteConfirmation,
+  kSendTabToSelfFailure = 38,
+  kMaxValue = kSendTabToSelfFailure,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

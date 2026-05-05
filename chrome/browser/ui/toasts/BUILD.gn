@@ -78,6 +78,7 @@ source_set("impl") {
     "//ui/base/metadata",
     "//ui/compositor",
     "//ui/menus",
+    "//ui/strings:ui_strings_grit",
   ]
   if (is_chrome_branded) {
     deps +=

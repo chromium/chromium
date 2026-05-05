@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,6 +32,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,7 +42,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/label.h"
 
 namespace send_tab_to_self {
 
@@ -107,12 +113,22 @@ class SendTabToSelfBubbleControllerBrowserTest : public InProcessBrowserTest {
         }));
   }
 
-  void ExpectToastShown() {
+  void ExpectToastShown(ToastId expected_id,
+                        int message_id,
+                        const std::u16string& replacement = u"") {
     ToastController* toast_controller =
         browser()->GetFeatures().toast_controller();
 
-    EXPECT_EQ(toast_controller->GetCurrentToastId(),
-              ToastId::kSendTabToSelfSuccess);
+    EXPECT_EQ(toast_controller->GetCurrentToastId(), expected_id);
+    toasts::ToastView* toast_view = toast_controller->GetToastViewForTesting();
+    ASSERT_TRUE(toast_view);
+
+    std::u16string expected_text =
+        replacement.empty()
+            ? l10n_util::GetStringUTF16(message_id)
+            : l10n_util::GetStringFUTF16(message_id, replacement);
+
+    EXPECT_EQ(toast_view->label_for_testing()->GetText(), expected_text);
   }
 
  protected:
@@ -157,7 +173,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
-  ExpectToastShown();
+  ExpectToastShown(ToastId::kSendTabToSelfSuccess,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                   u"device_name_1");
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -187,7 +205,82 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   observer.WaitForEntryAdded();
 
-  ExpectToastShown();
+  ExpectToastShown(ToastId::kSendTabToSelfSuccess,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                   u"device_name_1");
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+                       BubbleShowsFailureToast) {
+  GURL test_url("about:blank");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  ASSERT_TRUE(sync_service);
+
+  // Simulate failure by making the model not ready.
+  sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
+
+  // Verify that the failure toast is shown.
+  ExpectToastShown(
+      ToastId::kSendTabToSelfFailure,
+      IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE);
+}
+
+class SendTabToSelfPostSendToastDisabledBrowserTest
+    : public SendTabToSelfBubbleControllerBrowserTest {
+ public:
+  SendTabToSelfPostSendToastDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(kSendTabToSelfPostSendToast);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
+                       BubbleShowsFailureNotification) {
+  GURL test_url("about:blank");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+  ASSERT_TRUE(sync_service);
+
+  // Simulate failure by making the model not ready.
+  sync_service->GetFakeSendTabToSelfModel()->SetIsReady(false);
+
+  // Use NotificationDisplayServiceTester to monitor notifications.
+  NotificationDisplayServiceTester notification_tester(browser()->profile());
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::CreateOrGetFromWebContents(web_contents);
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
+
+  // Verify that a notification is shown.
+  std::vector<message_center::Notification> notifications =
+      notification_tester.GetDisplayedNotificationsForType(
+          NotificationHandler::Type::SHARING);
+  ASSERT_EQ(notifications.size(), 1u);
+  EXPECT_EQ(
+      notifications[0].title(),
+      l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE));
 }
 
 class SendTabToSelfScrollPositionBrowserTest
