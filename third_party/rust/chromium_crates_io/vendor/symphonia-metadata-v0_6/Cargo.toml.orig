@@ -1,0 +1,41 @@
+[package]
+name = "symphonia-metadata"
+description = "Project Symphonia multimedia tag and metadata readers."
+authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["multimedia", "media", "metadata", "id3v1", "id3v2"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[features]
+default = ["ape", "id3v1", "id3v2"]
+
+# Standalone metadata format readers.
+ape = []
+id3v1 = []
+id3v2 = []
+
+# Embedded metadata format readers.
+flac = ["vorbis"]
+riff-info = []
+riff-id3 = ["id3v2"]
+vorbis = ["flac"]
+
+# Meta-feature to enable all embedded RIFF metadata format readers.
+riff = [
+    "riff-id3",
+    "riff-info",
+]
+
+[dependencies]
+lazy_static = { workspace = true }
+log = { workspace = true }
+regex-lite = "0.1.6"
+smallvec = { workspace = true }
+symphonia-core = { version = "0.6.0-alpha.2", path = "../symphonia-core" }

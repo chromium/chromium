@@ -1,0 +1,24 @@
+[package]
+name = "symphonia-common"
+description = "Project Symphonia utilities for codecs and formats."
+authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["audio", "multimedia", "media", "xiph"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+log = { workspace = true }
+symphonia-core = { version = "0.6.0-alpha.2", path = "../symphonia-core" }
+
+[dependencies.symphonia-metadata]
+version = "0.6.0-alpha.2"
+path = "../symphonia-metadata"
+default-features = false
+features = ["flac"]

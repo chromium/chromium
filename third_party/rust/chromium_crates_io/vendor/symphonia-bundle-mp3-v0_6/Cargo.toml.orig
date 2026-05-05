@@ -1,0 +1,25 @@
+[package]
+name = "symphonia-bundle-mp3"
+description = "Pure Rust MP1, MP2, and MP3 demuxer and decoder (a part of project Symphonia)."
+authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["audio", "codec", "decoder", "mp3", "mpeg"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[features]
+default = ["mp1", "mp2", "mp3"]
+mp1 = []
+mp2 = []
+mp3 = []
+
+[dependencies]
+log = { workspace = true }
+lazy_static = { workspace = true }
+symphonia-core = { version = "0.6.0-alpha.2", path = "../symphonia-core" }

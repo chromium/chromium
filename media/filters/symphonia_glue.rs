@@ -42,12 +42,11 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use symphonia::core::audio::{AudioBufferRef, Channels, RawSampleBuffer};
-use symphonia::core::codecs::CodecParameters;
+use symphonia::core::audio::sample::i24;
+use symphonia::core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
+use symphonia::core::codecs::audio::{AudioCodecParameters, AudioDecoder};
 use symphonia::core::errors::Error;
-use symphonia::core::formats::Packet;
-use symphonia::core::sample::i24;
-use symphonia::core::units::TimeBase;
+use symphonia::core::packet::Packet;
 
 /// This module defines the FFI boundary using the `cxx` crate.
 ///
@@ -276,124 +275,120 @@ fn default_audio_buffer() -> ffi::SymphoniaAudioBuffer {
     }
 }
 
-/// A macro to apply an expression to a `GenericRawSampleBuffer`.
-/// This avoids repetitive `match` statements for immutable operations.
-macro_rules! impl_generic_buffer_func {
-    ($type:ident, $var:expr, $buf:ident,$expr:expr) => {
-        match $var {
-            $type::U8(ref $buf) => $expr,
-            $type::S16(ref $buf) => $expr,
-            $type::S24(ref $buf) => $expr,
-            $type::S32(ref $buf) => $expr,
-            $type::F32(ref $buf) => $expr,
-        }
-    };
-}
-
 /// An enum to wrap a `symphonia::core::audio::RawSampleBuffer` with a generic
 /// sample type.
 ///
 /// This allows for dynamically handling different sample formats at runtime
 /// without needing separate code paths for each format.
-enum GenericRawSampleBuffer {
-    U8(RawSampleBuffer<u8>),
-    S16(RawSampleBuffer<i16>),
-    S24(RawSampleBuffer<i24>),
-    S32(RawSampleBuffer<i32>),
-    F32(RawSampleBuffer<f32>),
-}
-
-/// A byte-oriented sample buffer that wraps `GenericRawSampleBuffer`.
-///
-/// This struct's primary purpose is to hold decoded sample data in its
+/// A byte-oriented sample buffer that holds decoded sample data in its
 /// original, strongly-typed format (`i16`, `f32`, etc.) while providing
 /// methods to access it as a raw byte slice (`&[u8]`). This is crucial
 /// for passing the data across the FFI boundary. It is reused across `decode`
 /// calls to reduce allocations.
 pub struct SymphoniaRawSampleBuffer {
-    /// The inner buffer, holding the type-specific sample data.
-    inner: GenericRawSampleBuffer,
+    /// Interleaved audio sample data as bytes.
+    data: Vec<u8>,
     /// The signal specification of the buffer (channels, rate).
-    spec: symphonia::core::audio::SignalSpec,
+    spec: symphonia::core::audio::AudioSpec,
+    /// The sample format of the data.
+    sample_format: ffi::SymphoniaSampleFormat,
+    /// The codec of the audio stream.
+    codec: ffi::SymphoniaAudioCodec,
 }
 
 impl SymphoniaRawSampleBuffer {
     /// Creates a new, empty `SymphoniaRawSampleBuffer` with a capacity and
-    /// specification derived from a decoded `AudioBufferRef`.
-    pub fn new_buffer_for(buf: &AudioBufferRef) -> Result<SymphoniaRawSampleBuffer, String> {
-        let capacity = buf.capacity() as u64;
-        let spec = *buf.spec();
-
-        let buf_result: Result<GenericRawSampleBuffer, &'static str> = match buf {
-            AudioBufferRef::U8(_) => {
-                Ok(GenericRawSampleBuffer::U8(RawSampleBuffer::<u8>::new(capacity, spec)))
-            }
-            AudioBufferRef::S16(_) => {
-                Ok(GenericRawSampleBuffer::S16(RawSampleBuffer::<i16>::new(capacity, spec)))
-            }
-            AudioBufferRef::S24(_) => {
-                Ok(GenericRawSampleBuffer::S24(RawSampleBuffer::<i24>::new(capacity, spec)))
-            }
-            AudioBufferRef::S32(_) => {
-                Ok(GenericRawSampleBuffer::S32(RawSampleBuffer::<i32>::new(capacity, spec)))
-            }
-            AudioBufferRef::F32(_) => {
-                Ok(GenericRawSampleBuffer::F32(RawSampleBuffer::<f32>::new(capacity, spec)))
-            }
-            _ => Err("Symphonia returned an unsupported buffer type"),
+    /// specification derived from a decoded `GenericAudioBufferRef`.
+    pub fn new_buffer_for(
+        buf: &GenericAudioBufferRef,
+        codec: ffi::SymphoniaAudioCodec,
+    ) -> Result<SymphoniaRawSampleBuffer, String> {
+        let spec = buf.spec().clone();
+        let sample_format = match buf {
+            GenericAudioBufferRef::U8(_) => ffi::SymphoniaSampleFormat::U8,
+            GenericAudioBufferRef::S16(_) => ffi::SymphoniaSampleFormat::S16,
+            GenericAudioBufferRef::S24(_) => ffi::SymphoniaSampleFormat::S24,
+            GenericAudioBufferRef::S32(_) => ffi::SymphoniaSampleFormat::S32,
+            GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::F32,
+            _ => return Err("unsupported format".to_string()),
         };
-        Ok(Self { inner: buf_result?, spec })
+        Ok(Self { data: Vec::new(), spec, sample_format, codec })
     }
 
     /// Determines the FFI `SymphoniaSampleFormat` from the inner buffer type.
     fn sample_format(&self) -> ffi::SymphoniaSampleFormat {
-        match self.inner {
-            GenericRawSampleBuffer::U8(_) => ffi::SymphoniaSampleFormat::U8,
-            GenericRawSampleBuffer::S16(_) => ffi::SymphoniaSampleFormat::S16,
-            GenericRawSampleBuffer::S24(_) => ffi::SymphoniaSampleFormat::S24,
-            GenericRawSampleBuffer::S32(_) => ffi::SymphoniaSampleFormat::S32,
-            GenericRawSampleBuffer::F32(_) => ffi::SymphoniaSampleFormat::F32,
-        }
+        self.sample_format
     }
+
     /// Gets an immutable slice to the raw bytes of the samples written in the
     /// buffer.
     fn as_bytes(&self) -> &[u8] {
-        impl_generic_buffer_func!(GenericRawSampleBuffer, self.inner, buf, buf.as_bytes())
+        &self.data
     }
 
-    /// Checks if the underlying type of the `GenericRawSampleBuffer` matches
-    /// the type of the provided `AudioBufferRef`.
-    fn formats_match(&self, other: &AudioBufferRef) -> bool {
-        matches!(
-            (&self.inner, other),
-            (GenericRawSampleBuffer::U8(_), AudioBufferRef::U8(_))
-                | (GenericRawSampleBuffer::S16(_), AudioBufferRef::S16(_))
-                | (GenericRawSampleBuffer::S24(_), AudioBufferRef::S24(_))
-                | (GenericRawSampleBuffer::S32(_), AudioBufferRef::S32(_))
-                | (GenericRawSampleBuffer::F32(_), AudioBufferRef::F32(_))
-        )
+    /// Checks if the underlying type of the buffer matches the type of the
+    /// provided `GenericAudioBufferRef`.
+    fn formats_match(&self, other: &GenericAudioBufferRef) -> bool {
+        let other_format = match other {
+            GenericAudioBufferRef::U8(_) => ffi::SymphoniaSampleFormat::U8,
+            GenericAudioBufferRef::S16(_) => ffi::SymphoniaSampleFormat::S16,
+            GenericAudioBufferRef::S24(_) => ffi::SymphoniaSampleFormat::S24,
+            GenericAudioBufferRef::S32(_) => ffi::SymphoniaSampleFormat::S32,
+            GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::F32,
+            _ => ffi::SymphoniaSampleFormat::Unknown,
+        };
+        self.sample_format == other_format
     }
 
-    /// Copies sample data from a Symphonia `AudioBufferRef` into this buffer.
-    /// It correctly handles both interleaved and planar formats.
-    fn copy_from_buffer(&mut self, src: AudioBufferRef) {
-        match (&mut self.inner, src) {
-            (GenericRawSampleBuffer::U8(dst), AudioBufferRef::U8(s)) => {
-                dst.copy_interleaved_typed(&s)
+    /// Copies sample data from a Symphonia `GenericAudioBufferRef` into this
+    /// buffer. It correctly handles both interleaved and planar formats.
+    fn copy_from_buffer(&mut self, src: GenericAudioBufferRef) {
+        self.data.clear();
+        match src {
+            GenericAudioBufferRef::U8(_) => {
+                src.copy_bytes_to_vec_interleaved_as::<u8>(&mut self.data)
             }
-            (GenericRawSampleBuffer::S16(dst), AudioBufferRef::S16(s)) => {
-                dst.copy_interleaved_typed(&s)
+            GenericAudioBufferRef::S16(_) => {
+                src.copy_bytes_to_vec_interleaved_as::<i16>(&mut self.data)
             }
-            (GenericRawSampleBuffer::S24(dst), AudioBufferRef::S24(s)) => {
-                dst.copy_interleaved_typed(&s)
+            GenericAudioBufferRef::S24(_) => {
+                src.copy_bytes_to_vec_interleaved_as::<i24>(&mut self.data)
             }
-            (GenericRawSampleBuffer::S32(dst), AudioBufferRef::S32(s)) => {
-                dst.copy_interleaved_typed(&s)
+            GenericAudioBufferRef::S32(_) => {
+                src.copy_bytes_to_vec_interleaved_as::<i32>(&mut self.data)
             }
-            (GenericRawSampleBuffer::F32(dst), AudioBufferRef::F32(s)) => {
-                dst.copy_interleaved_typed(&s)
+            GenericAudioBufferRef::F32(_) => {
+                if matches!(self.codec, ffi::SymphoniaAudioCodec::Mp3) {
+                    let buf = match src {
+                        GenericAudioBufferRef::F32(buf) => buf,
+                        _ => unreachable!(),
+                    };
+                    let num_frames = buf.frames();
+                    let num_channels = buf.spec().channels().count();
+
+                    self.data.reserve(num_frames * num_channels * std::mem::size_of::<f32>());
+
+                    let planes: Vec<&[f32]> =
+                        (0..num_channels).map(|ch| buf.plane(ch).unwrap()).collect();
+
+                    for i in 0..num_frames {
+                        for plane in &planes {
+                            // Symphonia v0.6+ does not clamp float samples to a valid range.
+                            // While some codecs like Opus and Vorbis can legitimately exceed
+                            // [-1.0, 1.0], Symphonia's MP3 decoder can produce extreme values
+                            // on corrupted streams. We clamp MP3 only to maintain parity with
+                            // the FFmpegAudioDecoder's handling of corrupt files.
+                            let sample = plane[i].clamp(-1.0, 1.0);
+                            self.data.extend_from_slice(&sample.to_le_bytes());
+                        }
+                    }
+                } else {
+                    src.copy_bytes_to_vec_interleaved_as::<f32>(&mut self.data)
+                }
             }
-            _ => unreachable!("Buffer format mismatch! Reallocation should have handled this."),
+            _ => {
+                unreachable!("Unsupported buffer format should have been caught in new_buffer_for")
+            }
         }
     }
 }
@@ -404,7 +399,7 @@ impl SymphoniaRawSampleBuffer {
 /// that needs to persist between `decode` calls.
 struct DecoderImpl {
     /// The boxed trait object for the `symphonia` decoder.
-    decoder: Box<dyn symphonia::core::codecs::Decoder>,
+    decoder: Box<dyn AudioDecoder>,
 
     /// A reusable buffer for decoded samples to avoid reallocation.
     /// It is `None` until the first successful decode.
@@ -412,6 +407,9 @@ struct DecoderImpl {
 
     /// Expected bytes per sample.
     bytes_per_sample: u8,
+
+    /// The codec of the audio stream.
+    codec: ffi::SymphoniaAudioCodec,
 }
 
 /// The opaque Rust decoder type exposed to C++ through the FFI bridge.
@@ -425,28 +423,28 @@ pub struct SymphoniaDecoder {
 
 /// Converts an FFI `SymphoniaAudioCodec` to a Symphonia `CodecType`.
 /// Returns an error string if the codec is not supported.
-fn to_symphonia_codec_type(
+fn to_symphonia_codec_id(
     codec: ffi::SymphoniaAudioCodec,
-) -> Result<symphonia::core::codecs::CodecType, String> {
-    use symphonia::core::codecs::*; // to type
+) -> Result<symphonia::core::codecs::audio::AudioCodecId, String> {
+    use symphonia::core::codecs::audio::well_known::*;
     match codec {
         ffi::SymphoniaAudioCodec::Unknown => Err("Unknown codec provided".to_string()),
-        ffi::SymphoniaAudioCodec::Flac => Ok(CODEC_TYPE_FLAC),
-        ffi::SymphoniaAudioCodec::Mp3 => Ok(CODEC_TYPE_MP3),
-        ffi::SymphoniaAudioCodec::PcmAlaw => Ok(CODEC_TYPE_PCM_ALAW),
-        ffi::SymphoniaAudioCodec::PcmF32 => Ok(CODEC_TYPE_PCM_F32LE),
-        ffi::SymphoniaAudioCodec::PcmF32Planar => Ok(CODEC_TYPE_PCM_F32LE_PLANAR),
-        ffi::SymphoniaAudioCodec::PcmMulaw => Ok(CODEC_TYPE_PCM_MULAW),
-        ffi::SymphoniaAudioCodec::PcmS16 => Ok(CODEC_TYPE_PCM_S16LE),
-        ffi::SymphoniaAudioCodec::PcmS16be => Ok(CODEC_TYPE_PCM_S16BE),
-        ffi::SymphoniaAudioCodec::PcmS16Planar => Ok(CODEC_TYPE_PCM_S16LE_PLANAR),
-        ffi::SymphoniaAudioCodec::PcmS24 => Ok(CODEC_TYPE_PCM_S24LE),
-        ffi::SymphoniaAudioCodec::PcmS24be => Ok(CODEC_TYPE_PCM_S24BE),
-        ffi::SymphoniaAudioCodec::PcmS32 => Ok(CODEC_TYPE_PCM_S32LE),
-        ffi::SymphoniaAudioCodec::PcmS32Planar => Ok(CODEC_TYPE_PCM_S32LE_PLANAR),
-        ffi::SymphoniaAudioCodec::PcmU8 => Ok(CODEC_TYPE_PCM_U8),
-        ffi::SymphoniaAudioCodec::PcmU8Planar => Ok(CODEC_TYPE_PCM_U8_PLANAR),
-        ffi::SymphoniaAudioCodec::Vorbis => Ok(CODEC_TYPE_VORBIS),
+        ffi::SymphoniaAudioCodec::Flac => Ok(CODEC_ID_FLAC),
+        ffi::SymphoniaAudioCodec::Mp3 => Ok(CODEC_ID_MP3),
+        ffi::SymphoniaAudioCodec::PcmAlaw => Ok(CODEC_ID_PCM_ALAW),
+        ffi::SymphoniaAudioCodec::PcmF32 => Ok(CODEC_ID_PCM_F32LE),
+        ffi::SymphoniaAudioCodec::PcmF32Planar => Ok(CODEC_ID_PCM_F32LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmMulaw => Ok(CODEC_ID_PCM_MULAW),
+        ffi::SymphoniaAudioCodec::PcmS16 => Ok(CODEC_ID_PCM_S16LE),
+        ffi::SymphoniaAudioCodec::PcmS16be => Ok(CODEC_ID_PCM_S16BE),
+        ffi::SymphoniaAudioCodec::PcmS16Planar => Ok(CODEC_ID_PCM_S16LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmS24 => Ok(CODEC_ID_PCM_S24LE),
+        ffi::SymphoniaAudioCodec::PcmS24be => Ok(CODEC_ID_PCM_S24BE),
+        ffi::SymphoniaAudioCodec::PcmS32 => Ok(CODEC_ID_PCM_S32LE),
+        ffi::SymphoniaAudioCodec::PcmS32Planar => Ok(CODEC_ID_PCM_S32LE_PLANAR),
+        ffi::SymphoniaAudioCodec::PcmU8 => Ok(CODEC_ID_PCM_U8),
+        ffi::SymphoniaAudioCodec::PcmU8Planar => Ok(CODEC_ID_PCM_U8_PLANAR),
+        ffi::SymphoniaAudioCodec::Vorbis => Ok(CODEC_ID_VORBIS),
         _ => Err(format!("Unsupported codec value {:?} provided", codec)),
     }
 }
@@ -454,7 +452,12 @@ fn to_symphonia_codec_type(
 /// Converts an FFI `SymphoniaPacket` to a Symphonia `Packet`.
 impl<'a> From<&ffi::SymphoniaPacket<'a>> for Packet {
     fn from(value: &ffi::SymphoniaPacket<'a>) -> Self {
-        Packet::new_from_slice(0, value.timestamp_us, value.duration_us, value.data)
+        Packet::new(
+            0,
+            (value.timestamp_us as i64).into(),
+            value.duration_us.into(),
+            value.data.to_vec(),
+        )
     }
 }
 
@@ -568,7 +571,7 @@ fn to_symphonia_init_status(err: &Error) -> ffi::SymphoniaInitStatus {
 }
 
 /// Converts an FFI `SymphoniaDecoderConfig` to Symphonia `CodecParameters`.
-impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
+impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for AudioCodecParameters {
     type Error = SymphoniaInitError;
 
     fn try_from(value: &ffi::SymphoniaDecoderConfig<'a>) -> Result<Self, Self::Error> {
@@ -597,28 +600,26 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for CodecParameters {
             }
         }
 
-        Ok(CodecParameters {
-            codec: to_symphonia_codec_type(value.codec)
-                .map_err(SymphoniaInitError::UnsupportedCodec)?,
-            time_base: Some(TimeBase::new(1_000_000, 1)), // Microsecond timebase
-            extra_data: Some(extra_data.into_boxed_slice()),
+        let mut params = AudioCodecParameters::new();
+        params
+            .for_codec(
+                to_symphonia_codec_id(value.codec).map_err(SymphoniaInitError::UnsupportedCodec)?,
+            )
+            .with_bits_per_sample(bits_per_sample)
+            .with_channels(Channels::Positioned(Position::from_bits_truncate(
+                value.channel_mask.into(),
+            )))
+            .with_sample_rate(value.sample_rate);
 
-            bits_per_sample: Some(bits_per_sample),
+        if !extra_data.is_empty() {
+            params.with_extra_data(extra_data.into_boxed_slice());
+        }
 
-            // Symphonia needs the channel layout, at least for PCM.
-            channels: Some(Channels::from_bits_truncate(value.channel_mask)),
-            max_frames_per_packet: if value.max_frames_per_packet > 0 {
-                Some(value.max_frames_per_packet)
-            } else {
-                None
-            },
-            sample_rate: Some(value.sample_rate),
+        if value.max_frames_per_packet > 0 {
+            params.with_max_frames_per_packet(value.max_frames_per_packet);
+        }
 
-            // We specify the minimum amount of configuration possible, since
-            // most of the values should come directly from the bitstream and
-            // should not be needed here.
-            ..Default::default()
-        })
+        Ok(params)
     }
 }
 
@@ -652,10 +653,11 @@ impl From<InitResult> for ffi::SymphoniaInitResult {
 /// type that can get translated to the FFI boundary type using its `From`
 /// trait.
 fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResult {
-    let codec_params = CodecParameters::try_from(config)?;
+    let codec_params = AudioCodecParameters::try_from(config)?;
 
-    let decoder =
-        symphonia::default::get_codecs().make(&codec_params, &Default::default()).map_err(|e| {
+    let decoder = symphonia::default::get_codecs()
+        .make_audio_decoder(&codec_params, &Default::default())
+        .map_err(|e| {
             SymphoniaInitError::SymphoniaError(to_symphonia_init_status(&e), e.to_string())
         })?;
 
@@ -664,6 +666,7 @@ fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResu
             decoder,
             sample_buffer: None,
             bytes_per_sample: config.bytes_per_sample,
+            codec: config.codec,
         }),
     })
 }
@@ -698,14 +701,17 @@ impl From<&Error> for ffi::SymphoniaDecodeStatus {
 /// Creates an FFI `SymphoniaAudioBuffer` from a decoded Symphonia
 /// `AudioBufferRef`.
 pub fn create_audio_buffer(
-    buffer_ref: AudioBufferRef,
+    buffer_ref: GenericAudioBufferRef,
     sample_buffer: &mut SymphoniaRawSampleBuffer,
     bytes_per_sample: u8,
 ) -> Result<ffi::SymphoniaAudioBuffer, String> {
-    let sample_rate = buffer_ref.spec().rate;
+    let sample_rate = buffer_ref.spec().rate();
     let num_frames = buffer_ref.frames();
-    let channel_count = buffer_ref.spec().channels.count();
-    let channel_mask = buffer_ref.spec().channels.bits();
+    let channel_count = buffer_ref.spec().channels().count();
+    let channel_mask = match buffer_ref.spec().channels() {
+        Channels::Positioned(pos) => pos.bits(),
+        _ => 0,
+    };
 
     // If there are no frames, avoid passing the buffer to Symphonia's
     // `copy_interleaved_ref`. There is a bug in Symphonia's
@@ -723,7 +729,7 @@ pub fn create_audio_buffer(
             sample_rate,
             num_frames,
             channel_count,
-            channel_mask,
+            channel_mask: channel_mask.try_into().unwrap(),
         });
     }
 
@@ -766,7 +772,7 @@ pub fn create_audio_buffer(
         sample_rate,
         num_frames,
         channel_count,
-        channel_mask,
+        channel_mask: channel_mask.try_into().unwrap(),
     })
 }
 
@@ -813,27 +819,23 @@ impl SymphoniaDecoder {
         // Lazily initialize the sample buffer on the first successful decode.
         // We also need to re-initialize if the spec (channel count, rate) or capacity
         // requirements change (e.g. mid-stream configuration change).
-        let spec = *buffer.spec();
-        let capacity = buffer.capacity();
+        let spec = buffer.spec().clone();
         let needs_realloc = match &decoder_impl.sample_buffer {
-            Some(sb) => {
-                !sb.formats_match(&buffer)
-                    || sb.spec != spec
-                    || impl_generic_buffer_func!(
-                        GenericRawSampleBuffer,
-                        sb.inner,
-                        buf,
-                        buf.capacity() < capacity
-                    )
-            }
+            Some(sb) => !sb.formats_match(&buffer) || sb.spec != spec,
             None => true,
         };
 
         if needs_realloc {
-            decoder_impl.sample_buffer =
-                Some(SymphoniaRawSampleBuffer::new_buffer_for(&buffer).map_err(|e| {
-                    (ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat, e.to_string())
-                })?);
+            decoder_impl.sample_buffer = Some(
+                SymphoniaRawSampleBuffer::new_buffer_for(&buffer, decoder_impl.codec).map_err(
+                    |e| {
+                        (
+                            ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat,
+                            e.to_string(),
+                        )
+                    },
+                )?,
+            );
         }
 
         Ok(Box::new(

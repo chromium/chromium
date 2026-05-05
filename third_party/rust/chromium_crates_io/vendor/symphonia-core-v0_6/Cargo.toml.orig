@@ -1,0 +1,51 @@
+[package]
+name = "symphonia-core"
+description = "Project Symphonia shared structs, traits, and features."
+authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["audio", "codec", "decoder", "multimedia", "media"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[features]
+default = []
+
+# SIMD support.
+opt-simd-sse = ["rustfft/sse"]
+opt-simd-avx = ["rustfft/avx"]
+opt-simd-neon = ["rustfft/neon"]
+
+# Enable all SIMD support.
+opt-simd = [
+    "opt-simd-sse",
+    "opt-simd-avx",
+    "opt-simd-neon",
+]
+
+# Experimental features.
+exp-subtitle-codecs = []
+exp-video-codecs = []
+
+[dependencies]
+bitflags = "2.4.2"
+bytemuck = "1.7"
+lazy_static = { workspace = true }
+log = { workspace = true }
+num-complex = "0.4"
+smallvec = { workspace = true }
+
+[dependencies.rustfft]
+version = "6.1.0"
+optional = true
+default-features = false
+
+[dev-dependencies.rand]
+version = "0.10.0"
+
+default-features = false

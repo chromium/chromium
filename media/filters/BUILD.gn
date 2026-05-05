@@ -15,7 +15,7 @@ if (media_use_symphonia) {
     sources = [ "symphonia_glue.rs" ]
     cxx_bindings = [ "symphonia_glue.rs" ]
     visibility = [ ":*" ]
-    deps = [ "//third_party/rust/symphonia/v0_5:lib" ]
+    deps = [ "//third_party/rust/symphonia/v0_6:lib" ]
   }
 }
 
@@ -461,7 +461,7 @@ if (media_use_symphonia) {
       ":symphonia_glue",
       "//testing/rust_gtest_interop",
       "//third_party/rust/num_traits/v0_2:lib",
-      "//third_party/rust/symphonia/v0_5:lib",
+      "//third_party/rust/symphonia/v0_6:lib",
     ]
   }
 }

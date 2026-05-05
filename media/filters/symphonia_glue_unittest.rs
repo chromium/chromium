@@ -8,7 +8,7 @@ chromium::import! {
 
 use num_traits::ToBytes;
 use rust_gtest_interop::prelude::*;
-use symphonia::core::audio::{AudioBuffer, AudioBufferRef, Layout, Signal, SignalSpec};
+use symphonia::core::audio::{layouts, AudioBuffer, AudioMut, AudioSpec, GenericAudioBufferRef};
 use symphonia_glue::{create_audio_buffer, ffi, init_symphonia_decoder, SymphoniaRawSampleBuffer};
 
 fn test_conversion<S, E, F>(
@@ -18,18 +18,19 @@ fn test_conversion<S, E, F>(
     expected_format: ffi::SymphoniaSampleFormat,
     expected_samples: &[E],
     to_ref: F,
+    codec: ffi::SymphoniaAudioCodec,
 ) where
-    S: symphonia::core::sample::Sample,
+    S: symphonia::core::audio::sample::Sample,
     E: ToBytes + std::fmt::Debug + std::cmp::PartialEq,
-    F: for<'a> Fn(&'a AudioBuffer<S>) -> AudioBufferRef<'a>,
+    F: for<'a> Fn(&'a AudioBuffer<S>) -> GenericAudioBufferRef<'a>,
 {
-    let spec = SignalSpec::new(sample_rate, Layout::Mono.into_channels());
-    let mut audio_buf = AudioBuffer::<S>::new(samples.len() as u64, spec);
-    audio_buf.render_reserved(Some(samples.len()));
-    audio_buf.chan_mut(0).copy_from_slice(samples);
+    let spec = AudioSpec::new(sample_rate, layouts::CHANNEL_LAYOUT_MONO);
+    let mut audio_buf = AudioBuffer::<S>::new(spec, samples.len());
+    audio_buf.render_uninit(Some(samples.len()));
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(samples);
 
     let buffer_ref = to_ref(&audio_buf);
-    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref).unwrap();
+    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, codec).unwrap();
 
     let result = create_audio_buffer(buffer_ref, &mut sample_buffer, bytes_per_sample).unwrap();
 
@@ -62,7 +63,8 @@ fn test_s32_to_s16_conversion() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::S16,
         EXPECTED,
-        |b| AudioBufferRef::S32(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::S32(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
@@ -78,7 +80,8 @@ fn test_no_bit_depth_adjusting_s32() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::S32,
         SAMPLES,
-        |b| AudioBufferRef::S32(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::S32(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
@@ -94,14 +97,33 @@ fn test_no_bit_depth_adjusting_f32() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::F32,
         SAMPLES,
-        |b| AudioBufferRef::F32(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::F32(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
-// Verify that we do not clip F32 values outside [-1.0, 1.0].
-#[gtest(SymphoniaGlueTest, F32NoClipping)]
-fn test_f32_no_clipping() {
-    const SAMPLES: &[f32] = &[2.0, -2.0, 10.0, -10.0];
+// Verify that we clip F32 values outside [-1.0, 1.0] for MP3 only.
+#[gtest(SymphoniaGlueTest, F32Clamping)]
+fn test_f32_clamping() {
+    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
+    const EXPECTED: &[f32] = &[1.0, -1.0, 1.0, -1.0];
+    const SAMPLE_RATE: u32 = 48000;
+    const BYTES_PER_SAMPLE: u8 = 4;
+    test_conversion(
+        SAMPLES,
+        SAMPLE_RATE,
+        BYTES_PER_SAMPLE,
+        ffi::SymphoniaSampleFormat::F32,
+        EXPECTED,
+        |b| GenericAudioBufferRef::F32(b),
+        ffi::SymphoniaAudioCodec::Mp3,
+    );
+}
+
+// Verify that we do not clip F32 values outside [-1.0, 1.0] for non-MP3 codecs.
+#[gtest(SymphoniaGlueTest, NoF32ClampingForNonMp3)]
+fn test_no_f32_clamping_for_non_mp3() {
+    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
     const SAMPLE_RATE: u32 = 48000;
     const BYTES_PER_SAMPLE: u8 = 4;
     test_conversion(
@@ -110,7 +132,8 @@ fn test_f32_no_clipping() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::F32,
         SAMPLES,
-        |b| AudioBufferRef::F32(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::F32(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
@@ -126,7 +149,8 @@ fn test_u8_conversion() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::U8,
         SAMPLES,
-        |b| AudioBufferRef::U8(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::U8(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
@@ -142,7 +166,8 @@ fn test_s16_conversion() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::S16,
         SAMPLES,
-        |b| AudioBufferRef::S16(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::S16(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
@@ -151,10 +176,10 @@ fn test_s16_conversion() {
 #[gtest(SymphoniaGlueTest, S24Conversion)]
 fn test_s24_conversion() {
     let samples = vec![
-        symphonia::core::sample::i24(0),
-        symphonia::core::sample::i24(0x7FFFFF),
-        symphonia::core::sample::i24(-0x800000),
-        symphonia::core::sample::i24(0x123456),
+        symphonia::core::audio::sample::i24(0),
+        symphonia::core::audio::sample::i24(0x7FFFFF),
+        symphonia::core::audio::sample::i24(-0x800000),
+        symphonia::core::audio::sample::i24(0x123456),
     ];
     let expected: &[i32] = &[
         0,
@@ -171,17 +196,19 @@ fn test_s24_conversion() {
         BYTES_PER_SAMPLE,
         ffi::SymphoniaSampleFormat::S24,
         expected,
-        |b| AudioBufferRef::S24(std::borrow::Cow::Borrowed(b)),
+        |b| GenericAudioBufferRef::S24(b),
+        ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
 // Verify that we handle unsupported buffer types.
 #[gtest(SymphoniaGlueTest, UnsupportedBufferType)]
 fn test_unsupported_buffer_type() {
-    let spec = SignalSpec::new(44100, Layout::Mono.into_channels());
-    let audio_buf = AudioBuffer::<f64>::new(1, spec);
-    let buffer_ref = AudioBufferRef::F64(std::borrow::Cow::Borrowed(&audio_buf));
-    let result = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref);
+    let spec = AudioSpec::new(44100, layouts::CHANNEL_LAYOUT_MONO);
+    let audio_buf = AudioBuffer::<f64>::new(spec, 1);
+    let buffer_ref = GenericAudioBufferRef::F64(&audio_buf);
+    let result =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown);
     expect_true!(result.is_err());
 }
 
@@ -217,16 +244,18 @@ fn test_decoder_init_failure() {
 #[gtest(SymphoniaGlueTest, StereoInterleaving)]
 fn test_stereo_interleaving() {
     const SAMPLE_RATE: u32 = 44100;
-    let spec = SignalSpec::new(SAMPLE_RATE, Layout::Stereo.into_channels());
-    let mut audio_buf = AudioBuffer::<f32>::new(2, spec);
-    audio_buf.render_reserved(Some(2));
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<f32>::new(spec, 2);
+    audio_buf.render_uninit(Some(2));
 
     // Planar data: L[0.5, 0.1], R[-0.5, -0.1]
-    audio_buf.chan_mut(0).copy_from_slice(&[0.5, 0.1]);
-    audio_buf.chan_mut(1).copy_from_slice(&[-0.5, -0.1]);
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[0.5, 0.1]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-0.5, -0.1]);
 
-    let buffer_ref = AudioBufferRef::F32(std::borrow::Cow::Borrowed(&audio_buf));
-    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref).unwrap();
+    let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
+    let mut sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
+            .unwrap();
     let result = create_audio_buffer(buffer_ref, &mut sample_buffer, 4).unwrap();
 
     // Expected interleaved: [0.5, -0.5, 0.1, -0.1]
@@ -267,10 +296,10 @@ fn test_error_mapping() {
 fn test_packet_conversion() {
     let ffi_packet =
         ffi::SymphoniaPacket { timestamp_us: 12345, duration_us: 6789, data: &[0xAA, 0xBB, 0xCC] };
-    let sym_packet = symphonia::core::formats::Packet::from(&ffi_packet);
+    let sym_packet = symphonia::core::packet::Packet::from(&ffi_packet);
 
-    expect_eq!(sym_packet.ts(), 12345);
-    expect_eq!(sym_packet.dur(), 6789);
+    expect_eq!(sym_packet.pts(), 12345_i64.into());
+    expect_eq!(sym_packet.dur(), 6789u64.into());
     expect_eq!(&*sym_packet.data, &[0xAA, 0xBB, 0xCC]);
 }
 
@@ -281,11 +310,13 @@ fn test_zero_frames() {
     // We use 5.1 channels (6 channels) to explicitly test the 3+ channels
     // interleaving path in Symphonia, which had a bug where it panicked
     // if num_frames == 0.
-    let spec = SignalSpec::new(SAMPLE_RATE, Layout::FivePointOne.into_channels());
-    let audio_buf = AudioBuffer::<f32>::new(0, spec);
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_MPEG_5P1_D);
+    let audio_buf = AudioBuffer::<f32>::new(spec, 0);
 
-    let buffer_ref = AudioBufferRef::F32(std::borrow::Cow::Borrowed(&audio_buf));
-    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref).unwrap();
+    let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
+    let mut sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
+            .unwrap();
     let result = create_audio_buffer(buffer_ref, &mut sample_buffer, 4).unwrap();
 
     expect_eq!(result.num_frames, 0);

@@ -1,0 +1,11 @@
+Name: symphonia-metadata
+URL: https://crates.io/crates/symphonia-metadata
+Version: 0.6.0-alpha.2
+Revision: c348da60d6753ede6e7c5752d84ec85b777cec27
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MPL-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/symphonia-metadata-v0_6/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Project Symphonia multimedia tag and metadata readers.

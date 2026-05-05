@@ -145,9 +145,6 @@ extra_kv = { allow_unsafe = false }
 [crate.array-init]
 extra_kv = { allow_unsafe = true }
 
-[crate.arrayvec.extra_kv]
-allow_unsafe = true
-
 [crate.autocfg.extra_kv]
 allow_unsafe = false
 
@@ -285,9 +282,6 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.either.extra_kv]
-allow_unsafe = true
-
-[crate.encoding_rs.extra_kv]
 allow_unsafe = true
 
 [crate.equivalent.extra_kv]
@@ -663,6 +657,9 @@ extra_kv = { allow_unsafe = false }
 [crate.regex-automata.extra_kv]
 allow_unsafe = true
 
+[crate.regex-lite]
+extra_kv = { allow_unsafe = false }
+
 [crate.regex-syntax.extra_kv]
 allow_unsafe = false
 
@@ -764,13 +761,13 @@ allow_unsafe = false
 [crate.symphonia-codec-vorbis.extra_kv]
 allow_unsafe = false
 
+[crate.symphonia-common]
+extra_kv = { allow_unsafe = false }
+
 [crate.symphonia-core.extra_kv]
 allow_unsafe = false
 
 [crate.symphonia-metadata.extra_kv]
-allow_unsafe = false
-
-[crate.symphonia-utils-xiph.extra_kv]
 allow_unsafe = false
 
 [crate.syn.extra_kv]

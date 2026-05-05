@@ -1,0 +1,12 @@
+Name: regex-lite
+URL: https://crates.io/crates/regex-lite
+Version: 0.1.9
+Revision: 0c07fae444adf0802d84455e689f1143d2dd7790
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/regex-lite-v0_1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: A lightweight regex engine that optimizes for binary size and compilation time.
+
