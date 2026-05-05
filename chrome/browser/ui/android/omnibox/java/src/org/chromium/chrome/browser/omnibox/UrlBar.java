@@ -957,8 +957,6 @@ public class UrlBar extends AutocompleteEditText {
         int textLength = text.length();
         if (textLength == 0) return;
 
-        clearBoundsEllipsisSpans(text);
-
         Layout textLayout = getLayout();
         if (textLayout != null) {
             int ellipsisWidth = (int) textLayout.getPaint().measureText(EllipsisSpan.ELLIPSIS);
@@ -969,12 +967,24 @@ public class UrlBar extends AutocompleteEditText {
                             .getOffsetForAdvance(
                                     text, 0, textLength, 0, textLength, false, cutoffWidth);
 
+            BoundsEllipsisSpan[] spans = text.getSpans(0, textLength, BoundsEllipsisSpan.class);
             if (finalVisibleCharIndex < textLength) {
+                if (spans != null
+                        && spans.length == 1
+                        && text.getSpanStart(spans[0]) == finalVisibleCharIndex
+                        && text.getSpanEnd(spans[0]) == textLength) {
+                    return;
+                }
+                clearBoundsEllipsisSpans(text);
                 text.setSpan(
                         BoundsEllipsisSpan.INSTANCE,
                         finalVisibleCharIndex,
                         textLength,
                         Editable.SPAN_INCLUSIVE_EXCLUSIVE);
+            } else {
+                if (spans != null && spans.length > 0) {
+                    clearBoundsEllipsisSpans(text);
+                }
             }
         }
     }
@@ -1218,7 +1228,10 @@ public class UrlBar extends AutocompleteEditText {
             // Confirmation check: be sure we don't re-request layout as a result of something that
             // happens in scrollDisplayText(). However, isLayoutRequested could be true before
             // scrollDisplayText() due to what happened within super.layout(), e.g. clear focus.
-            assert isLayoutRequestedBeforeScrollDisplayText || !isLayoutRequested();
+            // Note: applyBoundsEllipsis() may request layout when adding/removing spans.
+            assert isLayoutRequestedBeforeScrollDisplayText
+                    || !isLayoutRequested()
+                    || shouldApplyBoundsEllipsis();
         }
     }
 
