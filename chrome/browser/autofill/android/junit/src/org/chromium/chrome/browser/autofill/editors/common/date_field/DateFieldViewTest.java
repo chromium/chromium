@@ -166,15 +166,15 @@ public class DateFieldViewTest {
                 DateFieldView.getMonthName(mActivity, /* month= */ 2),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getMonthLabel() + "/Feb",
+                getMonthLabel() + " Feb",
                 mDateFieldView.getMonthPickerForTest().getDropdown().getContentDescription());
         assertEquals("15", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getDayLabel() + "/15",
+                getDayLabel() + " 15",
                 mDateFieldView.getDayPickerForTest().getDropdown().getContentDescription());
         assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getYearLabel() + "/2026",
+                getYearLabel() + " 2026",
                 mDateFieldView.getYearPickerForTest().getDropdown().getContentDescription());
     }
 
@@ -203,15 +203,15 @@ public class DateFieldViewTest {
                 DateFieldView.getMonthName(mActivity, /* month= */ 3),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getMonthLabel() + "/" + DateFieldView.getMonthName(mActivity, /* month= */ 3),
+                getMonthLabel() + " " + DateFieldView.getMonthName(mActivity, /* month= */ 3),
                 mDateFieldView.getMonthPickerForTest().getDropdown().getContentDescription());
         assertEquals("16", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getDayLabel() + "/16",
+                getDayLabel() + " 16",
                 mDateFieldView.getDayPickerForTest().getDropdown().getContentDescription());
         assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
         assertEquals(
-                getYearLabel() + "/2026",
+                getYearLabel() + " 2026",
                 mDateFieldView.getYearPickerForTest().getDropdown().getContentDescription());
     }
 

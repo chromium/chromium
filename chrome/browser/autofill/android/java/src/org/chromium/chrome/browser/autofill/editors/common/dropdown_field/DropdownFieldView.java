@@ -187,7 +187,7 @@ public class DropdownFieldView implements FieldView {
         if (selectedValue.equals(mHint)) {
             mDropdown.setContentDescription(selectedValue);
         } else {
-            mDropdown.setContentDescription(labelOrHint + "/" + selectedValue);
+            mDropdown.setContentDescription(labelOrHint + " " + selectedValue);
         }
     }
 
