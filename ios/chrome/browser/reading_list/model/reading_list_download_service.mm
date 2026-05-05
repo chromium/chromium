@@ -284,11 +284,6 @@ void ReadingListDownloadService::OnDownloadEnd(
       reading_list_model_->SetEntryDistilledInfoIfExists(
           url, distilled_path, distilled_url, size, base::Time::Now());
 
-      std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
-      if (!trimmed_title.empty()) {
-        reading_list_model_->SetEntryTitleIfExists(url, trimmed_title);
-      }
-
       scoped_refptr<const ReadingListEntry> entry =
           reading_list_model_->GetEntryByURL(url);
       if (entry) {
