@@ -1181,12 +1181,14 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
 void LocalFrameClientImpl::OnMainFrameRectangleChanged(
     const gfx::Rect& main_frame_rect) {
   DCHECK(web_frame_->Client());
+  DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
   web_frame_->Client()->OnMainFrameRectangleChanged(main_frame_rect);
 }
 
 void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(
     const gfx::Rect& main_frame_viewport_rect) {
   DCHECK(web_frame_->Client());
+  DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
   web_frame_->Client()->OnMainFrameViewportRectangleChanged(
       main_frame_viewport_rect);
 }
@@ -1195,6 +1197,7 @@ void LocalFrameClientImpl::OnMainFrameAdRectangleChanged(
     DOMNodeId element_id,
     const gfx::Rect& ad_rect) {
   DCHECK(web_frame_->Client());
+  DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
   web_frame_->Client()->OnMainFrameAdRectangleChanged(element_id, ad_rect);
 }
 

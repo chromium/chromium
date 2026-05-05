@@ -75,8 +75,11 @@ void DisplayAdElementMonitor::OnElementRemoved() {
 
   if (element_->InActiveDocument() && !last_reported_rect_.IsEmpty()) {
     gfx::Rect empty_rect;
-    element_->GetDocument().GetFrame()->Client()->OnMainFrameAdRectangleChanged(
-        element_->GetDomNodeId(), empty_rect);
+    element_->GetDocument()
+        .GetFrame()
+        ->LocalFrameRoot()
+        .Client()
+        ->OnMainFrameAdRectangleChanged(element_->GetDomNodeId(), empty_rect);
     last_reported_rect_ = empty_rect;
   }
 

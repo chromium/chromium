@@ -337,6 +337,47 @@ TEST_F(DisplayAdElementMonitorTest,
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
 
+TEST_F(DisplayAdElementMonitorTest, RemoveAdInSubframe) {
+  // Set up an iframe in the main document.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <iframe id="frame" style="position:absolute; left:100px; top:50px; border:none; width:400px; height:400px;"></iframe>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("frame")));
+  iframe_element->setAttribute(html_names::kSrcdocAttr, AtomicString(R"HTML(
+    <body style="margin:0;">
+      <img id="ad" style="position:absolute; left:10px; top:20px; width:300px; height:250px;">
+    </body>
+  )HTML"));
+
+  test::RunPendingTasks();
+  UpdateLifecycle();
+
+  Document* iframe_doc = iframe_element->contentDocument();
+  auto* ad_element =
+      To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
+
+  // Expect the initial position report relative to the main document.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(110, 70, 300, 250)));
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Remove the element from the subframe and expect an empty rect report on the
+  // main frame's client.
+  const int dom_node_id = ad_element->GetDomNodeId();
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
+  ad_element->remove();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+}
+
 TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
     <iframe id="ad" style="position:absolute; left:100px; top:50px; width:300px; height:250px; border:none;"></iframe>
