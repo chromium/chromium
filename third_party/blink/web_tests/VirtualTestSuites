@@ -5186,7 +5186,7 @@
     "args": [
       "--enable-features=WebCryptoPQC"
     ],
-    "expires": "May 2, 2026"
+    "expires": "Aug 2, 2026"
   },
   "This individual test must be run separately from others, because it makes a",
   "huge memory allocation that often causes OOM if other tests have run in the",
