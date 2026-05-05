@@ -67,7 +67,8 @@ namespace chromecast::media {
 class CastAudioManagerTest : public testing::Test {
  public:
   CastAudioManagerTest()
-      : audio_thread_("CastAudioThread", base::Thread::Restartable{}) {}
+      : audio_thread_("CastAudioThread", base::Thread::Restartable{}),
+        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override { CreateAudioManagerForTesting(); }
 
@@ -149,7 +150,7 @@ class CastAudioManagerTest : public testing::Test {
   }
 
   void RunThreadsUntilIdle() {
-    task_environment_.RunUntilIdle();
+    task_environment_.FastForwardUntilNoTasksRemain();
     audio_thread_.FlushForTesting();
   }
 
@@ -223,6 +224,7 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
     RunThreadsUntilIdle();
   }
   stream->Close();
+  RunThreadsUntilIdle();
 }
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -246,6 +248,7 @@ TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
     RunThreadsUntilIdle();
   }
   stream->Close();
+  RunThreadsUntilIdle();
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO))
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -297,6 +300,7 @@ TEST_F(CastAudioManagerTest, CanMakeMixerStream) {
   RunThreadsUntilIdle();
 
   stream->Close();
+  RunThreadsUntilIdle();
 }
 
 TEST_F(CastAudioManagerTest, CanMakeCommunicationsStream) {
@@ -318,6 +322,7 @@ TEST_F(CastAudioManagerTest, CanMakeCommunicationsStream) {
   task_environment_.RunUntilIdle();
 
   stream->Close();
+  RunThreadsUntilIdle();
 }
 
 }  // namespace chromecast::media
