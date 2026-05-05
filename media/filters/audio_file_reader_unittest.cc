@@ -211,9 +211,10 @@ TEST_P(AudioFileReaderTest, UnknownDuration) {
 }
 
 TEST_P(AudioFileReaderTest, WithVideo) {
-  // TODO(crbug.com/485920243): The total samples should be 45568.
-  RunTest("bear.ogv", "-0.73,0.92,0.48,-0.07,-0.92,-0.88,", 2, 44100,
-          base::Microseconds(1011520), 44609, 45632);
+  // The total samples should be 45568 after applying discard padding.
+  // ffprobe shows discard_padding=64 for the last packet.
+  RunTest("bear.ogv", "-2.10,-1.01,0.24,1.48,0.70,-0.68,", 2, 44100,
+          base::Microseconds(1011520), 44609, 45568);
 }
 
 TEST_P(AudioFileReaderTest, FLAC) {
@@ -227,9 +228,11 @@ TEST_P(AudioFileReaderTest, FLAC_WithMask) {
 }
 
 TEST_P(AudioFileReaderTest, Vorbis) {
-  // TODO(crbug.com/485920243): The total samples should be 15435.
-  RunTest("sfx.ogg", "2.17,3.31,5.15,6.33,5.97,4.35,", 1, 44100,
-          base::Microseconds(350001), 15436, 15936);
+  // oggdec produces 15435 samples, but the last 629 samples are silence
+  // corresponding to discard padding. FFmpeg applies this discard padding,
+  // resulting in 15307 samples.
+  RunTest("sfx.ogg", "3.95,3.02,3.98,5.14,5.65,5.13,", 1, 44100,
+          base::Microseconds(350001), 15436, 15307);
 }
 
 TEST_P(AudioFileReaderTest, WaveU8) {
@@ -306,9 +309,9 @@ TEST_P(AudioFileReaderTest, VorbisValidChannelLayout) {
     EXPECT_FALSE(reader_->Open());
     return;
   }
-  // TODO(crbug.com/485920243): The total samples should be 4800.
-  RunTest("9ch.ogg", "111.68,13.19,59.65,58.66,66.99,20.36,", 9, 48000,
-          base::Microseconds(100001), 4801, 4864);
+  // The total samples should be 4800 after applying discard padding.
+  RunTest("9ch.ogg", "102.08,12.51,57.91,56.94,63.05,17.30,", 9, 48000,
+          base::Microseconds(100001), 4801, 4800);
 }
 
 TEST_P(AudioFileReaderTest, WaveValidFourChannelLayout) {
