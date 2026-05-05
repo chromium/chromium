@@ -714,9 +714,18 @@ void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
     active_model = input_state.active_model;
   }
 
+  std::string query_text = query;
+  GURL url(query);
+  if (url.is_valid()) {
+    std::string extracted_query;
+    if (net::GetValueForKeyInQuery(url, "q", &extracted_query)) {
+      query_text = extracted_query;
+    }
+  }
+
   auto callback = base::BindOnce(
       [](base::WeakPtr<ComposeboxQueryControllerBridge> self,
-         const std::string& query, omnibox::ToolMode active_tool,
+         const std::string& query_text, omnibox::ToolMode active_tool,
          omnibox::ModelMode active_model,
          base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
              session_handle) {
@@ -724,7 +733,7 @@ void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
           return;
         }
         auto request_info = contextual_tasks::PrepareClientToAimRequestInfo(
-            query, self->session_handle_.get(),
+            query_text, self->session_handle_.get(),
             self->contextual_tasks_web_ui_interface_, active_tool, active_model,
             /*active_tab_context_id=*/std::nullopt,
             /*overlay_token=*/std::nullopt);
@@ -733,10 +742,10 @@ void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
             std::move(request_info), self->session_handle_.get(),
             self->contextual_tasks_web_ui_interface_);
       },
-      weak_ptr_factory_.GetWeakPtr(), query, active_tool, active_model);
+      weak_ptr_factory_.GetWeakPtr(), query_text, active_tool, active_model);
 
   query_contextualizer_->Contextualize(
-      /*task_id=*/std::nullopt, query, /*tabs_to_recontextualize=*/{},
+      /*task_id=*/std::nullopt, query_text, /*tabs_to_recontextualize=*/{},
       /*tabs_to_force_contextualize=*/{},
       /*on_ineligible_callback=*/base::DoNothing(),
       /*on_processed_callback=*/base::DoNothing(), std::move(callback),
