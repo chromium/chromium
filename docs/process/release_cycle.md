@@ -78,13 +78,23 @@ first time. A new build is shipped to beta each following week for three
 additional weeks so that the release spends four weeks total in the beta
 channel.
 
+### Early Stable Cut
+
+Early Stable cut is the day that our early stable release candidate build will
+be generated. This build is then shipped to a small percentage of stable channel
+users to gather user feedback. All stable blocking issues must be fixed by early
+stable cut.
+
+### Early Stable Promotion
+
+The new milestone is shipped to a small percentage of stable channel users for
+the first time.
+
 ### Stable Cut
 
-Stable cut is the day that our stable release candidate build will be
-generated. This build is then shipped to beta to gather user feedback for one
-week. Any changes that land after stable cut may or may not be included in the
-stable release, and thus all stable blocking issues must be fixed by stable
-cut.
+Stable cut is the day that our stable release candidate build will be generated.
+Any changes that land after stable cut may or may not be included in the stable
+release.
 
 ### Stable Promotion
 
@@ -95,8 +105,8 @@ release generally reaches all users within one to two weeks unless major issues
 arise that cannot be addressed quickly.
 
 To get better statistical data for staged rollouts, each rollout will consist of
-two separate builds which are identical, except for the build number. There is no
-harm in being on the lower build number, and all users are expected to be
+two separate builds which are identical, except for the build number. There is
+no harm in being on the lower build number, and all users are expected to be
 automatically updated to the higher build number as part of the rollout process.
 
 ### Stable Refresh
