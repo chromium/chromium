@@ -150,10 +150,10 @@ static_library("v4_local_database_manager") {
   deps = [
     ":database_manager",
     ":safebrowsing_proto",
+    ":sb_update_protocol_manager",
     ":v4_database",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
-    ":v4_update_protocol_manager",
     "//base",
     "//build:branding_buildflags",
     "//components/safe_browsing/core/common",
@@ -287,8 +287,10 @@ static_library("v4_test_util") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-static_library("v4_update_protocol_manager") {
+static_library("sb_update_protocol_manager") {
   sources = [
+    "sb_update_protocol_manager.cc",
+    "sb_update_protocol_manager.h",
     "v4_update_protocol_manager.cc",
     "v4_update_protocol_manager.h",
   ]
@@ -303,6 +305,7 @@ static_library("v4_update_protocol_manager") {
     "//base",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//net",
     "//services/network/public/cpp",
@@ -348,6 +351,7 @@ source_set("unit_tests_local_db") {
   ]
   deps = [
     ":database_manager",
+    ":sb_update_protocol_manager",
     ":unit_tests_shared",
     ":util",
     ":v4_database",
@@ -357,7 +361,6 @@ source_set("unit_tests_local_db") {
     ":v4_store",
     ":v4_store_proto",
     ":v4_test_util",
-    ":v4_update_protocol_manager",
     "//base",
     "//build:branding_buildflags",
     "//components/prefs:test_support",
