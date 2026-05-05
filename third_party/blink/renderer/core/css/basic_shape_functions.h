@@ -39,7 +39,7 @@ class CSSValue;
 class StyleResolverState;
 class ComputedStyle;
 
-CSSValue* ValueForBasicShape(const ComputedStyle&, const BasicShape*);
+CSSValue* ValueForBasicShape(const ComputedStyle&, const BasicShape&);
 CORE_EXPORT BasicShape* BasicShapeForValue(const StyleResolverState&,
                                            const CSSValue&);
 

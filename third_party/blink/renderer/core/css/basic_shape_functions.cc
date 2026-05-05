@@ -423,38 +423,38 @@ static CSSValue* BasicShapeRadiusToCSSValue(const ComputedStyle& style,
   NOTREACHED();
 }
 
-template <typename BasicShapeClass, typename CSSValueClass>
-static void InitializeBorderRadius(BasicShapeClass* rect,
-                                   const StyleResolverState& state,
-                                   const CSSValueClass& rect_value) {
-  rect->SetTopLeftRadius(
+template <typename CSSValueClass>
+static void InitializeBorderRadius(const StyleResolverState& state,
+                                   const CSSValueClass& rect_value,
+                                   BasicShapeInset& inset) {
+  inset.SetTopLeftRadius(
       ConvertToLengthSize(state, rect_value.TopLeftRadius()));
-  rect->SetTopRightRadius(
+  inset.SetTopRightRadius(
       ConvertToLengthSize(state, rect_value.TopRightRadius()));
-  rect->SetBottomRightRadius(
+  inset.SetBottomRightRadius(
       ConvertToLengthSize(state, rect_value.BottomRightRadius()));
-  rect->SetBottomLeftRadius(
+  inset.SetBottomLeftRadius(
       ConvertToLengthSize(state, rect_value.BottomLeftRadius()));
 }
 
-template <typename BasicShapeClass, typename CSSValueClass>
-static void InitializeBorderRadius(CSSValueClass* css_value,
-                                   const ComputedStyle& style,
-                                   const BasicShapeClass* rect) {
-  css_value->SetTopLeftRadius(ValueForLengthSize(rect->TopLeftRadius(), style));
-  css_value->SetTopRightRadius(
-      ValueForLengthSize(rect->TopRightRadius(), style));
-  css_value->SetBottomRightRadius(
-      ValueForLengthSize(rect->BottomRightRadius(), style));
-  css_value->SetBottomLeftRadius(
-      ValueForLengthSize(rect->BottomLeftRadius(), style));
+static void InitializeBorderRadius(
+    const BasicShapeInset& inset,
+    const ComputedStyle& style,
+    cssvalue::CSSBasicShapeInsetValue& css_value) {
+  css_value.SetTopLeftRadius(ValueForLengthSize(inset.TopLeftRadius(), style));
+  css_value.SetTopRightRadius(
+      ValueForLengthSize(inset.TopRightRadius(), style));
+  css_value.SetBottomRightRadius(
+      ValueForLengthSize(inset.BottomRightRadius(), style));
+  css_value.SetBottomLeftRadius(
+      ValueForLengthSize(inset.BottomLeftRadius(), style));
 }
 
 CSSValue* ValueForBasicShape(const ComputedStyle& style,
-                             const BasicShape* basic_shape) {
-  switch (basic_shape->GetType()) {
+                             const BasicShape& basic_shape) {
+  switch (basic_shape.GetType()) {
     case BasicShape::kStyleRayType: {
-      const StyleRay& ray = To<StyleRay>(*basic_shape);
+      const auto& ray = To<StyleRay>(basic_shape);
       const CSSValue* center_x =
           ray.HasExplicitCenter()
               ? ValueForCenterCoordinate(style, ray.CenterX(),
@@ -475,65 +475,65 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
     }
 
     case BasicShape::kStylePathType:
-      return To<StylePath>(basic_shape)->ComputedCSSValue();
+      return To<StylePath>(basic_shape).ComputedCSSValue();
 
     case BasicShape::kStyleShapeType: {
-      const StyleShape* shape = To<StyleShape>(basic_shape);
+      const auto& shape = To<StyleShape>(basic_shape);
       HeapVector<Member<const cssvalue::CSSShapeCommand>> commands;
-      commands.reserve(shape->Segments().size());
+      commands.reserve(shape.Segments().size());
       ShapeSegmentToShapeCommandVisitor visitor{style.EffectiveZoom()};
-      for (const auto& segment : shape->Segments()) {
+      for (const auto& segment : shape.Segments()) {
         commands.push_back(std::visit(visitor, segment));
       }
       return MakeGarbageCollected<cssvalue::CSSShapeValue>(
-          shape->GetWindRule(),
-          LengthPointToCSSValue(shape->GetOrigin(), style.EffectiveZoom()),
+          shape.GetWindRule(),
+          LengthPointToCSSValue(shape.GetOrigin(), style.EffectiveZoom()),
           std::move(commands));
     }
 
     case BasicShape::kBasicShapeCircleType: {
-      const BasicShapeCircle* circle = To<BasicShapeCircle>(basic_shape);
-      cssvalue::CSSBasicShapeCircleValue* circle_value =
+      const auto& circle = To<BasicShapeCircle>(basic_shape);
+      auto* circle_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeCircleValue>();
 
-      if (circle->HasExplicitCenter()) {
+      if (circle.HasExplicitCenter()) {
         circle_value->SetCenterX(ValueForCenterCoordinate(
-            style, circle->CenterX(), EBoxOrient::kHorizontal));
+            style, circle.CenterX(), EBoxOrient::kHorizontal));
         circle_value->SetCenterY(ValueForCenterCoordinate(
-            style, circle->CenterY(), EBoxOrient::kVertical));
+            style, circle.CenterY(), EBoxOrient::kVertical));
       }
       circle_value->SetRadius(
-          BasicShapeRadiusToCSSValue(style, circle->Radius()));
+          BasicShapeRadiusToCSSValue(style, circle.Radius()));
       return circle_value;
     }
     case BasicShape::kBasicShapeEllipseType: {
-      const BasicShapeEllipse* ellipse = To<BasicShapeEllipse>(basic_shape);
+      const auto& ellipse = To<BasicShapeEllipse>(basic_shape);
       auto* ellipse_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeEllipseValue>();
 
-      if (ellipse->HasExplicitCenter()) {
+      if (ellipse.HasExplicitCenter()) {
         ellipse_value->SetCenterX(ValueForCenterCoordinate(
-            style, ellipse->CenterX(), EBoxOrient::kHorizontal));
+            style, ellipse.CenterX(), EBoxOrient::kHorizontal));
         ellipse_value->SetCenterY(ValueForCenterCoordinate(
-            style, ellipse->CenterY(), EBoxOrient::kVertical));
+            style, ellipse.CenterY(), EBoxOrient::kVertical));
       }
       ellipse_value->SetRadiusX(
-          BasicShapeRadiusToCSSValue(style, ellipse->RadiusX()));
+          BasicShapeRadiusToCSSValue(style, ellipse.RadiusX()));
       ellipse_value->SetRadiusY(
-          BasicShapeRadiusToCSSValue(style, ellipse->RadiusY()));
+          BasicShapeRadiusToCSSValue(style, ellipse.RadiusY()));
       return ellipse_value;
     }
     case BasicShape::kBasicShapePolygonType: {
-      const BasicShapePolygon* polygon = To<BasicShapePolygon>(basic_shape);
+      const auto& polygon = To<BasicShapePolygon>(basic_shape);
       auto* polygon_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapePolygonValue>();
 
-      polygon_value->SetWindRule(polygon->GetWindRule());
-      if (polygon->HasRoundingRadius()) {
+      polygon_value->SetWindRule(polygon.GetWindRule());
+      if (polygon.HasRoundingRadius()) {
         polygon_value->SetRoundingRadius(CSSPrimitiveValue::CreateFromLength(
-            polygon->RoundingRadius(), style.EffectiveZoom()));
+            polygon.RoundingRadius(), style.EffectiveZoom()));
       }
-      const Vector<Length>& values = polygon->Values();
+      const Vector<Length>& values = polygon.Values();
       for (unsigned i = 0; i < values.size(); i += 2) {
         polygon_value->AppendPoint(
             CSSPrimitiveValue::CreateFromLength(values.at(i),
@@ -544,19 +544,19 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       return polygon_value;
     }
     case BasicShape::kBasicShapeInsetType: {
-      const BasicShapeInset* inset = To<BasicShapeInset>(basic_shape);
-      cssvalue::CSSBasicShapeInsetValue* inset_value =
+      const auto& inset = To<BasicShapeInset>(basic_shape);
+      auto* inset_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>(
-              CSSPrimitiveValue::CreateFromLength(inset->Top(),
+              CSSPrimitiveValue::CreateFromLength(inset.Top(),
                                                   style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset->Right(),
+              CSSPrimitiveValue::CreateFromLength(inset.Right(),
                                                   style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset->Bottom(),
+              CSSPrimitiveValue::CreateFromLength(inset.Bottom(),
                                                   style.EffectiveZoom()),
-              CSSPrimitiveValue::CreateFromLength(inset->Left(),
+              CSSPrimitiveValue::CreateFromLength(inset.Left(),
                                                   style.EffectiveZoom()));
 
-      InitializeBorderRadius(inset_value, style, inset);
+      InitializeBorderRadius(inset, style, *inset_value);
       return inset_value;
     }
     default:
@@ -659,7 +659,7 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
                                const CSSValue& basic_shape_value) {
   if (const auto* circle_value =
           DynamicTo<cssvalue::CSSBasicShapeCircleValue>(basic_shape_value)) {
-    BasicShapeCircle* circle = MakeGarbageCollected<BasicShapeCircle>();
+    auto* circle = MakeGarbageCollected<BasicShapeCircle>();
 
     circle->SetCenterX(
         ConvertToCenterCoordinate(state, circle_value->CenterX()));
@@ -673,7 +673,7 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
   } else if (const auto* ellipse_value =
                  DynamicTo<cssvalue::CSSBasicShapeEllipseValue>(
                      basic_shape_value)) {
-    BasicShapeEllipse* ellipse = MakeGarbageCollected<BasicShapeEllipse>();
+    auto* ellipse = MakeGarbageCollected<BasicShapeEllipse>();
 
     ellipse->SetCenterX(
         ConvertToCenterCoordinate(state, ellipse_value->CenterX()));
@@ -689,7 +689,7 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
   } else if (const auto* polygon_value =
                  DynamicTo<cssvalue::CSSBasicShapePolygonValue>(
                      basic_shape_value)) {
-    BasicShapePolygon* polygon = MakeGarbageCollected<BasicShapePolygon>();
+    auto* polygon = MakeGarbageCollected<BasicShapePolygon>();
 
     polygon->SetWindRule(polygon_value->GetWindRule());
     if (polygon_value->RoundingRadius()) {
@@ -707,23 +707,23 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
   } else if (const auto* inset_value =
                  DynamicTo<cssvalue::CSSBasicShapeInsetValue>(
                      basic_shape_value)) {
-    BasicShapeInset* rect = MakeGarbageCollected<BasicShapeInset>();
+    auto* inset = MakeGarbageCollected<BasicShapeInset>();
 
-    rect->SetTop(
+    inset->SetTop(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Top())));
-    rect->SetRight(
+    inset->SetRight(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Right())));
-    rect->SetBottom(
+    inset->SetBottom(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Bottom())));
-    rect->SetLeft(
+    inset->SetLeft(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Left())));
 
-    InitializeBorderRadius(rect, state, *inset_value);
-    return rect;
+    InitializeBorderRadius(state, *inset_value, *inset);
+    return inset;
   } else if (const auto* rect_value =
                  DynamicTo<cssvalue::CSSBasicShapeRectValue>(
                      basic_shape_value)) {
-    BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
+    auto* inset = MakeGarbageCollected<BasicShapeInset>();
 
     // Spec: All <basic-shape-rect> functions compute to the equivalent
     // inset() function. NOTE: Given `rect(t r b l)`, the equivalent function
@@ -747,12 +747,12 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
     inset->SetBottom(get_inset_length(*rect_value->Bottom(), true));
     inset->SetLeft(get_inset_length(*rect_value->Left(), false));
 
-    InitializeBorderRadius(inset, state, *rect_value);
+    InitializeBorderRadius(state, *rect_value, *inset);
     return inset;
   } else if (const auto* xywh_value =
                  DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(
                      basic_shape_value)) {
-    BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
+    auto* inset = MakeGarbageCollected<BasicShapeInset>();
 
     // Spec: All <basic-shape-rect> functions compute to the equivalent
     // inset() function. NOTE: Given `xywh(x y w h)`, the equivalent function
@@ -770,7 +770,7 @@ BasicShape* BasicShapeForValue(const StyleResolverState& state,
                          .Add(ConvertToLength(state, xywh_value->Height()))
                          .SubtractFromOneHundredPercent());
 
-    InitializeBorderRadius(inset, state, *xywh_value);
+    InitializeBorderRadius(state, *xywh_value, *inset);
     return inset;
   } else if (const auto* ray_value =
                  DynamicTo<cssvalue::CSSRayValue>(basic_shape_value)) {

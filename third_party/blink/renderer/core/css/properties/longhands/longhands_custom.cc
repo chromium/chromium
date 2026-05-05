@@ -1981,7 +1981,7 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   bool is_single_shape = !border_shape.HasSeparateInnerShape();
 
   // Outer shape and coord box
-  CSSValue* outer_shape = ValueForBasicShape(style, &border_shape.OuterShape());
+  CSSValue* outer_shape = ValueForBasicShape(style, border_shape.OuterShape());
   GeometryBox outer_box = border_shape.OuterBox();
   // For single-shape border-shape, half-border-box is the default and should
   // be omitted from serialization
@@ -1999,7 +1999,7 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   // Inner shape and coord box
   if (!is_single_shape) {
     CSSValue* inner_shape =
-        ValueForBasicShape(style, &border_shape.InnerShape());
+        ValueForBasicShape(style, border_shape.InnerShape());
     GeometryBox inner_box = border_shape.InnerBox();
     if (inner_box != GeometryBox::kPaddingBox) {
       CSSValue* inner_box_value = CSSIdentifierValue::Create(inner_box);
@@ -2334,7 +2334,7 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     }
     if (auto* shape = DynamicTo<ShapeClipPathOperation>(operation)) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      auto* basic_shape = ValueForBasicShape(style, shape->GetBasicShape());
+      auto* basic_shape = ValueForBasicShape(style, *shape->GetBasicShape());
       list->Append(*basic_shape);
       GeometryBox geometry_box = shape->GetGeometryBox();
       if (geometry_box != GeometryBox::kBorderBox) {
@@ -7106,7 +7106,7 @@ const CSSValue* ObjectViewBox::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (auto* basic_shape = style.ObjectViewBox()) {
-    return ValueForBasicShape(style, basic_shape);
+    return ValueForBasicShape(style, *basic_shape);
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
@@ -7160,7 +7160,7 @@ const CSSValue* OffsetPath::CSSValueFromComputedStyleInternal(
             DynamicTo<ShapeOffsetPathOperation>(operation)) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       CSSValue* shape =
-          ValueForBasicShape(style, &shape_operation->GetBasicShape());
+          ValueForBasicShape(style, shape_operation->GetBasicShape());
       list->Append(*shape);
       CoordBox coord_box = shape_operation->GetCoordBox();
       if (coord_box != CoordBox::kBorderBox) {
