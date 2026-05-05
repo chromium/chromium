@@ -53,6 +53,12 @@ class TextFragmentAnchorMetricsTest : public TextFragmentAnchorTestBase {
     return scoped_fake_ukm_recorder_.recorder();
   }
 
+  void ResetRelatedPagesFinalized() {
+    GetDocument()
+        .GetPage()
+        ->related_pages_mutation_from_previous_page_finalized_ = false;
+  }
+
   base::HistogramTester histogram_tester_;
   ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 };
@@ -250,6 +256,9 @@ TEST_F(TextFragmentAnchorMetricsTest, MatchFoundNoScroll) {
     <!DOCTYPE html>
     <p>This is a test page</p>
   )HTML");
+  GetDocument().GetPage()->NotifyRelatedPagesFinalized(false);
+  GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
+  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   // The anchor should have been found and finalized.
@@ -370,6 +379,8 @@ TEST_F(TextFragmentAnchorMetricsTest, InvalidFragmentDirective) {
       <!DOCTYPE html>
       <p id="element">This is a test page</p>
     )HTML");
+    GetDocument().GetPage()->NotifyRelatedPagesFinalized(false);
+    GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
     FragmentAnchor* anchor =
         GetDocument().GetFrame()->View()->GetFragmentAnchor();
     if (anchor && anchor->IsTextFragmentAnchor()) {
@@ -668,6 +679,7 @@ TEST_F(TextFragmentAnchorMetricsTest, ShadowDOMUseCounter) {
   }
 
   {
+    ResetRelatedPagesFinalized();
     SimRequest request("https://example.com/shadowtest.html#:~:text=ShadowDOM",
                        "text/html");
     LoadURL("https://example.com/shadowtest.html#:~:text=ShadowDOM");

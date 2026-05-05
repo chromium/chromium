@@ -102,6 +102,11 @@ class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
+class TextFragmentAnchorTestBase;
+class TextFragmentAnchorTest;
+class TextFragmentAnchorMetricsTest;
+class TextFragmentHandlerTest;
+class TextFragmentGenerationNavigationTest;
 
 typedef uint64_t LinkHash;
 
@@ -532,7 +537,24 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // related pages will include the new page instead of the old page, etc.
   void TakePropertiesForLocalMainFrameSwap(Page* old_page);
 
+  void NotifyRelatedPagesFinalized(bool has_other_related_pages) {
+    related_pages_mutation_from_previous_page_finalized_ = true;
+    has_other_related_pages_during_commit_ = has_other_related_pages;
+  }
+
+  bool RelatedPagesMutationFromPreviousPageFinalized() const {
+    return related_pages_mutation_from_previous_page_finalized_;
+  }
+  bool HasOtherRelatedPagesDuringCommit() const {
+    return has_other_related_pages_during_commit_;
+  }
+
  private:
+  friend class TextFragmentAnchorTestBase;
+  friend class TextFragmentAnchorTest;
+  friend class TextFragmentAnchorMetricsTest;
+  friend class TextFragmentHandlerTest;
+  friend class TextFragmentGenerationNavigationTest;
   friend class ScopedPagePauser;
   class CloseTaskHandler;
 
@@ -664,6 +686,18 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // browsing context.  See also RelatedPages method.
   Member<Page> next_related_page_;
   Member<Page> prev_related_page_;
+
+  // Indicates whether the related pages set can change due to previous page's
+  // mutations. Set when this (new page) is being committed. Once finalized, we
+  // would not expect the previous page to change the related pages set
+  // (although it can still change on this page).
+  bool related_pages_mutation_from_previous_page_finalized_ = false;
+  // Note that `has_other_related_pages_during_commit_` may not be in sync with
+  // RelatedPages() list and that's a bug. This is only used for text fragment
+  // checks to see if we're allowed to do a scroll or not. Ideally we don't need
+  // this and should just check the RelatedPages() set if the bug is fixed. See
+  // crbug.com/457771782 for details.
+  bool has_other_related_pages_during_commit_ = false;
 
   // The Page that opened this Page.
   WeakMember<Page> opener_;

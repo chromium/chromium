@@ -421,6 +421,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Returns the text fragment to scroll to and clears it.
   std::optional<String> TakeInternalScrollToTextFragment();
 
+  bool HasInternalScrollToTextFragment() const {
+    return internal_scroll_to_text_fragment_.has_value();
+  }
+
   // For testing purposes.
   void SetInternalScrollToTextFragment(const String& text_fragment) {
     internal_scroll_to_text_fragment_ = text_fragment;

@@ -262,6 +262,8 @@ class CORE_EXPORT FrameLoader final {
 
   mojo::PendingRemote<mojom::blink::CodeCacheHost> CreateWorkerCodeCacheHost();
 
+  void ProcessPendingCrossDocumentFragment();
+
  private:
   bool ShouldPerformFragmentNavigation(bool is_form_submission,
                                        const String& http_method,
@@ -349,6 +351,10 @@ class CORE_EXPORT FrameLoader final {
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.
   HashSet<String> tls_version_warning_origins_;
+
+  // True if we skipped processing a fragment and may need to do it again when
+  // asked.
+  bool has_pending_cross_document_fragment_ = false;
 };
 
 }  // namespace blink
