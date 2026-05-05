@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -251,6 +252,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/507245181")
     public void testOnConfigurationChanged() {
         // Start activity in Desktop mode. Expect UrlBar to focus.
         // The DesktopMode check verifies connected peripherals, not just the Configuration change.
