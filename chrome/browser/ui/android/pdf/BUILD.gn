@@ -17,6 +17,11 @@ android_library("pdf_provider_java") {
   ]
 }
 
+# Temporary compatibility stub for downstream dependency dance.
+# TODO(rathomas): Remove this target once downstream users are updated.
+java_group("pdf_page_java") {
+}
+
 generate_jni("pdf_jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfUtils.java" ]
 }
