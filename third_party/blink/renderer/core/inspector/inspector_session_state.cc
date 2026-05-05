@@ -28,7 +28,7 @@ using crdtp::cbor::EncodeTrue;
 InspectorSessionState::InspectorSessionState(
     mojom::blink::DevToolsSessionStatePtr reattach)
     : reattach_state_(std::move(reattach)),
-      updates_(mojom::blink::DevToolsSessionState::New()) {}
+      updates_(mojom::blink::RendererOriginatingSessionState::New()) {}
 
 const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
     const {
@@ -42,12 +42,14 @@ void InspectorSessionState::EnqueueUpdate(const String& key,
     Vector<uint8_t> payload(*value);
     updated_value = std::move(payload);
   }
+  CHECK(updates_);
   updates_->entries.Set(key, std::move(updated_value));
 }
 
-mojom::blink::DevToolsSessionStatePtr InspectorSessionState::TakeUpdates() {
+mojom::blink::RendererOriginatingSessionStatePtr
+InspectorSessionState::TakeUpdates() {
   auto updates = std::move(updates_);
-  updates_ = mojom::blink::DevToolsSessionState::New();
+  updates_ = mojom::blink::RendererOriginatingSessionState::New();
   return updates;
 }
 

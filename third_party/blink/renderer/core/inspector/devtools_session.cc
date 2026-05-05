@@ -172,7 +172,9 @@ DevToolsSession::DevToolsSession(
   host_remote_.set_disconnect_handler(
       BindOnce(&DevToolsSession::Detach, WrapWeakPersistent(this)));
 
-  bool restore = !!session_state_.ReattachState();
+  bool restore =
+      session_state_.ReattachState() &&
+      session_state_.ReattachState()->renderer_originating_session_state;
   v8_session_state_.InitFrom(&session_state_);
   agent_->client_->AttachSession(this, restore);
   agent_->probe_sink_->AddDevToolsSession(this);

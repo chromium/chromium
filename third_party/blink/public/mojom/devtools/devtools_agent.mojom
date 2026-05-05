@@ -188,20 +188,34 @@ interface DevToolsSessionHost {
   [UnlimitedSize]
   DispatchProtocolResponse(DevToolsMessage message,
                            int32 call_id,
-                           DevToolsSessionState? updates);
+                           RendererOriginatingSessionState? updates);
 
   // Dispatches protocol notification to a remote debugging client.
   [UnlimitedSize]
   DispatchProtocolNotification(DevToolsMessage message,
-                               DevToolsSessionState? updates);
+                               RendererOriginatingSessionState? updates);
 };
 
-// The session state is a mapping from keys to either values or missing
-// values. Missing values are only used when updates are sent; that's
-// in DispatchProtocolResponse and DispatchProtocolNotification. The
-// DevToolsSession will then interpret these missing values by deleting
+// The browser originating session state is managed by the browser-side agents
+// (i.e. "handlers") and is only ever sent from the browser to renderer.
+// Unlike the renderer originating session state, it is intended to be strongly typed.
+struct BrowserOriginatingSessionState {
+  // empty for now
+};
+
+// The renderer originating session state is a mapping from keys to either values
+// or missing values and is maintained by the renderer, but sent to the browser for
+// reattach after a renderer swap.
+// Missing values are only used when updates are sent; that's in
+// DispatchProtocolResponse and DispatchProtocolNotification.
+// The DevToolsSession will then interpret these missing values by deleting
 // the respective key when its applying the updates in
 // DevToolsSession::ApplySessionStateUpdates.
-struct DevToolsSessionState {
+struct RendererOriginatingSessionState {
   map<string, array<uint8>?> entries;
+};
+
+struct DevToolsSessionState {
+  BrowserOriginatingSessionState browser_originating_session_state;
+  RendererOriginatingSessionState? renderer_originating_session_state;
 };

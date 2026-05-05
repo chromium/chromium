@@ -130,13 +130,13 @@ TestDevToolsAgentClient::WaitForMethodNotification(std::string method) {
 void TestDevToolsAgentClient::DispatchProtocolResponse(
     blink::mojom::DevToolsMessagePtr message,
     int32_t call_id,
-    blink::mojom::DevToolsSessionStatePtr updates) {
+    blink::mojom::RendererOriginatingSessionStatePtr updates) {
   LogEvent(Event::Type::kResponse, call_id, std::move(message));
 }
 
 void TestDevToolsAgentClient::DispatchProtocolNotification(
     blink::mojom::DevToolsMessagePtr message,
-    blink::mojom::DevToolsSessionStatePtr updates) {
+    blink::mojom::RendererOriginatingSessionStatePtr updates) {
   LogEvent(Event::Type::kNotification, -1, std::move(message));
 }
 

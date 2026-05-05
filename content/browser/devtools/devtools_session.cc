@@ -120,6 +120,9 @@ int DevToolsSession::GetRootSessionCount() {
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client, Mode mode)
     : client_(client), mode_(mode) {
   ++g_root_session_count;
+  session_state_cookie_ = blink::mojom::DevToolsSessionState::New();
+  session_state_cookie_->browser_originating_session_state =
+      blink::mojom::BrowserOriginatingSessionState::New();
 }
 
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
@@ -132,6 +135,9 @@ DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
       mode_(mode) {
   DCHECK(root_session_);
   DCHECK(!session_id_.empty());
+  session_state_cookie_ = blink::mojom::DevToolsSessionState::New();
+  session_state_cookie_->browser_originating_session_state =
+      blink::mojom::BrowserOriginatingSessionState::New();
 }
 
 DevToolsSession::~DevToolsSession() {
@@ -219,8 +225,10 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
       &DevToolsSession::MojoConnectionDestroyed, base::Unretained(this)));
 
   // Set cookie to an empty struct to reattach next time instead of attaching.
-  if (!session_state_cookie_)
-    session_state_cookie_ = blink::mojom::DevToolsSessionState::New();
+  if (!session_state_cookie_->renderer_originating_session_state) {
+    session_state_cookie_->renderer_originating_session_state =
+        blink::mojom::RendererOriginatingSessionState::New();
+  }
 
   // Only use script_to_evaluate_on_load_ once.
   script_to_evaluate_on_load_.clear();
@@ -558,7 +566,7 @@ void DevToolsSession::DispatchProtocolResponseOrNotification(
 void DevToolsSession::DispatchProtocolResponse(
     blink::mojom::DevToolsMessagePtr message,
     int call_id,
-    blink::mojom::DevToolsSessionStatePtr updates) {
+    blink::mojom::RendererOriginatingSessionStatePtr updates) {
   TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolResponse",
               perfetto::TerminatingFlow::ProcessScoped(call_id), "call_id",
               call_id);
@@ -577,7 +585,7 @@ void DevToolsSession::DispatchProtocolResponse(
 
 void DevToolsSession::DispatchProtocolNotification(
     blink::mojom::DevToolsMessagePtr message,
-    blink::mojom::DevToolsSessionStatePtr updates) {
+    blink::mojom::RendererOriginatingSessionStatePtr updates) {
   ApplySessionStateUpdates(std::move(updates));
   DispatchProtocolResponseOrNotification(client_, agent_host_,
                                          std::move(message), session_id_);
@@ -613,16 +621,21 @@ void DevToolsSession::ConnectionClosed() {
 }
 
 void DevToolsSession::ApplySessionStateUpdates(
-    blink::mojom::DevToolsSessionStatePtr updates) {
+    blink::mojom::RendererOriginatingSessionStatePtr updates) {
   if (!updates)
     return;
-  if (!session_state_cookie_)
-    session_state_cookie_ = blink::mojom::DevToolsSessionState::New();
+  if (!session_state_cookie_->renderer_originating_session_state) {
+    session_state_cookie_->renderer_originating_session_state =
+        blink::mojom::RendererOriginatingSessionState::New();
+  }
   for (auto& entry : updates->entries) {
-    if (entry.second.has_value())
-      session_state_cookie_->entries[entry.first] = std::move(*entry.second);
-    else
-      session_state_cookie_->entries.erase(entry.first);
+    if (entry.second.has_value()) {
+      session_state_cookie_->renderer_originating_session_state
+          ->entries[entry.first] = std::move(*entry.second);
+    } else {
+      session_state_cookie_->renderer_originating_session_state->entries.erase(
+          entry.first);
+    }
   }
 }
 

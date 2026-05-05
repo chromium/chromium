@@ -203,10 +203,10 @@ class DevToolsSession : public protocol::FrontendChannel,
   void DispatchProtocolResponse(
       blink::mojom::DevToolsMessagePtr message,
       int call_id,
-      blink::mojom::DevToolsSessionStatePtr updates) override;
+      blink::mojom::RendererOriginatingSessionStatePtr updates) override;
   void DispatchProtocolNotification(
       blink::mojom::DevToolsMessagePtr message,
-      blink::mojom::DevToolsSessionStatePtr updates) override;
+      blink::mojom::RendererOriginatingSessionStatePtr updates) override;
 
   // DevToolsExternalAgentProxy implementation.
   void DispatchOnClientHost(base::span<const uint8_t> message) override;
@@ -219,7 +219,8 @@ class DevToolsSession : public protocol::FrontendChannel,
       const std::string& session_id);
 
   // Merges the |updates| received from the renderer into session_state_cookie_.
-  void ApplySessionStateUpdates(blink::mojom::DevToolsSessionStatePtr updates);
+  void ApplySessionStateUpdates(
+      blink::mojom::RendererOriginatingSessionStatePtr updates);
 
   template <typename T>
   bool IsDomainAvailableToUntrustedClient() {

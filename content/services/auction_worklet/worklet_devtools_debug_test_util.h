@@ -80,10 +80,10 @@ class TestDevToolsAgentClient : public blink::mojom::DevToolsSessionHost {
   void DispatchProtocolResponse(
       blink::mojom::DevToolsMessagePtr message,
       int32_t call_id,
-      blink::mojom::DevToolsSessionStatePtr updates) override;
+      blink::mojom::RendererOriginatingSessionStatePtr updates) override;
   void DispatchProtocolNotification(
       blink::mojom::DevToolsMessagePtr message,
-      blink::mojom::DevToolsSessionStatePtr updates) override;
+      blink::mojom::RendererOriginatingSessionStatePtr updates) override;
 
  private:
   void LogEvent(Event::Type type,

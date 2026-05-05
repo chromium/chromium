@@ -21,16 +21,26 @@ using testing::UnorderedElementsAre;
 // reimplementation to allow testing without sending data through a Mojo pipe.
 class FakeDevToolsSession {
  public:
-  void ApplyUpdates(DevToolsSessionStatePtr updates) {
+  void ApplyUpdates(mojom::blink::RendererOriginatingSessionStatePtr updates) {
     if (!updates)
       return;
-    if (!session_state_cookie_)
+    if (!session_state_cookie_) {
       session_state_cookie_ = DevToolsSessionState::New();
+      session_state_cookie_->renderer_originating_session_state =
+          mojom::blink::RendererOriginatingSessionState::New();
+    }
+    if (!session_state_cookie_->renderer_originating_session_state) {
+      session_state_cookie_->renderer_originating_session_state =
+          mojom::blink::RendererOriginatingSessionState::New();
+    }
     for (auto& entry : updates->entries) {
-      if (entry.value.has_value())
-        session_state_cookie_->entries.Set(entry.key, std::move(entry.value));
-      else
-        session_state_cookie_->entries.erase(entry.key);
+      if (entry.value.has_value()) {
+        session_state_cookie_->renderer_originating_session_state->entries.Set(
+            entry.key, std::move(entry.value));
+      } else {
+        session_state_cookie_->renderer_originating_session_state->entries
+            .erase(entry.key);
+      }
     }
   }
 
@@ -215,7 +225,8 @@ TEST(InspectorSessionStateTest, MapFields) {
 
   // The cookie should be empty since everything is cleared.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  EXPECT_TRUE(cookie->entries.empty());
+  EXPECT_TRUE(!cookie->renderer_originating_session_state ||
+              cookie->renderer_originating_session_state->entries.empty());
 }
 
 TEST(InspectorSessionStateTest, MultipleAgents) {
@@ -236,7 +247,8 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
   // Show that the keys for the field values are prefixed with the domain name
   // passed to AgentState so that the stored values won't collide.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  EXPECT_THAT(cookie->entries.Keys(),
+  ASSERT_TRUE(cookie->renderer_originating_session_state);
+  EXPECT_THAT(cookie->renderer_originating_session_state->entries.Keys(),
               UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
 
   {  // Renderer session, maps_agent clears its fields, and show that it will
@@ -265,6 +277,9 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
 
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
   }
-  EXPECT_TRUE(dev_tools_session.CloneCookie()->entries.empty());
+  EXPECT_TRUE(
+      !dev_tools_session.CloneCookie()->renderer_originating_session_state ||
+      dev_tools_session.CloneCookie()
+          ->renderer_originating_session_state->entries.empty());
 }
 }  // namespace blink
