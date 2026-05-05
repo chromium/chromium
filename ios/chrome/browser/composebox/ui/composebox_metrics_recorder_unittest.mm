@@ -185,24 +185,24 @@ TEST_F(ComposeboxMetricsRecorderTest, FilesAttached) {
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
-  [recorder_ recordAttachCountAtSubmission:2
-                                   forType:ComposeboxInputItemType::
-                                               kComposeboxInputItemTypeTab];
+  [recorder_
+      recordAttachCountAtSubmission:2
+                            forType:ComposeboxMetricsAttachmentType::kTab];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Tab", 2, 1);
 
-  [recorder_ recordAttachCountAtSubmission:1
-                                   forType:ComposeboxInputItemType::
-                                               kComposeboxInputItemTypeImage];
+  [recorder_
+      recordAttachCountAtSubmission:1
+                            forType:ComposeboxMetricsAttachmentType::kImage];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Image", 1, 1);
 
-  [recorder_ recordAttachCountAtSubmission:3
-                                   forType:ComposeboxInputItemType::
-                                               kComposeboxInputItemTypeRawFile];
-  [recorder_ recordAttachCountAtSubmission:3
-                                   forType:ComposeboxInputItemType::
-                                               kComposeboxInputItemTypePDF];
+  [recorder_
+      recordAttachCountAtSubmission:3
+                            forType:ComposeboxMetricsAttachmentType::kRawFile];
+  [recorder_
+      recordAttachCountAtSubmission:3
+                            forType:ComposeboxMetricsAttachmentType::kRawFile];
   // PDF and raw file both write to the same `AttachmentCountAtSubmission.File`
   // bucket. 3 of each.
   histogram_tester_.ExpectBucketCount(

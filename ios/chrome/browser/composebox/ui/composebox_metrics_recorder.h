@@ -9,8 +9,6 @@
 
 #import <vector>
 
-#import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
-
 // LINT.IfChange(AiModeActivationSource)
 enum class AiModeActivationSource {
   kToolMenu = 0,
@@ -68,6 +66,13 @@ enum class ComposeboxDragAndDropType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType)
 
+// Represents the possible attachment types for metrics recording.
+enum class ComposeboxMetricsAttachmentType {
+  kImage,
+  kTab,
+  kRawFile,
+};
+
 // A metrics recorder object for the composebox.
 @interface ComposeboxMetricsRecorder : NSObject
 // Records the AI mode activation source.
@@ -109,7 +114,7 @@ enum class ComposeboxDragAndDropType {
 
 // Records the number of attachments of a given type at submission.
 - (void)recordAttachCountAtSubmission:(NSUInteger)count
-                              forType:(ComposeboxInputItemType)type;
+                              forType:(ComposeboxMetricsAttachmentType)type;
 
 // Records the number of images attached.
 - (void)recordImagesAttached:(NSUInteger)count;

@@ -53,14 +53,13 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
 }
 
 /// Returns a string mapping to the input item type.
-std::string GetStringForInputItemType(ComposeboxInputItemType type) {
+std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
   switch (type) {
-    case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
+    case ComposeboxMetricsAttachmentType::kTab:
       return "Tab";
-    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
+    case ComposeboxMetricsAttachmentType::kImage:
       return "Image";
-    case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile:
-    case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
+    case ComposeboxMetricsAttachmentType::kRawFile:
       return "File";
   }
 }
@@ -128,7 +127,7 @@ std::string GetStringForInputItemType(ComposeboxInputItemType type) {
 }
 
 - (void)recordAttachCountAtSubmission:(NSUInteger)count
-                              forType:(ComposeboxInputItemType)type {
+                              forType:(ComposeboxMetricsAttachmentType)type {
   std::string histogram_name =
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.";
   histogram_name += GetStringForInputItemType(type);

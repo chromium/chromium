@@ -1396,17 +1396,14 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                             [self currentAutocompleteRequestType]];
   [self.metricsRecorder
       recordAttachCountAtSubmission:_items.tabsCount
-                            forType:ComposeboxInputItemType::
-                                        kComposeboxInputItemTypeTab];
+                            forType:ComposeboxMetricsAttachmentType::kTab];
   [self.metricsRecorder
       recordAttachCountAtSubmission:_items.imagesCount
-                            forType:ComposeboxInputItemType::
-                                        kComposeboxInputItemTypeImage];
+                            forType:ComposeboxMetricsAttachmentType::kImage];
   // Raw file is used as the metric type is the same for raw files and PDFs.
   [self.metricsRecorder
       recordAttachCountAtSubmission:_items.filesCount
-                            forType:ComposeboxInputItemType::
-                                        kComposeboxInputItemTypeRawFile];
+                            forType:ComposeboxMetricsAttachmentType::kRawFile];
   [_stateManager recordInputStateOnSubmission];
 }
 
