@@ -5327,7 +5327,7 @@
       "mcnee@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name": "glic-experimental-triggering",
