@@ -276,7 +276,6 @@ void StubSearchboxHandler::SetupWebUIDataSource(
   source->AddString("searchboxComposePlaceholder", "");
   source->AddString("suggestionActivityLink", "");
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);
-  source->AddBoolean("composeboxShowVoiceSearch", false);
   source->AddBoolean("contextualMenuUsePecApi", false);
   source->AddBoolean("ShowContextMenuHeaders", false);
   source->AddBoolean("thinkingModelIconUpdate", false);
