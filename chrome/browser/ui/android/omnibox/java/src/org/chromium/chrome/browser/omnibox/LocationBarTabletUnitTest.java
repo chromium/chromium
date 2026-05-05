@@ -136,7 +136,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(expansionPx, mLocationBarTablet.getPaddingLeft());
         assertEquals(expansionPx, mLocationBarTablet.getPaddingRight());
         assertEquals(expansionPx, mLocationBarTablet.getPaddingTop());
-        assertEquals(1.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
+        assertEquals(1.0f, mHolderView.getTranslationZ(), MathUtils.EPSILON);
         assertNull(mLocationBarTablet.getOutlineProvider());
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
         layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
@@ -152,7 +152,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(0, mLocationBarTablet.getPaddingLeft());
         assertEquals(0, mLocationBarTablet.getPaddingRight());
         assertEquals(0, mLocationBarTablet.getPaddingTop());
-        assertEquals(0.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
+        assertEquals(0.0f, mHolderView.getTranslationZ(), MathUtils.EPSILON);
         assertEquals(mOutlineProvider, mLocationBarTablet.getOutlineProvider());
     }
 

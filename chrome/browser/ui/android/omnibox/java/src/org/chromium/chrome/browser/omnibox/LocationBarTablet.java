@@ -133,7 +133,6 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
         mUnfocusedDrawable = (LayerDrawable) getBackground();
         mUnfocusedDrawable.mutate();
 
@@ -520,7 +519,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             setMarginsForWindowWidth(parentParams, expansionPx);
             parentParams.gravity = Gravity.TOP;
             setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
-            setTranslationZ(OVERLAY_Z_TRANSLATION);
+            mHolder.setTranslationZ(OVERLAY_Z_TRANSLATION);
             // Call super to avoid overwriting our locally saved reference to our OutlineProvider.
             // Null out the outline provider to avoid casting a shadow on views with translationZ
             // lower than ours.
@@ -536,7 +535,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     resources.getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
             parentParams.gravity = Gravity.CENTER_VERTICAL;
             setPadding(0, 0, 0, getPaddingBottom());
-            setTranslationZ(NEUTRAL_Z_TRANSLATION);
+            mHolder.setTranslationZ(NEUTRAL_Z_TRANSLATION);
             super.setOutlineProvider(mOutlineProvider);
             ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
