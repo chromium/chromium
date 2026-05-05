@@ -119,6 +119,15 @@ class MockContextualTasksUI : public ContextualTasksUI {
   explicit MockContextualTasksUI(content::WebUI* web_ui)
       : ContextualTasksUI(web_ui) {}
   ~MockContextualTasksUI() override = default;
+
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateContextualSessionHandle() override {
+    return session_handle_ptr_;
+  }
+  void SetSessionHandle(
+      contextual_search::ContextualSearchSessionHandle* handle) {
+    session_handle_ptr_ = handle;
+  }
   MOCK_METHOD(void,
               PostMessageToWebview,
               (const lens::ClientToAimMessage& message),
@@ -137,6 +146,10 @@ class MockContextualTasksUI : public ContextualTasksUI {
               GetAutoSuggestionManager,
               (),
               (override));
+
+ private:
+  raw_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_ptr_ = nullptr;
 };
 
 class TestContextualTasksComposeboxHandler
@@ -148,6 +161,10 @@ class TestContextualTasksComposeboxHandler
               GetLensOverlayToken,
               (),
               (override));
+  MOCK_METHOD(LensSearchController*,
+              GetLensSearchController,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               OnContextUploadStatusChanged,
               (const base::UnguessableToken& context_token,
@@ -328,12 +345,14 @@ class ContextualTasksComposeboxHandlerTest
     session_handle_ =
         service_->GetSession(contextual_session_handle->session_id(),
                              /*invocation_source=*/std::nullopt);
+    session_handle_->CheckSearchContentSharingSettings(profile()->GetPrefs());
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
         ->SetTaskSession(std::nullopt, std::move(contextual_session_handle),
                          /*input_state_model=*/nullptr);
 
     mock_ui_ =
         std::make_unique<testing::NiceMock<MockContextualTasksUI>>(&web_ui_);
+    mock_ui_->SetSessionHandle(session_handle_.get());
     ON_CALL(*mock_ui_, GetWebUIWebContents())
         .WillByDefault(testing::Return(web_contents()));
     ON_CALL(*mock_ui_, GetTaskId())
@@ -370,6 +389,8 @@ class ContextualTasksComposeboxHandlerTest
                             base::Unretained(mock_ui_.get())),
         base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                             base::Unretained(mock_ui_.get())));
+    ON_CALL(*handler_, GetLensSearchController())
+        .WillByDefault(testing::Return(mock_lens_controller_.get()));
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
     handler_->recontextualizer_ =
         std::make_unique<contextual_tasks::QueryContextualizer>(
@@ -424,6 +445,7 @@ class ContextualTasksComposeboxHandlerTest
     mock_contextual_tasks_service_ptr_ = nullptr;
     mock_tab_controller_ = nullptr;
     mock_lens_controller_ = nullptr;
+    mock_ui_->SetSessionHandle(nullptr);
     session_handle_.reset();
     service_.reset();
     mock_ui_.reset();
@@ -2596,9 +2618,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
   // Set up uploaded tokens in the session handle used by the handler.
-  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-      ->session_handle()
-      ->CreateContextToken();
+  session_handle_->CreateContextToken();
 
   // Mock GetLensOverlayToken.
   EXPECT_CALL(*handler_, GetLensOverlayToken())
@@ -2809,6 +2829,84 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   searchbox_page_receiver_.FlushForTesting();
   EXPECT_FALSE(mock_ui_->IsActiveTabContextSuggestionShowing());
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       UpdateSuggestedTabContext_ForceAllowWhenUploadedViaLens) {
+  // 1. Explicitly disable the auto suggestion chip feature param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasks,
+      {{"ContextualTasksTabAutoSuggestionChipEnabled", "false"}});
+
+  GURL url("https://example.com");
+  AddTab(browser(), url);
+  auto create_tab_info = [&]() {
+    auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+    info->url = url;
+    info->title = u"Example";
+    info->tab_id = TabListInterface::From(browser())
+                       ->GetActiveTab()
+                       ->GetHandle()
+                       .raw_value();
+    return info;
+  };
+
+  // 2. Set the bool flag on the session handle!
+  session_handle_->set_is_contextual_lens_session(true);
+
+  // 3. Expect the suggestion IS ALLOWED despite the feature flag being
+  // disabled, because dynamic enabling sees the session bool!
+  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+        EXPECT_TRUE(!received_info.is_null())
+            << "Expected a non-null pointer because session was contextual.";
+      });
+
+  auto_suggestion_manager_.SetCurrentSuggestion(create_tab_info());
+  handler_->UpdateSuggestedTabContext(
+      auto_suggestion_manager_.GetCurrentSuggestion());
+
+  searchbox_page_receiver_.FlushForTesting();
+  EXPECT_TRUE(mock_ui_->IsActiveTabContextSuggestionShowing());
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       UpdateSuggestedTabContext_NoForceAllowWhenVisualQuery) {
+  // 1. Explicitly disable the auto suggestion chip feature param.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasks,
+      {{"ContextualTasksTabAutoSuggestionChipEnabled", "false"}});
+
+  GURL url("https://example.com");
+  AddTab(browser(), url);
+  auto create_tab_info = [&]() {
+    auto info = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+    info->url = url;
+    info->title = u"Example";
+    info->tab_id = TabListInterface::From(browser())
+                       ->GetActiveTab()
+                       ->GetHandle()
+                       .raw_value();
+    return info;
+  };
+
+  // 2. Keep the bool flag on the session handle as false!
+  session_handle_->set_is_contextual_lens_session(false);
+
+  // 3. Expect the suggestion IS NOT ALLOWED because it wasn't a text query.
+  EXPECT_CALL(mock_searchbox_page_, UpdateAutoSuggestedTabContext(testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info) {
+        EXPECT_TRUE(received_info.is_null())
+            << "Expected a null pointer because it was a visual query.";
+      });
+
+  auto_suggestion_manager_.SetCurrentSuggestion(create_tab_info());
+  handler_->UpdateSuggestedTabContext(
+      auto_suggestion_manager_.GetCurrentSuggestion());
+
+  searchbox_page_receiver_.FlushForTesting();
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {

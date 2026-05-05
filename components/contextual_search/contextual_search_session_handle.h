@@ -60,6 +60,14 @@ class ContextualSearchSessionHandle {
     return invocation_source_;
   }
 
+  bool is_contextual_lens_session() const {
+    return is_contextual_lens_session_;
+  }
+
+  void set_is_contextual_lens_session(bool is_contextual_lens_session) {
+    is_contextual_lens_session_ = is_contextual_lens_session;
+  }
+
   // Returns the ContextualSearchContextController reference held by this
   // handle or nullptr if the session is not valid.
   virtual ContextualSearchContextController* GetController() const;
@@ -228,6 +236,11 @@ class ContextualSearchSessionHandle {
 
   // The invocation source to send with generated search URLs or query payloads.
   const std::optional<lens::LensOverlayInvocationSource> invocation_source_;
+
+  // Whether this session was initiated by a contextual Lens query. This could
+  // apply to entrypoints like contextual suggestions in the Omnibox or the
+  // contextual searchbox within the Lens overlay.
+  bool is_contextual_lens_session_ = false;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

@@ -481,6 +481,10 @@ void LensQueryFlowRouter::OnContextualizedComplete(
         !request_info->image_crop.has_value() &&
         request_info->search_url_type == SearchUrlType::kAim;
 
+    if (is_contextual_text_query) {
+      effective_session_handle->set_is_contextual_lens_session(true);
+    }
+
     // We do not add the token to file_tokens here because
     // CreateSearchUrl will automatically add all uploaded context tokens from
     // the session if file_tokens is empty.
