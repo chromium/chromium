@@ -60,7 +60,11 @@ std::string MachineIdProvider::GetMachineId() const {
       sizeof(STORAGE_PROPERTY_QUERY), &header,
       sizeof(STORAGE_DESCRIPTOR_HEADER), &bytes_returned, nullptr);
 
-  if (!status) {
+  // Some drivers might return an unexpectedly small size (e.g., 0 or 8 bytes)
+  // which can cause out-of-bounds reads when casting to
+  // STORAGE_DEVICE_DESCRIPTOR. Ensure the size is at least large enough to
+  // contain the descriptor structure.
+  if (!status || header.Size < sizeof(STORAGE_DEVICE_DESCRIPTOR)) {
     return std::string();
   }
 
