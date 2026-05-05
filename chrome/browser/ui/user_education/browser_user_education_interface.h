@@ -218,9 +218,14 @@ class BrowserUserEducationInterface {
   // its tabstrip, or null if `contents` is not a tab in any known browser.
   //
   // For WebUI embedded in a specific browser window or secondary UI of a
-  // browser window, instead just use the appropriate BrowserWindow[Interface]
-  // for that window.
+  // browser window, instead use `MaybeGetForWebUiContents()`.
   static BrowserUserEducationInterface* MaybeGetForWebContentsInTab(
+      content::WebContents* contents);
+
+  // Returns the interface associated with the browser containing `contents` in
+  // a WebUI. Returns null if it cannot determine the associated browser. Use
+  // this function for secondary UI (side panels, dialogs, etc.)
+  static BrowserUserEducationInterface* MaybeGetForWebUiContents(
       content::WebContents* contents);
 
   // Retrieves from the a browser window interface, or null if none.

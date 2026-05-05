@@ -47,6 +47,7 @@ source_set("impl") {
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/webui:webui_util",
     "//components/user_education/webui",
     "//ui/base/unowned_user_data",
   ]

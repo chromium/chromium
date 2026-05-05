@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -26,6 +27,14 @@ BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
     content::WebContents* contents) {
   auto* const tab = tabs::TabInterface::MaybeGetFromContents(contents);
   return tab ? From(tab->GetBrowserWindowInterface()) : nullptr;
+}
+
+// static
+BrowserUserEducationInterface*
+BrowserUserEducationInterface::MaybeGetForWebUiContents(
+    content::WebContents* contents) {
+  auto* const browser = webui::GetBrowserWindowInterface(contents);
+  return browser ? BrowserUserEducationInterface::From(browser) : nullptr;
 }
 
 // static
