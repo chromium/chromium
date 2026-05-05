@@ -1012,9 +1012,19 @@ public class LocationBarMediatorTest {
         doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
 
+        clearInvocations(mUrlCoordinator);
+
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_DEL, mKeyEvent));
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         assertNull(state.getAutocompleteInput().getSiteSearchData());
+
+        ArgumentCaptor<UrlBarData> urlBarDataCaptor = ArgumentCaptor.forClass(UrlBarData.class);
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        urlBarDataCaptor.capture(),
+                        eq(UrlBar.ScrollType.NO_SCROLL),
+                        eq(UrlBarData.SELECT_END));
+        assertEquals("keyword", urlBarDataCaptor.getValue().displayText.toString());
     }
 
     @Test
