@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,13 +41,14 @@ static_assert(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST -
               "target devices in chrome_command_ids.h");
 
 void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
+                               std::string_view device_name,
                                SendTabToSelfResult result) {
   switch (result) {
     case SendTabToSelfResult::kSuccess:
     case SendTabToSelfResult::kSuccessThrottled:
       if (web_contents &&
           base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
-        ShowTabSentSuccessToast(web_contents.get());
+        ShowTabSentSuccessToast(web_contents.get(), device_name);
       }
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:
@@ -161,7 +164,8 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
     handler->SendTabToDevice(
         devices_[device_index].cache_guid, web_contents_->GetLastCommittedURL(),
         base::UTF16ToUTF8(web_contents_->GetTitle()),
-        base::BindOnce(&OnSendTabToDeviceComplete, web_contents_));
+        base::BindOnce(&OnSendTabToDeviceComplete, web_contents_,
+                       devices_[device_index].device_name));
   }
 }
 

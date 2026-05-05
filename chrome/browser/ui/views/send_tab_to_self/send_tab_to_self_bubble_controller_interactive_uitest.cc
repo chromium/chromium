@@ -1,6 +1,7 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <string_view>
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
       Do([this]() {
         SendTabToSelfBubbleController::CreateOrGetFromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents())
-            ->OnDeviceSelected("device_1");
+            ->OnDeviceSelected("device_1", "device_1");
       }),
       WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
       Screenshot(toasts::ToastView::kToastViewId,

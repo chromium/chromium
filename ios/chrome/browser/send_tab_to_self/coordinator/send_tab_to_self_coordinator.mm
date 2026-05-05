@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <optional>
+#import <string_view>
 #import <utility>
 
 #import "base/apple/foundation_util.h"
@@ -18,6 +19,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/features.h"
@@ -94,7 +96,8 @@ void DisplaySendToSelfSnackbar(id<SnackbarCommands> snackbar_handler,
   [snackbar_handler showSnackbarMessage:message];
 }
 
-void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler) {
+void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler,
+                                      std::string_view device_name) {
   CHECK(
       base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfPostSendToast));
   // `snackbar_handler` can be nil if the command dispatcher was already
@@ -105,12 +108,14 @@ void DisplaySendToSelfSuccessSnackbar(id<SnackbarCommands> snackbar_handler) {
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* text =
-      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST);
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                              base::UTF8ToUTF16(device_name));
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   [snackbar_handler showSnackbarMessage:message];
 }
 
 void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
+                             std::string_view device_name,
                              send_tab_to_self::SendTabToSelfResult result) {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPostSendToast)) {
@@ -123,9 +128,9 @@ void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
       // Post to the main thread to safely present the snackbar and allow the
       // current call stack to unwind.
       web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(^{
-            DisplaySendToSelfSuccessSnackbar(snackbar_handler);
-          }));
+          FROM_HERE,
+          base::BindOnce(&DisplaySendToSelfSuccessSnackbar, snackbar_handler,
+                         std::string(device_name)));
       break;
     }
     case send_tab_to_self::SendTabToSelfResult::kFailureNotTrackingMetadata:
@@ -445,11 +450,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
-      ->SendEntry(
-          self.url, base::SysNSStringToUTF8(self.title),
-          base::SysNSStringToUTF8(cacheGUID), pageContext,
-          send_tab_to_self::NavigationHistory(),
-          base::BindOnce(&SendTabToDeviceComplete, snackbarHandler));
+      ->SendEntry(self.url, base::SysNSStringToUTF8(self.title),
+                  base::SysNSStringToUTF8(cacheGUID), pageContext,
+                  send_tab_to_self::NavigationHistory(),
+                  base::BindOnce(&SendTabToDeviceComplete, snackbarHandler,
+                                 base::SysNSStringToUTF8(deviceName)));
 
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPostSendToast)) {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -53,7 +54,8 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
 
   MOCK_METHOD(void,
               OnDeviceSelected,
-              (const std::string& target_device_guid),
+              (const std::string& target_device_guid,
+               std::string_view device_name),
               (override));
 };
 
@@ -114,7 +116,7 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewTest,
 }
 
 TEST_F(SendTabToSelfDevicePickerBubbleViewTest, ButtonPressed) {
-  EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3"));
+  EXPECT_CALL(*controller_, OnDeviceSelected("device_guid_3", "Device_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
 

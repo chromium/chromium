@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -35,7 +37,8 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
 
 // Shows a success toast confirming that the tab was successfully sent, if
 // `kSendTabToSelfPostSendToast` is enabled.
-void ShowTabSentSuccessToast(content::WebContents* web_contents);
+void ShowTabSentSuccessToast(content::WebContents* web_contents,
+                             std::string_view device_name);
 
 }  // namespace send_tab_to_self
 

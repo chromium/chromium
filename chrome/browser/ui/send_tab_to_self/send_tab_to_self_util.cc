@@ -6,9 +6,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -90,12 +92,19 @@ base::WeakPtr<content::WebContents> OpenEntryInNewBackgroundTab(
       profile, entry, WindowOpenDisposition::NEW_BACKGROUND_TAB);
 }
 
-void ShowTabSentSuccessToast(content::WebContents* web_contents) {
+void ShowTabSentSuccessToast(content::WebContents* web_contents,
+                             std::string_view device_name) {
   ToastController* toast_controller =
       ToastController::MaybeGetForWebContents(web_contents);
   if (toast_controller) {
-    toast_controller->MaybeShowToast(
-        ToastParams(ToastId::kSendTabToSelfSuccess));
+    ToastParams params(ToastId::kSendTabToSelfSuccess);
+    // TODO(mtatarski): The string "Sent to Chrome on your [device]" only really
+    // makes sense if `device_name` is a device type/class (e.g. "iPhone" or "Pixel"),
+    // not a custom name or hostname. Check with UX if we should use manufacturer
+    // + form factor to construct the device name where available, and how to
+    // handle edge cases like custom-made PCs.
+    params.body_string_replacement_params = {base::UTF8ToUTF16(device_name)};
+    toast_controller->MaybeShowToast(std::move(params));
   }
 }
 

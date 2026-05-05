@@ -146,7 +146,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  controller->OnDeviceSelected("device_1");
+  sync_service->GetModelFake()->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
+      "device_name_1", "device_1", syncer::DeviceInfo::FormFactor::kDesktop,
+      base::Time::Now())});
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
   ExpectToastShown();
@@ -167,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   ASSERT_TRUE(sync_service);
 
   sync_service->GetModelFake()->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-      "device_1", "device_1", syncer::DeviceInfo::FormFactor::kDesktop,
+      "device_name_1", "device_1", syncer::DeviceInfo::FormFactor::kDesktop,
       base::Time::Now())});
 
   TestSendTabToSelfModelObserver observer(
@@ -221,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1");
+  controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
   // Test that the entry was added with the correct URL.
@@ -264,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1");
+  controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
   // Test that the entry was added with the correct URL.
@@ -322,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   base::HistogramTester histogram_tester;
-  controller->OnDeviceSelected("device_1");
+  controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
   // Test that the entry was added with the correct URL.

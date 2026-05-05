@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -177,7 +178,8 @@ SendTabToSelfBubbleController::GetEntryPointDisplayReason() {
 }
 
 void SendTabToSelfBubbleController::OnDeviceSelected(
-    const std::string& target_device_guid) {
+    const std::string& target_device_guid,
+    std::string_view device_name) {
   // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
   // instead the 2 codepaths should share code.
   SendTabToSelfPageHandler* handler =
@@ -188,7 +190,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
       target_device_guid, url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
       base::BindOnce(
           &SendTabToSelfBubbleController::HandleSendTabToDeviceResult,
-          weak_ptr_factory_.GetWeakPtr(), url));
+          weak_ptr_factory_.GetWeakPtr(), url, std::string(device_name)));
 }
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
@@ -231,12 +233,13 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
 
 void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     const GURL& url,
+    std::string_view device_name,
     SendTabToSelfResult result) {
   switch (result) {
     case SendTabToSelfResult::kSuccess:
     case SendTabToSelfResult::kSuccessThrottled:
       if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
-        ShowTabSentSuccessToast(&GetWebContents());
+        ShowTabSentSuccessToast(&GetWebContents(), device_name);
       }
       break;
     case SendTabToSelfResult::kFailureInvalidUrl:

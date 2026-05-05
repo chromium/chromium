@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -69,7 +70,8 @@ class SendTabToSelfBubbleController
   // Handles the action when the user click on one valid device. Sends tab to
   // the target device.
   // Virtual for testing.
-  virtual void OnDeviceSelected(const std::string& target_device_guid);
+  virtual void OnDeviceSelected(const std::string& target_device_guid,
+                                std::string_view device_name);
 
   // Handler for when user clicks the link to manage their available devices.
   void OnManageDevicesClicked(const ui::Event& event);
@@ -111,7 +113,9 @@ class SendTabToSelfBubbleController
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
-  void HandleSendTabToDeviceResult(const GURL& url, SendTabToSelfResult result);
+  void HandleSendTabToDeviceResult(const GURL& url,
+                                   std::string_view device_name,
+                                   SendTabToSelfResult result);
   void OnSendFailed(const GURL& url);
 
   // Weak reference. Will be nullptr if no bubble is currently shown.

@@ -89,7 +89,8 @@ public class DevicePickerBottomSheetContentTest {
 
         mDevices =
                 Arrays.asList(
-                        new TargetDeviceInfo("Device", "guid", FormFactor.DESKTOP, "Active today"));
+                        new TargetDeviceInfo(
+                                "Pixel 10", "guid", FormFactor.DESKTOP, "Active today"));
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
     }
@@ -151,8 +152,7 @@ public class DevicePickerBottomSheetContentTest {
 
         // Verify that the completion success toast was shown.
         Assert.assertTrue(
-                ShadowToast.showedCustomToast(
-                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+                ShadowToast.showedCustomToast("Sent to Chrome on your Pixel 10.", R.id.toast_text));
     }
 
     @Test
@@ -186,8 +186,7 @@ public class DevicePickerBottomSheetContentTest {
 
         // Verify that the completion success toast was shown even when throttled.
         Assert.assertTrue(
-                ShadowToast.showedCustomToast(
-                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+                ShadowToast.showedCustomToast("Sent to Chrome on your Pixel 10.", R.id.toast_text));
     }
 
     @Test
@@ -221,8 +220,7 @@ public class DevicePickerBottomSheetContentTest {
 
         // Verify that the completion success toast was NOT shown.
         Assert.assertFalse(
-                ShadowToast.showedCustomToast(
-                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+                ShadowToast.showedCustomToast("Sent to Chrome on your Pixel 10.", R.id.toast_text));
     }
 
     @Test
@@ -256,7 +254,6 @@ public class DevicePickerBottomSheetContentTest {
 
         // The completion success toast should not be shown when the feature flag is disabled.
         Assert.assertFalse(
-                ShadowToast.showedCustomToast(
-                        "Sent. Open Chrome on your other device.", R.id.toast_text));
+                ShadowToast.showedCustomToast("Sent to Chrome on your Pixel 10.", R.id.toast_text));
     }
 }

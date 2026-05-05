@@ -256,7 +256,8 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   // Wait for and verify the success snackbar message.
   NSString* successMessage =
-      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST);
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                              base::SysNSStringToUTF16(kTargetDeviceName));
   id<GREYMatcher> snackbarMatcher =
       grey_allOf(chrome_test_util::SnackbarViewMatcher(),
                  grey_descendant(grey_accessibilityLabel(successMessage)), nil);
