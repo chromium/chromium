@@ -477,9 +477,9 @@ TEST_P(BoxPaintInvalidatorTest, BorderShapeBoxShadowChange) {
   ScopedCSSBorderShapeForTest scoped_border_shape(true);
   // Test that changing box-shadow on an element with border-shape does not
   // cause under-invalidation (crbug.com/483350719).
-  // For border-shape, the shadow is painted via ExpandPathWithStroke(
-  // outer_path, spread * 2), so the full shadow extent from the outer path
-  // is (spread + sigma_3), matching BoxDecorationOutsets().
+  // For border-shape, the shadow is painted via OuterPathWithOffset(style,
+  // outer_reference_rect, spread), so the full shadow extent from the outer
+  // path is (spread + sigma_3), matching BoxDecorationOutsets().
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {

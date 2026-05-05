@@ -58,19 +58,14 @@ class BorderShapePainter {
                                   const PhysicalRect& outer_reference_rect,
                                   float offset);
 
-  // Returns the union of |path| and its stroke at |stroke_thickness|,
-  // matching the shape used when painting border-shape shadows. Shared
-  // between painting (BoxPainterBase) and ink overflow (VisualOutsets).
-  static Path ExpandPathWithStroke(const Path& path, float stroke_thickness);
-
   // Returns the complete ink overflow outsets for a border-shape element:
   // both the visual extent of the border path (where the border stroke/fill
   // draws outside the border box) and the visual extent of any normal
   // (non-inset) box-shadows.
   //
   // Shadow outsets are computed by replicating the exact path the painter
-  // builds — ExpandPathWithStroke(OuterPath, spread*2) — then outset
-  // by sigma_3 = ceil(3*sigma), which is how Skia bounds a box blur.
+  // builds — OuterPathWithOffset(style, outer_reference_rect, spread) — then
+  // outset by sigma_3 = ceil(3*sigma), which is how Skia bounds a box blur.
   // This is more precise than BoxDecorationOutsets(), which omits the blur
   // term from the path expansion. Callers should Unite (not Expand/add) with
   // existing outsets so that these path-based shadow bounds supersede the

@@ -34,6 +34,40 @@ Path OuterPathWithoutStroke(const ComputedStyle& style,
                                            style.EffectiveZoom(), 1);
 }
 
+StrokeData GetStrokeData(const StyleBorderShape& border_shape,
+                         float thickness) {
+  StrokeData stroke_data;
+  stroke_data.SetThickness(thickness);
+
+  // If the shape is a polygon, check if the CSS `round <length>` modifier was
+  // used. If so, we change the join type to round to handle two scenarios:
+  //
+  //  1) Floating-point noise: When a rounding radius consumes segment length
+  //  within an epsilon distance of the midpoint of the first and second points,
+  //  floating-point noise in the `lineTo` calculation can cause slight jitter.
+  //  Although the distance is small, it can result in a large turning angle,
+  //  causing a miter join to spike outwards. Round and bevel joins are
+  //  guaranteed to stay within the stroke width, avoiding this. See:
+  //  https://g-issues.chromium.org/issues/504697281
+  //
+  //  2) Bevel flattening: While a bevel join avoids the miter spike, consider
+  //  a rounded polygon with a thick stroke and a corner segment smaller than
+  //  `kMinRoundingThreshold`. If the stroke is thick enough, a bevel join
+  //  will draw a visually noticeable flat edge. A round join prevents this.
+  //
+  // Since all points on the path produced by rounding the polygon must be
+  // collinear with the original line segments, any movement (and resulting
+  // joins) caused by floating-point noise is, by definition, visually
+  // negligible.
+  const BasicShape& outer_shape = border_shape.OuterShape();
+  if (outer_shape.GetType() == BasicShape::kBasicShapePolygonType &&
+      To<BasicShapePolygon>(outer_shape).HasRoundingRadius()) {
+    stroke_data.SetLineJoin(kRoundJoin);
+  }
+
+  return stroke_data;
+}
+
 }  // namespace
 
 Path BorderShapePainter::OuterPath(const ComputedStyle& style,
@@ -52,8 +86,8 @@ Path BorderShapePainter::OuterPath(const ComputedStyle& style,
   }
 
   // Add stroke to the outer path, if we don't have an inner one.
-  StrokeData stroke_data;
-  stroke_data.SetThickness(derived_stroke.thickness);
+  StrokeData stroke_data =
+      GetStrokeData(*style.BorderShape(), derived_stroke.thickness);
   SkOpBuilder builder;
   builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
   Path stroke_path = outer_path.StrokePath(stroke_data, AffineTransform());
@@ -82,33 +116,14 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
     return inner_path;
   }
 
-  StrokeData stroke_data;
-  stroke_data.SetThickness(derived_stroke.thickness);
+  StrokeData stroke_data =
+      GetStrokeData(*style.BorderShape(), derived_stroke.thickness);
   Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
   SkOpBuilder builder;
   builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
   builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
   SkPath result;
   return builder.resolve(&result) ? Path(result) : inner_path;
-}
-
-// static
-Path BorderShapePainter::ExpandPathWithStroke(const Path& path,
-                                              float stroke_thickness) {
-  if (stroke_thickness <= 0) {
-    return path;
-  }
-  StrokeData stroke_data;
-  stroke_data.SetThickness(stroke_thickness);
-  Path stroke_path = path.StrokePath(stroke_data, AffineTransform());
-  SkOpBuilder builder;
-  builder.add(path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  SkPath result;
-  if (builder.resolve(&result)) {
-    return Path(result);
-  }
-  return path;
 }
 
 Path BorderShapePainter::OuterPathWithOffset(
@@ -122,8 +137,8 @@ Path BorderShapePainter::OuterPathWithOffset(
     return outer_path;
   }
 
-  StrokeData stroke_data;
-  stroke_data.SetThickness(std::abs(offset) * 2);
+  StrokeData stroke_data =
+      GetStrokeData(*style.BorderShape(), std::abs(offset) * 2);
   Path stroke_path = outer_path.StrokePath(stroke_data, AffineTransform());
 
   SkOpBuilder builder;
@@ -177,8 +192,8 @@ static void PaintBorderShape(GraphicsContext& context,
 
   // When only a single <basic-shape> is given, the border is rendered as a
   // stroke with the relevant side’s computed border width as the stroke width.
-  StrokeData stroke_data;
-  stroke_data.SetThickness(stroke_thickness);
+  StrokeData stroke_data =
+      GetStrokeData(*style.BorderShape(), stroke_thickness);
   context.SetStrokeColor(color);
   context.SetStroke(stroke_data);
   context.StrokePath(outer_path, auto_dark_mode);
@@ -250,8 +265,8 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
 
   // For solid outline, stroke the center path with the outline width.
   if (outline_style == EBorderStyle::kSolid) {
-    StrokeData stroke_data;
-    stroke_data.SetThickness(static_cast<float>(outline_width));
+    StrokeData stroke_data =
+        GetStrokeData(*style.BorderShape(), static_cast<float>(outline_width));
     context.SetStrokeColor(outline_color);
     context.SetStroke(stroke_data);
     context.StrokePath(center_path, auto_dark_mode);
@@ -262,8 +277,8 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
         std::round(static_cast<float>(outline_width) / 3.0f);
     if (stroke_width < 1) {
       // Fall back to solid if too thin.
-      StrokeData stroke_data;
-      stroke_data.SetThickness(static_cast<float>(outline_width));
+      StrokeData stroke_data = GetStrokeData(*style.BorderShape(),
+                                             static_cast<float>(outline_width));
       context.SetStrokeColor(outline_color);
       context.SetStroke(stroke_data);
       context.StrokePath(center_path, auto_dark_mode);
@@ -276,8 +291,8 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
                                stroke_width / 2.0f;
     Path outer_stroke_path =
         OuterPathWithOffset(style, outer_reference_rect, outer_offset);
-    StrokeData outer_stroke_data;
-    outer_stroke_data.SetThickness(stroke_width);
+    StrokeData outer_stroke_data =
+        GetStrokeData(*style.BorderShape(), stroke_width);
     context.SetStrokeColor(outline_color);
     context.SetStroke(outer_stroke_data);
     context.StrokePath(outer_stroke_path, auto_dark_mode);
@@ -321,7 +336,7 @@ PhysicalBoxStrut BorderShapePainter::VisualOutsets(
 
   // Box-shadow visual bounds. BoxDecorationOutsets() uses (spread + sigma_3)
   // for shadows, but for border-shape the shadow path is built via:
-  //   ExpandPathWithStroke(outer_path, spread * 2)
+  //   OuterPathWithOffset(style, outer_reference_rect, spread)
   // giving a total visual extent of (spread + sigma_3). Replicate the
   // exact path the painter builds so the overflow bounds match the pixels
   // actually drawn.
