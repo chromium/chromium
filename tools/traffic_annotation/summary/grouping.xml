@@ -403,6 +403,7 @@ after discussions on the right group.
       <annotation id="device_management_enrollment"/>
       <annotation id="device_management_reporting"/>
       <annotation id="device_management_remote_commands"/>
+      <annotation id="private_verification_tokens_service_get_tokens"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

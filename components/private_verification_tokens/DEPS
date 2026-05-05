@@ -1,3 +1,16 @@
 include_rules = [
   "+base",
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+url",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+services/network/test",
+  ],
+  "run_all_unittests\\.cc": [
+    "+mojo/core/embedder",
+  ],
+}

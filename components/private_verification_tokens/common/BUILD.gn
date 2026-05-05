@@ -37,3 +37,33 @@ source_set("private_verification_tokens_token_unittest") {
     "//testing/gtest",
   ]
 }
+
+source_set("private_verification_tokens_fetcher") {
+  sources = [
+    "private_verification_tokens_fetcher.cc",
+    "private_verification_tokens_fetcher.h",
+  ]
+  deps = [
+    "//net",
+    "//services/network/public/mojom",
+  ]
+  public_deps = [
+    "//base",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("private_verification_tokens_fetcher_unittest") {
+  testonly = true
+  sources = [ "private_verification_tokens_fetcher_unittest.cc" ]
+  deps = [
+    ":private_verification_tokens_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
