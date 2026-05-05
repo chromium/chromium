@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "multistep_filter_internals.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/chrome/browser/ui/webui/multistep_filter_internals/"
+}
+
+source_set("multistep_filter_internals") {
+  sources = [
+    "multistep_filter_internals_page_handler.cc",
+    "multistep_filter_internals_page_handler.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//components/multistep_filter/core",
+    "//components/multistep_filter/core/logging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "multistep_filter_internals_page_handler_unittest.cc" ]
+
+  deps = [
+    ":multistep_filter_internals",
+    "//base/test:test_support",
+    "//components/multistep_filter/core",
+    "//components/multistep_filter/core/logging",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

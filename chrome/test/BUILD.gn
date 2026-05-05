@@ -7725,6 +7725,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/multistep_filter:unit_tests",
       "//chrome/browser/skills:unit_tests",
+      "//chrome/browser/ui/webui/multistep_filter_internals:unit_tests",
     ]
   }
 

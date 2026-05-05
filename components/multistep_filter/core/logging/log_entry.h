@@ -15,6 +15,7 @@ namespace multistep_filter {
 
 // Represents the types of events that can be logged by the Multistep Filter
 // system.
+// LINT.IfChange(LogEventType)
 enum class LogEventType {
   kNavigationStarted,
   kUrlEligibilityCheck,
@@ -34,8 +35,10 @@ enum class LogEventType {
   kServerRequestFailed,
   kServerResponseMalformed,
 };
+// LINT.ThenChange(//chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals.mojom:LogEventType)
 
 // Represents a single log entry for the Multistep Filter feature.
+// LINT.IfChange(LogEntry)
 struct LogEntry {
   // The time when the logged event occurred.
   base::Time timestamp = base::Time::Now();
@@ -71,6 +74,7 @@ struct LogEntry {
            LogEventType type,
            std::string_view source_etld_plus_1);
 };
+// LINT.ThenChange(//chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals.mojom:LogEntry)
 
 }  // namespace multistep_filter
 

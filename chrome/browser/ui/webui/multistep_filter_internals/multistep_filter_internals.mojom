@@ -1,0 +1,63 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module multistep_filter_internals.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+// Represents the types of events that can be logged by the Multistep Filter
+// system.
+// LINT.IfChange(LogEventType)
+enum LogEventType {
+  kNavigationStarted,
+  kUrlEligibilityCheck,
+  kAnnotationExtractionStarted,
+  kAnnotationsExtracted,
+  kSuggestionGenerationStarted,
+  kNoSupportedTasks,
+  kNoRelevantAnnotations,
+  kServerRequestSent,
+  kServerResponseReceived,
+  kSuggestionGenerated,
+  kSuggestionSuppressed,
+  kSuggestionCleared,
+  kUiShown,
+  kUiAccepted,
+  kUiDismissed,
+  kServerRequestFailed,
+  kServerResponseMalformed,
+};
+// LINT.ThenChange(//components/multistep_filter/core/logging/log_entry.h:LogEventType)
+
+// Represents a single log entry for the Multistep Filter feature.
+// LINT.IfChange(LogEntry)
+struct LogEntry {
+  mojo_base.mojom.Time timestamp;
+  int64 navigation_id;
+  LogEventType event_type;
+  string source_etld_plus_1;
+  mojo_base.mojom.DictionaryValue details;
+};
+// LINT.ThenChange(//components/multistep_filter/core/logging/log_entry.h:LogEntry)
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Get all logs that have been buffered so far.
+  GetBufferedLogs() => (array<LogEntry> logs);
+};
+
+// WebUI-side observer for log updates.
+interface Page {
+  // Notify the page that a new log entry has been added.
+  OnLogEntryAdded(LogEntry entry);
+};
+
+// Factory for creating the PageHandler.
+interface PageHandlerFactory {
+  // Create a PageHandler for the given Page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
