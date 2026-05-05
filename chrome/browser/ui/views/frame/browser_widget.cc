@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
@@ -356,7 +357,7 @@ void BrowserWidget::OnNativeWidgetDestroyed() {
   // destruction here.
   // TODO(crbug.com/413168662): Once clients have been migrated away from
   // closing Browsers via their NativeWidgets explore removing this completely.
-  browser->set_force_skip_warning_user_on_close(true);
+  UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
   browser->OnWindowClosing();
   Widget::OnNativeWidgetDestroyed();
   browser->SynchronouslyDestroyBrowser();

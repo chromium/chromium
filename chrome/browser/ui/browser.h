@@ -388,14 +388,6 @@ class Browser : public TabStripModelObserver,
     return creation_source_ == CreationSource::kSessionRestore;
   }
 
-  // Tells the browser whether it should skip showing any dialogs that ask the
-  // user to confirm that they want to close the browser when it is being
-  // closed.
-  void set_force_skip_warning_user_on_close(
-      bool force_skip_warning_user_on_close) {
-    force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
-  }
-
   // Sets whether the UI should be immediately updated when scheduled on a
   // test.
   void set_update_ui_immediately_for_testing() {
@@ -567,9 +559,6 @@ class Browser : public TabStripModelObserver,
   // TryToCloseWindow call.
   void ResetTryToCloseWindow();
 
-  // Figure out if there are tabs that have beforeunload handlers.
-  bool TabsNeedBeforeUnloadFired() const;
-
   // Browser closing consists of the following phases:
   //
   // 1. If the browser has WebContents with before unload handlers, then the
@@ -740,9 +729,6 @@ class Browser : public TabStripModelObserver,
 
   // Called each time the browser window is shown.
   void OnWindowDidShow();
-
-  bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
-  bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
 
   // Sets the browser's user title. Setting it to an empty string clears it.
   void SetWindowUserTitle(const std::string& user_title);
@@ -1298,9 +1284,6 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   WarnBeforeClosingCallback warn_before_closing_callback_;
-
-  // Tells if the browser should skip warning the user when closing the window.
-  bool force_skip_warning_user_on_close_ = false;
 
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -351,7 +352,7 @@ void LockedSessionWindowTracker::WillCloseAllTabs(
   // TODO (crbug.com/372362860): Add browser tests to test tab unload.
   Browser* const browser = static_cast<Browser*>(
       tab_strip_model->delegate()->GetBrowserWindowInterface());
-  browser->set_force_skip_warning_user_on_close(true);
+  UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
 }
 
 // ash::BrowserController::Observer Implementation

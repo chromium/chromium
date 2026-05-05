@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -506,8 +507,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
-  EXPECT_FALSE(boca_app_browser->ShouldRunUnloadListenerBeforeClosing(
-      boca_app_browser->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_FALSE(
+      UnloadController::From(boca_app_browser)
+          ->ShouldRunUnloadListenerBeforeClosing(
+              boca_app_browser->tab_strip_model()->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
@@ -533,8 +536,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_TRUE(
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
-  EXPECT_FALSE(boca_app_browser->ShouldRunUnloadListenerBeforeClosing(
-      boca_app_browser->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_FALSE(
+      UnloadController::From(boca_app_browser)
+          ->ShouldRunUnloadListenerBeforeClosing(
+              boca_app_browser->tab_strip_model()->GetActiveWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,

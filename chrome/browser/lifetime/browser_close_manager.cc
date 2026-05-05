@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
 
@@ -215,7 +216,8 @@ void BrowserCloseManager::CloseBrowsers() {
             browser_shutdown::ShouldIgnoreUnloadHandlers();
 
         Browser* const browser = browser_window->GetBrowserForMigrationOnly();
-        browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
+        UnloadController::From(browser_window)
+            ->set_force_skip_warning_user_on_close(ignore_unload_handlers);
         browser_window->GetWindow()->Close();
 
         if (ignore_unload_handlers) {

@@ -671,7 +671,7 @@ Browser::~Browser() {
     // `OnWindowClosing()` lifecycle hook. This may not be invoked during
     // Browser shutdown specifically in cases where clients directly reset
     // the Browser unique_ptr.
-    force_skip_warning_user_on_close_ = true;
+    UnloadController::From(this)->set_force_skip_warning_user_on_close(true);
     OnWindowClosing();
   }
 
@@ -932,7 +932,7 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
   // before-unload handlers by setting `force_skip_warning_user_on_close_` to
   // true or there are no pending downloads we need to prompt about) then
   // there's no need to warn.
-  if (force_skip_warning_user_on_close_) {
+  if (UnloadController::From(this)->force_skip_warning_user_on_close()) {
     return WarnBeforeClosingResult::kOkToClose;
   }
 
@@ -954,7 +954,7 @@ bool Browser::HandleBeforeClose() {
       [this]() -> BrowserWindowInterface::ClosingStatus {
     // If `force_skip_warning_user_` is true, then we should immediately
     // return true.
-    if (force_skip_warning_user_on_close_) {
+    if (UnloadController::From(this)->force_skip_warning_user_on_close()) {
       return BrowserWindowInterface::ClosingStatus::kPermitted;
     }
 
@@ -1000,18 +1000,6 @@ bool Browser::IsAttemptingToCloseBrowser() const {
   return UnloadController::From(this)->is_attempting_to_close_browser();
 }
 
-bool Browser::ShouldRunUnloadListenerBeforeClosing(
-    content::WebContents* web_contents) {
-  return !force_skip_warning_user_on_close_ &&
-         UnloadController::From(this)->ShouldRunUnloadEventsHelper(
-             web_contents);
-}
-
-bool Browser::RunUnloadListenerBeforeClosing(
-    content::WebContents* web_contents) {
-  return !force_skip_warning_user_on_close_ &&
-         UnloadController::From(this)->RunUnloadEventsHelper(web_contents);
-}
 
 void Browser::SetWindowUserTitle(const std::string& user_title) {
   user_title_ = user_title;
@@ -1772,10 +1760,6 @@ bool Browser::HandleKeyboardEvent(content::WebContents* source,
          window()->HandleKeyboardEvent(event);
 }
 
-bool Browser::TabsNeedBeforeUnloadFired() const {
-  return UnloadController::From(this)->TabsNeedBeforeUnloadFired();
-}
-
 bool Browser::CanDragEnter(content::WebContents* source,
                            const content::DropData& data,
                            blink::DragOperationsMask operations_allowed) {
@@ -2230,14 +2214,8 @@ bool Browser::DidAddMessageToConsole(
 void Browser::BeforeUnloadFired(WebContents* web_contents,
                                 bool proceed,
                                 bool* proceed_to_fire_unload) {
-  if (is_type_devtools() &&
-      DevToolsWindow::HandleBeforeUnload(web_contents, proceed,
-                                         proceed_to_fire_unload)) {
-    return;
-  }
-
-  *proceed_to_fire_unload =
-      UnloadController::From(this)->BeforeUnloadFired(web_contents, proceed);
+  UnloadController::From(this)->BeforeUnloadFired(web_contents, proceed,
+                                                  proceed_to_fire_unload);
 }
 
 bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {

@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-DEFINE_USER_DATA(UnloadController);
-
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,6 +38,8 @@ DEFINE_USER_DATA(UnloadController);
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+DEFINE_USER_DATA(UnloadController);
+
 ////////////////////////////////////////////////////////////////////////////////
 // UnloadController, public:
 
@@ -64,6 +64,30 @@ UnloadController::UnloadController(BrowserWindowInterface* browser)
 
 UnloadController::~UnloadController() {
   browser_->tab_strip_model()->RemoveObserver(this);
+}
+
+bool UnloadController::ShouldRunUnloadListenerBeforeClosing(
+    content::WebContents* web_contents) {
+  return !force_skip_warning_user_on_close_ &&
+         ShouldRunUnloadEventsHelper(web_contents);
+}
+
+bool UnloadController::RunUnloadListenerBeforeClosing(
+    content::WebContents* web_contents) {
+  return !force_skip_warning_user_on_close_ &&
+         RunUnloadEventsHelper(web_contents);
+}
+
+void UnloadController::BeforeUnloadFired(content::WebContents* web_contents,
+                                         bool proceed,
+                                         bool* proceed_to_fire_unload) {
+  if ((browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) &&
+      DevToolsWindow::HandleBeforeUnload(web_contents, proceed,
+                                         proceed_to_fire_unload)) {
+    return;
+  }
+
+  *proceed_to_fire_unload = BeforeUnloadFired(web_contents, proceed);
 }
 
 bool UnloadController::CanCloseContents(content::WebContents* contents) {

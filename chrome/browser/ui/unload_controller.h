@@ -94,6 +94,22 @@ class UnloadController : public WebContentsCollection::Observer,
   // events since the user cancelled closing the window.
   void CancelWindowClose();
 
+  bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
+
+  bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
+
+  void BeforeUnloadFired(content::WebContents* web_contents,
+                         bool proceed,
+                         bool* proceed_to_fire_unload);
+
+  void set_force_skip_warning_user_on_close(
+      bool force_skip_warning_user_on_close) {
+    force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
+  }
+  bool force_skip_warning_user_on_close() const {
+    return force_skip_warning_user_on_close_;
+  }
+
  private:
   typedef std::set<raw_ptr<content::WebContents, SetExperimental>>
       UnloadListenerSet;
@@ -171,6 +187,9 @@ class UnloadController : public WebContentsCollection::Observer,
   // multiple browser windows are being closed together. See
   // BrowserList::TryToCloseBrowserList.
   base::RepeatingCallback<void(bool)> on_close_confirmed_;
+
+  // Tells if the browser should skip warning the user when closing the window.
+  bool force_skip_warning_user_on_close_ = false;
 
   base::WeakPtrFactory<UnloadController> weak_factory_{this};
 };

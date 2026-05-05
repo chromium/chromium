@@ -283,12 +283,14 @@ void BrowserTabStripModelDelegate::GroupCloseStopped(
 
 bool BrowserTabStripModelDelegate::RunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
-  return browser_->RunUnloadListenerBeforeClosing(contents);
+  return UnloadController::From(browser_)->RunUnloadListenerBeforeClosing(
+      contents);
 }
 
 bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
-  return browser_->ShouldRunUnloadListenerBeforeClosing(contents);
+  return UnloadController::From(browser_)->ShouldRunUnloadListenerBeforeClosing(
+      contents);
 }
 
 bool BrowserTabStripModelDelegate::CanReload() const {

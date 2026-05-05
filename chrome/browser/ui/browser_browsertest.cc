@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -1020,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
   // Close the browser skipping unload handlers, ensure the did close
   // notification is propagated.
   EXPECT_CALL(browser_did_close_callback, Run).Times(1);
-  browser()->set_force_skip_warning_user_on_close(true);
+  UnloadController::From(browser())->set_force_skip_warning_user_on_close(true);
   browser()->window()->Close();
   EXPECT_TRUE(browser()->is_delete_scheduled());
 }
