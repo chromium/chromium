@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -21,6 +22,7 @@
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
@@ -109,6 +111,10 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
     // Called when the pin state has changed for the given tab.
     void OnPinnedStateChanged(tabs::TabInterface* tab, bool new_pinned_state);
 
+    // Called when the group state has changed for the given tab.
+    void OnGroupChanged(tabs::TabInterface* tab,
+                        std::optional<tab_groups::TabGroupId> new_group);
+
     // Whether we are waiting to fire the 'complete' status change. This will
     // occur the first time the WebContents stops loading after the
     // NavigationEntryCommitted() method was called. The tab may go back into
@@ -120,6 +126,9 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
 
     // Callback subscription to be notified as the "pinned" state changes.
     base::CallbackListSubscription pinned_state_subscription_;
+
+    // Callback subscription to be notified as the "group" state changes.
+    base::CallbackListSubscription group_changed_subscription_;
 
     // Callback subscription to be notified as the "recently audible" state
     // changes.

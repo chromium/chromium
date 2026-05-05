@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_PLATFORM_DELEGATE_NON_ANDROID_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_PLATFORM_DELEGATE_NON_ANDROID_H_
 
-#include <map>
-#include <set>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -56,12 +52,6 @@ class TabsEventRouterPlatformDelegate
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
-  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
-                              std::optional<tab_groups::TabGroupId> old_group,
-                              std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
-  void OnTabGroupChanged(const TabGroupChange& change) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // resource_coordinator::LifecycleUnitObserver:

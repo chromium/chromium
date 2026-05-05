@@ -51,7 +51,6 @@ namespace extensions {
 
 namespace {
 
-constexpr char kGroupIdKey[] = "groupId";
 constexpr char kSplitIdKey[] = "splitViewId";
 constexpr char kFrozenKey[] = "frozen";
 constexpr char kDiscardedKey[] = "discarded";
@@ -108,35 +107,6 @@ void TabsEventRouterPlatformDelegate::OnBrowserCreated(
   }
 }
 
-void TabsEventRouterPlatformDelegate::OnTabGroupChanged(
-    const TabGroupChange& change) {
-  // Maintain the previous tabstrip observation call sequence for extension so
-  // that it does not cause a breaking change for clients during detaching and
-  // re-inserting tab groups.
-  if (change.type == TabGroupChange::kCreated &&
-      change.GetCreateChange()->reason() ==
-          TabGroupChange::TabGroupCreationReason::
-              kInsertedFromAnotherTabstrip) {
-    for (tabs::TabInterface* tab :
-         change.GetCreateChange()->GetDetachedTabs()) {
-      std::set<std::string> changed_property_names;
-      changed_property_names.insert(kGroupIdKey);
-      router_->DispatchTabUpdatedEvent(tab->GetContents(),
-                                       std::move(changed_property_names));
-    }
-  } else if (change.type == TabGroupChange::kClosed &&
-             change.GetCloseChange()->reason() ==
-                 TabGroupChange::TabGroupClosureReason::
-                     kDetachedToAnotherTabstrip) {
-    for (tabs::TabInterface* tab : change.GetCloseChange()->GetDetachedTabs()) {
-      std::set<std::string> changed_property_names;
-      changed_property_names.insert(kGroupIdKey);
-      router_->DispatchTabUpdatedEvent(tab->GetContents(),
-                                       std::move(changed_property_names));
-    }
-  }
-}
-
 void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
     const SplitTabChange& change) {
   if (change.type == SplitTabChange::Type::kAdded &&
@@ -161,18 +131,6 @@ void TabsEventRouterPlatformDelegate::OnSplitTabChanged(
                                        std::move(changed_property_names));
     }
   }
-}
-
-void TabsEventRouterPlatformDelegate::TabGroupedStateChanged(
-    TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group,
-    std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  std::set<std::string> changed_property_names;
-  changed_property_names.insert(kGroupIdKey);
-  router_->DispatchTabUpdatedEvent(tab->GetContents(),
-                                   std::move(changed_property_names));
 }
 
 void TabsEventRouterPlatformDelegate::OnLifecycleUnitStateChanged(

@@ -30,6 +30,7 @@ namespace {
 constexpr char kAudibleKey[] = "audible";
 constexpr char kAutoDiscardableKey[] = "autoDiscardable";
 constexpr char kFromIndexKey[] = "fromIndex";
+constexpr char kGroupIdKey[] = "groupId";
 constexpr char kMutedInfoKey[] = "mutedInfo";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
@@ -117,6 +118,9 @@ TabsEventRouter::TabEntry::TabEntry(TabsEventRouter& router,
       tab->RegisterPinnedStateChanged(base::BindRepeating(
           &TabEntry::OnPinnedStateChanged, weak_factory_.GetWeakPtr()));
 
+  group_changed_subscription_ = tab->RegisterGroupChanged(base::BindRepeating(
+      &TabEntry::OnGroupChanged, weak_factory_.GetWeakPtr()));
+
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(&contents);
   recently_audible_subscription_ =
       audible_helper->RegisterRecentlyAudibleChangedCallback(
@@ -197,6 +201,12 @@ void TabsEventRouter::TabEntry::OnRecentlyAudibleStateChanged(
 void TabsEventRouter::TabEntry::OnPinnedStateChanged(tabs::TabInterface* tab,
                                                      bool new_pinned_state) {
   router_->TabUpdated(this, {kPinnedKey});
+}
+
+void TabsEventRouter::TabEntry::OnGroupChanged(
+    tabs::TabInterface* tab,
+    std::optional<tab_groups::TabGroupId> new_group) {
+  router_->TabUpdated(this, {kGroupIdKey});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -435,6 +445,14 @@ void TabsEventRouter::OnTabAdded(TabListInterface& tab_list,
                   api::tabs::OnAttached::kEventName, std::move(args),
                   EventRouter::UserGestureState::kUnknown);
 
+    // If the tab was part of a group, we also treat this as a groupId update.
+    // It's a shame this isn't handled as part of the group change callback --
+    // it seems like it should be (the tab can't have been part of a previous
+    // group if it's being added to this window).
+    if (tab->GetGroup().has_value()) {
+      DispatchTabUpdatedEvent(contents, {kGroupIdKey});
+    }
+
     return;
   }
 
@@ -499,6 +517,13 @@ void TabsEventRouter::OnTabRemoved(TabListInterface& tab_list,
   if (TabRemoveReasonUtils::WillDeleteTab(removed_reason)) {
     DispatchTabRemovedEvent(*web_contents, tab_list.IsClosingAllTabs());
   } else {
+    // If the tab was part of a group, we also treat this as a groupId update.
+    // It's a shame this isn't handled as part of the group change callback --
+    // it seems like it should be, since the tab is being removed from the
+    // current group if it's being removed from the window.
+    if (tab->GetGroup().has_value()) {
+      DispatchTabUpdatedEvent(web_contents, {kGroupIdKey});
+    }
     DispatchTabDetachedEvent(*web_contents);
   }
 }
