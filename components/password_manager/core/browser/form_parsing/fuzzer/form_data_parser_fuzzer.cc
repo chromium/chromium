@@ -12,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -25,9 +26,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> env;
   FuzzedDataProvider data_provider(data, size);
   const auto mode = data_provider.ConsumeBool() ? FormDataParser::Mode::kFilling
                                                 : FormDataParser::Mode::kSaving;

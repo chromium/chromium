@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_essentials.pb.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_proto_producer.h"
@@ -24,9 +25,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
-
 DEFINE_BINARY_PROTO_FUZZER(const ::form_data_fuzzer::Form& form_proto) {
+  static const base::NoDestructor<IcuEnvironment> env;
   FormDataParser::Mode mode = form_proto.is_mode_filling()
                                   ? FormDataParser::Mode::kFilling
                                   : FormDataParser::Mode::kSaving;
