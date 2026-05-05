@@ -177,6 +177,15 @@ enum ActionResultCode {
   // The click event was suppressed.
   kClickSuppressed = 200,
 
+  // The click event has a missing target.
+  kClickMissingTarget = 201,
+
+  // The click event has a missing type.
+  kClickMissingType = 202,
+
+  // The click event has an invalid count.
+  kClickInvalidCount = 203,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

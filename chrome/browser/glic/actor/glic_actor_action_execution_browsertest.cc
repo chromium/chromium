@@ -85,6 +85,94 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
       << "Task " << task_id << " did not reach kFinished state.";
 }
 
+using ClickActionFactory = ClickAction (*)(tabs::TabHandle);
+
+ClickAction MakeNullTabClickAction(tabs::TabHandle handle) {
+  ClickAction click;
+  click.mutable_target()->mutable_coordinate()->set_x(0);
+  click.mutable_target()->mutable_coordinate()->set_y(0);
+  click.set_click_type(ClickAction::LEFT);
+  click.set_click_count(ClickAction::SINGLE);
+  return click;
+}
+
+ClickAction MakeMissingTargetClickAction(tabs::TabHandle handle) {
+  ClickAction click;
+  click.set_tab_id(handle.raw_value());
+  click.set_click_type(ClickAction::LEFT);
+  click.set_click_count(ClickAction::SINGLE);
+  return click;
+}
+
+ClickAction MakeMissingTypeClickAction(tabs::TabHandle handle) {
+  ClickAction click;
+  click.set_tab_id(handle.raw_value());
+  click.mutable_target()->mutable_coordinate()->set_x(0);
+  click.mutable_target()->mutable_coordinate()->set_y(0);
+  click.set_click_count(ClickAction::SINGLE);
+  return click;
+}
+
+ClickAction MakeMissingCountClickAction(tabs::TabHandle handle) {
+  ClickAction click;
+  click.set_tab_id(handle.raw_value());
+  click.mutable_target()->mutable_coordinate()->set_x(0);
+  click.mutable_target()->mutable_coordinate()->set_y(0);
+  click.set_click_type(ClickAction::LEFT);
+  return click;
+}
+
+class GlicActorClickActionExecutionErrorBrowserTest
+    : public GlicActorFunctionalBrowserTestBase,
+      public ::testing::WithParamInterface<
+          std::pair<ClickActionFactory, ::actor::mojom::ActionResultCode>> {
+ public:
+  GlicActorClickActionExecutionErrorBrowserTest() = default;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicActorClickActionExecutionErrorBrowserTest,
+                       PerformClickActionErrors) {
+  // Set up the initial page with a link to the target page.
+  const GURL initial_url = embedded_test_server()->GetURL("/actor/link.html");
+  const GURL target_url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", target_url)));
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  auto [action_factory, expected_result] = GetParam();
+
+  Actions action;
+  *action.add_actions()->mutable_click() =
+      action_factory(active_tab()->GetHandle());
+  action.set_task_id(task_id.value());
+
+  EXPECT_THAT(PerformActions(action), ValueIs(HasResultCode(expected_result)));
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+  EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())
+      << "Task " << task_id << " did not reach kFinished state.";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    GlicActorClickActionExecutionErrorBrowserTestAll,
+    GlicActorClickActionExecutionErrorBrowserTest,
+    ::testing::Values(
+        std::make_pair(MakeNullTabClickAction,
+                       ::actor::mojom::ActionResultCode::kTabWentAway),
+        std::make_pair(MakeMissingTargetClickAction,
+                       ::actor::mojom::ActionResultCode::kClickMissingTarget),
+        std::make_pair(MakeMissingTypeClickAction,
+                       ::actor::mojom::ActionResultCode::kClickMissingType),
+        std::make_pair(MakeMissingCountClickAction,
+                       ::actor::mojom::ActionResultCode::kClickInvalidCount)));
+
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformConcurrentAsyncWaitActions) {
   // Manually create tasks via ActorKeyedService.

@@ -72,6 +72,9 @@ chromium-metrics-reviews@google.com.
   <int value="101" label="NavigateFailedToStart"/>
   <int value="102" label="NavigateCommittedErrorPage"/>
   <int value="200" label="ClickSuppressed"/>
+  <int value="201" label="ClickMissingTarget"/>
+  <int value="202" label="ClickMissingType"/>
+  <int value="203" label="ClickInvalidCount"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>
   <int value="301" label="DragAndReleaseToOffscreen"/>
   <int value="302" label="DragAndReleaseFromMoveSuppressed"/>

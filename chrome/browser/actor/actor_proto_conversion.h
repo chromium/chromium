@@ -42,8 +42,9 @@ using ToolRequestList = std::vector<std::unique_ptr<ToolRequest>>;
 // Result type returned from the BuildToolRequest functions below. Aliased for
 // convenience. on failure, the error value contains the index of the action in
 // the list that failed to convert.
-using BuildToolRequestResult =
-    base::expected<ToolRequestList, size_t /*index_of_failed_action*/>;
+using BuildToolRequestResult = base::expected<
+    ToolRequestList,
+    std::pair<size_t /*index_of_failed_action*/, mojom::ActionResultCode>>;
 
 // Builds a vector of ToolRequests usable for ActorKeyedService::PerformActions
 // out of the given proto::Actions proto. If an action failed to convert,

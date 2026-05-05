@@ -496,12 +496,12 @@ void GlicActorTaskManager::PerformActions(
         GURL::EmptyGURL(), task_id, "Act Failed",
         actor::JournalDetailsBuilder()
             .AddError("Failed to convert proto::Actions to ToolRequest")
-            .Add("failed_action_index", requests.error())
+            .Add("failed_action_index", requests.error().first)
+            .Add("error_code", static_cast<int>(requests.error().second))
             .Build());
     optimization_guide::proto::ActionsResult response =
-        actor::BuildErrorActionsResult(
-            actor::mojom::ActionResultCode::kArgumentsInvalid,
-            requests.error());
+        actor::BuildErrorActionsResult(requests.error().second,
+                                       requests.error().first);
     std::move(callback).Run(mojo_base::ProtoWrapper(response));
     return;
   }
