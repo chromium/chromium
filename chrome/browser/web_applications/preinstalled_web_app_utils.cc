@@ -487,7 +487,7 @@ IconBitmapsOrError ParseOfflineManifestIconBitmaps(
     const base::FilePath& manifest_file,
     const char* icon_key,
     const base::ListValue& icon_files) {
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+  OrderedSizeToBitmap icon_bitmaps;
 
   for (const base::Value& icon_file : icon_files) {
     if (!icon_file.is_string()) {

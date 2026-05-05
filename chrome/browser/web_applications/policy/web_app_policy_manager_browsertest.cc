@@ -233,8 +233,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   provider().icon_manager().ReadAllIcons(GetAppId(),
                                          disk_bitmaps.GetCallback());
   ASSERT_TRUE(disk_bitmaps.Wait());
-  const std::map<SquareSizePx, SkBitmap>& any_icons =
-      disk_bitmaps.Get().trusted_icons.any;
+  const OrderedSizeToBitmap& any_icons = disk_bitmaps.Get().trusted_icons.any;
   ASSERT_THAT(any_icons, testing::Contains(testing::Pair(192, testing::_)));
   EXPECT_THAT(
       any_icons.at(192),
@@ -300,8 +299,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   provider().icon_manager().ReadAllIcons(GetAppId(),
                                          disk_bitmaps.GetCallback());
   ASSERT_TRUE(disk_bitmaps.Wait());
-  const std::map<SquareSizePx, SkBitmap>& any_icons =
-      disk_bitmaps.Get().trusted_icons.any;
+  const OrderedSizeToBitmap& any_icons = disk_bitmaps.Get().trusted_icons.any;
   ASSERT_THAT(any_icons, testing::Contains(testing::Pair(192, testing::_)));
   EXPECT_THAT(
       any_icons.at(192),
@@ -324,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   base::test::TestFuture<WebAppIconManager::WebAppBitmaps> disk_bitmaps;
   provider().icon_manager().ReadAllIcons(app_id, disk_bitmaps.GetCallback());
   ASSERT_TRUE(disk_bitmaps.Wait());
-  const std::map<SquareSizePx, SkBitmap>& any_icons =
-      disk_bitmaps.Get().trusted_icons.any;
+  const OrderedSizeToBitmap& any_icons = disk_bitmaps.Get().trusted_icons.any;
   ASSERT_THAT(any_icons, testing::Contains(testing::Pair(192, testing::_)));
   EXPECT_THAT(
       any_icons.at(192),
@@ -347,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   provider().icon_manager().ReadAllIcons(GetAppId(),
                                          disk_bitmaps.GetCallback());
   ASSERT_TRUE(disk_bitmaps.Wait());
-  const std::map<SquareSizePx, SkBitmap>& any_icons =
-      disk_bitmaps.Get().trusted_icons.any;
+  const OrderedSizeToBitmap& any_icons = disk_bitmaps.Get().trusted_icons.any;
   ASSERT_THAT(any_icons, testing::Contains(testing::Pair(192, testing::_)));
   EXPECT_THAT(
       any_icons.at(192),

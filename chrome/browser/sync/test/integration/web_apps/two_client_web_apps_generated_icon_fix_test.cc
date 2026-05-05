@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/flat_map.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -145,7 +146,7 @@ class TwoClientGeneratedIconFixSyncTest
         ->icon_manager()
         .ReadTrustedIconsWithFallbackToManifestIcons(
             app_id, {kIconSize}, IconPurpose::ANY, icons_future.GetCallback());
-    SizeToBitmap icons_bitmap = std::move(icons_future.Take().icons_map);
+    OrderedSizeToBitmap icons_bitmap = std::move(icons_future.Take().icons_map);
     CHECK(icons_bitmap.contains(kIconSize));
 
     return {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 
-#include <map>
 #include <memory>
 
 #include "base/strings/strcat.h"
@@ -121,7 +120,7 @@ class OsIntegrationSynchronizeCommandTest : public WebAppTest {
       IconBitmaps menu_item_icon_map;
       for (const GeneratedIconsInfo& info : icons_info) {
         DCHECK_EQ(info.sizes_px.size(), info.colors.size());
-        std::map<SquareSizePx, SkBitmap> generated_bitmaps;
+        OrderedSizeToBitmap generated_bitmaps;
         for (size_t j = 0; j < info.sizes_px.size(); ++j) {
           AddGeneratedIcon(&generated_bitmaps, info.sizes_px[j],
                            info.colors[j]);
@@ -392,7 +391,7 @@ TEST_F(OsIntegrationSynchronizeCommandTest, InstallSynchronizesShortcuts) {
       web_app::mojom::UserDisplayMode::kStandalone;
 
   // Add icons for shortcuts.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   install_info->icon_bitmaps.any = std::move(icon_map);

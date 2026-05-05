@@ -46,7 +46,7 @@ SkBitmap CreateSquareIcon(int size_px, SkColor solid_color) {
   return bitmap;
 }
 
-void AddGeneratedIcon(std::map<SquareSizePx, SkBitmap>* icon_bitmaps,
+void AddGeneratedIcon(OrderedSizeToBitmap* icon_bitmaps,
                       int size_px,
                       SkColor solid_color) {
   (*icon_bitmaps)[size_px] = CreateSquareIcon(size_px, solid_color);
@@ -129,13 +129,11 @@ base::span<const int> GetIconSizes() {
   return kIconSizes;
 }
 
-bool ContainsOneIconOfEachSize(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
+bool ContainsOneIconOfEachSize(const OrderedSizeToBitmap& icon_bitmaps) {
   for (int size_px : kIconSizes) {
-    int num_icons_for_size = std::ranges::count(
-        icon_bitmaps, size_px, &std::pair<const SquareSizePx, SkBitmap>::first);
-    if (num_icons_for_size != 1)
+    if (!icon_bitmaps.contains(size_px)) {
       return false;
+    }
   }
 
   return true;
@@ -168,10 +166,9 @@ blink::Manifest::ImageResource CreateSquareImageResource(
   return r;
 }
 
-std::map<SquareSizePx, SkBitmap> ReadPngsFromDirectory(
-    FileUtilsWrapper* file_utils,
-    const base::FilePath& icons_dir) {
-  std::map<SquareSizePx, SkBitmap> pngs;
+OrderedSizeToBitmap ReadPngsFromDirectory(FileUtilsWrapper* file_utils,
+                                          const base::FilePath& icons_dir) {
+  OrderedSizeToBitmap pngs;
 
   base::FileEnumerator enumerator(icons_dir, true, base::FileEnumerator::FILES);
   for (base::FilePath path = enumerator.Next(); !path.empty();
@@ -229,7 +226,7 @@ void AddIconsToWebAppInstallInfo(
   for (const GeneratedIconsInfo& info : icons_info) {
     DCHECK_EQ(info.sizes_px.size(), info.colors.size());
 
-    std::map<SquareSizePx, SkBitmap> generated_bitmaps;
+    OrderedSizeToBitmap generated_bitmaps;
 
     for (size_t i = 0; i < info.sizes_px.size(); ++i) {
       apps::IconInfo apps_icon_info =
@@ -257,7 +254,7 @@ void IconManagerWriteGeneratedIcons(
   for (const GeneratedIconsInfo& info : icons_info) {
     DCHECK_EQ(info.sizes_px.size(), info.colors.size());
 
-    std::map<SquareSizePx, SkBitmap> generated_bitmaps;
+    OrderedSizeToBitmap generated_bitmaps;
 
     for (size_t i = 0; i < info.sizes_px.size(); ++i)
       AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);

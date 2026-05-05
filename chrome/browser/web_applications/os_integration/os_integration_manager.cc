@@ -611,10 +611,9 @@ void OsIntegrationManager::SetCurrentAppShortcutsVersion() {
   }
 }
 
-void OsIntegrationManager::OnIconsRead(
-    const webapps::AppId& app_id,
-    GetShortcutInfoCallback callback,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+void OsIntegrationManager::OnIconsRead(const webapps::AppId& app_id,
+                                       GetShortcutInfoCallback callback,
+                                       OrderedSizeToBitmap icon_bitmaps) {
   const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!app) {
     std::move(callback).Run(nullptr);

@@ -1155,7 +1155,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, MultiPurposeIcons) {
 
   // Verify the same bitmap has been parsed and generated as per the
   // requirements, since it is both maskable and any, and is the largest icon.
-  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+  const OrderedSizeToBitmap& icon_map_parsed =
       ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
                              : web_app_info->trusted_icon_bitmaps.any;
   for (const auto& icon_data : icon_map_parsed) {
@@ -1215,7 +1215,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
 
   // Verify the correct bitmap has been parsed and generated as per the
   // requirements.
-  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+  const OrderedSizeToBitmap& icon_map_parsed =
       ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
                              : web_app_info->trusted_icon_bitmaps.any;
   const SkColor final_color =
@@ -1294,7 +1294,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, SVGIconsNoSize) {
 
   // Verify the correct bitmap has been parsed and downloaded as per the
   // requirements.
-  const std::map<SquareSizePx, SkBitmap>& icon_map_parsed =
+  const OrderedSizeToBitmap& icon_map_parsed =
       ShouldPreferMaskable() ? web_app_info->trusted_icon_bitmaps.maskable
                              : web_app_info->trusted_icon_bitmaps.any;
   for (const auto& icon_data : icon_map_parsed) {

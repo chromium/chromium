@@ -11,6 +11,7 @@
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 
 namespace base {
 class FilePath;
@@ -30,8 +31,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& file,
                            const base::Value& app_config);
 
-using IconBitmapsOrError =
-    base::expected<std::map<SquareSizePx, SkBitmap>, std::string>;
+using IconBitmapsOrError = base::expected<OrderedSizeToBitmap, std::string>;
 
 IconBitmapsOrError ParseOfflineManifestIconBitmaps(
     FileUtilsWrapper& file_utils,

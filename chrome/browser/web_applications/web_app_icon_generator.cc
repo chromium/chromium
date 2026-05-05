@@ -35,7 +35,7 @@ namespace {
 // to |bitmaps| by drawing the given |icon_letter| into a rounded background.
 // For each size, if an icon of the requested size already exists in |bitmaps|,
 // nothing will happen.
-void GenerateIcon(SizeToBitmap* bitmaps,
+void GenerateIcon(OrderedSizeToBitmap* bitmaps,
                   SquareSizePx output_size,
                   std::u16string_view icon_letter) {
   // Do nothing if there is already an icon of |output_size|.
@@ -47,7 +47,7 @@ void GenerateIcon(SizeToBitmap* bitmaps,
 
 void GenerateIcons(const std::set<SquareSizePx>& generate_sizes,
                    std::u16string_view icon_letter,
-                   SizeToBitmap* bitmap_map) {
+                   OrderedSizeToBitmap* bitmap_map) {
   for (SquareSizePx size : generate_sizes)
     GenerateIcon(bitmap_map, size, icon_letter);
 }
@@ -65,14 +65,17 @@ std::set<SquareSizePx> SizesToGenerate() {
   });
 }
 
-SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
-                                     const std::set<SquareSizePx>& sizes) {
-  SizeToBitmap output_bitmaps;
-  SizeToBitmap ordered_bitmaps;
+OrderedSizeToBitmap ConstrainBitmapsToSizes(
+    const std::vector<SkBitmap>& bitmaps,
+    const std::set<SquareSizePx>& sizes) {
+  OrderedSizeToBitmap output_bitmaps;
+  std::vector<std::pair<SquareSizePx, SkBitmap>> ordered_bitmaps_vector;
+  ordered_bitmaps_vector.reserve(bitmaps.size());
   for (const SkBitmap& bitmap : bitmaps) {
     DCHECK(bitmap.width() == bitmap.height());
-    ordered_bitmaps[bitmap.width()] = bitmap;
+    ordered_bitmaps_vector.emplace_back(bitmap.width(), bitmap);
   }
+  OrderedSizeToBitmap ordered_bitmaps(std::move(ordered_bitmaps_vector));
 
   if (!ordered_bitmaps.empty()) {
     for (const auto& size : sizes) {
@@ -96,7 +99,7 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
   return output_bitmaps;
 }
 
-SizeToBitmap ResizeIconsAndGenerateMissing(
+OrderedSizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
     std::u16string_view icon_letter,
@@ -105,7 +108,7 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
 
   // Resize provided icons to make sure we have versions for each size in
   // |sizes_to_generate|.
-  SizeToBitmap resized_bitmaps(
+  OrderedSizeToBitmap resized_bitmaps(
       ConstrainBitmapsToSizes(icons, sizes_to_generate));
 
   // Also add all provided icon sizes.
@@ -127,11 +130,11 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
   return resized_bitmaps;
 }
 
-SizeToBitmap GenerateIcons(std::u16string_view app_name) {
+OrderedSizeToBitmap GenerateIcons(std::u16string_view app_name) {
   const std::u16string icon_letter =
       shortcuts::GenerateIconLetterFromName(app_name);
 
-  SizeToBitmap icons;
+  OrderedSizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {
     icons[size] = shortcuts::GenerateBitmap(size, icon_letter);
   }

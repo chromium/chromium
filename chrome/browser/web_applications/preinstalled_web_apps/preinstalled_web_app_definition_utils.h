@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_PREINSTALLED_WEB_APP_DEFINITION_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_PREINSTALLED_WEB_APP_DEFINITION_UTILS_H_
 
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include <initializer_list>
+
+#include "base/containers/span.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 
 namespace web_app {
 
-std::map<SquareSizePx, SkBitmap> LoadBundledIcons(
+OrderedSizeToBitmap LoadBundledIcons(
     const std::initializer_list<int>& icon_resource_ids);
 
 struct Translation {

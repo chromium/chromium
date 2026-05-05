@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_LOADER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_LOADER_H_
 
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -200,10 +200,11 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
 
   void CompleteWithIconValue(IconValuePtr iv);
 
-  void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
+  void OnReadWebAppIcon(web_app::OrderedSizeToBitmap icon_bitmaps);
 
-  void OnReadWebAppForCompressedIconData(bool is_maskable_icon,
-                                         std::map<int, SkBitmap> icon_bitmaps);
+  void OnReadWebAppForCompressedIconData(
+      bool is_maskable_icon,
+      web_app::OrderedSizeToBitmap icon_bitmaps);
 
   void OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
                                            const SkBitmap& bitmap);

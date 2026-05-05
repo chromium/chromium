@@ -606,7 +606,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   auto result = future.Take();
   EXPECT_THAT(result, HasValue());
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps = result->icon_bitmaps.any;
+  OrderedSizeToBitmap icon_bitmaps = result->icon_bitmaps.any;
   EXPECT_THAT(result, ValueIs(Field(
                           &WebAppInstallInfo::icon_bitmaps,
                           Field(&IconBitmaps::any,

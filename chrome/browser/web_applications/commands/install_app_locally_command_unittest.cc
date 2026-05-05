@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 
@@ -82,7 +81,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
   }
 
   webapps::AppId InstallNonLocallyInstalledAppWithIcons(
-      std::map<SquareSizePx, SkBitmap> icon_map,
+      OrderedSizeToBitmap icon_map,
       proto::InstallState install_state =
           proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE) {
     std::unique_ptr<WebAppInstallInfo> info =
@@ -184,7 +183,7 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   // Create an app that is not locally installed, i.e. has the
   // is_locally_installed bit set to false and there is no OS integration
   // defined for it.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
@@ -249,7 +248,7 @@ TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
 }
 
 TEST_F(InstallAppLocallyCommandTest, MigrationPWAsNotAllowed) {
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
   const webapps::AppId& app_id = InstallNonLocallyInstalledAppWithIcons(

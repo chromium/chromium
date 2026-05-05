@@ -70,7 +70,7 @@ SkBitmap GetBitmapForInstalledAppOnDisk(const webapps::AppId& app_id,
   base::test::TestFuture<IconMetadataFromDisk> future;
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {kIconSizeToTest}, IconPurpose::ANY, future.GetCallback());
-  web_app::SizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
+  OrderedSizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
   CHECK(!icon_bitmaps.empty());
   return icon_bitmaps[kIconSizeToTest];
 }

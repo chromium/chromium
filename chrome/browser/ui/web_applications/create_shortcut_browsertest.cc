@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <initializer_list>
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>
@@ -336,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
           app_id, {icon_size::k128}, IconPurpose::ANY, future.GetCallback());
 
   IconMetadataFromDisk icon_metadata = future.Take();
-  SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+  OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
   auto icon_it = icon_bitmaps.find(icon_size::k128);
   ASSERT_TRUE(icon_it != icon_bitmaps.end());
   SkBitmap bitmap = icon_it->second;

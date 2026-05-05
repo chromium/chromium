@@ -212,7 +212,7 @@ class OsIntegrationManager {
 
   void OnIconsRead(const webapps::AppId& app_id,
                    GetShortcutInfoCallback callback,
-                   std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+                   OrderedSizeToBitmap icon_bitmaps);
 
   std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);
 

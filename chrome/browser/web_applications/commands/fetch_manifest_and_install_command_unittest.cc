@@ -399,7 +399,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
       kWebAppId, {icon_size::k512}, IconPurpose::ANY,
       icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
-  std::map<SquareSizePx, SkBitmap> trusted_bitmaps =
+  OrderedSizeToBitmap trusted_bitmaps =
       std::move(icons_future.Take().icons_map);
   EXPECT_THAT(trusted_bitmaps[icon_size::k512],
               gfx::test::EqualsBitmap(icons_map[icon_url2][0]));
@@ -680,8 +680,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
     const base::FilePath icons_dir = app_dir.AppendASCII(purpose_info.dir);
     EXPECT_TRUE(file_utils().DirectoryExists(icons_dir));
 
-    std::map<SquareSizePx, SkBitmap> pngs =
-        ReadPngsFromDirectory(&file_utils(), icons_dir);
+    OrderedSizeToBitmap pngs = ReadPngsFromDirectory(&file_utils(), icons_dir);
 
     // The install does ResizeIconsAndGenerateMissing() only for ANY icons.
     if (purpose_info.purpose == IconPurpose::ANY) {
@@ -762,8 +761,7 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_PrimaryPageChanged) {
     const base::FilePath icons_dir = app_dir.AppendASCII(icon_dir);
     EXPECT_TRUE(file_utils().DirectoryExists(icons_dir));
 
-    std::map<SquareSizePx, SkBitmap> pngs =
-        ReadPngsFromDirectory(&file_utils(), icons_dir);
+    OrderedSizeToBitmap pngs = ReadPngsFromDirectory(&file_utils(), icons_dir);
     if (icon_dir == "Icons") {
       // Auto generated ANY icons.
       EXPECT_EQ(GetIconSizes().size(), pngs.size());
@@ -825,8 +823,7 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_IconNotFound) {
     const base::FilePath icons_dir = app_dir.AppendASCII(icon_dir);
     EXPECT_TRUE(file_utils().DirectoryExists(icons_dir));
 
-    std::map<SquareSizePx, SkBitmap> pngs =
-        ReadPngsFromDirectory(&file_utils(), icons_dir);
+    OrderedSizeToBitmap pngs = ReadPngsFromDirectory(&file_utils(), icons_dir);
     if (icon_dir == "Icons") {
       // Auto generated ANY icons.
       EXPECT_EQ(GetIconSizes().size(), pngs.size());
@@ -1258,8 +1255,7 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   provider()->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {icon_size::k256}, IconPurpose::ANY, icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
-  std::map<SquareSizePx, SkBitmap> bitmaps =
-      std::move(icons_future.Take().icons_map);
+  OrderedSizeToBitmap bitmaps = std::move(icons_future.Take().icons_map);
   EXPECT_THAT(bitmaps[icon_size::k256],
               gfx::test::EqualsBitmap(GenerateExpected256Icon()));
 

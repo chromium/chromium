@@ -71,10 +71,10 @@ class InstallFromSyncCommandTest : public WebAppBrowserTestBase {
   // Get the primary icon for `app_id` of `size` from the disk.
   SkBitmap GetAppIconOfSize(const webapps::AppId& app_id, int size) {
     WebAppProvider* web_app_provider = WebAppProvider::GetForTest(profile());
-    base::test::TestFuture<SizeToBitmap> test_future;
+    base::test::TestFuture<OrderedSizeToBitmap> test_future;
     web_app_provider->icon_manager().ReadIconAndResize(
         app_id, IconPurpose::ANY, size, test_future.GetCallback());
-    SizeToBitmap bitmaps = test_future.Take();
+    OrderedSizeToBitmap bitmaps = test_future.Take();
     CHECK(bitmaps.contains(size));
     return bitmaps[size];
   }

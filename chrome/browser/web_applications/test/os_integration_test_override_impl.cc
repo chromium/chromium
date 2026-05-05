@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 
 #include <algorithm>
-#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -74,7 +73,6 @@
 #include <shellapi.h>
 
 #include "base/command_line.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -139,7 +137,7 @@ std::optional<SkBitmap> IconManagerReadIconForSize(
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {size_px}, IconPurpose::ANY,
       base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
-        SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+        OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
         CHECK(icon_bitmaps.contains(size_px));
         result = icon_bitmaps[size_px];
         run_loop.Quit();

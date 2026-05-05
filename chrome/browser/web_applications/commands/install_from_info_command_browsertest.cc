@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 
@@ -40,10 +39,10 @@ namespace web_app {
 class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
  public:
   InstallFromInfoCommandTest() = default;
-  std::map<SquareSizePx, SkBitmap> ReadIcons(const webapps::AppId& app_id,
-                                             IconPurpose purpose,
-                                             const SortedSizesPx& sizes_px) {
-    std::map<SquareSizePx, SkBitmap> result;
+  OrderedSizeToBitmap ReadIcons(const webapps::AppId& app_id,
+                                IconPurpose purpose,
+                                const SortedSizesPx& sizes_px) {
+    OrderedSizeToBitmap result;
     base::RunLoop run_loop;
     provider().icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
         app_id, sizes_px, purpose,
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
       provider().registrar_unsafe().GetAppById(result_app_id);
   ASSERT_TRUE(web_app);
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps =
+  OrderedSizeToBitmap icon_bitmaps =
       ReadIcons(result_app_id, IconPurpose::ANY,
                 web_app->downloaded_icon_sizes(IconPurpose::ANY));
 

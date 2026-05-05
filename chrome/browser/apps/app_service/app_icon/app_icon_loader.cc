@@ -1084,7 +1084,8 @@ void AppIconLoader::CompleteWithIconValue(IconValuePtr iv) {
 }
 
 // Callback for reading uncompressed web app icons.
-void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
+void AppIconLoader::OnReadWebAppIcon(
+    web_app::OrderedSizeToBitmap icon_bitmaps) {
   TRACE_EVENT0("ui", "AppIconLoader::OnReadWebAppIcon");
   if (icon_bitmaps.empty()) {
     MaybeApplyEffectsAndComplete(gfx::ImageSkia());
@@ -1125,7 +1126,7 @@ void AppIconLoader::OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps) {
 
 void AppIconLoader::OnReadWebAppForCompressedIconData(
     bool is_maskable_icon,
-    std::map<int, SkBitmap> icon_bitmaps) {
+    web_app::OrderedSizeToBitmap icon_bitmaps) {
   TRACE_EVENT0("ui", "AppIconLoader::OnReadWebAppForCompressedIconData");
   if (icon_bitmaps.empty()) {
     MaybeLoadFallbackOrCompleteEmpty();

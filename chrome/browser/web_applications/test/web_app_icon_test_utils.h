@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_TEST_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_TEST_UTILS_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -31,7 +30,7 @@ class WebAppIconManager;
 
 SkBitmap CreateSquareIcon(int size_px, SkColor solid_color);
 
-void AddGeneratedIcon(std::map<SquareSizePx, SkBitmap>* icon_bitmaps,
+void AddGeneratedIcon(OrderedSizeToBitmap* icon_bitmaps,
                       int size_px,
                       SkColor solid_color);
 
@@ -59,8 +58,7 @@ SkBitmap ReadBitmap(FileUtilsWrapper* utils, const base::FilePath& file_path);
 
 base::span<const int> GetIconSizes();
 
-bool ContainsOneIconOfEachSize(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps);
+bool ContainsOneIconOfEachSize(const OrderedSizeToBitmap& icon_bitmaps);
 
 void ExpectImageSkiaRep(const gfx::ImageSkia& image_skia,
                         float scale,
@@ -73,9 +71,8 @@ blink::Manifest::ImageResource CreateSquareImageResource(
     const std::vector<IconPurpose>& purposes);
 
 // Performs blocking IO and decompression.
-std::map<SquareSizePx, SkBitmap> ReadPngsFromDirectory(
-    FileUtilsWrapper* file_utils,
-    const base::FilePath& icons_dir);
+OrderedSizeToBitmap ReadPngsFromDirectory(FileUtilsWrapper* file_utils,
+                                          const base::FilePath& icons_dir);
 
 struct GeneratedIconsInfo {
   GeneratedIconsInfo();

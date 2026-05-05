@@ -23,9 +23,9 @@ icu::Locale GetLocaleFromTranslation(const Translation& translation) {
 
 }  // namespace
 
-std::map<SquareSizePx, SkBitmap> LoadBundledIcons(
+OrderedSizeToBitmap LoadBundledIcons(
     const std::initializer_list<int>& icon_resource_ids) {
-  std::map<SquareSizePx, SkBitmap> results;
+  OrderedSizeToBitmap results;
   for (int id : icon_resource_ids) {
     const gfx::Image& image =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(id);

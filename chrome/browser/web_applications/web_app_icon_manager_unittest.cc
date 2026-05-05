@@ -87,7 +87,7 @@ class WebAppIconManagerTest : public WebAppTest {
       for (const GeneratedIconsInfo& info : icons_info) {
         DCHECK_EQ(info.sizes_px.size(), info.colors.size());
 
-        std::map<SquareSizePx, SkBitmap> generated_bitmaps;
+        OrderedSizeToBitmap generated_bitmaps;
 
         for (size_t j = 0; j < info.sizes_px.size(); ++j) {
           AddGeneratedIcon(&generated_bitmaps, info.sizes_px[j],
@@ -179,17 +179,16 @@ class WebAppIconManagerTest : public WebAppTest {
 
     icon_manager().ReadIconAndResize(
         app_id, purpose, desired_icon_size,
-        base::BindLambdaForTesting(
-            [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              EXPECT_EQ(1u, icon_bitmaps.size());
-              SkBitmap bitmap = icon_bitmaps[desired_icon_size];
-              EXPECT_FALSE(bitmap.empty());
-              EXPECT_EQ(desired_icon_size, bitmap.width());
-              EXPECT_EQ(desired_icon_size, bitmap.height());
-              icon_color = bitmap.getColor(0, 0);
+        base::BindLambdaForTesting([&](OrderedSizeToBitmap icon_bitmaps) {
+          EXPECT_EQ(1u, icon_bitmaps.size());
+          SkBitmap bitmap = icon_bitmaps[desired_icon_size];
+          EXPECT_FALSE(bitmap.empty());
+          EXPECT_EQ(desired_icon_size, bitmap.width());
+          EXPECT_EQ(desired_icon_size, bitmap.height());
+          icon_color = bitmap.getColor(0, 0);
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
     return icon_color;
@@ -294,22 +293,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
-              EXPECT_EQ(SK_ColorYELLOW,
-                        icon_bitmaps[icon_size::k512].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
+          EXPECT_EQ(SK_ColorYELLOW,
+                    icon_bitmaps[icon_size::k512].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -337,22 +335,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MASKABLE, sizes_px,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::MASKABLE);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::MASKABLE);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
-              EXPECT_EQ(SK_ColorYELLOW,
-                        icon_bitmaps[icon_size::k512].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
+          EXPECT_EQ(SK_ColorYELLOW,
+                    icon_bitmaps[icon_size::k512].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -381,22 +378,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MONOCHROME, sizes_px,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::MONOCHROME);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::MONOCHROME);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k128].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k128].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k128].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k128].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorTRANSPARENT,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorTRANSPARENT,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -423,22 +419,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
-              EXPECT_EQ(SK_ColorYELLOW,
-                        icon_bitmaps[icon_size::k512].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
+          EXPECT_EQ(SK_ColorYELLOW,
+                    icon_bitmaps[icon_size::k512].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -448,22 +443,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MASKABLE, sizes_px,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::MASKABLE);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::MASKABLE);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
-              EXPECT_EQ(SK_ColorYELLOW,
-                        icon_bitmaps[icon_size::k512].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
+          EXPECT_EQ(SK_ColorYELLOW,
+                    icon_bitmaps[icon_size::k512].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -497,22 +491,21 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
 
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, sizes_px_any,
-        base::BindLambdaForTesting(
-            [&](IconMetadataFromDisk icon_metadata) {
-              SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
-              EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
-              EXPECT_EQ(2u, icon_bitmaps.size());
+        base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
+          EXPECT_EQ(2u, icon_bitmaps.size());
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
-              EXPECT_EQ(SK_ColorGREEN,
-                        icon_bitmaps[icon_size::k256].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k256].empty());
+          EXPECT_EQ(SK_ColorGREEN,
+                    icon_bitmaps[icon_size::k256].getColor(0, 0));
 
-              EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
-              EXPECT_EQ(SK_ColorYELLOW,
-                        icon_bitmaps[icon_size::k512].getColor(0, 0));
+          EXPECT_FALSE(icon_bitmaps[icon_size::k512].empty());
+          EXPECT_EQ(SK_ColorYELLOW,
+                    icon_bitmaps[icon_size::k512].getColor(0, 0));
 
-              run_loop.Quit();
-            }));
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }
@@ -524,7 +517,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::MONOCHROME, sizes_px_monochrome,
         base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
-          SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
           EXPECT_EQ(icon_metadata.purpose, IconPurpose::MONOCHROME);
           EXPECT_EQ(2u, icon_bitmaps.size());
 
@@ -806,7 +799,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
           break;
       }
 
-      const std::map<SquareSizePx, SkBitmap>& icon_bitmaps =
+      const OrderedSizeToBitmap& icon_bitmaps =
           shortcuts_menu_icons_map[i].GetBitmapsForPurpose(purpose);
 
       ASSERT_EQ(expect_sizes->size(), expect_colors->size());
@@ -885,7 +878,7 @@ TEST_F(WebAppIconManagerTest, WriteTrustedIconsIntoDisk) {
   // Verify bitmaps of purpose `any` are written correctly to disk.
   base::FilePath any_trusted_icons =
       GetAppTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_trusted_icons);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(any_bitmap1, any_icons[icon_size::k32]);
@@ -895,7 +888,7 @@ TEST_F(WebAppIconManagerTest, WriteTrustedIconsIntoDisk) {
   // Verify bitmaps of purpose `maskable` are written correctly to disk.
   base::FilePath maskable_trusted_icons =
       GetAppTrustedIconsDir(profile(), app_id).AppendASCII("Icons Maskable");
-  std::map<SquareSizePx, SkBitmap> maskable_icons =
+  OrderedSizeToBitmap maskable_icons =
       ReadPngsFromDirectory(&file_utils(), maskable_trusted_icons);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(maskable_bitmap1, maskable_icons[icon_size::k256]);
@@ -937,7 +930,7 @@ TEST_F(WebAppIconManagerTest, WriteTrustedAndManifestIconsBoth) {
   // trusted folder.
   base::FilePath any_trusted_icons =
       GetAppTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_trusted_icons);
   EXPECT_EQ(2u, any_icons.size());
   gfx::test::AreBitmapsEqual(any_trusted_bitmap1, any_icons[icon_size::k256]);
@@ -945,7 +938,7 @@ TEST_F(WebAppIconManagerTest, WriteTrustedAndManifestIconsBoth) {
 
   // Verify bitmaps of purpose `any` are written correctly to disk under the
   // manifest icons folder.
-  std::map<SquareSizePx, SkBitmap> disk_icons = ReadPngsFromDirectory(
+  OrderedSizeToBitmap disk_icons = ReadPngsFromDirectory(
       &file_utils(), GetAppIconsAnyDir(profile(), app_id));
   EXPECT_EQ(2u, disk_icons.size());
   gfx::test::AreBitmapsEqual(any_bitmap1, disk_icons[icon_size::k64]);
@@ -993,8 +986,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadTrustedIcons) {
       icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
   auto icon_metadata = icons_future.Take();
-  std::map<SquareSizePx, SkBitmap> bitmaps_from_disk =
-      std::move(icon_metadata.icons_map);
+  OrderedSizeToBitmap bitmaps_from_disk = std::move(icon_metadata.icons_map);
   EXPECT_EQ(2u, bitmaps_from_disk.size());
 
   SkBitmap bitmap_for_size256 = any_bitmap4;
@@ -1044,8 +1036,7 @@ TEST_F(WebAppIconManagerTest, ReadTrustedIconsFallbackToManifest) {
   ASSERT_TRUE(icons_future.Wait());
 
   auto icon_metadata = icons_future.Take();
-  std::map<SquareSizePx, SkBitmap> bitmaps_from_disk =
-      std::move(icon_metadata.icons_map);
+  OrderedSizeToBitmap bitmaps_from_disk = std::move(icon_metadata.icons_map);
   EXPECT_EQ(2u, bitmaps_from_disk.size());
 
   // This is obtained from the directory containing the manifest icons.
@@ -1085,8 +1076,7 @@ TEST_F(WebAppIconManagerTest, TrustedIconsOfSizeNotFoundNoFallback) {
   ASSERT_TRUE(icons_future.Wait());
 
   auto icon_metadata = icons_future.Take();
-  std::map<SquareSizePx, SkBitmap> bitmaps_from_disk =
-      std::move(icon_metadata.icons_map);
+  OrderedSizeToBitmap bitmaps_from_disk = std::move(icon_metadata.icons_map);
 
   // Verify only icon of size 64 is read from the disk.
   EXPECT_EQ(1u, bitmaps_from_disk.size());
@@ -1156,7 +1146,7 @@ TEST_F(WebAppIconManagerTest, WritePendingTrustedIconsIntoDisk) {
   // pending trusted folder.
   base::FilePath any_trusted_icons_dir =
       GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_trusted_icons_dir);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(any_bitmap1, any_icons[icon_size::k32]);
@@ -1168,7 +1158,7 @@ TEST_F(WebAppIconManagerTest, WritePendingTrustedIconsIntoDisk) {
   base::FilePath maskable_trusted_icons_dir =
       GetAppPendingTrustedIconsDir(profile(), app_id)
           .AppendASCII("Icons Maskable");
-  std::map<SquareSizePx, SkBitmap> maskable_icons =
+  OrderedSizeToBitmap maskable_icons =
       ReadPngsFromDirectory(&file_utils(), maskable_trusted_icons_dir);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(maskable_bitmap1, maskable_icons[icon_size::k256]);
@@ -1212,7 +1202,7 @@ TEST_F(WebAppIconManagerTest, WritePendingManifestIconsIntoDisk) {
   // pending manifest folder.
   base::FilePath any_pending_manifest_icons_dir =
       GetAppPendingManifestIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_pending_manifest_icons_dir);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(any_bitmap1, any_icons[icon_size::k32]);
@@ -1224,7 +1214,7 @@ TEST_F(WebAppIconManagerTest, WritePendingManifestIconsIntoDisk) {
   base::FilePath maskable_pending_manifest_icons_dir =
       GetAppPendingManifestIconsDir(profile(), app_id)
           .AppendASCII("Icons Maskable");
-  std::map<SquareSizePx, SkBitmap> maskable_icons =
+  OrderedSizeToBitmap maskable_icons =
       ReadPngsFromDirectory(&file_utils(), maskable_pending_manifest_icons_dir);
   EXPECT_EQ(3u, any_icons.size());
   gfx::test::AreBitmapsEqual(maskable_bitmap1, maskable_icons[icon_size::k256]);
@@ -1269,7 +1259,7 @@ TEST_F(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
   // pending trusted folder.
   base::FilePath any_pending_trusted_icons_dir =
       GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_pending_trusted_icons =
+  OrderedSizeToBitmap any_pending_trusted_icons =
       ReadPngsFromDirectory(&file_utils(), any_pending_trusted_icons_dir);
   EXPECT_EQ(2u, any_pending_trusted_icons.size());
   gfx::test::AreBitmapsEqual(any_trusted_bitmap1,
@@ -1281,7 +1271,7 @@ TEST_F(WebAppIconManagerTest, WritePendingTrustedAndPendingManifestIconsBoth) {
   // pending manifest folder.
   base::FilePath any_pending_manifest_icons_dir =
       GetAppPendingManifestIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_pending_manifest_icons =
+  OrderedSizeToBitmap any_pending_manifest_icons =
       ReadPngsFromDirectory(&file_utils(), any_pending_manifest_icons_dir);
   EXPECT_EQ(2u, any_pending_manifest_icons.size());
   gfx::test::AreBitmapsEqual(any_bitmap1,
@@ -1339,7 +1329,7 @@ TEST_F(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
   // pending trusted icons folder.
   base::FilePath any_pending_trusted_icons =
       GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_pending_trusted_icons);
   EXPECT_EQ(1u, any_icons.size());
   EXPECT_THAT(any_icons[icon_size::k256],
@@ -1347,7 +1337,7 @@ TEST_F(WebAppIconManagerTest, PendingIconsDoNotOverwriteManifestIcons) {
 
   // Verify bitmaps of purpose `any` are written correctly to disk under the
   // manifest icons folder and are not wiped out by the double write call.
-  std::map<SquareSizePx, SkBitmap> disk_icons = ReadPngsFromDirectory(
+  OrderedSizeToBitmap disk_icons = ReadPngsFromDirectory(
       &file_utils(), GetAppIconsAnyDir(profile(), app_id));
   EXPECT_EQ(1u, disk_icons.size());
   EXPECT_THAT(disk_icons[icon_size::k64], gfx::test::EqualsBitmap(any_bitmap));
@@ -1403,7 +1393,7 @@ TEST_F(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
   // directory.
   base::FilePath any_pending_trusted_icons =
       GetAppPendingTrustedIconsDir(profile(), app_id).AppendASCII("Icons");
-  std::map<SquareSizePx, SkBitmap> any_icons =
+  OrderedSizeToBitmap any_icons =
       ReadPngsFromDirectory(&file_utils(), any_pending_trusted_icons);
   EXPECT_EQ(1u, any_icons.size());
   EXPECT_THAT(any_icons[icon_size::k256],
@@ -1416,7 +1406,7 @@ TEST_F(WebAppIconManagerTest, PendingIconsEmptyManifestIconDirShortcutIcons) {
 
   for (int i = 0; i < num_menu_items; ++i) {
     for (IconPurpose purpose : kIconPurposes) {
-      const std::map<SquareSizePx, SkBitmap>& icon_bitmaps =
+      const OrderedSizeToBitmap& icon_bitmaps =
           shortcuts_menu_icons_map[i].GetBitmapsForPurpose(purpose);
 
       for (unsigned s = 0; s < sizes.size(); ++s) {
@@ -1453,7 +1443,7 @@ TEST_F(WebAppIconManagerTest, ReadIconsFailed) {
   icon_manager().ReadUntrustedIcons(
       app_id, IconPurpose::ANY, icon_sizes_px,
       base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
-        SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+        OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
         EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
         EXPECT_TRUE(icon_bitmaps.empty());
         run_loop.Quit();
@@ -1487,7 +1477,7 @@ TEST_F(WebAppIconManagerTest, FindExact) {
     icon_manager().ReadUntrustedIcons(
         app_id, IconPurpose::ANY, {20},
         base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
-          SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+          OrderedSizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
           EXPECT_EQ(icon_metadata.purpose, IconPurpose::ANY);
           EXPECT_EQ(1u, icon_bitmaps.size());
           EXPECT_FALSE(icon_bitmaps[20].empty());
@@ -1814,11 +1804,10 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Success_AnyOnly) {
   base::RunLoop run_loop;
   icon_manager().ReadIconAndResize(
       app_id, IconPurpose::MASKABLE, icon_size::k128,
-      base::BindLambdaForTesting(
-          [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            EXPECT_TRUE(icon_bitmaps.empty());
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](OrderedSizeToBitmap icon_bitmaps) {
+        EXPECT_TRUE(icon_bitmaps.empty());
+        run_loop.Quit();
+      }));
 
   run_loop.Run();
 }
@@ -1880,22 +1869,20 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Failure) {
     base::RunLoop run_loop;
     icon_manager().ReadIconAndResize(
         app_id, IconPurpose::ANY, icon_size::k128,
-        base::BindLambdaForTesting(
-            [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              EXPECT_TRUE(icon_bitmaps.empty());
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](OrderedSizeToBitmap icon_bitmaps) {
+          EXPECT_TRUE(icon_bitmaps.empty());
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
   {
     base::RunLoop run_loop;
     icon_manager().ReadIconAndResize(
         app_id, IconPurpose::MASKABLE, icon_size::k128,
-        base::BindLambdaForTesting(
-            [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              EXPECT_TRUE(icon_bitmaps.empty());
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](OrderedSizeToBitmap icon_bitmaps) {
+          EXPECT_TRUE(icon_bitmaps.empty());
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 }

@@ -68,7 +68,8 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
   base::test::TestFuture<web_app::IconMetadataFromDisk> future;
   icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, sizes_px, purpose, future.GetCallback());
-  web_app::SizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
+  web_app::OrderedSizeToBitmap icon_bitmaps =
+      std::move(future.Take().icons_map);
 
   gfx::ImageSkia output_image_skia;
 

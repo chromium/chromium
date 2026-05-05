@@ -11,15 +11,12 @@
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
-
-namespace proto {
-class PendingUpdateInfo;
-}  // namespace proto
 
 // The result of constructing the required metadata for an app update dialog to
 // be shown to the user for `app_id`. These values are persisted to logs.

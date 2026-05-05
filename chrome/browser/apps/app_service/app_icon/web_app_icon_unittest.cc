@@ -423,7 +423,7 @@ TEST_F(WebAppIconFactoryTest, LoadIconFailed) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
   gfx::ImageSkia converted_image = ConvertSquareBitmapsToImageSkia(
-      /*icon_bitmaps=*/std::map<web_app::SquareSizePx, SkBitmap>{},
+      /*icon_bitmaps=*/web_app::OrderedSizeToBitmap{},
       /*icon_effects=*/apps::IconEffects::kNone,
       /*size_hint_in_dip=*/32);
 
@@ -432,7 +432,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_Empty) {
 
 TEST_F(WebAppIconFactoryTest,
        ConvertSquareBitmapsToImageSkia_OneBigIconForDownscale) {
-  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::OrderedSizeToBitmap icon_bitmaps;
   web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k512,
                             SK_ColorYELLOW);
 
@@ -455,7 +455,7 @@ TEST_F(WebAppIconFactoryTest,
 
 TEST_F(WebAppIconFactoryTest,
        ConvertSquareBitmapsToImageSkia_OneSmallIconNoUpscale) {
-  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::OrderedSizeToBitmap icon_bitmaps;
   web_app::AddGeneratedIcon(&icon_bitmaps, web_app::icon_size::k16,
                             SK_ColorMAGENTA);
 
@@ -472,7 +472,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_MatchBigger) {
   const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED, SK_ColorMAGENTA,
                                     SK_ColorGREEN, SK_ColorWHITE};
 
-  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::OrderedSizeToBitmap icon_bitmaps;
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
   }
@@ -503,7 +503,7 @@ TEST_F(WebAppIconFactoryTest, ConvertSquareBitmapsToImageSkia_StandardEffect) {
                                                     web_app::icon_size::k96};
   const std::vector<SkColor> colors{SK_ColorBLUE, SK_ColorRED};
 
-  std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps;
+  web_app::OrderedSizeToBitmap icon_bitmaps;
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     web_app::AddGeneratedIcon(&icon_bitmaps, sizes_px[i], colors[i]);
   }

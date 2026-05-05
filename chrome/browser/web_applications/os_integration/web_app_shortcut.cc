@@ -168,9 +168,8 @@ ConvertIconProtoDataToShortcutsMenuIcon(
   return shortcut_menu_item_icons;
 }
 
-gfx::ImageFamily PackageIconsIntoImageFamily(
-    bool allow_empty,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+gfx::ImageFamily PackageIconsIntoImageFamily(bool allow_empty,
+                                             OrderedSizeToBitmap icon_bitmaps) {
   gfx::ImageFamily image_family;
   for (auto& size_and_bitmap : icon_bitmaps) {
     image_family.Add(gfx::ImageSkia(

@@ -504,7 +504,7 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
 
   apps::IconInfo::Purpose purpose = new_install_info_->trusted_icons[0].purpose;
   SkBitmap new_trusted_icon = [&]() {
-    const std::map<SquareSizePx, SkBitmap>& icons =
+    const OrderedSizeToBitmap& icons =
         new_install_info_->trusted_icon_bitmaps.GetBitmapsForPurpose(
             ConvertIconPurposeToManifestImagePurpose(purpose));
     auto icon_it = icons.lower_bound(kLogoSizeInDialog);

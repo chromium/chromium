@@ -15,8 +15,8 @@ namespace web_app {
 
 namespace {
 
-bool BitmapMapsEqual(const std::map<SquareSizePx, SkBitmap>& left,
-                     const std::map<SquareSizePx, SkBitmap>& right) {
+bool BitmapMapsEqual(const OrderedSizeToBitmap& left,
+                     const OrderedSizeToBitmap& right) {
   return std::ranges::equal(left, right, [](const auto& lhs, const auto& rhs) {
     return lhs.first == rhs.first &&
            gfx::BitmapsAreEqual(lhs.second, rhs.second);
@@ -51,7 +51,7 @@ bool IconBitmaps::operator==(const IconBitmaps& other) const {
          BitmapMapsEqual(monochrome, other.monochrome);
 }
 
-const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
+const OrderedSizeToBitmap& IconBitmaps::GetBitmapsForPurpose(
     IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::MONOCHROME:
@@ -63,9 +63,8 @@ const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
   }
 }
 
-void IconBitmaps::SetBitmapsForPurpose(
-    IconPurpose purpose,
-    std::map<SquareSizePx, SkBitmap> bitmaps) {
+void IconBitmaps::SetBitmapsForPurpose(IconPurpose purpose,
+                                       OrderedSizeToBitmap bitmaps) {
   switch (purpose) {
     case IconPurpose::ANY:
       any = std::move(bitmaps);

@@ -581,14 +581,14 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty map if any errors occurred.
-TypedResult<SizeToBitmap> ReadIconAndResizeBlocking(
+TypedResult<OrderedSizeToBitmap> ReadIconAndResizeBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const IconId& icon_id,
     SquareSizePx target_icon_size_px,
     bool is_trusted) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconAndResizeBlocking");
-  TypedResult<SizeToBitmap> result;
+  TypedResult<OrderedSizeToBitmap> result;
 
   TypedResult<SkBitmap> read_result =
       ReadIconBlocking(std::move(utils), web_apps_directory, icon_id,
@@ -818,7 +818,7 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
     IconBitmaps result;
 
     for (IconPurpose purpose : kIconPurposes) {
-      SizeToBitmap bitmaps;
+      OrderedSizeToBitmap bitmaps;
 
       for (SquareSizePx icon_size_px :
            item_info.downloaded_icon_sizes.GetSizesForPurpose(purpose)) {
@@ -834,9 +834,9 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
     }
 
     ++curr_index;
-    // We always push_back (even when result is empty) to keep a given
-    // std::map's index in sync with that of its corresponding shortcuts menu
-    // item.
+    // We always append one |IconBitmaps| entry per shortcut menu item, even
+    // when no icon bitmaps were read for that item, to keep the vector index in
+    // sync with the corresponding shortcut menu item.
     results.value.push_back(std::move(result));
   }
   CHECK_EQ(shortcuts_menu_item_infos.size(), results.value.size());
@@ -872,9 +872,9 @@ ReadShortcutMenuIconsWithTimestampBlocking(
       data[purpose] = bitmap_with_time;
     }
     ++curr_index;
-    // We always push_back (even when result is empty) to keep a given
-    // std::map's index in sync with that of its corresponding shortcuts menu
-    // item.
+    // We always append one |ShortcutMenuIconTimes| entry per shortcut menu
+    // item, even when every per-purpose time map is empty, to keep the vector
+    // index in sync with the corresponding shortcut menu item.
     results.value.push_back(std::move(data));
   }
   CHECK_EQ(shortcuts_menu_icon_infos.size(), results.value.size());
@@ -951,7 +951,7 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
 }
 
 gfx::ImageSkia ConvertFaviconBitmapsToImageSkia(
-    const SizeToBitmap& icon_bitmaps) {
+    const OrderedSizeToBitmap& icon_bitmaps) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ConvertFaviconBitmapsToImageSkia");
   gfx::ImageSkia image_skia;
 
@@ -1196,10 +1196,9 @@ class WriteIconsJob {
         return create_result;
       }
 
-      for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
+      for (const auto& [size, bitmap] :
            icon_bitmaps.GetBitmapsForPurpose(purpose)) {
-        TypedResult<bool> write_result =
-            EncodeAndWriteIcon(icons_dir, icon_bitmap.second);
+        TypedResult<bool> write_result = EncodeAndWriteIcon(icons_dir, bitmap);
         if (write_result.HasErrors()) {
           return write_result;
         }
@@ -1226,7 +1225,7 @@ class WriteIconsJob {
       int shortcut_index = -1;
       for (const IconBitmaps& icon_bitmaps : shortcuts_menu_icon_bitmaps_) {
         ++shortcut_index;
-        const SizeToBitmap& bitmaps =
+        const OrderedSizeToBitmap& bitmaps =
             icon_bitmaps.GetBitmapsForPurpose(purpose);
         if (bitmaps.empty())
           continue;
@@ -1238,10 +1237,9 @@ class WriteIconsJob {
         if (create_result.HasErrors())
           return create_result;
 
-        for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-             bitmaps) {
+        for (const auto& [size, bitmap] : bitmaps) {
           TypedResult<bool> write_result =
-              EncodeAndWriteIcon(shortcuts_menu_icon_dir, icon_bitmap.second);
+              EncodeAndWriteIcon(shortcuts_menu_icon_dir, bitmap);
           if (write_result.HasErrors())
             return write_result;
         }
@@ -1383,10 +1381,9 @@ WebAppIconManager::~WebAppIconManager() = default;
 
 // static
 ReadIconMetadataCallback WebAppIconManager::BitmapsFromIconMetadataExtractor(
-    base::OnceCallback<void(std::map<int, SkBitmap>)> icon_metadata_callback) {
+    base::OnceCallback<void(OrderedSizeToBitmap)> icon_metadata_callback) {
   return base::BindOnce(
-      [](base::OnceCallback<void(std::map<int, SkBitmap>)>
-             icon_metadata_callback,
+      [](base::OnceCallback<void(OrderedSizeToBitmap)> icon_metadata_callback,
          IconMetadataFromDisk icon_metadata_from_disk) {
         std::move(icon_metadata_callback)
             .Run(std::move(icon_metadata_from_disk.icons_map));
@@ -1977,7 +1974,7 @@ void WebAppIconManager::ReadIconAndResize(const webapps::AppId& app_id,
   }
 
   if (!best_icon) {
-    std::move(callback).Run(SizeToBitmap());
+    std::move(callback).Run(OrderedSizeToBitmap());
     return;
   }
 
@@ -1987,7 +1984,7 @@ void WebAppIconManager::ReadIconAndResize(const webapps::AppId& app_id,
       base::BindOnce(ReadIconAndResizeBlocking, provider_->file_utils(),
                      web_apps_directory_, std::move(icon_id), desired_icon_size,
                      best_icon->is_trusted),
-      base::BindOnce(&LogErrorsCallCallback<SizeToBitmap>, GetWeakPtr(),
+      base::BindOnce(&LogErrorsCallCallback<OrderedSizeToBitmap>, GetWeakPtr(),
                      std::move(callback)));
 }
 

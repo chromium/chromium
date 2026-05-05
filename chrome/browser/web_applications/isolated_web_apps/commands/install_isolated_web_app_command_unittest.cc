@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -585,12 +584,12 @@ TEST_F(InstallIsolatedWebAppCommandManifestIconsTest,
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
 
-  base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> test_future;
+  base::test::TestFuture<OrderedSizeToBitmap> test_future;
   web_app_icon_manager().ReadIconAndResize(url_info.app_id(), IconPurpose::ANY,
                                            SquareSizePx{1},
                                            test_future.GetCallback());
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps = test_future.Get();
+  OrderedSizeToBitmap icon_bitmaps = test_future.Get();
 
   EXPECT_THAT(icon_bitmaps,
               UnorderedElementsAre(Pair(_, ResultOf(

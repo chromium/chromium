@@ -108,7 +108,7 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
   webapps::AppId InstallAppWithInstallState(
       const GURL app_url,
       std::u16string name,
-      std::map<SquareSizePx, SkBitmap> icon_map,
+      OrderedSizeToBitmap icon_map,
       InstallOptionsForMigration install_options) {
     std::unique_ptr<WebAppInstallInfo> info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
@@ -222,7 +222,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
        SuccessDestinationAppAlreadyInstalled) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -248,7 +248,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Install the destination app also with OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -323,7 +323,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const SkColor source_color = SK_ColorGREEN;
   const SkColor dest_color = SK_ColorRED;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, source_color);
@@ -349,7 +349,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Install the destination app as if it was suggested for migration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, dest_color);
@@ -416,7 +416,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   const SkColor source_color = SK_ColorGREEN;
   const SkColor dest_color = SK_ColorRED;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, source_color);
@@ -441,7 +441,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Install the destination app as if it was suggested for migration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, dest_color);
@@ -506,7 +506,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
 TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -532,7 +532,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   }
 
   // Install the destination app as if it was suggested for migration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -594,7 +594,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
 TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -627,7 +627,7 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   }
 
   // Install the destination app as if it was suggested for migration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -690,7 +690,7 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
 TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -711,7 +711,7 @@ TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
   }
 
   // Install the destination app also with OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -751,7 +751,7 @@ TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
 TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -771,7 +771,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
   }
 
   // Install the destination app also with OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -810,7 +810,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
 TEST_F(ApplyManifestMigrationCommandTest, NoSourceApp) {
   base::HistogramTester histogram_tester;
   // Install the destination app with OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   std::u16string destination_app_name = u"Destination app";
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
@@ -849,7 +849,7 @@ TEST_F(ApplyManifestMigrationCommandTest, NoSourceApp) {
 TEST_F(ApplyManifestMigrationCommandTest, NoDestinationApp) {
   base::HistogramTester histogram_tester;
   // Install the source app first with complete OS integration.
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   std::u16string source_app_name = u"Source app";
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);

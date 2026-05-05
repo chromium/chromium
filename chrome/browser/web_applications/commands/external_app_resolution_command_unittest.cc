@@ -95,8 +95,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   const GURL kWebAppManifestUrl =
       GURL("https://example.com/path/manifest.json");
 
-  using BitmapData = std::map<SquareSizePx, SkBitmap>;
-
   ExternallyManagedAppManager::InstallResult InstallAndWait(
       const ExternalInstallOptions& install_options,
       std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr) {
@@ -176,7 +174,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
   void LoadIconsFromDB(const webapps::AppId& app_id,
                        const std::vector<SquareSizePx>& sizes_px) {
-    BitmapData icon_bitmaps;
+    OrderedSizeToBitmap icon_bitmaps;
     WebAppIconManager& icon_manager = provider()->icon_manager();
 
     // We can use this to test if icons of a specific size do not exist in the
@@ -263,7 +261,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   }
 
  private:
-  base::flat_map<webapps::AppId, BitmapData> app_to_icons_data_;
+  base::flat_map<webapps::AppId, OrderedSizeToBitmap> app_to_icons_data_;
   raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 };
 

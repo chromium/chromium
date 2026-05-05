@@ -1459,9 +1459,8 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
     return bitmap;
   }
 
-  webapps::AppId InstallWebAppWithShortcuts(
-      std::map<SquareSizePx, SkBitmap> icon_map,
-      const GURL manifest_id) {
+  webapps::AppId InstallWebAppWithShortcuts(OrderedSizeToBitmap icon_map,
+                                            const GURL manifest_id) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>(webapps::ManifestId(manifest_id),
                                             /*start_url=*/manifest_id);
@@ -1508,7 +1507,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
 
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1544,7 +1543,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   if (!IsOsIntegrationAllowed()) {
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1580,7 +1579,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   if (!IsOsIntegrationAllowed()) {
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1616,7 +1615,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   if (!IsOsIntegrationAllowed()) {
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
-  std::map<SquareSizePx, SkBitmap> icon_map;
+  OrderedSizeToBitmap icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1673,7 +1672,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   if (!IsOsIntegrationAllowed()) {
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
-  std::map<SquareSizePx, SkBitmap> icon_map1;
+  OrderedSizeToBitmap icon_map1;
   icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map1[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1686,7 +1685,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
       profile(), app_id1, app_name1));
 
   const GURL manifest_id2 = GURL("https://example_2.com/index.html");
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   icon_map2[icon_size::k24] =
       CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
   icon_map2[icon_size::k128] =
@@ -1729,7 +1728,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   if (!IsOsIntegrationAllowed()) {
     GTEST_SKIP() << "OS integration execution does not work on this OS";
   }
-  std::map<SquareSizePx, SkBitmap> icon_map1;
+  OrderedSizeToBitmap icon_map1;
   icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map1[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
@@ -1742,7 +1741,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
       profile(), app_id1, app_name1));
 
   const GURL manifest_id2 = GURL("https://example_2.com/index.html");
-  std::map<SquareSizePx, SkBitmap> icon_map2;
+  OrderedSizeToBitmap icon_map2;
   icon_map2[icon_size::k24] =
       CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
   icon_map2[icon_size::k128] =

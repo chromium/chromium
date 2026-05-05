@@ -67,7 +67,7 @@ class AppMigrationDataReadCommandTest : public WebAppTest {
     auto install_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     install_info->title = title;
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+    OrderedSizeToBitmap icon_bitmaps;
     icon_bitmaps[kIconSizeForUpdateDialog] = icon_bitmap;
     install_info->icon_bitmaps.any = std::move(icon_bitmaps);
     return test::InstallWebApp(profile(), std::move(install_info));

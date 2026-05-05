@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -156,11 +155,10 @@ class AppIconFetcherTask : public content::WebContentsObserver {
     MaybeSendImageAndSelfDestruct();
   }
 
-  void OnIconFetched(int fetched_size,
-                     std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+  void OnIconFetched(int fetched_size, OrderedSizeToBitmap icon_bitmaps) {
     DCHECK_EQ(icon_bitmaps.size(), 1ul);
     DCHECK_EQ(icon_bitmaps.begin()->first, fetched_size);
-    if (icon_bitmaps.size() == 0) {
+    if (icon_bitmaps.empty()) {
       delete this;
       return;
     }

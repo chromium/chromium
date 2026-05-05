@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -17,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
@@ -117,23 +115,24 @@ void AddSquareIconsFromMapMatchingIconInfos(
 }
 
 // Append non-empty square icons from |bitmaps| onto the |square_icons| list.
-void AddSquareIconsFromBitmaps(
-    std::vector<SkBitmap>* square_icons,
-    const std::map<SquareSizePx, SkBitmap>& bitmaps) {
-  for (const std::pair<const SquareSizePx, SkBitmap>& icon : bitmaps) {
-    DCHECK_EQ(icon.first, icon.second.width());
-    DCHECK_EQ(icon.first, icon.second.height());
-    if (!icon.second.empty())
-      square_icons->push_back(icon.second);
+void AddSquareIconsFromBitmaps(std::vector<SkBitmap>* square_icons,
+                               const OrderedSizeToBitmap& bitmaps) {
+  for (const auto& [size, icon] : bitmaps) {
+    DCHECK_EQ(size, icon.width());
+    DCHECK_EQ(size, icon.height());
+    if (!icon.empty()) {
+      square_icons->push_back(icon);
+    }
   }
 }
 
 std::vector<SquareSizePx> GetSquareSizePxs(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
+    const OrderedSizeToBitmap& icon_bitmaps) {
   std::vector<SquareSizePx> sizes;
   sizes.reserve(icon_bitmaps.size());
-  for (const std::pair<const SquareSizePx, SkBitmap>& item : icon_bitmaps)
-    sizes.push_back(item.first);
+  for (const auto& [size, icon] : icon_bitmaps) {
+    sizes.push_back(size);
+  }
   return sizes;
 }
 
@@ -189,7 +188,7 @@ void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
     IconBitmaps shortcut_icon_bitmaps;
 
     for (IconPurpose purpose : kIconPurposes) {
-      std::map<SquareSizePx, SkBitmap> bitmaps;
+      OrderedSizeToBitmap bitmaps;
       for (const auto& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
         auto it = icons_map.find(icon.url);
@@ -201,7 +200,7 @@ void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
           if (icon.square_size_px != 0) {
             std::set<SquareSizePx> sizes_to_generate;
             sizes_to_generate.emplace(icon.square_size_px);
-            SizeToBitmap resized_bitmaps(
+            OrderedSizeToBitmap resized_bitmaps(
                 ConstrainBitmapsToSizes(it->second, sizes_to_generate));
 
             // Don't overwrite as a shortcut item could have multiple icon urls.
@@ -331,7 +330,7 @@ apps::FileHandler::LaunchType ToFileHandlerLaunchType(
 void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
     const IconsMap& icons_downloaded,
     const std::vector<apps::IconInfo>& icon_metadata,
-    std::map<SquareSizePx, SkBitmap>& output_size_to_bitmaps) {
+    OrderedSizeToBitmap& output_size_to_bitmaps) {
   CHECK(output_size_to_bitmaps.empty());
   std::vector<SkBitmap> square_icons_matching_infos;
   // First, choose all bitmaps from `icons_downloaded` that share the same url
@@ -347,7 +346,7 @@ void PopulateTrustedIconsFromDownloadedBitmapsAndMetadata(
 
   // Third, resize existing icons if any and populate `output_size_to_bitmaps`
   // with the bitmaps whose sizes are not populated previously.
-  SizeToBitmap sizes_to_icons = ConstrainBitmapsToSizes(
+  OrderedSizeToBitmap sizes_to_icons = ConstrainBitmapsToSizes(
       square_icons_matching_infos, web_app::SizesToGenerate());
   for (auto& [size, icon] : sizes_to_icons) {
     output_size_to_bitmaps.try_emplace(size, std::move(icon));
@@ -486,7 +485,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   // contain links to icons that are not actually created and linked on disk.
   // TODO(crbug.com/40661228): Don't resize before writing to disk, it's
   // not necessary and would simplify this code path to remove.
-  SizeToBitmap size_to_icons = ResizeIconsAndGenerateMissing(
+  OrderedSizeToBitmap size_to_icons = ResizeIconsAndGenerateMissing(
       square_icons_any, SizesToGenerate(), icon_letter,
       &web_app_info->is_generated_icon);
 

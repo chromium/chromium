@@ -407,7 +407,7 @@ void ArcActivityIconsToImageSkias(
 }
 
 gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
-    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
+    const web_app::OrderedSizeToBitmap& icon_bitmaps,
     IconEffects icon_effects,
     int size_hint_in_dip) {
   TRACE_EVENT0("ui", "apps::ConvertSquareBitmapsToImageSkia");
@@ -428,7 +428,7 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 gfx::ImageSkia ConvertIconBitmapsToImageSkia(
-    const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
+    const web_app::OrderedSizeToBitmap& icon_bitmaps,
     int size_hint_in_dip) {
   TRACE_EVENT0("ui", "apps::ConvertIconBitmapsToImageSkia");
   if (icon_bitmaps.empty()) {
