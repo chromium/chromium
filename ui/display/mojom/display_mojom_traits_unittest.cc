@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
+#include "skia/ext/skcms_ext.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -296,9 +297,8 @@ TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
   SerializeAndDeserialize<mojom::ColorCalibration>(input, &output);
 
   // Validate `srgb_to_device_matrix`.
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(&input.srgb_to_device_matrix, &output.srgb_to_device_matrix,
-                sizeof(skcms_Matrix3x3))));
+  EXPECT_TRUE(
+      skcms::Equal(input.srgb_to_device_matrix, output.srgb_to_device_matrix));
 
   // Validate `srgb_to_linear`.
   input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
@@ -322,8 +322,7 @@ TEST(DisplayStructTraitsTest, ColorTemperatureAdjustmentRoundtrip) {
   ColorTemperatureAdjustment output;
   SerializeAndDeserialize<mojom::ColorTemperatureAdjustment>(input, &output);
 
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
-                                  sizeof(skcms_Matrix3x3))));
+  EXPECT_TRUE(skcms::Equal(input.srgb_matrix, output.srgb_matrix));
 }
 
 TEST(DisplayStructTraitsTest, GammaAdjustmentRoundtrip) {
