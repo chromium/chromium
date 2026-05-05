@@ -1232,12 +1232,12 @@ class AutocompleteMediator
         // false).
         // Otherwise, it might be the chip losing focus because the user started typing.
         if (mIgnoreOmniboxItemSelection && siteSearchData == null) return;
-        mIgnoreOmniboxItemSelection = true;
 
         // Prevent clearing the text from triggering a new autocomplete request.
         mAutocompleteInput.setAutocompleteState(AutocompleteState.STANDBY);
 
         if (siteSearchData != null) {
+            mIgnoreOmniboxItemSelection = true;
             // In keyword mode, the query string starts fresh/empty. The keyword is presented as a
             // UI chip outside the URL bar text input field.
             // Note: The order here is critical. The internal state and UI text must be cleared
