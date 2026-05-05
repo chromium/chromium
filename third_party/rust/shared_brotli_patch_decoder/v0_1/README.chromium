@@ -1,0 +1,11 @@
+Name: shared-brotli-patch-decoder
+URL: https://crates.io/crates/shared-brotli-patch-decoder
+Version: 0.1.3
+Revision: 60023c5e324f9f200f7f9b08b38f5e81bc4f128e
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/shared-brotli-patch-decoder-v0_1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Wrapper around brotli-sys which allows for decoding shared brotli (https://datatracker.ietf.org/doc/draft-vandevenne-shared-brotli-format/) encoded patch data.

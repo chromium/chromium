@@ -704,6 +704,11 @@ allow_unsafe = true
 [crate.serde_json_lenient.extra_kv]
 allow_unsafe = true
 
+[crate.shared-brotli-patch-decoder]
+extra_kv = { allow_unsafe = true, extra_deps = ["//third_party/brotli:dec"] }
+remove_build_rs = true
+remove_deps = ['cc'] # Only used in build.rs
+
 [crate.simd-adler32.extra_kv]
 allow_unsafe = true
 allow_unstable_features = ["stdarch_arm_neon_intrinsics"]

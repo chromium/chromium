@@ -271,6 +271,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_json_lenient",
+ "shared-brotli-patch-decoder",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -1500,6 +1501,15 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "shared-brotli-patch-decoder"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cc",
+ "cfg-if",
 ]
 
 [[package]]
