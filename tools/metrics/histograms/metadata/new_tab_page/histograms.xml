@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency"
-    units="ms" expires_after="2026-05-01">
+    units="ms" expires_after="2026-11-01">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.WebUI.InitialLoadLatency" units="ms"
-    expires_after="2026-05-01">
+    expires_after="2026-11-01">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
