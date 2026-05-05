@@ -41,6 +41,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -49,6 +50,8 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

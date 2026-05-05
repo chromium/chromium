@@ -1776,6 +1776,13 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   sources = [
+    "activity_log/activity_database_unittest.cc",
+    "activity_log/activity_log_enabled_unittest.cc",
+    "activity_log/activity_log_policy_unittest.cc",
+    "activity_log/activity_log_unittest.cc",
+    "activity_log/counting_policy_unittest.cc",
+    "activity_log/database_string_table_unittest.cc",
+    "activity_log/fullstream_ui_policy_unittest.cc",
     "api/bookmarks/bookmarks_api_unittest.cc",
     "api/browsing_data/browsing_data_unittest.cc",
     "api/chrome_extensions_api_client_unittest.cc",
@@ -1912,6 +1919,7 @@ source_set("unit_tests") {
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/resources:component_extension_resources_grit",
     "//chrome/browser/search_engines",
     "//chrome/browser/supervised_user:test_support",
@@ -1922,6 +1930,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/browser_sync:switches",
     "//components/gcm_driver:test_support",
+    "//components/no_state_prefetch/browser",
     "//components/os_crypt/async/browser:test_support",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
@@ -1955,13 +1964,6 @@ source_set("unit_tests") {
 
   if (enable_extensions) {
     sources += [
-      "activity_log/activity_database_unittest.cc",
-      "activity_log/activity_log_enabled_unittest.cc",
-      "activity_log/activity_log_policy_unittest.cc",
-      "activity_log/activity_log_unittest.cc",
-      "activity_log/counting_policy_unittest.cc",
-      "activity_log/database_string_table_unittest.cc",
-      "activity_log/fullstream_ui_policy_unittest.cc",
       "api/activity_log_private/activity_log_private_api_unittest.cc",
       "api/declarative_webrequest/webrequest_action_unittest.cc",
       "api/declarative_webrequest/webrequest_rules_registry_unittest.cc",
@@ -2024,7 +2026,6 @@ source_set("unit_tests") {
       "//chrome/browser/affiliations",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/password_manager",
-      "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/browser/spellchecker",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/update_client",
@@ -2034,7 +2035,6 @@ source_set("unit_tests") {
       "//chrome/browser/webauthn:test_support",
       "//components/affiliations/core/browser:test_support",
       "//components/enterprise:test_support",
-      "//components/no_state_prefetch/browser",
       "//components/password_manager/content/browser",
       "//components/password_manager/core/browser/sharing",
       "//components/password_manager/core/browser/sharing:test_support",

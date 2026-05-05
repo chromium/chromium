@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/activity_log/activity_log_policy.h"
+
 #include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
-#include "chrome/browser/extensions/activity_log/activity_log_policy.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_activity_log_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,6 +45,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

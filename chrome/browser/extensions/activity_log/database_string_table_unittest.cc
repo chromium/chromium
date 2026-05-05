@@ -9,11 +9,14 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

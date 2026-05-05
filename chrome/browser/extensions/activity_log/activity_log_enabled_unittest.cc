@@ -16,8 +16,11 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
