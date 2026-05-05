@@ -137,7 +137,6 @@ AccessibilityPrefsMergeConflictDialog::AccessibilityPrefsMergeConflictDialog(
           &AccessibilityPrefsMergeConflictDialog::OnShowAccessibilitySettings,
           weak_factory_.GetWeakPtr()))
       .BuildChildren();
-  // TODO(crbug.com/507302792): Add the accessibility icon to the dialog.
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -148,6 +147,11 @@ AccessibilityPrefsMergeConflictDialog::AccessibilityPrefsMergeConflictDialog(
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kContentsRoundingDip));
   SetButtonContainerAlignment(views::LayoutAlignment::kEnd);
+  SetTopContentView(views::Builder<views::ImageView>()
+                        .SetImage(ui::ImageModel::FromVectorIcon(
+                            kUnifiedMenuAccessibilityIcon))
+                        .Build());
+  SetTopContentAlignment(views::LayoutAlignment::kStart);
 
   auto scroller = std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled);
