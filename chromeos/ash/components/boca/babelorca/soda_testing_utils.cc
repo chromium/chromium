@@ -17,6 +17,7 @@ void RegisterSodaPrefsForTesting(PrefRegistrySimple* pref_service) {
   // install even if just school tools teacher is enabled on the current
   // profile. Callers to this method will need to set the boca pref to kTeacher.
   pref_service->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
+  pref_service->RegisterBooleanPref(::prefs::kHeadlessCaptionEnabled, false);
   pref_service->RegisterBooleanPref(
       ::ash::prefs::kAccessibilityDictationEnabled, false);
   pref_service->RegisterBooleanPref(::ash::prefs::kProjectorCreationFlowEnabled,

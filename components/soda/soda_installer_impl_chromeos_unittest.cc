@@ -51,6 +51,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     pref_service_->registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
                                                    true);
     pref_service_->registry()->RegisterBooleanPref(
+        prefs::kHeadlessCaptionEnabled, true);
+    pref_service_->registry()->RegisterBooleanPref(
         ash::prefs::kProjectorCreationFlowEnabled, true);
     pref_service_->registry()->RegisterStringPref(
         ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale);
@@ -123,6 +125,11 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
 
   void SetLiveCaptionEnabled(bool enabled) {
     pref_service_->SetManagedPref(prefs::kLiveCaptionEnabled,
+                                  std::make_unique<base::Value>(enabled));
+  }
+
+  void SetHeadlessCaptionEnabled(bool enabled) {
+    pref_service_->SetManagedPref(prefs::kHeadlessCaptionEnabled,
                                   std::make_unique<base::Value>(enabled));
   }
 
@@ -224,7 +231,6 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   soda_installer_impl_.reset();
   soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
   std::vector<std::string> enabled_and_available_languages;
-  std::vector<base::DictValue> available_language_packs;
   {
     std::vector<std::string> enabled_languages =
         GetInstance()->GetLiveCaptionEnabledLanguages();
@@ -394,6 +400,7 @@ TEST_F(SodaInstallerImplChromeOSTest, UninstallSodaAfterThirtyDays) {
   // Turn off features that use SODA so that the uninstall timer can be set.
   SetDictationEnabled(false);
   SetLiveCaptionEnabled(false);
+  SetHeadlessCaptionEnabled(false);
   SetProjectorCreationFlowEnabled(false);
   SetUninstallTimer();
   ASSERT_TRUE(IsSodaInstalled());
@@ -416,6 +423,7 @@ TEST_F(SodaInstallerImplChromeOSTest, ReinstallSoda) {
   // Turn off features that use SODA so that the uninstall timer can be set.
   SetDictationEnabled(false);
   SetLiveCaptionEnabled(false);
+  SetHeadlessCaptionEnabled(false);
   SetProjectorCreationFlowEnabled(false);
   SetUninstallTimer();
   ASSERT_TRUE(IsSodaInstalled());

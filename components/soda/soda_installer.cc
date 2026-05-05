@@ -317,6 +317,7 @@ std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) const {
 #if BUILDFLAG(IS_CHROMEOS)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+         prefs->GetBoolean(prefs::kHeadlessCaptionEnabled) ||
          prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
          prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled) ||
          prefs->GetString(
