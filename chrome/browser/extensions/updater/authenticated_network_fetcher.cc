@@ -17,10 +17,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/update_client/network.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

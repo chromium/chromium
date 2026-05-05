@@ -15,7 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/update_client/network.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

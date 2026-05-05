@@ -21,10 +21,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/update_client/network.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using ::base::test::RunClosure;
 using ::testing::_;
