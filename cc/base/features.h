@@ -154,6 +154,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAllowLCDTextWithFilter);
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
 
+// When enabled, HTMLImageElement::decode() promises resolve even if the image
+// is too large to fit into the image decode cache budget.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResolveLargeImageDecodes);
+
 // When enabled, fix bug where an image decode cache entry last use timestamp is
 // initialized to 0 instead of now.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);

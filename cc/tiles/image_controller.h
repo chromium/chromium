@@ -101,7 +101,8 @@ class CC_EXPORT ImageController {
                        ImageDecodedCallback callback,
                        scoped_refptr<TileTask> task,
                        bool need_unref,
-                       bool has_external_dependency);
+                       bool has_external_dependency,
+                       bool too_large_to_pin);
     ImageDecodeRequest(ImageDecodeRequest&& other);
     ~ImageDecodeRequest();
 
@@ -113,6 +114,7 @@ class CC_EXPORT ImageController {
     scoped_refptr<TileTask> task;
     bool need_unref;
     bool has_external_dependency;
+    bool too_large_to_pin;
   };
 
   enum class WorkerTaskState {

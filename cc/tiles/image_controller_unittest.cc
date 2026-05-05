@@ -15,6 +15,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_restrictions.h"
@@ -326,7 +327,29 @@ TEST_F(ImageControllerTest, QueueImageDecodeTooLarge) {
           /*speculative*/ false);
   RunOrTimeout(&run_loop);
   EXPECT_EQ(expected_id, decode_client.id());
-  EXPECT_EQ(ImageController::ImageDecodeResult::FAILURE,
+  // We succeed even if the image is too large.
+  EXPECT_EQ(ImageController::ImageDecodeResult::SUCCESS,
+            decode_client.result());
+}
+
+TEST_F(ImageControllerTest, QueueImageDecodeTooLargeResolves) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kResolveLargeImageDecodes);
+
+  base::RunLoop run_loop;
+  DecodeClient decode_client;
+
+  DrawImage image = CreateDiscardableDrawImage(gfx::Size(2000, 2000));
+  ImageController::ImageDecodeRequestId expected_id =
+      controller()->QueueImageDecode(
+          image,
+          base::BindOnce(&DecodeClient::Callback,
+                         base::Unretained(&decode_client),
+                         run_loop.QuitClosure()),
+          /*speculative*/ false);
+  RunOrTimeout(&run_loop);
+  EXPECT_EQ(expected_id, decode_client.id());
+  EXPECT_EQ(ImageController::ImageDecodeResult::SUCCESS,
             decode_client.result());
 }
 

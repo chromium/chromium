@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/completion_event.h"
+#include "cc/base/features.h"
 #include "cc/tiles/tile_task_manager.h"
 
 namespace cc {
@@ -333,7 +334,8 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
     if (!cache_) {
       orphaned_decode_requests_.emplace_back(
           id, draw_image, std::move(callback), /*task=*/nullptr,
-          /*need_unref=*/false, /*has_external_dependency=*/false);
+          /*need_unref=*/false, /*has_external_dependency=*/false,
+          /*too_large_to_pin=*/false);
       return id;
     }
     result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
@@ -350,7 +352,7 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
         result.task->dependencies()[0]->IsRasterTask());
   worker_state_->image_decode_queue[id] = ImageDecodeRequest(
       id, draw_image, std::move(callback), std::move(result.task),
-      result.need_unref, has_external_dependency);
+      result.need_unref, has_external_dependency, result.is_at_raster_decode);
   ScheduleImageDecodeOnWorkerIfNeeded();
 
   return id;
@@ -493,6 +495,10 @@ ImageController::ImageDecodeResult ImageController::CompleteTaskForRequest(
   ImageDecodeResult result;
   if (!request.draw_image.paint_image().IsLazyGenerated()) {
     result = ImageDecodeResult::DECODE_NOT_REQUIRED;
+  } else if (request.too_large_to_pin &&
+             base::FeatureList::IsEnabled(
+                 features::kResolveLargeImageDecodes)) {
+    result = ImageDecodeResult::SUCCESS;
   } else if (!request.need_unref) {
     result = ImageDecodeResult::FAILURE;
   } else {
@@ -533,6 +539,7 @@ void ImageController::GenerateTasksForOrphanedRequests() {
       request.task = result.task;
       request.has_external_dependency =
           result.task && !result.task->dependencies().empty();
+      request.too_large_to_pin = result.is_at_raster_decode;
     }
     worker_state_->image_decode_queue[request.id] = std::move(request);
   }
@@ -556,13 +563,15 @@ ImageController::ImageDecodeRequest::ImageDecodeRequest(
     ImageDecodedCallback callback,
     scoped_refptr<TileTask> task,
     bool need_unref,
-    bool has_external_dependency)
+    bool has_external_dependency,
+    bool too_large_to_pin)
     : id(id),
       draw_image(draw_image),
       callback(std::move(callback)),
       task(std::move(task)),
       need_unref(need_unref),
-      has_external_dependency(has_external_dependency) {}
+      has_external_dependency(has_external_dependency),
+      too_large_to_pin(too_large_to_pin) {}
 ImageController::ImageDecodeRequest::ImageDecodeRequest(
     ImageDecodeRequest&& other) = default;
 ImageController::ImageDecodeRequest::~ImageDecodeRequest() = default;
