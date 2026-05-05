@@ -782,7 +782,6 @@
     },
 
     'client_v8_chromium_gtests': {
-      'app_shell_unittests': {},
       'browser_tests': {
         'swarming': {
           'shards': 10,
@@ -2081,7 +2080,6 @@
 
     'non_android_chromium_gtests': {
       'accessibility_unittests': {},
-      'app_shell_unittests': {},
       'blink_fuzzer_unittests': {},
       'browser_tests': {
         'swarming': {

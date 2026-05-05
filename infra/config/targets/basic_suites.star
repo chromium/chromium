@@ -545,7 +545,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "client_v8_chromium_gtests",
     tests = {
-        "app_shell_unittests": targets.legacy_test_config(),
         "browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 10,
@@ -1207,7 +1206,6 @@ targets.legacy_basic_suite(
     name = "non_android_chromium_gtests",
     tests = {
         "accessibility_unittests": targets.legacy_test_config(),
-        "app_shell_unittests": targets.legacy_test_config(),
         "blink_fuzzer_unittests": targets.legacy_test_config(),
         "browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(

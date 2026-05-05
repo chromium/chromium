@@ -142,11 +142,6 @@
     "module_scheme": "gtest",
     "skip_usage_check": True,
   },
-  "app_shell_unittests": {
-    "label": "//extensions/shell:app_shell_unittests",
-    "type": "windowed_test_launcher",
-    "module_scheme": "gtest",
-  },
   "ash_components_unittests": {
     "label": "//chromeos/ash/experiences:ash_components_unittests",
     "type": "windowed_test_launcher",

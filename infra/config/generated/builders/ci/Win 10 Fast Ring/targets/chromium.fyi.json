@@ -24,13 +24,6 @@
         "use_isolated_scripts_api": true
       },
       {
-        "module_name": "//extensions/shell:app_shell_unittests",
-        "module_scheme": "gtest",
-        "name": "app_shell_unittests",
-        "test": "app_shell_unittests",
-        "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
-      },
-      {
         "module_name": "//ui/aura:aura_unittests",
         "module_scheme": "gtest",
         "name": "aura_unittests",

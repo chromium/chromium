@@ -182,12 +182,6 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.windowed_test_launcher(
-    name = "app_shell_unittests",
-    label = "//extensions/shell:app_shell_unittests",
-    module_scheme = "gtest",
-)
-
-targets.binaries.windowed_test_launcher(
     name = "ash_components_unittests",
     label = "//chromeos/ash/experiences:ash_components_unittests",
     module_scheme = "gtest",

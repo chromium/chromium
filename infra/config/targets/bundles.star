@@ -5968,7 +5968,6 @@ targets.bundle(
     targets = [
         "absl_hardening_tests",
         "accessibility_unittests",
-        "app_shell_unittests",
         "base_unittests",
         "blink_heap_unittests",
         "blink_platform_unittests",
@@ -6199,7 +6198,6 @@ targets.bundle(
     name = "non_android_chromium_gtests_no_nacl",
     targets = [
         "accessibility_unittests",
-        "app_shell_unittests",
         "blink_fuzzer_unittests",
         "browser_tests",
         "chrome_app_unittests",

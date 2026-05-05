@@ -209,10 +209,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "app_shell_unittests",
-)
-
-targets.tests.gtest_test(
     name = "ash_components_unittests",
 )
 
