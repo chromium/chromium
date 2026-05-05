@@ -13,7 +13,10 @@ namespace blink {
 ImageTrackList::ImageTrackList(ImageDecoderExternal* image_decoder)
     : image_decoder_(image_decoder),
       ready_property_(MakeGarbageCollected<ReadyProperty>(
-          image_decoder->GetExecutionContext())) {}
+          image_decoder->GetExecutionContext())) {
+  // Do not report unhandled rejections of the ready promise.
+  ready_property_->MarkAsHandled();
+}
 
 ImageTrackList::~ImageTrackList() = default;
 

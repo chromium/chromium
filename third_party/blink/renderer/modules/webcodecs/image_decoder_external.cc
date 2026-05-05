@@ -159,6 +159,9 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
+  // Do not report unhandled rejections of the completed promise.
+  completed_property_->MarkAsHandled();
+
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebCodecs);
 
   // |data| is a required field.
