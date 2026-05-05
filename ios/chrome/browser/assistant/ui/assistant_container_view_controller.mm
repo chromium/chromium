@@ -13,9 +13,6 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
@@ -38,9 +35,6 @@ constexpr CGFloat kAssistantSheetWidthMultiplier = 2.0 / 3.0;
 // landscape).
 constexpr CGFloat kMinTopPadding = 12.0;
 
-// The fullscreen progress threshold below which the container minimizes.
-constexpr CGFloat kFullscreenMinimizationThreshold = 0.50;
-
 // Default percentage for the medium detent.
 constexpr NSInteger kDefaultMediumDetentPercentage = 50;
 
@@ -54,8 +48,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 }  // namespace
 
-@interface AssistantContainerViewController () <FullscreenUIElement,
-                                                LayoutStateObserver,
+@interface AssistantContainerViewController () <LayoutStateObserver,
                                                 UIGestureRecognizerDelegate>
 @end
 
@@ -93,8 +86,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
   // Gesture recognizer for resizing the container.
   UIPanGestureRecognizer* _headerPanGesture;
-  // Observer for the fullscreen controller.
-  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 
   // An array of unowned scroll views, modeled through provider blocks that
   // capture weak references to the views in question.
@@ -279,15 +270,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
       }];
 }
 
-- (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController {
-  if (fullscreenController) {
-    _fullscreenUIUpdater =
-        std::make_unique<FullscreenUIUpdater>(fullscreenController, self);
-  } else {
-    _fullscreenUIUpdater = nullptr;
-  }
-}
-
 #pragma mark - Properties
 
 - (void)setLayoutState:(LayoutState*)layoutState {
@@ -420,25 +402,6 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   }
 
   return NO;
-}
-
-#pragma mark - FullscreenUIElement
-
-- (void)updateForFullscreenProgress:(CGFloat)progress {
-  if (_presentationContext == AssistantPresentationContext::kPanel) {
-    self.view.alpha = 1.0;
-    return;
-  }
-
-  self.view.alpha = MIN(1.0, progress / kFullscreenMinimizationThreshold);
-
-  AssistantContainerDetent smallestDetent = _detents.front();
-  if (progress <= kFullscreenMinimizationThreshold &&
-      _activeDetent != smallestDetent) {
-    [self animateToDetent:smallestDetent
-                 duration:kAssistantSheetSpringDuration
-                    curve:UIViewAnimationCurveEaseInOut];
-  }
 }
 
 #pragma mark - Private

@@ -20,8 +20,6 @@ source_set("ui") {
     ":constants",
     ":detent",
     "//base",
-    "//ios/chrome/browser/fullscreen/ui_bundled",
-    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/chrome_overlay_window",

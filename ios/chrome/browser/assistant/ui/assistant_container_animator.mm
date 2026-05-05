@@ -235,4 +235,21 @@ constexpr NSTimeInterval kAssistantBottomSheetAnimationDuration = 0.4;
       }];
 }
 
+- (void)animateFullscreenWithProgress:(CGFloat)progress
+                           animatable:
+                               (id<AssistantContainerAnimatable>)animatable {
+  UIView* containerView = animatable.assistantContainerView;
+  UIView* superview = containerView.superview;
+  if (!containerView || !superview) {
+    return;
+  }
+
+  // Move the container off screen as progress goes to 0.
+  CGFloat bottomInset = superview.safeAreaInsets.bottom;
+  CGFloat totalDistance =
+      containerView.bounds.size.height + bottomInset + kMorphingBaseMargin;
+  CGFloat translationY = (1.0 - progress) * totalDistance;
+  containerView.transform = CGAffineTransformMakeTranslation(0, translationY);
+}
+
 @end

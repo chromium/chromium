@@ -14,15 +14,11 @@
 
 @protocol AssistantContainerDelegate;
 enum class AssistantContainerDetent : NSInteger;
-class FullscreenController;
 @class LayoutState;
 
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController
     : UIViewController <AssistantContainerAnimatable>
-
-// Sets up observation of the given fullscreen controller.
-- (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController;
 
 // The available detents for the container. Can't be empty.
 @property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;

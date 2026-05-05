@@ -48,6 +48,11 @@
                          animated:(BOOL)animated
                        completion:(void (^)(void))completion;
 
+// Animates the fullscreen transition based on progress.
+- (void)animateFullscreenWithProgress:(CGFloat)progress
+                           animatable:
+                               (id<AssistantContainerAnimatable>)animatable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_ANIMATOR_H_
