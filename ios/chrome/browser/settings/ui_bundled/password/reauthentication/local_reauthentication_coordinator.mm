@@ -361,6 +361,7 @@ enum class ReauthenticationState {
     // Only update the reauth state if the reauth controller was successfully
     // pushed.
     if (![self pushReauthenticationViewControllerWithRequestAuth:YES]) {
+      [self closeUI];
       return;
     }
   }
