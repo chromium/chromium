@@ -4461,8 +4461,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.Notifications.SendTab.Received"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2026-10-04">
-  <owner>hiramahmood@google.com</owner>
-  <owner>bling-pandamonium@google.com</owner>
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the notification permission status when a Send Tab notification is
     received on the target device.
@@ -5730,8 +5730,8 @@ chromium-metrics-reviews@google.com.
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
     enum="PushNotificationSettingsAuthorizationStatus"
     expires_after="2026-10-04">
-  <owner>danieltwhite@google.com</owner>
-  <owner>scottyoder@google.com</owner>
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the push notification iOS settings permission status the user's device
     was previously in before the user updated their push notifications
@@ -5744,9 +5744,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToDenied"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-09-06">
-  <owner>danieltwhite@google.com</owner>
-  <owner>scottyoder@google.com</owner>
+    expires_after="2026-10-04">
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the push notification iOS settings permission status the user's device
     was previously in before the user updated their push notifications
@@ -5759,9 +5759,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToProvisional"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-09-20">
-  <owner>scottyoder@google.com</owner>
-  <owner>bling-pandamonium@google.com</owner>
+    expires_after="2026-10-04">
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the push notification iOS settings permission status the user's device
     was previously in before their push notifications permission status changed
@@ -5772,9 +5772,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.PushNotification.NotificationSettingsAuthorizationStatus"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-09-06">
-  <owner>danieltwhite@google.com</owner>
-  <owner>scottyoder@google.com</owner>
+    expires_after="2026-10-04">
   <owner>gujen@google.com</owner>
   <owner>ioanabalas@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -5790,9 +5788,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.PushNotification.NotificationSettingsAuthorizationStatus.ByProvider"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2026-05-03">
-  <owner>guiperez@google.com</owner>
-  <owner>chrome-sherlock@google.com</owner>
+    expires_after="2026-10-04">
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the permission status, stored in iOS settings, the user has given for
     whether Chrome can receive push notifications on the device. Logged every
