@@ -486,6 +486,12 @@ ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
 
 void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
     DescriptionAndStylesResult result) {
+  // Since the XML parsing happens asynchronously, the browser context can be
+  // torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
+  }
+
   if (!result.error.empty()) {
     Respond(Error(std::move(result.error)));
     return;
