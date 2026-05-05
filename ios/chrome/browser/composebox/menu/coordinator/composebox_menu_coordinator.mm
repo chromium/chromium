@@ -210,13 +210,9 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                              [commands showComposeboxWithParams:focusParams];
                            }];
   } else {
-    [_viewController
-        dismissViewControllerAnimated:YES
-                           completion:^{
-                             [self.inputPlateDelegate
-                                 composeboxMenuCoordinator:self
-                                                didTapTool:toolMode];
-                           }];
+    [self.inputPlateDelegate composeboxMenuCoordinator:self
+                                            didTapTool:toolMode];
+    [_viewController dismissViewControllerAnimated:YES completion:nil];
   }
 }
 
@@ -237,13 +233,9 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                              [commands showComposeboxWithParams:focusParams];
                            }];
   } else {
-    [_viewController
-        dismissViewControllerAnimated:YES
-                           completion:^{
-                             [self.inputPlateDelegate
-                                 composeboxMenuCoordinator:self
-                                               didTapModel:modelMode];
-                           }];
+    [self.inputPlateDelegate composeboxMenuCoordinator:self
+                                           didTapModel:modelMode];
+    [_viewController dismissViewControllerAnimated:YES completion:nil];
   }
 }
 
@@ -264,13 +256,9 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                              [commands showComposeboxWithParams:focusParams];
                            }];
   } else {
-    [_viewController
-        dismissViewControllerAnimated:YES
-                           completion:^{
-                             [self.inputPlateDelegate
-                                 composeboxMenuCoordinator:self
-                                      didUpdateAttachments:attachments];
-                           }];
+    [self.inputPlateDelegate composeboxMenuCoordinator:self
+                                  didUpdateAttachments:attachments];
+    [_viewController dismissViewControllerAnimated:YES completion:nil];
   }
 }
 
