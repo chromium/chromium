@@ -145,10 +145,8 @@ SkillsInteractiveUiTestBase::UpdateContextualSkillPreviews(
     std::vector<glic::mojom::SkillPreviewPtr> contextual_skill_previews) {
   return Steps(Do([this, contextual_skill_previews =
                              std::move(contextual_skill_previews)]() mutable {
-    glic_service()
-        ->GetInstanceForTab(browser()->GetActiveTabInterface())
-        ->host()
-        .NotifyContextualSkillsChanged(std::move(contextual_skill_previews));
+    GetGlicInstanceImpl()->host().NotifyContextualSkillsChanged(
+        std::move(contextual_skill_previews));
   }));
 }
 

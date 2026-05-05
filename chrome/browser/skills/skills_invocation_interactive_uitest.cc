@@ -50,10 +50,8 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
         auto mojo_skill = glic::mojom::Skill::New(
             SkillToGlicMojomSkillPreview(&skill), skill.prompt,
             /*source_skill_id=*/std::nullopt);
-        glic_service()
-            ->GetInstanceForTab(browser()->GetActiveTabInterface())
-            ->host()
-            .NotifySkillToInvokeChanged(std::move(mojo_skill));
+        GetGlicInstanceImpl()->host().NotifySkillToInvokeChanged(
+            std::move(mojo_skill));
       }),
       // Verify the getSkillToInvoke() endpoint reflects the update.
       VerifyInvocationInWebUI(skill.prompt));
