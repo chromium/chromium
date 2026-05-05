@@ -121,6 +121,22 @@ size_t SharedImageRepresentation::NumPlanesExpected() const {
   return static_cast<size_t>(format().NumberOfPlanes());
 }
 
+bool SharedImageRepresentation::IsCleared() const {
+  return ClearedRect() == gfx::Rect(size());
+}
+
+void SharedImageRepresentation::SetCleared() {
+  SetClearedRect(gfx::Rect(size()));
+}
+
+gfx::Rect SharedImageRepresentation::ClearedRect() const {
+  return backing_->ClearedRect();
+}
+
+void SharedImageRepresentation::SetClearedRect(const gfx::Rect& cleared_rect) {
+  backing_->SetClearedRect(cleared_rect);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GLTextureImageRepresentationBase
 

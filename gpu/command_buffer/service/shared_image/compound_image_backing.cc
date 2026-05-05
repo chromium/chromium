@@ -174,6 +174,13 @@ class WrappedGLTextureCompoundImageRepresentation
     return wrapped_->GetTexture(plane_index);
   }
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<GLTextureImageRepresentation> wrapped_;
@@ -224,6 +231,13 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       size_t plane_index) final {
     return wrapped_->GetTexturePassthrough(plane_index);
+  }
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
   }
 
  private:
@@ -301,6 +315,13 @@ class WrappedSkiaGaneshCompoundImageRepresentation
     compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
   }
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
@@ -363,6 +384,13 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
     compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
   }
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped_;
@@ -404,6 +432,13 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
     compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<DawnImageRepresentation> wrapped_;
@@ -423,6 +458,13 @@ class WrappedDawnBufferCompoundImageRepresentation
         owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
+  }
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
   }
 
  private:
@@ -502,6 +544,13 @@ class WrappedOverlayCompoundImageRepresentation
   }
 #endif
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
@@ -539,6 +588,13 @@ class WrappedWebNNTensorCompoundImageRepresentation
 #if BUILDFLAG(IS_APPLE)
   IOSurfaceRef GetIOSurface() const final { return wrapped_->GetIOSurface(); }
 #endif
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
 
  private:
   CompoundImageBacking* compound_backing() {
@@ -586,6 +642,13 @@ class WrappedMemoryCompoundImageRepresentation
                                           AccessMode::kRead,
                                           SharedImageAccessStream::kMemory);
     return wrapped_->BeginReadAccess();
+  }
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
   }
 
  private:
@@ -644,6 +707,13 @@ class WrappedVideoCompoundImageRepresentation
   }
 #endif
 
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<VideoImageRepresentation> wrapped_;
@@ -696,6 +766,13 @@ class WrappedVulkanCompoundImageRepresentation
 
   gpu::VulkanImage& GetVulkanImage() override {
     return wrapped_->GetVulkanImage();
+  }
+
+  void SetClearedRect(const gfx::Rect& cleared_rect) override {
+    SharedImageRepresentation::SetClearedRect(cleared_rect);
+    if (owned_backing_) {
+      wrapped_->SetClearedRect(cleared_rect);
+    }
   }
 
  private:
