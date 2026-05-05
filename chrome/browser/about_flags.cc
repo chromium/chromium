@@ -8614,10 +8614,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
 
-    {"fedcm-in-authenticator", flag_descriptions::kFedCmInAuthenticatorName,
-     flag_descriptions::kFedCmInAuthenticatorDescription, kOsAll,
-     FEATURE_VALUE_TYPE(device::kFedCmInAuthenticator)},
-
     {"fedcm-lightweight-mode", flag_descriptions::kFedCmLightweightModeName,
      flag_descriptions::kFedCmLightweightModeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmLightweightMode)},
