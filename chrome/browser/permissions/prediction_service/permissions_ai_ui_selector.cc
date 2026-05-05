@@ -749,7 +749,9 @@ void PermissionsAiUiSelector::TakeSnapshot(
                                     &snapshot_for_testing_.value());
   } else if (!host_view) {
     VLOG(1) << "[CPSS] Snapshot cannot be taken because host_view is nullptr.";
-    FinishRequest(Decision::UseNormalUiAndShowNoWarning());
+    OnSnapshotTakenForOnDeviceModel(snapshot_inquire_start_time,
+                                    std::move(model_data),
+                                    /*snapshot=*/nullptr);
   } else {
     host_view->CopyFromSurface(
         /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
