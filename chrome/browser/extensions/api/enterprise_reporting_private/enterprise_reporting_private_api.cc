@@ -686,15 +686,15 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // Verify that all file paths are UTF8.
-  bool paths_are_all_utf8 = true;
+  // Verify that all file paths are UTF8 and strictly local.
   for (const auto& api_options_param : params->request.options) {
-    if (!base::IsStringUTF8(api_options_param.path)) {
-      paths_are_all_utf8 = false;
-      break;
+    EXTENSION_FUNCTION_VALIDATE(base::IsStringUTF8(api_options_param.path));
+    base::FilePath file_path =
+        base::FilePath::FromUTF8Unsafe(api_options_param.path);
+    if (file_path.IsNetwork()) {
+      return RespondNow(Error("Network paths are not supported."));
     }
   }
-  EXTENSION_FUNCTION_VALIDATE(paths_are_all_utf8);
 
   auto aggregation_request = CreateAggregationRequest(signal_name());
   aggregation_request.file_system_signal_parameters =

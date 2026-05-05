@@ -1366,6 +1366,25 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
       "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo.Latency", 0);
 }
 
+TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest,
+       NetworkPathFailsGracefully) {
+  enterprise_reporting_private::GetFileSystemInfoRequest request;
+  request.user_context = GetFakeUserContext();
+
+  enterprise_reporting_private::GetFileSystemInfoOptions option;
+  option.path = "//server/share/file.txt";
+  request.options.push_back(std::move(option));
+
+  base::ListValue args;
+  args.Append(request.ToValue());
+  std::string json_args = base::WriteJson(args).value_or("");
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), json_args, profile());
+
+  EXPECT_EQ(error, "Network paths are not supported.");
+}
+
 TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, TopLevelError) {
   device_signals::SignalCollectionError expected_error =
       device_signals::SignalCollectionError::kConsentRequired;
