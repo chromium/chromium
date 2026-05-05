@@ -9200,7 +9200,7 @@
   {
     "name": "toolbar-snapshot-refactor",
     "owners": [ "mschillaci@google.com", "wenyufu@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name" : "toolbar-stale-capture-bug-fix",
