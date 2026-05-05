@@ -802,11 +802,12 @@ void Vp9UncompressedHeaderParser::ReadLoopFilterParams() {
         }
       }
 
+      auto update_mode_deltas = base::span(loop_filter.update_mode_deltas);
+      auto mode_deltas = base::span(loop_filter.mode_deltas);
       for (size_t i = 0; i < Vp9LoopFilterParams::kNumModeDeltas; i++) {
-        loop_filter.update_mode_deltas[i] = reader_.ReadBool();
-        if (loop_filter.update_mode_deltas[i]) {
-          UNSAFE_TODO(loop_filter.mode_deltas[i]) =
-              reader_.ReadSignedLiteral(6);
+        update_mode_deltas[i] = reader_.ReadBool();
+        if (update_mode_deltas[i]) {
+          mode_deltas[i] = reader_.ReadSignedLiteral(6);
         }
       }
     }
@@ -861,10 +862,12 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
         std::to_array<bool>({true, true, false, false});
 
     for (size_t i = 0; i < Vp9SegmentationParams::kNumSegments; i++) {
+      auto enabled_span = base::span(segmentation.feature_enabled[i]);
+      auto data_span = base::span(segmentation.feature_data[i]);
       for (size_t j = 0; j < Vp9SegmentationParams::SEG_LVL_MAX; j++) {
         int16_t data = 0;
-        UNSAFE_TODO(segmentation.feature_enabled[i][j]) = reader_.ReadBool();
-        if (UNSAFE_TODO(segmentation.feature_enabled[i][j])) {
+        enabled_span[j] = reader_.ReadBool();
+        if (enabled_span[j]) {
           data = reader_.ReadLiteral(kFeatureDataBits[j]);
           if (kFeatureDataSigned[j])
             if (reader_.ReadBool()) {
@@ -877,7 +880,7 @@ bool Vp9UncompressedHeaderParser::ReadSegmentationParams() {
               data = -data;
             }
         }
-        UNSAFE_TODO(segmentation.feature_data[i][j]) = data;
+        data_span[j] = data;
       }
     }
   }
@@ -1009,10 +1012,13 @@ bool Vp9UncompressedHeaderParser::Parse(base::span<const uint8_t> stream,
       static_assert(std::tuple_size_v<decltype(fhdr->ref_frame_sign_bias)> >=
                         Vp9RefType::VP9_FRAME_LAST + kVp9NumRefsPerFrame,
                     "ref_frame_sign_bias is not big enough");
+      auto sign_bias_span =
+          base::span(fhdr->ref_frame_sign_bias)
+              .subspan(static_cast<size_t>(Vp9RefType::VP9_FRAME_LAST),
+                       kVp9NumRefsPerFrame);
       for (size_t i = 0; i < kVp9NumRefsPerFrame; i++) {
         fhdr->ref_frame_idx[i] = reader_.ReadLiteral(kVp9NumRefFramesLog2);
-        UNSAFE_TODO(fhdr->ref_frame_sign_bias[Vp9RefType::VP9_FRAME_LAST + i]) =
-            reader_.ReadBool();
+        sign_bias_span[i] = reader_.ReadBool();
 
         // 8.2 Frame order constraints
         // ref_frame_idx[i] refers to an earlier decoded frame.
