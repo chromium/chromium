@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <xf86drm.h>
 
+#include <array>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -52,11 +54,11 @@ const int kAuthFailSleepMs = 100;
 // Log a warning after failing to authenticate for this many milliseconds.
 const int kLogAuthFailDelayMs = 1000;
 
-constexpr const char* kDisplayActionString[] = {
+constexpr auto kDisplayActionString = std::to_array<std::string_view>({
     "ADD",
     "REMOVE",
     "CHANGE",
-};
+});
 
 // Find sysfs device path for the given device path.
 base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
@@ -126,8 +128,7 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
     const bool should_log_error =
         (base::TimeTicks::Now() - start_time).InMilliseconds() >=
         kLogAuthFailDelayMs;
-    drm_magic_t magic;
-    UNSAFE_TODO(memset(&magic, 0, sizeof(magic)));
+    drm_magic_t magic = 0;
     // We need to make sure the DRM device has enough privilege. Use the DRM
     // authentication logic to figure out if the device has enough permissions.
     int drm_errno = drmGetMagic(fd, &magic);
@@ -204,8 +205,7 @@ std::vector<DisplayCard> GetValidDisplayCards() {
       continue;
     }
 
-    struct drm_mode_card_res res;
-    UNSAFE_TODO(memset(&res, 0, sizeof(struct drm_mode_card_res)));
+    struct drm_mode_card_res res = {};
     int ret = drmIoctl(fd.get(), DRM_IOCTL_MODE_GETRESOURCES, &res);
     VPLOG_IF(1, ret) << "Failed to get DRM resources for '" << card_path << "'";
 
@@ -440,8 +440,8 @@ void DrmDisplayHostManager::ProcessEvent() {
                                    ? ""
                                    : ("(SEQNUM:" + seqnum_it->second + ")");
     VLOG(1) << "Got display event "
-            << UNSAFE_TODO(kDisplayActionString[event.action_type]) << seqnum
-            << " for " << event.path.value();
+            << kDisplayActionString.at(static_cast<size_t>(event.action_type))
+            << seqnum << " for " << event.path.value();
     switch (event.action_type) {
       case DeviceEvent::ADD:
         if (drm_devices_.find(event.path) == drm_devices_.end()) {
