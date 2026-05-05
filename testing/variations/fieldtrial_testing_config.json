@@ -26403,21 +26403,6 @@
             ]
         }
     ],
-    "WebViewUseNonembeddedLowEntropySource": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewUseNonembeddedLowEntropySource"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewVizDirectCompositorThreadIpcFrameSinkManager": [
         {
             "platforms": [
