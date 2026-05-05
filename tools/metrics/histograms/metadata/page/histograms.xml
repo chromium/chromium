@@ -426,6 +426,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".focus-mode-player"/>
   <variant name=".gcm-internals"/>
   <variant name=".glic"/>
+  <variant name=".glic-experimental-opt-in"/>
   <variant name=".glic-fre"/>
   <variant name=".gpu"/>
   <variant name=".graduation"/>

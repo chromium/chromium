@@ -180,6 +180,10 @@ inline constexpr char kChromeUIGlicUntrustedHost[] = "glic";
 inline constexpr char kChromeUIGlicUntrustedURL[] = "chrome-untrusted://glic/";
 inline constexpr char kChromeUIGlicSelectionOverlayURL[] =
     "chrome-untrusted://glic/selection-overlay/";
+inline constexpr char kChromeUIGlicExperimentalOptInHost[] =
+    "glic-experimental-opt-in";
+inline constexpr char kChromeUIGlicExperimentalOptInURL[] =
+    "chrome://glic-experimental-opt-in";
 inline constexpr char kChromeUIHangUIHost[] = "uithreadhang";
 inline constexpr char kChromeUIHelpHost[] = "help";
 inline constexpr char kChromeUIHelpURL[] = "chrome://help/";

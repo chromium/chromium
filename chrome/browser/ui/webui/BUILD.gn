@@ -50,6 +50,7 @@ source_set("configs") {
     "//chrome/browser/actor/ui:actor_overlay",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",

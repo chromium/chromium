@@ -301,6 +301,7 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
       "chrome://feedback",
       "chrome://glic",
       "chrome://glic-fre",
+      "chrome://glic-experimental-opt-in",
       "chrome-untrusted://glic",
       "chrome://history-sync-optin",
       // Not a valid URL; only internals/session-service is valid.

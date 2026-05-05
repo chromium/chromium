@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -54,9 +55,10 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   auto web_contents =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
 
-  // Load about:blank for this initial minimal CL.
+  // Load the experimental opt-in WebUI.
   web_contents->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(GURL("about:blank")));
+      content::NavigationController::LoadURLParams(
+          GURL(chrome::kChromeUIGlicExperimentalOptInURL)));
 
   web_view->SetOwnedWebContents(std::move(web_contents));
 

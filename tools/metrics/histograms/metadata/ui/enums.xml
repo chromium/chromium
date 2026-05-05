@@ -782,6 +782,7 @@ chromium-metrics-reviews@google.com.
   <int value="-986956132" label="chrome://app-install-dialog/"/>
   <int value="-986409800" label="chrome://identity-internals/"/>
   <int value="-969979971" label="chrome://sandbox/"/>
+  <int value="-960608521" label="chrome://glic-experimental-opt-in/"/>
   <int value="-949665427"
       label="chrome://customize-chrome-side-panel.top-chrome/"/>
   <int value="-946383082" label="chrome://translate-internals/"/>
