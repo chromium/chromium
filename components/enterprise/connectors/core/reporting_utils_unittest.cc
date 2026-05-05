@@ -232,6 +232,9 @@ TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
 }
 
 TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+
   auto event = GetUnscannedFileEvent(
       /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
       /*source=*/"source", /*destination=*/"destination",
@@ -243,6 +246,7 @@ TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
       /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*referrer_chain=*/referrer_chain,
       /*event_result=*/EventResult::ALLOWED);
 
   ASSERT_EQ(event.url(), "https://google.com/");
@@ -267,9 +271,20 @@ TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
   ASSERT_FALSE(event.content_size());
   ASSERT_EQ(event.event_result(),
             chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    auto referrer = event.referrers()[0];
+    ASSERT_EQ(referrer.url(), "https://referrer.com");
+    ASSERT_EQ(referrer.ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
 }
 
 TEST(ReportingUtilsTest, GetUnscannedFileEventUserCancelled) {
+  ReferrerChain referrer_chain;
+
   auto event = GetUnscannedFileEvent(
       /*url=*/GURL("https://google.com/"), /*tab_url=*/GURL("about:blank"),
       /*source=*/"source", /*destination=*/"destination",
@@ -281,6 +296,7 @@ TEST(ReportingUtilsTest, GetUnscannedFileEventUserCancelled) {
       /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
       /*profile_identifier=*/"identifier",
       /*profile_username=*/"profile_username", /*content_size=*/-1,
+      /*referrer_chain=*/referrer_chain,
       /*event_result=*/EventResult::CANCELLED);
 
   ASSERT_EQ(event.unscanned_reason(),

@@ -499,6 +499,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     const std::string& reason,
     const std::string& content_transfer_method,
     const int64_t content_size,
+    const ReferrerChain& referrer_chain,
     EventResult event_result) {
   if (!IsEventEnabled(kKeyUnscannedFileEvent)) {
     return;
@@ -522,7 +523,8 @@ void ReportingEventRouter::OnUnscannedFileEvent(
         url, tab_url, source, destination, final_file_name,
         download_digest_sha256, mime_type, trigger, scan_id, reason,
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
-        reporting_client_->GetProfileUserName(), content_size, event_result);
+        reporting_client_->GetProfileUserName(), content_size, referrer_chain,
+        event_result);
 
     auto send_event_cb =
         base::BindOnce(&ReportingEventRouter::SendEventOnGotHash,
@@ -551,6 +553,9 @@ void ReportingEventRouter::OnUnscannedFileEvent(
       event.Set(kKeyContentSize, base::Int64ToValue(content_size));
     }
     event.Set(kKeyTrigger, trigger);
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
     event.Set(kKeyEventResult, EventResultToString(event_result));
     event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
     if (!content_transfer_method.empty()) {

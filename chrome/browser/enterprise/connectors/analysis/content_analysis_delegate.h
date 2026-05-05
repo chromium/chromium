@@ -420,6 +420,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // for every file/text. This is read to ensure `this` isn't deleted too early.
   bool data_uploaded_ = false;
 
+  base::WeakPtr<content::WebContents> web_contents_;
+
   // Responsible for opening and scanning multiple files on parallel threads.
   // Always nullptr for non-file content scanning.
   std::unique_ptr<FilesRequestHandlerBase> files_request_handler_;
@@ -472,8 +474,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;
-
-  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };

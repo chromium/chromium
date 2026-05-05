@@ -336,6 +336,20 @@ void TruncateUrlInfo(::chrome::cros::reporting::proto::UrlInfo* url_info) {
   TruncateUrl(url_info->mutable_url());
 }
 
+template <typename T>
+void AddReferrersToEventProto(const ReferrerChain& referrer_chain, T* event) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    for (const auto& referrer : referrer_chain) {
+      proto::UrlInfo url_info;
+      if (referrer.ip_addresses().size() > 0) {
+        url_info.set_ip(referrer.ip_addresses()[0]);
+      }
+      url_info.set_url(referrer.url());
+      *event->add_referrers() = url_info;
+    }
+  }
+}
+
 #define TRUNCATE_STRING_URL(event_ptr, field_name) \
   TruncateUrl((event_ptr)->mutable_##field_name());
 
@@ -564,16 +578,7 @@ proto::SafeBrowsingInterstitialEvent GetInterstitialEvent(
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(profile_username);
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    for (const auto& referrer : referrer_chain) {
-      proto::UrlInfo url_info;
-      if (referrer.ip_addresses().size() > 0) {
-        url_info.set_ip(referrer.ip_addresses()[0]);
-      }
-      url_info.set_url(referrer.url());
-      *event.add_referrers() = url_info;
-    }
-  }
+  AddReferrersToEventProto(referrer_chain, &event);
 
   return event;
 }
@@ -610,16 +615,7 @@ proto::UrlFilteringInterstitialEvent GetUrlFilteringInterstitialEvent(
     *event.add_triggered_rule_info() = triggered_rule_info;
   }
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    for (const auto& referrer : referrer_chain) {
-      proto::UrlInfo url_info;
-      if (referrer.ip_addresses().size() > 0) {
-        url_info.set_ip(referrer.ip_addresses()[0]);
-      }
-      url_info.set_url(referrer.url());
-      *event.add_referrers() = url_info;
-    }
-  }
+  AddReferrersToEventProto(referrer_chain, &event);
 
   return event;
 }
@@ -652,6 +648,7 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
     const std::string& profile_identifier,
     const std::string& profile_username,
     const int64_t content_size,
+    const ReferrerChain& referrer_chain,
     EventResult event_result) {
   proto::UnscannedFileEvent event;
   event.set_url(url.spec());
@@ -678,6 +675,8 @@ proto::UnscannedFileEvent GetUnscannedFileEvent(
   if (content_size >= 0) {
     event.set_content_size(content_size);
   }
+
+  AddReferrersToEventProto(referrer_chain, &event);
 
   event.set_event_result(GetEventResult(event_result));
   event.set_clicked_through(event_result == EventResult::BYPASSED);
@@ -746,16 +745,7 @@ proto::DlpSensitiveDataEvent GetDlpSensitiveDataEvent(
   *event.mutable_triggered_rule_info() =
       GetTriggerRulesFromContentAnalysisResult(result);
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    for (const auto& referrer : referrer_chain) {
-      proto::UrlInfo url_info;
-      if (referrer.ip_addresses().size() > 0) {
-        url_info.set_ip(referrer.ip_addresses()[0]);
-      }
-      url_info.set_url(referrer.url());
-      *event.add_referrers() = url_info;
-    }
-  }
+  AddReferrersToEventProto(referrer_chain, &event);
 
   event.set_event_result(GetEventResult(event_result));
   event.set_clicked_through(event_result == EventResult::BYPASSED);
@@ -809,16 +799,7 @@ proto::SafeBrowsingDangerousDownloadEvent GetDangerousDownloadEvent(
     event.set_content_size(content_size);
   }
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    for (const auto& referrer : referrer_chain) {
-      proto::UrlInfo url_info;
-      if (referrer.ip_addresses().size() > 0) {
-        url_info.set_ip(referrer.ip_addresses()[0]);
-      }
-      url_info.set_url(referrer.url());
-      *event.add_referrers() = url_info;
-    }
-  }
+  AddReferrersToEventProto(referrer_chain, &event);
 
   event.set_event_result(GetEventResult(event_result));
   event.set_clicked_through(event_result == EventResult::BYPASSED);

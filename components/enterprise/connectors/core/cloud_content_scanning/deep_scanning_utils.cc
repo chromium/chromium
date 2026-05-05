@@ -182,7 +182,7 @@ void MaybeReportDeepScanningVerdict(
         GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
         source, destination, file_name, sha256_or_cb, mime_type, trigger,
         response.request_token(), unscanned_reason, content_transfer_method,
-        content_size, event_result);
+        content_size, content_analysis_info->referrer_chain(), event_result);
   }
 
   if (result != ScanRequestUploadResult::kSuccess) {
@@ -202,7 +202,8 @@ void MaybeReportDeepScanningVerdict(
           GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
           source, destination, file_name, sha256_or_cb, mime_type, trigger,
           response.request_token(), std::move(unscanned_reason),
-          content_transfer_method, content_size, event_result);
+          content_transfer_method, content_size,
+          content_analysis_info->referrer_chain(), event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       reporting_event_router->OnAnalysisConnectorResult(
           GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
