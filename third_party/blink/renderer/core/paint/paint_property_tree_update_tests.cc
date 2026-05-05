@@ -2329,4 +2329,55 @@ TEST_P(PaintPropertyTreeUpdateTest, RestrictionTargetIdChange) {
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, change);
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, FixedPositionChangeCompositingReason) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; height: 1000px; }
+      #target { position: fixed; width: 100px; height: 100px; }
+    </style>
+    <div id="target" style="top: 100px; left: 0"></div>
+  )HTML");
+
+  auto* translation =
+      PaintPropertiesForElement("target")->PaintOffsetTranslation();
+  EXPECT_EQ(gfx::Vector2dF(0, 100), translation->Matrix().To2dTranslation());
+  EXPECT_FALSE(translation->IsAffectedByOuterViewportBoundsDelta());
+
+  // Change target to attach to the bottom of viewport.
+  // The bottom value is chosen to keep the initial location unchanged.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("bottom: 400px; left: 0"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Vector2dF(0, 100), translation->Matrix().To2dTranslation());
+  EXPECT_TRUE(translation->IsAffectedByOuterViewportBoundsDelta());
+
+  // Change target back to top-anchored; should no longer be affected.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("top: 100px; left: 0"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(translation->IsAffectedByOuterViewportBoundsDelta());
+
+  // Change target to use bottom relative to safe area inset.
+  // This is also affected by outer viewport bounds delta since safe area
+  // insets change when the browser UI (e.g. address bar) resizes.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(
+          html_names::kStyleAttr,
+          AtomicString("bottom: env(safe-area-inset-bottom); left: 0"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(translation->IsAffectedByOuterViewportBoundsDelta());
+
+  // Change target back to top-anchored; should no longer be affected.
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("top: 100px; left: 0"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(translation->IsAffectedByOuterViewportBoundsDelta());
+}
 }  // namespace blink

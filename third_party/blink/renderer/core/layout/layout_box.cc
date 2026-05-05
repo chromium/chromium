@@ -747,6 +747,22 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       // spanners. See https://drafts.csswg.org/css-multicol-1/#spanning-columns
       MarkColumnSpannerCandidatesForLayoutIfNeeded();
     }
+
+    // When a fixed-position element changes between top-relative and
+    // bottom-relative positioning, invalidate paint properties to ensure
+    // IsAffectedByOuterViewportBoundsDelta() is re-evaluated on the next
+    // document lifecycle update. This mirrors the style-level checks in
+    // CompositingReasonsForViewportScrollEffect(), and must be kept in sync
+    // with that function.
+    if (new_style.GetPosition() == EPosition::kFixed) {
+      if (old_style->IsFixedToBottom() != new_style.IsFixedToBottom()) {
+        SetNeedsPaintPropertyUpdate();
+      } else if (new_style.IsFixedToBottom() &&
+                 (old_style->IsBottomRelativeToSafeAreaInset() !=
+                  new_style.IsBottomRelativeToSafeAreaInset())) {
+        SetNeedsPaintPropertyUpdate();
+      }
+    }
   }
 
   if (diff.transform_changed && TransformsChangeMayRequireLayout()) {

@@ -271,6 +271,10 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
     }
   }
 
+  // NOTE: The style-level checks here (position: fixed with bottom-relative or
+  // safe-area-inset-relative positioning) are mirrored in
+  // LayoutBox::StyleDidChange() to invalidate paint properties on the next
+  // document lifecycle update. Keep the two in sync.
   if (layout_object.StyleRef().IsFixedToBottom()) {
     reasons |= CompositingReason::kFixedPosition |
                CompositingReason::kAffectedByOuterViewportBoundsDelta;
