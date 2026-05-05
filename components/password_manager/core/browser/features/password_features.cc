@@ -201,9 +201,6 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseActionablesForImprovedPasswordChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseDetachedWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserInterventionForPasswordChange,

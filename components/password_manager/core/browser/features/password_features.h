@@ -227,10 +227,6 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // Starts passwords resync when undecryptable passwords are detected.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 
-// Updates password change flow to use the refined prompt on Open form step. The
-// prompt uses the list of interactable actionables on the web page to identify
-// the button, which opens the password change form.
-BASE_DECLARE_FEATURE(kUseActionablesForImprovedPasswordChange);
 
 // The feature enables the use of detached Widget during password change
 // to which WebContents is attached. This helps to resolve the problem

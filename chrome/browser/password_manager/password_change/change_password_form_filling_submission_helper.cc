@@ -49,16 +49,9 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
-  blink::mojom::AIPageContentOptionsPtr options;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUseActionablesForImprovedPasswordChange)) {
-    options = optimization_guide::ActionableAIPageContentOptions(
-        /*on_critical_path =*/true);
-  } else {
-    options = optimization_guide::DefaultAIPageContentOptions(
-        /*on_critical_path =*/true);
-  }
+  blink::mojom::AIPageContentOptionsPtr options =
+      optimization_guide::ActionableAIPageContentOptions(
+          /*on_critical_path =*/true);
   options->include_same_site_only = true;
   return options;
 }
