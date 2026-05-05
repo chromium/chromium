@@ -244,11 +244,11 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
 const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
     &kNtpComposebox,
     "NtpComposeboxContextMenuEnableMultiTabSelection",
-    false);
+    true);
 
 const base::FeatureParam<bool> kEnableThreadsRail(&kNtpComposebox,
                                                   "EnableThreadsRail",
-                                                  true);
+                                                  false);
 const base::FeatureParam<bool> kEnableThreadsRailLogo(&kNtpComposebox,
                                                       "EnableThreadsRailLogo",
                                                       false);

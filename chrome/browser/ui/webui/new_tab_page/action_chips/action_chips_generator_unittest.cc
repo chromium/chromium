@@ -374,54 +374,9 @@ TEST(ActionChipGeneratorTest,
   generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
                                         actual);
   run_loop.Run();
-  ActionChipPtr most_recent_tab_chip =
-      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
   EXPECT_THAT(actual,
-              ElementsAre(Eq(std::cref(most_recent_tab_chip)),
-                          Eq(std::cref(GetStaticDeepSearchChip())),
+              ElementsAre(Eq(std::cref(GetStaticDeepSearchChip())),
                           Eq(std::cref(GetStaticImageGenerationChip()))));
-}
-
-TEST(ActionChipGeneratorTest, GenerateStaticChipsLimitedToThree) {
-  EnvironmentFixture env;
-  const GURL page_url("https://google.com/");
-  const std::u16string page_title(u"Google");
-  TabFixture tab_fixture(page_url, page_title);
-  GeneratorFixture generator_fixture;
-
-  // Make sure all 3 non-recent-tab chips are eligible.
-  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
-              IsDeepSearchEligible())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
-              IsCreateImagesEligible())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
-              IsCanvasEligible())
-      .WillRepeatedly(Return(true));
-
-  base::test::ScopedFeatureList list;
-  list.InitWithFeaturesAndParameters(
-      {{ntp_features::kNtpNextFeatures,
-        {{ntp_features::kNtpNextShowStaticTextParam.name, "true"},
-         {ntp_features::kNtpNextShowStaticRecentTabChipParam.name, "true"}}},
-       {ntp_features::kNtpNextCanvasChip, {}}},
-      {});
-
-  base::RunLoop run_loop;
-  std::vector<ActionChipPtr> actual;
-  generator_fixture.GenerateActionChips(&tab_fixture.mock_tab(), run_loop,
-                                        actual);
-  run_loop.Run();
-
-  ActionChipPtr most_recent_tab_chip =
-      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
-
-  // We expect 4 potential chips: Recent Tab, Create Image, Canvas, Deep Search.
-  // With limit 3, Deep Search should be dropped (last one).
-  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(most_recent_tab_chip)),
-                                  Eq(std::cref(GetStaticImageGenerationChip())),
-                                  Eq(std::cref(GetStaticCanvasChip()))));
 }
 
 TEST(ActionChipGeneratorTest,
@@ -529,14 +484,10 @@ TEST_P(ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest,
     tab_fixture.emplace(GURL("https://google.com/"), u"Google");
   }
   GeneratorFixture generator_fixture;
-  const bool deep_search_not_considered =
-      GetParam().tab_exists && GetParam().is_create_images_eligible &&
-      GetParam().is_canvas_eligible;
 
   EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
               IsDeepSearchEligible())
-      // no call is made when the deep search chip is the fourth chip.
-      .Times(deep_search_not_considered ? 0 : 1)
+      .Times(1)
       .WillRepeatedly(Return(GetParam().is_deepsearch_eligible));
   EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
               IsCreateImagesEligible())
@@ -560,18 +511,13 @@ TEST_P(ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest,
   run_loop.Run();
 
   std::vector<Matcher<ActionChipPtr>> expected;
-  ActionChipPtr most_recent_tab_chip;
-  if (tab != nullptr) {
-    most_recent_tab_chip = CreateStaticRecentTabChip(CreateTabInfo(tab));
-    expected.push_back(Eq(std::cref(most_recent_tab_chip)));
-  }
   if (GetParam().is_create_images_eligible) {
     expected.push_back(Eq(std::cref(GetStaticImageGenerationChip())));
   }
   if (GetParam().is_canvas_eligible) {
     expected.push_back(Eq(std::cref(GetStaticCanvasChip())));
   }
-  if (!deep_search_not_considered && GetParam().is_deepsearch_eligible) {
+  if (GetParam().is_deepsearch_eligible) {
     expected.push_back(Eq(std::cref(GetStaticDeepSearchChip())));
   }
   EXPECT_THAT(actual, ElementsAreArray(expected));
@@ -814,11 +760,8 @@ TEST(ActionChipGeneratorTest, NewEndpointFailureFallsBackToStaticChips) {
                                         actual);
   run_loop.Run();
 
-  ActionChipPtr most_recent_tab_chip =
-      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
   EXPECT_THAT(actual,
-              ElementsAre(Eq(std::cref(most_recent_tab_chip)),
-                          Eq(std::cref(GetStaticDeepSearchChip())),
+              ElementsAre(Eq(std::cref(GetStaticDeepSearchChip())),
                           Eq(std::cref(GetStaticImageGenerationChip()))));
 
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.RequestStatus",
@@ -1018,11 +961,9 @@ TEST(ActionChipGeneratorTest, NewEndpointParseErrorFallsBackToStaticChips) {
                                         actual);
   run_loop.Run();
 
-  ActionChipPtr most_recent_tab_chip =
-      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
-  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(most_recent_tab_chip)),
-                                  Eq(std::cref(GetStaticImageGenerationChip())),
-                                  Eq(std::cref(GetStaticCanvasChip()))));
+  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(GetStaticImageGenerationChip())),
+                                  Eq(std::cref(GetStaticCanvasChip())),
+                                  Eq(std::cref(GetStaticDeepSearchChip()))));
 
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.RequestStatus",
                                       ActionChipsRequestStatus::kParseError, 1);
@@ -1173,11 +1114,9 @@ TEST(ActionChipGeneratorTest, StaticChipsParamTakesPrecedenceOverNewEndpoint) {
   run_loop.Run();
 
   // Expect static chips.
-  ActionChipPtr most_recent_tab_chip =
-      CreateStaticRecentTabChip(CreateTabInfo(&tab_fixture.mock_tab()));
-  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(most_recent_tab_chip)),
-                                  Eq(std::cref(GetStaticImageGenerationChip())),
-                                  Eq(std::cref(GetStaticCanvasChip()))));
+  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(GetStaticImageGenerationChip())),
+                                  Eq(std::cref(GetStaticCanvasChip())),
+                                  Eq(std::cref(GetStaticDeepSearchChip()))));
 }
 
 TEST(ActionChipGeneratorTest,
