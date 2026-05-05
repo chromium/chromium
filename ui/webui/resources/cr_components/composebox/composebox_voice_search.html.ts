@@ -17,7 +17,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
             ${this.i18n('tryAgain')}
           </a>`
         : ''}
-        <a id="details" target="_blank" href="${this.detailsUrl_}"
+        <a id="details" part="voice-details-link" target="_blank" href="${this.detailsUrl_}"
             @click="${this.onLinkClick_}">
           ${this.i18n('voiceDetails')}
         </a>
