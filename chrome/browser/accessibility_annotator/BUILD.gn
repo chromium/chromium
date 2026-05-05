@@ -52,6 +52,7 @@ source_set("impl") {
     "//components/keyed_service/core",
     "//components/variations/service",
     "//content/public/browser",
+    "//sql",
   ]
 }
 

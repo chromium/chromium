@@ -4,21 +4,18 @@
 
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 
+#include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/history/core/browser/history_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
 
-class AccessibilityAnnotatorBackendFactoryTest : public testing::Test {
+class AccessibilityAnnotatorBackendFactoryTestBase : public testing::Test {
  public:
-  AccessibilityAnnotatorBackendFactoryTest() = default;
-  ~AccessibilityAnnotatorBackendFactoryTest() override = default;
-
   void SetUp() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
@@ -27,10 +24,19 @@ class AccessibilityAnnotatorBackendFactoryTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      accessibility_annotator::features::kAccessibilityAnnotator};
   std::unique_ptr<TestingProfile> profile_;
+};
+
+class AccessibilityAnnotatorBackendFactoryTest
+    : public AccessibilityAnnotatorBackendFactoryTestBase {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAccessibilityAnnotator);
+    AccessibilityAnnotatorBackendFactoryTestBase::SetUp();
+  }
 };
 
 TEST_F(AccessibilityAnnotatorBackendFactoryTest,
@@ -48,12 +54,48 @@ TEST_F(AccessibilityAnnotatorBackendFactoryTest,
             AccessibilityAnnotatorBackendFactory::GetForProfile(otr_profile));
 }
 
-TEST_F(AccessibilityAnnotatorBackendFactoryTest, ServiceDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(features::kAccessibilityAnnotator);
+class AccessibilityAnnotatorBackendFactoryDisabledTest
+    : public AccessibilityAnnotatorBackendFactoryTestBase {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAccessibilityAnnotator);
+    AccessibilityAnnotatorBackendFactoryTestBase::SetUp();
+  }
+};
 
+TEST_F(AccessibilityAnnotatorBackendFactoryDisabledTest, ServiceDisabled) {
   EXPECT_EQ(nullptr, AccessibilityAnnotatorBackendFactory::GetForProfile(
                          profile_.get()));
+}
+
+TEST_F(AccessibilityAnnotatorBackendFactoryDisabledTest,
+       DeleteDatabaseWhenFeaturesDisabled) {
+  base::FilePath db_path =
+      profile_->GetPath().Append(FILE_PATH_LITERAL("AccessibilityAnnotatorDB"));
+
+  ASSERT_TRUE(base::WriteFile(db_path, "dummy content"));
+  ASSERT_TRUE(base::PathExists(db_path));
+
+  // Trigger the deletion logic.
+  AccessibilityAnnotatorBackendFactory::GetForProfile(profile_.get());
+
+  // `task_environment_.RunUntilIdle()` is required here. The database deletion
+  // logic is triggered asynchronously and executes on a background thread pool
+  // thread. Crucially, this background task does not post a reply task back to
+  // the main thread upon completion.
+  //
+  // If we used a utility like `base::test::RunUntil` to wait for the file to be
+  // deleted, it would be flake-prone from a deadlock/timeout. `RunUntil`
+  // evaluates the condition whenever the main thread becomes idle, and relies
+  // on cross-thread signaling (e.g., a reply task) to wake up the main thread's
+  // message pump to re-evaluate.
+  //
+  // `RunUntilIdle()` avoids this by forcing the task environment to run all
+  // pending tasks across both the main thread and the ThreadPool until both
+  // are empty, ensuring the background deletion completes before we proceed.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(db_path));
 }
 
 }  // namespace accessibility_annotator
