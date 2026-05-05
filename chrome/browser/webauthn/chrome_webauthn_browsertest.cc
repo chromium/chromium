@@ -35,7 +35,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/page_actions/action_ids.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -152,6 +158,19 @@ static constexpr char kGetAssertionWithHints[] = R"((() => {
 })())";
 
 #endif  // BUILDFLAG(IS_WIN)
+
+static constexpr char kAmbientUIGetRequest[] = R"((() => {
+navigator.credentials.get({
+  uiMode: 'passive',
+  mediation: 'conditional',
+  publicKey: {
+    challenge: new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
 
 std::string GetSignalUnknownCredentialScript(
     base::span<const uint8_t> credential_id) {
@@ -1161,6 +1180,189 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   EXPECT_EQ(result, "\"webauthn: OK\"");
   EXPECT_EQ(observer_->accounts_.size(), 1u);
   EXPECT_EQ(observer_->accounts_.at(0), "0102030405060708090A0B0C0D0E0F10");
+}
+
+class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
+ public:
+  WebAuthnAmbientUITest() {
+    // kWebAuthnImmediateGet is necessary because the uiMode attribute is not
+    // supported without it.
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnAmbientSignin, device::kWebAuthnImmediateGet}, {});
+  }
+
+  class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
+   public:
+    enum State {
+      kHasNotShowedUI,
+      kWaitingForUI,
+      kShowedUI,
+    };
+
+    virtual ~Observer() = default;
+
+    void WaitForUI() {
+      if (state_ != kHasNotShowedUI) {
+        return;
+      }
+      state_ = kWaitingForUI;
+      run_loop_.Run();
+    }
+
+    // ChromeAuthenticatorRequestDelegate::TestObserver:
+    void OnTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate,
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
+        override {}
+
+    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
+      if (state_ == kWaitingForUI) {
+        run_loop_.QuitWhenIdle();
+      }
+      state_ = kShowedUI;
+    }
+
+    void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data) override {}
+
+    void AccountSelectorShown(
+        const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
+        override {
+      for (const auto& response : responses) {
+        accounts_.emplace_back(base::HexEncode(response.credential->id));
+      }
+    }
+
+    std::vector<std::string> accounts_;
+
+   private:
+    State state_ = kHasNotShowedUI;
+    base::RunLoop run_loop_;
+  };
+
+  void SetUpOnMainThread() override {
+    WebAuthnBrowserTest::SetUpOnMainThread();
+    observer_ = std::make_unique<Observer>();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory_ = virtual_device_factory.get();
+    virtual_device_factory_->mutable_state()->InjectResidentKey(
+        kCredentialID, "www.example.com", std::vector<uint8_t>{5, 6, 7, 8},
+        "flandre", "Flandre Scarlet");
+    virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+
+    auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+        PasskeyModelFactory::GetForProfile(browser()->profile()));
+    passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+        kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+    device::VirtualCtap2Device::Config config;
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    config.is_platform_authenticator = true;
+    virtual_device_factory->SetTransport(
+        device::FidoTransportProtocol::kInternal);
+    virtual_device_factory->SetCtap2Config(std::move(config));
+    virtual_device_factory->mutable_state()->simulate_press_callback =
+        base::BindLambdaForTesting(
+            [](device::VirtualFidoDevice* device) { return false; });
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(virtual_device_factory));
+
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
+        observer_.get());
+  }
+
+  void PostRunTestOnMainThread() override {
+    virtual_device_factory_ = nullptr;
+    auth_env_.reset();
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
+    WebAuthnBrowserTest::PostRunTestOnMainThread();
+  }
+
+ protected:
+  std::unique_ptr<Observer> observer_;
+  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the ambient UI page action is shown and can be clicked.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPageAction) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [](device::VirtualFidoDevice* device) { return true; });
+
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
+  observer_->WaitForUI();
+
+  // Verify that the page action is shown.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  page_actions::PageActionView* action_view =
+      browser_view->GetLocationBarView()
+          ->page_action_container()
+          ->GetPageActionView(kActionWebAuthnAmbientSignin);
+  ASSERT_TRUE(action_view);
+
+  // Simulate user selection.
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  action_view->NotifyClick(click);
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
+// Tests that the ambient UI bubble is shown and can be interacted with.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
+  // Inject TWO credentials to trigger bubble.
+  virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kCredentialID2, "www.example.com", std::vector<uint8_t>{1, 2, 3, 4},
+      "sakuya", "Sakuya Izayoi");
+
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [](device::VirtualFidoDevice* device) { return true; });
+
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
+  observer_->WaitForUI();
+
+  ambient_signin::AmbientSigninController* ambient_controller = nullptr;
+  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    auto* c =
+        ambient_signin::AmbientSigninController::GetForCurrentDocument(rfh);
+    if (c) {
+      ambient_controller = c;
+    }
+  });
+  ASSERT_TRUE(ambient_controller);
+
+  // Simulate user selection.
+  ambient_controller->OnPasskeySelected(
+      std::vector<uint8_t>(std::begin(kCredentialID), std::end(kCredentialID)));
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
 }
 
 class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
