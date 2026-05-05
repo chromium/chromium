@@ -8,11 +8,11 @@ import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
-import type { RecordingWaveElement } from 'chrome://resources/cr_components/search/recording_wave.js';
+import type {RecordingWaveElement} from 'chrome://resources/cr_components/search/recording_wave.js';
 import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -700,6 +700,118 @@ suite('ComposeboxVoiceSearch', () => {
     mockVoiceSearch.voiceRecognition_.abort();
     await microtasksFinished();
   });
+
+  test('Submits the voice transcript accurately after stop click', async () => {
+    const voiceTranscript = 'voice query';
+    searchboxHandler.setResultMapperFor('queryAutocomplete', () => {
+      return Promise.resolve({
+        result: {
+          input: voiceTranscript,
+          matches: [
+            createAutocompleteMatch({
+              contents: voiceTranscript,
+              fillIntoEdit: voiceTranscript,
+              allowedToBeDefaultMatch: true,
+              destinationUrl: 'https://fake.com',
+            }),
+          ],
+          suggestionGroupsMap: {},
+          smartComposeInlineHint: '',
+          sequenceId: 0,
+        },
+      });
+    });
+
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    assertTrue(!!voiceSearchButton);
+    voiceSearchButton.click();
+    await microtasksFinished();
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+    const result = createResults(1);
+    Object.assign(
+        result.results[0]![0]!, {confidence: 1, transcript: voiceTranscript});
+    mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
+
+    searchboxHandler.resetResolver('queryAutocomplete');
+
+    const stopButton =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#stopButton');
+    assertTrue(!!stopButton);
+    stopButton.click();
+
+    await searchboxHandler.whenCalled('queryAutocomplete');
+    await microtasksFinished();
+
+    searchboxHandler.resetResolver('submitQuery');
+    const mainSubmitButton =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>(
+            'cr-composebox-submit');
+    assertTrue(!!mainSubmitButton);
+
+    mainSubmitButton.dispatchEvent(
+        new CustomEvent('submit-focusin', {bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    mainSubmitButton.dispatchEvent(
+        new CustomEvent('submit-click', {bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+    const submitArgs = await searchboxHandler.whenCalled('submitQuery');
+    assertEquals(
+        voiceTranscript, submitArgs[0],
+        'The submitted query must match the voice transcript');
+  });
+
+  test(
+      'Queries autocomplete to update suggestions after stop click',
+      async () => {
+        // Reset handler calls to ensure a clean slate.
+        searchboxHandler.resetResolver('queryAutocomplete');
+
+        // Open voice search.
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        assertTrue(!!voiceSearchButton);
+        voiceSearchButton.click();
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        // Simulate speech recognition result.
+        const result = createResults(1);
+        Object.assign(
+            result.results[0]![0]!,
+            {confidence: 1, transcript: 'refresh suggestions'});
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Click the stop button.
+        const stopButton =
+            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                '#stopButton');
+        assertTrue(!!stopButton, 'Stop button should exist');
+        stopButton.click();
+        await microtasksFinished();
+
+        // Verify queryAutocomplete was explicitly called to update suggestions.
+        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
+
+        const queryArgs =
+            await searchboxHandler.whenCalled('queryAutocomplete');
+        assertEquals('refresh suggestions', queryArgs[0]);
+        assertFalse(queryArgs[1]);  // verify clearMatches is false
+      });
 
   test(
       'clicking voice search starts speech recognition and hides the composebox',
