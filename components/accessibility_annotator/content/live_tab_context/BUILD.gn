@@ -6,6 +6,8 @@ source_set("live_tab_context") {
   sources = [
     "active_query.cc",
     "active_query.h",
+    "live_tab_retriever.cc",
+    "live_tab_retriever.h",
   ]
 
   public_deps = [
@@ -17,12 +19,18 @@ source_set("live_tab_context") {
     "//content/public/browser",
   ]
 
-  deps = [ "//components/accessibility_annotator/core:features" ]
+  deps = [
+    "//components/accessibility_annotator/core:features",
+    "//components/page_content_annotations/content",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "active_query_unittest.cc" ]
+  sources = [
+    "active_query_unittest.cc",
+    "live_tab_retriever_unittest.cc",
+  ]
 
   deps = [
     ":live_tab_context",

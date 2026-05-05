@@ -32,6 +32,12 @@ namespace accessibility_annotator {
 // pages to find relevant text passages. Essentially acts as an orchestrator for
 // page search tasks, managing both the global state (e.g. query embedding
 // and overall timeout) and the coordination of results across those pages.
+//
+// Lifecycle and Ownership:
+// ActiveQuery is owned by LiveTabRetriever. Its lifecycle is strictly
+// scoped to a single LiveTabRetriever::Retrieve operation, meaning it is
+// created when a retrieval starts and is destroyed when the retrieval finishes,
+// times out, or is preempted by a new request.
 class ActiveQuery
     : public page_content_annotations::PageEmbeddingsService::Observer {
  public:
