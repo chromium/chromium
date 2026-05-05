@@ -385,6 +385,7 @@ page
 pageBreakAfter
 pageBreakBefore
 pageBreakInside
+pageMarginSafety
 pageOrientation
 paintOrder
 parentRule

@@ -1835,7 +1835,7 @@
     },
     {
       name: "CSSSafePrintableInset",
-      status: "experimental",
+      status: "stable",
     },
     {
       // The '&' pseudo-class effectively behaves like :where(:scope)

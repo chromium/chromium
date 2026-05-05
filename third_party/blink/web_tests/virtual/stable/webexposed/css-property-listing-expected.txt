@@ -327,6 +327,7 @@ All changes to this list should go through Blink's feature review process: http:
     padding-right
     padding-top
     page
+    page-margin-safety
     page-orientation
     paint-order
     perspective
