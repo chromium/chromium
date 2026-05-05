@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
-#include "chrome/browser/ui/page_actions/test_support/mock_page_action_controller.h"
+#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"

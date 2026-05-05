@@ -6,7 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/page_actions/test_support/test_page_action_properties_provider.h"
+#include "chrome/browser/ui/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"

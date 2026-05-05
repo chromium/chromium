@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/page_actions/test_support/mock_page_action_controller.h"
+#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"

@@ -59,7 +59,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
-#include "chrome/browser/ui/page_actions/page_action_triggers.h"
+#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"

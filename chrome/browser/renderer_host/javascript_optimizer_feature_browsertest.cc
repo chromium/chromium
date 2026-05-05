@@ -25,7 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/page_actions/action_ids.h"
+#include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
