@@ -237,15 +237,19 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
   for (const auto& mode : modes) {
     file_select_helper->dialog_mode_ = mode;
 
+    file_select_helper->AddRef();  // Normally called by RunFileChooser().
     file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_1), index);
     EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
+    file_select_helper->AddRef();  // Normally called by RunFileChooser().
     file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_2), index);
     EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
+    file_select_helper->AddRef();  // Normally called by RunFileChooser().
     file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_3), index);
     EXPECT_EQ(dir_path_2, profile.last_selected_directory());
 
+    file_select_helper->AddRef();  // Normally called by RunFileChooser().
     file_select_helper->MultiFilesSelected(
         ui::FilePathListToSelectedFileInfoList(files));
     EXPECT_EQ(dir_path_1, profile.last_selected_directory());
@@ -254,12 +258,15 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
   // Type where the selected folder itself is remembered.
   file_select_helper->dialog_mode_ = FileChooserParams::Mode::kUploadFolder;
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_1), index);
   EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_2), index);
   EXPECT_EQ(dir_path_2, profile.last_selected_directory());
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->MultiFilesSelected(
       ui::FilePathListToSelectedFileInfoList(dirs));
   EXPECT_EQ(dir_path_1, profile.last_selected_directory());
@@ -283,6 +290,7 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_NoFiles) {
   std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   enterprise_connectors::ContentAnalysisDelegate::Result result;
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -306,6 +314,7 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_OneOKFile) {
   PrepareContentAnalysisCompletionCallbackArgs(
       {data_dir_.AppendASCII("foo.doc")}, {true}, &orig_files, &data, &result);
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -330,6 +339,7 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_TwoOKFiles) {
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {true, true}, &orig_files, &data, &result);
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -354,8 +364,10 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_TwoBadFiles) {
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {false, false}, &orig_files, &data, &result);
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
+
   EXPECT_EQ(0u, files.size());
 }
 
@@ -377,6 +389,7 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_OKBadFiles) {
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {false, true}, &orig_files, &data, &result);
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -406,6 +419,7 @@ TEST_F(FileSelectHelperTest,
         blink::mojom::FileSystemFileInfo::New()));
   }
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -440,6 +454,7 @@ TEST_F(FileSelectHelperTest,
   orig_files.push_back(blink::mojom::FileChooserFileInfo::NewFileSystem(
       blink::mojom::FileSystemFileInfo::New()));
 
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
@@ -473,9 +488,15 @@ TEST_F(FileSelectHelperTest,
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {true, true}, &orig_files, &data, &result);
 
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
+  EXPECT_TRUE(file_select_helper->HasOneRef());
   EXPECT_EQ(2u, files.size());
 }
 
@@ -501,8 +522,14 @@ TEST_F(FileSelectHelperTest,
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {false, false}, &orig_files, &data, &result);
 
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
+  EXPECT_TRUE(file_select_helper->HasOneRef());
   EXPECT_EQ(0u, files.size());
 }
 
@@ -528,9 +555,15 @@ TEST_F(FileSelectHelperTest,
       {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
       {true, false}, &orig_files, &data, &result);
 
+  // Calling the content analysis completion callback would normally
+  // release `file_select_helper`, so we add a reference and validate that
+  // it goes down to 1 after the call.
+  file_select_helper->AddRef();
+  EXPECT_FALSE(file_select_helper->HasOneRef());
   file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
                                                         data, result);
 
+  EXPECT_TRUE(file_select_helper->HasOneRef());
   // Files should be cleared.
   EXPECT_EQ(0u, files.size());
 }
@@ -627,42 +660,4 @@ TEST_F(FileSelectHelperTest, ConfirmationDialog) {
   ui::TestDialogModelHost::Close(std::move(host));
   EXPECT_EQ(callback_count_, 3);
   EXPECT_EQ(selected_files_.size(), 0u);
-}
-
-// Tests that a pending asynchronous operation (like content analysis) will
-// keep the helper alive until it completes, even if the tab is destroyed.
-TEST_F(FileSelectHelperTest, TaskKeepsAlive) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  auto web_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(&profile));
-
-  scoped_refptr<FileSelectHelper> helper = new FileSelectHelper(&profile);
-  base::WeakPtr<FileSelectHelper> weak_helper = helper->GetWeakPtr();
-
-  // Register with the manager to keep the helper alive.
-  FileSelectHelper::ActiveHelpers::Add(web_contents.get(), helper);
-
-  // Simulate a background task holding a reference.
-  base::OnceClosure task;
-  base::RunLoop run_loop;
-  task = base::BindOnce(
-      [](scoped_refptr<FileSelectHelper> helper,
-         base::OnceClosure quit_closure) {
-        // Do nothing, just hold the reference.
-        std::move(quit_closure).Run();
-      },
-      helper, run_loop.QuitClosure());
-
-  // Drop our local reference and destroy the WebContents.
-  helper = nullptr;
-  web_contents.reset();
-
-  // The helper should be kept alive by the pending task.
-  EXPECT_TRUE(weak_helper);
-
-  // Once the task finishes, the helper should be destroyed.
-  std::move(task).Run();
-  run_loop.Run();
-  EXPECT_FALSE(weak_helper);
 }
