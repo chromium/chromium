@@ -161,6 +161,7 @@ public class UserEducationHelper {
             assert !contentString.isEmpty();
             assert !accessibilityString.isEmpty();
 
+            // TODO(crbug.com/505624919): Replace with Builder pattern.
             mTextBubble =
                     new TextBubble(
                             mActivity,

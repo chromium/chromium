@@ -191,24 +191,26 @@ class KeyboardAccessoryIphUtils {
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {
             helpBubble =
-                    new TextBubble(
-                            context,
-                            rootView,
-                            helpText,
-                            helpText,
-                            /* showArrow= */ true,
-                            rectProvider,
-                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                    new TextBubble.Builder(
+                                    context,
+                                    rootView,
+                                    rectProvider,
+                                    helpText,
+                                    helpText,
+                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                            .setShowArrow(true)
+                            .build();
         } else {
             @StringRes int helpTextResourceId = getHelpTextForFeature(feature);
             helpBubble =
-                    new TextBubble(
-                            context,
-                            rootView,
-                            helpTextResourceId,
-                            helpTextResourceId,
-                            rectProvider,
-                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                    new TextBubble.Builder(
+                                    context,
+                                    rootView,
+                                    rectProvider,
+                                    helpTextResourceId,
+                                    helpTextResourceId,
+                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                            .build();
         }
         helpBubble.setDismissOnTouchInteraction(true);
         helpBubble.addOnDismissListener(

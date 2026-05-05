@@ -219,6 +219,7 @@ class LargeMessageCardView extends FrameLayout {
      */
     public static void showPriceDropTooltip(View view) {
         ViewRectProvider rectProvider = new ViewRectProvider(view);
+        // TODO(crbug.com/505624919): Replace with Builder pattern.
         TextBubble textBubble =
                 new TextBubble(
                         view.getContext(),

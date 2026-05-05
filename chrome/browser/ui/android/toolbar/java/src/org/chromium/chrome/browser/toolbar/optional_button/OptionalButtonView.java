@@ -881,6 +881,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private void showTextBubble(@StringRes int stringId) {
         // TODO(crbug.com/391931916): Now the bubble shows up when the expansion animation would
         //     have appeared. Consider displaying IPH for setting a different cadence.
+        // TODO(crbug.com/505624919): Replace with Builder pattern.
         var textBubble =
                 new TextBubble(
                         getContext(),

@@ -260,6 +260,7 @@ class GoogleBottomBarActionsHandler {
 
     private void showTooltip(View view, int messageId) {
         ViewRectProvider rectProvider = new ViewRectProvider(view);
+        // TODO(crbug.com/505624919): Replace with Builder pattern.
         TextBubble textBubble =
                 new TextBubble(
                         view.getContext(),
