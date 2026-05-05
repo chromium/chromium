@@ -34,6 +34,10 @@
 - (void)assistantAIMViewControllerDidRequestEndEditing:
     (AssistantAIMViewController*)viewController;
 
+// Called when the trait collection changes (e.g., orientation change).
+- (void)assistantAIMViewControllerDidChangeTraits:
+    (AssistantAIMViewController*)viewController;
+
 @end
 
 @interface AssistantAIMViewController

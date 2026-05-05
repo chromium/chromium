@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
@@ -212,6 +213,24 @@ class AssistantAIMUIStateProvider
 - (void)assistantAIMViewControllerDidRequestEndEditing:
     (AssistantAIMViewController*)viewController {
   [self dismissKeyboard];
+}
+
+- (void)assistantAIMViewControllerDidChangeTraits:
+    (AssistantAIMViewController*)viewController {
+  if (IsIPhoneLandscapeLayout(viewController.traitCollection)) {
+    [_containerHandler
+        setAssistantContainerDetents:{
+                                         AssistantContainerDetent::kMinimized,
+                                         AssistantContainerDetent::kLarge,
+    }];
+    return;
+  }
+  [_containerHandler
+      setAssistantContainerDetents:{
+                                       AssistantContainerDetent::kMinimized,
+                                       AssistantContainerDetent::kMedium,
+                                       AssistantContainerDetent::kLarge,
+  }];
 }
 
 #pragma mark - Private

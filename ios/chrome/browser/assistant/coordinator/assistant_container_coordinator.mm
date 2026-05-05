@@ -183,9 +183,6 @@
 
 - (void)setAssistantContainerDetents:
     (std::vector<AssistantContainerDetent>)detents {
-  if (IsAssistantContainerDebugEnabled()) {
-    return;
-  }
   _detents = detents;
   [_containerViewController setDetents:detents];
 }
