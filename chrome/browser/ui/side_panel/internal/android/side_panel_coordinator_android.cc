@@ -208,6 +208,38 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
       AttachCurrentThread(), java_coordinator(), suppress_animations);
 }
 
+void SidePanelCoordinatorAndroid::OnWindowResized(JNIEnv* env,
+                                                  bool should_show_side_panel) {
+  SPLOG("OnWindowResized - should_show_side_panel: " << should_show_side_panel);
+
+  if (is_window_too_small_ == !should_show_side_panel) {
+    return;
+  }
+
+  is_window_too_small_ = !should_show_side_panel;
+
+  if (should_show_side_panel) {
+    CHECK(!IsSidePanelShowing() || IsClosing())
+        << "Side panel should not be visible when the window changes from "
+           "being too small to being large enough.";
+    if (key_to_restore_after_window_resize_ &&
+        CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
+      // TODO(crbug.com/507911289): Revisit animations.
+      Show(*key_to_restore_after_window_resize_, std::nullopt,
+           /*suppress_animations=*/true);
+      key_to_restore_after_window_resize_.reset();
+    }
+  } else {
+    if (IsSidePanelShowing() && !IsClosing()) {
+      std::optional<UniqueKey> current_key = this->current_key();
+      CHECK(current_key);
+      key_to_restore_after_window_resize_ = *current_key;
+      Close(SidePanelEntryHideReason::kWindowResized,
+            /*suppress_animations=*/true);
+    }
+  }
+}
+
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
                                          SidePanelOpenTrigger open_trigger) {
   SPLOG("Toggle - key: " << key.ToString()
@@ -256,6 +288,12 @@ void SidePanelCoordinatorAndroid::Show(
   SPLOG("Show - key: " << key << ", open_trigger: "
                        << (open_trigger ? ToString(*open_trigger) : "nullopt")
                        << ", suppress_animations: " << suppress_animations);
+
+  if (is_window_too_small_) {
+    SPLOG("Show - window is too small, skipping.");
+    return;
+  }
+
   SidePanelEntry* entry = GetEntryForUniqueKey(key);
   if (!entry) {
     return;
@@ -410,6 +448,13 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
         << old_contextual_registry
         << ", new_contextual_registry: " << new_contextual_registry);
 
+  if (is_window_too_small_) {
+    SPLOG(
+        "MaybeShowEntryOnTabStripModelChanged - window is too small, "
+        "skipping.");
+    return;
+  }
+
   // If the side panel is showing, check if we should:
   // (1) replace the current UI content by calling `Show()`, or
   // (2) close the side panel by calling `Close()`.
@@ -417,6 +462,12 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
   if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
     std::optional<UniqueKey> new_active_key = GetNewActiveKeyOnTabChanged();
+
+    if (!new_active_key && key_to_restore_after_window_resize_ &&
+        CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
+      new_active_key = key_to_restore_after_window_resize_;
+      key_to_restore_after_window_resize_.reset();
+    }
 
     if (new_active_key) {
       Show(*new_active_key, SidePanelOpenTrigger::kTabChanged,
@@ -444,6 +495,12 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
                   (*new_active_entry)->key()};
     Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
+  } else if (key_to_restore_after_window_resize_ &&
+             CanShowEntryForKey(*key_to_restore_after_window_resize_)) {
+    Show(*key_to_restore_after_window_resize_,
+         SidePanelOpenTrigger::kTabChanged,
+         /*suppress_animations=*/true);
+    key_to_restore_after_window_resize_.reset();
   }
 }
 
@@ -484,6 +541,22 @@ void SidePanelCoordinatorAndroid::PopulateJavaSidePanel(
       AttachCurrentThread(), java_coordinator(), view, start_bounds.x(),
       start_bounds.y(), start_bounds.width(), start_bounds.height(),
       suppress_animations);
+}
+
+bool SidePanelCoordinatorAndroid::CanShowEntryForKey(
+    const UniqueKey& key) const {
+  if (!GetEntryForUniqueKey(key)) {
+    return false;
+  }
+
+  SidePanelRegistry* active_contextual_registry = GetActiveContextualRegistry();
+  if (active_contextual_registry &&
+      active_contextual_registry->GetTabInterface().GetHandle() ==
+          key.tab_handle) {
+    return true;
+  }
+
+  return !key.tab_handle.has_value();
 }
 
 // ----------------------------------------------------------------------------

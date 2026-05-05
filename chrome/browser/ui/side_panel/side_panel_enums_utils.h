@@ -88,6 +88,10 @@ inline std::string ToString(SidePanelEntryHideReason reason) {
       return "Replaced";
     case SidePanelEntryHideReason::kBackgrounded:
       return "Backgrounded";
+#if BUILDFLAG(IS_ANDROID)
+    case SidePanelEntryHideReason::kWindowResized:
+      return "WindowResized";
+#endif
   }
   NOTREACHED();
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
 
 #include "base/containers/enum_set.h"
+#include "build/build_config.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. SidePanelOpenTrigger in
@@ -67,6 +68,11 @@ enum class SidePanelEntryHideReason {
   // Side panel entry was hidden because it is tab-scoped and the user switched
   // tabs.
   kBackgrounded = 2,
+#if BUILDFLAG(IS_ANDROID)
+  // SidePanel entry was hidden because the window resize resulted in too small
+  // of a range to have it visible.
+  kWindowResized = 3,
+#endif
 };
 
 // LINT.IfChange(SidePanelAnimationType)

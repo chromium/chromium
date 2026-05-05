@@ -53,6 +53,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void Destroy(JNIEnv* env);
   void NotifyCloseAnimationFinished(JNIEnv* env, SidePanelType panel_type);
   void NotifyOpenAnimationFinished(JNIEnv* env, SidePanelType panel_type);
+  void OnWindowResized(JNIEnv* env, bool should_show_side_panel);
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -100,6 +101,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void PopulateJavaSidePanel(const base::android::JavaRef<jobject>& view,
                              bool suppress_animations);
 
+  bool CanShowEntryForKey(const UniqueKey& key) const;
+
   // The current state of the Side Panel.
   //
   // A SidePanelEntry is considered current/active as soon as the state becomes
@@ -120,6 +123,13 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Tracks the previous entry that is being replaced, which we keep in state
   // until animations have completed and it is fully replaced.
   raw_ptr<SidePanelEntry> pending_replaced_entry_ = nullptr;
+
+  // Whether the window is too small to show a side panel.
+  bool is_window_too_small_ = false;
+
+  // Key of the entry that was hidden when the window became too small.
+  // We'll re-show this entry if the window becomes large enough again.
+  std::optional<UniqueKey> key_to_restore_after_window_resize_;
 
   std::optional<gfx::Rect> last_starting_bounds_;
 

@@ -114,6 +114,14 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
                 result -> notifyCloseAnimationFinished(null), suppressAnimations);
     }
 
+    public void onWindowResized(boolean shouldShowSidePanel) {
+        log(TAG, "onWindowResized", shouldShowSidePanel);
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .onWindowResized(mNativeSidePanelCoordinatorAndroid, shouldShowSidePanel);
+        }
+    }
+
     private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
         if (x == INVALID_COORDINATE
                 && y == INVALID_COORDINATE
@@ -180,5 +188,14 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          */
         void notifyOpenAnimationFinished(
                 long nativeSidePanelCoordinatorAndroid, @JniType("SidePanelType") int panelType);
+
+        /**
+         * Sets the visibility of the side panel due to a resize.
+         *
+         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
+         *     SidePanelCoordinatorAndroid}.
+         * @param shouldShowSidePanel Whether the side panel should be visible.
+         */
+        void onWindowResized(long nativeSidePanelCoordinatorAndroid, boolean shouldShowSidePanel);
     }
 }
