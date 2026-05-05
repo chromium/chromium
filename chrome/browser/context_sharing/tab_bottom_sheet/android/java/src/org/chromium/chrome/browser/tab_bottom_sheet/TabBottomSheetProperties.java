@@ -23,9 +23,11 @@ public class TabBottomSheetProperties {
 
     public static final WritableFloatPropertyKey PEEK_STATE_ALPHA =
             new WritableFloatPropertyKey("peek_state_alpha");
+    public static final WritableFloatPropertyKey EXPANDED_STATE_ALPHA =
+            new WritableFloatPropertyKey("expanded_state_alpha");
 
     public static final PropertyKey[] ALL_KEYS = {
-        BOTTOM_SHEET_VIEWS, WEB_VIEW_RESIZING_HELPER, PEEK_STATE_ALPHA
+        BOTTOM_SHEET_VIEWS, WEB_VIEW_RESIZING_HELPER, PEEK_STATE_ALPHA, EXPANDED_STATE_ALPHA
     };
 
     /**

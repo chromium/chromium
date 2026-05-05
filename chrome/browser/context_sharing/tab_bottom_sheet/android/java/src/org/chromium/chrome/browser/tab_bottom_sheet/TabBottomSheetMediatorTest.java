@@ -76,6 +76,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.FULL);
         assertEquals(BottomSheetController.SheetState.FULL, mMediator.getSheetStateForTesting());
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -84,6 +85,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.PEEK);
         assertEquals(BottomSheetController.SheetState.PEEK, mMediator.getSheetStateForTesting());
         assertEquals(1.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -92,6 +94,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.HALF);
         assertEquals(BottomSheetController.SheetState.HALF, mMediator.getSheetStateForTesting());
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -103,18 +106,46 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(peekHeight);
 
         assertEquals(1.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
     @SmallTest
-    public void testUpdateCrossFadeAlpha_Transition() {
+    public void testUpdateCrossFadeAlpha_Transition_FirstHalf() {
         int peekHeight = 100;
-        float offsetPx = 150f;
+        float offsetPx = 125f; // Quarter way
 
         mMediator.setPeekHeight(peekHeight);
         mMediator.updateCrossFadeAlpha(offsetPx);
 
         assertEquals(0.5f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateCrossFadeAlpha_Transition_Midpoint() {
+        int peekHeight = 100;
+        float offsetPx = 150f; // Midpoint
+
+        mMediator.setPeekHeight(peekHeight);
+        mMediator.updateCrossFadeAlpha(offsetPx);
+
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateCrossFadeAlpha_Transition_SecondHalf() {
+        int peekHeight = 100;
+        float offsetPx = 175f; // Three-quarters way
+
+        mMediator.setPeekHeight(peekHeight);
+        mMediator.updateCrossFadeAlpha(offsetPx);
+
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.5f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -127,6 +158,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(offsetPx);
 
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -136,6 +168,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(100);
 
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -148,6 +181,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(offsetPx);
 
         assertEquals(1.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(0.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test
@@ -160,6 +194,7 @@ public class TabBottomSheetMediatorTest {
         mMediator.updateCrossFadeAlpha(offsetPx);
 
         assertEquals(0.0f, mModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA), EPSILON);
+        assertEquals(1.0f, mModel.get(TabBottomSheetProperties.EXPANDED_STATE_ALPHA), EPSILON);
     }
 
     @Test

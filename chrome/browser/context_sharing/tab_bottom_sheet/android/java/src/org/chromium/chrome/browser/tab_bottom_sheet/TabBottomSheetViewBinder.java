@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.EXPANDED_STATE_ALPHA;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.PEEK_STATE_ALPHA;
 
 import android.view.View;
@@ -27,13 +28,15 @@ public class TabBottomSheetViewBinder {
         if (PEEK_STATE_ALPHA == propertyKey) {
             float alpha = model.get(PEEK_STATE_ALPHA);
             View peekContainer = view.findViewById(R.id.actor_control_container);
-            View expandedContent = view.findViewById(R.id.expanded_content_group);
             peekContainer.setAlpha(alpha);
             peekContainer.setVisibility(alpha == 0.0f ? View.INVISIBLE : View.VISIBLE);
-            expandedContent.setAlpha(1.0f - alpha);
+        } else if (EXPANDED_STATE_ALPHA == propertyKey) {
+            float alpha = model.get(EXPANDED_STATE_ALPHA);
+            View expandedContent = view.findViewById(R.id.expanded_content_group);
+            expandedContent.setAlpha(alpha);
             // Using INVISIBLE instead of GONE to keep the view in layout hierarchy,
             // allowing the BottomSheetController to calculate correct scrollable height.
-            expandedContent.setVisibility(alpha == 1.0f ? View.INVISIBLE : View.VISIBLE);
+            expandedContent.setVisibility(alpha == 0.0f ? View.INVISIBLE : View.VISIBLE);
         }
     }
 }
