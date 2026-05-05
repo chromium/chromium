@@ -21,11 +21,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -78,143 +76,12 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testConsistentHeader() {
-        setPermission(ContentSetting.ALLOW);
-        long now = setMockLocationNow();
-
-        // X-Geo should be sent for Google search results page URLs.
-        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
-
-        // But only the current CCTLD.
-        assertNullHeader(SEARCH_URL_2, false);
-
-        // X-Geo shouldn't be sent in incognito mode.
-        assertNullHeader(SEARCH_URL_1, true);
-        assertNullHeader(SEARCH_URL_2, true);
-
-        // X-Geo shouldn't be sent with URLs that aren't the Google search results page.
-        assertNullHeader("invalid$url", false);
-        assertNullHeader("https://www.chrome.fr/", false);
-        assertNullHeader("https://www.google.com/", false);
-
-        // X-Geo shouldn't be sent over HTTP.
-        assertNullHeader("http://www.google.com/search?q=potatoes", false);
-        assertNullHeader("http://www.google.com/webhp?#q=dinosaurs", false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
-    public void testConsistentHeaderApproximate() {
-        setPermission(ContentSetting.ALLOW, ContentSetting.BLOCK);
-        long now = setMockLocationNow();
-
-        // X-Geo should be sent for Google search results page URLs.
-        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testConsistentHeaderForOneTimeGrant() {
-        setOneTimeGrant();
-        long now = setMockLocationNow();
-
-        // X-Geo should be sent for Google search results page URLs.
-        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
-
-        // But only the current CCTLD.
-        assertNullHeader(SEARCH_URL_2, false);
-
-        // X-Geo shouldn't be sent in incognito mode.
-        assertNullHeader(SEARCH_URL_1, true);
-        assertNullHeader(SEARCH_URL_2, true);
-
-        // X-Geo shouldn't be sent with URLs that aren't the Google search results page.
-        assertNullHeader("invalid$url", false);
-        assertNullHeader("https://www.chrome.fr/", false);
-        assertNullHeader("https://www.google.com/", false);
-
-        // X-Geo shouldn't be sent over HTTP.
-        assertNullHeader("http://www.google.com/search?q=potatoes", false);
-        assertNullHeader("http://www.google.com/webhp?#q=dinosaurs", false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testPermissionWithoutAutogrant() {
-        long now = setMockLocationNow();
-
-        // X-Geo should be sent if DSE autogrant is enabled only if the user has explicitly allowed
-        // geolocation.
-        checkHeaderWithPermission(ContentSetting.ALLOW, now, false);
-        checkHeaderWithPermission(ContentSetting.BLOCK, now, true);
-        checkHeaderWithPermission(ContentSetting.DEFAULT, now, true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
     @DisabledTest(message = "https://crbug.com/416787235")
     public void testProtoEncoding() {
         setPermission(ContentSetting.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs using proto encoding.
-        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/421965472")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/421965472")
-    public void testGpsFallback() {
-        setPermission(ContentSetting.ALLOW);
-        // Only GPS location, should be sent when flag is on.
-        long now = System.currentTimeMillis();
-        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
-        GeolocationTracker.setLocationForTesting(null, gpsLocation);
-
-        assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    @DisabledTest(message = "https://crbug.com/414769376")
-    public void testGpsFallbackYounger() {
-        setPermission(ContentSetting.ALLOW);
-        long now = System.currentTimeMillis();
-        // GPS location is younger.
-        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now + 100);
-        // Network location is older
-        Location netLocation = generateMockLocation(LocationManager.NETWORK_PROVIDER, now);
-        GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
-
-        // The younger (GPS) should be used.
-        assertNonNullHeader(SEARCH_URL_1, false, now + 100, /* isPrecise= */ true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Location"})
-    public void testGpsFallbackOlder() {
-        setPermission(ContentSetting.ALLOW);
-        long now = System.currentTimeMillis();
-        // GPS location is older.
-        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now - 100);
-        // Network location is younger.
-        Location netLocation = generateMockLocation(LocationManager.NETWORK_PROVIDER, now);
-        GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
-
-        // The younger (Network) should be used.
         assertNonNullHeader(SEARCH_URL_1, false, now, /* isPrecise= */ true);
     }
 
@@ -254,32 +121,6 @@ public class GeolocationHeaderTest {
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({OmniboxFeatureList.PLATFORM_AGNOSTIC_X_GEO})
-    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testHeaderNotSentWhenPlatformAgnosticEnabled() {
-        setPermission(ContentSetting.ALLOW);
-        setMockLocationNow();
-
-        // X-Geo shouldn't be sent because the platform agnostic logic is enabled.
-        assertNullHeader(SEARCH_URL_1, false);
-    }
-
-    private void checkHeaderWithPermission(
-            final @ContentSetting int httpsPermission,
-            final long locationTime,
-            final boolean shouldBeNull) {
-        setPermission(httpsPermission);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var profile = mCurrentWebPageStation.getTab().getProfile();
-                    var service = TemplateUrlServiceFactory.getForProfile(profile);
-                    String header = GeolocationHeader.getGeoHeader(SEARCH_URL_1, profile, service);
-                    assertHeaderState(header, locationTime, shouldBeNull, /* isPrecise= */ true);
-                });
-    }
-
     private void checkHeaderPriming(boolean shouldPrimeHeader) {
         openBlankPage(/* isIncognito= */ false);
 
@@ -288,15 +129,6 @@ public class GeolocationHeaderTest {
         omniboxTestUtils.typeText("aaaaaaaaaa", false);
         omniboxTestUtils.waitAnimationsComplete();
         Assert.assertEquals(shouldPrimeHeader, GeolocationHeader.isGeolocationPrimedForTesting());
-    }
-
-    private void assertHeaderState(
-            String header, long locationTime, boolean shouldBeNull, boolean isPrecise) {
-        if (shouldBeNull) {
-            Assert.assertNull(header);
-        } else {
-            assertHeaderEquals(locationTime, header, isPrecise);
-        }
     }
 
     private long setMockLocationNow() {
@@ -319,16 +151,6 @@ public class GeolocationHeaderTest {
     private void setMockLocation(long time) {
         Location location = generateMockLocation(LocationManager.NETWORK_PROVIDER, time);
         GeolocationTracker.setLocationForTesting(location, null);
-    }
-
-    private void assertNullHeader(final String url, final boolean isIncognito) {
-        openBlankPage(isIncognito);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var profile = mCurrentWebPageStation.getTab().getProfile();
-                    var service = TemplateUrlServiceFactory.getForProfile(profile);
-                    Assert.assertNull(GeolocationHeader.getGeoHeader(url, profile, service));
-                });
     }
 
     private void assertNonNullHeader(
@@ -390,15 +212,6 @@ public class GeolocationHeaderTest {
 
     private void setPermission(final @ContentSetting int setting) {
         setPermission(setting, setting, /* isOneTime= */ false);
-    }
-
-    private void setPermission(
-            final @ContentSetting int approximate, final @ContentSetting int precise) {
-        setPermission(approximate, precise, /* isOneTime= */ false);
-    }
-
-    private void setOneTimeGrant() {
-        setPermission(ContentSetting.ALLOW, ContentSetting.ALLOW, /* isOneTime= */ true);
     }
 
     private void setPermission(

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.SystemClock;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -109,8 +110,9 @@ public class GeolocationHeaderUnitTest {
     @Before
     public void setUp() {
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
-        GeolocationTracker.setLocationForTesting(null, null);
-        GeolocationTracker.setLocationAgeForTesting(null);
+        Location location = generateMockLocation("should_not_matter", LOCATION_TIME);
+        GeolocationTracker.setLocationForTesting(location, null);
+        GeolocationTracker.setLocationAgeForTesting(1 * 60 * 1000L);
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ true);
         GeolocationHeader.resetStateForTesting();
         setSiteGeolocationPermissions(
@@ -146,6 +148,162 @@ public class GeolocationHeaderUnitTest {
         String header =
                 GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
         assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE, header);
+    }
+
+    @Test
+    public void testConsistentHeader_ReturnsHeaderForGoogleSearchUrl() {
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE, header);
+    }
+
+    @Test
+    public void testConsistentHeader_ReturnsNullInIncognito() {
+        when(mProfileMock.isOffTheRecord()).thenReturn(true);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testConsistentHeader_ReturnsNullForNonGoogleUrl() {
+        String header =
+                GeolocationHeader.getGeoHeader(
+                        "https://www.chrome.fr/", mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testConsistentHeader_ReturnsNullForHttpUrl() {
+        String header =
+                GeolocationHeader.getGeoHeader(
+                        "http://www.google.com/search?q=potatoes",
+                        mProfileMock,
+                        mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testConsistentHeaderApproximate() {
+        setSiteGeolocationPermissions(
+                /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.BLOCK);
+
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_COARSE, header);
+    }
+
+    @Test
+    public void testConsistentHeader_ApproximateAllow_PreciseAsk() {
+        setSiteGeolocationPermissions(
+                /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.ASK);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_COARSE, header);
+    }
+
+    @Test
+    public void testConsistentHeader_ApproximateBlock_PreciseAllow() {
+        setSiteGeolocationPermissions(
+                /* approximate= */ ContentSetting.BLOCK, /* precise= */ ContentSetting.ALLOW);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testConsistentHeader_ApproximateAsk_PreciseAllow() {
+        setSiteGeolocationPermissions(
+                /* approximate= */ ContentSetting.ASK, /* precise= */ ContentSetting.ALLOW);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testConsistentHeaderForOneTimeGrant() {
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingWithEmbargo(
+                        any(BrowserContextHandle.class),
+                        eq(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
+                        anyString(),
+                        anyString()))
+                .thenReturn(
+                        new PermissionSetting(
+                                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW),
+                                null,
+                                /* isOneTime= */ true));
+
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE, header);
+    }
+
+    @Test
+    public void testPermissionWithoutAutogrant_AllowsHeaderWhenAllowed() {
+        setSiteGeolocationPermissions(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertEquals("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE, header);
+    }
+
+    @Test
+    public void testPermissionWithoutAutogrant_BlocksHeaderWhenBlocked() {
+        setSiteGeolocationPermissions(ContentSetting.BLOCK, ContentSetting.BLOCK);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testPermissionWithoutAutogrant_BlocksHeaderWhenAsk() {
+        setSiteGeolocationPermissions(ContentSetting.ASK, ContentSetting.ASK);
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        assertNull(header);
+    }
+
+    @Test
+    public void testGpsFallback() {
+        setSiteGeolocationPermissions(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        long now = System.currentTimeMillis();
+        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
+        GeolocationTracker.setLocationForTesting(null, gpsLocation);
+
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        String expectedHeader =
+                "X-Geo: w " + GeolocationHeader.encodeProtoLocation(gpsLocation, true);
+        assertEquals(expectedHeader, header);
+    }
+
+    @Test
+    public void testGpsFallbackYounger() {
+        setSiteGeolocationPermissions(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        long now = System.currentTimeMillis();
+        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
+        Location netLocation = generateMockLocation(LocationManager.NETWORK_PROVIDER, now - 100);
+        GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
+
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        String expectedHeader =
+                "X-Geo: w " + GeolocationHeader.encodeProtoLocation(gpsLocation, true);
+        assertEquals(expectedHeader, header);
+    }
+
+    @Test
+    public void testGpsFallbackOlder() {
+        setSiteGeolocationPermissions(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        long now = System.currentTimeMillis();
+        Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now - 100);
+        Location netLocation = generateMockLocation(LocationManager.NETWORK_PROVIDER, now);
+        GeolocationTracker.setLocationForTesting(netLocation, gpsLocation);
+
+        String header =
+                GeolocationHeader.getGeoHeader(SEARCH_URL, mProfileMock, mTemplateUrlServiceMock);
+        String expectedHeader =
+                "X-Geo: w " + GeolocationHeader.encodeProtoLocation(netLocation, true);
+        assertEquals(expectedHeader, header);
     }
 
     @Test
@@ -200,9 +358,6 @@ public class GeolocationHeaderUnitTest {
         assertEquals(
                 OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue(),
                 actualRequest.getMaxUpdateAgeMillis());
-        assertEquals(
-                OmniboxFeatures.sGeolocationRequestUpdateInterval.getValue(),
-                actualRequest.getMinUpdateIntervalMillis());
         assertEquals(
                 OmniboxFeatures.sGeolocationRequestPriority.getValue(),
                 actualRequest.getPriority());

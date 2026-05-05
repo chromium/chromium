@@ -460,5 +460,6 @@ public class GeolocationHeader {
     /* package */ static void resetStateForTesting() {
         sGeolocationPrimed = false;
         sCurrentLocationRequested = false;
+        sFusedLocation = null;
     }
 }
