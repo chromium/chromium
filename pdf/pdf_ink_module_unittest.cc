@@ -1018,6 +1018,38 @@ class PdfInkModuleTextTest : public testing::Test {
                          /*is_horizontal=*/true);
   }
 
+  static base::DictValue SampleSerializedTypeface(
+      FontId font_id,
+      base::span<const uint8_t> font_data) {
+    return base::DictValue()
+        .Set("uniqueId", font_id.value())
+        .Set("serializedTypeface", base::Value(font_data));
+  }
+
+  static base::DictValue SampleFinishTextAnnotationData(int frontend_id,
+                                                        FontId font_id,
+                                                        int page_index,
+                                                        double pdf_zoom) {
+    return base::DictValue()
+        .Set("id", frontend_id)
+        .Set("isEdited", true)
+        .Set("mojoTextInfo", SampleInkTextInfoBlob(font_id))
+        .Set("newTypefaces", base::ListValue())
+        .Set("pageIndex", page_index)
+        .Set("pdfZoom", pdf_zoom)
+        .Set("text", "hi")
+        .Set("textAttributes", SampleTextAttributesDict())
+        .Set("textBoxRect", SampleTextBoxRectDict())
+        .Set("textOrientation", 1);
+  }
+
+  static base::DictValue CreateFinishTextAnnotationMessage(
+      base::DictValue data) {
+    return base::DictValue()
+        .Set("type", "finishTextAnnotation")
+        .Set("data", std::move(data));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -1034,27 +1066,12 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
       std::to_array<const uint8_t>({1, 2, 3, 4});
   static constexpr InkTextId kTextId(0);
 
-  base::DictValue typeface;
-  typeface.Set("uniqueId", kFontId.value());
-  typeface.Set("serializedTypeface", base::Value(kTypefaceBlob));
+  base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                        kPageIndex, kPdfZoom);
 
-  base::DictValue data;
   base::ListValue typefaces;
-  typefaces.Append(std::move(typeface));
+  typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
   data.Set("newTypefaces", std::move(typefaces));
-
-  data.Set("id", kFrontendId);
-  data.Set("isEdited", false);
-  data.Set("mojoTextInfo", SampleInkTextInfoBlob(kFontId));
-  data.Set("pageIndex", kPageIndex);
-  data.Set("pdfZoom", kPdfZoom);
-  data.Set("textAttributes", SampleTextAttributesDict());
-  data.Set("textBoxRect", SampleTextBoxRectDict());
-  data.Set("textOrientation", 1);
-
-  base::DictValue message = base::DictValue()
-                                .Set("type", "finishTextAnnotation")
-                                .Set("data", std::move(data));
 
   EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
   EXPECT_CALL(client(),
@@ -1062,7 +1079,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
                        ElementsAre(SampleInkTextInfoMatcher(kFontId)), kPdfZoom,
                        SampleInkTextBoxAttributesMatcher()));
 
-  EXPECT_TRUE(ink_module().OnMessage(message));
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateFinishTextAnnotationMessage(std::move(data))));
 }
 
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
