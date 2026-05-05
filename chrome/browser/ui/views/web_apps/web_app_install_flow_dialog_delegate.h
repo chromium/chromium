@@ -83,7 +83,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
     progress_view_ = std::move(progress_view);
   }
 
-  bool OnOkButtonClicked() override;
+  bool AdvanceToNextStepOrClose();
 
   void OnAccept() override;
   void OnProgress(std::optional<double> percent);

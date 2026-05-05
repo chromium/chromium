@@ -166,13 +166,9 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
 
 WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() = default;
 
-bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
+bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
   if (!dialog_model()) {
     return false;
-  }
-
-  if (current_step_ == InstallDialogStep::kSuccessful) {
-    return true;
   }
 
   // Update install dialog step.
@@ -194,43 +190,49 @@ bool WebAppInstallFlowDialogDelegate::OnOkButtonClicked() {
       break;
 
     case InstallDialogStep::kSuccessful:
-      NOTREACHED();
+      return true;
   }
 
   // Actions based on the new current_step_
-  if (current_step_ == InstallDialogStep::kProgress) {
-    // Trigger the installation.
-    // TODO(b/492657179): Implement the logic to open the newly installed
-    // app in a tab/window.
-    // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
-    OnAccept();
+  switch (current_step_) {
+    case InstallDialogStep::kInstallDialog:
+    case InstallDialogStep::kInstallerOptions:
+      break;
 
-    progress_delay_->Start(
-        base::BindRepeating(&WebAppInstallFlowDialogDelegate::OnProgress,
-                            weak_ptr_factory_.GetWeakPtr()));
+    case InstallDialogStep::kProgress:
+      // Trigger the installation.
+      // TODO(b/492657179): Implement the logic to open the newly installed
+      // app in a tab/window.
+      // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
+      OnAccept();
 
-    // Hide buttons on progress step.
-    dialog_model()->SetVisible(kLearnMoreButtonId, false);
-    dialog_model()->SetVisible(kPwaInstallDialogInstallButton, false);
-    dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, false);
-  }
+      progress_delay_->Start(
+          base::BindRepeating(&WebAppInstallFlowDialogDelegate::OnProgress,
+                              weak_ptr_factory_.GetWeakPtr()));
 
-  if (current_step_ == InstallDialogStep::kSuccessful) {
-    ui::DialogModel::Button* ok_button =
-        dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
-    if (ok_button) {
-      dialog_model()->SetButtonLabel(
-          ok_button,
-          l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP));
-    }
-    ui::DialogModel::Button* cancel_button =
-        dialog_model()->GetButtonByUniqueId(kPwaInstallDialogCancelButtonId);
-    if (cancel_button) {
-      dialog_model()->SetButtonLabel(cancel_button,
-                                     l10n_util::GetStringUTF16(IDS_CLOSE));
-    }
-    dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
-    dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, true);
+      // Hide buttons on progress step.
+      dialog_model()->SetVisible(kLearnMoreButtonId, false);
+      dialog_model()->SetVisible(kPwaInstallDialogInstallButton, false);
+      dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, false);
+      break;
+
+    case InstallDialogStep::kSuccessful:
+      ui::DialogModel::Button* ok_button =
+          dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
+      if (ok_button) {
+        dialog_model()->SetButtonLabel(
+            ok_button,
+            l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP));
+      }
+      ui::DialogModel::Button* cancel_button =
+          dialog_model()->GetButtonByUniqueId(kPwaInstallDialogCancelButtonId);
+      if (cancel_button) {
+        dialog_model()->SetButtonLabel(cancel_button,
+                                       l10n_util::GetStringUTF16(IDS_CLOSE));
+      }
+      dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
+      dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, true);
+      break;
   }
 
   if (flow_view_) {
@@ -306,7 +308,7 @@ void WebAppInstallFlowDialogDelegate::UpdateProgressAndMaybeAdvance() {
   }
 
   if (!timer_percentage_.has_value() && install_success_) {
-    OnOkButtonClicked();
+    AdvanceToNextStepOrClose();
   }
 }
 
@@ -454,7 +456,7 @@ void WebAppInstallFlowDialogDelegate::Show(
       .AddOkButton(
           base::BindRepeating(
               [](base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate) {
-                return delegate ? delegate->OnOkButtonClicked() : true;
+                return delegate ? delegate->AdvanceToNextStepOrClose() : true;
               },
               delegate_weak_ptr),
           // TODO(crbug.com/503767931): Localize this text.
