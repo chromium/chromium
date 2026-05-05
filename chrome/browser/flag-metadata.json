@@ -1052,11 +1052,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-show-bubbles-based-on-priorities",
-    "owners": ["vidhanj@google.com", "autofill-squad-muc@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-support-date-input",
     "owners": [ "tmartino@chromium.org", "bling-transactions@google.com" ],
     "expiry_milestone": 160

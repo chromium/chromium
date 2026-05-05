@@ -1111,13 +1111,6 @@ inline constexpr char
     kAutofillPrioritizeSaveCardOverMandatoryReauthDescription[] =
         "When enabled, this flag prioritizes showing the save card bubble over "
         "the mandatory re-auth bubble when both are applicable.";
-
-inline constexpr char kAutofillShowBubblesBasedOnPrioritiesName[] =
-    "Show bubbles based on priorities";
-inline constexpr char kAutofillShowBubblesBasedOnPrioritiesDescription[] =
-    "When enabled, the autofill and the password manager bubbles would be"
-    "shown based on their respective priorities compared to each other";
-
 inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixName[] =
     "Ensures showing of the BNPL VCN on manual fallback sheet in the Touch To "
     "Fill flow";
