@@ -363,7 +363,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       attacher.IsNotInTabHelperFilter());
 
   if (IsAimCobrowseEnabled()) {
-    attacher.Create<CobrowseTabHelper>(
+    attacher.CreateWhen<CobrowseTabHelper>(
+        attacher.IsNotInTabHelperFilter(),
         ios::TemplateURLServiceFactory::GetForProfile(profile));
   }
 

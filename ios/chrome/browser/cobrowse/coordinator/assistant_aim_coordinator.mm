@@ -29,6 +29,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
+#import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/web/public/web_state.h"
 
 @interface AssistantAIMCoordinator () <AssistantAIMViewControllerDelegate,
@@ -106,11 +109,15 @@ class AssistantAIMUIStateProvider
         self.browser->GetProfile());
   }
 
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+  AttachTabHelpers(webState.get(), TabHelperFilter::kAssistantAim);
+
   _mediator = [[AssistantAIMMediator alloc]
-            initWithWebState:web::WebState::Create(params)
+            initWithWebState:std::move(webState)
                      context:context
             containerHandler:_containerHandler
-      contextualTasksService:contextualTasksService];
+      contextualTasksService:contextualTasksService
+                   URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

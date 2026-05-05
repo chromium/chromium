@@ -103,11 +103,13 @@ class TabHelperAttacher {
   bool IsForPrerender() const { return for_prerender_; }
   bool IsForLensOverlay() const { return for_lens_overlay_; }
   bool IsForReaderMode() const { return for_reader_mode_; }
+  bool IsForAssistantAim() const { return for_assistant_aim_; }
   bool IsForStandardNavigation() const {
-    return !for_lens_overlay_ && !for_reader_mode_;
+    return !for_lens_overlay_ && !for_reader_mode_ && !for_assistant_aim_;
   }
   bool IsNotInTabHelperFilter() const {
-    return !for_prerender_ && !for_lens_overlay_ && !for_reader_mode_;
+    return !for_prerender_ && !for_lens_overlay_ && !for_reader_mode_ &&
+           !for_assistant_aim_;
   }
 
  private:
@@ -117,6 +119,7 @@ class TabHelperAttacher {
   const bool for_prerender_;
   const bool for_lens_overlay_;
   const bool for_reader_mode_;
+  const bool for_assistant_aim_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_TAB_HELPER_ATTACHER_H_

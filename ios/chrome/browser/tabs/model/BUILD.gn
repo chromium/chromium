@@ -271,6 +271,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync_sessions:test_support",
     "//components/tab_groups",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/lens/model",

@@ -19,6 +19,11 @@ enum class TabHelperFilter {
   // Filter out tab helpers that are not needed when the web state
   // is presented for Reader Mode.
   kReaderMode = 1 << 2,
+  // Filter out tab helpers that are not needed when the web state
+  // is presented in the Assistant AIM sheet.
+  // TODO(crbug.com/445918427): Define specific tab helpers to filter for
+  // Assistant AIM.
+  kAssistantAim = 1 << 3,
 };
 
 // Implementation of bitwise "or", "and" operators (as those are not

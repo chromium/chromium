@@ -12,6 +12,7 @@
 #import "components/contextual_tasks/public/contextual_task.h"
 #import "components/contextual_tasks/public/contextual_tasks_service.h"
 #import "components/contextual_tasks/public/features.h"
+#import "components/search_engines/util.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
@@ -19,10 +20,15 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "url/gurl.h"
 
@@ -30,31 +36,40 @@ namespace {
 
 }  // namespace
 
+@interface AssistantAIMMediator () <CRWWebStatePolicyDecider>
+@end
+
 @implementation AssistantAIMMediator {
   std::unique_ptr<web::WebState> _webState;
+  std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
   __weak id<AssistantAIMConsumer> _consumer;
   CobrowseContext* _context;
   id<AssistantContainerCommands> _containerHandler;
   raw_ptr<contextual_tasks::ContextualTasksService> _contextualTasksService;
+  raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
 }
 
 @synthesize consumer = _consumer;
 
-- (instancetype)
-          initWithWebState:(std::unique_ptr<web::WebState>)webState
-                   context:(CobrowseContext*)context
-          containerHandler:(id<AssistantContainerCommands>)containerHandler
-    contextualTasksService:
-        (contextual_tasks::ContextualTasksService*)contextualTasksService {
+- (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
+                         context:(CobrowseContext*)context
+                containerHandler:
+                    (id<AssistantContainerCommands>)containerHandler
+          contextualTasksService:
+              (contextual_tasks::ContextualTasksService*)contextualTasksService
+                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader {
   self = [super init];
   if (self) {
     _webState = std::move(webState);
+    _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
+        _webState.get(), self);
     _webState->SetUserAgentOverride(
         web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE) + " " +
         contextual_tasks::GetContextualTasksUserAgentSuffix());
     _context = context;
     _containerHandler = containerHandler;
     _contextualTasksService = contextualTasksService;
+    _urlLoader = URLLoader;
   }
   return self;
 }
@@ -71,7 +86,47 @@ namespace {
 }
 
 - (void)disconnect {
+  _policyDeciderBridge.reset();
   _webState.reset();
+  _urlLoader = nullptr;
+}
+
+#pragma mark - CRWWebStatePolicyDecider
+
+- (void)shouldAllowRequest:(NSURLRequest*)request
+               requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
+           decisionHandler:(PolicyDecisionHandler)decisionHandler {
+  GURL URL = net::GURLWithNSURL(request.URL);
+
+  // 1. Allow Google redirection or main-frame navigation to Google/AIM domains.
+  if (lens::IsGoogleRedirection(URL, requestInfo)) {
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  BOOL isGoogleHost = lens::IsGoogleHostURL(URL);
+  BOOL isAim = IsAimURL(URL);
+
+  if (isGoogleHost && isAim) {
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  // 2. Block renderer-initiated third-party main-frame navigations and open in
+  // the main browser instead.
+  if (requestInfo.target_frame_is_main) {
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    // Filter out about:blank initialization navigations to prevent spawning
+    // empty tabs in the main browser upon loading the Assistant AIM sheet.
+    if (URL.is_valid() && !URL.IsAboutBlank()) {
+      BOOL openInNewTab = requestInfo.target_window_is_cross_origin;
+      UrlLoadParams params = openInNewTab ? UrlLoadParams::InNewTab(URL)
+                                          : UrlLoadParams::InCurrentTab(URL);
+      _urlLoader->Load(params);
+    }
+  } else {
+    decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  }
 }
 
 #pragma mark - Private helpers

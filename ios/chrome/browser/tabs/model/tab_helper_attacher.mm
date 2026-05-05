@@ -19,8 +19,10 @@ TabHelperAttacher::TabHelperAttacher(web::WebState* web_state,
       for_lens_overlay_(
           IsTabHelperFilterMaskSet(filter_flags,
                                    TabHelperFilter::kLensOverlay)),
-      for_reader_mode_(IsTabHelperFilterMaskSet(filter_flags,
-                                                TabHelperFilter::kReaderMode)) {
-}
+      for_reader_mode_(
+          IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kReaderMode)),
+      for_assistant_aim_(
+          IsTabHelperFilterMaskSet(filter_flags,
+                                   TabHelperFilter::kAssistantAim)) {}
 
 TabHelperAttacher::~TabHelperAttacher() = default;

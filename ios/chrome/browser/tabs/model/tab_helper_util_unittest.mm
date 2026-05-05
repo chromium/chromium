@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -32,6 +35,8 @@ class TabHelperUtilTest : public PlatformTest,
         return "ReaderMode";
       case TabHelperFilter::kLensOverlay:
         return "LensOverlay";
+      case TabHelperFilter::kAssistantAim:
+        return "AssistantAim";
     }
   }
 
@@ -81,7 +86,29 @@ TEST_P(TabHelperUtilTest, LensTabHelper) {
     case TabHelperFilter::kPrerender:
     case TabHelperFilter::kReaderMode:
     case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kAssistantAim:
       ASSERT_FALSE(LensTabHelper::FromWebState(&web_state_));
+      break;
+  }
+}
+
+// Validate that CobrowseTabHelper is created when there is no filter, but
+// suppressed for Assistant AIM filter.
+TEST_P(TabHelperUtilTest, CobrowseTabHelper) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAimCobrowse);
+
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  switch (tab_helper_filter()) {
+    case TabHelperFilter::kEmpty:
+      ASSERT_TRUE(CobrowseTabHelper::FromWebState(&web_state_));
+      break;
+    case TabHelperFilter::kPrerender:
+    case TabHelperFilter::kReaderMode:
+    case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kAssistantAim:
+      ASSERT_FALSE(CobrowseTabHelper::FromWebState(&web_state_));
       break;
   }
 }
@@ -102,7 +129,8 @@ TEST_P(TabHelperUtilTest, InfobarBadgeTabHelper) {
       ASSERT_TRUE(tab_helper);
     } break;
     case TabHelperFilter::kReaderMode:
-    case TabHelperFilter::kLensOverlay: {
+    case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kAssistantAim: {
       ASSERT_FALSE(tab_helper);
     } break;
   }
@@ -113,5 +141,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(TabHelperFilter::kEmpty,
                                          TabHelperFilter::kPrerender,
                                          TabHelperFilter::kLensOverlay,
-                                         TabHelperFilter::kReaderMode),
+                                         TabHelperFilter::kReaderMode,
+                                         TabHelperFilter::kAssistantAim),
                          TabHelperUtilTest::TabHelperFilterToString);

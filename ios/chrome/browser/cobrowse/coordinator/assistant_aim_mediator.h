@@ -19,7 +19,7 @@
 namespace contextual_tasks {
 class ContextualTasksService;
 }
-
+class UrlLoadingBrowserAgent;
 namespace web {
 class WebState;
 }
@@ -42,14 +42,15 @@ class WebState;
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;
 
 // Initializes the mediator with a web state and a cobrowse context that defines
-// the AI mode assistant state, a container handler, and the contextual tasks
-// service.
+// the AI mode assistant state, a container handler, the contextual tasks
+// service, and the URL loader.
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
                          context:(CobrowseContext*)context
                 containerHandler:
                     (id<AssistantContainerCommands>)containerHandler
           contextualTasksService:
               (contextual_tasks::ContextualTasksService*)contextualTasksService
+                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
