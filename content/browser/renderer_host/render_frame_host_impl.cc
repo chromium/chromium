@@ -3372,7 +3372,9 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImplIncludingSpeculative(
 void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
     base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame,
     bool include_speculative) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(https://crbug.com/508709711): Convert this to a CHECK once callers are
+  // on the UI thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!include_speculative &&
       (lifecycle_state() == LifecycleStateImpl::kSpeculative ||
