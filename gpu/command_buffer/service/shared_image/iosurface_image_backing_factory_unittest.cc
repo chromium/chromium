@@ -193,8 +193,10 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
                                SHARED_IMAGE_USAGE_DISPLAY_READ,
                                SHARED_IMAGE_USAGE_SCANOUT};
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
   backing->SetCleared();
 
@@ -340,8 +342,10 @@ class IOSurfaceImageBackingFactoryDawnTest
     SkAlphaType alpha_type = kPremul_SkAlphaType;
     gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
     auto backing = backing_factory_->CreateSharedImage(
-        mailbox, format, surface_handle, size, color_space, surface_origin,
-        alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+        mailbox,
+        {format, size, color_space, surface_origin, alpha_type, usage,
+         "TestLabel"},
+        surface_handle, /*is_thread_safe=*/false);
     EXPECT_TRUE(backing);
 
     std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -755,8 +759,10 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
                                      SHARED_IMAGE_USAGE_WEBGPU_READ};
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   // Fill the shared image's data
@@ -811,8 +817,10 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
                                SHARED_IMAGE_USAGE_DISPLAY_READ};
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -958,8 +966,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
     return;
   }
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -1118,8 +1128,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
     return;
   }
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, initial_data);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data);
   ::testing::Mock::VerifyAndClearExpectations(&progress_reporter_);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -1209,8 +1221,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
     return;
   }
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, initial_data);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data);
   if (!should_succeed) {
     EXPECT_FALSE(backing);
     return;
@@ -1275,12 +1289,16 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   std::vector<uint8_t> initial_data_small(256 * 128 * 4);
   std::vector<uint8_t> initial_data_large(256 * 512 * 4);
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, initial_data_small);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data_small);
   EXPECT_FALSE(backing);
   backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, initial_data_large);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data_large);
   EXPECT_FALSE(backing);
 }
 
@@ -1297,8 +1315,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   std::vector<uint8_t> initial_data(256 * 256 * 4);
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, initial_data);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, initial_data);
   EXPECT_FALSE(backing);
 }
 
@@ -1312,14 +1332,18 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidSize) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
   backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -1345,8 +1369,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
     return;
   }
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -1450,8 +1476,10 @@ class IOSurfaceImageBackingFactoryGMBTest
     DCHECK(handle.io_surface());
 
     auto backing = backing_factory_->CreateSharedImage(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+        mailbox,
+        {format, size, color_space, surface_origin, alpha_type, usage,
+         "TestLabel"},
+        /*is_thread_safe=*/false, std::move(handle));
 
     if (!should_succeed) {
       return nullptr;
@@ -1490,8 +1518,10 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneSize) {
   gfx::GpuMemoryBufferHandle handle(io_surface);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, std::move(handle));
 
   // Should fail because Plane 1 height is incorrect.
   EXPECT_FALSE(backing);
@@ -1520,8 +1550,10 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, InconsistentPlaneStride) {
   gfx::GpuMemoryBufferHandle handle(io_surface);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      /*is_thread_safe=*/false, std::move(handle));
 
   // Should fail because Plane 1 stride is too small.
   EXPECT_FALSE(backing);

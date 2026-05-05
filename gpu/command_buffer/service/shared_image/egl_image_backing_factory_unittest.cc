@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -427,9 +428,10 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   // Note that this backing is always thread safe by default even if it is not
   // requested to be.
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-      /*is_thread_safe=*/true);
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       usage, "TestLabel"},
+      surface_handle, /*is_thread_safe=*/true);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -522,8 +524,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     std::vector<uint8_t> pixel_data = {0x80, 0x40, 0x20, 0x10};
 
     auto backing = backing_factory_->CreateSharedImage(
-        mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "Dawn_SampledTexture",
+        mailbox,
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin,
+         kPremul_SkAlphaType, usage, "Dawn_SampledTexture"},
         /*is_thread_safe=*/true, pixel_data);
     ASSERT_NE(backing, nullptr);
 
@@ -674,12 +677,16 @@ CreateAndValidateSharedImageRepresentations::
     size_t required_size = format.MaybeEstimatedSizeInBytes(size_).value();
     std::vector<uint8_t> initial_data(required_size);
     backing_ = backing_factory->CreateSharedImage(
-        mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", /*is_thread_safe=*/true, initial_data);
+        mailbox_,
+        {format, size_, color_space, surface_origin, alpha_type, usage,
+         "TestLabel"},
+        /*is_thread_safe=*/true, initial_data);
   } else {
     backing_ = backing_factory->CreateSharedImage(
-        mailbox_, format, surface_handle, size_, color_space, surface_origin,
-        alpha_type, usage, "TestLabel", is_thread_safe);
+        mailbox_,
+        {format, size_, color_space, surface_origin, alpha_type, usage,
+         "TestLabel"},
+        surface_handle, is_thread_safe);
   }
 
   // As long as either |chromium_image_ar30| or |chromium_image_ab30| is

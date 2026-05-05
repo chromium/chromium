@@ -88,38 +88,33 @@ SharedMemoryImageBackingFactory::~SharedMemoryImageBackingFactory() = default;
 std::unique_ptr<SharedImageBacking>
 SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
   if (!shm_wrapper.Initialize(handle, size, format)) {
     return nullptr;
   }
   return std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_wrapper));
+      mailbox, format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, si_info.usage, si_info.debug_label,
+      std::move(shm_wrapper));
 }
 
 std::unique_ptr<SharedImageBacking>
 SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+
   gfx::GpuMemoryBufferHandle handle;
   if (IsBufferUsageSupported(buffer_usage)) {
     handle = CreateGpuMemoryBufferHandle(size, format);
@@ -129,9 +124,9 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_wrapper), std::move(handle),
-      std::move(buffer_usage));
+      mailbox, format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, si_info.usage, si_info.debug_label,
+      std::move(shm_wrapper), std::move(handle), std::move(buffer_usage));
   return backing;
 }
 

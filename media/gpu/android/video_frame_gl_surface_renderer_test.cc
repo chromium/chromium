@@ -291,8 +291,10 @@ TEST_F(VideoFrameGLSurfaceRendererTest, RenderSharedImageVideoFrame) {
                     kSurfaceSize.height());
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, kSurfaceSize, color_space, surface_origin, alpha_type,
-      usage, "TestLabel", /*is_thread_safe=*/false, pixel_data);
+      mailbox,
+      gpu::SharedImageInfo(format, kSurfaceSize, color_space, surface_origin,
+                           alpha_type, usage, "TestLabel"),
+      /*is_thread_safe=*/false, pixel_data);
   ASSERT_TRUE(backing);
 
   auto factory_ref =

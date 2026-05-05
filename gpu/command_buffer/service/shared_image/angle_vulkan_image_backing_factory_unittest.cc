@@ -9,6 +9,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -99,9 +100,10 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
-      /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -165,9 +167,10 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
   gfx::Size size(100, 100);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, gpu::kNullSurfaceHandle, size, kColorSpace,
-      kSurfaceOrigin, kAlphaType, kUsage, "TestLabel",
-      /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, kColorSpace, kSurfaceOrigin, kAlphaType, kUsage,
+       "TestLabel"},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> bitmaps = AllocateRedBitmaps(format, size);
@@ -200,8 +203,10 @@ TEST_P(AngleVulkanImageBackingFactoryTest, ReadbackToMemory) {
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   std::vector<SkBitmap> src_bitmaps =

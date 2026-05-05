@@ -600,15 +600,12 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+  const auto usage = si_info.usage;
   if (usage.Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
@@ -619,9 +616,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     }
 
     auto backing = D3DImageBacking::CreateFromSwapChainBuffers(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(back_buffer_texture), std::move(front_buffer_texture),
-        swap_chain, gl_format_caps_);
+        mailbox, format, size, si_info.color_space, si_info.surface_origin,
+        si_info.alpha_type, usage, std::move(back_buffer_texture),
+        std::move(front_buffer_texture), swap_chain, gl_format_caps_);
     if (!backing) {
       return nullptr;
     }
@@ -630,22 +627,20 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return std::move(backing);
   }
 
-  return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
-                           alpha_type, usage, std::move(debug_label),
-                           is_thread_safe, base::span<const uint8_t>());
+  return CreateSharedImage(mailbox, si_info, is_thread_safe,
+                           base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+  const auto usage = si_info.usage;
+  const auto& color_space = si_info.color_space;
+
   if (usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
     gfx::Size buffer_size = size;
     // WebNN tensors have a valid height and format and must be converted to 1D
@@ -667,9 +662,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       buffer_size = gfx::Size(element_count * bytes_per_element, 1);
     }
 
-    return CreateSharedBufferD3D12(mailbox, buffer_size, color_space,
-                                   surface_origin, alpha_type, usage,
-                                   debug_label, is_thread_safe);
+    SharedImageInfo si_info_copy = si_info;
+    si_info_copy.size = buffer_size;
+
+    return CreateSharedBufferD3D12(mailbox, si_info_copy, is_thread_safe);
   }
 
   // D3D11/Texture-based paths below do not yet support thread-safe access.
@@ -772,7 +768,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  debug_label = "D3DSharedImage_" + debug_label;
+  std::string debug_label = "D3DSharedImage_" + si_info.debug_label;
   d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 
@@ -814,9 +810,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
                                  dxgi_shared_handle_state->has_keyed_mutex()));
 
   auto backing = D3DImageBacking::Create(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
+      mailbox, format, size, color_space, si_info.surface_origin,
+      si_info.alpha_type, usage, std::move(debug_label),
+      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
+      gl_format_caps_, texture_target,
       /*array_slice=*/0u, use_update_subresource1_, want_dcomp_texture,
       /*is_thread_safe=*/false,
       /*share_dxgi_handle_with_other_backings=*/false);
@@ -829,15 +826,12 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+
   // Windows does not support external sampler.
   CHECK(!format.PrefersExternalSampler());
 
@@ -892,10 +886,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
 
   std::unique_ptr<D3DImageBacking> backing = D3DImageBacking::Create(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), gl_format_caps_,
-      /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
+      mailbox, format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, si_info.usage, si_info.debug_label,
+      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
+      gl_format_caps_, /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
       use_update_subresource1_);
 
   if (backing) {
@@ -905,15 +899,15 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 }
 
 std::unique_ptr<SharedImageBacking>
-D3DImageBackingFactory::CreateSharedBufferD3D12(
-    const Mailbox& mailbox,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    bool is_thread_safe) {
+D3DImageBackingFactory::CreateSharedBufferD3D12(const Mailbox& mailbox,
+                                                const SharedImageInfo& si_info,
+                                                bool is_thread_safe) {
+  const auto size = si_info.size;
+  const auto usage = si_info.usage;
+  const auto& color_space = si_info.color_space;
+  const auto surface_origin = si_info.surface_origin;
+  const auto alpha_type = si_info.alpha_type;
+
   if (!d3d12_device_) {
     // Lazily create a D3D12 Device by acquiring the DXGI adapter of the
     // existing D3D11 device.
@@ -1069,7 +1063,7 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     return nullptr;
   }
 
-  debug_label = "D3DSharedBuffer_" + debug_label;
+  std::string debug_label = "D3DSharedBuffer_" + si_info.debug_label;
   hr = d3d12_buffer->SetPrivateData(WKPDID_D3DDebugObjectName,
                                     debug_label.length(), debug_label.c_str());
 

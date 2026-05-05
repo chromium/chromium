@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 
@@ -20,14 +21,8 @@ class RawDrawImageBackingFactory : public SharedImageBackingFactory {
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       bool is_thread_safe) override;
   bool IsSupported(SharedImageUsageSet usage,
                    viz::SharedImageFormat format,

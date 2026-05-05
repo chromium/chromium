@@ -49,18 +49,13 @@ AngleVulkanImageBackingFactory::~AngleVulkanImageBackingFactory() = default;
 std::unique_ptr<SharedImageBacking>
 AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label));
+      context_state_, mailbox, si_info.format, si_info.size,
+      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
+      si_info.usage, si_info.debug_label);
 
   if (!backing->Initialize({}))
     return nullptr;
@@ -71,18 +66,13 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label));
+      context_state_, mailbox, si_info.format, si_info.size,
+      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
+      si_info.usage, si_info.debug_label);
 
   if (!backing->Initialize(data)) {
     return nullptr;
@@ -94,18 +84,13 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 AngleVulkanImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label));
+      context_state_, mailbox, si_info.format, si_info.size,
+      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
+      si_info.usage, si_info.debug_label);
 
   if (!backing->InitializeWihGMB(std::move(handle))) {
     return nullptr;

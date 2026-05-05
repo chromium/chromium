@@ -18,6 +18,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -764,10 +765,11 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     return nullptr;
   }
 
+  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
+                              alpha_type, GetShmSharedImageUsage(usage),
+                              debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      GetShmSharedImageUsage(usage), debug_label,
-      /*is_thread_safe=*/false, std::move(handle));
+      mailbox, shm_si_info, /*is_thread_safe=*/false, std::move(handle));
   if (!shm_backing) {
     return nullptr;
   }
@@ -805,10 +807,12 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     return nullptr;
   }
 
+  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
+                              alpha_type, GetShmSharedImageUsage(usage),
+                              debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, format, kNullSurfaceHandle, size, color_space, surface_origin,
-      alpha_type, GetShmSharedImageUsage(usage), debug_label,
-      /*is_thread_safe=*/false, buffer_usage);
+      mailbox, shm_si_info, kNullSurfaceHandle, /*is_thread_safe=*/false,
+      buffer_usage);
   if (!shm_backing) {
     return nullptr;
   }
@@ -857,10 +861,11 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     std::string debug_label) {
   DCHECK(IsValidSharedMemoryFormat(size, format));
 
+  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
+                              alpha_type, GetShmSharedImageUsage(usage),
+                              debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      GetShmSharedImageUsage(usage), debug_label,
-      /*is_thread_safe=*/false, std::move(handle));
+      mailbox, shm_si_info, /*is_thread_safe=*/false, std::move(handle));
   if (!shm_backing) {
     return nullptr;
   }
@@ -889,10 +894,12 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     gfx::BufferUsage buffer_usage) {
   DCHECK(IsValidSharedMemoryFormat(size, format));
 
+  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
+                              alpha_type, GetShmSharedImageUsage(usage),
+                              debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, format, kNullSurfaceHandle, size, color_space, surface_origin,
-      alpha_type, GetShmSharedImageUsage(usage), debug_label,
-      /*is_thread_safe=*/false, buffer_usage);
+      mailbox, shm_si_info, kNullSurfaceHandle, /*is_thread_safe=*/false,
+      buffer_usage);
   if (!shm_backing) {
     return nullptr;
   }
@@ -1784,10 +1791,10 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
     return;
   }
 
-  backing = factory->CreateSharedImage(
-      mailbox(), format(), kNullSurfaceHandle, size(), color_space(),
-      surface_origin(), alpha_type(), usage, std::move(debug_label),
-      /*is_thread_safe=*/false);
+  SharedImageInfo si_info(format(), size(), color_space(), surface_origin(),
+                          alpha_type(), usage, debug_label);
+  backing = factory->CreateSharedImage(mailbox(), si_info, kNullSurfaceHandle,
+                                       /*is_thread_safe=*/false);
   if (!backing) {
     DLOG(ERROR) << "Failed to allocate GPU backing";
     return;

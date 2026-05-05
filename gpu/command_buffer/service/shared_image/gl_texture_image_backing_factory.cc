@@ -54,39 +54,24 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    bool is_thread_safe) {
+GLTextureImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
+                                                const SharedImageInfo& si_info,
+                                                SurfaceHandle surface_handle,
+                                                bool is_thread_safe) {
   CHECK(!is_thread_safe);
-  return CreateSharedImageInternal(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), base::span<const uint8_t>());
+  return CreateSharedImageInternal(mailbox, si_info, surface_handle,
+                                   base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   CHECK(!is_thread_safe);
-  return CreateSharedImageInternal(mailbox, format, kNullSurfaceHandle, size,
-                                   color_space, surface_origin, alpha_type,
-                                   usage, std::move(debug_label), pixel_data);
+  return CreateSharedImageInternal(mailbox, si_info, kNullSurfaceHandle,
+                                   pixel_data);
 }
 
 bool GLTextureImageBackingFactory::IsSupported(
@@ -190,30 +175,26 @@ void GLTextureImageBackingFactory::ForceSetUsingANGLEMetalForTesting(
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
+  DCHECK(CanCreateTexture(si_info.format, si_info.size, pixel_data,
+                          GL_TEXTURE_2D));
 
   // GLTextureImageBackingFactory supports raster and display usage only for
   // Ganesh-GL, meaning that raster/display write usage implies GL writes
   // within Skia.
-  const bool for_framebuffer_attachment = usage.HasAny(
+  const bool for_framebuffer_attachment = si_info.usage.HasAny(
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto result = std::make_unique<GLTextureImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), use_passthrough_);
-  result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
+      mailbox, si_info.format, si_info.size, si_info.color_space,
+      si_info.surface_origin, si_info.alpha_type, si_info.usage,
+      si_info.debug_label, use_passthrough_);
+  result->InitializeGLTexture(GetFormatInfo(si_info.format), pixel_data,
                               progress_reporter_, framebuffer_attachment_angle);
 
   return std::move(result);

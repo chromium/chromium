@@ -47,15 +47,13 @@ DCompImageBackingFactory::~DCompImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe) {
+  const auto alpha_type = si_info.alpha_type;
+  const auto& color_space = si_info.color_space;
+  const auto usage = si_info.usage;
+
   DCHECK(!is_thread_safe);
   CHECK(alpha_type == kOpaque_SkAlphaType || alpha_type == kPremul_SkAlphaType);
 
@@ -66,13 +64,13 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
   if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE)) {
     DCHECK_NE(internal_format, DXGI_FORMAT_R10G10B10A2_UNORM);
     return DCompSurfaceImageBacking::Create(
-        mailbox, format, internal_format, size, color_space, surface_origin,
-        alpha_type, usage, std::move(debug_label));
+        mailbox, si_info.format, internal_format, si_info.size, color_space,
+        si_info.surface_origin, alpha_type, usage, si_info.debug_label);
   } else {
     return DXGISwapChainImageBacking::Create(
-        context_state_->GetD3D11Device(), mailbox, format, internal_format,
-        size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label));
+        context_state_->GetD3D11Device(), mailbox, si_info.format,
+        internal_format, si_info.size, color_space, si_info.surface_origin,
+        alpha_type, usage, si_info.debug_label);
   }
 }
 

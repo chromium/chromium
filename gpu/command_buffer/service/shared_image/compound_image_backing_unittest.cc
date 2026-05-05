@@ -6,6 +6,7 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -35,44 +36,27 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       bool is_thread_safe) override {
     if (allocations_should_fail_)
       return nullptr;
 
     return std::make_unique<TestImageBacking>(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        mailbox, si_info.format, si_info.size, si_info.color_space,
+        si_info.surface_origin, si_info.alpha_type, si_info.usage,
         kTestBackingSize);
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
     return nullptr;
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
     return nullptr;

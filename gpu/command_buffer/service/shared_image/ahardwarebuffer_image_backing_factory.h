@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_AHARDWAREBUFFER_IMAGE_BACKING_FACTORY_H_
 
 #include "base/containers/flat_set.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
@@ -15,7 +16,6 @@
 
 namespace gfx {
 class Size;
-class ColorSpace;
 }  // namespace gfx
 
 namespace viz {
@@ -51,35 +51,17 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override;
   bool IsSupported(SharedImageUsageSet usage,
@@ -107,13 +89,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
 
   std::unique_ptr<SharedImageBacking> MakeBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data);
 

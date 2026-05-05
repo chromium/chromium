@@ -155,48 +155,32 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
   // gpu::SharedImageBackingFactory implementation.
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
-      SharedImageFormat format,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
       bool is_thread_safe) override {
-    size_t estimated_size = format.EstimatedSizeInBytes(size);
+    size_t estimated_size = si_info.format.EstimatedSizeInBytes(si_info.size);
     auto backing = std::make_unique<gpu::TestImageBacking>(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        mailbox, si_info.format, si_info.size, si_info.color_space,
+        si_info.surface_origin, si_info.alpha_type, si_info.usage,
         estimated_size);
     backings_[mailbox] = backing.get();
     return backing;
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
+      const gpu::SharedImageInfo& si_info,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
     auto backing = std::make_unique<gpu::TestImageBacking>(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        mailbox, si_info.format, si_info.size, si_info.color_space,
+        si_info.surface_origin, si_info.alpha_type, si_info.usage,
         pixel_data.size());
     backings_[mailbox] = backing.get();
     return backing;
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
       const gpu::Mailbox& mailbox,
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
+      const gpu::SharedImageInfo& si_info,
       bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
     NOTREACHED();

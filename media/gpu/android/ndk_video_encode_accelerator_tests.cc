@@ -336,8 +336,10 @@ class NdkVideoEncoderAcceleratorTest
       gmb_handle.android_hardware_buffer = std::move(ahb_handle);
 
       backing = backing_factory_->CreateSharedImage(
-          mailbox, viz_format, size, color_space, surface_origin, alpha_type,
-          usage, "TestLabel", /*is_thread_safe=*/false, std::move(gmb_handle));
+          mailbox,
+          gpu::SharedImageInfo(viz_format, size, color_space, surface_origin,
+                               alpha_type, usage, "TestLabel"),
+          /*is_thread_safe=*/false, std::move(gmb_handle));
 
     } else {
       CHECK_EQ(software_frame->format(), PIXEL_FORMAT_XBGR);
@@ -382,8 +384,10 @@ class NdkVideoEncoderAcceleratorTest
       gmb_handle.android_hardware_buffer = std::move(ahb_handle);
 
       backing = backing_factory_->CreateSharedImage(
-          mailbox, viz_format, size, color_space, surface_origin, alpha_type,
-          usage, "TestLabel", /*is_thread_safe=*/false, std::move(gmb_handle));
+          mailbox,
+          gpu::SharedImageInfo(viz_format, size, color_space, surface_origin,
+                               alpha_type, usage, "TestLabel"),
+          /*is_thread_safe=*/false, std::move(gmb_handle));
     }
     CHECK(backing);
 

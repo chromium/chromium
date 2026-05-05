@@ -22,19 +22,14 @@ DawnImageBackingFactory::~DawnImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking> DawnImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
-  return std::make_unique<DawnImageBacking>(mailbox, format, size, color_space,
-                                            surface_origin, alpha_type, usage,
-                                            std::move(debug_label));
+  return std::make_unique<DawnImageBacking>(
+      mailbox, si_info.format, si_info.size, si_info.color_space,
+      si_info.surface_origin, si_info.alpha_type, si_info.usage,
+      si_info.debug_label);
 }
 
 bool DawnImageBackingFactory::IsSupported(

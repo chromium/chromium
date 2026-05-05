@@ -8,6 +8,7 @@
 
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing.h"
@@ -79,9 +80,10 @@ TEST_F(DawnImageBackingFactoryTest, MAYBE_Basic) {
   ASSERT_TRUE(supported);
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, kNullSurfaceHandle, size, color_space, surface_origin,
-      alpha_type, usage, "DawnImageBackingFactoryTest",
-      /*is_thread_safe=*/false);
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "DawnImageBackingFactoryTest"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   static_cast<DawnImageBacking*>(backing.get())

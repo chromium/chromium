@@ -50,34 +50,18 @@ EGLImageBackingFactory::~EGLImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     bool is_thread_safe) {
-  return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, std::move(debug_label),
-                             base::span<const uint8_t>());
+  return MakeEglImageBacking(mailbox, si_info, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage, std::move(debug_label),
-                             pixel_data);
+  return MakeEglImageBacking(mailbox, si_info, pixel_data);
 }
 
 bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
@@ -133,14 +117,12 @@ bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
+  const auto format = si_info.format;
+  const auto size = si_info.size;
+  const auto usage = si_info.usage;
+
   DCHECK(!usage.Has(SHARED_IMAGE_USAGE_SCANOUT));
 
   // Calculate SharedImage size in bytes.
@@ -155,9 +137,9 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
   CHECK_EQ(static_cast<int>(format_info.size()), format.NumberOfPlanes());
 
   return std::make_unique<EGLImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), estimated_size.value(), format_info, workarounds_,
-      use_passthrough_, pixel_data);
+      mailbox, format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, usage, si_info.debug_label, estimated_size.value(),
+      format_info, workarounds_, use_passthrough_, pixel_data);
 }
 
 SharedImageBackingType EGLImageBackingFactory::GetBackingType() {

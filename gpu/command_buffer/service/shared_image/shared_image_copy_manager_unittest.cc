@@ -65,9 +65,10 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
 
   // Create a shared memory backing.
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      Mailbox::Generate(), format, kNullSurfaceHandle, size,
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage, "TestLabel",
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, usage, "TestLabel"},
+      kNullSurfaceHandle,
       /*is_thread_safe=*/false, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
 
   // Create a generic test backing.
@@ -113,10 +114,10 @@ TEST_F(SharedImageCopyManagerTestWithGraphiteDawn, CopyUsingDawnStrategy) {
   // Create a Dawn backing.
   DawnImageBackingFactory dawn_factory;
   auto dawn_backing = dawn_factory.CreateSharedImage(
-      Mailbox::Generate(), format, kNullSurfaceHandle, size,
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, dawn_backing_usage, "dawn_backing",
-      /*is_thread_safe=*/false);
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, dawn_backing_usage, "dawn_backing"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(dawn_backing);
 
   static_cast<DawnImageBacking*>(dawn_backing.get())
@@ -125,10 +126,10 @@ TEST_F(SharedImageCopyManagerTestWithGraphiteDawn, CopyUsingDawnStrategy) {
   // Create a Graphite backing.
   WrappedSkImageBackingFactory sk_image_factory(context_state_);
   auto graphite_backing = sk_image_factory.CreateSharedImage(
-      Mailbox::Generate(), format, kNullSurfaceHandle, size,
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, graphite_backing_usage, "graphite_backing",
-      /*is_thread_safe=*/false);
+      Mailbox::Generate(),
+      {format, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, graphite_backing_usage, "graphite_backing"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_TRUE(graphite_backing);
 
   // Test copy from Graphite to Dawn.

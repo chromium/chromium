@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
@@ -391,9 +392,7 @@ bool SharedImageFactory::CreateSharedImage(
   }
 
   auto temp_backing = factory->CreateSharedImage(
-      mailbox, format, surface_handle, size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, SharedImageUsageSet(usage),
-      si_info.debug_label, IsSharedBetweenThreads(usage));
+      mailbox, si_info, surface_handle, IsSharedBetweenThreads(usage));
 
   std::unique_ptr<SharedImageBacking> backing =
       CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
@@ -513,10 +512,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       return false;
     }
 
-    auto temp_backing = factory->CreateSharedImage(
-        mailbox, format, surface_handle, size, si_info.color_space,
-        si_info.surface_origin, si_info.alpha_type, SharedImageUsageSet(usage),
-        debug_label, IsSharedBetweenThreads(usage), buffer_usage);
+    auto temp_backing =
+        factory->CreateSharedImage(mailbox, si_info, surface_handle,
+                                   IsSharedBetweenThreads(usage), buffer_usage);
 
     backing = CompoundImageBacking::WrapExternalBacking(
         this, copy_manager(), std::move(temp_backing));
@@ -544,9 +542,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       bool use_compound = false;
       if (!factory && !IsSharedBetweenThreads(usage)) {
         // Check if CompoundImageBacking can be created. CompoundImageBacking
-        // holds
-        // a shared memory buffer plus another GPU backing type to satisfy the
-        // requirements.
+        // holds a shared memory buffer plus another GPU backing type to satisfy
+        // the requirements.
         backing = CompoundImageBacking::Create(
             this, copy_manager(), mailbox, format_copy, size,
             si_info.color_space, si_info.surface_origin, si_info.alpha_type,
@@ -556,10 +553,11 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
       if (!use_compound) {
         if (factory) {
+          SharedImageInfo si_info_copy(format_copy, size, si_info.color_space,
+                                       si_info.surface_origin,
+                                       si_info.alpha_type, usage, debug_label);
           auto temp_backing = factory->CreateSharedImage(
-              mailbox, format_copy, surface_handle, size, si_info.color_space,
-              si_info.surface_origin, si_info.alpha_type,
-              SharedImageUsageSet(usage), debug_label,
+              mailbox, si_info_copy, surface_handle,
               IsSharedBetweenThreads(usage), buffer_usage);
           backing = CompoundImageBacking::WrapExternalBacking(
               this, copy_manager(), std::move(temp_backing));
@@ -601,9 +599,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
 
   auto temp_backing = factory->CreateSharedImage(
-      mailbox, format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, usage, si_info.debug_label,
-      IsSharedBetweenThreads(usage), data);
+      mailbox, si_info, IsSharedBetweenThreads(usage), data);
 
   std::unique_ptr<SharedImageBacking> backing =
       CompoundImageBacking::WrapExternalBacking(this, copy_manager(),
@@ -661,8 +657,7 @@ bool SharedImageFactory::CreateSharedImage(
 
   if (!use_compound) {
     auto temp_backing = factory->CreateSharedImage(
-        mailbox, format, size, si_info.color_space, si_info.surface_origin,
-        si_info.alpha_type, usage, debug_label, IsSharedBetweenThreads(usage),
+        mailbox, si_info, IsSharedBetweenThreads(usage),
         std::move(buffer_handle));
 
     backing = CompoundImageBacking::WrapExternalBacking(
