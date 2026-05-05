@@ -7,7 +7,10 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -56,11 +59,11 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory_TransferBuffer) {
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  const char kPixels[4 * 4 * 4] = {};
+  const std::array<uint8_t, 4 * 4 * 4> kPixels = {};
   // Allocates transfer buffer space for the pixels.
   size_t old_size = gl_.GetSharedMemoryBytesAllocated();
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               kPixels);
+               kPixels.data());
   EXPECT_LT(old_size, gl_.GetSharedMemoryBytesAllocated());
 
   gl_.gles2_implementation()->SetAggressivelyFreeResources(true);
@@ -72,15 +75,19 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory_MappedMemory) {
   GLuint buffer = 0;
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  const char kData[256] = {};
-  glBufferData(GL_ARRAY_BUFFER, sizeof(kData), kData, GL_STATIC_DRAW);
+  const std::array<uint8_t, 256> kData = {};
+  glBufferData(GL_ARRAY_BUFFER, kData.size(), kData.data(), GL_STATIC_DRAW);
 
   size_t old_size = gl_.GetSharedMemoryBytesAllocated();
   // Allocates mapped memory for data.
-  void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, sizeof(kData),
+  void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, kData.size(),
                                           GL_WRITE_ONLY);
   ASSERT_TRUE(data);
-  UNSAFE_TODO(memcpy(data, kData, sizeof(kData)));
+  // SAFETY: `data` points to at least `kData.size()` bytes mapped by
+  // glMapBufferSubDataCHROMIUM.
+  UNSAFE_BUFFERS({
+    base::span(static_cast<uint8_t*>(data), kData.size()).copy_from(kData);
+  });
   glUnmapBufferSubDataCHROMIUM(data);
   EXPECT_LT(old_size, gl_.GetSharedMemoryBytesAllocated());
 
@@ -115,23 +122,27 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory) {
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  const char kPixels[4 * 4 * 4] = {};
+  const std::array<uint8_t, 4 * 4 * 4> kPixels = {};
   // Allocates transfer buffer space for the pixels.
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               kPixels);
+               kPixels.data());
 
   GLuint buffer = 0;
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  const char kData[256] = {};
+  const std::array<uint8_t, 256> kData = {};
   // Allocates transfer buffer space for kData.
-  glBufferData(GL_ARRAY_BUFFER, sizeof(kData), kData, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, kData.size(), kData.data(), GL_STATIC_DRAW);
 
   // Allocates mapped memory for data.
-  void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, sizeof(kData),
+  void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, kData.size(),
                                           GL_WRITE_ONLY);
   ASSERT_TRUE(data);
-  UNSAFE_TODO(memcpy(data, kData, sizeof(kData)));
+  // SAFETY: `data` points to at least `kData.size()` bytes mapped by
+  // glMapBufferSubDataCHROMIUM.
+  UNSAFE_BUFFERS({
+    base::span(static_cast<uint8_t*>(data), kData.size()).copy_from(kData);
+  });
   glUnmapBufferSubDataCHROMIUM(data);
 
   glEndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
