@@ -28,13 +28,15 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      * @param backgroundColor The background color to use for the animation.
      * @param durationMs The duration in milliseconds of the animation.
      * @param onAlphaChange Observer to notify when alpha changes during animations.
+     * @param isIncognito Whether the animation is in the incognito state.
      */
     public static HubLayoutAnimatorProvider createNewTabAnimatorProvider(
             HubContainerView hubContainerView,
             SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange,
+            boolean isIncognito) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.EXPAND_NEW_TAB,
                 /* needsBitmap= */ false,
@@ -42,7 +44,8 @@ public class ShrinkExpandHubLayoutAnimationFactory {
                 animationDataSupplier,
                 backgroundColor,
                 durationMs,
-                onAlphaChange);
+                onAlphaChange,
+                isIncognito);
     }
 
     /**
@@ -55,13 +58,15 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      *     animating area (this is unlikely to happen for Shrink animations).
      * @param durationMs The duration in milliseconds of the animation.
      * @param onAlphaChange Observer to notify when alpha changes during animations.
+     * @param isIncognito Whether the animation is in the incognito state.
      */
     public static HubLayoutAnimatorProvider createShrinkTabAnimatorProvider(
             HubContainerView hubContainerView,
             SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange,
+            boolean isIncognito) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.SHRINK_TAB,
                 /* needsBitmap= */ true,
@@ -69,7 +74,8 @@ public class ShrinkExpandHubLayoutAnimationFactory {
                 animationDataSupplier,
                 backgroundColor,
                 durationMs,
-                onAlphaChange);
+                onAlphaChange,
+                isIncognito);
     }
 
     /**
@@ -83,13 +89,15 @@ public class ShrinkExpandHubLayoutAnimationFactory {
      *     ratio than the one that will be shown i.e. different orientation or multi-window.
      * @param durationMs The duration in milliseconds of the animation.
      * @param onAlphaChange Observer to notify when alpha changes during animations.
+     * @param isIncognito Whether the animation is in the incognito state.
      */
     public static HubLayoutAnimatorProvider createExpandTabAnimatorProvider(
             HubContainerView hubContainerView,
             SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs,
-            DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange,
+            boolean isIncognito) {
         return new ShrinkExpandHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.EXPAND_TAB,
                 /* needsBitmap= */ true,
@@ -97,6 +105,7 @@ public class ShrinkExpandHubLayoutAnimationFactory {
                 animationDataSupplier,
                 backgroundColor,
                 durationMs,
-                onAlphaChange);
+                onAlphaChange,
+                isIncognito);
     }
 }

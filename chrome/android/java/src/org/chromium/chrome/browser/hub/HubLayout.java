@@ -575,7 +575,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         animationDataSupplier,
                         backgroundColor,
                         HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
-                        mOnToolbarAlphaChange);
+                        mOnToolbarAlphaChange,
+                        newIsIncognito);
 
         // TODO(crbug.com/40285429): Supply this from HubController so it can look like the
         // animation originated from wherever on the Hub was clicked. This defaults to the top

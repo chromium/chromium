@@ -324,7 +324,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                 animationDataSupplier,
                 backgroundColor,
                 HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
-                mOnToolbarAlphaChange);
+                mOnToolbarAlphaChange,
+                mIsIncognito);
     }
 
     @Override
@@ -345,7 +346,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                 animationDataSupplier,
                 backgroundColor,
                 HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
-                mOnToolbarAlphaChange);
+                mOnToolbarAlphaChange,
+                mIsIncognito);
     }
 
     @Override
@@ -401,7 +403,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
         assert coordinator != null;
 
-        Resources res = hubContainerView.getContext().getResources();
+        Context context = hubContainerView.getContext();
+        Resources res = context.getResources();
         int thumbnailRadiusTop =
                 res.getDimensionPixelSize(R.dimen.tab_grid_card_thumbnail_corner_radius_top);
         int thumbnailRadiusBottom =
@@ -439,8 +442,12 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                     RectF viewportRectf = new RectF();
                     viewHolder.getVisibleViewport(viewportRectf);
                     viewportRectf.round(viewportRect);
-                    if (!isTopToolbar) {
-                        // TODO(crubug.com/390714662): This is a temporary fix and should be removed
+                    // When the bottom bar is enabled, we have an animation to fake the bottom
+                    // controls stack translating in and out. This animation no longer requires
+                    // adjustments to the viewport as the bottom controls portion is now covered
+                    // during the animation.
+                    if (!isTopToolbar && !BottomBarConfigUtils.isBottomBarEnabled(context)) {
+                        // TODO(crbug.com/390714662): This is a temporary fix and should be removed
                         // once the fade-in and fade-out behavior of the bottom toolbar is
                         // implemented.
                         // When the bottom toolbar is visible, the tab's view must extend all the
