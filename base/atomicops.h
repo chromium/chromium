@@ -70,10 +70,6 @@ typedef intptr_t Atomic64;
 #endif
 #endif
 
-// Use AtomicWord for a machine-sized pointer.  It will use the Atomic32 or
-// Atomic64 routines below, depending on your architecture.
-typedef intptr_t AtomicWord;
-
 // Atomically execute:
 //      result = *ptr;
 //      if (*ptr == old_value)
@@ -158,11 +154,5 @@ BASE_EXPORT void RelaxedAtomicWriteMemcpy(base::span<uint8_t> dst,
 }  // namespace base
 
 #include "base/atomicops_internals_portable.h"
-
-// On some platforms we need additional declarations to make
-// AtomicWord compatible with our other Atomic* types.
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD)
-#include "base/atomicops_internals_atomicword_compat.h"
-#endif
 
 #endif  // BASE_ATOMICOPS_H_

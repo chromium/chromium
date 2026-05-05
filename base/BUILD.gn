@@ -253,7 +253,6 @@ component("base") {
     "atomic_sequence_num.h",
     "atomicops.cc",
     "atomicops.h",
-    "atomicops_internals_atomicword_compat.h",
     "atomicops_internals_portable.h",
     "auto_reset.h",
     "barrier_callback.h",

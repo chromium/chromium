@@ -211,7 +211,6 @@ static void TestLoad() {
 
 TEST(AtomicOpsTest, Inc) {
   TestAtomicIncrement<base::subtle::Atomic32>();
-  TestAtomicIncrement<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, CompareAndSwap) {
@@ -220,17 +219,14 @@ TEST(AtomicOpsTest, CompareAndSwap) {
 
 TEST(AtomicOpsTest, Exchange) {
   TestAtomicExchange<base::subtle::Atomic32>();
-  TestAtomicExchange<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, IncrementBounds) {
   TestAtomicIncrementBounds<base::subtle::Atomic32>();
-  TestAtomicIncrementBounds<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, Store) {
   TestStore<base::subtle::Atomic32>();
-  TestStore<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, Load) {
