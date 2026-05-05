@@ -380,13 +380,14 @@ def CheckJsonFiles(input_api, output_api):
     # Specifically validate enum for verdict if active schema is
     # ReviewFeedback
     if active_schema is review_feedback_schema:
-      if 'verdict' in content and content['verdict'] not in active_schema.get(
-          'properties', {}
-      ).get('verdict', {}).get('enum', []):
+      verdict_enum = (
+          active_schema.get('properties', {}).get('verdict', {}).get('enum', [])
+      )
+      if 'verdict' in content and content['verdict'] not in verdict_enum:
         results.append(
             output_api.PresubmitError(
                 f"File {f.LocalPath()} key 'verdict' must be one of "
-                f"{active_schema.get('properties', {}).get('verdict', {}).get('enum', [])}."
+                f'{verdict_enum}.'
             )
         )
   return results

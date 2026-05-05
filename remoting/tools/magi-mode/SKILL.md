@@ -55,6 +55,22 @@ Do not assume specific tool names (e.g., `update_topic`, `read_file`,
 mechanism prior to invoking any sub-agents to clearly identify the current phase
 of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
 
+**DECENTRALIZED HANDOFFS:** To reduce Orchestrator overhead, agents SHOULD
+include a `next_phase` field in their JSON output to signal the intended
+successor. The environment will use this token to automatically route to the
+next expert.
+*   **Scoping Lead:** `SCAFFOLDING`
+*   **Architect / Test Expert:** `PREPARATION`
+*   **Engineering Manager:** `IMPLEMENTATION`
+*   **Domain Experts:** `SYNTHESIS`
+*   **Synthesizing Architect:** `CRITIQUE`
+*   **Reviewers:** `ANALYSIS`
+*   **Review Analyst:** `TPM_UPDATE`
+*   **Technical Program Manager:** `SYNTHESIS` (if iteration needed) or
+    `TRAINING`
+*   **Trainer:** `VALIDATION`
+*   **Validation:** `DEPLOYMENT`
+
 ## Workflow
 
 ### 0. Investigation & Specification (The Scoping Lead)
@@ -64,14 +80,15 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
 - **The Specification:** The Scoping Lead investigates the codebase
   (`grep_search`, `read_file`) to locate the relevant code and writes a strict
   specification to `project.magi.json` conforming to `magi_schema.json`. This
-  file MUST contain:
+  file MUST contain a `next_phase` of `SCAFFOLDING` and the following structure:
   ```json
   {
     "$schema": "./magi_schema.json#definitions/ProjectSpec",
     "goal": "A one-sentence summary of the fix/feature.",
     "target_files": ["Absolute paths to the files that must be modified."],
     "anti_goals": ["What should explicitly NOT be changed."],
-    "edge_cases": ["Specific warnings from logs or code context."]
+    "edge_cases": ["Specific warnings from logs or code context."],
+    "next_phase": "SCAFFOLDING"
   }
   ```
 
@@ -80,16 +97,19 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
   Architect MUST read `project.magi.json` to understand the goal. Their mandate
   is to create necessary files, define class interfaces, set up Mojo pipes, and
   GN/DEPS rules. Leave implementation details empty or stubbed (e.g.,
-  `NOTIMPLEMENTED()`).
+  `NOTIMPLEMENTED()`). The Architect SHOULD signal `next_phase: SCAFFOLDING` (if
+  Test Expert yet to be invoked) or `PREPARATION`.
 - **Test-Driven Development (The Test Expert):** Second, invoke a Test Expert
   sub-agent to establish the testing boundaries. Their mandate is to add test
   files (`*_unittest.cc`), define the required test fixtures, and stub out the
-  critical test cases based on the Architect's scaffold.
+  critical test cases based on the Architect's scaffold. The Test Expert SHOULD
+  signal `next_phase: PREPARATION`.
 - **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
   the "Base Scaffold" so all parallel Domain Experts share the exact same
   multi-file API and test boundaries. The Synthesizing Architect will
   eventually amend or squash the final implementation into this scaffold,
-  ensuring no broken stubs land in the final CL.
+  ensuring no broken stubs land in the final CL. The Orchestrator MUST signal
+  `next_phase: PREPARATION`.
 
 ### 2. Preparation & Persona Selection (The Engineering Manager)
 - **Needs Assessment:** Now that the scope of the change is defined by the
@@ -108,7 +128,8 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
   *CRITICAL:* These MAGI system changes MUST NOT be entangled with the main
   work CL (see VCS Isolation rule below).
 - **Transparency:** The Orchestrator MUST output the Engineering Manager's
-  persona selection logic to the human. Ensure the workspace is clean.
+  persona selection logic to the human. Ensure the workspace is clean. The
+  Engineering Manager MUST set `next_phase` to `IMPLEMENTATION` in its output.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
   personas to the sub-agents. The sub-agents read the file from disk to load
   their mandate, keeping the Orchestrator's context window lean.
@@ -120,6 +141,7 @@ Instruct each to implement the stubbed internals from the Base Scaffold.
 implementation in the actual requirements. They MUST securely save their draft
 to disk using the versioned naming convention
 `[filename].[persona].magi.[iteration]` (e.g., `host.cc.security.magi.1`).
+Expert sub-agents SHOULD signal `next_phase: SYNTHESIS` upon completion.
 *Note: Sub-agents are permitted to change scaffolded signatures if their
 priority requires it.*
 
@@ -135,11 +157,13 @@ Once the Domain Experts finish:
       "stall_count": 0,
       "active_constraints": [],
       "resolved_constraints": [],
-      "personas": ["[Selected Experts]"]
+      "personas": ["[Selected Experts]"],
+      "next_phase": "CRITIQUE"
     }
     ```
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
-    drafts and synthesize them into "Draft A" in the original file.
+    drafts and synthesize them into "Draft A" in the original file. Signal
+    `next_phase: CRITIQUE`.
 ### 5. The Consensus Loop (Expanded Review)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
     **File I/O:** Each reviewer MUST securely save their feedback to disk in a
@@ -150,15 +174,18 @@ Once the Domain Experts finish:
     > Project Spec: Read the requirements from `project.magi.json`.
     > Priority: [Priority].
     > Task: Review Draft [filename]. Save a JSON object with `verdict`
-    >   ("ACCEPT" or "REJECT"), `reasoning` (array of bullet points), and
-    >   `comments` (array of objects with `file`, optional `line`, and
-    >   `comment`) to `review.[persona].magi.[iteration].json`.
+    >   ("ACCEPT" or "REJECT"), `reasoning` (array of bullet points), `comments`
+    >   (array of objects with `file`, optional `line`, and `comment`), and
+    >   `next_phase` ("ANALYSIS") to `review.[persona].magi.[iteration].json`.
 2.  **The Review Analyst:** If any agent rejects, this agent reads all
     `review.*.magi.[iteration].json` files and saves a strict list of 3-5
-    Actionable Constraints to `constraints.magi.[iteration].json` on disk.
+    Actionable Constraints and `next_phase: TPM_UPDATE` to
+    `constraints.magi.[iteration].json` on disk.
 3.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
     and updates `state_block.magi.json` conforming to `magi_schema.json`. Checks
     for "flip-flopping" (e.g., Constraint 1 violates a constraint from Round 1).
+    Set `next_phase` to `SYNTHESIS` if more work is needed, otherwise
+    `TRAINING`.
     **Deadlock API:** If `Stall Count` exceeds 3, the Technical Program
     Manager's ONLY output must be the exact string `STATUS: DEADLOCK` followed
     by a structured report (Core Conflict, Blocked Personas, Human Decision
@@ -193,7 +220,8 @@ Once consensus is reached, the Orchestrator MUST invoke a "Trainer" sub-agent.
 The Trainer evaluates the final State Block and Review Analyst constraints to
 identify systemic gaps in the Personas' knowledge. If a Persona made a recurring
 mistake or lacked domain context, the Trainer proposes an upgrade to their
-`personas/*.md` file and applies the improvements.
+`personas/*.md` file and applies the improvements. The Trainer SHOULD signal
+`next_phase: VALIDATION`.
 
 **VCS Isolation Rule:** Any modifications to MAGI files (e.g., adding/updating
 personas by the Recruiter or Trainer) MUST be excluded from the feature/bugfix
@@ -201,7 +229,8 @@ CL. Ensure MAGI paths are not staged during upload. Once the main solution is
 uploaded, create a completely separate, independent CL for the MAGI upgrades.
 
 ### 9. Validation
-Run the standard suite (`git cl presubmit`, `gn check`, and unit tests).
+Run the standard suite (`git cl presubmit`, `gn check`, and unit tests). Upon
+success, signal `next_phase: DEPLOYMENT`.
 
 ### 10. Deployment (The Release Engineer)
 Once Validation passes, the Orchestrator pauses its own actions and delegates

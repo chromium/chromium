@@ -8,7 +8,8 @@
         "stall_count": { "type": "integer" },
         "active_constraints": { "type": "array", "items": { "type": "string" } },
         "resolved_constraints": { "type": "array", "items": { "type": "string" } },
-        "personas": { "type": "array", "items": { "type": "string" } }
+        "personas": { "type": "array", "items": { "type": "string" } },
+        "next_phase": { "type": "string" }
       },
       "required": ["iteration", "stall_count", "active_constraints", "resolved_constraints", "personas"]
     },
@@ -18,7 +19,8 @@
         "goal": { "type": "string" },
         "target_files": { "type": "array", "items": { "type": "string" } },
         "anti_goals": { "type": "array", "items": { "type": "string" } },
-        "edge_cases": { "type": "array", "items": { "type": "string" } }
+        "edge_cases": { "type": "array", "items": { "type": "string" } },
+        "next_phase": { "type": "string" }
       },
       "required": ["goal", "target_files", "anti_goals", "edge_cases"]
     },
@@ -38,7 +40,8 @@
             },
             "required": ["file", "comment"]
           }
-        }
+        },
+        "next_phase": { "type": "string" }
       },
       "required": ["verdict", "reasoning"]
     },
@@ -46,7 +49,8 @@
       "type": "object",
       "properties": {
         "iteration": { "type": "integer" },
-        "constraints": { "type": "array", "items": { "type": "string" } }
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "next_phase": { "type": "string" }
       },
       "required": ["iteration", "constraints"]
     }
