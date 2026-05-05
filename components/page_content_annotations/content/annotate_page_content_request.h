@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/content_extraction/content/browser/inner_text.h"
@@ -47,6 +48,9 @@ using GetTabIdCallback =
 // Class for deciding when a page is ready for getting page content, and
 // extracts page content.
 // TODO(b/490161242): Rename this class to reflect that it's the observer.
+// TODO(b/487632737): Rename this class to reflect that it requests either:
+// - `AnnotatedPageContent` for non-PDF pages.
+// - Text for PDF pages.
 class AnnotatedPageContentRequest
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AnnotatedPageContentRequest> {
@@ -88,7 +92,7 @@ class AnnotatedPageContentRequest
       GetTabIdCallback get_tab_id_callback);
   // Returns the cached APC for `page` and whether it is eligible for
   // server upload. Will return nullopt if not available or not supported (e.g.
-  // for PDFs).
+  // for PDFs, the text extraction result is never cached).
   std::optional<ExtractedPageContentResult> GetCachedContentAndEligibility(
       bool log_metrics = true);
 
@@ -108,11 +112,10 @@ class AnnotatedPageContentRequest
 
   // Extracts a new APC for `page` and computes its eligibility for server
   // upload, and caches the new result. It will wait for the initial
-  // extraction to complete if there is one pending. For PDFs, it will return
-  // the cached copy instead. If the extraction request is cleared or reset
-  // (e.g. from a navigation or destruction), the callbacks will resolve with
-  // std::nullopt. Extraction is not supported for PDFs and will also result in
-  // nullopt.
+  // extraction to complete if there is one pending. If the extraction request
+  // is cleared or reset (e.g. from a navigation or destruction), the callbacks
+  // will resolve with std::nullopt. On-demand extraction is not supported for
+  // PDFs and will also result in std::nullopt.
   void RefreshExtractedPageContentAndEligibilityForPage(
       GetExtractedPageContentAndEligibilityCallback callback);
 
@@ -168,6 +171,7 @@ class AnnotatedPageContentRequest
 
 #if BUILDFLAG(ENABLE_PDF)
   void RequestPdfPageCount();
+  void RequestPdfText(TriggerSource trigger_source);
 
   // Invoked when pdf document is loaded, so that the metadata can be queried.
   void OnPdfDocumentLoadComplete();
@@ -180,6 +184,7 @@ class AnnotatedPageContentRequest
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
   const blink::mojom::AIPageContentOptionsPtr options_;
   const bool include_inner_text_;
+  const bool is_pdf_text_extraction_enabled_;
 
   // LINT.IfChange(Lifecycle)
   // These values are persisted to logs. Entries should not be renumbered and
@@ -220,6 +225,16 @@ class AnnotatedPageContentRequest
   bool waiting_for_fcp_ = false;
   bool is_hidden_ = false;
 
+  // `AnnotatedPageContentRequest` supports two different content requests:
+  // - `AnnotatedPageContent` for non-PDF pages.
+  // - Text for PDF pages.
+  //
+  // This cache only stores `AnnotatedPageContent`. PDF text is not cached here,
+  // and as a result, on-demand extraction and other methods that rely on this
+  // cache are not supported for PDFs.
+
+  // TODO(b/503685696): Support on-demand extraction for PDF, which may require
+  // adding PDF text extraction result to the cache.
   std::optional<ExtractedPageContentResult> cached_content_;
 
   std::vector<GetExtractedPageContentAndEligibilityCallback>

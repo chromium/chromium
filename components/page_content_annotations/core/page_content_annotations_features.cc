@@ -5,9 +5,12 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -120,6 +123,10 @@ BASE_FEATURE(kAnnotatedPageContentNonSalientFiltering,
 
 BASE_FEATURE(kAnnotatedPageContentPDFTextExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<size_t> kMaxPDFTextExtractionByteSizeParam{
+    &kAnnotatedPageContentPDFTextExtraction, "max_text_byte_size",
+    1048576};  // 1MB
 
 const base::FeatureParam<bool> kAnnotatedPageContentExcludeAdRelatedParam{
     &kAnnotatedPageContentNonSalientFiltering, "exclude_ad_related", false};
@@ -291,6 +298,14 @@ bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
 
 std::string AnnotatedPageContentMode() {
   return kAnnotatedPageContentMode.Get();
+}
+
+uint32_t MaxPDFTextExtractionByteSize() {
+  size_t limit = kMaxPDFTextExtractionByteSizeParam.Get();
+  return base::IsValueInRangeForNumericType<uint32_t>(limit)
+             ? static_cast<uint32_t>(limit)
+             : static_cast<uint32_t>(
+                   kMaxPDFTextExtractionByteSizeParam.default_value);
 }
 
 bool ShouldAnnotatedPageContentExcludeAdRelated() {

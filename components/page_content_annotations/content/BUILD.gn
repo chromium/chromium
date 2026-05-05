@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core:features",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/test:test_support",
+    "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]

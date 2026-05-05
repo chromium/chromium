@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_
 
+#include <cstddef>
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -216,6 +219,10 @@ std::string AnnotatedPageContentMode();
 // content.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 bool ShouldAnnotatedPageContentExcludeAdRelated();
+
+// The maximum size in bytes of the text extracted from a PDF.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+uint32_t MaxPDFTextExtractionByteSize();
 
 // The triggering mode for page content extraction.
 enum class PageContentExtractionTriggeringMode {

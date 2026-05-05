@@ -268,7 +268,9 @@ void FetchPageContext(
     options.inner_text_bytes_limit = tab_context_options.inner_text_bytes_limit;
   }
   if (tab_context_options.include_pdf) {
-    options.pdf_size_limit = tab_context_options.pdf_size_limit;
+    options.pdf_options.emplace(
+        page_content_annotations::PdfOptions::Format::kBytes,
+        tab_context_options.pdf_size_limit);
   }
 
   if (tab_context_options.include_viewport_screenshot) {

@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
+#include <cstdint>
 #include <optional>
 #include <utility>
 #include <variant>
@@ -150,6 +151,8 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
       options_(CreateOptions()),
       include_inner_text_(
           features::ShouldAnnotatedPageContentStudyIncludeInnerText()),
+      is_pdf_text_extraction_enabled_(base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentPDFTextExtraction)),
       fetch_page_context_callback_(std::move(fetch_page_context_callback)),
       get_tab_id_callback_(std::move(get_tab_id_callback)) {
   // Post to a background thread to avoid blocking the set up of the overlay.
@@ -327,8 +330,11 @@ void AnnotatedPageContentRequest::StartExtraction(
 
   if (IsPdf()) {
 #if BUILDFLAG(ENABLE_PDF)
-    // TODO(b/487632737): Implement PDF text extraction.
-    RequestPdfPageCount();
+    if (is_pdf_text_extraction_enabled_) {
+      RequestPdfText(trigger_source);
+    } else {
+      RequestPdfPageCount();
+    }
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
     RequestAnnotatedPageContentSync(trigger_source);
@@ -392,7 +398,9 @@ AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
       triggering_mode ==
           features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
 
-  if (trigger_on_hide) {
+  // PDF extraction skips the on-hidden trigger to avoid redundant extraction of
+  // static content.
+  if (trigger_on_hide && !IsPdf()) {
     // We trigger extraction any time the page transitions to hidden, or if the
     // page finished loading while already in the background.
     bool newly_hidden =
@@ -538,6 +546,30 @@ void AnnotatedPageContentRequest::RequestPdfPageCount() {
   }
 }
 
+void AnnotatedPageContentRequest::RequestPdfText(TriggerSource trigger_source) {
+  TRACE_EVENT0("browser", "AnnotatedPageContentRequest::RequestPdfText");
+  CHECK(IsPdf());
+
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(PdfOptions::Format::kText,
+                              features::MaxPDFTextExtractionByteSize());
+
+  // PDF text extraction is triggered with a default 3-second delay after the
+  // page stops loading (see `kAnnotatedPageContentCaptureDelay`).
+  //
+  // For most PDFs, the first page renders within this delay (see UMA
+  // histogram `PDF.FirstPaintTime`). If it is not rendered, extraction may
+  // return an empty string.
+  //
+  // TODO(b/422120832): This fixed delay will be replaced by
+  // `PageSettledMonitor`, the general page stability detection mechanism also
+  // used by Actor. This implementation may require changes when that happens.
+  fetch_page_context_callback_.Run(
+      *web_contents(), options, /*progress_listener=*/nullptr,
+      base::BindOnce(&AnnotatedPageContentRequest::OnPageContextFetched,
+                     weak_factory_.GetWeakPtr(), trigger_source));
+}
+
 void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   CHECK(IsPdf());
   lifecycle_ = Lifecycle::kExtracted;
@@ -652,8 +684,8 @@ void AnnotatedPageContentRequest::
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentExtraction.OnDemand.IsPDF", IsPdf());
 
-  // PDFs have special handling where we only save a metric of their page count
-  // and do not extract an AnnotatedPageContent.
+  // PDF text is extracted when 'AnnotatedPageContentPDFTextExtraction' feature
+  // is enabled. However, the result is never cached.
   if (IsPdf()) {
     CHECK(!cached_content_.has_value());
     std::move(callback).Run(std::nullopt);

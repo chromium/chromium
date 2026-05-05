@@ -4,9 +4,15 @@
 
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +20,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -248,8 +256,8 @@ std::string_view ToString(content::CopyFromSurfaceError error) {
   }
 }
 
-// Combination of tracked states for when a PDF contents request is made.
-// Must be kept in sync with PdfRequestStates in
+// Combination of tracked states for when a PDF contents request is made by
+// Glic. Must be kept in sync with PdfRequestStates in
 // src/tools/metrics/histograms/metadata/glic/enums.xml.
 enum class PdfRequestStates {
   kPdfMainDoc_PdfFound = 0,
@@ -273,6 +281,20 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
   UMA_HISTOGRAM_ENUMERATION("Glic.TabContext.PdfContentsRequested", state);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+// Truncate the UTF-8 string to the nearest UTF-8 character that will leave the
+// string size less than or equal to the byte limit. Returns true if the text
+// was truncated.
+bool TruncateUTF8ToByteLimit(std::string& text, size_t byte_limit) {
+  const size_t truncated_size =
+      base::TruncateUTF8ToByteSize(std::string_view{text}, byte_limit).size();
+  if (truncated_size < text.size()) {
+    text.resize(truncated_size);
+    return true;
+  }
+
+  return false;
+}
 
 }  // namespace
 
@@ -381,23 +403,8 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
 
   pdf_done_ = true;  // Will not fetch PDF contents by default.
 #if BUILDFLAG(ENABLE_PDF)
-  if (options.pdf_size_limit > 0) {
-    bool is_pdf_document =
-        web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
-    RecordPdfRequestState(is_pdf_document,
-                          /*pdf_found=*/pdf_helper != nullptr);
-    // GetPdfBytes() is not safe before IsDocumentLoadComplete() = true.
-    if (is_pdf_document && pdf_helper && pdf_helper->IsDocumentLoadComplete()) {
-      const url::Origin& pdf_origin =
-          pdf_helper->render_frame_host().GetLastCommittedOrigin();
-      pdf_helper->GetPdfBytes(
-          options.pdf_size_limit,
-          base::BindOnce(&PageContextFetcher::ReceivedPdfBytes, GetWeakPtr(),
-                         pdf_origin, options.pdf_size_limit));
-      pdf_done_ = false;  // Will fetch PDF contents.
-    }
+  if (options.pdf_options && options.pdf_options->size_limit() > 0) {
+    FetchPdfContent(*(options.pdf_options));
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -441,8 +448,59 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
 // TODO: Enable pdf fetching for Android.
 // PDF support is compiled out on some platforms, including Fuchsia.
 #if BUILDFLAG(ENABLE_PDF)
+void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
+  bool is_pdf_document =
+      web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+
+  if (options.format() == PdfOptions::Format::kBytes) {
+    // This metric is specific to Glic, which requests PDF bytes only.
+    RecordPdfRequestState(is_pdf_document,
+                          /*pdf_found=*/pdf_helper != nullptr);
+  }
+
+  // When document load is not complete:
+  // - GetPdfBytes() is not safe.
+  // - GetPageText() is safe but returns an empty string.
+  //
+  // See comments in `AnnotatedPageContentRequest::RequestPdfText` for more
+  // information about the timing of PDF text extraction.
+  if (is_pdf_document && pdf_helper && pdf_helper->IsDocumentLoadComplete()) {
+    switch (options.format()) {
+      case PdfOptions::Format::kBytes: {
+        pdf_helper->GetPdfBytes(
+            options.size_limit(),
+            base::BindOnce(
+                &PageContextFetcher::ReceivedPdfBytes, GetWeakPtr(),
+                pdf_helper->render_frame_host().GetLastCommittedOrigin(),
+                options.size_limit()));
+        pdf_done_ = false;  // Will fetch PDF bytes.
+        break;
+      }
+      case PdfOptions::Format::kText: {
+        // The PDF text is restricted to first page only. This is intentional
+        // for performance considerations. Extracting from a rendered page is
+        // more efficient than extracting from an unrendered page.
+        //
+        // TODO(b/506129567): The size limit is currently enforced after the
+        // text is retrieved from `PDFDocumentHelper::GetPageText`. It can be
+        // more efficient if enforced within this method, inside the PDFium.
+        pdf_helper->GetPageText(
+            /*page_index=*/0,
+            base::BindOnce(
+                &PageContextFetcher::ReceivedPdfText, GetWeakPtr(),
+                pdf_helper->render_frame_host().GetLastCommittedOrigin(),
+                options.size_limit()));
+        pdf_done_ = false;  // Will fetch PDF first page text.
+        break;
+      }
+    }
+  }
+}
+
 void PageContextFetcher::ReceivedPdfBytes(
-    const url::Origin& pdf_origin,
+    url::Origin pdf_origin,
     uint32_t pdf_size_limit,
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& pdf_bytes,
@@ -457,10 +515,38 @@ void PageContextFetcher::ReceivedPdfBytes(
       pdf_bytes.size() > pdf_size_limit;
 
   if (size_limit_exceeded) {
-    pending_result_->pdf_result.emplace(pdf_origin);
+    pending_result_->pdf_result.emplace(std::move(pdf_origin));
   } else {
-    pending_result_->pdf_result.emplace(pdf_origin, pdf_bytes);
+    pending_result_->pdf_result.emplace(std::move(pdf_origin), pdf_bytes);
   }
+  RunCallbackIfComplete();
+}
+
+void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
+                                         uint32_t text_byte_limit,
+                                         const std::u16string& text) {
+  pdf_done_ = true;
+
+  // Create a UTF-16 string view that contains at most `text_byte_limit` number
+  // of chars. There is no need to convert the UTF-16 chars beyond this view
+  // since they cannot be within the byte limit, as one char occupies at least
+  // one bytes.
+  std::u16string_view text_view(text);
+  if (text_view.size() > text_byte_limit) {
+    text_view = text_view.substr(0, text_byte_limit);
+  }
+
+  // Convert to UTF-8 string.
+  std::string utf8_text = base::UTF16ToUTF8(text_view);
+
+  // Truncate the `utf8_text` to the `text_byte_limit`.
+  bool size_exceeded = TruncateUTF8ToByteLimit(utf8_text, text_byte_limit);
+
+  // Move construct the PDF result.
+  pending_result_->pdf_result.emplace(std::move(pdf_origin),
+                                      std::move(utf8_text));
+  pending_result_->pdf_result->size_exceeded = size_exceeded;
+
   RunCallbackIfComplete();
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -741,14 +827,8 @@ void PageContextFetcher::ReceivedInnerText(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   // Get trimmed text without copying.
   std::string trimmed_text = std::move(result->inner_text);
-  size_t truncated_size =
-      base::TruncateUTF8ToByteSize(trimmed_text, inner_text_bytes_limit_)
-          .length();
-  bool truncated = false;
-  if (truncated_size < trimmed_text.length()) {
-    truncated = true;
-    trimmed_text.resize(truncated_size);
-  }
+  bool truncated =
+      TruncateUTF8ToByteLimit(trimmed_text, inner_text_bytes_limit_);
 
   pending_result_->inner_text_result.emplace(
       std::move(trimmed_text), std::move(result->node_offset), truncated);
@@ -859,6 +939,11 @@ const base::FeatureParam<std::string> kScreenshotImageType{
 
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
+
+PdfOptions::PdfOptions(Format format, uint32_t size_limit)
+    : format_(format), size_limit_(size_limit) {
+  CHECK_GT(size_limit, 0u);
+}
 
 FetchPageContextOptions::FetchPageContextOptions() = default;
 

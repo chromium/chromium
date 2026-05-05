@@ -12,6 +12,8 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -36,6 +39,8 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "pdf/buildflags.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "url/gurl.h"
@@ -94,11 +99,26 @@ class TestPageContentExtractionService : public PageContentExtractionService {
 };
 
 class AnnotatePageContentRequestTest
-    : public content::RenderViewHostTestHarness {
+    : public content::RenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
  public:
+  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
+    return info.param ? "PDFTextExtractionEnabled"
+                      : "PDFTextExtractionDisabled";
+  }
+
   AnnotatePageContentRequestTest()
       : content::RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    if (IsPDFTextExtractionEnabled()) {
+      pdf_extraction_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kAnnotatedPageContentPDFTextExtraction,
+          {{"max_text_byte_size", "100"}});
+    } else {
+      pdf_extraction_feature_list_.InitAndDisableFeature(
+          features::kAnnotatedPageContentPDFTextExtraction);
+    }
+  }
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -118,9 +138,21 @@ class AnnotatePageContentRequestTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
+  bool IsPDFTextExtractionEnabled() const { return GetParam(); }
+
+  // Tests exercise `AnnotatedPageContentRequest::StartExtraction` are only
+  // supported on platforms that enable `ENABLE_PDF` build flag.
+  bool PlatformSupportsPDF() const {
+#if BUILDFLAG(ENABLE_PDF)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(ENABLE_PDF)
+  }
+
   void SetTriggeringMode(const std::string& mode,
                          const std::string& capture_delay = "0s") {
-    feature_list_.InitAndEnableFeatureWithParameters(
+    triggering_mode_feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction,
         {{"triggering_mode", mode}, {"capture_delay", capture_delay}});
   }
@@ -136,13 +168,29 @@ class AnnotatePageContentRequestTest
                std::unique_ptr<FetchPageProgressListener>,
                FetchPageContextResultCallback callback) {
               test->previous_options_ =
-                  options.annotated_page_content_options->Clone();
-              auto page_content =
-                  std::make_unique<optimization_guide::AIPageContentResult>();
+                  options.annotated_page_content_options
+                      ? options.annotated_page_content_options->Clone()
+                      : nullptr;
+
               auto result = std::make_unique<FetchPageContextResult>();
-              result->annotated_page_content_result =
-                  PageContentResultWithEndTime(std::move(*page_content));
-              std::move(callback).Run(std::move(result));
+              if (options.annotated_page_content_options) {
+                auto page_content =
+                    std::make_unique<optimization_guide::AIPageContentResult>();
+                result->annotated_page_content_result =
+                    PageContentResultWithEndTime(std::move(*page_content));
+                std::move(callback).Run(std::move(result));
+              } else {
+                CHECK(options.pdf_options)
+                    << "Either `annotated_page_content_options` or "
+                       "`pdf_options` should be non-null.";
+                CHECK_GT(options.pdf_options->size_limit(), 0u)
+                    << "`pdf_options` does not allow `size_limit` being 0.";
+                PdfResult pdf_result{
+                    url::Origin::Create(GURL("https://example.com")),
+                    "Sample PDF text"};
+                result->pdf_result = std::move(pdf_result);
+                std::move(callback).Run(std::move(result));
+              }
             },
             base::Unretained(this)),
         base::BindRepeating([](content::WebContents* web_contents) {
@@ -176,6 +224,15 @@ class AnnotatePageContentRequestTest
     TriggerOnFirstContentfulPaintInPrimaryMainFrame();
   }
 
+  void SimulatePDFLoad(const GURL& url) {
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        url, web_contents());
+    navigation->Start();
+    navigation->SetContentsMimeType("application/pdf");
+    navigation->Commit();
+  }
+
+  // Wait until either APC or PDF text is extracted.
   void WaitForExtraction() {
     base::RunLoop run_loop;
     extraction_service_->SetQuitClosure(run_loop.QuitClosure());
@@ -201,14 +258,15 @@ class AnnotatePageContentRequestTest
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList pdf_extraction_feature_list_;
+  base::test::ScopedFeatureList triggering_mode_feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<TestPageContentExtractionService> extraction_service_;
   raw_ptr<AnnotatedPageContentRequest> request_ = nullptr;
   blink::mojom::AIPageContentOptionsPtr previous_options_;
 };
 
-TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger) {
+TEST_P(AnnotatePageContentRequestTest, OnLoadTrigger) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -222,7 +280,7 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger) {
+TEST_P(AnnotatePageContentRequestTest, OnHiddenTrigger) {
   SetTriggeringMode("on_hidden");
 
   SimulatePageLoad();
@@ -246,7 +304,7 @@ TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        OnHiddenTrigger_NoDuplicateScheduledExtractions) {
   SetTriggeringMode("on_hidden", /*capture_delay=*/"5s");
 
@@ -269,7 +327,7 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
+TEST_P(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
   SetTriggeringMode("on_load_and_hidden");
 
   SimulatePageLoad();
@@ -294,7 +352,7 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
   EXPECT_EQ(extraction_service().extraction_count(), 3);
 }
 
-TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger_LoadWhileHidden) {
+TEST_P(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger_LoadWhileHidden) {
   SetTriggeringMode("on_load_and_hidden");
 
   // Start with the tab hidden.
@@ -317,7 +375,7 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger_LoadWhileHidden) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
+TEST_P(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -332,7 +390,7 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, SameDocumentNavigation) {
+TEST_P(AnnotatePageContentRequestTest, SameDocumentNavigation) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -349,7 +407,7 @@ TEST_F(AnnotatePageContentRequestTest, SameDocumentNavigation) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
+TEST_P(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
   SetTriggeringMode("on_load");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -364,7 +422,7 @@ TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
   EXPECT_FALSE(last_options()->non_salient_content_config);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        ExcludeAdRelatedFlag_FeatureParamDisabled) {
   SetTriggeringMode("on_load");
 
@@ -381,7 +439,7 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_FALSE(last_options()->non_salient_content_config);
 }
 
-TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_Enabled) {
+TEST_P(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_Enabled) {
   SetTriggeringMode("on_load");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -398,7 +456,7 @@ TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_Enabled) {
   EXPECT_TRUE(last_options()->non_salient_content_config->exclude_ad_related);
 }
 
-TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger_ExtractsEvenWhileHidden) {
+TEST_P(AnnotatePageContentRequestTest, OnLoadTrigger_ExtractsEvenWhileHidden) {
   SetTriggeringMode("on_load");
 
   // Tab starts completely hidden.
@@ -412,7 +470,7 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger_ExtractsEvenWhileHidden) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger_NoExtractionOnLoad) {
+TEST_P(AnnotatePageContentRequestTest, OnHiddenTrigger_NoExtractionOnLoad) {
   SetTriggeringMode("on_hidden");
 
   // Load the page while entirely visible.
@@ -423,7 +481,7 @@ TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger_NoExtractionOnLoad) {
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        ShouldScheduleExtraction_WaitingForLifecycle) {
   SetTriggeringMode("on_hidden");
 
@@ -441,7 +499,7 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        OnHiddenTrigger_AsyncVisibilityRaceCondition) {
   SetTriggeringMode("on_hidden");
 
@@ -522,7 +580,7 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, RefreshAPC) {
+TEST_P(AnnotatePageContentRequestTest, RefreshAPC) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -540,7 +598,7 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC) {
   EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
+TEST_P(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
   SetTriggeringMode("on_load");
 
   // Override the request with an async fetcher to test batching.
@@ -593,26 +651,21 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_Batching) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, RefreshAPC_PdfShortCircuit) {
+// Page content getter methods do not support PDF pages.
+// TODO(b/487632737): Support on-demand PDF text extraction.
+TEST_P(AnnotatePageContentRequestTest, RefreshAPCPdfShortCircuit) {
   SetTriggeringMode("on_load");
-
-  // Simulate a PDF navigation.
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(
-          GURL("https://example.com/file.pdf"), web_contents());
-  simulator->SetContentsMimeType("application/pdf");
-  simulator->Commit();
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
 
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       refresh_future;
   request_->RefreshExtractedPageContentAndEligibilityForPage(
       refresh_future.GetCallback());
 
-  // PDF extraction is not supported.
   EXPECT_FALSE(refresh_future.Get().has_value());
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        RefreshAPC_WhileInitialExtractionPending) {
   SetTriggeringMode("on_load");
 
@@ -631,7 +684,7 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
+TEST_P(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
   // Ensures extraction is enabled for this class.
   SetTriggeringMode("on_load");
 
@@ -662,9 +715,10 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_ExtractionFailure) {
   EXPECT_FALSE(refresh_future.Get().has_value());
 }
 
-TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
+TEST_P(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
   // Ensures extraction is enabled for this class.
   SetTriggeringMode("on_load");
+
   // Override the request with an async fetcher.
   FetchPageContextResultCallback saved_callback;
   base::RunLoop run_loop;
@@ -706,7 +760,7 @@ TEST_F(AnnotatePageContentRequestTest, RefreshAPC_NavigationWhileRunning) {
   EXPECT_FALSE(refresh_future.Get().has_value());
 }
 
-TEST_F(AnnotatePageContentRequestTest, GetAsync_AlreadyExtracted) {
+TEST_P(AnnotatePageContentRequestTest, GetAsync_AlreadyExtracted) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -727,7 +781,7 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_AlreadyExtracted) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, GetAsync_BeforeExtraction) {
+TEST_P(AnnotatePageContentRequestTest, GetAsync_BeforeExtraction) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -752,7 +806,7 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_BeforeExtraction) {
   EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, GetAsync_InvalidateOnNavigation) {
+TEST_P(AnnotatePageContentRequestTest, GetAsync_InvalidateOnNavigation) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -777,7 +831,7 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_InvalidateOnNavigation) {
   EXPECT_FALSE(eligibility_future.Get().has_value());
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        GetAsync_ReturnNulloptWhenVisibleInOnHiddenMode) {
   SetTriggeringMode("on_hidden");
 
@@ -798,15 +852,11 @@ TEST_F(AnnotatePageContentRequestTest,
   EXPECT_FALSE(eligibility_future.Get().has_value());
 }
 
-TEST_F(AnnotatePageContentRequestTest, GetAsync_OnPdfPages) {
+// Async page content getter methods do not support PDF pages.
+// TODO(b/487632737): Support on-demand PDF text extraction.
+TEST_P(AnnotatePageContentRequestTest, GetAsyncOnPdfPages) {
   SetTriggeringMode("on_load");
-
-  // Simulate a PDF navigation.
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(
-          GURL("https://example.com/file.pdf"), web_contents());
-  simulator->SetContentsMimeType("application/pdf");
-  simulator->Commit();
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
 
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       content_future;
@@ -822,60 +872,7 @@ TEST_F(AnnotatePageContentRequestTest, GetAsync_OnPdfPages) {
   EXPECT_FALSE(eligibility_future.Get().has_value());
 }
 
-// TODO(b/487632737): Implement PDF text extraction and update this test.
-TEST_F(AnnotatePageContentRequestTest, OnPageContextFetchedPDFTextExtraction) {
-  // This test simulates a PDF text extraction. The actual PDF text extraction
-  // has not been implemented.
-  SetTriggeringMode("on_load");
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAnnotatedPageContentPDFTextExtraction);
-
-  // Create a request for PDF. The request simulates a reception of PDF text
-  // extraction result.
-  request_ = nullptr;
-  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
-
-  AnnotatedPageContentRequest::CreateForWebContents(
-      web_contents(), extraction_service(),
-      base::BindRepeating([](content::WebContents&,
-                             const FetchPageContextOptions&,
-                             std::unique_ptr<FetchPageProgressListener>,
-                             FetchPageContextResultCallback callback) {
-        auto result = std::make_unique<FetchPageContextResult>();
-        PdfResult pdf_result{
-            /*origin=*/url::Origin::Create(GURL("https://example.com")),
-            /*text=*/"Sample PDF text"};
-        result->pdf_result = std::move(pdf_result);
-        std::move(callback).Run(std::move(result));
-      }),
-      base::BindRepeating([](content::WebContents* web_contents) {
-        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
-      }));
-
-  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
-
-  SimulatePageLoad();
-
-  // Trigger the callback that directly notifies
-  // `AnnotatedPageContentRequest::OnPageContextFetched` with a `PdfResult`.
-  // TODO(b/487632737): Once PDF extraction is implemented, this method should
-  // not trigger PDF text extraction. This should be replaced by a navigation to
-  // a PDF document, which triggers the extraction.
-  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
-      refresh_future;
-  request_->RefreshExtractedPageContentAndEligibilityForPage(
-      refresh_future.GetCallback());
-
-  std::optional<ExtractedPageContentResult> result = refresh_future.Get();
-  EXPECT_FALSE(result.has_value());
-
-  EXPECT_EQ(extraction_service().extraction_count(), 1);
-  EXPECT_EQ(extraction_service().last_extracted_pdf_text(), "Sample PDF text");
-}
-
-TEST_F(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
+TEST_P(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
   base::HistogramTester histogram_tester;
   SetTriggeringMode("on_load");
 
@@ -898,7 +895,7 @@ TEST_F(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
       AnnotatedPageContentRequest::TriggerSource::kOnLoad, 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest, Metrics_OnHiddenTrigger) {
+TEST_P(AnnotatePageContentRequestTest, Metrics_OnHiddenTrigger) {
   base::HistogramTester histogram_tester;
   SetTriggeringMode("on_hidden");
 
@@ -926,7 +923,7 @@ TEST_F(AnnotatePageContentRequestTest, Metrics_OnHiddenTrigger) {
       0);
 }
 
-TEST_F(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
+TEST_P(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -955,7 +952,7 @@ TEST_F(AnnotatePageContentRequestTest, Metrics_OnDemandTrigger) {
       1);  // 4 corresponds to Lifecycle::kExtracted
 }
 
-TEST_F(AnnotatePageContentRequestTest, Metrics_CacheHit) {
+TEST_P(AnnotatePageContentRequestTest, Metrics_CacheHit) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -980,7 +977,7 @@ TEST_F(AnnotatePageContentRequestTest, Metrics_CacheHit) {
       "OptimizationGuide.PageContentExtraction.IsCacheHit", 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest, Metrics_CacheHit_Async) {
+TEST_P(AnnotatePageContentRequestTest, Metrics_CacheHit_Async) {
   SetTriggeringMode("on_load");
 
   SimulatePageLoad();
@@ -1009,7 +1006,7 @@ TEST_F(AnnotatePageContentRequestTest, Metrics_CacheHit_Async) {
       "OptimizationGuide.PageContentExtraction.IsCacheHit", 2);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        Metrics_OnLoadAndHiddenTrigger_LoadWhileHidden) {
   base::HistogramTester histogram_tester;
   SetTriggeringMode("on_load_and_hidden");
@@ -1025,7 +1022,7 @@ TEST_F(AnnotatePageContentRequestTest,
       AnnotatedPageContentRequest::TriggerSource::kOnHidden, 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        Metrics_OnLoadAndHiddenTrigger_HideBeforeFCP) {
   base::HistogramTester histogram_tester;
   SetTriggeringMode("on_load_and_hidden");
@@ -1047,7 +1044,7 @@ TEST_F(AnnotatePageContentRequestTest,
       AnnotatedPageContentRequest::TriggerSource::kOnHidden, 1);
 }
 
-TEST_F(AnnotatePageContentRequestTest,
+TEST_P(AnnotatePageContentRequestTest,
        Metrics_OnLoadTrigger_SameDocumentNavigation) {
   base::HistogramTester histogram_tester;
   SetTriggeringMode("on_load");
@@ -1103,5 +1100,85 @@ TEST_F(AnnotatePageContentRequestTest,
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
       1);
 }
+
+TEST_P(AnnotatePageContentRequestTest, OnLoadTriggerPDFExtraction) {
+  SetTriggeringMode("on_load");
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
+
+  if (IsPDFTextExtractionEnabled() && PlatformSupportsPDF()) {
+    WaitForExtraction();
+    EXPECT_EQ(extraction_service().extraction_count(), 1);
+    EXPECT_EQ(extraction_service().last_extracted_pdf_text(),
+              "Sample PDF text");
+  } else {
+    // When feature is disabled:
+    // - If platform enables PDF build flag, the count of PDF page is requested
+    // and logged to UKM metrics. No extraction takes place.
+    // - If platform disables PDF build flag, no operation is performed for PDF.
+    task_environment()->FastForwardBy(base::Seconds(1));
+    EXPECT_EQ(extraction_service().extraction_count(), 0);
+    EXPECT_FALSE(extraction_service().last_extracted_pdf_text().has_value());
+  }
+}
+
+// For PDF documents, on-hidden trigger is not allowed. This is because PDF
+// content is almost always static. Repeatedly extracting text does not add much
+// value.
+TEST_P(AnnotatePageContentRequestTest, OnHiddenTriggerNoPDFExtraction) {
+  SetTriggeringMode("on_hidden");
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
+
+  // No extraction triggered upon load completion.
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // Hide the tab.
+  web_contents()->WasHidden();
+
+  // PDF document does not trigger extraction on hidden.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+  EXPECT_FALSE(extraction_service().last_extracted_pdf_text().has_value());
+}
+
+TEST_P(AnnotatePageContentRequestTest,
+       OnLoadAndHiddenTriggerPDFTextExtraction) {
+  SetTriggeringMode("on_load_and_hidden");
+  SimulatePDFLoad(GURL("https://example.com/file.pdf"));
+
+  if (IsPDFTextExtractionEnabled() && PlatformSupportsPDF()) {
+    // Extraction should happen when load completes.
+    WaitForExtraction();
+    EXPECT_EQ(extraction_service().extraction_count(), 1);
+    EXPECT_EQ(extraction_service().last_extracted_pdf_text(),
+              "Sample PDF text");
+
+    // Hide the tab.
+    web_contents()->WasHidden();
+
+    // PDF document does not trigger extraction on hidden.
+    task_environment()->FastForwardBy(base::Seconds(1));
+    EXPECT_EQ(extraction_service().extraction_count(), 1);
+  } else {
+    // When feature is disabled:
+    // - If platform enables PDF build flag, the count of PDF page is requested
+    // and logged to UKM metrics. No extraction takes place.
+    // - If platform disables PDF build flag, no operation is performed for PDF.
+    task_environment()->FastForwardBy(base::Seconds(1));
+    EXPECT_EQ(extraction_service().extraction_count(), 0);
+    EXPECT_FALSE(extraction_service().last_extracted_pdf_text().has_value());
+
+    // Hide the tab.
+    web_contents()->WasHidden();
+
+    // PDF document does not trigger extraction on hidden.
+    task_environment()->FastForwardBy(base::Seconds(1));
+    EXPECT_EQ(extraction_service().extraction_count(), 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AnnotatePageContentRequestTest,
+                         ::testing::Bool(),
+                         &AnnotatePageContentRequestTest::DescribeParams);
 
 }  // namespace page_content_annotations

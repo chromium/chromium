@@ -155,6 +155,29 @@ class ScreenshotOptions {
   std::optional<ScreenshotCollectionOptions> screenshot_collection_options_;
 };
 
+// TODO(b/504577535): Support PDF bookmark extraction.
+// TODO(b/504577256): Support PDF accessibility info extraction.
+class PdfOptions {
+ public:
+  enum class Format {
+    kBytes,
+    kText,
+  };
+
+  PdfOptions(Format format, uint32_t size_limit);
+
+  Format format() const { return format_; }
+  uint32_t size_limit() const { return size_limit_; }
+
+ private:
+  // The requested content extraction format of PDF content.
+  Format format_;
+
+  // Limit defining the number of bytes or chars for PDF contents that should be
+  // returned. It must be greater than 0.
+  uint32_t size_limit_;
+};
+
 struct FetchPageContextOptions {
   FetchPageContextOptions();
   ~FetchPageContextOptions();
@@ -166,11 +189,11 @@ struct FetchPageContextOptions {
   // Options for taking a screenshot. If not set, no screenshot will be taken.
   std::optional<ScreenshotOptions> screenshot_options = std::nullopt;
 
-  blink::mojom::AIPageContentOptionsPtr annotated_page_content_options;
+  // Options for extracting contents from a PDF document. If not set, no
+  // extraction will take place for PDF.
+  std::optional<PdfOptions> pdf_options = std::nullopt;
 
-  // Limit defining number of bytes for PDF data that should be returned.
-  // A value of 0 indicates no pdf data should be returned.
-  uint32_t pdf_size_limit = 0;
+  blink::mojom::AIPageContentOptionsPtr annotated_page_content_options;
 };
 
 // TODO(b/504577535): Support PDF bookmark extraction.
@@ -328,11 +351,15 @@ class PageContextFetcher : public content::WebContentsObserver {
       SkColor4f redaction_color);
 
 #if BUILDFLAG(ENABLE_PDF)
-  void ReceivedPdfBytes(const url::Origin& pdf_origin,
+  void FetchPdfContent(const PdfOptions& options);
+  void ReceivedPdfBytes(url::Origin pdf_origin,
                         uint32_t pdf_size_limit,
                         pdf::mojom::PdfListener::GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes,
                         uint32_t page_count);
+  void ReceivedPdfText(url::Origin pdf_origin,
+                       uint32_t text_byte_limit,
+                       const std::u16string& text);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   void GetTabScreenshot(content::WebContents& web_contents,
