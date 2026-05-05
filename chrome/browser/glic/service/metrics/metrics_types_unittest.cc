@@ -16,6 +16,8 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
                 mojom::InvocationSource::kExperimentalTriggering));
   EXPECT_EQ("UniversalCart",
             GetInvocationSourceString(mojom::InvocationSource::kUniversalCart));
+  EXPECT_EQ("PasswordChange", GetInvocationSourceString(
+                                  mojom::InvocationSource::kPasswordChange));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -42,6 +44,30 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
             GetResponseSegmentation(
                 /*attached=*/false, mojom::WebClientMode::kAudio,
                 mojom::InvocationSource::kExperimentalTriggering));
+
+  // PasswordChange Attached Text
+  EXPECT_EQ(ResponseSegmentation::kPasswordChangeAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kPasswordChange));
+
+  // PasswordChange Attached Audio
+  EXPECT_EQ(ResponseSegmentation::kPasswordChangeAttachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kPasswordChange));
+
+  // PasswordChange Detached Text
+  EXPECT_EQ(ResponseSegmentation::kPasswordChangeDetachedText,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kPasswordChange));
+
+  // PasswordChange Detached Audio
+  EXPECT_EQ(ResponseSegmentation::kPasswordChangeDetachedAudio,
+            GetResponseSegmentation(
+                /*attached=*/false, mojom::WebClientMode::kAudio,
+                mojom::InvocationSource::kPasswordChange));
 }
 
 }  // namespace

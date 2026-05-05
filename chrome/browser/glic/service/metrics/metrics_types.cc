@@ -82,6 +82,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "OsButtonMenu";
     case mojom::InvocationSource::kOsHotkey:
       return "OsHotkey";
+    case mojom::InvocationSource::kPasswordChange:
+      return "PasswordChange";
     case mojom::InvocationSource::kPdfSummarizeButton:
       return "PdfSummarizeButton";
     case mojom::InvocationSource::kProfilePicker:

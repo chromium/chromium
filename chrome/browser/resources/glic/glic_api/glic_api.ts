@@ -2989,6 +2989,8 @@ export enum InvocationSource {
   // Used exclusively for invocations originating from the
   // GlicExperimentalTriggeringMessageHandler.
   EXPERIMENTAL_TRIGGERING = 28,
+  // Actuation triggered by the password change feature.
+  PASSWORD_CHANGE = 29,
 }
 
 ///////////////////////////////////////////////

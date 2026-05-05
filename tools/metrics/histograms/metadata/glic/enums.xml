@@ -502,6 +502,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Zero-state Auto-summarize"/>
   <int value="27" label="From the universal cart"/>
   <int value="28" label="Experimental triggering"/>
+  <int value="29" label="Password change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -773,6 +774,10 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="Experimental triggering, attached, audio mode."/>
   <int value="115" label="Experimental triggering, detached, text mode."/>
   <int value="116" label="Experimental triggering, detached, audio mode."/>
+  <int value="117" label="Password Change, attached, text mode."/>
+  <int value="118" label="Password Change, attached, audio mode."/>
+  <int value="119" label="Password Change, detached, text mode."/>
+  <int value="120" label="Password Change, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
