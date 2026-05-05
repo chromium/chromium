@@ -243,12 +243,11 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveToken) {
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveEncryptedTokenEarly) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       TestingBrowserProcess::GetGlobal()->local_state());
+  StoreV3Token("test-token");
 
   // Set a new refresh token without the system salt available.
   InitWithPendingSalt(&store);
 
-  store.SetAndSaveRefreshToken("test-token",
-                               DeviceOAuth2TokenStore::StatusCallback());
   EXPECT_EQ("test-token", store.GetRefreshToken());
 
   // Make the system salt available.
