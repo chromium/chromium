@@ -194,6 +194,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
 - (void)lensController:(id<ChromeLensViewFinderController>)lensController
           didSelectURL:(GURL)url {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
   [_metricsRecorder recordLensViewFinderCameraURLOpen];
   __weak __typeof(self) weakSelf = self;
   [self exitLensViewFinderAnimated:YES
