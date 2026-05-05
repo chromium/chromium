@@ -194,6 +194,14 @@ struct SuggestionGroup {
   SideType side_type = SideType.kDefaultPrimary;
 };
 
+struct SmartComposeStats {
+  bool enabled;
+  int32 shown_count;
+  int32 accepted_count;
+  int32 characters_accepted;
+  int32 shown_length;
+};
+
 struct AutocompleteResult {
   uint32 sequence_id;
   mojo_base.mojom.String16 input;
@@ -276,6 +284,9 @@ interface PageHandler {
                         bool ctrl_key,
                         bool meta_key,
                         bool shift_key);
+
+  // Sets the Smart Compose stats to be passed during the next navigation.
+  SetSmartComposeStats(SmartComposeStats smart_compose_stats);
 
   // Sets the native OmniboxEditModel popup selection.
   // TODO(crbug.com/483117840): This drives some omnibox state affecting

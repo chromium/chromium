@@ -849,6 +849,19 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                                           meta_key, shift_key);
 }
 
+void ContextualSearchboxHandler::SetSmartComposeStats(
+    searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) {
+  if (smart_compose_stats) {
+    omnibox::metrics::SmartComposeStats stats;
+    stats.set_enabled(smart_compose_stats->enabled);
+    stats.set_shown_count(smart_compose_stats->shown_count);
+    stats.set_accepted_count(smart_compose_stats->accepted_count);
+    stats.set_characters_accepted(smart_compose_stats->characters_accepted);
+    stats.set_shown_length(smart_compose_stats->shown_length);
+    autocomplete_controller()->SetSmartComposeStats(stats);
+  }
+}
+
 void ContextualSearchboxHandler::ShouldShowDriveDisclaimer(
     ShouldShowDriveDisclaimerCallback callback) {
   if (!base::FeatureList::IsEnabled(

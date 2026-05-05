@@ -945,6 +945,7 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
 void AutocompleteController::ResetSession() {
   search_service_worker_signal_sent_ = false;
   triggered_feature_service_->ResetSession();
+  smart_compose_stats_.reset();
 }
 
 void AutocompleteController::
@@ -1003,6 +1004,16 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
         omnibox_position_stat.int_value());
   }
 #endif
+
+  if (smart_compose_stats_.has_value()) {
+    *search_terms_args.searchbox_stats.mutable_smart_compose_stats() =
+        smart_compose_stats_.value();
+  }
+}
+
+void AutocompleteController::SetSmartComposeStats(
+    const omnibox::metrics::SmartComposeStats& stats) {
+  smart_compose_stats_ = stats;
 }
 
 void AutocompleteController::UpdateMatchDestinationURLWithInvocationSource(

@@ -927,6 +927,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   override submitCleanup() {
     this.clearAutocompleteMatches();
+    this.resetSmartComposeStats();
     // Update states after submitting:
     this.animationState = GlowAnimationState.SUBMITTING;
 
@@ -1002,6 +1003,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.smartComposeInlineHint = this.result.smartComposeInlineHint?.trim() ?
         this.result.smartComposeInlineHint :
         '';
+    if (this.smartComposeInlineHint) {
+      this.smartComposeStats.shownCount++;
+      this.smartComposeStats.shownLength += this.smartComposeInlineHint.length;
+    }
   }
 
 
@@ -1029,6 +1034,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // Reset files in set to match remaining files in carousel.
     this.pendingUploads = new Set([...this.files.keys()]);
     this.smartComposeInlineHint = '';
+    this.resetSmartComposeStats();
     if (!querySubmitted) {
       // If the query was submitted, the searchbox handler will clear its own
       // uploaded file state when the query submission is handled.

@@ -107,6 +107,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                              bool ctrl_key,
                              bool meta_key,
                              bool shift_key) override;
+  void SetSmartComposeStats(
+      searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override {}
   void SetPopupSelection(
       searchbox::mojom::OmniboxPopupSelectionPtr selection) override;
   void OpenPopupSelection(uint32_t result_sequence_id,

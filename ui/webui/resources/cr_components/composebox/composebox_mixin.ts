@@ -10,7 +10,7 @@ import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -127,6 +127,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
             },
             smartComposeInlineHint: {type: String},
+            smartComposeStats: {type: Object},
             state: {type: Object},
             submitEnabled: {
               reflect: true,
@@ -210,6 +211,13 @@ export const ComposeboxEmbedderMixin =
         showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
         accessor showVoiceSearch: boolean = false;
         accessor smartComposeInlineHint: string = '';
+        accessor smartComposeStats: SmartComposeStats = {
+          enabled: loadTimeData.getBoolean('composeboxSmartComposeEnabled'),
+          shownCount: 0,
+          acceptedCount: 0,
+          charactersAccepted: 0,
+          shownLength: 0,
+        };
         accessor state: ComposeboxState|null = null;
         accessor submitEnabled: boolean = false;
         accessor tabSuggestions: TabInfo[] = [];
@@ -651,6 +659,9 @@ export const ComposeboxEmbedderMixin =
               this.getDropdownElement().unselect();
             } else if (
                 this.smartComposeEnabled && this.smartComposeInlineHint) {
+              this.smartComposeStats.acceptedCount++;
+              this.smartComposeStats.charactersAccepted +=
+                  this.smartComposeInlineHint.length;
               this.input = this.input + this.smartComposeInlineHint;
               this.smartComposeInlineHint = '';
               e.preventDefault();
@@ -1184,6 +1195,8 @@ export const ComposeboxEmbedderMixin =
           if (this.selectedMatchIndex >= 0) {
             const match = this.result!.matches[this.selectedMatchIndex];
             assert(match);
+            this.getSearchboxHandler().setSmartComposeStats(
+                this.smartComposeStats);
             this.getSearchboxHandler().openAutocompleteMatch(
                 this.selectedMatchIndex, match.destinationUrl,
                 /* are_matches_showing */ true, mouseButton, altKey, ctrlKey,
@@ -1224,6 +1237,16 @@ export const ComposeboxEmbedderMixin =
 
         hasFiles(): boolean {
           return this.files.size > 0;
+        }
+
+        resetSmartComposeStats() {
+          this.smartComposeStats = {
+            enabled: loadTimeData.getBoolean('composeboxSmartComposeEnabled'),
+            shownCount: 0,
+            acceptedCount: 0,
+            charactersAccepted: 0,
+            shownLength: 0,
+          };
         }
 
         queryAutocomplete(clearMatches: boolean) {
@@ -1745,6 +1768,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   showZps: boolean;
   showVoiceSearch: boolean;
   smartComposeInlineHint: string;
+  smartComposeStats: SmartComposeStats;
   state: ComposeboxState|null;
   submitEnabled: boolean;
   tabSuggestions: TabInfo[];
@@ -1843,6 +1867,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   hasMatches(): boolean;
   selectFirstMatch(): void;
   hasFiles(): boolean;
+  resetSmartComposeStats(): void;
   queryAutocomplete(clearMatches: boolean): void;
   clearAutocompleteMatches(): void;
   computeSubmitEnabled(): boolean;
