@@ -12,9 +12,14 @@
 
 namespace tabs_api {
 
+class AndroidTabStripModelAdapter;
+class TranslationAdapter;
+
 class AndroidTabModelEventBridge : public EventBridge, public TabModelObserver {
  public:
-  explicit AndroidTabModelEventBridge(TabModel* model);
+  AndroidTabModelEventBridge(TabModel* model,
+                             AndroidTabStripModelAdapter& adapter,
+                             TranslationAdapter& translation_adapter);
   ~AndroidTabModelEventBridge() override;
 
   // EventBridge:
@@ -22,13 +27,26 @@ class AndroidTabModelEventBridge : public EventBridge, public TabModelObserver {
   void RemoveObserver(events::EventObserver* observer) override;
 
   // TabModelObserver:
+  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
+  void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
+  void DidMoveTab(TabAndroid* tab, int new_index, int old_index) override;
   void DidRemoveTabForClosure(TabAndroid* tab) override;
+  void TabRemoved(TabAndroid* tab) override;
+  void OnTabGroupCreated(tab_groups::TabGroupId group_id) override;
+  void OnTabGroupRemoving(tab_groups::TabGroupId group_id) override;
+  void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id) override;
 
  private:
   void Notify(events::Event event) const;
 
   base::ObserverList<events::EventObserver> observers_;
   raw_ptr<TabModel> model_;
+  raw_ref<AndroidTabStripModelAdapter> adapter_;
+  raw_ref<TranslationAdapter> translation_adapter_;
+
+  // Android tab model does selection change event does not contain the last
+  // selected tab, so we will need to keep track of it ourselves.
+  tabs::TabHandle last_selected_tab_;
 };
 
 }  // namespace tabs_api

@@ -19,7 +19,7 @@ AndroidTabStripApiInjector::AndroidTabStripApiInjector(TabModel* model)
       translation_adapter_(
           std::make_unique<AndroidTranslationAdapter>(model,
                                                       *tab_model_adapter_)),
-      event_bridge_(model) {}
+      event_bridge_(model, *tab_model_adapter_, *translation_adapter_) {}
 
 AndroidTabStripApiInjector::~AndroidTabStripApiInjector() = default;
 

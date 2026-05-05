@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -247,40 +248,79 @@ AndroidTabStripModelAdapter::FindGroupIdFor(
 void AndroidTabStripModelAdapter::UpdateTabGroupVisuals(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {
-  NOTREACHED() << "not implemented";
+  model_->SetTabGroupVisualData(group, visual_data);
 }
 
 void AndroidTabStripModelAdapter::SetTabSelection(
     const std::vector<tabs::TabHandle>& handles_to_select,
     tabs::TabHandle to_activate) {
-  NOTREACHED() << "not implemented";
+  std::set<tabs::TabHandle> handles;
+  for (const auto& handle : handles_to_select) {
+    handles.insert(handle);
+  }
+  model_->HighlightTabs(to_activate, handles);
 }
 
 std::optional<tab_groups::TabGroupId>
 AndroidTabStripModelAdapter::GetTabGroupForTab(int index) const {
-  NOTREACHED() << "not implemented";
+  return model_->GetTabAt(index)->GetGroup();
 }
 
 tabs::TabCollectionHandle
 AndroidTabStripModelAdapter::GetCollectionHandleForTabGroupId(
     tab_groups::TabGroupId group_id) const {
-  NOTREACHED() << "not implemented";
+  auto* collection = root_->GetTabGroupCollection(group_id);
+  CHECK(collection);
+  return collection->GetHandle();
 }
 
 tabs::TabCollectionHandle
 AndroidTabStripModelAdapter::GetCollectionHandleForSplitTabId(
     split_tabs::SplitTabId split_id) const {
-  NOTREACHED() << "not implemented";
+  auto* collection = root_->GetSplitTabCollection(split_id);
+  CHECK(collection);
+  return collection->GetHandle();
 }
 
 tabs_api::Position AndroidTabStripModelAdapter::GetPositionForAbsoluteIndex(
     int absolute_index) const {
-  NOTREACHED() << "not implemented";
+  auto* tab = model_->GetTabAt(absolute_index);
+  CHECK(tab);
+  auto* collection = tab->GetParentCollection();
+
+  if (collection) {
+    auto relative_index = collection->GetIndexOfTab(tab);
+    if (relative_index.has_value()) {
+      return tabs_api::Position(relative_index.value(),
+                                GetPathForCollection(collection->GetHandle()));
+    }
+  }
+
+  // Fallback to absolute index and tab strip root if collection is not ready.
+  return tabs_api::Position(absolute_index,
+                            GetPathForCollection(root_->GetHandle()));
 }
 
 tabs_api::Path AndroidTabStripModelAdapter::GetPathForCollection(
     tabs::TabCollectionHandle collection_handle) const {
-  NOTREACHED() << "not implemented";
+  std::vector<tabs_api::NodeId> components;
+  components.push_back(NodeId::FromWindowId(GetWindowId()));
+
+  // Traversal is bottom-up (child -> root), but the path requires a top-down
+  // representation (root -> child).
+  std::vector<tabs_api::NodeId> collection_components;
+  const tabs::TabCollection* curr = collection_handle.Get();
+  while (curr) {
+    collection_components.push_back(
+        NodeId::FromTabCollectionHandle(curr->GetHandle()));
+    curr = curr->GetParentCollection();
+  }
+  std::reverse(collection_components.begin(), collection_components.end());
+  components.insert(components.end(),
+                    std::make_move_iterator(collection_components.begin()),
+                    std::make_move_iterator(collection_components.end()));
+
+  return tabs_api::Path(std::move(components));
 }
 
 InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(

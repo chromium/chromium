@@ -72,8 +72,50 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
 
 base::expected<mojom::DataPtr, mojo_base::mojom::ErrorPtr>
 AndroidTranslationAdapter::ToMojoData(tabs::TabCollectionHandle handle) {
-  // TODO(crbug.com/445765534): Implement ToMojoData for Android.
-  NOTREACHED() << "not implemented";
+  auto* collection = handle.Get();
+  CHECK(collection);
+
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::TABSTRIP: {
+      auto tab_strip = mojom::TabStrip::New();
+      tab_strip->id = NodeId::FromTabCollectionHandle(handle);
+      return mojom::Data::NewTabStrip(std::move(tab_strip));
+    }
+    case tabs::TabCollection::Type::PINNED: {
+      auto pinned = mojom::PinnedTabs::New();
+      pinned->id = NodeId::FromTabCollectionHandle(handle);
+      return mojom::Data::NewPinnedTabs(std::move(pinned));
+    }
+    case tabs::TabCollection::Type::UNPINNED: {
+      auto unpinned = mojom::UnpinnedTabs::New();
+      unpinned->id = NodeId::FromTabCollectionHandle(handle);
+      return mojom::Data::NewUnpinnedTabs(std::move(unpinned));
+    }
+    case tabs::TabCollection::Type::GROUP: {
+      auto group_id = adapter_->FindGroupIdFor(handle);
+      CHECK(group_id.has_value());
+
+      auto group = mojom::TabGroup::New();
+      group->id = NodeId::FromTabCollectionHandle(handle);
+
+      auto visual_data = model_->GetTabGroupVisualData(group_id.value());
+      if (visual_data.has_value()) {
+        group->data = tab_groups::TabGroupVisualData(
+            visual_data.value().title(), visual_data.value().color(),
+            visual_data.value().is_collapsed());
+      }
+      return mojom::Data::NewTabGroup(std::move(group));
+    }
+    case tabs::TabCollection::Type::SPLIT: {
+      auto split = mojom::SplitTab::New();
+      split->id = NodeId::FromTabCollectionHandle(handle);
+      // Split tabs are not fully supported on Android yet.
+      split->data = split_tabs::SplitTabVisualData();
+      return mojom::Data::NewSplitTab(std::move(split));
+    }
+  }
+
+  NOTREACHED();
 }
 
 }  // namespace tabs_api

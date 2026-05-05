@@ -73,9 +73,14 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, Observation) {
   model_->DuplicateTab(target_to_close);
   model_->CloseTab(target_to_close);
 
-  ASSERT_EQ(1u, client.received.size());
+  // We expect 4 events now:
+  // 1. Tab created (from DuplicateTab)
+  // 2. Tab deselected (from DuplicateTab selecting the new tab)
+  // 3. Tab selected (from DuplicateTab selecting the new tab)
+  // 4. Nodes closed (from CloseTab)
+  ASSERT_EQ(4u, client.received.size());
 
-  auto& event = client.received.at(0);
+  auto& event = client.received.at(3);
   auto& close_event = event->get_nodes_closed_event();
   ASSERT_EQ(1u, close_event->node_ids.size());
   ASSERT_EQ(NodeId::FromTabHandle(target_to_close),
