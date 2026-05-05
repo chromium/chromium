@@ -1056,7 +1056,18 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   observer.WatchWebContents(handle->GetWebContents());
   observer.Wait();
 
-  ASSERT_EQ(1, tab_list2->GetTabCount());
+  // Open a second tab in window2 and make it active.
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  NavigateParams open_params3(window2, url3, ui::PAGE_TRANSITION_LINK);
+  open_params3.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  base::WeakPtr<content::NavigationHandle> handle3 = Navigate(&open_params3);
+  ASSERT_TRUE(handle3);
+  content::TestNavigationObserver observer3(url3);
+  observer3.WatchWebContents(handle3->GetWebContents());
+  observer3.Wait();
+
+  ASSERT_EQ(2, tab_list2->GetTabCount());
+  ASSERT_EQ(1, tab_list2->GetActiveIndex());
   ASSERT_EQ(2u, GetAllBrowserWindowInterfaces().size());
 
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
@@ -1065,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   EXPECT_EQ(1, tab_list_->GetTabCount());
   EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
-  EXPECT_EQ(1, tab_list2->GetTabCount());
+  EXPECT_EQ(2, tab_list2->GetTabCount());
   EXPECT_EQ(0, tab_list2->GetActiveIndex());
   EXPECT_EQ(url2,
             tab_list2->GetActiveTab()->GetContents()->GetLastCommittedURL());
@@ -2056,4 +2067,108 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   ASSERT_TRUE(new_tab2_android);
   EXPECT_EQ(source_tab_android->GetAndroidId(),
             new_tab2_android->GetParentId());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    NullBrowser_NewForegroundTabDisposition_OpenTabInBrowserWithMatchingProfile) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
+
+  // Trigger a NEW_FOREGROUND_TAB navigation with a null browser.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(GetProfile(), url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = nullptr;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+
+  // Verify navigation fell back to the normal browser window.
+  EXPECT_EQ(params.browser, browser_window_);
+  EXPECT_EQ(2, tab_list_->GetTabCount());
+  tabs::TabInterface* new_tab = tab_list_->GetTab(1);
+  EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
+  EXPECT_EQ(1, tab_list_->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    AsyncNavigate_NullBrowser_NewWindowDisposition_OpenUrlInNewWindow) {
+  ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
+
+  // Trigger an asynchronous NEW_WINDOW navigation with a null browser.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(GetProfile(), url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.browser = nullptr;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+
+  // Verify a new normal window was created.
+  std::vector<BrowserWindowInterface*> windows =
+      GetAllBrowserWindowInterfaces();
+  ASSERT_EQ(2u, windows.size());
+
+  EXPECT_EQ(params.disposition, WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_NE(params.browser, browser_window_);
+  EXPECT_EQ(params.browser->GetType(), BrowserWindowInterface::TYPE_NORMAL);
+  EXPECT_FALSE(params.browser->GetProfile()->IsOffTheRecord());
+
+  TabListInterface* new_tab_list = TabListInterface::From(params.browser);
+  EXPECT_EQ(1, new_tab_list->GetTabCount());
+  EXPECT_EQ(url2,
+            new_tab_list->GetTab(0)->GetContents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       NullBrowser_SwitchToTabDisposition_ActivateTargetTab) {
+  // 1. Create a second window and navigate it to url2.
+  const GURL url1 = StartAtURL("/title1.html");
+  BrowserWindowInterface* window2 = CreateNormalBrowserWindow();
+  ASSERT_NE(browser_window_, window2);
+  TabListInterface* tab_list2 = TabListInterface::From(window2);
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams open_params(window2, url2, ui::PAGE_TRANSITION_LINK);
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&open_params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(url2);
+  observer.WatchWebContents(handle->GetWebContents());
+  observer.Wait();
+
+  // Open a second tab in window2 and make it active.
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  NavigateParams open_params3(window2, url3, ui::PAGE_TRANSITION_LINK);
+  open_params3.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  base::WeakPtr<content::NavigationHandle> handle3 = Navigate(&open_params3);
+  ASSERT_TRUE(handle3);
+  content::TestNavigationObserver observer3(url3);
+  observer3.WatchWebContents(handle3->GetWebContents());
+  observer3.Wait();
+
+  ASSERT_EQ(2, tab_list2->GetTabCount());
+  ASSERT_EQ(1, tab_list2->GetActiveIndex());
+  ASSERT_EQ(2u, GetAllBrowserWindowInterfaces().size());
+
+  // 2. Trigger SWITCH_TO_TAB navigation with a null browser.
+  NavigateParams params(GetProfile(), url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  params.browser = nullptr;
+
+  base::WeakPtr<content::NavigationHandle> switch_handle = Navigate(&params);
+  // Navigation doesn't actually happen since tab is already at url2.
+  EXPECT_FALSE(switch_handle);
+
+  // 3. Verify it found window2 and activated it.
+  EXPECT_EQ(params.browser, window2);
+  EXPECT_EQ(0, tab_list2->GetActiveIndex());
+  EXPECT_EQ(url2,
+            tab_list2->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }

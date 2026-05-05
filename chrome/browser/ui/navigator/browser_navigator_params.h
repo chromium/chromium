@@ -187,12 +187,18 @@ struct NavigateParams {
   // SINGLETON_TAB, then AddTabTypes::ADD_ACTIVE is automatically added to
   // |tabstrip_add_types|.
   //
-  // On Android there are 2 additional coercions that may occur if an app
-  // browser requests a new tab but there is no suitable fallback browser:
+  // On Android there are additional coercions that may occur if the target
+  // browser cannot open new tabs (e.g. app browsers, popups) or if
+  // params.browser is not provided. If no suitable fallback browser is found,
+  // the disposition is coerced to NEW_WINDOW:
   //
   // [in]:                Condition:                        [out]:
-  // NEW_BACKGROUND_TAB   target browser is an app browser  NEW_WINDOW
-  // NEW_FOREGROUND_TAB   target browser is an app browser  NEW_WINDOW
+  // NEW_BACKGROUND_TAB   no fallback browser               NEW_WINDOW
+  // NEW_FOREGROUND_TAB   no fallback browser               NEW_WINDOW
+  // SWITCH_TO_TAB        no fallback & no params.browser   NEW_WINDOW
+  //                        & no matching tab
+  // CURRENT_TAB          no params.browser                 DCHECK FAILURE
+  //                        & no params.source_contents
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
 
   // Allows setting the opener for the case when new WebContents are created
