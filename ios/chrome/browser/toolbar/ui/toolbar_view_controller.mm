@@ -253,7 +253,9 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 }
 
 - (void)setNTPScrollProgress:(CGFloat)progress {
-  CHECK(_NTPVisible);
+  if (!_NTPVisible) {
+    return;
+  }
   _NTPScrollProgress = progress;
 
   if (!CanShowTabStrip(self)) {
@@ -803,6 +805,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 // Sets the NTP scroll progress for the toolbar. The toolbar is revealed as the
 // page is scrolled.
 - (void)setNTPScrollProgressForToolbar:(CGFloat)progress {
+  CHECK(_NTPVisible);
   [self updateToolbarVisibility];
   [self setNTPScrollProgressForOmnibox:progress];
   self.view.alpha = progress;
@@ -811,6 +814,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 // Sets the NTP scroll progress for the location bar. The location bar in the
 // toolbar is revealed with a translation effect as the page is scrolled.
 - (void)setNTPScrollProgressForOmnibox:(CGFloat)progress {
+  CHECK(_NTPVisible);
   // The vertical distance the location bar translates during the NTP scroll
   // animation. Set to `kToolbarPadding` so the location bar slides exactly down
   // to the bottom edge of the toolbar container as it fades out of view.
