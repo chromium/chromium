@@ -11419,6 +11419,24 @@
             ]
         }
     ],
+    "GeminiWebChromeCohesion": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260430",
+                    "enable_features": [
+                        "GlicWebContinuity"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicActorObservationDelayExcludeAdFrameLoading": [
         {
             "platforms": [
