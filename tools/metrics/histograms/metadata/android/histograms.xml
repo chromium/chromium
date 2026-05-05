@@ -498,7 +498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Variant.OnPageLoad"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-08-30">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-11-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -1129,7 +1129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackPress.StrictBackfalsing"
-    enum="NavigationDirection" expires_after="2026-08-30">
+    enum="NavigationDirection" expires_after="2026-11-01">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -2519,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.HubSearch.SearchBoxEntrypointV2"
-    enum="HubSearchEntrypoint" expires_after="2026-08-30">
+    enum="HubSearchEntrypoint" expires_after="2026-11-01">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@google.com</owner>
   <owner>clank-hub-dev@google.com</owner>
@@ -2531,7 +2531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2683,7 +2683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.EventTypesInDroppedSequence"
-    enum="MotionEventAction" expires_after="2026-08-30">
+    enum="MotionEventAction" expires_after="2026-11-01">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2830,7 +2830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.SequenceDroppedReason"
-    enum="VizSequenceDroppedReason" expires_after="2026-08-30">
+    enum="VizSequenceDroppedReason" expires_after="2026-11-01">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -3940,7 +3940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.ActionInSuggest.IntentResult"
-    enum="ActionInSuggestIntentResult" expires_after="2026-08-30">
+    enum="ActionInSuggestIntentResult" expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -3998,7 +3998,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4066,7 +4066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -4097,7 +4097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SearchActivity.IntentOrigin"
-    enum="SearchActivityIntentOrigin" expires_after="2026-08-30">
+    enum="SearchActivityIntentOrigin" expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <summary>
     Record the origin of an intent (i.e. from where the SearchActivity was
@@ -4191,7 +4191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4216,7 +4216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime3" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
@@ -4239,7 +4239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime2" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4267,7 +4267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime3" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
@@ -4308,7 +4308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.RequestToUiModel.Last"
-    units="ms" expires_after="2026-08-30">
+    units="ms" expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>pnoland@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
@@ -4370,7 +4370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime2" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -4492,7 +4492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -4621,7 +4621,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.OverscrollFromBottom.CanStart" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
   <summary>
@@ -4632,7 +4632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.OverscrollFromBottom.DidTriggerOverscroll"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
   <summary>
@@ -5421,7 +5421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.UserSwitchToDesktop" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -5710,7 +5710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectionMenu.UsedCachedMenu" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -6237,7 +6237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>gauravjj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -6431,7 +6431,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.TopToolbar.CaptureBlocked.OptionalButtonAnimationDuration"
-    units="ms" expires_after="2026-08-30">
+    units="ms" expires_after="2026-11-01">
   <owner>peilinwang@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -6441,7 +6441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.CaptureBlocked.StatusIconAnimationDuration"
-    units="ms" expires_after="2026-08-30">
+    units="ms" expires_after="2026-11-01">
   <owner>peilinwang@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>

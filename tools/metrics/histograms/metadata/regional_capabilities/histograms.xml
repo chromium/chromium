@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.AndroidProgramResolution"
-    enum="AndroidProgramResolution" expires_after="2026-09-01">
+    enum="AndroidProgramResolution" expires_after="2026-11-01">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.HasActiveRegionalProgram"
-    enum="Boolean" expires_after="2026-09-01">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.Debug.ProgramSpecificExclusion"
-    enum="RegionalProgramSpecificExclusion" expires_after="2026-09-01">
+    enum="RegionalProgramSpecificExclusion" expires_after="2026-11-01">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

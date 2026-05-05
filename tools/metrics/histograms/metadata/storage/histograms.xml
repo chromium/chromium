@@ -1064,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBWrapper.CommitDelay" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1325,7 +1325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Buckets.Parameters.QuotaKb" units="KB"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1388,7 +1388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ConfirmSensitiveEntryAccessDuration"
-    units="ms" expires_after="2026-08-31">
+    units="ms" expires_after="2026-11-01">
   <owner>leimy@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>

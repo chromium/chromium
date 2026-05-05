@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ContainerLifetimeEvent" enum="ArcContainerLifetimeEvent"
-    expires_after="2026-09-01">
+    expires_after="2026-11-01">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1200,7 +1200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
-    enum="GameControlsEditDeleteMenuFunction" expires_after="2026-08-30">
+    enum="GameControlsEditDeleteMenuFunction" expires_after="2026-11-01">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1211,7 +1211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditingListFunctionTriggered"
-    enum="GameControlsEditingListFunction" expires_after="2026-08-30">
+    enum="GameControlsEditingListFunction" expires_after="2026-11-01">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>

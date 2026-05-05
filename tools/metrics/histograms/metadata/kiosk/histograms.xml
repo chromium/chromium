@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>aghuie@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>

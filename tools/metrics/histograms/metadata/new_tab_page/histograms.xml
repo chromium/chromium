@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Count" units="count" expires_after="2026-08-30">
+<histogram name="NewTabPage.Count" units="count" expires_after="2026-11-01">
   <owner>kawasin@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.MvtEnabled" enum="BooleanEnabled"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>hanxi@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -543,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.OpenBottomSheetEntry"
-    enum="NtpCustomizationEntryPoint" expires_after="2026-08-30">
+    enum="NtpCustomizationEntryPoint" expires_after="2026-11-01">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Customization.UserEngagement.MostVisitedSitesEnabled"
-    enum="BooleanVisible" expires_after="2026-06-30">
+    enum="BooleanVisible" expires_after="2026-11-01">
   <owner>hanxi@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -1606,7 +1606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemoval" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1620,7 +1620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalModuleId" enum="NtpModules"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1681,7 +1681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalUndone" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.AutoRemovalUndoneModuleId"
-    enum="NtpModules" expires_after="2026-08-30">
+    enum="NtpModules" expires_after="2026-11-01">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2071,7 +2071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.AutoRemovalSkipped"
-    enum="NtpShortcutsAutoRemovalReason" expires_after="2026-08-30">
+    enum="NtpShortcutsAutoRemovalReason" expires_after="2026-11-01">
   <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -2088,7 +2088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.AutoRemovalStaleDays" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
@@ -2527,7 +2527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"
-    enum="SuggestTileType" expires_after="2026-08-30">
+    enum="SuggestTileType" expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2542,7 +2542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.SelectedTileType"
-    enum="SuggestTileType" expires_after="2026-08-30">
+    enum="SuggestTileType" expires_after="2026-11-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

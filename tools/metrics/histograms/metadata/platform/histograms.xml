@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileDescriptors.Count" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>keiichiw@google.com</owner>
   <owner>uekawa@google.com</owner>
   <summary>
@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>nancylanxiao@google.com</owner>
   <owner>xanth@google.com</owner>
   <owner>domfc@google.com</owner>

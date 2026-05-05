@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-08-30">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-11-01">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -351,14 +351,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Database.ReadResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-08-30">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-11-01">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>Records result of read operations in ServiceWorkerDatabase.</summary>
 </histogram>
 
 <histogram name="ServiceWorker.Database.WriteResult"
-    enum="ServiceWorkerDatabaseStatus" expires_after="2026-08-30">
+    enum="ServiceWorkerDatabaseStatus" expires_after="2026-11-01">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1535,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.RouterEvaluator.RuleCount" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

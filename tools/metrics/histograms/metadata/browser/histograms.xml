@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Browser.Actions.PinnedActionsCount" units="actions"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EnqueueFailureDestination"
-    enum="EnterpriseCloudReportingDestination" expires_after="2026-08-30">
+    enum="EnterpriseCloudReportingDestination" expires_after="2026-11-01">
   <owner>nancylanxiao@google.com</owner>
   <owner>xanth@google.com</owner>
   <owner>domfc@google.com</owner>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EnqueueSuccessDestination"
-    enum="EnterpriseCloudReportingDestination" expires_after="2026-08-30">
+    enum="EnterpriseCloudReportingDestination" expires_after="2026-11-01">
   <owner>nancylanxiao@google.com</owner>
   <owner>xanth@google.com</owner>
   <owner>domfc@google.com</owner>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-10-11">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-11-01">
   <owner>nancylanxiao@google.com</owner>
   <owner>xanth@google.com</owner>
   <owner>domfc@google.com</owner>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion.LowMemory" units="janks"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1704,7 +1704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareRendererDispatchResult"
-    enum="SpareRendererDispatchResult" expires_after="2026-08-30">
+    enum="SpareRendererDispatchResult" expires_after="2026-11-01">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2096,7 +2096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.UrlListWildcard" enum="BooleanPresent"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2131,7 +2131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.QueueSize" units="InfoBars"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2151,7 +2151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.StarvedCount" units="InfoBars"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

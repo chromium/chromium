@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

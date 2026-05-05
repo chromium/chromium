@@ -667,7 +667,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>

@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Downloads.DirectorySizeMiB" units="MiB"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.AuthResult.Interactive"
-    enum="OfficeOneDriveAuthResultInteractive" expires_after="2026-08-30">
+    enum="OfficeOneDriveAuthResultInteractive" expires_after="2026-11-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -945,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.AuthResult.NonInteractive"
-    enum="OfficeOneDriveAuthResultNonInteractive" expires_after="2026-08-30">
+    enum="OfficeOneDriveAuthResultNonInteractive" expires_after="2026-11-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1330,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Setup.CancelPage"
-    enum="OfficeSetupPage" expires_after="2026-08-30">
+    enum="OfficeSetupPage" expires_after="2026-11-01">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1341,7 +1341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Setup.FileHandlerSelection"
-    enum="OfficeSetupFileHandler" expires_after="2026-08-30">
+    enum="OfficeSetupFileHandler" expires_after="2026-11-01">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FileBrowser.OfficeFiles.Setup.FirstTimeMicrosoft365Availability"
-    enum="Microsoft365Availability" expires_after="2026-08-30">
+    enum="Microsoft365Availability" expires_after="2026-11-01">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1586,7 +1586,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.SWA.Create" enum="FileDialogType"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

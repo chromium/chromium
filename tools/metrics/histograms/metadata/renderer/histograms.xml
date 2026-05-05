@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResourceCount" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -540,7 +540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.WebSandboxSupportLinux.GetFallbackFontForCharacter"
-    enum="BooleanFound" expires_after="2026-08-30">
+    enum="BooleanFound" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.WebSandboxSupportLinux.GetWebFontRenderStyleForStrike"
-    enum="BooleanFound" expires_after="2026-08-30">
+    enum="BooleanFound" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.WebSandboxSupportLinux.MatchFontByPostscriptNameOrFullFontName"
-    enum="BooleanFound" expires_after="2026-08-30">
+    enum="BooleanFound" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>lizeb@chromium.org</owner>
   <owner>shaseley@chromium.org</owner>
   <summary>

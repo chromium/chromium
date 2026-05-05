@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="2026-08-30">
+    enum="PermissionEmbargoStatus" expires_after="2026-11-01">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.CrowdDeny.PreloadData.NotificationUxQuality"
-    enum="CrowdDenyNotificationUxQuality" expires_after="2026-08-30">
+    enum="CrowdDenyNotificationUxQuality" expires_after="2026-11-01">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.DSE.EffectiveSetting.Geolocation.Accuracy"
-    enum="GeolocationAccuracy" expires_after="2026-09-01">
+    enum="GeolocationAccuracy" expires_after="2026-11-01">
   <owner>antoniosartori@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -2196,7 +2196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.WindowManagementApi.Android.Allowed"
-    enum="BooleanAllowed" expires_after="2026-08-30">
+    enum="BooleanAllowed" expires_after="2026-11-01">
   <owner>renkens@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>

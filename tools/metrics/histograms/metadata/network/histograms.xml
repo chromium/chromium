@@ -2471,7 +2471,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.SharedDictionary.CreateBrotliSourceStreamWithDictionary"
-    units="microseconds" expires_after="2026-08-30">
+    units="microseconds" expires_after="2026-11-01">
   <owner>pmeenan@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2485,7 +2485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SharedDictionary.CreateZstdSourceStreamWithDictionary"
-    units="microseconds" expires_after="2026-08-30">
+    units="microseconds" expires_after="2026-11-01">
   <owner>pmeenan@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

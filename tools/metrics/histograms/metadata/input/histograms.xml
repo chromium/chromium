@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.CharacterIndex.TimedOut" enum="Boolean"
-    expires_after="2026-08-16">
+    expires_after="2026-11-01">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -2230,7 +2230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.CharacterIndex2" units="ms"
-    expires_after="2026-08-16">
+    expires_after="2026-11-01">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -2286,7 +2286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.InSyncRequest.CharacterIndex" enum="Boolean"
-    expires_after="2026-08-16">
+    expires_after="2026-11-01">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

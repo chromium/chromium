@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequest"
-    enum="CredManPrepareRequestEnum" expires_after="2026-08-30">
+    enum="CredManPrepareRequestEnum" expires_after="2026-11-01">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-08-30">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-01">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -538,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GPM.RecoveryEvent"
-    enum="WebAuthenticationGPMRecoveryEvent" expires_after="2026-08-30">
+    enum="WebAuthenticationGPMRecoveryEvent" expires_after="2026-11-01">
   <owner>ylahodiuk@google.com</owner>
   <owner>izuzic@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Windows.ForegroundedWindowsHelloDialog"
-    enum="WindowsForegroundedHelloDialog" expires_after="2026-08-30">
+    enum="WindowsForegroundedHelloDialog" expires_after="2026-11-01">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

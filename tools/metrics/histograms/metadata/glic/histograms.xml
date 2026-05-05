@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.FreToFirstQueryTime" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>birnie@google.com</owner>
   <owner>cuianthony@google.com</owner>
   <summary>
@@ -717,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.FreToFirstQueryTimeMax24H" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>birnie@google.com</owner>
   <owner>cuianthony@google.com</owner>
   <summary>
@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.InputSubmitted.SelectionCount" units="areas"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dtapuska@google.com</owner>
   <owner>liuwilliam@google.com</owner>
   <owner>naai-xfn@google.com</owner>
@@ -1374,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TotalActiveDuration" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

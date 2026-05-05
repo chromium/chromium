@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.DWriteFontProxy.GetFontFailedHResult" enum="Hresult"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>drott@chromium.org</owner>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.DWriteFontProxy.InvokedIPC" enum="DWriteFontProxyIPC"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.DWriteFontProxy.WinLastError" enum="WinGetLastError"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.CreateResult"
-    enum="FontDataServiceCreateResult" expires_after="2026-08-31">
+    enum="FontDataServiceCreateResult" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.EmptyPathOnGetFileHandle"
-    enum="Boolean" expires_after="2026-08-31">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.FileHandlePathReferencesParent"
-    enum="Boolean" expires_after="2026-08-31">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.InvokedIPC" enum="FontDataServiceIPC"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.MemoryMapCacheSize" units="count"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.FontDataService.WinLastError" enum="WinGetLastError"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>drott@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorType" enum="ChromeColorType"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

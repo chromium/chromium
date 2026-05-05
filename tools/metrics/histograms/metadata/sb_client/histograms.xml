@@ -214,7 +214,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -472,7 +472,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -600,7 +600,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ClientSideDetectionTypeRequest"
-    enum="ClientSideDetectionType" expires_after="2026-08-30">
+    enum="ClientSideDetectionType" expires_after="2026-11-01">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -921,7 +921,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.IntelligentScanVerdict"
-    enum="IntelligentScanVerdict" expires_after="2026-08-30">
+    enum="IntelligentScanVerdict" expires_after="2026-11-01">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>
@@ -1165,7 +1165,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelSessionAliveOnDelegateShutdown"
-    enum="BooleanExists" expires_after="2026-08-28">
+    enum="BooleanExists" expires_after="2026-11-01">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1213,7 +1213,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive"
-    enum="BooleanExists" expires_after="2026-08-30">
+    enum="BooleanExists" expires_after="2026-11-01">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1432,7 +1432,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ServerSideModelExecutionDuration" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1443,7 +1443,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ServerSideModelExecutionError"
-    enum="OptimizationGuideModelExecutionError" expires_after="2026-08-30">
+    enum="OptimizationGuideModelExecutionError" expires_after="2026-11-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1454,7 +1454,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ServerSideModelExecutionSuccess"
-    enum="BooleanSuccess" expires_after="2026-08-30">
+    enum="BooleanSuccess" expires_after="2026-11-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1465,7 +1465,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime"
-    enum="BooleanHit" expires_after="2026-08-30">
+    enum="BooleanHit" expires_after="2026-11-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

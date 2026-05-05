@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2026-08-30">
+    enum="SessionRestoreFinishReason" expires_after="2026-11-01">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1161,7 +1161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.InfoBar.TurnOffFromRestart"
-    enum="SessionRestoreInfoBarAction" expires_after="2026-09-01">
+    enum="SessionRestoreInfoBarAction" expires_after="2026-11-01">
   <owner>musalmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <summary>
@@ -1171,7 +1171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.InfoBar.TurnOnSessionRestore"
-    enum="SessionRestoreInfoBarAction" expires_after="2026-09-01">
+    enum="SessionRestoreInfoBarAction" expires_after="2026-11-01">
   <owner>musalmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <summary>
@@ -1181,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.PageStateOldVersions" units="version"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>creis@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>

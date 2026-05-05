@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ShareThisPage.Shown" enum="ShareThisPageLocation"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ameurhosni@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
-    enum="BooleanEnabled" expires_after="2026-08-30">
+    enum="BooleanEnabled" expires_after="2026-11-01">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>

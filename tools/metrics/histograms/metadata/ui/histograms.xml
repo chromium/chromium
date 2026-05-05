@@ -1034,7 +1034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Snackbar.DismissalReason" enum="SnackbarDismissalReason"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>lazzzis@google.com</owner>
   <owner>src/chrome/browser/ui/messages/OWNERS</owner>
   <summary>Records the reason why a snackbar was dismissed.</summary>

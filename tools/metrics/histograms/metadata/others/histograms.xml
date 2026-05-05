@@ -3887,7 +3887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.TrustSafetySentiment.TriggerOccurred"
-    enum="TrustSafetySentimentFeatureArea" expires_after="2026-08-30">
+    enum="TrustSafetySentimentFeatureArea" expires_after="2026-11-01">
   <owner>sauski@google.com</owner>
   <owner>chrome-hats-eng@google.com</owner>
   <summary>
@@ -4199,7 +4199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -4362,7 +4362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.KnownGamepadConnectedWithId"
-    enum="GamepadVendorProduct" expires_after="2026-08-30">
+    enum="GamepadVendorProduct" expires_after="2026-11-01">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -5095,7 +5095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchSubsequent" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>pasko@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -5914,7 +5914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.IPC.ThreadCreateRemoteThreadErrorCode"
-    enum="WinGetLastError" expires_after="2026-08-31">
+    enum="WinGetLastError" expires_after="2026-11-01">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -5925,7 +5925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode"
-    enum="WinGetLastError" expires_after="2026-08-31">
+    enum="WinGetLastError" expires_after="2026-11-01">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -6143,14 +6143,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Unread.Number" units="count"
-    expires_after="2026-08-23">
+    expires_after="2026-11-01">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of unread entries in reading list.</summary>
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -6344,7 +6344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome"
-    enum="CrashRepHandlingOutcome" expires_after="2026-08-30">
+    enum="CrashRepHandlingOutcome" expires_after="2026-11-01">
   <owner>iclelland@chromium.org</owner>
   <owner>issackjohn@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>

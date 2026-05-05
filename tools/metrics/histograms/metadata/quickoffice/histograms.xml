@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.FileFormat" enum="QuickofficeFileFormat"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>

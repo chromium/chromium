@@ -1000,7 +1000,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Database.Local.ErrorByOperation"
-    enum="ExtensionsDatabaseOperation" expires_after="2026-08-31">
+    enum="ExtensionsDatabaseOperation" expires_after="2026-11-01">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1011,7 +1011,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Database.Local.RestoreStatus"
-    enum="BackingStoreRestoreStatus" expires_after="2026-08-31">
+    enum="BackingStoreRestoreStatus" expires_after="2026-11-01">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1639,7 +1639,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3537,7 +3537,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

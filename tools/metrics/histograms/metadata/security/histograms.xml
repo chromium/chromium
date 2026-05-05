@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.InterstitialReason"
-    enum="HttpsFirstModeInterstitialReason" expires_after="2026-08-30">
+    enum="HttpsFirstModeInterstitialReason" expires_after="2026-11-01">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged2"
-    enum="HttpsFirstModeSetting" expires_after="2026-07-05">
+    enum="HttpsFirstModeSetting" expires_after="2026-11-01">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1163,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsSitePerProcessOrStricter.AndroidDesktop"
-    enum="Boolean" expires_after="2026-08-28">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wenz@chromium.org</owner>

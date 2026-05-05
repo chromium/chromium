@@ -1264,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.JSDispatchTableEntriesCount" units="count"
-    expires_after="2026-08-31">
+    expires_after="2026-11-01">
   <owner>mlippautz@chromium.org</owner>
   <owner>olivf@chromium.org</owner>
   <summary>

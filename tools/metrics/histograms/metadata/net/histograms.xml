@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMSupport2" enum="TPMSupport"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>agl@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.EntriesAddedDuringLoading"
-    units="entries" expires_after="2026-08-30">
+    units="entries" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.EntriesLoaded" units="entries"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -941,7 +941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.HeaderParseResult"
-    enum="NoVarySearchHeaderParseResult" expires_after="2026-08-30">
+    enum="NoVarySearchHeaderParseResult" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -999,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.JournalAppendError" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1013,7 +1013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.JournalCreateError"
-    enum="PlatformFileError" expires_after="2026-08-30">
+    enum="PlatformFileError" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.JournalStartError" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.LoadResult"
-    enum="NoVarySearchCacheStorageLoadResult" expires_after="2026-08-30">
+    enum="NoVarySearchCacheStorageLoadResult" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1083,7 +1083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.LoadTime.Failure" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.LoadTime.Success" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1144,7 +1144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.NotUsableLostTime2.NotSuitable"
-    units="microseconds" expires_after="2026-08-30">
+    units="microseconds" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.ReplaceFileError"
-    enum="PlatformFileError" expires_after="2026-08-30">
+    enum="PlatformFileError" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.SnapshotLoadError"
-    enum="PlatformFileError" expires_after="2026-08-30">
+    enum="PlatformFileError" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1306,7 +1306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.NoVarySearch.SnapshotSaveError"
-    enum="PlatformFileError" expires_after="2026-08-30">
+    enum="PlatformFileError" expires_after="2026-11-01">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -2356,7 +2356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.SigningQuotaExceededLastResult"
-    enum="DeviceBoundSessionError" expires_after="2026-08-30">
+    enum="DeviceBoundSessionError" expires_after="2026-11-01">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2583,7 +2583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
-    enum="AdditionalHttpsRecordStatus" expires_after="2026-08-30">
+    enum="AdditionalHttpsRecordStatus" expires_after="2026-11-01">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -3245,7 +3245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.FailureTime" units="ms"
-    expires_after="2026-06-28">
+    expires_after="2026-11-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3256,7 +3256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SystemTask.SuccessTime" units="ms"
-    expires_after="2026-06-28">
+    expires_after="2026-11-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3488,7 +3488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3506,7 +3506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.BytesSent2" units="bytes"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3521,7 +3521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.MainJobWaitTimeWithAvailableSpdySession"
-    units="ms" expires_after="2026-08-30">
+    units="ms" expires_after="2026-11-01">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3531,7 +3531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.MainJobWaitTimeWithoutAvailableSpdySession"
-    units="ms" expires_after="2026-08-30">
+    units="ms" expires_after="2026-11-01">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3917,7 +3917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.NewSpdySessionEstablishTime" units="ms"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4173,7 +4173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>davidben@chromium.org</owner>
   <owner>src/third_party/boringssl/OWNERS</owner>
   <summary>
@@ -4250,7 +4250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkErrorLoggingService.TaskBacklogSize" units="count"
-    expires_after="2026-09-01">
+    expires_after="2026-11-01">
   <owner>hayato@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -4426,7 +4426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkTransaction.TooManyRetriesOnConnectionErrors"
-    enum="Boolean" expires_after="2026-09-01">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>hayato@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -7774,7 +7774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -8090,7 +8090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AcceptChForOrigin" enum="Boolean"
-    expires_after="2026-09-02">
+    expires_after="2026-11-01">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8102,7 +8102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsAcceptChEntries" enum="AcceptChEntries"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8114,7 +8114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsDecoderStatus" enum="AlpsDecoderError"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8137,7 +8137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsSettingParameterCount" units="parameters"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8669,7 +8669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLExtendedMainSecretSupported" enum="BooleanSupported"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8750,7 +8750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLRenegotiationInfoSupported" enum="BooleanSupported"
-    expires_after="2026-06-30">
+    expires_after="2026-11-01">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8787,7 +8787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TaskRunner.RequestPriority" enum="RequestPriority"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>hayato@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

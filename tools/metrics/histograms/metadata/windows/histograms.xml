@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.AutoDeElevateResult" enum="Hresult"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>wfh@chromium.org</owner>
   <owner>ssmole@microsoft.com</owner>
   <summary>

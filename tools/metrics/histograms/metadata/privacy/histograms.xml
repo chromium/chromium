@@ -143,7 +143,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.AutomaticallyDismissed"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.3PCD.RollbackNotice.ShouldShow" enum="Boolean"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -187,7 +187,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.PageRefreshCount"
-    units="count" expires_after="2026-08-30">
+    units="count" expires_after="2026-11-01">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration"
-    units="microseconds" expires_after="2026-08-30">
+    units="microseconds" expires_after="2026-11-01">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -269,7 +269,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DeleteBrowsingData.MigratedToNewDefaults"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-11-01">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -357,7 +357,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -598,7 +598,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
     enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

@@ -2226,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FullRestoreWindowCount2" units="count"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2531,7 +2531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoredAppLaunch" enum="AppType"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2542,7 +2542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2553,7 +2553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreSetting" enum="RestoreSetting"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2645,7 +2645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
-    expires_after="2026-08-30">
+    expires_after="2026-11-01">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
