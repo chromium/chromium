@@ -176,7 +176,7 @@ UniqueElementData::UniqueElementData(const UniqueElementData& other)
 }
 
 UniqueElementData::UniqueElementData(const ShareableElementData& other)
-    : ElementData(other, true) {
+    : ElementData(other, true), attribute_vector_(other.AttributesSpan()) {
   // An ShareableElementData should never have a mutable inline
   // CSSPropertyValueSet attached. Same for presentation attribute style.
   DCHECK(!other.inline_style_ || !other.inline_style_->IsMutable());
@@ -184,11 +184,6 @@ UniqueElementData::UniqueElementData(const ShareableElementData& other)
   DCHECK(!other.presentation_attribute_style_ ||
          !other.presentation_attribute_style_->IsMutable());
   presentation_attribute_style_ = other.presentation_attribute_style_;
-
-  attribute_vector_.reserve(other.Attributes().size());
-  for (auto& attribute : other.AttributesSpan()) {
-    attribute_vector_.UncheckedAppend(attribute);
-  }
 }
 
 ShareableElementData* UniqueElementData::MakeShareableCopy() const {
