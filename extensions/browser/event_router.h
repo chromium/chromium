@@ -182,7 +182,8 @@ class EventRouter : public KeyedService,
       mojom::EventListenerPtr event_listener) override;
 
   void AddListenerForServiceWorker(
-      mojom::EventListenerPtr event_listener) override;
+      mojom::EventListenerPtr event_listener,
+      mojom::ServiceWorkerContextPtr service_worker_context) override;
 
   void AddLazyListenerForMainThread(const ExtensionId& extension_id,
                                     const std::string& name) override;
@@ -208,7 +209,8 @@ class EventRouter : public KeyedService,
       mojom::EventListenerPtr event_listener) override;
 
   void RemoveListenerForServiceWorker(
-      mojom::EventListenerPtr event_listener) override;
+      mojom::EventListenerPtr event_listener,
+      mojom::ServiceWorkerContextPtr service_worker_context) override;
 
   void RemoveLazyListenerForMainThread(const ExtensionId& extension_id,
                                        const std::string& name) override;
@@ -238,8 +240,11 @@ class EventRouter : public KeyedService,
   void RemoveEventListener(const std::string& event_name,
                            content::RenderProcessHost* process,
                            const ExtensionId& extension_id);
-  void RemoveServiceWorkerEventListener(mojom::EventListenerPtr event_listener,
-                                        content::RenderProcessHost* process);
+  void RemoveServiceWorkerEventListener(
+      const ExtensionId& extension_id,
+      const std::string& event_name,
+      const mojom::ServiceWorkerContext& service_worker_context,
+      content::RenderProcessHost* process);
 
   // Add or remove a URL as an event listener for `event_name`.
   void AddEventListenerForURL(const std::string& event_name,
@@ -442,12 +447,6 @@ class EventRouter : public KeyedService,
   bool CanProcessAccessOrigin(content::RenderProcessHost& process,
                               const GURL& url) const;
 
-  // Validates that a renderer-originated service worker listener context exists
-  // and supplies a valid worker scope URL.
-  bool ValidateServiceWorkerContext(
-      const mojom::ServiceWorkerContext* service_worker_context,
-      bool is_add);
-
   // Validates a main-thread listener owner from a renderer-originated message.
   // If `require_extension_process` is true, content and user script processes
   // are rejected. Returns true if the listener owner is valid and authorized.
@@ -476,8 +475,11 @@ class EventRouter : public KeyedService,
   void AddEventListener(const std::string& event_name,
                         content::RenderProcessHost* process,
                         const ExtensionId& extension_id);
-  void AddServiceWorkerEventListener(mojom::EventListenerPtr event_listener,
-                                     content::RenderProcessHost* process);
+  void AddServiceWorkerEventListener(
+      const ExtensionId& extension_id,
+      const std::string& event_name,
+      const mojom::ServiceWorkerContext& service_worker_context,
+      content::RenderProcessHost* process);
 
   // Returns or sets the list of events for which the given extension has
   // registered.

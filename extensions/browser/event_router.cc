@@ -444,20 +444,6 @@ bool EventRouter::CanProcessAccessOrigin(RenderProcessHost& process,
                                url::Origin::Create(url));
 }
 
-bool EventRouter::ValidateServiceWorkerContext(
-    const mojom::ServiceWorkerContext* service_worker_context,
-    bool is_add) {
-  // The scope_url.is_valid() check is securely deferred to
-  // ValidateServiceWorkerListenerForExtension.
-  if (!service_worker_context) {
-    receivers_.ReportBadMessage(
-        is_add ? kAddEventListenerWithInvalidWorkerScopeURL
-               : kRemoveEventListenerWithInvalidWorkerScopeURL);
-    return false;
-  }
-  return true;
-}
-
 bool EventRouter::ValidateMainThreadListenerOwner(
     const mojom::EventListenerOwner& listener_owner,
     RenderProcessHost& process,
@@ -576,7 +562,8 @@ void EventRouter::AddListenerForMainThread(
 }
 
 void EventRouter::AddListenerForServiceWorker(
-    mojom::EventListenerPtr event_listener) {
+    mojom::EventListenerPtr event_listener,
+    mojom::ServiceWorkerContextPtr service_worker_context) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
     return;
@@ -589,13 +576,6 @@ void EventRouter::AddListenerForServiceWorker(
     return;
   }
 
-  const mojom::ServiceWorkerContext* service_worker_context =
-      event_listener->service_worker_context.get();
-  if (!ValidateServiceWorkerContext(service_worker_context,
-                                    /*is_add=*/true)) {
-    return;
-  }
-
   const ExtensionId& extension_id = listener_owner.get_extension_id();
   if (!ValidateServiceWorkerListenerForExtension(
           extension_id, service_worker_context->scope_url, *process,
@@ -603,7 +583,8 @@ void EventRouter::AddListenerForServiceWorker(
     return;
   }
 
-  AddServiceWorkerEventListener(std::move(event_listener), process);
+  AddServiceWorkerEventListener(extension_id, event_listener->event_name,
+                                *service_worker_context, process);
 }
 
 void EventRouter::AddLazyListenerForMainThread(const ExtensionId& extension_id,
@@ -741,7 +722,8 @@ void EventRouter::RemoveListenerForMainThread(
 }
 
 void EventRouter::RemoveListenerForServiceWorker(
-    mojom::EventListenerPtr event_listener) {
+    mojom::EventListenerPtr event_listener,
+    mojom::ServiceWorkerContextPtr service_worker_context) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
     return;
@@ -754,13 +736,6 @@ void EventRouter::RemoveListenerForServiceWorker(
     return;
   }
 
-  const mojom::ServiceWorkerContext* service_worker_context =
-      event_listener->service_worker_context.get();
-  if (!ValidateServiceWorkerContext(service_worker_context,
-                                    /*is_add=*/false)) {
-    return;
-  }
-
   const ExtensionId& extension_id = listener_owner.get_extension_id();
   if (!ValidateServiceWorkerListenerForExtension(
           extension_id, service_worker_context->scope_url, *process,
@@ -768,7 +743,8 @@ void EventRouter::RemoveListenerForServiceWorker(
     return;
   }
 
-  RemoveServiceWorkerEventListener(std::move(event_listener), process);
+  RemoveServiceWorkerEventListener(extension_id, event_listener->event_name,
+                                   *service_worker_context, process);
 }
 
 void EventRouter::RemoveLazyListenerForMainThread(
@@ -891,15 +867,14 @@ void EventRouter::AddEventListener(const std::string& event_name,
 }
 
 void EventRouter::AddServiceWorkerEventListener(
-    mojom::EventListenerPtr event_listener,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    const mojom::ServiceWorkerContext& service_worker_context,
     RenderProcessHost* process) {
-  const mojom::ServiceWorkerContext& service_worker =
-      *event_listener->service_worker_context;
   listeners_.AddListener(EventListener::ForExtensionServiceWorker(
-      event_listener->event_name,
-      event_listener->listener_owner->get_extension_id(), process,
-      process->GetBrowserContext(), service_worker.scope_url,
-      service_worker.version_id, service_worker.thread_id, std::nullopt));
+      event_name, extension_id, process, process->GetBrowserContext(),
+      service_worker_context.scope_url, service_worker_context.version_id,
+      service_worker_context.thread_id, std::nullopt));
   CHECK(observed_process_set_.contains(process));
 }
 
@@ -912,16 +887,15 @@ void EventRouter::RemoveEventListener(const std::string& event_name,
 }
 
 void EventRouter::RemoveServiceWorkerEventListener(
-    mojom::EventListenerPtr event_listener,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    const mojom::ServiceWorkerContext& service_worker_context,
     RenderProcessHost* process) {
-  const mojom::ServiceWorkerContext& service_worker =
-      *event_listener->service_worker_context;
   std::unique_ptr<EventListener> listener =
       EventListener::ForExtensionServiceWorker(
-          event_listener->event_name,
-          event_listener->listener_owner->get_extension_id(), process,
-          process->GetBrowserContext(), service_worker.scope_url,
-          service_worker.version_id, service_worker.thread_id, std::nullopt);
+          event_name, extension_id, process, process->GetBrowserContext(),
+          service_worker_context.scope_url, service_worker_context.version_id,
+          service_worker_context.thread_id, std::nullopt);
   listeners_.RemoveListener(listener.get());
 }
 

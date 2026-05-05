@@ -262,7 +262,8 @@ class EventRouterInterceptorForStopListenerRemoval
  protected:
   // mojom::EventRouter:
   void RemoveListenerForServiceWorker(
-      mojom::EventListenerPtr event_listener) override {
+      mojom::EventListenerPtr event_listener,
+      mojom::ServiceWorkerContextPtr service_worker_context) override {
     // Don't call the real `EventRouter::RemoveListenerForServiceWorker()`
     // method to simulate that the worker never finishing stopping and informing
     // the browser to remove the listener.

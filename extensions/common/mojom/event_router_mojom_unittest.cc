@@ -29,7 +29,8 @@ class TestEventRouterImpl : public mojom::EventRouter {
   void AddListenerForMainThread(
       mojom::EventListenerPtr event_listener) override {}
   void AddListenerForServiceWorker(
-      mojom::EventListenerPtr event_listener) override {}
+      mojom::EventListenerPtr event_listener,
+      mojom::ServiceWorkerContextPtr service_worker_context) override {}
   void AddLazyListenerForMainThread(const ExtensionId& extension_id,
                                     const std::string& name) override {}
   void AddLazyListenerForServiceWorker(const ExtensionId& extension_id,
@@ -49,7 +50,8 @@ class TestEventRouterImpl : public mojom::EventRouter {
   void RemoveListenerForMainThread(
       mojom::EventListenerPtr event_listener) override {}
   void RemoveListenerForServiceWorker(
-      mojom::EventListenerPtr event_listener) override {}
+      mojom::EventListenerPtr event_listener,
+      mojom::ServiceWorkerContextPtr service_worker_context) override {}
   void RemoveLazyListenerForMainThread(const ExtensionId& extension_id,
                                        const std::string& name) override {}
   void RemoveLazyListenerForServiceWorker(const ExtensionId& extension_id,
@@ -87,7 +89,7 @@ class EventRouterMojomExtensionIdTest : public testing::Test {
   void AddListenerForServiceWorker(const ExtensionId& extension_id) {
     auto event_listener = CreateEventListener(extension_id);
     event_router_remote_->AddListenerForServiceWorker(
-        std::move(event_listener));
+        std::move(event_listener), CreateServiceWorkerContext());
     event_router_remote_.FlushForTesting();
   }
 
@@ -121,7 +123,7 @@ class EventRouterMojomExtensionIdTest : public testing::Test {
   void RemoveListenerForServiceWorker(const ExtensionId& extension_id) {
     auto event_listener = CreateEventListener(extension_id);
     event_router_remote_->RemoveListenerForServiceWorker(
-        std::move(event_listener));
+        std::move(event_listener), CreateServiceWorkerContext());
     event_router_remote_.FlushForTesting();
   }
 
@@ -159,9 +161,12 @@ class EventRouterMojomExtensionIdTest : public testing::Test {
     return mojom::EventListenerPtr(mojom::EventListener::New(
         mojom::EventListenerOwner::NewExtensionId(extension_id),
         "test_event_name",
-        mojom::ServiceWorkerContext::New(GURL("test_worker_scope"),
-                                         /*version_id=*/0, /*thread_id=*/0),
         /*event_filter=*/std::nullopt));
+  }
+
+  mojom::ServiceWorkerContextPtr CreateServiceWorkerContext() {
+    return mojom::ServiceWorkerContext::New(GURL("test_worker_scope"),
+                                            /*version_id=*/0, /*thread_id=*/0);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment;

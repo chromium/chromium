@@ -1019,12 +1019,10 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   const int sw_version_id = 10;
   const int sw_thread_id = 100;
   MockEventDispatcher sw_event_dispatcher;
-  event_router()->AddServiceWorkerEventListener(
-      mojom::EventListener::New(
-          mojom::EventListenerOwner::NewExtensionId(ext3), event_name,
-          mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id),
-          /*event_filter=*/std::nullopt),
-      process4.get());
+  auto sw_context =
+      mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id);
+  event_router()->AddServiceWorkerEventListener(ext3, event_name, *sw_context,
+                                                process4.get());
   event_router()->BindServiceWorkerEventDispatcher(
       process4->GetDeprecatedID(), sw_thread_id,
       sw_event_dispatcher.BindAndPassRemote());

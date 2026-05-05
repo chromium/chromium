@@ -32,9 +32,6 @@ struct EventListener {
   EventListenerOwner listener_owner;
   // The event name for which the listener was added.
   string event_name;
-  // Details about the service worker context, if and only if this listener was
-  // added by an extension service worker.
-  ServiceWorkerContext? service_worker_context;
   // The event filter for the listener, if and only if this was for a filtered
   // event.
   mojo_base.mojom.DictionaryValue? filter;
@@ -48,7 +45,8 @@ interface EventRouter {
 
   // Notifies the browser that the given extension added a listener to an event
   // in a service worker.
-  AddListenerForServiceWorker(EventListener event_listener);
+  AddListenerForServiceWorker(EventListener event_listener,
+                              ServiceWorkerContext service_worker_context);
 
   // Notifies the browser that the given extension added a listener to an event
   // from a lazy background page.
@@ -86,7 +84,8 @@ interface EventRouter {
 
   // Notifies the browser that the given extension removed a listener from an
   // event in a service worker.
-  RemoveListenerForServiceWorker(EventListener event_listener);
+  RemoveListenerForServiceWorker(EventListener event_listener,
+                                 ServiceWorkerContext service_worker_context);
 
   // Notifies the browser that the given extension is no longer interested in
   // receiving the given event from a lazy background page.
