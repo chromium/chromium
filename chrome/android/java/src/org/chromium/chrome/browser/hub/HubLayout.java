@@ -897,12 +897,14 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     /**
-     * @return The y-offset for the container view that may be impacted by the status indicator and
-     *     app header heights.
+     * Returns the y-offset for the container view that may be impacted by the status indicator and
+     * app header heights.
      */
     private float getContainerYOffset() {
-        var params = (FrameLayout.LayoutParams) mHubController.getContainerView().getLayoutParams();
-        return params.topMargin;
+        var params =
+                (FrameLayout.LayoutParams)
+                        mHubController.getContainerViewUnchecked().getLayoutParams();
+        return params == null ? 0 : params.topMargin;
     }
 
     /**
@@ -926,7 +928,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         if (isActive()) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
-                    () -> mHubController.getContainerView().setY(getContainerYOffset()));
+                    () -> mHubController.getContainerViewUnchecked().setY(getContainerYOffset()));
         }
     }
 
