@@ -131,6 +131,7 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedCo
 
 # Flakes on Android and Windows DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ win ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/509789253 [ mac intel ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 
 #######################################################################
