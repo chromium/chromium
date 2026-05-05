@@ -1860,6 +1860,7 @@ test("content_browsertests") {
     "../renderer/render_widget_browsertest.cc",
     "../renderer/visual_state_browsertest.cc",
     "../renderer/webclipboard_impl_browsertest.cc",
+    "../shell/browser/mojo_bindings_test_browsertest.cc",
     "../shell/browser/rust_mojo_test_browsertest.cc",
     "../test/browser_test_utils_browsertest.cc",
     "../test/content_browser_test_test.cc",
@@ -1914,6 +1915,10 @@ test("content_browsertests") {
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  if (enable_mojom_fuzzer) {
+    defines += [ "MOJOM_FUZZER_BUILD_MODE" ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 
@@ -2004,6 +2009,7 @@ test("content_browsertests") {
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
+    "//mojo/public/js:bindings_lite",
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",
@@ -2044,6 +2050,7 @@ test("content_browsertests") {
     "//testing/gtest",
     "//third_party/angle:includes",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/mojom:mojom_platform_js",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/leveldatabase",
     "//third_party/re2",
@@ -2093,6 +2100,7 @@ test("content_browsertests") {
     "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
     "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
     "$root_gen_dir/content/shell/common/rust_test.test-mojom-lite.js",
+    "$root_gen_dir/url/mojom/scheme_host_port.mojom-lite.js",
   ]
 
   if (!is_ios && !is_android) {

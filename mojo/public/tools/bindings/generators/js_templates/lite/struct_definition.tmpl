@@ -62,20 +62,34 @@ goog.provide('{{module.namespace}}.{{struct.name}}');
 
 /** @record */
 {{module.namespace}}.{{struct.name}} = class {
-  constructor() {
+{%- set fields = [] %}
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
 {%-   if packed_field|is_nullable_value_kind_packed_field %}
 {%-     if packed_field|is_primary_nullable_value_kind_packed_field %}
 {%-       set original_field = packed_field.original_field %}
-{%-       set name = original_field.name %}
-{%-       set kind = original_field.kind %}
-    /** @export { {{original_field.kind|lite_closure_field_type}} } */
-    this.{{name}};
+{%-       set _ = fields.append({'name': original_field.name, 'kind': original_field.kind}) %}
 {%-     endif %}
 {%-   else %}
-    /** @export { {{packed_field.field.kind|lite_closure_field_type}} } */
-    this.{{packed_field.field.name}};
+{%-     set _ = fields.append({'name': packed_field.field.name, 'kind': packed_field.field.kind}) %}
 {%-   endif %}
 {%- endfor %}
+{#--- Fuzzing #}
+{%- if generate_fuzzing %}
+  constructor(
+{%-   for param in fields%}
+    {{param.name|sanitize_identifier}}{%- if not loop.last %},{% endif %}
+{%-   endfor -%}) {
+{%-   for param in fields%}
+    /** @export { {{param.kind|lite_closure_field_type}} } */
+    this.{{param.name}} = {{param.name|sanitize_identifier}};
+{%-   endfor -%}
   }
+{%- else %}
+  constructor() {
+{%-   for param in fields%}
+    /** @export { {{param.kind|lite_closure_field_type}} } */
+    this.{{param.name}};
+{%-   endfor -%}
+  }
+{%- endif %}
 };
