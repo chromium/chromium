@@ -9,6 +9,7 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -22,6 +23,7 @@ import java.util.List;
 /** Centralizes management of NTP background preference data. */
 @NullMarked
 public class NtpBackgroundDataManager {
+    private static final String TAG = "NtpBackgroundData";
     private static final int MAXIMUM_LOCAL_HISTORY = 3;
     private static final int MAXIMUM_REMOTE_HISTORY = 2;
 
@@ -52,79 +54,93 @@ public class NtpBackgroundDataManager {
      * Saves a single NTP's background type from cross device sync to the shared preference.
      *
      * @param backgroundData The background data to save.
-     * @throws JSONException If there is an error converting the data to JSON.
      */
-    public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataBase backgroundData)
-            throws JSONException {
-        @PlatformType int platformType = backgroundData.getPlatformType();
-        List<NtpBackgroundDataBase> currentList =
-                getBackgroundDataListFromSharedPreference(platformType);
-        JSONArray newList = new JSONArray();
+    public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataBase backgroundData) {
+        try {
+            @PlatformType int platformType = backgroundData.getPlatformType();
+            List<NtpBackgroundDataBase> currentList =
+                    getBackgroundDataListFromSharedPreference(platformType);
+            JSONArray newList = new JSONArray();
 
-        if (currentList == null || currentList.isEmpty()) {
-            newList.put(backgroundData.toJson());
-            writeToShardPreference(newList, platformType);
-            return;
-        }
-
-        // To update existing remote sync data:
-        // If this backgroundData already in the current remote sync data list, moves it to the
-        // first one. Otherwise, adds it as the first one on the list and removed the last data of
-        // the list if exceeds the maximum allowed size of history data.
-        int index = currentList.indexOf(backgroundData);
-        if (index != -1) {
-            currentList.remove(index);
-        } else {
-            int length = currentList.size();
-            if (length >= MAXIMUM_REMOTE_HISTORY) {
-                currentList.remove(currentList.size() - 1);
+            if (currentList == null || currentList.isEmpty()) {
+                newList.put(backgroundData.toJson());
+                writeToShardPreference(newList, platformType);
+                return;
             }
-        }
-        currentList.add(0, backgroundData);
 
-        for (var data : currentList) {
-            newList.put(data.toJson());
+            // To update existing remote sync data:
+            // If this backgroundData already in the current remote sync data list, moves it to the
+            // first one. Otherwise, adds it as the first one on the list and removed the last data
+            // of the list if exceeds the maximum allowed size of history data.
+            int index = currentList.indexOf(backgroundData);
+            if (index != -1) {
+                currentList.remove(index);
+            } else {
+                int length = currentList.size();
+                if (length >= MAXIMUM_REMOTE_HISTORY) {
+                    currentList.remove(currentList.size() - 1);
+                }
+            }
+            currentList.add(0, backgroundData);
+
+            for (var data : currentList) {
+                newList.put(data.toJson());
+            }
+            writeToShardPreference(newList, platformType);
+        } catch (JSONException e) {
+            Log.i(
+                    TAG,
+                    "Failed to save NTP's sync background data to the SharedPreference: platform"
+                            + " type = %d, data type = %d.",
+                    backgroundData.getPlatformType(),
+                    backgroundData.getBackgroundType());
         }
-        writeToShardPreference(newList, platformType);
     }
 
     /**
      * Saves the user selected background type to the shared preference for local history.
      *
      * @param backgroundData The user selected background data.
-     * @throws JSONException If there is an error converting the data to JSON.
      */
     public void saveUserSelectedBackgroundTypeToSharedPreference(
-            NtpBackgroundDataBase backgroundData) throws JSONException {
-        @PlatformType int platformTypeToSave = PlatformType.ANDROID_LOCAL;
-        List<NtpBackgroundDataBase> currentList =
-                getBackgroundDataListFromSharedPreference(platformTypeToSave);
-        JSONArray newList = new JSONArray();
+            NtpBackgroundDataBase backgroundData) {
+        try {
+            @PlatformType int platformTypeToSave = PlatformType.ANDROID_LOCAL;
+            List<NtpBackgroundDataBase> currentList =
+                    getBackgroundDataListFromSharedPreference(platformTypeToSave);
+            JSONArray newList = new JSONArray();
 
-        if (currentList == null || currentList.isEmpty()) {
-            newList.put(backgroundData.toJson());
+            if (currentList == null || currentList.isEmpty()) {
+                newList.put(backgroundData.toJson());
+                writeToShardPreference(newList, platformTypeToSave);
+                return;
+            }
+
+            // To update user selected background history data:
+            // If the user chose a cross device synced background type, we add the type to the local
+            // selection history list, but remove any existing type from that platform from the
+            // local selection history. This allows to cache only the latest chosen background type
+            // from any remote platform.
+            int platformTypeOfNewData = backgroundData.getPlatformType();
+            if (platformTypeOfNewData != PlatformType.ANDROID_LOCAL) {
+                currentList.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
+            }
+            currentList.add(0, backgroundData);
+            int size = currentList.size();
+            if (size > MAXIMUM_LOCAL_HISTORY) {
+                currentList.remove(size - 1);
+            }
+            for (var data : currentList) {
+                newList.put(data.toJson());
+            }
             writeToShardPreference(newList, platformTypeToSave);
-            return;
+        } catch (JSONException e) {
+            Log.i(
+                    TAG,
+                    "Failed to save user selected NTP's sync background data to the"
+                            + " SharedPreference: data type = %d.",
+                    backgroundData.getBackgroundType());
         }
-
-        // To update user selected background history data:
-        // If the user chose a cross device synced background type, we add the type to the local
-        // selection history list, but remove any existing type from that platform from the local
-        // selection history. This allows to cache only the latest chosen background type from any
-        // remote platform.
-        int platformTypeOfNewData = backgroundData.getPlatformType();
-        if (platformTypeOfNewData != PlatformType.ANDROID_LOCAL) {
-            currentList.removeIf(item -> item.getPlatformType() == platformTypeOfNewData);
-        }
-        currentList.add(0, backgroundData);
-        int size = currentList.size();
-        if (size > MAXIMUM_LOCAL_HISTORY) {
-            currentList.remove(size - 1);
-        }
-        for (var data : currentList) {
-            newList.put(data.toJson());
-        }
-        writeToShardPreference(newList, platformTypeToSave);
     }
 
     /**

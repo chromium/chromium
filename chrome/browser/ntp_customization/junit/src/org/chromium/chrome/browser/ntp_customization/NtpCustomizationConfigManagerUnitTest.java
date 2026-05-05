@@ -62,6 +62,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.url.JUnitTestGURLs;
@@ -75,6 +77,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private HomepageStateListener mListener;
     @Mock private NtpThemeDailyRefreshManager mNtpThemeDailyRefreshManager;
+    @Mock private NtpBackgroundDataManager mNtpBackgroundDataManager;
     @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
     @Captor private ArgumentCaptor<BackgroundImageInfo> mBackgroundImageInfoCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -95,6 +98,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpThemeDailyRefreshManager.setInstanceForTesting(mNtpThemeDailyRefreshManager);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mNtpCustomizationConfigManager = new NtpCustomizationConfigManager());
+        mNtpCustomizationConfigManager.setNtpBackgroundDataManagerForTesting(
+                mNtpBackgroundDataManager);
 
         // Makes mPortraitMatrix and mLandscapeMatrix different in terms of values.
         mPortraitMatrix = new Matrix();
@@ -120,6 +125,43 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpCustomizationUtils.deleteBackgroundImageFileImpl(
                 NtpCustomizationUtils.createDailyRefreshBackgroundImageFile());
         NtpCustomizationConfigManager.setInstanceForTesting(null);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnBackgroundColorChanged_syncsToDataManager() {
+        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+
+        verify(mNtpBackgroundDataManager)
+                .saveUserSelectedBackgroundTypeToSharedPreference(
+                        any(NtpBackgroundDataColor.class));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnBackgroundColorChanged_colorFromHex_syncsToDataManager() {
+        @ColorInt int backgroundColor = Color.RED;
+        @ColorInt int primaryColor = Color.BLUE;
+        NtpThemeColorFromHexInfo colorFromHexInfo =
+                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
+
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorFromHexInfo, NtpBackgroundType.COLOR_FROM_HEX);
+
+        verify(mNtpBackgroundDataManager)
+                .saveUserSelectedBackgroundTypeToSharedPreference(
+                        any(NtpBackgroundDataCustomizedColor.class));
     }
 
     @Test
