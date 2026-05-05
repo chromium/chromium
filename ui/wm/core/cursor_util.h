@@ -36,7 +36,8 @@ std::optional<ui::CursorData> GetCursorData(
     float scale,
     std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation,
-    SkColor color);
+    SkColor color,
+    std::optional<SkColor> outline_color = std::nullopt);
 
 // Scale and rotate the cursor's bitmap and hotpoint.
 // `bitmap_in_out` and `hotpoint_in_out` are used as

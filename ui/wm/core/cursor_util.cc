@@ -268,6 +268,8 @@ static_assert(std::size(kCursorResourceData) ==
 
 // The name of cursor fill shape in lottie.
 constexpr char kCursorFillColorName[] = "cursor.fill.color";
+// The name of cursor outline shape in lottie.
+constexpr char kCursorOutlineColorName[] = "cursor.outline.color";
 
 // Target frame rate for animated cursor.
 constexpr int kAnimatedCursorFramePerSecond = 60;
@@ -279,7 +281,8 @@ std::optional<ui::CursorData> GetCursorData(
     float scale,
     std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation,
-    SkColor color) {
+    SkColor color,
+    std::optional<SkColor> outline_color) {
   DCHECK_NE(type, CursorType::kCustom);
 
   int resource_id;
@@ -295,6 +298,10 @@ std::optional<ui::CursorData> GetCursorData(
     // If cursor color is not the default, color map needs to be applied
     // when creating lottie animation for dynamic coloration.
     colormap.emplace(cc::SkottieMapColor(kCursorFillColorName, color));
+  }
+  if (outline_color.has_value()) {
+    colormap.emplace(
+        cc::SkottieMapColor(kCursorOutlineColorName, outline_color.value()));
   }
 
   AnimationCache& cursor_animations = GetAnimationCache();

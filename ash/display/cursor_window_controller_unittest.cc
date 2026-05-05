@@ -541,4 +541,35 @@ TEST_F(InvertedCursorWindowControllerTest, SeparateCursorBitmap_PureColors) {
   EXPECT_EQ(SK_ColorWHITE, overlay.getColor(3, 0));
 }
 
+TEST_F(InvertedCursorWindowControllerTest, InvertedCursorOutlineColor) {
+  SetCursorCompositionEnabled(true);
+
+  auto test_cursor_outline = [&](CursorType type) {
+    cursor_window_controller()->SetCursor(type);
+    const SkBitmap* original = GetCursorImage().bitmap();
+    SkBitmap mask, overlay;
+    SeparateCursorBitmap(*original, &mask, &overlay);
+
+    // Look through the overlay for white pixels, showing that the outline
+    // remains white. Also ensure there are no black pixels in the outline
+    // (expected for these pointer types).
+    // TODO(b:509950328) - Improve test after labeling other strokes /
+    // parts of the cursor. While this works for hand and arrow, it would
+    // not work for the copy cursor, for example.
+    bool found_outline = false;
+    for (int y = 0; y < overlay.height(); ++y) {
+      for (int x = 0; x < overlay.width(); ++x) {
+        ASSERT_NE(overlay.getColor(x, y), SK_ColorBLACK);
+        if (overlay.getColor(x, y) == SK_ColorWHITE) {
+          found_outline = true;
+        }
+      }
+    }
+    EXPECT_TRUE(found_outline);
+  };
+
+  test_cursor_outline(CursorType::kPointer);
+  test_cursor_outline(CursorType::kHand);
+}
+
 }  // namespace ash

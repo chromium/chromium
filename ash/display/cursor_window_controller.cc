@@ -63,6 +63,7 @@ std::vector<gfx::ImageSkia> GetCursorImages(
     int target_cursor_size_in_dip,
     float dsf,
     SkColor cursor_color,
+    std::optional<SkColor> outline_color,
     gfx::Point* out_hotspot_in_physical_pixels) {
   std::vector<gfx::ImageSkia> images;
   // Rotation is handled in viz (for aura::Window based cursor)
@@ -73,7 +74,7 @@ std::vector<gfx::ImageSkia> GetCursorImages(
       cursor_size == ui::CursorSize::kLarge
           ? std::make_optional(target_cursor_size_in_dip * dsf)
           : std::nullopt,
-      display::Display::ROTATE_0, cursor_color);
+      display::Display::ROTATE_0, cursor_color, outline_color);
   if (!cursor_data) {
     return images;
   }
@@ -790,9 +791,14 @@ void CursorWindowController::UpdateCursorImage() {
     // Standard cursor.
     const float dsf = display_.device_scale_factor();
 
-    images =
-        GetCursorImages(cursor_size_, cursor_.type(), large_cursor_size_in_dip_,
-                        dsf, fill_color, &hot_point_in_physical_pixels);
+    std::optional<SkColor> outline_color;
+    if (use_inverted) {
+      outline_color = SK_ColorWHITE;
+    }
+
+    images = GetCursorImages(cursor_size_, cursor_.type(),
+                             large_cursor_size_in_dip_, dsf, fill_color,
+                             outline_color, &hot_point_in_physical_pixels);
     if (images.empty()) {
       return;
     }
