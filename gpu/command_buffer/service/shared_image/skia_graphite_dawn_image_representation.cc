@@ -97,7 +97,7 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextureHolders(
       SupportsMultiplanarRendering(context_state_.get());
   const bool supports_multiplanar_copy =
       SupportsMultiplanarCopy(context_state_.get());
-  if (format().is_multi_plane()) {
+  if (format().is_multi_plane() && !format().PrefersExternalSampler()) {
     CHECK(format() == viz::MultiPlaneFormat::kP010 ||
           format() == viz::MultiPlaneFormat::kP210 ||
           format() == viz::MultiPlaneFormat::kP410 ||
@@ -148,6 +148,11 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     const gfx::Rect& update_rect) {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
+
+  if (format().PrefersExternalSampler()) {
+    return {};
+  }
+
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       supported_tex_usages_, AllowUnclearedAccess::kYes, update_rect);
   if (!dawn_scoped_access_) {
@@ -195,6 +200,10 @@ std::vector<scoped_refptr<GraphiteTextureHolder>>
 SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
+
+  if (format().PrefersExternalSampler()) {
+    return {};
+  }
 
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       supported_tex_usages_, AllowUnclearedAccess::kYes);

@@ -615,6 +615,10 @@ wgpu::TextureUsage SupportedDawnTextureUsage(
   // TextureBinding usage is always supported.
   wgpu::TextureUsage usage = wgpu::TextureUsage::TextureBinding;
 
+  if (format.PrefersExternalSampler()) {
+    return usage;
+  }
+
   if (format == viz::SinglePlaneFormat::kETC1) {
     return usage | wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
   }
@@ -693,22 +697,24 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 #if BUILDFLAG(SKIA_USE_DAWN)
   CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  wgpu::TextureFormat wgpu_view_format;
-  if (ycbcr_info) {
-    wgpu_view_format = wgpu::TextureFormat::OpaqueYCbCrAndroid;
-  } else {
-    wgpu_view_format = gpu::ToDawnTextureViewFormat(format, plane_index);
-  }
-  if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
-    return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
-  }
   dawn_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
-  // For multiplanar shared image, we don't know the real texture format until
-  // the promise image is fulfilled, so set the fFormat to Undefined for now.
-  dawn_texture_info.fFormat = format.is_multi_plane()
-                                  ? wgpu::TextureFormat::Undefined
-                                  : wgpu_view_format;
-  dawn_texture_info.fViewFormat = wgpu_view_format;
+
+  if (ycbcr_info || format.PrefersExternalSampler()) {
+    dawn_texture_info.fFormat = wgpu::TextureFormat::OpaqueYCbCrAndroid;
+    dawn_texture_info.fViewFormat = wgpu::TextureFormat::OpaqueYCbCrAndroid;
+  } else {
+    wgpu::TextureFormat wgpu_view_format =
+        gpu::ToDawnTextureViewFormat(format, plane_index);
+    if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
+      return skgpu::graphite::TextureInfos::MakeDawn(dawn_texture_info);
+    }
+    // For multiplanar shared image, we don't know the real texture format until
+    // the promise image is fulfilled, so set the fFormat to Undefined for now.
+    dawn_texture_info.fFormat = format.is_multi_plane()
+                                    ? wgpu::TextureFormat::Undefined
+                                    : wgpu_view_format;
+    dawn_texture_info.fViewFormat = wgpu_view_format;
+  }
   // The aspect is always defaulted to all as multiplanar copies are not
   // needed by the display compositor.
   // TODO(324422644): set fAspect to Undefined for multiplanar format.
@@ -767,16 +773,23 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool supports_multiplanar_rendering,
     bool supports_multiplanar_copy) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
-  wgpu::TextureFormat wgpu_view_format =
-      ToDawnTextureViewFormat(format, plane_index);
-  if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
-    return dawn_texture_info;
-  }
   dawn_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
-  dawn_texture_info.fFormat =
-      is_yuv_plane ? ToDawnFormat(format) : wgpu_view_format;
-  dawn_texture_info.fViewFormat = wgpu_view_format;
-  dawn_texture_info.fAspect = ToDawnTextureAspect(is_yuv_plane, plane_index);
+
+  if (format.PrefersExternalSampler()) {
+    dawn_texture_info.fFormat = wgpu::TextureFormat::OpaqueYCbCrAndroid;
+    dawn_texture_info.fViewFormat = wgpu::TextureFormat::OpaqueYCbCrAndroid;
+    dawn_texture_info.fAspect = wgpu::TextureAspect::All;
+  } else {
+    wgpu::TextureFormat wgpu_view_format =
+        ToDawnTextureViewFormat(format, plane_index);
+    if (wgpu_view_format == wgpu::TextureFormat::Undefined) {
+      return dawn_texture_info;
+    }
+    dawn_texture_info.fFormat =
+        is_yuv_plane ? ToDawnFormat(format) : wgpu_view_format;
+    dawn_texture_info.fViewFormat = wgpu_view_format;
+    dawn_texture_info.fAspect = ToDawnTextureAspect(is_yuv_plane, plane_index);
+  }
   dawn_texture_info.fUsage = SupportedDawnTextureUsage(
       format, is_yuv_plane, scanout_dcomp_surface,
       supports_multiplanar_rendering, supports_multiplanar_copy);

@@ -740,6 +740,9 @@ AHardwareBufferImageBacking::ProduceDawn(
 #endif
 
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
+  if (format().PrefersExternalSampler()) {
+    webgpu_format = wgpu::TextureFormat::OpaqueYCbCrAndroid;
+  }
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unable to fine a suitable WebGPU format.";
     return nullptr;

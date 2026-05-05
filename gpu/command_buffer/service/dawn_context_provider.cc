@@ -299,6 +299,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
       wgpu::FeatureName::SharedFenceSyncFD,
       wgpu::FeatureName::RenderPassRenderArea,
+      wgpu::FeatureName::OpaqueYCbCrAndroidForExternalTexture,
 
       // The following features are always supported by the the D3D backends.
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
