@@ -7,16 +7,24 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
 // A provider that returns whether extensions have declared permissions in the
 // manifest.
 class ExtensionInstallTimePermissionProvider final
-    : public content_settings::ObservableProvider {
+    : public content_settings::ObservableProvider,
+      public ExtensionRegistryObserver {
  public:
-  explicit ExtensionInstallTimePermissionProvider(
+  ExtensionInstallTimePermissionProvider(
+      content::BrowserContext* context,
       extensions::ExtensionRegistry* extension_registry);
 
   ExtensionInstallTimePermissionProvider(
@@ -45,7 +53,15 @@ class ExtensionInstallTimePermissionProvider final
   void ShutdownOnUIThread() override;
 
  private:
+  // extensions::ExtensionRegistryObserver overrides.
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  content_settings::OriginValueMap value_map_;
 };
 
 }  // namespace extensions

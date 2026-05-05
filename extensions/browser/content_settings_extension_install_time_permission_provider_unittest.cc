@@ -35,8 +35,8 @@ class ExtensionInstallTimePermissionProviderTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     registry_ = ExtensionRegistry::Get(browser_context());
-    provider_ =
-        std::make_unique<ExtensionInstallTimePermissionProvider>(registry_);
+    provider_ = std::make_unique<ExtensionInstallTimePermissionProvider>(
+        browser_context(), registry_);
 
     // Ensure geolocation and notifications are registered.
     PermissionsInfo* info = PermissionsInfo::GetInstance();
@@ -71,6 +71,7 @@ TEST_F(ExtensionInstallTimePermissionProviderTest, GetRule) {
   AddPermission(extension.get(), mojom::APIPermissionID::kGeolocation);
   ASSERT_TRUE(extension);
   registry()->AddEnabled(extension);
+  registry()->TriggerOnLoaded(extension.get());
 
   // The primary URL must exactly match the extension's URL.
   GURL extension_url = extension->url();
@@ -111,15 +112,18 @@ TEST_F(ExtensionInstallTimePermissionProviderTest, GetRuleIterator) {
       ExtensionBuilder("Extension 1").Build();
   AddPermission(extension1.get(), mojom::APIPermissionID::kGeolocation);
   registry()->AddEnabled(extension1);
+  registry()->TriggerOnLoaded(extension1.get());
 
   scoped_refptr<const Extension> extension2 =
       ExtensionBuilder("Extension 2").Build();
   registry()->AddEnabled(extension2);
+  registry()->TriggerOnLoaded(extension2.get());
 
   scoped_refptr<const Extension> extension3 =
       ExtensionBuilder("Extension 3").Build();
   AddPermission(extension3.get(), mojom::APIPermissionID::kGeolocation);
   registry()->AddEnabled(extension3);
+  registry()->TriggerOnLoaded(extension3.get());
 
   // Expect exactly two extensions (extension1, extension3) have GEOLOCATION.
   std::unique_ptr<content_settings::RuleIterator> iterator =
@@ -136,17 +140,13 @@ TEST_F(ExtensionInstallTimePermissionProviderTest, GetRuleIterator) {
     count++;
   }
   EXPECT_EQ(2, count);
+  // reset iterator to release lock.
+  iterator.reset();
 
-  // Expect zero extensions have NOTIFICATIONS.
+  // Expect zero extensions have NOTIFICATIONS (null iterator).
   iterator = provider()->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                          /*off_the_record=*/false);
-  ASSERT_TRUE(iterator);
-  count = 0;
-  while (iterator->HasNext()) {
-    iterator->Next();
-    count++;
-  }
-  EXPECT_EQ(0, count);
+  ASSERT_FALSE(iterator);
 
   // Expect null iterator for unrelated ContentSettingsType.
   iterator = provider()->GetRuleIterator(ContentSettingsType::COOKIES,
@@ -159,6 +159,7 @@ TEST_F(ExtensionInstallTimePermissionProviderTest, NoopMethods) {
       ExtensionBuilder("Test Extension").Build();
   AddPermission(extension.get(), mojom::APIPermissionID::kGeolocation);
   registry()->AddEnabled(extension);
+  registry()->TriggerOnLoaded(extension.get());
 
   // SetWebsiteSetting should return false (not supported).
   EXPECT_FALSE(provider()->SetWebsiteSetting(

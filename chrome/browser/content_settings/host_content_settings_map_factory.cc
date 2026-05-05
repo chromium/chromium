@@ -158,7 +158,7 @@ scoped_refptr<RefcountedKeyedService>
   settings_map->RegisterProvider(
       ProviderType::kExtensionInstallTimePermissionProvider,
       std::make_unique<extensions::ExtensionInstallTimePermissionProvider>(
-          extensions::ExtensionRegistry::Get(context)));
+          context, extensions::ExtensionRegistry::Get(context)));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
