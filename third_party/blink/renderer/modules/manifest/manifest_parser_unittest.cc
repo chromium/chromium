@@ -1928,6 +1928,63 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
               "http://foo.com/landing/icons/foo.png");
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Accept 'http' scheme.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "icons": [ {"src": "http://example.com/foo.png" } ] })");
+    EXPECT_FALSE(manifest->icons.empty());
+    EXPECT_EQ(manifest->icons[0]->src.GetString(),
+              "http://example.com/foo.png");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'https' scheme.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "icons": [ {"src": "https://example.com/foo.png" } ] })");
+    EXPECT_FALSE(manifest->icons.empty());
+    EXPECT_EQ(manifest->icons[0]->src.GetString(),
+              "https://example.com/foo.png");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'data' scheme.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "icons": [ {"src": "data:image/png;base64,abc" } ] })");
+    EXPECT_FALSE(manifest->icons.empty());
+    EXPECT_EQ(manifest->icons[0]->src.GetString(), "data:image/png;base64,abc");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept scheme matching document scheme.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "icons": [ {"src": "chrome://theme/foo.png" } ] })",
+        DefaultManifestUrl(), KURL("chrome://password-manager/"));
+    EXPECT_FALSE(manifest->icons.empty());
+    EXPECT_EQ(manifest->icons[0]->src.GetString(), "chrome://theme/foo.png");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Ignore 'ftp' scheme.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "icons": [ {"src": "ftp://example.com/foo.png" } ] })");
+    EXPECT_TRUE(manifest->icons.empty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'src' of 'icon' ignored, invalid scheme.", errors()[0]);
+  }
+
+  // Ignore 'file' scheme.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "icons": [ {"src": "file:///etc/passwd" } ] })");
+    EXPECT_TRUE(manifest->icons.empty());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'src' of 'icon' ignored, invalid scheme.", errors()[0]);
+  }
 }
 
 TEST_F(ManifestParserTest, IconTypeParseRules) {

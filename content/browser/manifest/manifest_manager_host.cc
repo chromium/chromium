@@ -131,6 +131,17 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
         return "Manifest shortcut urls must be within scope.";
       }
     }
+
+    for (const auto& icon : manifest.icons) {
+      if (!icon.src.is_valid()) {
+        return "Manifest icon urls must be valid.";
+      }
+      if (!icon.src.SchemeIsHTTPOrHTTPS() && !icon.src.SchemeIs("data") &&
+          !icon.src.SchemeIs(document_origin.scheme())) {
+        return "Manifest icon urls must be http, https, data, or match the "
+               "document scheme.";
+      }
+    }
   }
   return std::nullopt;
 }

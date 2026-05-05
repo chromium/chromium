@@ -108,4 +108,43 @@ TEST_F(ManifestMojomTraitsTest, ShortcutItemIconsLocalizedRoundTrip) {
   EXPECT_EQ(GURL("https://example.com/icon-fr.png"), fr_it->second[0].src);
 }
 
+TEST_F(ManifestMojomTraitsTest, ImageResourceFtpSchemeSucceeds) {
+  Manifest::ImageResource original;
+  original.src = GURL("ftp://example.com/icon.png");
+  original.type = u"image/png";
+  original.purpose.emplace_back(mojom::ManifestImageResource_Purpose::ANY);
+
+  Manifest::ImageResource round_tripped;
+  // Should succeed to deserialize because traits only check validity, not
+  // scheme.
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestImageResource>(
+      original, round_tripped));
+  EXPECT_EQ(original.src, round_tripped.src);
+}
+
+TEST_F(ManifestMojomTraitsTest, ImageResourceValidSchemeSucceeds) {
+  Manifest::ImageResource original;
+  original.src = GURL("https://example.com/icon.png");
+  original.type = u"image/png";
+  original.purpose.emplace_back(mojom::ManifestImageResource_Purpose::ANY);
+
+  Manifest::ImageResource round_tripped;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestImageResource>(
+      original, round_tripped));
+  EXPECT_EQ(original.src, round_tripped.src);
+}
+
+TEST_F(ManifestMojomTraitsTest, ImageResourceEmptySrcFails) {
+  Manifest::ImageResource original;
+  original.src = GURL();  // Empty URL
+  original.type = u"image/png";
+  original.purpose.emplace_back(mojom::ManifestImageResource_Purpose::ANY);
+
+  Manifest::ImageResource round_tripped;
+  // Should fail to deserialize because of empty URL.
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::ManifestImageResource>(
+          original, round_tripped));
+}
+
 }  // namespace blink

@@ -223,8 +223,13 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
 
   // Pick the best icon, and load it.
   // Inability to load them should not be fatal to the fetch.
+  for (auto& icon : options->icons()) {
+    icon->setSrc(execution_context->CompleteURL(icon->src()));
+  }
+
   mojom::blink::BackgroundFetchOptionsPtr options_ptr =
       mojom::blink::BackgroundFetchOptions::From(options);
+
   if (options->icons().size()) {
     BackgroundFetchIconLoader* loader =
         MakeGarbageCollected<BackgroundFetchIconLoader>();

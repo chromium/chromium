@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 namespace mojo {
@@ -69,6 +70,10 @@ bool StructTraits<blink::mojom::ManifestImageResourceDataView,
          ::blink::Manifest::ImageResource* out) {
   if (!data.ReadSrc(&out->src))
     return false;
+
+  if (!out->src.is_valid()) {
+    return false;
+  }
 
   TruncatedString16 string;
   if (!data.ReadType(&string))

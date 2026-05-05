@@ -1289,6 +1289,12 @@ ManifestParser::ParseImageResource(const JSONValue* object) {
     return std::nullopt;
   }
 
+  if (!icon->src.ProtocolIsInHttpFamily() && !icon->src.ProtocolIsData() &&
+      icon->src.Protocol() != document_url_.Protocol()) {
+    AddErrorInfo("property 'src' of 'icon' ignored, invalid scheme.");
+    return std::nullopt;
+  }
+
   icon->type = ParseIconType(icon_object);
   icon->sizes = ParseIconSizes(icon_object);
   auto purpose = ParseIconPurpose(icon_object);

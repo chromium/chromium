@@ -1373,6 +1373,35 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
       ::testing::StartsWith("Manifest shortcut urls must be within scope."));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       ManifestIconInvalidSchemeBadMessage) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that an icon with invalid scheme triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::Manifest::ImageResource icon;
+  icon.src = GURL("ftp://evil.com/icon.png");
+  bad_manifest->icons.push_back(std::move(icon));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      ::testing::StartsWith("Manifest icon urls must be http, https, data, or "
+                            "match the document scheme."));
+}
+
 // Local waiter to wait for WebContentsObserver::DidUpdateWebManifestURL.
 class ManifestUrlUpdateWaiter : public content::WebContentsObserver {
  public:
