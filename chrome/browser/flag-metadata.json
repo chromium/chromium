@@ -3830,12 +3830,12 @@
   {
     "name": "enable-openxr-android",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 162
   },
   {
     "name": "enable-openxr-android-smooth-depth",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 162
   },
   {
     "name": "enable-palm-suppression",
@@ -8805,7 +8805,7 @@
   {
     "name": "spatial-entities-depth-hit-test",
     "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "xr-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 162
   },
   {
     "name": "spectre-v2-mitigation",
