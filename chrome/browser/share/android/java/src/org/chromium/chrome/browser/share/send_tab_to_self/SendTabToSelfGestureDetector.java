@@ -13,6 +13,11 @@ import android.hardware.SensorManager;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Detects a physical double-tap gesture of the phone against a surface. Uses the linear
@@ -33,19 +38,18 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
 
     private final SensorManager mSensorManager;
     private final @Nullable Sensor mAccelerometer;
+    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<Profile> mProfileSupplier;
 
     private long mLastTapTimeMs;
     private boolean mListening;
 
-    private @Nullable Runnable mGestureDetectedCallbackForTesting;
-
-    public SendTabToSelfGestureDetector(Context context) {
+    public SendTabToSelfGestureDetector(
+            Context context, Supplier<Tab> tabSupplier, Supplier<Profile> profileSupplier) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-    }
-
-    void setGestureDetectedCallbackForTesting(Runnable callback) {
-        mGestureDetectedCallbackForTesting = callback;
+        mTabSupplier = tabSupplier;
+        mProfileSupplier = profileSupplier;
     }
 
     public void start() {
@@ -88,7 +92,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
         if (magnitude > ACCELERATION_THRESHOLD) {
             long delay = currentTimeMs - mLastTapTimeMs;
 
-            Log.d(TAG, "Peak detected: magnitude=" + magnitude + ", delay=" + delay);
+            Log.d(TAG, "Peak detected: magnitude=%f, delay=%d", magnitude, delay);
 
             if (delay > MIN_DELAY_MS && delay < MAX_DELAY_MS) {
                 Log.i(TAG, "Double tap detected against surface!");
@@ -106,9 +110,51 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
         // Not needed for this implementation.
     }
 
-    private void onGestureDetected() {
-        if (mGestureDetectedCallbackForTesting != null) {
-            mGestureDetectedCallbackForTesting.run();
+    void onGestureDetected() {
+        Tab tab = mTabSupplier.get();
+        if (tab == null || tab.isOffTheRecord()) return;
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        @EntryPointDisplayReason
+        Integer displayReason =
+                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                        profile, tab.getUrl().getSpec());
+        // The model is starting up, ignore the gesture.
+        if (displayReason == null) return;
+
+        switch (displayReason) {
+            case EntryPointDisplayReason.OFFER_SIGN_IN:
+                Log.d(TAG, "User is not signed in for Send Tab to Self");
+                return;
+            case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
+                Log.d(TAG, "No target devices found for Send Tab to Self");
+                return;
+            case EntryPointDisplayReason.OFFER_FEATURE:
+                break;
         }
+
+        List<TargetDeviceInfo> devices =
+                SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(profile);
+        // This should ideally have been caught by the switch case above, but in some rarest edge
+        // cases, the device list may become empty between the check and now.
+        if (devices.isEmpty()) {
+            Log.d(TAG, "No target devices found for Send Tab to Self");
+            return;
+        }
+
+        // `devices` is sorted based on the most recently used timestamp. Grab the device with the
+        // freshest timestamp as the target.
+        TargetDeviceInfo target = devices.get(0);
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                profile,
+                tab.getWebContents(),
+                target.cacheGuid,
+                tab.getUrl().getSpec(),
+                tab.getTitle(),
+                result -> {
+                    Log.i(TAG, "Send tab result: %s", result);
+                });
     }
 }
