@@ -22,6 +22,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -524,6 +528,13 @@ TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest,
 }
 
 TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest, ClearAndResetGuardrails) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   ForceMLPromoAgnosticGuardrailsBlocked();
   // This is important so that the global guardrail dismisses are not hit, and
   // tests can verify a clean guardrail reset, i.e. once reset, an app is
@@ -653,6 +664,13 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest,
 }
 
 TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, ClearAndResetGuardrails) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   ForceUserBlockedOnIphGuardrails();
   EXPECT_TRUE(IsDesktopIphBlockedTimeSet());
 
