@@ -19,7 +19,8 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
  public:
   // Create a CADisplayLinkMac for the specified display.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(
-      CGDirectDisplayID display_id);
+      CGDirectDisplayID display_id,
+      bool in_gpu_process);
 
   // DisplayLinkMac implementation
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(
@@ -53,6 +54,13 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
 
   // CADisplayLink callback from ObjCState.display_link.
   void Step();
+
+  // Ensures that the Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2
+  // histogram is recorded only once per display within
+  // CADisplayLinkMac::GetForDisplay().
+  static void TryRecordDisplayLinkCreation(CGDirectDisplayID display_id,
+                                           bool success,
+                                           bool in_gpu_process);
 
   const CGDirectDisplayID display_id_;
   std::unique_ptr<ObjCState> objc_state_;

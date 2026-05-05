@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/screen_utils_mac.h"
 
 API_AVAILABLE(macos(14.0))
@@ -43,7 +44,11 @@ struct CADisplayLinkGlobals {
   base::Lock lock;
   // Set of display IDs where CADisplayLink has become unreliable in the GPU
   // process (e.g., due to a power event or system refresh rate change).
-  base::flat_set<int64_t> invalidated_displays GUARDED_BY(lock);
+  absl::flat_hash_set<int64_t> invalidated_displays GUARDED_BY(lock);
+
+  // Indicate whether the display creation has been logged within the
+  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
+  absl::flat_hash_set<CGDirectDisplayID> recorded_displays GUARDED_BY(lock);
 
   static CADisplayLinkGlobals& Get() {
     static base::NoDestructor<CADisplayLinkGlobals> instance;
@@ -120,8 +125,28 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
 }
 
 // static
+void CADisplayLinkMac::TryRecordDisplayLinkCreation(
+    CGDirectDisplayID display_id,
+    bool success,
+    bool in_gpu_process) {
+  // Only record the one from the GPU process as we cannot track the status from
+  // multi-process in one |globals.recorded_displays|.
+  if (!in_gpu_process) {
+    return;
+  }
+  auto& globals = CADisplayLinkGlobals::Get();
+  base::AutoLock lock(globals.lock);
+
+  auto [it, inserted] = globals.recorded_displays.insert(display_id);
+  if (inserted) {
+    RecordDisplayLinkCreation(success);
+  }
+}
+
+// static
 scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
-    CGDirectDisplayID display_id) {
+    CGDirectDisplayID display_id,
+    bool in_gpu_process) {
   if (@available(macos 14.0, *)) {
     scoped_refptr<CADisplayLinkMac> display_link(
         new CADisplayLinkMac(display_id));
@@ -129,7 +154,8 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
 
     NSScreen* screen = display::GetNSScreenFromDisplayID(display_id);
     if (!screen) {
-      RecordDisplayLinkCreation(false);
+      TryRecordDisplayLinkCreation(display_id, /*success=*/false,
+                                   in_gpu_process);
       return nullptr;
     }
 
@@ -138,11 +164,12 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
                                                     selector:@selector(step:)];
 
     if (!objc_state->display_link) {
-      RecordDisplayLinkCreation(false);
+      TryRecordDisplayLinkCreation(display_id, /*success=*/false,
+                                   in_gpu_process);
       return nullptr;
     }
 
-    RecordDisplayLinkCreation(true);
+    TryRecordDisplayLinkCreation(display_id, /*success=*/true, in_gpu_process);
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;

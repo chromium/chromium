@@ -44,13 +44,15 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   // CADisplayLink is available only for MacOS 14.0+.
   if (@available(macos 14.0, *)) {
     if (base::FeatureList::IsEnabled(kCADisplayLinkInGpu)) {
-      return CADisplayLinkMac::GetForDisplay(display_id);
+      return CADisplayLinkMac::GetForDisplay(display_id,
+                                             /*in_gpu_process=*/true);
     }
   }
 
   if (SupportsDisplayLinkMacInBrowser()) {
     if (CADisplayLinkMac::IsValidInGpuProcess(display_id)) {
-      return CADisplayLinkMac::GetForDisplay(display_id);
+      return CADisplayLinkMac::GetForDisplay(display_id,
+                                             /*in_gpu_process=*/true);
     }
     return ExternalDisplayLinkMac::GetForDisplay(display_id);
   }

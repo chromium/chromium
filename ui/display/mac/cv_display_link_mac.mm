@@ -49,7 +49,7 @@ struct DisplayLinkGlobals {
   base::Lock lock;
 
   // Indicate whether the display creation has been logged within the
-  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create' histogram.
+  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2 histogram.
   absl::flat_hash_set<CGDirectDisplayID> recorded_displays;
 
   static DisplayLinkGlobals& Get() {

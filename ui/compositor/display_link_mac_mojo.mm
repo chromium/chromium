@@ -227,7 +227,7 @@ void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t display_id) {
   }
 
   scoped_refptr<DisplayLinkMac> display_link_mac =
-      CADisplayLinkMac::GetForDisplay(display_id);
+      CADisplayLinkMac::GetForDisplay(display_id, /*in_gpu_process=*/false);
   if (!display_link_mac) {
     // The display ID was never added to the GPU, so there is no need to call
     // SetSupportedDisplayLinkId(false) to remove an existing supported ID from
