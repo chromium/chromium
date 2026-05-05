@@ -40,7 +40,7 @@ class MEDIA_GPU_EXPORT H264RateCtrlRTC {
       const H264RateControlConfigRTC& config);
 
   // Updates Rate Control using the given `config`.
-  void UpdateRateControl(const H264RateControlConfigRTC& config);
+  [[nodiscard]] bool UpdateRateControl(const H264RateControlConfigRTC& config);
 
   // GetQP() needs to be called after ComputeQP() to get the latest QP.
   int GetQP();

@@ -1008,9 +1008,13 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   frame_rate_ = framerate;
   // For SW BRC we don't reconfigure the encoder.
   if (rate_ctrl_) {
-    rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
-        bitrate_allocation_, size.value_or(input_visible_size_), frame_rate_,
-        num_temporal_layers_, codec_, content_type_));
+    if (!rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
+            bitrate_allocation_, size.value_or(input_visible_size_),
+            frame_rate_, num_temporal_layers_, codec_, content_type_))) {
+      NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Failed to update rate control parameters"});
+      return;
+    }
   } else {
     VARIANT var;
     var.vt = VT_UI4;

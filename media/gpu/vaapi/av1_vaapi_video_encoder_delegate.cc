@@ -554,7 +554,10 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
     return !!rate_ctrl_;
   }
 
-  rate_ctrl_->UpdateRateControl(rc_config);
+  if (!rate_ctrl_->UpdateRateControl(rc_config)) {
+    LOG(ERROR) << "Failed to update rate control parameters";
+    return false;
+  }
 
   return true;
 }
