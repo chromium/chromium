@@ -18,7 +18,10 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,6 +51,7 @@ import java.util.function.Supplier;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
 public class ShareDelegateImplIntegrationTest {
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_https_canonical.html";
@@ -62,6 +66,7 @@ public class ShareDelegateImplIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
     public void testCanonicalUrlsOverHttps() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
@@ -85,6 +90,30 @@ public class ShareDelegateImplIntegrationTest {
 
     @Test
     @SmallTest
+    public void testCanonicalUrlsOverHttps_AndroidShareFullLinkEnabled() throws TimeoutException {
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
+        final String httpsCanonicalUrl = testServer.getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
+        final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
+        final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
+
+        verifyShareUrl(
+                httpsCanonicalUrl,
+                httpsCanonicalUrl,
+                CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
+        verifyShareUrl(
+                httpCanonicalUrl,
+                httpCanonicalUrl,
+                CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS);
+        verifyShareUrl(
+                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
     public void testCanonicalUrlsOverHttp() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
