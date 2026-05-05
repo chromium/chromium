@@ -805,6 +805,57 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
 
     @Test
     @SmallTest
+    public void testFastIdempotent_onWriteCompleted_withReusedByteBuffer() {
+        // We need java.util.stream.Stream to be available for these tests.
+        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        mAdaptiveStream =
+                new CronetAdaptiveNetworkBidirectionalStream(
+                        mMockCallback,
+                        mMockScheduledExecutorService,
+                        mMockAdaptiveRequestContext,
+                        URI.create(TEST_URL),
+                        mTestLogger,
+                        /* isFastIdempotentRequest= */ true);
+        mAdaptiveStream.setPrimaryStream(mPrimaryStream);
+        mAdaptiveStream.setFallbackStream(mFallbackStream);
+
+        mAdaptiveStream.getCallback().onStreamReady(mPrimaryStream);
+
+        ByteBuffer userBuffer = ByteBuffer.allocateDirect(100);
+        userBuffer.put((byte) 1);
+        userBuffer.flip();
+
+        // First write
+        mAdaptiveStream.write(userBuffer, false);
+
+        ArgumentCaptor<ByteBuffer> primaryCaptor1 = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mPrimaryStream).write(primaryCaptor1.capture(), eq(false));
+        ByteBuffer replayed1 = primaryCaptor1.getValue();
+
+        UrlResponseInfo info = mock(UrlResponseInfo.class);
+        mAdaptiveStream.getCallback().onWriteCompleted(mPrimaryStream, info, replayed1, false);
+        verify(mMockCallback).onWriteCompleted(mAdaptiveStream, info, userBuffer, false);
+
+        // Second write reusing the SAME ByteBuffer instance!
+        userBuffer.clear();
+        userBuffer.put((byte) 2);
+        userBuffer.flip();
+
+        mAdaptiveStream.write(userBuffer, false);
+
+        ArgumentCaptor<ByteBuffer> primaryCaptor2 = ArgumentCaptor.forClass(ByteBuffer.class);
+        verify(mPrimaryStream, times(2)).write(primaryCaptor2.capture(), eq(false));
+        ByteBuffer replayed2 = primaryCaptor2.getValue();
+
+        mAdaptiveStream.getCallback().onWriteCompleted(mPrimaryStream, info, replayed2, false);
+
+        // Verify backend callback received onWriteCompleted a second time with the same buffer!
+        // In the buggy map implementation, this wasn't reported (due to ByteBuffer identity sets).
+        verify(mMockCallback, times(2)).onWriteCompleted(mAdaptiveStream, info, userBuffer, false);
+    }
+
+    @Test
+    @SmallTest
     public void testFastIdempotent_onWriteCompleted_forwardsOriginal() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);

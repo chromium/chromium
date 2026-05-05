@@ -68,15 +68,15 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     /**
      * Tracks duplicates that are currently being written to one or more underlying streams. Maps
-     * each duplicate back to the original buffer provided by the user.
+     * each duplicate back to its corresponding PendingWrite.
      */
     @GuardedBy("mLock")
-    private final IdentityHashMap<ByteBuffer, ByteBuffer> mDuplicateToOriginal =
+    private final IdentityHashMap<ByteBuffer, PendingWrite> mDuplicateToPendingWrite =
             new IdentityHashMap<>();
 
-    /** Tracks original buffers for which onWriteCompleted has already been reported. */
+    /** Tracks PendingWrite instances for which onWriteCompleted has already been reported. */
     @GuardedBy("mLock")
-    private final Set<ByteBuffer> mReportedOriginals =
+    private final Set<PendingWrite> mReportedWrites =
             Collections.newSetFromMap(new IdentityHashMap<>());
 
     private final AtomicBoolean mCallbackOnStreamReadyCalled = new AtomicBoolean(false);
@@ -269,7 +269,7 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
                 mReadyStreams.add(stream);
                 for (PendingWrite pendingWrite : mPendingWrites) {
                     ByteBuffer duplicate = pendingWrite.mDeepCopy.duplicate();
-                    mDuplicateToOriginal.put(duplicate, pendingWrite.mOriginalBuffer);
+                    mDuplicateToPendingWrite.put(duplicate, pendingWrite);
                     stream.write(duplicate, pendingWrite.mEndOfStream);
                 }
             }
@@ -302,21 +302,19 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             checkValidStream(stream);
             ByteBuffer original;
             synchronized (mLock) {
-                // TODO(b/474048542) while this is removing the ByteBuffer from the map,
-                // ByteBuffers can be reused by the caller after onWriteCompleted is called. This
-                // breaks our way of tracking duplicate writes. See
-                // https://chromium-review.git.corp.google.com/c/chromium/src/+/7795941/comment/4ca82ae6_ac01a4f8
-                original = mDuplicateToOriginal.remove(buffer);
-                if (original == null) {
+                PendingWrite pendingWrite = mDuplicateToPendingWrite.remove(buffer);
+                if (pendingWrite != null) {
+                    if (mReportedWrites.contains(pendingWrite)) {
+                        // Already reported completion for this write.
+                        return;
+                    }
+                    mReportedWrites.add(pendingWrite);
+                    original = pendingWrite.mOriginalBuffer;
+                } else {
                     // This was either not a replayed buffer or we already handled it.
                     // If it wasn't replayed, it must be the original (in non-fast-idempotent mode).
                     original = buffer;
                 }
-                if (mReportedOriginals.contains(original)) {
-                    // Already reported completion for this original buffer.
-                    return;
-                }
-                mReportedOriginals.add(original);
             }
             original.position(original.limit());
             mBackendCallback.onWriteCompleted(
@@ -433,10 +431,11 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
             deepCopy.put(buffer.duplicate());
             deepCopy.flip();
 
-            mPendingWrites.add(new PendingWrite(buffer, deepCopy, endOfStream));
+            PendingWrite pendingWrite = new PendingWrite(buffer, deepCopy, endOfStream);
+            mPendingWrites.add(pendingWrite);
             for (BidirectionalStream stream : mReadyStreams) {
                 ByteBuffer duplicate = deepCopy.duplicate();
-                mDuplicateToOriginal.put(duplicate, buffer);
+                mDuplicateToPendingWrite.put(duplicate, pendingWrite);
                 stream.write(duplicate, endOfStream);
             }
         }
