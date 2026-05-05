@@ -89,6 +89,22 @@ class FirstPartyOverrideContentBrowserClient : public ContentBrowserClient {
   }
 };
 
+// Extends `FirstPartyOverrideContentBrowserClient` with a configurable
+// MIME handler effective top frame for StorageKey truncation tests.
+class MimeHandlerOverrideContentBrowserClient
+    : public FirstPartyOverrideContentBrowserClient {
+ public:
+  void SetEffectiveTopFrame(RenderFrameHost* rfh) { effective_top_ = rfh; }
+
+  RenderFrameHost* GetEffectiveTopFrameForPartitioning(
+      RenderFrameHost* render_frame_host) override {
+    return effective_top_;
+  }
+
+ private:
+  raw_ptr<RenderFrameHost> effective_top_ = nullptr;
+};
+
 // A test class that forces kOriginKeyedProcessesByDefault off for tests that
 // require that same-site cross-origin navigations don't trigger a RFH swap.
 class RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault
@@ -1564,6 +1580,188 @@ TEST_P(RenderFrameHostImplCookieChangeListenerTest, CookieChangeListener) {
     EXPECT_EQ(IsBackForwardCacheCCNSIgnoreUnchangedCookiesEnabled() ? 2 : 4,
               listener->cookie_change_info().cookie_modification_count);
   }
+}
+
+// Shared fixture for tests that exercise
+// `ContentBrowserClient::GetEffectiveTopFrameForPartitioning()` and the
+// IsolationInfo / StorageKey overrides keyed off it. Centralizes the
+// scheme registration, ContentBrowserClient swap, third-party storage
+// partitioning flag, and the canonical embedder/extension/grandchild
+// frame tree.
+class RenderFrameHostImplMimeHandlerStoragePartitioningTest
+    : public RenderFrameHostImplTest {
+ public:
+  RenderFrameHostImplMimeHandlerStoragePartitioningTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+    url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+    previous_client_ = SetBrowserClientForTesting(&modified_client_);
+  }
+
+  ~RenderFrameHostImplMimeHandlerStoragePartitioningTest() override {
+    SetBrowserClientForTesting(previous_client_);
+  }
+
+  void TearDown() override {
+    // Drop the raw_ptr to the extension frame before
+    // `RenderFrameHostImplTest::TearDown` destroys the WebContents and its
+    // RFHs, otherwise the dangling-pointer detector trips.
+    modified_client_.SetEffectiveTopFrame(nullptr);
+    RenderFrameHostImplTest::TearDown();
+  }
+
+ protected:
+  // Commits the main frame at the embedder URL and returns it.
+  TestRenderFrameHost* CommitEmbedder(const GURL& embedder_url) {
+    NavigationSimulator::CreateRendererInitiated(embedder_url, main_rfh())
+        ->Commit();
+    return main_test_rfh();
+  }
+
+  // Appends a child of `parent` and (optionally) commits a navigation to
+  // `url`. When `url` is empty, returns the still-uncommitted child.
+  TestRenderFrameHost* AppendAndMaybeCommit(TestRenderFrameHost* parent,
+                                            std::string_view name,
+                                            const GURL& url) {
+    auto* child = static_cast<TestRenderFrameHost*>(
+        content::RenderFrameHostTester::For(parent)->AppendChild(
+            std::string(name)));
+    if (url.is_empty()) {
+      return child;
+    }
+    return static_cast<TestRenderFrameHost*>(
+        NavigationSimulator::NavigateAndCommitFromDocument(url, child));
+  }
+
+  // main(embedder) → extension(extension_url) → grandchild(grandchild_url).
+  struct Subtree {
+    raw_ptr<TestRenderFrameHost> main_frame;
+    raw_ptr<TestRenderFrameHost> extension_frame;
+    raw_ptr<TestRenderFrameHost> grandchild_frame;
+  };
+  Subtree BuildEmbedderExtensionGrandchild(const GURL& embedder_url,
+                                           const GURL& extension_url,
+                                           const GURL& grandchild_url) {
+    Subtree tree;
+    tree.main_frame = CommitEmbedder(embedder_url);
+    tree.extension_frame =
+        AppendAndMaybeCommit(tree.main_frame, "extension", extension_url);
+    tree.grandchild_frame = AppendAndMaybeCommit(tree.extension_frame,
+                                                 "grandchild", grandchild_url);
+    return tree;
+  }
+
+  MimeHandlerOverrideContentBrowserClient modified_client_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  url::ScopedSchemeRegistryForTests scoped_registry_;
+  raw_ptr<ContentBrowserClient> previous_client_ = nullptr;
+};
+
+namespace {
+constexpr char kEmbedderUrl[] = "https://embedder.com/doc.pdf";
+constexpr char kExtensionUrl[] = "chrome-extension://abc123/viewer.html";
+constexpr char kGrandchildUrl[] = "https://child-content.com/page.html";
+}  // namespace
+
+// Override active: the descendant's StorageKey uses the extension as
+// top_level_site, not the embedder. The extension frame itself stays
+// first-party (handled by `ShouldUseFirstPartyStorageKey`), and the
+// main frame is unaffected.
+TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
+       StorageKeyMimeHandlerTruncation) {
+  Subtree tree = BuildEmbedderExtensionGrandchild(
+      GURL(kEmbedderUrl), GURL(kExtensionUrl), GURL(kGrandchildUrl));
+  modified_client_.SetEffectiveTopFrame(tree.extension_frame);
+
+  const net::SchemefulSite embedder_site(
+      url::Origin::Create(GURL(kEmbedderUrl)));
+  const net::SchemefulSite extension_site(
+      url::Origin::Create(GURL(kExtensionUrl)));
+
+  blink::StorageKey main_key = tree.main_frame->CalculateStorageKey(
+      tree.main_frame->GetLastCommittedOrigin(), /*nonce=*/nullptr);
+  EXPECT_EQ(embedder_site, main_key.top_level_site());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+            main_key.ancestor_chain_bit());
+
+  blink::StorageKey extension_key = tree.extension_frame->CalculateStorageKey(
+      tree.extension_frame->GetLastCommittedOrigin(), /*nonce=*/nullptr);
+  EXPECT_EQ(extension_site, extension_key.top_level_site());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+            extension_key.ancestor_chain_bit());
+
+  blink::StorageKey grandchild_key = tree.grandchild_frame->CalculateStorageKey(
+      tree.grandchild_frame->GetLastCommittedOrigin(), /*nonce=*/nullptr);
+  EXPECT_EQ(extension_site, grandchild_key.top_level_site());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kCrossSite,
+            grandchild_key.ancestor_chain_bit());
+}
+
+// No override: descendant's StorageKey falls through to the embedder.
+TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
+       StorageKeyNoMimeHandlerTruncation) {
+  Subtree tree = BuildEmbedderExtensionGrandchild(
+      GURL(kEmbedderUrl), GURL(kExtensionUrl), GURL(kGrandchildUrl));
+
+  blink::StorageKey storage_key = tree.grandchild_frame->CalculateStorageKey(
+      tree.grandchild_frame->GetLastCommittedOrigin(), /*nonce=*/nullptr);
+
+  EXPECT_EQ(net::SchemefulSite(url::Origin::Create(GURL(kEmbedderUrl))),
+            storage_key.top_level_site());
+  EXPECT_EQ(blink::mojom::AncestorChainBit::kCrossSite,
+            storage_key.ancestor_chain_bit());
+}
+
+// Override active: descendant's IsolationInfo uses the extension as
+// top_frame_origin.
+TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
+       IsolationInfoMimeHandlerChildFrameOverride) {
+  Subtree tree = BuildEmbedderExtensionGrandchild(GURL(kEmbedderUrl),
+                                                  GURL(kExtensionUrl), GURL());
+  // Set the override before the grandchild navigates so its commit-time
+  // IsolationInfo sees the extension as effective top.
+  modified_client_.SetEffectiveTopFrame(tree.extension_frame);
+  tree.grandchild_frame = AppendAndMaybeCommit(
+      tree.extension_frame, "grandchild", GURL(kGrandchildUrl));
+
+  EXPECT_EQ(url::Origin::Create(GURL(kExtensionUrl)),
+            tree.grandchild_frame->GetIsolationInfoForSubresources()
+                .top_frame_origin());
+}
+
+// No override: descendant's IsolationInfo falls through to the embedder.
+TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
+       IsolationInfoNoMimeHandlerChildFrameOverride) {
+  Subtree tree = BuildEmbedderExtensionGrandchild(
+      GURL(kEmbedderUrl), GURL(kExtensionUrl), GURL(kGrandchildUrl));
+
+  EXPECT_EQ(url::Origin::Create(GURL(kEmbedderUrl)),
+            tree.grandchild_frame->GetIsolationInfoForSubresources()
+                .top_frame_origin());
+}
+
+// During the extension frame's own navigation, `IsExtensionHost` matches
+// by frame tree node id (set before the navigation commits), so the
+// override fires with `effective_top == this` while
+// `GetLastCommittedOrigin()` still returns the initial about:blank
+// inherited from the embedder. The override must use the pending
+// `frame_origin` instead.
+TEST_F(RenderFrameHostImplMimeHandlerStoragePartitioningTest,
+       IsolationInfoMimeHandlerSelfFramePendingCommit) {
+  TestRenderFrameHost* embedder = CommitEmbedder(GURL(kEmbedderUrl));
+  TestRenderFrameHost* extension_frame =
+      AppendAndMaybeCommit(embedder, "extension", GURL());
+  modified_client_.SetEffectiveTopFrame(extension_frame);
+
+  url::Origin extension_origin = url::Origin::Create(GURL(kExtensionUrl));
+  net::IsolationInfo info =
+      extension_frame->ComputeIsolationInfoForSubresourcesForPendingCommit(
+          extension_origin, /*is_credentialless=*/false,
+          /*fenced_frame_nonce_for_navigation=*/std::nullopt);
+
+  EXPECT_EQ(extension_origin, info.top_frame_origin());
 }
 
 }  // namespace content

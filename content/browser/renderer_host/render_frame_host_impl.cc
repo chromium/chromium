@@ -5476,6 +5476,28 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     bool is_credentialless,
     std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation) {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
+
+  // When this frame is inside a MIME handler extension subtree, the
+  // extension acts as the effective top-level for IsolationInfo. Applies
+  // both to the extension subframe itself and to any iframe nested
+  // inside it. When `this` is the effective top, use the pending
+  // `frame_origin` rather than the last committed origin: the MIME
+  // handler stream is registered against the frame tree node before the
+  // extension URL commits, so during the extension frame's own
+  // navigation `GetLastCommittedOrigin()` still returns the initial
+  // about:blank inherited from the embedder.
+  RenderFrameHostImpl* effective_top_for_isolation = nullptr;
+  if (RenderFrameHost* effective_top =
+          GetContentClient()->browser()->GetEffectiveTopFrameForPartitioning(
+              this)) {
+    effective_top_for_isolation =
+        static_cast<RenderFrameHostImpl*>(effective_top);
+    top_frame_origin =
+        (effective_top_for_isolation == this)
+            ? frame_origin
+            : effective_top_for_isolation->GetLastCommittedOrigin();
+  }
+
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
   net::SiteForCookies candidate_site_for_cookies(top_frame_site);
@@ -5499,6 +5521,16 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
   }
 
   for (const RenderFrameHostImpl* rfh = initial_rfh; rfh; rfh = rfh->parent_) {
+    // If the effective top frame was overridden for a MIME handler
+    // extension, stop walking at the extension frame's parent. Overriding
+    // `top_frame_origin` alone is not enough: this loop also computes
+    // `candidate_frame_ancestor_relation` over all visited ancestors, and
+    // including the cross-site embedder would force kCrossSite even though
+    // the override declares the extension as the effective top.
+    if (effective_top_for_isolation &&
+        rfh == effective_top_for_isolation->parent_) {
+      break;
+    }
     const url::Origin& cur_origin =
         rfh == this ? frame_origin : rfh->last_committed_origin_;
     net::SchemefulSite cur_site = net::SchemefulSite(cur_origin);
@@ -5566,10 +5598,21 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
 std::vector<RenderFrameHostImpl*>
 RenderFrameHostImpl::GetAncestorChainForStorageKeyCalculation(
     const url::Origin& new_rfh_origin) {
+  // If the effective top frame was overridden for a MIME handler
+  // extension, stop walking at that frame. `top_level_site` and
+  // `ancestor_chain_bit` below are derived from the last entry and the
+  // entries between `this` and the top, so leaving the embedder in the
+  // chain would force the descendant's StorageKey to use the embedder
+  // as top_level_site instead of the extension.
+  auto* effective_top_for_storage_key = static_cast<RenderFrameHostImpl*>(
+      GetContentClient()->browser()->GetEffectiveTopFrameForPartitioning(this));
   std::vector<RenderFrameHostImpl*> ancestor_chain;
   RenderFrameHostImpl* current = this;
   while (current) {
     ancestor_chain.push_back(current);
+    if (current == effective_top_for_storage_key) {
+      break;
+    }
     current = current->parent_;
   }
 
@@ -5593,8 +5636,11 @@ RenderFrameHostImpl::GetAncestorChainForStorageKeyCalculation(
   // able to access partitioned storage based not partitioned by the top level
   // extension URL. A origin will only have access to another origin via
   // OriginAccessList if the origin is an extension.
+  // The size guard protects `ancestor_chain.end()[-2]` from a
+  // single-element chain when `this` is itself the MIME handler
+  // effective top.
   bool ignore_top_level_extension =
-      !is_main_frame() &&
+      !is_main_frame() && ancestor_chain.size() >= 2 &&
       GetBrowserContext()
               ->GetSharedCorsOriginAccessList()
               ->GetOriginAccessList()
