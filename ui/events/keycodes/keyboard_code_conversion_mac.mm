@@ -217,6 +217,28 @@ DomKey DomKeyFromNsCharCode(char32_t char_code) {
   return DomKey::FromCharacter(char_code);
 }
 
+// Returns the last Unicode character from the given string.
+char32_t ReadLastUnicodeCharacter(NSString* characters) {
+  if (characters.length == 0) {
+    return 0;
+  }
+  // Use uint16_t instead of char16_t to suppress a compiler warning.
+  uint16_t trail = [characters characterAtIndex:characters.length - 1];
+  if (CBU16_IS_SINGLE(trail)) {
+    return trail;
+  }
+  if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
+    return 0;
+  }
+  uint16_t lead = [characters characterAtIndex:characters.length - 2];
+  if (!CBU16_IS_LEAD(lead)) {
+    return 0;
+  }
+  return CBU16_GET_SUPPLEMENTARY(lead, trail);
+}
+
+}  // namespace
+
 // Returns a macOS key code and modifier to a character based on the current
 // keyboard layout.
 //
@@ -258,28 +280,6 @@ std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
 
   return {translated_char, is_dead_key};
 }
-
-// Returns the last Unicode character from the given string.
-char32_t ReadLastUnicodeCharacter(NSString* characters) {
-  if (characters.length == 0) {
-    return 0;
-  }
-  // Use uint16_t instead of char16_t to suppress a compiler warning.
-  uint16_t trail = [characters characterAtIndex:characters.length - 1];
-  if (CBU16_IS_SINGLE(trail)) {
-    return trail;
-  }
-  if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
-    return 0;
-  }
-  uint16_t lead = [characters characterAtIndex:characters.length - 2];
-  if (!CBU16_IS_LEAD(lead)) {
-    return 0;
-  }
-  return CBU16_GET_SUPPLEMENTARY(lead, trail);
-}
-
-}  // namespace
 
 int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
                                 NSUInteger flags,

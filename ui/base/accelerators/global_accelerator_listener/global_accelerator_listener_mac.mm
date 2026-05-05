@@ -11,6 +11,7 @@
 #include <memory>
 
 #import "base/apple/foundation_util.h"
+#include "base/feature_list.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -19,6 +20,8 @@
 
 using content::BrowserThread;
 using ui::GlobalAcceleratorListenerMac;
+
+BASE_FEATURE(kLayoutAwareGlobalHotkeys, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace ui {
 
@@ -184,10 +187,32 @@ bool GlobalAcceleratorListenerMac::RegisterHotKey(
   modifiers |= (accelerator.IsAltDown() ? optionKey : 0);
   modifiers |= (accelerator.IsCmdDown() ? cmdKey : 0);
 
-  int key_code =
+  unichar target_char = 0;
+  int fixed_mapping_key_code =
       ui::MacKeyCodeForWindowsKeyCode(accelerator.key_code(), /*flags=*/0,
                                       /*us_keyboard_shifted_character=*/nullptr,
-                                      /*keyboard_character=*/nullptr);
+                                      /*keyboard_character=*/&target_char);
+
+  int key_code = -1;
+  if (base::FeatureList::IsEnabled(kLayoutAwareGlobalHotkeys) &&
+      target_char != 0) {
+    // Brute force search for the physical key code that produces target_char
+    // in the current keyboard layout.
+    for (int i = 0; i < 128; ++i) {
+      auto [translated_char, is_dead_key] =
+          NsKeyCodeAndModifiersToCharacter(i, 0);
+      if (translated_char == target_char && !is_dead_key) {
+        key_code = i;
+        break;
+      }
+    }
+  }
+
+  // Fallback to fixed mapping if not found in current layout or not a character
+  // key.
+  if (key_code == -1) {
+    key_code = fixed_mapping_key_code;
+  }
 
   // Register the event hot key.
   EventHotKeyRef hot_key_ref;

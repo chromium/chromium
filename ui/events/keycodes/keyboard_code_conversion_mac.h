@@ -8,6 +8,8 @@
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 
+#include <tuple>
+
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -49,6 +51,10 @@ EVENTS_BASE_EXPORT KeyboardCode KeyboardCodeFromCharCode(unichar char_code);
 // Converts |event| into a |KeyboardCode|.  The mapping is not direct as the Mac
 // has a different notion of key codes.
 EVENTS_BASE_EXPORT KeyboardCode KeyboardCodeFromNSEvent(NSEvent* event);
+
+EVENTS_BASE_EXPORT std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
+    unsigned short key_code,
+    int modifiers);
 
 EVENTS_BASE_EXPORT DomCode DomCodeFromNSEvent(NSEvent* event);
 

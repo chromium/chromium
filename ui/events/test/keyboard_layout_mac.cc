@@ -5,28 +5,36 @@
 #include "ui/events/test/keyboard_layout.h"
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace ui {
 
 PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
-  // Right now tests only need US English.  If other layouts need to be
-  // supported in the future this code should be extended.
-  DCHECK_EQ(KEYBOARD_LAYOUT_ENGLISH_US, layout);
-
-  const char kUsInputSourceId[] = "com.apple.keylayout.US";
+  const char* input_source_id = nullptr;
+  switch (layout) {
+    case KEYBOARD_LAYOUT_ENGLISH_US:
+      input_source_id = "com.apple.keylayout.US";
+      break;
+    case KEYBOARD_LAYOUT_DVORAK:
+      input_source_id = "com.apple.keylayout.Dvorak";
+      break;
+    default:
+      NOTREACHED() << "Unsupported keyboard layout";
+  }
 
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> input_source_list_filter(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   base::apple::ScopedCFTypeRef<CFStringRef> input_source_id_ref =
-      base::SysUTF8ToCFStringRef(kUsInputSourceId);
+      base::SysUTF8ToCFStringRef(input_source_id);
   CFDictionaryAddValue(input_source_list_filter.get(),
                        kTISPropertyInputSourceID, input_source_id_ref.get());
   base::apple::ScopedCFTypeRef<CFArrayRef> input_source_list(
-      TISCreateInputSourceList(input_source_list_filter.get(), true));
-  if (CFArrayGetCount(input_source_list.get()) != 1) {
+      TISCreateInputSourceList(input_source_list_filter.get(),
+                               /*includeAllInstalled=*/true));
+  if (!input_source_list || CFArrayGetCount(input_source_list.get()) != 1) {
     return PlatformKeyboardLayout();
   }
 

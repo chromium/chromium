@@ -735,7 +735,10 @@ if (use_blink) {
     ]
 
     if (is_mac) {
-      sources += [ "cocoa/events_mac_unittest.mm" ]
+      sources += [
+        "cocoa/events_mac_unittest.mm",
+        "keycodes/keyboard_code_conversion_mac_unittest.mm",
+      ]
     }
 
     if (is_linux || is_chromeos || is_win) {
