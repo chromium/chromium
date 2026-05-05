@@ -271,6 +271,9 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_COLUMN_LABEL" desc="Available offline column label.">
     Available offline
   </message>
+  <message name="IDS_FILE_BROWSER_DEPRECATED_DEBIAN_PACKAGE_INSTALL" desc="Message shown to users when they try to open a .deb file, informing them that Debian package installations are no longer supported in the File Manager.">
+    Debian package installs are no longer supported. <ph name="BEGIN_LINK">&lt;a href="https://developers.google.com/chromeos/app-development/develop/news#feature-deprecations" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_FILE_BROWSER_ERROR_CREATING_FOLDER" desc="Message displayed when we can't create a folder.">
     Unable to create folder "<ph name="FOLDER_NAME">$1<ex>Documents</ex></ph>". <ph name="ERROR_MESSAGE">$2<ex>An error occurred (code: ABORT)</ex></ph>
   </message>

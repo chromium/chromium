@@ -8,6 +8,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isDirectoryEntry, isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
+import {getExtension} from '../../common/js/file_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
@@ -146,12 +147,30 @@ export class MainWindowComponent {
     }
   }
 
+  private showDebOpeningDialog_(_event: MouseEvent|TouchEvent|KeyboardEvent) {
+    this.ui_.alertDialog.showHtml(
+        '',  // Title is passed as the first argument
+        str('DEPRECATED_DEBIAN_PACKAGE_INSTALL'),
+        () => {},
+    );
+  }
+
   /**
    * Handles a double click event.
    *
    * @param event The dblclick event.
    */
   private onDoubleClick_(event: MouseEvent) {
+    const selection = this.selectionHandler_.selection;
+
+    if (selection.totalCount === 1) {
+      const entry = selection.entries[0];
+      if (entry && getExtension(entry) === '.deb') {
+        this.showDebOpeningDialog_(event);
+        return;  // Prevent default behavior
+      }
+    }
+
     this.handleOpenDefault_(event);
   }
 
@@ -163,7 +182,8 @@ export class MainWindowComponent {
    * @param event The dblclick event.
    * @return true if successfully opened the item.
    */
-  private handleOpenDefault_(event: MouseEvent|TouchEvent): boolean {
+  private handleOpenDefault_(event: MouseEvent|TouchEvent|KeyboardEvent):
+      boolean {
     if (this.namingController_.isRenamingInProgress()) {
       // Don't pay attention to clicks or taps during a rename.
       return false;
@@ -171,11 +191,19 @@ export class MainWindowComponent {
 
     // It is expected that the target item should have already been selected
     // by previous touch or mouse event processing.
-    const node = 'touchedElement' in event ?
-        event.touchedElement as HTMLElement :
-        event.srcElement as HTMLElement;
-    const listItem = this.ui_.listContainer.findListItemForNode(node);
     const selection = this.selectionHandler_.selection;
+    let listItem = null;
+    if ('touchedElement' in event) {
+      listItem = this.ui_.listContainer.findListItemForNode(
+          event.touchedElement as HTMLElement);
+    } else if (event instanceof MouseEvent) {
+      listItem = this.ui_.listContainer.findListItemForNode(
+          event.srcElement as HTMLElement);
+    } else if (event instanceof KeyboardEvent) {
+      listItem = this.ui_.listContainer.currentList.getListItemByIndex(
+          selection.indexes[0]!);
+    }
+
     if (!listItem || !listItem.selected || selection.totalCount !== 1) {
       return false;
     }
@@ -397,6 +425,16 @@ export class MainWindowComponent {
           }
           break;
         }
+
+        if (selection.totalCount === 1) {
+          const entry = selection.entries[0];
+          if (entry && getExtension(entry) === '.deb') {
+            event.preventDefault();
+            this.showDebOpeningDialog_(event);
+            break;
+          }
+        }
+
         if (this.acceptSelection_()) {
           event.preventDefault();
         }
