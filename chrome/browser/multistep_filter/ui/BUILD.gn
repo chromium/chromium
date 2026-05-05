@@ -26,6 +26,7 @@ source_set("ui") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//components/multistep_filter/content",
+      "//components/multistep_filter/core/logging",
       "//components/tabs:public",
       "//content/public/browser",
       "//ui/base",

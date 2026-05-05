@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -24,6 +25,7 @@ class TabInterface;
 namespace multistep_filter {
 
 class FilterUiControllerTestApi;
+class MultistepFilterLogRouter;
 
 // Manages the UI lifecycle and user interactions for multistep filter
 // suggestions within a tab.
@@ -81,13 +83,19 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   virtual void NavigateTo(const GURL& url);
 
   // Returns the callback to be executed when the suggestion UI is dismissed.
-  base::OnceClosure GetOnDismissedCallback(const GURL& url);
+  base::OnceClosure GetOnDismissedCallback(std::string suppression_domain,
+                                           int64_t navigation_id,
+                                           std::string triggering_domain);
 
  private:
   friend class FilterUiControllerTestApi;
 
-  void OnSuggestionDismissed(const GURL& url);
+  // Invoked when a filter suggestion is dismissed by the user.
+  void OnSuggestionDismissed(std::string suppression_domain,
+                             int64_t navigation_id,
+                             std::string triggering_domain);
 
+  // Helper variable to scope tab instance unowned user data ownership.
   ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
 
   // The current suggestion that is displayed in the UI. Cached here so that
@@ -99,6 +107,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // TODO (crbug.com/495396112): Identify if dismissed hosts should be persisted
   // or shared across tabs.
   base::flat_set<std::string> dismissed_hosts_;
+
+  // Router for logging filter events.
+  raw_ptr<MultistepFilterLogRouter> log_router_ = nullptr;
 
   // Factory for dismissal callbacks. Must be the last member variable to
   // ensure that it is destroyed first, invalidating all weak pointers before

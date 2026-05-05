@@ -243,7 +243,7 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
       std::move(candidate.navigation_url),
       base::UTF8ToUTF16(matching_annotation_it->source_domain),
       matching_annotation_it->creation_timestamp,
-      std::move(attribute_ui_labels));
+      std::move(attribute_ui_labels), navigation_id, std::string(domain));
   LogSuggestionGenerated(log_router_, navigation_id, domain, suggestion);
   std::move(success_callback).Run(std::move(suggestion));
 }

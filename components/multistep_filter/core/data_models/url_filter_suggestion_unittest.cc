@@ -18,6 +18,9 @@
 
 namespace multistep_filter {
 
+namespace {
+constexpr int64_t kTriggeringNavigationId = 123;
+
 TEST(FilterAttributeUiLabelTest, ToString) {
   FilterAttributeUiLabel label(
       FilterSuggestionCandidateAttribute("key", u"label"),
@@ -44,7 +47,8 @@ TEST(UrlFilterSuggestionTest, CopyAndMove) {
       GURL("https://example.com"), u"domain", base::Time::Now(),
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
-          FilterAttribute("key1", "val1"))});
+          FilterAttribute("key1", "val1"))},
+      kTriggeringNavigationId, "example.com");
 
   UrlFilterSuggestion copy = suggestion;
   EXPECT_EQ(copy, suggestion);
@@ -58,12 +62,17 @@ TEST(UrlFilterSuggestionTest, Equality) {
       GURL("https://example.com"), u"domain", base::Time::Now(),
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
-          FilterAttribute("key1", "val1"))});
+          FilterAttribute("key1", "val1"))},
+      kTriggeringNavigationId, "example.com");
   UrlFilterSuggestion suggestion2 = suggestion1;
 
   EXPECT_EQ(suggestion1, suggestion2);
 
   suggestion2.source_domain = u"other";
+  EXPECT_NE(suggestion1, suggestion2);
+
+  suggestion2 = suggestion1;
+  suggestion2.triggering_domain = "other.com";
   EXPECT_NE(suggestion1, suggestion2);
 
   suggestion2 = suggestion1;
@@ -77,6 +86,10 @@ TEST(UrlFilterSuggestionTest, Equality) {
   suggestion2 = suggestion1;
   suggestion2.attribute_ui_labels.clear();
   EXPECT_NE(suggestion1, suggestion2);
+
+  suggestion2 = suggestion1;
+  suggestion2.triggering_navigation_id = 456;
+  EXPECT_NE(suggestion1, suggestion2);
 }
 
 TEST(UrlFilterSuggestionTest, ToString) {
@@ -87,7 +100,8 @@ TEST(UrlFilterSuggestionTest, ToString) {
       GURL("https://example.com"), u"domain", timestamp,
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
-          FilterAttribute("key1", "val1"))});
+          FilterAttribute("key1", "val1"))},
+      kTriggeringNavigationId, "example.com");
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -96,7 +110,9 @@ TEST(UrlFilterSuggestionTest, ToString) {
                 base::NumberToString(
                     timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
                 ", attribute_ui_labels=[FilterAttributeUiLabel(label=label1, "
-                "value=val1)])");
+                "value=val1)], triggering_navigation_id=" +
+                base::NumberToString(kTriggeringNavigationId) +
+                ", triggering_domain=example.com)");
 }
 
 TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
@@ -109,7 +125,8 @@ TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
            FilterAttribute("key1", "val1")),
        FilterAttributeUiLabel(
            FilterSuggestionCandidateAttribute("key2", u"label2"),
-           FilterAttribute("key2", "val2"))});
+           FilterAttribute("key2", "val2"))},
+      kTriggeringNavigationId, "example.com");
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -119,7 +136,10 @@ TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
                     timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
                 ", attribute_ui_labels=[FilterAttributeUiLabel(label=label1, "
                 "value=val1), FilterAttributeUiLabel(label=label2, "
-                "value=val2)])");
+                "value=val2)], triggering_navigation_id=" +
+                base::NumberToString(kTriggeringNavigationId) +
+                ", triggering_domain=example.com)");
 }
 
+}  // namespace
 }  // namespace multistep_filter

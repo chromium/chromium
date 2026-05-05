@@ -20,6 +20,8 @@ namespace multistep_filter {
 
 namespace {
 
+constexpr int64_t kTestNavigationId = 0;
+
 class MockFilterUiController : public FilterUiController {
  public:
   explicit MockFilterUiController(tabs::TabInterface& tab)
@@ -36,8 +38,6 @@ class MockFilterUiController : public FilterUiController {
               (const GURL& url),
               (const, override));
 };
-
-}  // namespace
 
 class MultistepFilterUiDelegateImplTest
     : public ChromeRenderViewHostTestHarness {
@@ -86,7 +86,8 @@ TEST_F(MultistepFilterUiDelegateImplTest,
 
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(suggestion_url, u"suggestion.com",
-                                 base::Time::Now(), /*attribute_ui_labels=*/{});
+                                 base::Time::Now(), /*attribute_ui_labels=*/{},
+                                 kTestNavigationId, "suggestion.com");
 
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
@@ -97,7 +98,8 @@ TEST_F(MultistepFilterUiDelegateImplTest,
        OnSuggestionGenerated_WithoutController) {
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(suggestion_url, u"suggestion.com",
-                                 base::Time::Now(), /*attribute_ui_labels=*/{});
+                                 base::Time::Now(), /*attribute_ui_labels=*/{},
+                                 kTestNavigationId, "suggestion.com");
   // Should not crash when there is no controller.
   delegate_->OnSuggestionGenerated(suggestion);
 }
@@ -135,5 +137,7 @@ TEST_F(MultistepFilterUiDelegateImplTest, ClearSuggestion_InvalidatesWeakPtr) {
   delegate_->ClearSuggestion();
   EXPECT_FALSE(weak_ptr);
 }
+
+}  // namespace
 
 }  // namespace multistep_filter

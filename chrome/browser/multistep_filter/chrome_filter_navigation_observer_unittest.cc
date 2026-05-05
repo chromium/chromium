@@ -32,6 +32,8 @@ using ::testing::_;
 
 namespace {
 
+constexpr int64_t kTestNavigationId = 0;
+
 class MockFilterUiController : public FilterUiController {
  public:
   explicit MockFilterUiController(tabs::TabInterface& tab)
@@ -219,7 +221,8 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(
       suggestion_url, base::UTF8ToUTF16(GetEtldPlusOne(suggestion_url)),
-      base::Time::Now(), /*attribute_ui_labels=*/{});
+      base::Time::Now(), /*attribute_ui_labels=*/{}, kTestNavigationId,
+      GetEtldPlusOne(suggestion_url));
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
   std::move(captured_callback).Run(suggestion);

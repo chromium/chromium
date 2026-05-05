@@ -28,6 +28,8 @@ namespace multistep_filter {
 
 namespace {
 
+constexpr int64_t kTestNavigationId = 0;
+
 class MockFilterUiController : public FilterUiController {
  public:
   explicit MockFilterUiController(tabs::TabInterface& tab)
@@ -79,10 +81,9 @@ UrlFilterSuggestion CreateDummySuggestion(
     const GURL& url,
     std::vector<FilterAttributeUiLabel> attribute_ui_labels = {}) {
   return UrlFilterSuggestion(url, base::UTF8ToUTF16(GetEtldPlusOne(url)),
-                             base::Time::Now(), std::move(attribute_ui_labels));
+                             base::Time::Now(), std::move(attribute_ui_labels),
+                             kTestNavigationId, GetEtldPlusOne(url));
 }
-
-}  // namespace
 
 class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -94,6 +95,7 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*mock_tab_, GetContents())
         .WillByDefault(testing::Return(web_contents()));
+    ON_CALL(*mock_tab_, GetProfile()).WillByDefault(testing::Return(profile()));
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
     controller_ = std::make_unique<MockFilterUiController>(*mock_tab_);
@@ -110,6 +112,7 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
       ui::UnownedUserDataHost& host) {
     auto tab = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*tab, GetContents()).WillByDefault(testing::Return(contents));
+    ON_CALL(*tab, GetProfile()).WillByDefault(testing::Return(profile()));
     ON_CALL(*tab, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(host));
     return tab;
@@ -189,7 +192,9 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForDismissedHost) {
   controller_->OnSuggestionGenerated(suggestion);
 
   // 1. Trigger suggestion and simulate dismissal for the source URL.
-  auto callback = controller_->GetOnDismissedCallback(source_url);
+  auto callback = controller_->GetOnDismissedCallback(
+      GetEtldPlusOne(source_url), kTestNavigationId,
+      GetEtldPlusOne(target_url));
   std::move(callback).Run();
 
   // 2. Verify subsequent suggestion for same host is suppressed.
@@ -217,7 +222,9 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForEtldPlusOne) {
 
   // 1. Trigger suggestion for sub.example.com and simulate dismissal for source
   // site.
-  auto callback = controller_->GetOnDismissedCallback(source_url);
+  auto callback = controller_->GetOnDismissedCallback(
+      GetEtldPlusOne(source_url), kTestNavigationId,
+      GetEtldPlusOne(target_url));
   std::move(callback).Run();
 
   // 2. Verify subsequent suggestion for other.example.com is suppressed.
@@ -242,7 +249,9 @@ TEST_F(FilterUiControllerTest, ShouldSuppressSuggestionsForLocalhost) {
   controller_->OnSuggestionGenerated(suggestion);
 
   // Simulate dismissal.
-  base::OnceClosure callback = controller_->GetOnDismissedCallback(source_url);
+  base::OnceClosure callback = controller_->GetOnDismissedCallback(
+      GetEtldPlusOne(source_url), kTestNavigationId,
+      GetEtldPlusOne(target_url));
   std::move(callback).Run();
 
   // Verify suppression works for localhost (host fallback).
@@ -260,7 +269,8 @@ TEST_F(FilterUiControllerTest, DismissalDoesNotClearNewSuggestion) {
   // 1. Suggestion A is generated.
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion_a)));
   controller_->OnSuggestionGenerated(suggestion_a);
-  base::OnceClosure callback_a = controller_->GetOnDismissedCallback(url_a);
+  base::OnceClosure callback_a = controller_->GetOnDismissedCallback(
+      GetEtldPlusOne(url_a), kTestNavigationId, GetEtldPlusOne(url_a));
 
   // 2. Suggestion B is generated (preempts A).
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion_b)));
@@ -442,5 +452,7 @@ TEST_F(FilterUiControllerTest, GetSuggestionUiData_Months) {
   EXPECT_EQ(data_75.replacement_params[1],
             l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 3));
 }
+
+}  // namespace
 
 }  // namespace multistep_filter

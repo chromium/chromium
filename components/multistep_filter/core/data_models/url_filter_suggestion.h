@@ -43,7 +43,9 @@ struct UrlFilterSuggestion {
   UrlFilterSuggestion(GURL navigation_url,
                       std::u16string source_domain,
                       base::Time extraction_timestamp,
-                      std::vector<FilterAttributeUiLabel> attribute_ui_labels);
+                      std::vector<FilterAttributeUiLabel> attribute_ui_labels,
+                      int64_t triggering_navigation_id,
+                      std::string triggering_domain);
 
   UrlFilterSuggestion(const UrlFilterSuggestion&);
   UrlFilterSuggestion(UrlFilterSuggestion&&);
@@ -67,6 +69,11 @@ struct UrlFilterSuggestion {
   // List of filter attribute UI labels and values for the suggestion. The
   // order follows that of the filter suggestion candidate's attributes.
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
+  // The ID of the navigation that triggered this suggestion.
+  int64_t triggering_navigation_id;
+  // The eTLD+1 domain of the original triggering navigation. Used only for
+  // logging.
+  std::string triggering_domain;
 };
 
 }  // namespace multistep_filter
