@@ -19,7 +19,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/platform_test.h"
-#import "url/origin.h"
 
 using IOS_ReaderMode_Heuristic_Result =
     ukm::builders::IOS_ReaderMode_Heuristic_Result;
@@ -41,14 +40,14 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
     return web::ScriptMessage(ValidDerivedFeatures(),
                               /*is_user_interacting=*/true,
                               /*is_main_frame=*/true,
-                              /*request_url=*/url, url::Origin::Create(url));
+                              /*request_url=*/url);
   }
 
   web::ScriptMessage ScriptMessageForInvalidUrl() {
     return web::ScriptMessage(ValidDerivedFeatures(),
                               /*is_user_interacting=*/true,
                               /*is_main_frame=*/true,
-                              /*request_url=*/std::nullopt, url::Origin());
+                              /*request_url=*/std::nullopt);
   }
 
   web::FakeWebState* web_state() { return &web_state_; }
@@ -139,8 +138,7 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseNotDict) {
   web::ScriptMessage script_message(std::move(invalid_body),
                                     /*is_user_interacting=*/true,
                                     /*is_main_frame=*/true,
-                                    /*request_url=*/valid_url(),
-                                    url::Origin::Create(valid_url()));
+                                    /*request_url=*/valid_url());
   ReaderModeJavaScriptFeature::GetInstance()->ScriptMessageReceived(
       web_state(), script_message);
   // Test heuristic result histogram.
@@ -161,8 +159,7 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseMissingFeatures) {
   web::ScriptMessage script_message(std::move(invalid_body),
                                     /*is_user_interacting=*/true,
                                     /*is_main_frame=*/true,
-                                    /*request_url=*/valid_url(),
-                                    url::Origin::Create(valid_url()));
+                                    /*request_url=*/valid_url());
   ReaderModeJavaScriptFeature::GetInstance()->ScriptMessageReceived(
       web_state(), script_message);
   // Test heuristic result histogram.
