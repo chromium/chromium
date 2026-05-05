@@ -9314,7 +9314,7 @@
   {
     "name": "unexportable-key-deletion",
     "owners": [ "jdoerrie@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "uno-phase-2-follow-up",
