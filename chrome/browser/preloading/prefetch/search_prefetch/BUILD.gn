@@ -47,12 +47,14 @@ source_set("impl") {
     ":search_prefetch",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/omnibox",
     "//chrome/browser/prefetch",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/search_engines",
     "//components/embedder_support:user_agent",
+    "//components/omnibox/browser",
   ]
 
   if (is_android) {

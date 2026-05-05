@@ -397,13 +397,12 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // TODO(crbug.com/40244149): Instead of handling headers added by
   // embedders specifically, prerender should expose an interface to embedders
   // to set url parameters.
-#if BUILDFLAG(IS_ANDROID)
-  // Used by Android devices only.
+  // Remove X-Geo header for embedder triggers (e.g. search prefetch) as it can
+  // change easily.
   if (trigger_type == PreloadingTriggerType::kEmbedder) {
     prerender_headers.RemoveHeader("X-Geo");
     potential_activation_headers.RemoveHeader("X-Geo");
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Remove the viewport headers as the viewport size of the initiator page can
   // be changed during prerendering. See also https://crbug.com/1401244.

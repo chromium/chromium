@@ -762,5 +762,22 @@ TEST(AreHttpRequestHeadersCompatible, XHeaders) {
       /*histogram_suffix=*/"", /*allow_x_header_mismatch=*/true, reason));
 }
 
+TEST(AreHttpRequestHeadersCompatible, IgnoreXGeo) {
+  PrerenderCancellationReason reason = PrerenderCancellationReason(
+      PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+  const std::string prerender_headers = "X-Geo: latitude=10";
+  const std::string potential_activation_headers = "X-Geo: latitude=20";
+
+  // Should ignore X-Geo mismatch when trigger type is kEmbedder.
+  EXPECT_TRUE(PrerenderHost::AreHttpRequestHeadersCompatible(
+      potential_activation_headers,
+#if BUILDFLAG(IS_ANDROID)
+      /*potential_activation_additional_headers=*/"",
+#endif  // BUILDFLAG(IS_ANDROID)
+      prerender_headers, PreloadingTriggerType::kEmbedder,
+      /*embedder_histogram_suffix=*/"", /*allow_x_header_mismatch=*/false,
+      reason));
+}
+
 }  // namespace
 }  // namespace content
