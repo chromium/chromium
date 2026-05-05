@@ -203,6 +203,7 @@ found in the LICENSE file.
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/credit_card_nickname_label"
         app:counterMaxLength="25"
+        app:counterEnabled="true"
         app:errorEnabled="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
