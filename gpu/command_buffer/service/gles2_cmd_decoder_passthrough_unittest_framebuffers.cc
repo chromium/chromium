@@ -71,12 +71,6 @@ TEST_F(GLES2DecoderPassthroughTest, DiscardFramebufferEXTUnsupported) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
-#if 1
-  // TODO(anglebug.com/507782759): re-enable with modifications after
-  // ANGLE rolls in.
-  GTEST_SKIP() << "Temporarily skipped while ANGLE changes are rolling in in "
-                  "anglebug.com/507782759";
-#else
   const GLint kWidth = 5;
   const GLint kHeight = 3;
   const GLenum kFormat = GL_RGBA;
@@ -144,11 +138,19 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
     // Check the Result has the correct metadata for what was read.
     GLint startx = std::max(test.x, 0);
     GLint endx = std::min(test.x + test.w, kWidth);
-    EXPECT_EQ(result->row_length, endx - startx);
-
     GLint starty = std::max(test.y, 0);
     GLint endy = std::min(test.y + test.h, kHeight);
-    EXPECT_EQ(result->num_rows, endy - starty);
+
+    // ReadPixelsRobustANGLE reports both 0 columns and 0 rows written
+    // if either is 0.
+    GLint deltax = endx - startx;
+    GLint deltay = endy - starty;
+    if (deltax == 0 || deltay == 0) {
+      deltax = 0;
+      deltay = 0;
+    }
+    EXPECT_EQ(result->row_length, deltax);
+    EXPECT_EQ(result->num_rows, deltay);
 
     // Check each pixel and expect them to be non-zero if they were written. The
     // non-zero values are written by ANGLE's NULL backend to simulate the
@@ -167,7 +169,6 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
       }
     }
   }
-#endif
 }
 
 TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsync) {
