@@ -117,6 +117,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAndroidAutofillSupportForHttpAuth,
     &autofill::features::kAutofillAiAvailableByDefault,
     &autofill::features::kAutofillAiCreateEntityDataManager,
+    &autofill::features::kAutofillAiEditEntitiesFromSaveUpdatePrompt,
     &autofill::features::kAutofillAiReauthRequired,
     &autofill::features::kAutofillAiShowWalletDisabledBanner,
     &autofill::features::kAutofillAiWalletPrivatePassesDeepLink,

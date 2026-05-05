@@ -26,6 +26,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -130,21 +131,47 @@ public class AutofillAiSaveUpdateEntityPrompt {
         LinearLayout attributeList = mDialogView.findViewById(R.id.autofill_ai_attribute_infos);
         attributeList.removeAllViews();
 
-        for (EntityAttributeUpdateDetails updateDetails : updateDetailsList) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            View attributeInfo = inflater.inflate(R.layout.autofill_ai_attribute_info, null);
+        if (updateDetailsList.isEmpty()) {
+            return;
+        }
+        int startIndex = 0;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)) {
+            startIndex = 1;
+            View attributeInfoWithEditButton =
+                    inflater.inflate(
+                            R.layout.autofill_ai_attribute_info_with_edit_button,
+                            attributeList,
+                            /* attachToRoot= */ false);
+            attributeList.addView(attributeInfoWithEditButton);
+            setAttributeDetails(
+                    attributeInfoWithEditButton, updateDetailsList.get(0), isUpdatePrompt);
+        }
 
-            TextView attributeName = attributeInfo.findViewById(R.id.attribute_name);
-            TextView attributeValue = attributeInfo.findViewById(R.id.attribute_value);
-
-            attributeName.setText(updateDetails.getAttributeName());
-            attributeValue.setText(updateDetails.getAttributeValue());
-
-            if (isUpdatePrompt) {
-                setBadgeAndAxLabelsInUpdatePrompt(attributeInfo, updateDetails);
-            }
-
+        for (int i = startIndex; i < updateDetailsList.size(); i++) {
+            View attributeInfo =
+                    inflater.inflate(
+                            R.layout.autofill_ai_attribute_info,
+                            attributeList,
+                            /* attachToRoot= */ false);
             attributeList.addView(attributeInfo);
+            setAttributeDetails(attributeInfo, updateDetailsList.get(i), isUpdatePrompt);
+        }
+    }
+
+    private void setAttributeDetails(
+            View attributeInfo,
+            EntityAttributeUpdateDetails updateDetails,
+            boolean isUpdatePrompt) {
+        TextView attributeName = attributeInfo.findViewById(R.id.attribute_name);
+        TextView attributeValue = attributeInfo.findViewById(R.id.attribute_value);
+
+        attributeName.setText(updateDetails.getAttributeName());
+        attributeValue.setText(updateDetails.getAttributeValue());
+
+        if (isUpdatePrompt) {
+            setBadgeAndAxLabelsInUpdatePrompt(attributeInfo, updateDetails);
         }
     }
 

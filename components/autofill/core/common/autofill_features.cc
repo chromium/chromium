@@ -176,6 +176,13 @@ BASE_FEATURE(kAutofillAiDedupeEntities,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the entity save/update prompt displays an edit button that
+// opens the entity editor on click.
+BASE_FEATURE(kAutofillAiEditEntitiesFromSaveUpdatePrompt,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, a HaTS survey is shown after a walletable suggestion is
 // displayed and the form submitted. The survey does not require the suggestion
 // to be accepted.

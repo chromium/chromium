@@ -215,6 +215,7 @@ android_resources("java_resources") {
     "java/res/drawable/store_locally_tooltip_background.xml",
     "java/res/drawable/text_analysis_24dp.xml",
     "java/res/layout/autofill_ai_attribute_info.xml",
+    "java/res/layout/autofill_ai_attribute_info_with_edit_button.xml",
     "java/res/layout/autofill_ai_preference.xml",
     "java/res/layout/autofill_ai_save_entity_prompt.xml",
     "java/res/layout/autofill_ai_settings_info_item.xml",

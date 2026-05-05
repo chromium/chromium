@@ -34,17 +34,22 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link AutofillAiSaveUpdateEntityPrompt}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)
 public class AutofillAiSaveUpdateEntityPromptTest {
     private static final long NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER = 100L;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -186,6 +191,17 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     @SmallTest
+    public void noEntityAttributeUpdateDetails() {
+        mPrompt.setEntityUpdateDetails(Collections.emptyList(), /* isUpdatePrompt= */ false);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(0, attributeList.getChildCount());
+    }
+
+    @Test
+    @SmallTest
     public void entityAttributeUpdateDetailsInSavePrompt() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
@@ -234,6 +250,12 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "12/12/2030",
                 /* oldAttributeValue= */ "");
+        // The edit button should be present only in the first attribute view.
+        assertEquals(
+                View.VISIBLE,
+                attributeList.getChildAt(0).findViewById(R.id.edit_button).getVisibility());
+        assertNull(attributeList.getChildAt(1).findViewById(R.id.edit_button));
+        assertNull(attributeList.getChildAt(2).findViewById(R.id.edit_button));
     }
 
     @Test
@@ -286,6 +308,42 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 /* attributeNameAxLabel= */ null,
                 /* attributeValue= */ "12/12/2030",
                 /* oldAttributeValue= */ "");
+        // The edit button should be present only in the first attribute view.
+        assertEquals(
+                View.VISIBLE,
+                attributeList.getChildAt(0).findViewById(R.id.edit_button).getVisibility());
+        assertNull(attributeList.getChildAt(1).findViewById(R.id.edit_button));
+        assertNull(attributeList.getChildAt(2).findViewById(R.id.edit_button));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)
+    public void editButtonNotVisibleWhenFeatureDisabled() {
+        final EntityAttributeUpdateDetails passportNumber =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport number",
+                        /* attributeValue= */ "AA1111",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        List<EntityAttributeUpdateDetails> updateDetailsList = List.of(passportNumber);
+
+        mPrompt.setEntityUpdateDetails(updateDetailsList, /* isUpdatePrompt= */ true);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(1, attributeList.getChildCount());
+
+        // Make sure the "New" badge is added to the added attributes.
+        assertAttributeNameAndValue(
+                /* attributeInfo= */ attributeList.getChildAt(0),
+                /* attributeName= */ "Passport number",
+                /* attributeNameAxLabel= */ "Passport number, new",
+                /* attributeValue= */ "AA1111  New",
+                /* oldAttributeValue= */ "");
+        // The edit button should not be shown if the feature is disabled.
+        assertNull(attributeList.getChildAt(0).findViewById(R.id.edit_button));
     }
 
     private void assertAttributeNameAndValue(

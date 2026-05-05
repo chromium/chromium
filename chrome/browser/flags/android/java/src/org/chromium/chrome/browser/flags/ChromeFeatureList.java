@@ -246,6 +246,8 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_AI_AVAILABLE_BY_DEFAULT = "AutofillAiAvailableByDefault";
     public static final String AUTOFILL_AI_CREATE_ENTITY_DATA_MANAGER =
             "AutofillAiCreateEntityDataManager";
+    public static final String AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT =
+            "AutofillAiEditEntitiesFromSaveUpdatePrompt";
     public static final String AUTOFILL_AI_REAUTH_REQUIRED = "AutofillAiReauthRequired";
     public static final String AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER =
             "AutofillAiShowWalletDisabledBanner";

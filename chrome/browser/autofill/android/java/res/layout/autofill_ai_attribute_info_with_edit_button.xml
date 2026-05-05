@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textDirection="locale">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/attribute_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/autofill_entity_attribute_top_padding"
+        android:layout_toStartOf="@id/edit_button"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/attribute_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/attribute_name"
+        android:layout_toStartOf="@id/edit_button"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/old_attribute_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/attribute_value"
+        android:layout_toStartOf="@id/edit_button"
+        android:textAppearance="@style/TextAppearance.TextLarge.Disabled"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
+    <!-- Only shown for the first attribute in the list. -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="@dimen/autofill_entity_prompt_edit_icon_size"
+        android:layout_height="@dimen/autofill_entity_prompt_edit_icon_size"
+        android:layout_marginEnd="@dimen/dialog_padding_sides"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/autofill_entity_prompt_edit_icon_top_padding"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_edit_24dp"
+        app:tint="@color/default_icon_color_tint_list" />
+
+</RelativeLayout>
