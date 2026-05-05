@@ -149,6 +149,12 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   _viewController.sheetPresentationController
       .prefersEdgeAttachedInCompactHeight = YES;
 
+  if ([UIDevice currentDevice].userInterfaceIdiom ==
+      UIUserInterfaceIdiomPhone) {
+    _viewController.sheetPresentationController
+        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  }
+
   __weak UIViewController* weakVC = _viewController;
   auto detentResolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {

@@ -26,6 +26,9 @@ namespace {
 // The estimated height of the attachments group.
 const CGFloat kAttachmentGroupEstimatedHeight = 80.0f;
 
+// The width of the sheet in landscape.
+const CGFloat kLandscapeSheetWidth = 400.0f;
+
 // The top padding for the collection view.
 const CGFloat kCollectionViewTopPadding = 20.0f;
 
@@ -196,6 +199,26 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   [self.view layoutIfNeeded];
   size.height =
       _collectionView.contentSize.height + _collectionView.contentInset.top;
+
+  if ([UIDevice currentDevice].userInterfaceIdiom !=
+      UIUserInterfaceIdiomPhone) {
+    return size;
+  }
+  // Width is controlled by preferredControlSize on phones (see.
+  // widthFollowsPreferredContentSizeWhenEdgeAttached).
+
+  BOOL isLandscape =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  if (isLandscape) {
+    CGFloat baseWidth = size.width > 0 ? size.width : kLandscapeSheetWidth;
+    size.width =
+        baseWidth < kLandscapeSheetWidth ? baseWidth : kLandscapeSheetWidth;
+  } else {
+    // Portrait fallback: use full width if not specified.
+    if (size.width == 0) {
+      size.width = self.view.bounds.size.width;
+    }
+  }
   return size;
 }
 
