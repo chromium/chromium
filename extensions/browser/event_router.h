@@ -456,16 +456,14 @@ class EventRouter : public KeyedService,
   bool ValidateMainThreadListenerOwner(
       const mojom::EventListenerOwner& listener_owner,
       content::RenderProcessHost& process,
-      bool require_extension_process,
-      bool is_add);
+      bool require_extension_process);
 
   // Validates that a renderer-originated service worker listener message is
   // acting for an extension-owned worker scope that `process` may host.
   bool ValidateServiceWorkerListenerForExtension(
       const ExtensionId& extension_id,
       const GURL& worker_scope_url,
-      content::RenderProcessHost& process,
-      bool is_add);
+      content::RenderProcessHost& process);
 
   // Adds an extension as an event listener for `event_name`.
   //

@@ -69,71 +69,41 @@ base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
 
 namespace {
 
-// A message when mojom::EventRouter::AddListenerForMainThread() is called with
-// an invalid param.
-constexpr char kAddEventListenerWithInvalidParam[] =
-    "Tried to add an event listener without a valid extension ID nor listener "
-    "URL";
-
-// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
-// with an invalid worker scope URL.
-constexpr char kAddEventListenerWithInvalidWorkerScopeURL[] =
-    "Tried to add an event listener for a service worker without a valid "
-    "worker scope URL.";
-
-// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
-// with an invalid extension ID.
-constexpr char kAddEventListenerWithInvalidExtensionID[] =
-    "Tried to add an event listener for a service worker without a valid "
-    "extension ID.";
-
 // A message when mojom::EventRouter::AddListenerForMainThread() or
-// AddListenerForServiceWorker() is called with an unauthorized extension ID.
-constexpr char kAddEventListenerWithUnauthorizedExtensionID[] =
-    "Tried to add an event listener for an unauthorized extension ID.";
-
-// A message when mojom::EventRouter::AddListenerForMainThread() is called
-// with an unauthorized listener URL.
-constexpr char kAddEventListenerWithUnauthorizedListenerURL[] =
-    "Tried to add an event listener for an unauthorized listener URL.";
-
-// A message when mojom::EventRouter::AddListenerForServiceWorker() is called
-// with an unauthorized worker scope URL.
-constexpr char kAddEventListenerWithUnauthorizedWorkerScopeURL[] =
-    "Tried to add an event listener for an unauthorized worker scope URL.";
-
-// A message when mojom::EventRouter::RemoveListenerForMainThread() is called
-// with an invalid param.
-constexpr char kRemoveEventListenerWithInvalidParam[] =
-    "Tried to remove an event listener without a valid extension ID nor "
+// RemoveListenerForMainThread() is called with an invalid param.
+constexpr char kEventListenerWithInvalidParam[] =
+    "Tried to manipulate an event listener without a valid extension ID nor "
     "listener URL";
 
-// A message when mojom::EventRouter::RemoveListenerForServiceWorker() is called
-// with an invalid worker scope URL.
-constexpr char kRemoveEventListenerWithInvalidWorkerScopeURL[] =
-    "Tried to remove an event listener for a service worker without a valid "
-    "worker scope URL.";
+// A message when mojom::EventRouter::AddListenerForServiceWorker() or
+// RemoveListenerForServiceWorker() is called with an invalid worker scope URL.
+constexpr char kEventListenerWithInvalidWorkerScopeURL[] =
+    "Tried to manipulate an event listener for a service worker without a "
+    "valid worker scope URL.";
 
-// A message when mojom::EventRouter::RemoveListenerForServiceWorker() is called
-// with an invalid extension ID.
-constexpr char kRemoveEventListenerWithInvalidExtensionID[] =
-    "Tried to remove an event listener for a service worker without a valid "
-    "extension ID.";
+// A message when mojom::EventRouter::AddListenerForServiceWorker() or
+// RemoveListenerForServiceWorker() is called with an invalid extension ID.
+constexpr char kEventListenerWithInvalidExtensionID[] =
+    "Tried to manipulate an event listener for a service worker without a "
+    "valid extension ID.";
 
-// A message when mojom::EventRouter::RemoveListenerForMainThread() or
-// RemoveListenerForServiceWorker() is called with an unauthorized extension ID.
-constexpr char kRemoveEventListenerWithUnauthorizedExtensionID[] =
-    "Tried to remove an event listener for an unauthorized extension ID.";
+// A message when mojom::EventRouter::AddListenerForMainThread() or
+// AddListenerForServiceWorker() or their Remove counterparts is called with an
+// unauthorized extension ID.
+constexpr char kEventListenerWithUnauthorizedExtensionID[] =
+    "Tried to manipulate an event listener for an unauthorized extension ID.";
 
-// A message when mojom::EventRouter::RemoveListenerForMainThread() is called
-// with an unauthorized listener URL.
-constexpr char kRemoveEventListenerWithUnauthorizedListenerURL[] =
-    "Tried to remove an event listener for an unauthorized listener URL.";
+// A message when mojom::EventRouter::AddListenerForMainThread() or
+// RemoveListenerForMainThread() is called with an unauthorized listener URL.
+constexpr char kEventListenerWithUnauthorizedListenerURL[] =
+    "Tried to manipulate an event listener for an unauthorized listener URL.";
 
-// A message when mojom::EventRouter::RemoveListenerForServiceWorker() is called
-// with an unauthorized worker scope URL.
-constexpr char kRemoveEventListenerWithUnauthorizedWorkerScopeURL[] =
-    "Tried to remove an event listener for an unauthorized worker scope URL.";
+// A message when mojom::EventRouter::AddListenerForServiceWorker() or
+// RemoveListenerForServiceWorker() is called with an unauthorized worker scope
+// URL.
+constexpr char kEventListenerWithUnauthorizedWorkerScopeURL[] =
+    "Tried to manipulate an event listener for an unauthorized worker scope "
+    "URL.";
 
 // Sends a notification about an event to the API activity monitor and the
 // ExtensionHost for |extension_id| on the UI thread. Can be called from any
@@ -447,8 +417,7 @@ bool EventRouter::CanProcessAccessOrigin(RenderProcessHost& process,
 bool EventRouter::ValidateMainThreadListenerOwner(
     const mojom::EventListenerOwner& listener_owner,
     RenderProcessHost& process,
-    bool require_extension_process,
-    bool is_add) {
+    bool require_extension_process) {
   if (listener_owner.is_extension_id()) {
     const ExtensionId& extension_id = listener_owner.get_extension_id();
     // Return false to indicate the message shouldn't be processed, but don't
@@ -467,9 +436,7 @@ bool EventRouter::ValidateMainThreadListenerOwner(
             : IsProcessAuthorizedForMainThreadExtensionListener(extension_id,
                                                                 process);
     if (!is_authorized) {
-      receivers_.ReportBadMessage(
-          is_add ? kAddEventListenerWithUnauthorizedExtensionID
-                 : kRemoveEventListenerWithUnauthorizedExtensionID);
+      receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
       return false;
     }
     return true;
@@ -479,28 +446,22 @@ bool EventRouter::ValidateMainThreadListenerOwner(
       listener_owner.get_listener_url().is_valid() &&
       !require_extension_process) {
     if (!CanProcessAccessOrigin(process, listener_owner.get_listener_url())) {
-      receivers_.ReportBadMessage(
-          is_add ? kAddEventListenerWithUnauthorizedListenerURL
-                 : kRemoveEventListenerWithUnauthorizedListenerURL);
+      receivers_.ReportBadMessage(kEventListenerWithUnauthorizedListenerURL);
       return false;
     }
     return true;
   }
 
-  receivers_.ReportBadMessage(is_add ? kAddEventListenerWithInvalidParam
-                                     : kRemoveEventListenerWithInvalidParam);
+  receivers_.ReportBadMessage(kEventListenerWithInvalidParam);
   return false;
 }
 
 bool EventRouter::ValidateServiceWorkerListenerForExtension(
     const ExtensionId& extension_id,
     const GURL& worker_scope_url,
-    RenderProcessHost& process,
-    bool is_add) {
+    RenderProcessHost& process) {
   if (!worker_scope_url.is_valid()) {
-    receivers_.ReportBadMessage(
-        is_add ? kAddEventListenerWithInvalidWorkerScopeURL
-               : kRemoveEventListenerWithInvalidWorkerScopeURL);
+    receivers_.ReportBadMessage(kEventListenerWithInvalidWorkerScopeURL);
     return false;
   }
 
@@ -510,9 +471,7 @@ bool EventRouter::ValidateServiceWorkerListenerForExtension(
 
   if (!Extension::CreateOriginFromExtensionId(extension_id)
            .IsSameOriginWith(worker_scope_url)) {
-    receivers_.ReportBadMessage(
-        is_add ? kAddEventListenerWithUnauthorizedWorkerScopeURL
-               : kRemoveEventListenerWithUnauthorizedWorkerScopeURL);
+    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedWorkerScopeURL);
     return false;
   }
 
@@ -520,16 +479,12 @@ bool EventRouter::ValidateServiceWorkerListenerForExtension(
   // state. A process that merely ran an extension content or user script is not
   // authorized to mutate that state.
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, process)) {
-    receivers_.ReportBadMessage(
-        is_add ? kAddEventListenerWithUnauthorizedExtensionID
-               : kRemoveEventListenerWithUnauthorizedExtensionID);
+    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
     return false;
   }
 
   if (!CanProcessAccessOrigin(process, worker_scope_url)) {
-    receivers_.ReportBadMessage(
-        is_add ? kAddEventListenerWithUnauthorizedWorkerScopeURL
-               : kRemoveEventListenerWithUnauthorizedWorkerScopeURL);
+    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedWorkerScopeURL);
     return false;
   }
 
@@ -546,8 +501,7 @@ void EventRouter::AddListenerForMainThread(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!ValidateMainThreadListenerOwner(listener_owner, *process,
-                                       /*require_extension_process=*/false,
-                                       /*is_add=*/true)) {
+                                       /*require_extension_process=*/false)) {
     return;
   }
 
@@ -572,14 +526,13 @@ void EventRouter::AddListenerForServiceWorker(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!listener_owner.is_extension_id()) {
-    receivers_.ReportBadMessage(kAddEventListenerWithInvalidExtensionID);
+    receivers_.ReportBadMessage(kEventListenerWithInvalidExtensionID);
     return;
   }
 
   const ExtensionId& extension_id = listener_owner.get_extension_id();
   if (!ValidateServiceWorkerListenerForExtension(
-          extension_id, service_worker_context->scope_url, *process,
-          /*is_add=*/true)) {
+          extension_id, service_worker_context->scope_url, *process)) {
     return;
   }
 
@@ -599,7 +552,7 @@ void EventRouter::AddLazyListenerForMainThread(const ExtensionId& extension_id,
   }
 
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, *process)) {
-    receivers_.ReportBadMessage(kAddEventListenerWithUnauthorizedExtensionID);
+    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
     return;
   }
 
@@ -626,7 +579,7 @@ void EventRouter::AddLazyListenerForServiceWorker(
   }
 
   if (!ValidateServiceWorkerListenerForExtension(extension_id, worker_scope_url,
-                                                 *process, /*is_add=*/true)) {
+                                                 *process)) {
     return;
   }
 
@@ -664,8 +617,7 @@ void EventRouter::AddFilteredListenerForMainThread(
 
   if (!ValidateMainThreadListenerOwner(
           *listener_owner, *process,
-          /*require_extension_process=*/add_lazy_listener,
-          /*is_add=*/true)) {
+          /*require_extension_process=*/add_lazy_listener)) {
     return;
   }
 
@@ -685,8 +637,7 @@ void EventRouter::AddFilteredListenerForServiceWorker(
   }
 
   if (!ValidateServiceWorkerListenerForExtension(
-          extension_id, service_worker_context->scope_url, *process,
-          /*is_add=*/true)) {
+          extension_id, service_worker_context->scope_url, *process)) {
     return;
   }
 
@@ -706,8 +657,7 @@ void EventRouter::RemoveListenerForMainThread(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!ValidateMainThreadListenerOwner(listener_owner, *process,
-                                       /*require_extension_process=*/false,
-                                       /*is_add=*/false)) {
+                                       /*require_extension_process=*/false)) {
     return;
   }
 
@@ -732,14 +682,13 @@ void EventRouter::RemoveListenerForServiceWorker(
   const mojom::EventListenerOwner& listener_owner =
       *event_listener->listener_owner;
   if (!listener_owner.is_extension_id()) {
-    receivers_.ReportBadMessage(kRemoveEventListenerWithInvalidExtensionID);
+    receivers_.ReportBadMessage(kEventListenerWithInvalidExtensionID);
     return;
   }
 
   const ExtensionId& extension_id = listener_owner.get_extension_id();
   if (!ValidateServiceWorkerListenerForExtension(
-          extension_id, service_worker_context->scope_url, *process,
-          /*is_add=*/false)) {
+          extension_id, service_worker_context->scope_url, *process)) {
     return;
   }
 
@@ -760,8 +709,7 @@ void EventRouter::RemoveLazyListenerForMainThread(
   }
 
   if (!IsProcessAuthorizedForExtensionProcessListener(extension_id, *process)) {
-    receivers_.ReportBadMessage(
-        kRemoveEventListenerWithUnauthorizedExtensionID);
+    receivers_.ReportBadMessage(kEventListenerWithUnauthorizedExtensionID);
     return;
   }
 
@@ -788,7 +736,7 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
   }
 
   if (!ValidateServiceWorkerListenerForExtension(extension_id, worker_scope_url,
-                                                 *process, /*is_add=*/false)) {
+                                                 *process)) {
     return;
   }
 
@@ -826,8 +774,7 @@ void EventRouter::RemoveFilteredListenerForMainThread(
 
   if (!ValidateMainThreadListenerOwner(
           *listener_owner, *process,
-          /*require_extension_process=*/remove_lazy_listener,
-          /*is_add=*/false)) {
+          /*require_extension_process=*/remove_lazy_listener)) {
     return;
   }
 
@@ -847,8 +794,7 @@ void EventRouter::RemoveFilteredListenerForServiceWorker(
   }
 
   if (!ValidateServiceWorkerListenerForExtension(
-          extension_id, service_worker_context->scope_url, *process,
-          /*is_add=*/false)) {
+          extension_id, service_worker_context->scope_url, *process)) {
     return;
   }
 
@@ -1048,7 +994,7 @@ void EventRouter::AddFilteredEventListener(
         EventListener::ForURL(event_name, listener_owner->get_listener_url(),
                               process, filter.Clone());
   } else {
-    mojo::ReportBadMessage(kAddEventListenerWithInvalidParam);
+    mojo::ReportBadMessage(kEventListenerWithInvalidParam);
     return;
   }
 
@@ -1109,7 +1055,7 @@ void EventRouter::RemoveFilteredEventListener(
         EventListener::ForURL(event_name, listener_owner->get_listener_url(),
                               process, filter.Clone());
   } else {
-    mojo::ReportBadMessage(kRemoveEventListenerWithInvalidParam);
+    mojo::ReportBadMessage(kEventListenerWithInvalidParam);
     return;
   }
 
