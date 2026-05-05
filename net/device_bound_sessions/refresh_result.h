@@ -12,22 +12,24 @@ namespace net::device_bound_sessions {
 // numeric values should never be reused.
 // LINT.IfChange(DeviceBoundSessionRefreshResult)
 enum class RefreshResult {
-  kRefreshed = 0,             // Refresh was successful and was triggered by
-                              // this specific request.
-  kInitializedService = 1,    // Service is now initialized, refresh may still
-                              // be needed.
-  kUnreachable = 2,           // Refresh endpoint was unreachable.
-  kServerError = 3,           // Refresh endpoint served a transient error.
-  kRefreshQuotaExceeded = 4,  // Refresh quota exceeded. This is being
-                              // replaced with `kSigningQuotaExceeded`.
-  kFatalError = 5,            // Refresh failed and session was terminated. No
-                              // further refresh needed.
-  kSigningQuotaExceeded = 6,  // Signing quota exceeded.
-  kRefreshedAsWaiter = 7,     // Refresh was successful for the session, but
-                              // this specific request did not trigger it (it
-                              // was a waiter), a new refresh may still be
-                              // needed.
-  kMaxValue = kRefreshedAsWaiter
+  kRefreshed = 0,              // Refresh was successful and was triggered by
+                               // this specific request.
+  kInitializedService = 1,     // Service is now initialized, refresh may still
+                               // be needed.
+  kUnreachable = 2,            // Refresh endpoint was unreachable.
+  kServerError = 3,            // Refresh endpoint served a transient error.
+  kRefreshQuotaExceeded = 4,   // Refresh quota exceeded. This is being
+                               // replaced with `kSigningQuotaExceeded`.
+  kFatalError = 5,             // Refresh failed and session was terminated. No
+                               // further refresh needed.
+  kSigningQuotaExceeded = 6,   // Signing quota exceeded.
+  kRefreshedAsWaiter = 7,      // Refresh was successful for the session, but
+                               // this specific request did not trigger it (it
+                               // was a waiter), a new refresh may still be
+                               // needed.
+  kTransientSigningError = 8,  // Transient local signing failure. Examples
+                               // include canceled key operations.
+  kMaxValue = kTransientSigningError
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionRefreshResult)
 

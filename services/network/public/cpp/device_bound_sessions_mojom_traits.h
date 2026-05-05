@@ -391,6 +391,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case kSessionDeletedDuringRefresh:
         return network::mojom::DeviceBoundSessionError::
             kSessionDeletedDuringRefresh;
+      case kTransientSigningError:
+        return network::mojom::DeviceBoundSessionError::kTransientSigningError;
     }
   }
 
@@ -567,6 +569,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case network::mojom::DeviceBoundSessionError::
           kSessionDeletedDuringRefresh:
         return kSessionDeletedDuringRefresh;
+      case network::mojom::DeviceBoundSessionError::kTransientSigningError:
+        return kTransientSigningError;
     }
     NOTREACHED();
   }

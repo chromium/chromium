@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "base/types/expected.h"
 
 namespace unexportable_keys {
@@ -53,6 +54,9 @@ constexpr ServiceError kNoServiceErrorForMetrics = static_cast<ServiceError>(0);
 // fail. Either contains a `ServiceError` or a result value of arbitrary type.
 template <class Result>
 using ServiceErrorOr = base::expected<Result, ServiceError>;
+
+// Returns whether a given `error` is persistent.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS) bool IsPersistentError(ServiceError error);
 
 }  // namespace unexportable_keys
 

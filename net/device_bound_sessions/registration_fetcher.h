@@ -98,7 +98,7 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       std::string challenge,
       std::optional<std::string> authorization,
-      base::OnceCallback<void(std::optional<RegistrationToken>)> callback);
+      base::OnceCallback<void(SessionErrorOr<RegistrationToken>)> callback);
 
   static void SetFetcherForTesting(FetcherType* fetcher);
 

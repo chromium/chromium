@@ -323,7 +323,7 @@ void SessionStoreImpl::RestoreSessionBindingKey(
       std::vector<uint8_t> wrapped_key(it->second.wrapped_key().begin(),
                                        it->second.wrapped_key().end());
       key_service_->FromWrappedSigningKeySlowlyAsync(
-          wrapped_key, BackgroundTaskPriority::kUserVisible,
+          wrapped_key, unexportable_keys::BackgroundTaskPriority::kUserVisible,
           base::BindOnce(&SessionStoreImpl::OnSessionBindingKeyRestored,
                          weak_ptr_factory_.GetWeakPtr(), session_key));
       return;
