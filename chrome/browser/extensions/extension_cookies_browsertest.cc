@@ -23,15 +23,14 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_test_util.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -40,6 +39,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -59,6 +59,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -344,8 +346,7 @@ class ExtensionSameSiteCookiesTest
     // If SameSite access semantics is "legacy", add content settings to allow
     // legacy access for all sites.
     if (HasLegacySameSiteAccessSemantics()) {
-      browser()
-          ->profile()
+      GetProfile()
           ->GetDefaultStoragePartition()
           ->GetNetworkContext()
           ->GetCookieManager(
@@ -612,13 +613,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   ExpectSameSiteCookies(cookies);
 }
 
+// TODO(crbug.com/509639786): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ActiveTabPermissions_BackgroundPage \
+  DISABLED_ActiveTabPermissions_BackgroundPage
+#else
+#define MAYBE_ActiveTabPermissions_BackgroundPage \
+  ActiveTabPermissions_BackgroundPage
+#endif
 // SameSite-cookies-flavoured copy of the ExtensionActiveTabTest.ActiveTab test.
 // In this test, the effective extension permissions are changing at runtime
 // - the test verifies that the changing permissions are correctly propagated
 // into the SameSite cookie decisions (e.g. in
 // network::URLLoader::ShouldForceIgnoreSiteForCookies).
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       ActiveTabPermissions_BackgroundPage) {
+                       MAYBE_ActiveTabPermissions_BackgroundPage) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
       {
@@ -795,8 +804,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   }
 }
 
+// TODO(crbug.com/509639786): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ActiveTabPermissions_ExtensionServiceWorker \
+  DISABLED_ActiveTabPermissions_ExtensionServiceWorker
+#else
+#define MAYBE_ActiveTabPermissions_ExtensionServiceWorker \
+  ActiveTabPermissions_ExtensionServiceWorker
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       ActiveTabPermissions_ExtensionServiceWorker) {
+                       MAYBE_ActiveTabPermissions_ExtensionServiceWorker) {
   const char kServiceWorker[] = R"(
       chrome.runtime.onMessage.addListener(
           function(request, sender, sendResponse) {
@@ -875,12 +892,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL().GetHost());
   SetCookies(kActiveTabHost);
   GURL extension_frame_url = extension->GetResourceURL("frame.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension_frame_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP |
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  auto* browser = GetBrowserWindowInterface();
+  auto* tab_list = TabListInterface::From(browser);
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(tab_list->GetTabCount(), 1);
+  tab_list->OpenTab(extension_frame_url, /*index=*/-1, /*foreground=*/false);
+  ASSERT_EQ(tab_list->GetTabCount(), 2);
+  content::WebContents* extension_contents = tab_list->GetTab(1)->GetContents();
+  content::WaitForLoadStop(extension_contents);
   content::RenderFrameHost* extension_frame =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
+      extension_contents->GetPrimaryMainFrame();
   EXPECT_EQ(extension_frame_url, extension_frame->GetLastCommittedURL());
 
   // Based on activeTab, the extension shouldn't be initially granted access to
