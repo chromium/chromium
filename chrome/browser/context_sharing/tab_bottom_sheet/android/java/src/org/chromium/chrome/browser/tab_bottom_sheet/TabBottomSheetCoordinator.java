@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -145,6 +146,7 @@ public class TabBottomSheetCoordinator {
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
     private boolean mInitialContainerSizeChanged;
+    private @Nullable KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
      * @param context The context to use for creating views.
@@ -244,6 +246,13 @@ public class TabBottomSheetCoordinator {
                 mContext.registerComponentCallbacks(mComponentsCallbacks);
             }
 
+            if (mKeyboardVisibilityListener == null) {
+                mKeyboardVisibilityListener = buildKeyboardVisibilityListener();
+                mWindowAndroid
+                        .getKeyboardDelegate()
+                        .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+            }
+
             mIsShowingTabBottomSheet = true;
             return true;
         } else {
@@ -319,6 +328,13 @@ public class TabBottomSheetCoordinator {
             mComponentsCallbacks = null;
         }
         stopObservingCompositorViewInteractions();
+
+        if (mKeyboardVisibilityListener != null) {
+            mWindowAndroid
+                    .getKeyboardDelegate()
+                    .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+            mKeyboardVisibilityListener = null;
+        }
 
         if (mSheetContent != null) {
             mSheetContent.destroy();
@@ -422,6 +438,17 @@ public class TabBottomSheetCoordinator {
                     }
                     mIsShowingTabBottomSheet = false;
                 }
+            }
+        };
+    }
+
+    private KeyboardVisibilityListener buildKeyboardVisibilityListener() {
+        return isShowing -> {
+            if (isShowing
+                    && mIsShowingTabBottomSheet
+                    && mContentView != null
+                    && !mContentView.hasFocus()) {
+                collapseSheet();
             }
         };
     }
