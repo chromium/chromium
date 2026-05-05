@@ -57,6 +57,7 @@ constexpr char kCleanupMultiProcessConfigSwitch[] =
     "cleanup-multi-process-config";
 constexpr char kSaveMultiProcessPairingsSwitch[] =
     "save-multi-process-pairings";
+constexpr char kKeepConfigSwitch[] = "keep-config";
 
 // Runs the current program with sudo.
 // `args`: The arguments to pass to the program.
@@ -314,27 +315,31 @@ bool MigrateToMultiProcess(const base::CommandLine& command_line) {
       return false;
     }
 
-    // Deleting the old pairing directory as the user.
-    std::cout << "Deleting old single-process config.\n";
-    base::FilePath user_config_dir = GetConfigDir();
-    base::FilePath config_file =
-        user_config_dir.Append(GetHostHash() + ".json");
-    base::FilePath user_pairing_dir = user_config_dir.Append(
-        PairingRegistryDelegateLinux::kRegistryDirectory);
+    if (command_line.HasSwitch(kKeepConfigSwitch)) {
+      std::cout << "Keeping old single-process config as requested.\n";
+    } else {
+      // Deleting the old pairing directory as the user.
+      std::cout << "Deleting old single-process config.\n";
+      base::FilePath user_config_dir = GetConfigDir();
+      base::FilePath config_file =
+          user_config_dir.Append(GetHostHash() + ".json");
+      base::FilePath user_pairing_dir = user_config_dir.Append(
+          PairingRegistryDelegateLinux::kRegistryDirectory);
 
-    if (base::PathExists(user_pairing_dir) &&
-        !base::DeletePathRecursively(user_pairing_dir)) {
-      std::cerr << "Failed to delete old pairing directory.\n";
-      return false;
-    }
-    // Ideally we should delete the old host config file, but an internal
-    // service will re-provision the host if it detects that the config file no
-    // longer exists. For now we just clear its content to prevent the
-    // single-process host from accidentally running.
-    // TODO: b/495898776 - just delete the file once the tooling is fixed.
-    if (base::PathExists(config_file) && !base::WriteFile(config_file, "")) {
-      std::cerr << "Failed to clear old host config file.\n";
-      return false;
+      if (base::PathExists(user_pairing_dir) &&
+          !base::DeletePathRecursively(user_pairing_dir)) {
+        std::cerr << "Failed to delete old pairing directory.\n";
+        return false;
+      }
+      // Ideally we should delete the old host config file, but an internal
+      // service will re-provision the host if it detects that the config file
+      // no longer exists. For now we just clear its content to prevent the
+      // single-process host from accidentally running.
+      // TODO: b/495898776 - just delete the file once the tooling is fixed.
+      if (base::PathExists(config_file) && !base::WriteFile(config_file, "")) {
+        std::cerr << "Failed to clear old host config file.\n";
+        return false;
+      }
     }
 
     std::cout << "Successfully migrated to multi-process host.\n";
@@ -488,10 +493,14 @@ bool MigrateToSingleProcess(const base::CommandLine& command_line) {
     return false;
   }
 
-  std::cout << "Elevating to clean up multi-process host state.\n";
-  if (!RunWithSudo({"--" + std::string(kCleanupMultiProcessConfigSwitch)})) {
-    std::cerr << "Failed to clean up multi-process host state.\n";
-    return false;
+  if (command_line.HasSwitch(kKeepConfigSwitch)) {
+    std::cout << "Keeping multi-process host state as requested.\n";
+  } else {
+    std::cout << "Elevating to clean up multi-process host state.\n";
+    if (!RunWithSudo({"--" + std::string(kCleanupMultiProcessConfigSwitch)})) {
+      std::cerr << "Failed to clean up multi-process host state.\n";
+      return false;
+    }
   }
 
   std::cout << "Successfully migrated to single-process host.\n";
@@ -534,7 +543,7 @@ int MigrateHostMain(int argc, char** argv) {
 
   const base::CommandLine::StringVector& args = command_line.GetArgs();
   if (args.empty()) {
-    std::cerr << "Usage: migrate_host <host_type>\n\n";
+    std::cerr << "Usage: migrate_host <host_type> [--keep-config]\n\n";
     // Internal switches are not documented here.
     HostType::PrintHostTypeHelp();
     return -1;
