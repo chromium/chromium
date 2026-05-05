@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "chrome/browser/ui/record_replay/save_recording_bubble_controller_impl.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

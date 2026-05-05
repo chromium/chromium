@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/page_action/page_action_model.h"
+#include "chrome/browser/ui/page_actions/page_action_model.h"
 #include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"

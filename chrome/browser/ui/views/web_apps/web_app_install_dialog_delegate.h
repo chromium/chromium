@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"

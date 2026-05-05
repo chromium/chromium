@@ -15,7 +15,7 @@
 #include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/strings/grit/components_strings.h"

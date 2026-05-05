@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
-#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
+#include "chrome/browser/ui/page_actions/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"

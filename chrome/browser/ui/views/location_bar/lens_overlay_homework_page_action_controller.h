@@ -9,7 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_actions/page_action_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 

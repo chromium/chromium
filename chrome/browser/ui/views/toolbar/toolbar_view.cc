@@ -53,7 +53,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
-#include "chrome/browser/ui/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/page_actions/page_action_properties_provider.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"

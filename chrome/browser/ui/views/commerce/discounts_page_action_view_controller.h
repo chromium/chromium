@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/page_action/page_action_observer.h"
+#include "chrome/browser/ui/page_actions/page_action_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ScopedCallToActionLock;

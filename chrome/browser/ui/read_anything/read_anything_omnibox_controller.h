@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/page_action/page_action_observer.h"
+#include "chrome/browser/ui/page_actions/page_action_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
