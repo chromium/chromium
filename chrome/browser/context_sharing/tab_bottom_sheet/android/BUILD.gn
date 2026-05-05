@@ -7,6 +7,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
+    "co_browse_views_bridge.cc",
+    "co_browse_views_bridge.h",
     "tab_bottom_sheet_bridge.cc",
     "tab_bottom_sheet_bridge.h",
   ]

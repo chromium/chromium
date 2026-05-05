@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/android/co_browse_views_bridge.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 
 #include "base/android/jni_android.h"
 #include "components/tabs/public/tab_interface.h"
@@ -17,7 +17,7 @@
 
 using base::android::AttachCurrentThread;
 
-namespace glic {
+namespace context_sharing {
 
 CoBrowseViewsBridge::CoBrowseViewsBridge(
     tabs::TabInterface& tab,
@@ -72,4 +72,4 @@ base::android::ScopedJavaLocalRef<jobject> CoBrowseViewsBridge::GetView() {
   return view;
 }
 
-}  // namespace glic
+}  // namespace context_sharing

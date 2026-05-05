@@ -18,8 +18,11 @@ class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
 
-namespace glic {
+namespace context_sharing {
 class CoBrowseViewsBridge;
+}
+
+namespace glic {
 class GlicKeyedService;
 
 // GlicSidePanelCoordinatorDesktopAndroid handles the creation and registration
@@ -78,7 +81,7 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
 
   State state_ = State::kClosed;
 
-  std::unique_ptr<CoBrowseViewsBridge> cobrowse_views_bridge_;
+  std::unique_ptr<context_sharing::CoBrowseViewsBridge> cobrowse_views_bridge_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<GlicKeyedService> glic_service_ = nullptr;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
-#define CHROME_BROWSER_GLIC_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
+#ifndef CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
+#define CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
@@ -17,7 +17,7 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace glic {
+namespace context_sharing {
 
 // Bridge for managing CoBrowseViews on Android from C++.
 class CoBrowseViewsBridge {
@@ -46,6 +46,6 @@ class CoBrowseViewsBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
 };
 
-}  // namespace glic
+}  // namespace context_sharing
 
-#endif  // CHROME_BROWSER_GLIC_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_
+#endif  // CHROME_BROWSER_CONTEXT_SHARING_TAB_BOTTOM_SHEET_ANDROID_CO_BROWSE_VIEWS_BRIDGE_H_

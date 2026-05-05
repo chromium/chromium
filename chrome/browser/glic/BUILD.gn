@@ -457,7 +457,6 @@ source_set("impl") {
       ":actor_types_for_migration",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
       "//chrome/browser/glic/android",
-      "//chrome/browser/glic/android:jni_bridges",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/side_panel/android",
