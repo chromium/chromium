@@ -12,11 +12,11 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/animation/browser_animation_provider.h"
 #include "chrome/browser/ui/animation/browser_animation_provider_internal.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserAnimationProvider;
 class BrowserWindowInterface;
 
 namespace gfx {
@@ -82,6 +82,26 @@ class BrowserAnimationController {
     return result;
   }
 
+  // Retrieve a provider by type, or null if none.
+  template <typename T>
+    requires std::derived_from<T, BrowserAnimationProvider>
+  const T* GetAnimationProvider() const {
+    for (auto& provider : providers_) {
+      if (const T* const result = provider->AsA<T>()) {
+        return result;
+      }
+    }
+    return nullptr;
+  }
+
+  // Retrieve a provider by type, or null if none.
+  template <typename T, typename... Args>
+    requires std::derived_from<T, BrowserAnimationProvider>
+  T* GetAnimationProvider() {
+    return const_cast<T*>(const_cast<const BrowserAnimationController*>(this)
+                              ->GetAnimationProvider<T>());
+  }
+
   // Is the given `group` animating?
   bool IsAnimating(BrowserAnimationGroup group) const;
 
@@ -94,15 +114,31 @@ class BrowserAnimationController {
   base::TimeDelta GetMotionDuration(BrowserAnimationGroup group) const;
 
   // Starts animating `group` with `motion`. If the group is already animating,
-  // does something reasonably intelligent.
+  // does whatever transition behavior has been specified.
+  //
+  // There will be a cancel event for the current motion and a start event for
+  // `motion`.
   void Start(BrowserAnimationGroup group, BrowserAnimationMotion motion);
 
-  // Cancels the current motion associated with `group` and returns true if one
-  // was running.
-  bool Cancel(BrowserAnimationGroup group);
+  // Resets the current state of `group` to the end of `motion`, regardless of
+  // what is currently happening. If `motion` is not specified then the current
+  // motion is snapped to its end (if there is no motion, this is a no-op).
+  //
+  // There will be a cancel event for the current motion and an ended event for
+  // `motion`. If `motion` is already playing, then it simply fast-forwards to
+  // the end of the current motion.
+  void Reset(BrowserAnimationGroup group,
+             BrowserAnimationMotion motion = BrowserAnimationMotion());
 
-  // Gets the current animation value for `sequence` in `group` or null if no
-  // motion is playing.
+  // Cancels the current motion associated with `group` and returns true if one
+  // was running. All values are discarded so `GetCurrentValue()` will return
+  // null (or default) for all sequences in `group`.
+  //
+  // Note: You probably want to use `Reset()`.
+  bool Clear(BrowserAnimationGroup group);
+
+  // Gets the current animation value for `sequence` in `group`. If there is
+  // none, returns default, or if there is no default, returns null.
   std::optional<double> GetCurrentValue(
       BrowserAnimationGroup group,
       BrowserAnimationSequence sequence) const;
@@ -131,14 +167,22 @@ class BrowserAnimationController {
  private:
   // Holds data about a currently running motion.
   class GroupData;
+  struct MotionInfo;
 
-  std::optional<internal::BrowserAnimationMotionSpecification>
-  GetMotionSpecification(BrowserAnimationGroup group,
-                         BrowserAnimationMotion motion) const;
+  std::optional<MotionInfo> GetMotionInfo(BrowserAnimationGroup group,
+                                          BrowserAnimationMotion motion) const;
 
   GroupData& GetGroupData(BrowserAnimationGroup group);
   const GroupData& GetGroupData(BrowserAnimationGroup group) const;
 
+  internal::BrowserAnimationSequenceParamsLookup GetAllSequenceParams(
+      BrowserAnimationGroup group) const;
+
+  std::optional<internal::BrowserAnimationSequenceParams> GetSequenceParams(
+      BrowserAnimationGroup group,
+      BrowserAnimationSequence sequence) const;
+
+  // The list of providers. Must always be destructed last.
   std::vector<std::unique_ptr<BrowserAnimationProvider>> providers_;
 
   // Execution data is always created on-demand, as we don't necessarily know

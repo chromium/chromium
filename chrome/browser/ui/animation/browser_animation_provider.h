@@ -5,14 +5,18 @@
 #ifndef CHROME_BROWSER_UI_ANIMATION_BROWSER_ANIMATION_PROVIDER_H_
 #define CHROME_BROWSER_UI_ANIMATION_BROWSER_ANIMATION_PROVIDER_H_
 
-#include <map>
+#include <concepts>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/animation/browser_animation_provider_internal.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/animation/tween.h"
 
 // Convenience class for creating browser animation specifications.
@@ -24,22 +28,54 @@
 // groups all at once, see `CachingBrowserAnimationProvider`.
 //
 // See README.md for full details.
-class BrowserAnimationProvider {
+class BrowserAnimationProvider : public ui::FrameworkSpecificImplementation {
  public:
   BrowserAnimationProvider() = default;
   BrowserAnimationProvider(const BrowserAnimationProvider&) = delete;
   void operator=(const BrowserAnimationProvider&) = delete;
-  virtual ~BrowserAnimationProvider() = default;
+  ~BrowserAnimationProvider() override = default;
 
   using MotionSpecification = internal::BrowserAnimationMotionSpecification;
+  using Transition = internal::BrowserAnimationTransition;
+  using SequenceParams = internal::BrowserAnimationSequenceParams;
+  using SequenceParamsLookup = internal::BrowserAnimationSequenceParamsLookup;
+  using KeyframeValueType = internal::BrowserAnimationKeyframe::ValueType;
+  using KeyframeValue = internal::BrowserAnimationKeyframe::Value;
+
+  static KeyframeValue DefaultValue() {
+    return KeyframeValue(0.0, KeyframeValueType::kDefault);
+  }
+  static KeyframeValue MaxOfDefaultAnd(double value) {
+    return KeyframeValue(value, KeyframeValueType::kMaxOfDefaultAnd);
+  }
+  static KeyframeValue MinOfDefaultAnd(double value) {
+    return KeyframeValue(value, KeyframeValueType::kMinOfDefaultAnd);
+  }
 
   // Creates and returns the animations for `motion` in `group`, or null if
   // this provider does not provide that motion or group.
-  virtual std::optional<MotionSpecification> GetMotionSpecification(
+  std::optional<MotionSpecification> GetMotionSpecification(
+      BrowserAnimationGroup group,
+      BrowserAnimationMotion motion) const;
+
+  // Gets additional parameters for `sequence` in `group`. By default calls
+  // `GetAllSequenceParams()` and looks up `sequence`.
+  virtual std::optional<SequenceParams> GetSequenceParams(
+      BrowserAnimationGroup group,
+      BrowserAnimationSequence sequence) const;
+
+  // Returns all parameters for all sequences in `group`. By default returns
+  // nothing.
+  virtual SequenceParamsLookup GetAllSequenceParams(
+      BrowserAnimationGroup group) const;
+
+ protected:
+  // Implementation of `GetMotionSpecification()` that just retrieves the
+  // motion, without accounting for default values, etc.
+  virtual std::optional<MotionSpecification> GetMotionSpecificationImpl(
       BrowserAnimationGroup group,
       BrowserAnimationMotion motion) const = 0;
 
- protected:
   using SequenceInfo =
       std::pair<BrowserAnimationSequence,
                 internal::BrowserAnimationSequenceSpecification>;
@@ -91,9 +127,9 @@ class BrowserAnimationProvider {
   };
 
   struct StartingValue {
-    explicit StartingValue(double starting_value_)
+    explicit StartingValue(KeyframeValue starting_value_)
         : starting_value(starting_value_) {}
-    double starting_value;
+    KeyframeValue starting_value;
   };
 
   struct TotalDurationMs {
@@ -104,18 +140,18 @@ class BrowserAnimationProvider {
   };
 
   struct FromValue {
-    explicit FromValue(double value_) : value(value_) {}
-    double value;
+    explicit FromValue(KeyframeValue value_) : value(value_) {}
+    KeyframeValue value;
   };
 
   struct Value {
-    explicit Value(double value_) : value(value_) {}
-    double value;
+    explicit Value(KeyframeValue value_) : value(value_) {}
+    KeyframeValue value;
   };
 
   struct ToValue {
-    explicit ToValue(double value_) : value(value_) {}
-    double value;
+    explicit ToValue(KeyframeValue value_) : value(value_) {}
+    KeyframeValue value;
   };
 
   // Represents a segment which performs a `tween` to `animate_to` from `start`
@@ -154,7 +190,7 @@ class BrowserAnimationProvider {
 
     internal::BrowserAnimationTime start;
     internal::BrowserAnimationTime end;
-    double animate_to;
+    KeyframeValue animate_to;
     gfx::Tween::Type tween;
   };
 
@@ -170,7 +206,7 @@ class BrowserAnimationProvider {
              gfx::Tween::Type tween_ = gfx::Tween::LINEAR)
         : frame_time(at.percent), value(value_.value), tween(tween_) {}
     internal::BrowserAnimationTime frame_time;
-    double value;
+    KeyframeValue value;
     gfx::Tween::Type tween;
   };
 
@@ -219,6 +255,24 @@ class BrowserAnimationProvider {
     return std::make_pair(sequence, std::move(sequence_spec));
   }
 
+  // Creates a sequence from a starting value and list of segments, with an
+  // explicit transition from the previous value. Syntax is: `Sequence(id,
+  // StartingValue(value), transition, Segment(...), ...)`.
+  template <typename... Args>
+    requires(std::same_as<Args, Segment> && ...)
+  static SequenceInfo Sequence(BrowserAnimationSequence sequence,
+                               StartingValue starting_at,
+                               Transition transition,
+                               Args... rest) {
+    CHECK(sequence);
+    internal::BrowserAnimationSequenceSpecification sequence_spec;
+    sequence_spec.transition = transition;
+    sequence_spec.keyframes.push_back(internal::BrowserAnimationKeyframe{
+        .time{}, .value = starting_at.starting_value});
+    (AddSegment(sequence_spec, std::move(rest)), ...);
+    return std::make_pair(sequence, std::move(sequence_spec));
+  }
+
   // Creates a sequence that snaps from `starting_value` to `ending_value` at
   // `at_time`.
   static SequenceInfo Snap(BrowserAnimationSequence sequence,
@@ -256,6 +310,28 @@ class BrowserAnimationProvider {
                     Keyframe(AtPercent(1.0), Value(ending_value.value), tween));
   }
 
+  static SequenceInfo Animate(BrowserAnimationSequence sequence,
+                              Transition transition,
+                              FromValue starting_value,
+                              ToValue ending_value,
+                              gfx::Tween::Type tween = gfx::Tween::LINEAR) {
+    return Sequence(sequence, transition,
+                    Keyframe(AtPercent(0.0), Value(starting_value.value)),
+                    Keyframe(AtPercent(1.0), Value(ending_value.value), tween));
+  }
+
+  // Returns the value of sequence to `ending_value` optionally using `tween`
+  // over the whole animation.
+  static SequenceInfo Return(BrowserAnimationSequence sequence,
+                             ToValue ending_value,
+                             gfx::Tween::Type tween = gfx::Tween::LINEAR) {
+    CHECK(sequence);
+    internal::BrowserAnimationSequenceSpecification spec;
+    AddKeyframe(spec,
+                Keyframe(AtPercent(1.0), Value(ending_value.value), tween));
+    return std::make_pair(sequence, std::move(spec));
+  }
+
   // Creates a sequence from a list of keyframes. The first keyframe will define
   // the starting value fo the animation, and the final keyframe defines the
   // end.
@@ -267,6 +343,24 @@ class BrowserAnimationProvider {
                                Args... rest) {
     CHECK(sequence);
     internal::BrowserAnimationSequenceSpecification spec;
+    AddKeyframe(spec, std::move(first));
+    (AddKeyframe(spec, std::move(rest)), ...);
+    return std::make_pair(sequence, std::move(spec));
+  }
+
+  // Creates a sequence from a list of keyframes. The first keyframe will define
+  // the starting value fo the animation, and the final keyframe defines the
+  // end. Specifies an explicit transition from the previous value.
+  // Syntax is `Sequence(id, transition, Keyframe(...), Keyframe(...), ...)`.
+  template <typename... Args>
+    requires(std::same_as<Args, Keyframe> && ...)
+  static SequenceInfo Sequence(BrowserAnimationSequence sequence,
+                               Transition transition,
+                               Keyframe first,
+                               Args... rest) {
+    CHECK(sequence);
+    internal::BrowserAnimationSequenceSpecification spec;
+    spec.transition = transition;
     AddKeyframe(spec, std::move(first));
     (AddKeyframe(spec, std::move(rest)), ...);
     return std::make_pair(sequence, std::move(spec));
@@ -298,16 +392,63 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
                                 internal::BrowserAnimationMotionSpecification>;
   using GroupInfo = std::pair<BrowserAnimationGroup, MotionLookup>;
   using GroupInfos = std::map<BrowserAnimationGroup, MotionLookup>;
-
   // Override this to do the generation; it will be lazily-computed.
   virtual GroupInfos GenerateAnimations() const = 0;
 
   // BrowserAnimationProvider:
-  std::optional<MotionSpecification> GetMotionSpecification(
+  std::optional<SequenceParams> GetSequenceParams(
+      BrowserAnimationGroup group,
+      BrowserAnimationSequence sequence) const override;
+  SequenceParamsLookup GetAllSequenceParams(
+      BrowserAnimationGroup group) const override;
+
+  // Update or clear the sequence params associated with `sequence` in `group`.
+  void UpdateSequenceParams(BrowserAnimationGroup group,
+                            BrowserAnimationSequence sequence,
+                            std::optional<SequenceParams> params);
+
+  // Updates the default for `sequence` in `group` to `new_default`. There must
+  // already be an entry for `sequence`.
+  void UpdateDefaultValue(BrowserAnimationGroup group,
+                          BrowserAnimationSequence sequence,
+                          double new_default);
+
+ protected:
+  // BrowserAnimationProvider:
+  std::optional<MotionSpecification> GetMotionSpecificationImpl(
       BrowserAnimationGroup group,
       BrowserAnimationMotion motion) const override;
 
- protected:
+  struct Persist {
+    explicit Persist(BrowserAnimationSequence sequence_)
+        : sequence(sequence_) {}
+    BrowserAnimationSequence sequence;
+  };
+
+  struct Default {
+    Default(BrowserAnimationSequence sequence_,
+            double value_,
+            bool auto_return_to_default_)
+        : sequence(sequence_),
+          value(value_),
+          auto_return_to_default(auto_return_to_default_) {}
+    BrowserAnimationSequence sequence;
+    double value = 0.0;
+    bool auto_return_to_default = false;
+  };
+
+  // Sets the parameters for any/all sequences in `group`.
+  template <typename... Args>
+    requires((std::same_as<std::remove_cvref_t<Args>, Persist> ||
+              std::same_as<std::remove_cvref_t<Args>, Default>) &&
+             ...)
+  void SetSequenceParams(BrowserAnimationGroup group,
+                         const Args&... sequence_params) {
+    SequenceParamsLookup params;
+    (AddSequenceParams(params, sequence_params), ...);
+    sequence_params_[group] = std::move(params);
+  }
+
   // Creates a list of groups.
   // Syntax is `Groups(Group(...), Group(...), ...)`
   template <typename... Args>
@@ -334,7 +475,7 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
   }
 
   // Creates a motion within the current group.
-  // Syntax is `Motion(id, Element(...), Element(...), ...)`.
+  // Syntax is `Motion(id, Sequence(...), Sequence(...), ...)`.
   template <typename... Args>
     requires(std::same_as<Args, SequenceInfo> && ...)
   static MotionInfo Motion(BrowserAnimationMotion motion,
@@ -350,21 +491,22 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
   // Creates a motion within the current group with global duration and tween.
   // Syntax is
   // `Motion(id, TotalDurationMs(...), global_tween,
-  //         Element(...), Element(...), ...)`.
+  //         Sequence(...), Sequence(...), ...)`.
+  //
+  // Note that all the sequences can be implicit (specified as default-value
+  // transitions) resulting in no explicit sequences.
   template <typename... Args>
     requires(std::same_as<Args, SequenceInfo> && ...)
   static MotionInfo Motion(BrowserAnimationMotion motion,
                            TotalDurationMs total_duration,
                            gfx::Tween::Type global_tween,
-                           SequenceInfo first,
-                           Args... rest) {
+                           Args... sequences) {
     CHECK(motion);
     CHECK_GE(total_duration.length, base::Milliseconds(0));
     internal::BrowserAnimationMotionSpecification spec;
     spec.duration = total_duration.length;
     spec.global_tween = global_tween;
-    AddSequence(spec, std::move(first));
-    (AddSequence(spec, std::move(rest)), ...);
+    (AddSequence(spec, std::move(sequences)), ...);
     return std::make_pair(motion, std::move(spec));
   }
 
@@ -374,8 +516,22 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
  private:
   using BrowserAnimationProvider::Motion;
 
+  void AddSequenceParams(SequenceParamsLookup& lookup, const Persist& persist) {
+    lookup.emplace(persist.sequence,
+                   SequenceParams{.persist_between_animations = true});
+  }
+
+  void AddSequenceParams(SequenceParamsLookup& lookup, const Default& def) {
+    lookup.emplace(
+        def.sequence,
+        SequenceParams{.persist_between_animations = true,
+                       .auto_return_to_default = def.auto_return_to_default,
+                       .default_value = def.value});
+  }
+
   // Mutable because lazily-generated.
   mutable GroupInfos cached_infos_;
+  base::flat_map<BrowserAnimationGroup, SequenceParamsLookup> sequence_params_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANIMATION_BROWSER_ANIMATION_PROVIDER_H_

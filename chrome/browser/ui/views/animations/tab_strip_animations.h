@@ -8,10 +8,13 @@
 #include "chrome/browser/ui/animation/browser_animation_provider.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "ui/base/identifier/unique_identifier.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 
 // Provides tab strip animations.
 class TabStripAnimations : public CachingBrowserAnimationProvider {
  public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
   // Animations for the Vertical Tabstrip.
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kVerticalTabStrip);
 

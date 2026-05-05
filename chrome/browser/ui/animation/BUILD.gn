@@ -8,6 +8,7 @@ source_set("animation") {
   public = [
     "browser_animation_controller.h",
     "browser_animation_provider.h",
+    "browser_animation_provider_internal.h",
     "browser_animation_types.h",
   ]
 
@@ -15,7 +16,6 @@ source_set("animation") {
     "browser_animation_controller.cc",
     "browser_animation_provider.cc",
     "browser_animation_provider_internal.cc",
-    "browser_animation_provider_internal.h",
   ]
 
   public_deps = [

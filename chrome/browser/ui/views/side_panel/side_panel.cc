@@ -660,7 +660,7 @@ void SidePanel::ResetSidePanelAnimationContent() {
     browser_view_->SetSidePanelAnimationContent(nullptr);
     auto* const controller =
         BrowserAnimationController::From(browser_view_->browser());
-    controller->Cancel(kAnimationGroup);
+    controller->Clear(kAnimationGroup);
   }
 }
 
@@ -724,7 +724,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
       animation_controller->Start(kAnimationGroup, motion);
     }
   } else {
-    animation_controller->Cancel(kAnimationGroup);
+    animation_controller->Clear(kAnimationGroup);
     SetVisible(should_be_open);
     open_starting_point_ = should_be_open ? 1.0 : 0.0;
   }

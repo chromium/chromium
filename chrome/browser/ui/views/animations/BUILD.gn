@@ -17,6 +17,7 @@ source_set("animations") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/animation",
     "//ui/base/identifier",
+    "//ui/base/interaction",
     "//ui/gfx/animation",
   ]
 }

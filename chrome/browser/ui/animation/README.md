@@ -7,6 +7,8 @@ panel show/hide, etc.
 It provides an interface for declaratively specifying animations, including
 using (but not limited to) syntax similar to CSS.
 
+It also allows for smooth redirection of animations, even mid-animation.
+
 ## Motivation
 
 Consider the toolbar-height side panel. When it shows, several things happen:
@@ -19,8 +21,12 @@ exactly the same time. This can be confusing to program and it often isn't
 easy to translate the UX spec (which often uses CSS animation concepts) to a
 Views animation.
 
+Furthermore, if the panel is in the middle of closing and then decides to open
+again, you have to write special-case code to blend the two animations together.
+
 **Browser Animation Controller** is designed to make it simple to define these
-animations, and to allow views to subscribe for update events.
+animations, have them behave correctly, and to allow views to subscribe for
+update events, without having to write any special-case code.
 
 ## Terminology
 
@@ -29,7 +35,8 @@ The primary entry point for this system is `BrowserAnimationController`. This is
 `BrowserWindowInterface`, so it can be retrieved using:
 
 ```cpp
-  auto* const controller = BrowserAnimationController::From(browser);
+  auto* const controller =
+      BrowserAnimationController::From(browser_window_interface);
 ```
 
 Animations are broken down into:
@@ -44,20 +51,27 @@ Animations are broken down into:
     - Open with content transition
     - Close
  3. **Sequence** - changes to a specific visual element that happen over the
-    course of a motion. For example, when the toolbar-height side panel opens,
-    the following may change:
-    - Side panel width
-    - Padding around the main area (toolbar, bookmarks, web contents)
-    - Opacity of the shadow around the main area
+    course of a motion.
+    - For example, when the toolbar-height side panel opens, the following may
+      change:
+      - Side panel width
+      - Padding around the main area (toolbar, bookmarks, web contents)
+      - Opacity of the shadow around the main area
+    - You can also specify if a sequence value persists after a motion
+      completes, what the default value is, and if it returns automatically to
+      that default value, etc.
  4. Individual parts of a sequence:
     - **Keyframe** - similar to CSS keyframes; these map a timestamp to an
       animation value
     - **Segment** - a subset of a motion during which an animation value changes
-      to a new value
+      to a new value (time between two keyframes)
     - **Tween** - an interpolation curve used by either the entire motion, a
       single segment, or between two keyframes
     - **Snap** - the animation value jumps between specified values at a
       specific timestamp
+ 5. **Transition** - how sequence values modified by one motion and persisting
+    afterwards participate in the next motion, allowing animations to flow into
+    each other.
 
 **Groups**, **Motions**, and **Sequences** are named using
 [unique identifiers](/ui/base/identifier/README.md): `BrowserAnimationGroup`,
@@ -96,8 +110,8 @@ All of the different ways to define an animation will be described later.
 In order to create an animation, you will need to subclass either
 `BrowserAnimationProvider` or `CachingBrowserAnimationProvider` and override a
 single method.
-  - `CachingBrowserAnimationProvider`: defines all of its animations once, in a
-    single function.
+  - `CachingBrowserAnimationProvider` **(recommended)**: defines all of its
+    animations once, in a single function.
   - `BrowserAnimationProvider`: computes animations on demand, whenever an
     animation is started.
 
@@ -115,7 +129,8 @@ provider once, before you need it:
 ```
 
 Animation providers should be placed in
-[chrome/browser/ui/views/animations](/chrome/browser/ui/views/animations).
+[chrome/browser/ui/views/animations](/chrome/browser/ui/views/animations). There
+are several examples already there you can use as guides.
 
 Animations should be registered in
 `BrowserWindowFeatures::InitPostBrowserViewConstruction()`.
@@ -128,7 +143,7 @@ preferred.
 
 ### Defining Animations with `CachingBrowserAnimationProvider`
 
-This is the easier of the two options.
+This is the easier (and recommended) of the two options.
 
 Derive from `CachingBrowserAnimationProvider` and override
 `GenerateAnimations()`:
@@ -138,6 +153,9 @@ Derive from `CachingBrowserAnimationProvider` and override
 
 class MyAnimations : public CachingBrowserAnimationProvider {
  public:
+  // Required to support retrieval.
+  DECLARE_FRAMEWORK_SPECIFIC_IMPLEMENTATION()
+
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kPanelGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kFlyoverGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_MOTION(kExpandMotion);
@@ -152,6 +170,8 @@ class MyAnimations : public CachingBrowserAnimationProvider {
 };
 
 // In chrome/browser/ui/views/animations/my_animation_provider.cc:
+
+DEFINE_FRAMEWORK_SPECIFIC_IMPLEMENTATION(MyAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kPanelGroup);
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kFlyoverGroup);
@@ -186,10 +206,10 @@ See below for the syntax for sequences. Note that for
 This is the more complex of the two options, but provides the ability to
 dynamically generate parameters as the state of the browser changes.
 
-Derive from `BrowserAnimationProvider` and override `GetMotionSpecification()`.
-You must manually determine which animation sequences to build based on the
-`group` and `motion` parameters. Return `std::nullopt` if you do not provide
-that motion in that group.
+Derive from `BrowserAnimationProvider` and override
+`GetMotionSpecificationImpl()`. You must manually determine which animation
+sequences to build based on the `group` and `motion` parameters. Return
+`std::nullopt` if you do not provide that motion in that group.
 
 Example:
 
@@ -197,6 +217,9 @@ Example:
 // .h file:
 class MyAnimations : public BrowserAnimationProvider {
  public:
+  // Required to support retrieval.
+  DECLARE_FRAMEWORK_SPECIFIC_IMPLEMENTATION()
+
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kPanelGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kFlyoverGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_MOTION(kExpandMotion);
@@ -207,12 +230,14 @@ class MyAnimations : public BrowserAnimationProvider {
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kElementHeight);
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kOpacity);
 
-  std::optional<internal::MotionSpecification> GetMotionSpecification(
+  std::optional<internal::MotionSpecification> GetMotionSpecificationImpl(
       BrowserAnimationGroup group,
       BrowserAnimationMotion motion) const override;
 };
 
 // .cc file:
+DEFINE_FRAMEWORK_SPECIFIC_IMPLEMENTATION(MyAnimations)
+
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kPanelGroup);
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kFlyoverGroup);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(MyAnimations, kExpandMotion);
@@ -302,9 +327,7 @@ For example:
   Snap(kTopPadding, FromValue(0.0), ToValue(1.0), AtPercent(0.5))
 ```
 
-Snapping at the very start or end of an animation is supported, but often
-unnecessary if the calling code is responsible for rendering when the animation
-isn't playing.
+You may snap at the very start or end of a motion.
 
 ### Full-Motion Sequences
 
@@ -356,7 +379,9 @@ The animation value will start at the value of the first keyframe, and end at
 the value of the last keyframe. You may specify keyframes at the start (time
 zero) and end of the animation.
 
-Keyframes must be specified in order of time.
+Keyframes must be specified in order of time. If two subsequent keyframes are at
+the exact same time, the value of the sequence will jump from the first value to
+the second.
 
 If two subsequent keyframes have the same value, no animation takes place
 between them.
@@ -403,8 +428,10 @@ Syntax for segment sequences is:
            [, Segment(...)])
 ```
 
-Sequences must be in order and cannot overlap, though the end of one segment can
+Segments must be in order and cannot overlap, though the end of one segment can
 be the beginning of the next.
+
+You may specify a length instead of an end.
 
 If segments are specified using percentages, you must specify the motion's total
 duration (see below). Segments in the same sequence cannot mix and match percent
@@ -473,10 +500,174 @@ can mix and match sequences that use percentage and absolute time.
          Animate(kSomeOtherThing, FromValue(1.0), ToValue(0.0)))
 ```
 
+## Sequence Properties (Defaults, Persistence, and Transitions)
+
+By default, once a motion has completed, `GetCurrentValue()` will return null.
+This means you will need to compute all the visual properties of your UI
+elements whenever an animation isn't playing.
+
+If you want sequence values to persist between motions and even be factored into
+future motions, you can specify sequence properties. You do not need to specify
+properties for all sequences in your `BrowserAnimationProvider`; merely those
+that need to not have the default behavior described above.
+
+For example, you might want to have the system remember your side panel width
+between animations, so that (a) you don't have to query the panel state when
+it's not animating and (b) if you start a close in the middle of an open or
+vice-versa, the animation starts from its current position (rather than fully
+open or closed).
+
+### Configuring Sequences
+
+You'll want to create a `SequenceParams` in your animation provider for each
+such sequence. These have three properties:
+ - `persist_between_animations` - if set to `true`, the value is not discarded
+   at the end of a motion. Default is false.
+ - `default_value` - specifies a value that will be returned if there is no
+   known value, or the current value is explicitly default (see below). Default
+   is none.
+ - `auto_return_to_default` - whether a motion which does not specify an
+   animation for this sequence should automatically return it to its default
+   value. Default is false.
+
+For `BrowserAnimationProvider`, override `GetAllSequenceParams()` and optionally
+`GetSequenceParams()`. These require directly using `SequenceParams`.
+
+For `CachingBrowserAnimationProvider` (recommended), you should instead use
+`SetSequenceParams()`, typically in the constructor. This lets you use the much
+simpler `Persist()` and `Default()` to define params.
+
+```cpp
+
+MyAnimations::MyAnimations() {
+  SetSequenceParams(
+    // Parameters for the panel group.
+    kPanelGroup,
+    // Panel width value persists between motions.
+    Persist(kPanelWidth),
+    // Element height persists and returns to a default value of 1 if not
+    // specified in a motion.
+    Default(kElementHeight, 1.0, /*auto_return=*/true));
+}
+
+```
+
+### Using the Default Value
+
+In addition to a literal value (e.g. "1.0", "0.0", "0.5") you can specify that
+the default value should be used for a keyframe or animation endpoint:
+
+```cpp
+    Motion(kExpandMotion,
+           Animate(kOpacity, FromValue(0.0), ToValue(DefaultValue())))
+```
+
+This will animate to whatever the default opacity is (you must have already
+defined it). If you want to create a more complex animation curve but don't want
+to exceed the default value, you can do something like:
+
+```cpp
+    Motion(kExpandMotion,
+           Sequence(
+              kOpacity,
+              // Start at zero.
+              StartingValue(0.0),
+              // Pause at 0.7 or default value, whichever is less.
+              Segment(StartMs(0), EndMs(200), ToValue(MinOfDefaultAnd(0.7))),
+              // Animate to the default value.
+              Segment(StartMs(800), EndMs(1000), ToValue(DefaultValue()))))
+```
+
+### Updating the Default Value
+
+Sequence properties including the default value may change, e.g. via
+`CachingBrowserAnimationProvider::UpdateDefaultValue()`. You might use this if,
+for example, the user changes a setting that affects the UI. Note that you can
+retrieve an animation provider from the animation controller by type:
+
+```cpp
+void OnUsePanelTransparencyChanged(bool use_transparency) {
+  auto* const controller = BrowserAnimationController::From(browser);
+  MyAnimations* const animations = controller->GetAnimationProvider<MyAnimations>();
+  animations->UpdateDefaultValue(
+      MyAnimations::kPanelGroup,
+      MyAnimations::kOpacity,
+      use_transparency ? 0.8 : 1.0);
+}
+```
+
+This won't only affect the target opacity for future animations - if the current
+value of `kOpacity` is the default, any calls to
+`BrowserAnimationController::GetCurrentValue(kPanelGroup, kOpacity)` will return
+the updated value.
+
+### Return and Auto-Return
+
+You can specify that a sequence should explicitly return from the current value
+to some specific value using the `Return()` sequence specification. The value
+must use `Persist()` or `Default()` since otherwise there's no value to return
+from:
+
+```cpp
+    Motion(kCollapseMotion,
+           Return(kPanelWidth, ToValue(0.0)),
+           ...)
+```
+
+Basically, if you don't care where the animation starts from, use `Return()`.
+
+**Auto-return** can happen when you specify something like
+`Default(kElementHeight, 1.0, /*auto_return=*/true)` and you don't specify
+what to do with `kElementHeight` in a particular motion. When that motion is
+played, the following specification will be implicitly added:
+
+```cpp
+  Return(kElementHeight, ToValue(DefaultValue()))
+```
+
+### Transition Types
+
+When there is an existing value that has persisted, a **transition** plays.
+The default transition is "start at", but there are three options, which can
+be specified in most sequences:
+ - **Start at** - scales the animation so that it starts at the previous value.
+ - **Cap at** - plays the animation as normal, but bounds the value between
+   the previous value and the final (target) value.
+ - **Ignore** - just plays the motion, ignoring the current value. Current
+   values still persist between motions.
+
+Consider a segment which tweens linearly from 0 to 1, but the current value is
+0.5. Here's the result with each transition type:
+
+| Transition | before | 0%   | 25%  | 50%  | 75%  | 100% |
+| ---------- | ------ | ---- | ---- | ---- | ---- | ---- |
+| start at   | 0.5    | 0.5  | 0.68 | 0.75 | 0.89 | 1    |
+| cap at     | 0.5    | 0.5  | 0.5  | 0.5  | 0.75 | 1    |
+| ignore     | 0.5    | 0    | 0.25 | 0.5  | 0.75 | 1    |
+
+If _start at_ or _cap at_ is specified, but the starting value is outside the
+range of the animation, a crossfade is played between the current value and the
+animation over the course of the motion:
+
+| Transition | before | 0%   | 25%  | 50%  | 75%  | 100% |
+| ---------- | ------ | ---- | ---- | ---- | ---- | ---- |
+| start at   | -1     | -1   | -0.5 | 0    | 0.5  | 1    |
+| cap at     | -1     | -1   | -0.5 | 0    | 0.5  | 1    |
+| ignore     | -1     | 0    | 0.25 | 0.5  | 0.75 | 1    |
+
+You may explicitly specify a transition as the second parameter of a `Segment()`
+declaration. You never have to specify `kStartAtOldValue` as it is the default.
+
+```cpp
+  Segment(kOpacity, Transition::kCapAtOldValue, Keyframe(...), ...)
+  Segment(kOpacity, Transition::kIgnoreOldValue,
+          StartingValue(0.0), Segment(...), ...)
+```
+
 ## Using `BrowserAnimationController`
 
-Once the animation provider is registered, you can start an animation motion via
-`Start()`. Example:
+Once your animation provider is registered, you can start an animation motion
+via `Start()`. Example:
 
 ```cpp
   BrowserAnimationController::From(browser)->Start(
@@ -487,14 +678,16 @@ You can then get the value of an animation using `GetCurrentValue()`. Sometimes,
 it's sufficient to just call this during `Layout()` or `OnPaint()`.
 
 ```cpp
-  const auto value = BrowserAnimationController::From(browser)->GetCurrentValue(
-      MyAnimations::kPanelGroup, MyAnimations::kPanelWidth);
-  if (auto.has_value()) {
-    // The side panel is animating; the value is valid.
-  } else {
-    // The side panel isn't animating; use the default width for the panel's
-    // current state.
-  }
+  const auto anim_value =
+      BrowserAnimationController::From(browser)->GetCurrentValue(
+          MyAnimations::kPanelGroup, MyAnimations::kPanelWidth);
+
+  // Note: if we always call `Reset()` during system initialization, then
+  // `kPanelWidth` - which is persisted - would always have a valid value, and
+  // we wouldn't need `value_or()` here.
+  const int side_panel_width =
+      base::ClampRound(preferred_side_panel_width * anim_value.value_or(1.0));
+
 ```
 
 Other times, you need to know when the animation has changed so you can e.g.
@@ -522,7 +715,56 @@ invalidate a layout, or update a size or opacity. In this case, use
   }
 ```
 
-The `status` will either be "progressed", "ended", or "canceled". You can use
-this if you need it; note that if the animation is canceled, calling
-`GetCurrentValue()` will return null. Calling `GetCurrentValue()` when the
-animation ends will always give the final value for the sequence.
+The `status` will be "started", "progressed", "ended", or "canceled". Calling
+`GetCurrentValue()` when the animation ends will always yield the final value
+for the sequence.
+
+### Resetting and Clearing Animations
+
+The `Clear()` method clears all values and stops all motions, subsequently,
+`GetCurrentValue()` will return null (at least until the next call to
+`Start()`), or a default value if one has been set.
+
+The `Reset()` method immediately stops all motions and snaps the state of all
+sequences to the end of a specified motion. Only sequences marked as persist
+will be saved; all others will be null/default as with `Clear()`.
+
+`Reset()` is useful when you want to snap directly to a state. If you do not
+specify a motion, then the values will snap to the end of the current motion
+(if there is no current motion this does nothing).
+
+```cpp
+  // Immediately collapse the panel.
+  auto* const controller = BrowserAnimationController::From(bwi);
+  controller->Reset(kPanelGroup, kCollapseMotion);
+```
+
+`Clear()` generates a _cancel_ event if a motion is playing. `Reset()` may
+generate a _cancel_ event if a different motion is playing, and will generate
+an _ended_ event if the target motion is valid. During the _ended_ event, all
+sequence values will be the final values of the motion.
+
+## Best Practices
+
+Persist all values that make sense to. This will make animations smoother.
+All things equal, also prefer to enable auto-return to make your motions
+simpler.
+
+If your UI can be configured to start in one of several initial states (such as
+vertical tab strip expanded or collapsed mode), call `Reset()` to set up the
+current state on UI initialization. That way, each sequence will always have a
+valid value that reflects the current state.
+
+When choosing which state to pick "default" values from, think of the state that
+the most things can transition to/from. For example, all animations in vertical
+tab strip start or end at the collapsed state.
+
+## Possible Future Work
+
+- Instead of one default state, have multiple states, with each animation ending
+  in a state.
+  - Keyframe values can reference one or more states rather than just the
+    default.
+  - Each state can be modified in response to e.g. user preference or window
+    geometry changes.
+- Allow more complicated math when computing keyframe values.
