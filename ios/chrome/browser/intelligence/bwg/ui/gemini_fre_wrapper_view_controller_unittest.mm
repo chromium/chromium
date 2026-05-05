@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
-#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

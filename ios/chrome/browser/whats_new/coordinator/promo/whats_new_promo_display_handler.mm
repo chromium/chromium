@@ -9,7 +9,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
-#import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 
 @implementation WhatsNewPromoDisplayHandler
 

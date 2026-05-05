@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -14,7 +13,6 @@
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h"
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_action_handler.h"
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_delegate.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"

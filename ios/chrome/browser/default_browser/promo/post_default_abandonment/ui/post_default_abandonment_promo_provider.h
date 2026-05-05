@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_POST_DEFAULT_ABANDONMENT_UI_POST_DEFAULT_ABANDONMENT_PROMO_PROVIDER_H_
 
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
-#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 // Provider for displaying the post-default browser abandonment alert.
 @interface PostDefaultBrowserAbandonmentPromoProvider

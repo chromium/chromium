@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation DefaultBrowserGenericPromoMediator
 
