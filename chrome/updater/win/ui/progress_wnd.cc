@@ -100,6 +100,13 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
     return 1;
   }
 
+  if (IsDarkModeOn()) {
+    WTL::CBrush fill_brush = ::CreateSolidBrush(RGB(0x20, 0x20, 0x20));
+    ::FillRect(hdc, &rect, fill_brush);
+    handled = TRUE;
+    return 1;
+  }
+
   // Fill the entire client area with solid white first to clear any previous
   // artifacts.
   ::FillRect(hdc, &rect, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
@@ -206,11 +213,27 @@ LRESULT ProgressWnd::OnSysColorChange(UINT msg,
   return 0;
 }
 
+LRESULT ProgressWnd::OnSettingChange(UINT msg,
+                                     WPARAM wparam,
+                                     LPARAM lparam,
+                                     BOOL& handled) {
+  handled = FALSE;
+  if (lparam && std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
+                    L"ImmersiveColorSet") {
+    RedrawWindow(nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  }
+  return 0;
+}
+
 HBRUSH ProgressWnd::OnCtlColorStatic(WTL::CDCHandle dc,
                                      WTL::CStatic wndStatic) {
   if (IsHighContrastOn()) {
     dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
     dc.SetBkColor(::GetSysColor(COLOR_WINDOW));
+  } else if (IsDarkModeOn()) {
+    dc.SetTextColor(RGB(0xFF, 0xFF, 0xFF));
+    dc.SetBkColor(RGB(0x20, 0x20, 0x20));
   }
   dc.SetBkMode(TRANSPARENT);
   return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));

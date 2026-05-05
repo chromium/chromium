@@ -67,6 +67,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
     MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
     MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
     MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
+    MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
     MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
     COMMAND_HANDLER(IDC_BUTTON1, BN_CLICKED, OnClickedButton)
     COMMAND_HANDLER(IDC_BUTTON2, BN_CLICKED, OnClickedButton)
@@ -148,6 +149,10 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                            WPARAM wparam,
                            LPARAM lparam,
                            BOOL& handled);  // NOLINT
+  LRESULT OnSettingChange(UINT msg,
+                          WPARAM wparam,
+                          LPARAM lparam,
+                          BOOL& handled);  // NOLINT
   HBRUSH OnCtlColorStatic(WTL::CDCHandle dc, WTL::CStatic wndStatic);
 
   void SetControlText(int id, const std::wstring& text);

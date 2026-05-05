@@ -675,8 +675,12 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
 
   // Fill the high-res background with the fill color to avoid bleeding at the
   // edges.
-  dc_hi_res.FillSolidRect(&high_res_rect,
-                          GetColor(empty_fill_color_, COLOR_WINDOW));
+  COLORREF track_color = GetColor(empty_fill_color_, COLOR_WINDOW);
+  if (!IsHighContrastOn() && IsDarkModeOn()) {
+    track_color = RGB(0x3F, 0x3F, 0x3F);
+  }
+
+  dc_hi_res.FillSolidRect(&high_res_rect, track_color);
 
   // Setup GDI objects for rounded drawing. `NULL_PEN` prevents the thin black
   // border around the shapes.
@@ -685,8 +689,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   const int corner_size = high_res_rect.Height();
 
   // Draw the Background Track.
-  WTL::CBrush bg_brush =
-      ::CreateSolidBrush(GetColor(empty_fill_color_, COLOR_WINDOW));
+  WTL::CBrush bg_brush = ::CreateSolidBrush(track_color);
   const HBRUSH old_brush = dc.SelectBrush(bg_brush);
   dc_hi_res.RoundRect(&high_res_rect, {corner_size, corner_size});
 

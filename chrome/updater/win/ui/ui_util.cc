@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -143,6 +144,17 @@ bool IsHighContrastOn() {
     return false;
   }
   return hc.dwFlags & HCF_HIGHCONTRASTON;
+}
+
+bool IsDarkModeOn() {
+  base::win::RegKey key(
+      HKEY_CURRENT_USER,
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+      KEY_READ);
+  DWORD is_light_theme = 1;
+  return key.ReadValueDW(L"AppsUseLightTheme", &is_light_theme) ==
+             ERROR_SUCCESS &&
+         !is_light_theme;
 }
 
 }  // namespace updater::ui

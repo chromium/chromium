@@ -49,6 +49,9 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 // Returns true if the system is in high contrast mode.
 bool IsHighContrastOn();
 
+// Returns true if the system is in dark mode.
+bool IsDarkModeOn();
+
 }  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_UTIL_H_
