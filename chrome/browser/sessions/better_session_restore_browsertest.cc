@@ -651,12 +651,21 @@ IN_PROC_BROWSER_TEST_F(RestartTest, Post) {
   CheckFormRestored(true, false);
 }
 
-IN_PROC_BROWSER_TEST_F(RestartTest, PRE_PostWithPassword) {
+// TODO(crbug.com/509692227): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Restart_PostWithPassword DISABLED_PostWithPassword
+#define MAYBE_Restart_PRE_PostWithPassword DISABLED_PRE_PostWithPassword
+#else
+#define MAYBE_Restart_PostWithPassword PostWithPassword
+#define MAYBE_Restart_PRE_PostWithPassword PRE_PostWithPassword
+#endif
+
+IN_PROC_BROWSER_TEST_F(RestartTest, MAYBE_Restart_PRE_PostWithPassword) {
   PostFormWithPage("post_with_password.html", true);
   Restart();
 }
 
-IN_PROC_BROWSER_TEST_F(RestartTest, PostWithPassword) {
+IN_PROC_BROWSER_TEST_F(RestartTest, MAYBE_Restart_PostWithPassword) {
   // The form data contained passwords, so it's removed completely.
   CheckFormRestored(false, false);
 }
