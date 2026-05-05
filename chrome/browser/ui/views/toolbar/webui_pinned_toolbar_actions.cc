@@ -52,10 +52,10 @@ WebUIPinnedToolbarActions::PendingAnchorRequest::~PendingAnchorRequest() =
     default;
 
 WebUIPinnedToolbarActions::WebUIPinnedToolbarActions(
-    WebUIToolbarControlDelegate* delegate)
-    : delegate_(delegate),
+    WebUIToolbarWebView* webui_toolbar_web_view)
+    : webui_toolbar_web_view_(webui_toolbar_web_view),
       model_(PinnedToolbarActionsModel::Get(
-          delegate_->GetBrowser()->GetProfile())) {}
+          webui_toolbar_web_view->browser_->GetProfile())) {}
 
 WebUIPinnedToolbarActions::~WebUIPinnedToolbarActions() = default;
 
@@ -129,9 +129,10 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
   }
 
   int old_width = GetWidth();
-  delegate_->OnPinnedToolbarActionsStateChanged(std::move(states));
+  webui_toolbar_web_view_->OnPinnedToolbarActionsStateChanged(
+      std::move(states));
   if (old_width != GetWidth()) {
-    delegate_->OnPreferredSizeChanged();
+    webui_toolbar_web_view_->PreferredSizeChanged();
   }
 }
 
@@ -143,7 +144,7 @@ WebUIPinnedToolbarActions::PinnedActionIds() const {
 actions::ActionItem* WebUIPinnedToolbarActions::GetActionItemFor(
     actions::ActionId id) {
   return actions::ActionManager::Get().FindAction(
-      id, delegate_->GetBrowser()->GetActions()->root_action_item());
+      id, webui_toolbar_web_view_->browser_->GetActions()->root_action_item());
 }
 
 bool WebUIPinnedToolbarActions::IsOverflowed(actions::ActionId id) {
@@ -212,7 +213,7 @@ views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
   if (IsActionPinnedOrPoppedOut(action_id)) {
     ui::TrackedElement* element =
-        BrowserElements::From(delegate_->GetBrowser())
+        BrowserElements::From(webui_toolbar_web_view_->browser_)
             ->GetElement(webui_toolbar::ActionIdToElementIdentifier(action_id));
     DCHECK(element);
     return views::BubbleAnchor(element);
@@ -232,7 +233,8 @@ void WebUIPinnedToolbarActions::GetBubbleAnchorAsync(
   }
 
   ui::TrackedElement* element =
-      BrowserElements::From(delegate_->GetBrowser())->GetElement(element_id);
+      BrowserElements::From(webui_toolbar_web_view_->browser_)
+          ->GetElement(element_id);
   if (element) {
     std::move(callback).Run(views::BubbleAnchor(element));
     return;
@@ -241,7 +243,8 @@ void WebUIPinnedToolbarActions::GetBubbleAnchorAsync(
   auto subscription =
       ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
           element_id,
-          BrowserElements::From(delegate_->GetBrowser())->GetContext(),
+          BrowserElements::From(webui_toolbar_web_view_->browser_)
+              ->GetContext(),
           base::BindRepeating(&WebUIPinnedToolbarActions::OnElementShown,
                               base::Unretained(this), action_id));
 
@@ -273,7 +276,7 @@ void WebUIPinnedToolbarActions::UpdatePinnedStateAndAnnounce(
       !GetActionItemFor(id)->GetProperty(actions::kActionItemPinnableKey)) {
     return;
   }
-  delegate_->GetView()->GetViewAccessibility().AnnounceAlert(
+  webui_toolbar_web_view_->GetViewAccessibility().AnnounceAlert(
       l10n_util::GetStringUTF16(pin ? IDS_TOOLBAR_BUTTON_PINNED
                                     : IDS_TOOLBAR_BUTTON_UNPINNED));
   model_->UpdatePinnedState(id, pin);
@@ -409,7 +412,7 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
 
   menu_runner_.reset();
   menu_model_ = std::make_unique<PinnedActionToolbarButtonMenuModel>(
-      delegate_->GetBrowser(), action_id);
+      webui_toolbar_web_view_->browser_, action_id);
   active_context_menu_action_ = action_id;
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -417,17 +420,17 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
       base::BindRepeating(&WebUIPinnedToolbarActions::OnActionsChanged,
                           base::Unretained(this)));
 
-  menu_runner_->RunMenuAt(delegate_->GetView()->GetWidget(), nullptr,
+  menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
                           screen_rect, views::MenuAnchorPosition::kTopLeft,
                           source_type);
-
   OnActionsChanged();
 }
 
 int WebUIPinnedToolbarActions::GetWidth() const {
   const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
   int width = 0;
-  for (const auto& it : delegate_->GetPinnedToolbarActionsState()) {
+  for (const auto& it : webui_toolbar_web_view_->last_queued_state_
+                            .pinned_toolbar_actions_state) {
     if (it->action == toolbar_ui_api::mojom::PinnedToolbarAction::kDivider) {
       // Matches toolbar_divider.css
       width += GetLayoutConstant(LayoutConstant::kToolbarDividerWidth) +

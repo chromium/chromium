@@ -17,7 +17,7 @@
 #include "ui/base/interaction/element_tracker.h"
 
 class PinnedActionToolbarButtonMenuModel;
-class WebUIToolbarControlDelegate;
+class WebUIToolbarWebView;
 
 namespace views {
 class MenuRunner;
@@ -27,7 +27,8 @@ class MenuRunner;
 class WebUIPinnedToolbarActions : public PinnedToolbarActions,
                                   public PinnedToolbarActionsModel::Observer {
  public:
-  explicit WebUIPinnedToolbarActions(WebUIToolbarControlDelegate* delegate);
+  explicit WebUIPinnedToolbarActions(
+      WebUIToolbarWebView* webui_toolbar_web_view);
   WebUIPinnedToolbarActions(const WebUIPinnedToolbarActions&) = delete;
   WebUIPinnedToolbarActions& operator=(const WebUIPinnedToolbarActions&) =
       delete;
@@ -88,7 +89,7 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   struct PendingAnchorRequest;
 
   // Parent toolbar.
-  const raw_ptr<WebUIToolbarControlDelegate> delegate_;
+  const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   // The model whose state we use to populate this view.
   raw_ptr<PinnedToolbarActionsModel> model_;
   // Allow this class to observe |model_|.

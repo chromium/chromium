@@ -23,7 +23,7 @@ class OmniboxPopupViewWebUI;
 class PermissionDashboardController;
 class WebUIPermissionDashboard;
 class Profile;
-class WebUIToolbarControlDelegate;
+class WebUIToolbarWebView;
 
 // A LocationBar implementation using WebUI.
 class WebUILocationBar : public LocationBar,
@@ -34,7 +34,7 @@ class WebUILocationBar : public LocationBar,
   WebUILocationBar(Browser* browser, LocationBarView::Delegate* delegate);
   ~WebUILocationBar() override;
 
-  void Init(WebUIToolbarControlDelegate* delegate);
+  void Init(WebUIToolbarWebView* toolbar_view);
 
   // WebUIReadOnlyOmnibox::UpdatePropagator:
   void PropagateOmniboxUpdate(
@@ -141,7 +141,7 @@ class WebUILocationBar : public LocationBar,
 
   raw_ptr<Browser> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
-  raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;
+  raw_ptr<WebUIToolbarWebView> toolbar_view_ = nullptr;
 
   ui::ElementTracker::Subscription moved_subscription_;
   ui::ElementTracker::Subscription shown_subscription_;

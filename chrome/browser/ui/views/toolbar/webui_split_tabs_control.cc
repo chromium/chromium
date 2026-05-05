@@ -35,18 +35,17 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-WebUISplitTabsControl::WebUISplitTabsControl(
-    WebUIToolbarControlDelegate* delegate)
-    : delegate_(delegate) {}
+WebUISplitTabsControl::WebUISplitTabsControl(WebUIToolbarWebView* toolbar_view)
+    : toolbar_view_(toolbar_view) {}
 
 WebUISplitTabsControl::~WebUISplitTabsControl() {
-  if (delegate_->GetBrowser() && delegate_->GetBrowser()->GetTabStripModel()) {
-    delegate_->GetBrowser()->GetTabStripModel()->RemoveObserver(this);
+  if (toolbar_view_->browser_ && toolbar_view_->browser_->GetTabStripModel()) {
+    toolbar_view_->browser_->GetTabStripModel()->RemoveObserver(this);
   }
 }
 
 void WebUISplitTabsControl::Init() {
-  BrowserWindowInterface* browser = delegate_->GetBrowser();
+  BrowserWindowInterface* browser = toolbar_view_->browser_;
   pin_state_.Init(prefs::kPinSplitTabButton, browser->GetProfile()->GetPrefs(),
                   base::BindRepeating(&WebUISplitTabsControl::UpdateState,
                                       base::Unretained(this)));
@@ -70,7 +69,7 @@ void WebUISplitTabsControl::HandleContextMenu(
     menu_runner_->Cancel();
     return;
   }
-  BrowserWindowInterface* browser = delegate_->GetBrowser();
+  BrowserWindowInterface* browser = toolbar_view_->browser_;
 
   if (menu_type == toolbar_ui_api::mojom::ContextMenuType::kSplitTabsAction) {
     // Only show "Separate Views" menu if actually in split.
@@ -117,9 +116,8 @@ void WebUISplitTabsControl::RunMenuAt(const gfx::Rect& screen_rect,
         std::move(root), views::MenuRunner::HAS_MNEMONICS);
   }
 
-  menu_runner_->RunMenuAt(delegate_->GetView()->GetWidget(), nullptr,
-                          screen_rect, views::MenuAnchorPosition::kTopLeft,
-                          source_type);
+  menu_runner_->RunMenuAt(toolbar_view_->GetWidget(), nullptr, screen_rect,
+                          views::MenuAnchorPosition::kTopLeft, source_type);
   UpdateState();
 }
 
@@ -151,17 +149,17 @@ void WebUISplitTabsControl::UpdateVisibility(
 
   if (should_be_visible != is_visible_) {
     is_visible_ = should_be_visible;
-    delegate_->OnPreferredSizeChanged();
+    toolbar_view_->PreferredSizeChanged();
   }
 }
 
 void WebUISplitTabsControl::UpdateState() {
   auto state = toolbar_ui_api::mojom::SplitTabsControlState::New();
-  auto s = webui_toolbar::ComputeTabSplitStatus(delegate_->GetBrowser());
+  auto s = webui_toolbar::ComputeTabSplitStatus(toolbar_view_->browser_);
   state->is_current_tab_split = s.is_split;
   state->location = s.location;
   state->is_pinned = pin_state_.GetValue();
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
   UpdateVisibility(state.get());
-  delegate_->OnSplitTabsControlStateChanged(std::move(state));
+  toolbar_view_->OnSplitTabsControlStateChanged(std::move(state));
 }

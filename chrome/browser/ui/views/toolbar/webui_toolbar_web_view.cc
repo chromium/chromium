@@ -484,27 +484,6 @@ WebUIToolbarWebView::GetAvatarToolbarButtonInterface() {
   return &avatar_control_;
 }
 
-BrowserWindowInterface* WebUIToolbarWebView::GetBrowser() {
-  return browser_;
-}
-
-chrome::BrowserCommandController* WebUIToolbarWebView::GetCommandController() {
-  return controller_;
-}
-
-views::View* WebUIToolbarWebView::GetView() {
-  return this;
-}
-
-void WebUIToolbarWebView::OnPreferredSizeChanged() {
-  PreferredSizeChanged();
-}
-
-const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
-WebUIToolbarWebView::GetPinnedToolbarActionsState() const {
-  return last_queued_state_.pinned_toolbar_actions_state;
-}
-
 browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
 WebUIToolbarWebView::GetBrowserControlsDelegate() {
   return this;

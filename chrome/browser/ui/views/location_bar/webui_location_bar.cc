@@ -93,8 +93,8 @@ WebUILocationBar::WebUILocationBar(Browser* browser,
 
 WebUILocationBar::~WebUILocationBar() = default;
 
-void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
-  toolbar_delegate_ = delegate;
+void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
+  toolbar_view_ = toolbar_view;
 
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
@@ -126,7 +126,7 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
 
 void WebUILocationBar::PropagateOmniboxUpdate(
     toolbar_ui_api::mojom::OmniboxViewStatePtr omnibox_state) {
-  toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
+  toolbar_view_->OnOmniboxViewStateChanged(std::move(omnibox_state));
 }
 
 void WebUILocationBar::OnOmniboxAction(
@@ -206,10 +206,10 @@ void WebUILocationBar::UpdateContentSettingsIcons() {
   if (!web_contents) {
     return;
   }
-  if (!toolbar_delegate_) {
+  if (!toolbar_view_) {
     return;
   }
-  toolbar_delegate_->OnContentSettingChanged(
+  toolbar_view_->OnContentSettingChanged(
       content_setting_image_control_.ProcessContentSettingState(web_contents));
 }
 
@@ -295,16 +295,15 @@ bool WebUILocationBar::IsInitialized() const {
 }
 
 bool WebUILocationBar::IsVisible() const {
-  return toolbar_delegate_ && toolbar_delegate_->GetView()->GetVisible();
+  return toolbar_view_ && toolbar_view_->GetVisible();
 }
 
 bool WebUILocationBar::IsDrawn() const {
-  return toolbar_delegate_ && toolbar_delegate_->GetView()->IsDrawn();
+  return toolbar_view_ && toolbar_view_->IsDrawn();
 }
 
 bool WebUILocationBar::IsFullscreen() const {
-  return toolbar_delegate_ &&
-         toolbar_delegate_->GetView()->GetWidget()->IsFullscreen();
+  return toolbar_view_ && toolbar_view_->GetWidget()->IsFullscreen();
 }
 
 bool WebUILocationBar::IsEditingOrEmpty() const {
@@ -320,8 +319,7 @@ void WebUILocationBar::InvalidateLayout() {
 gfx::Rect WebUILocationBar::Bounds() const {
   gfx::Rect screen_rect = BoundsInScreen();
   if (!screen_rect.IsEmpty()) {
-    return views::View::ConvertRectFromScreen(toolbar_delegate_->GetView(),
-                                              screen_rect);
+    return views::View::ConvertRectFromScreen(toolbar_view_, screen_rect);
   }
   return gfx::Rect();
 }
@@ -333,7 +331,7 @@ gfx::Rect WebUILocationBar::BoundsInScreen() const {
   // yet; this should be correct for vertical margin computation, and start
   // the popup creation with something reasonable.
   return anchor ? anchor->GetScreenBounds()
-                : toolbar_delegate_->GetView()->GetBoundsInScreen();
+                : toolbar_view_->GetBoundsInScreen();
 }
 
 gfx::Size WebUILocationBar::MinimumSize() const {
@@ -387,8 +385,8 @@ void WebUILocationBar::UpdateLhsChipsState() {
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
       permission_dashboard_->GetState());
 
-  if (toolbar_delegate_) {
-    toolbar_delegate_->OnLhsChipsStateChanged(std::move(lhs_chips_state));
+  if (toolbar_view_) {
+    toolbar_view_->OnLhsChipsStateChanged(std::move(lhs_chips_state));
   }
 
   last_update_security_level_ = model->GetSecurityLevel();
@@ -494,12 +492,10 @@ void WebUILocationBar::ShowPageInfoBubble() {
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          location_bar_element
-              ? views::BubbleAnchor(location_bar_element)
-              : views::BubbleAnchor(toolbar_delegate_->GetView()),
-          toolbar_delegate_->GetView()->GetWidget()->GetNativeWindow(),
-          contents, entry->GetVirtualURL())
-
+          location_bar_element ? views::BubbleAnchor(location_bar_element)
+                               : views::BubbleAnchor(toolbar_view_),
+          toolbar_view_->GetWidget()->GetNativeWindow(), contents,
+          entry->GetVirtualURL())
           .AddPageInfoClosingCallback(
               base::BindOnce(&WebUILocationBar::OnPageInfoBubbleClosed,
                              weak_ptr_factory_.GetWeakPtr()))
@@ -570,7 +566,7 @@ WebUILocationBar::GetContentSettingBubbleModelDelegate() {
 }
 
 views::Widget* WebUILocationBar::GetLocationBarWidget() {
-  return toolbar_delegate_->GetView()->GetWidget();
+  return toolbar_view_->GetWidget();
 }
 
 OmniboxPopupFileSelector* WebUILocationBar::GetOmniboxPopupFileSelector()
@@ -599,5 +595,5 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
   location_bar_flags->user_input_in_progress =
       omnibox_controller_->edit_model()->user_input_in_progress();
   location_bar_flags->popup_open = omnibox_controller_->IsPopupOpen();
-  toolbar_delegate_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
+  toolbar_view_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
 }

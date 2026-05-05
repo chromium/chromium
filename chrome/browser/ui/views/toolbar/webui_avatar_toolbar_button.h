@@ -13,13 +13,13 @@
 
 class Browser;
 class AvatarToolbarButtonStateManager;
-class WebUIToolbarControlDelegate;
+class WebUIToolbarWebView;
 
 // WebUIAvatarToolbarButton implements C++-side functionality for the
 // WebUI-based implementation of the avatar button in the toolbar.
 class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
  public:
-  WebUIAvatarToolbarButton(WebUIToolbarControlDelegate* delegate,
+  WebUIAvatarToolbarButton(WebUIToolbarWebView* webui_toolbar_web_view,
                            Browser* browser);
   WebUIAvatarToolbarButton(const WebUIAvatarToolbarButton&) = delete;
   WebUIAvatarToolbarButton& operator=(const WebUIAvatarToolbarButton&) = delete;
@@ -63,7 +63,7 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   void UpdateState();
   void UpdateAccessibilityLabel();
 
-  const raw_ptr<WebUIToolbarControlDelegate> delegate_;
+  const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
 
   // May be null.
   std::unique_ptr<AvatarToolbarButtonStateManager> state_manager_;

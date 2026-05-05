@@ -19,14 +19,14 @@ class Widget;
 class MenuRunner;
 }  // namespace views
 
-class WebUIToolbarControlDelegate;
+class WebUIToolbarWebView;
 class WebUIToolbarWebViewPixelBrowserTest;
 
 // WebUIReloadControl implements C++-side functionality for the WebUI-based
 // implementation of the reload button in the toolbar.
 class WebUIReloadControl : public ReloadControl {
  public:
-  explicit WebUIReloadControl(WebUIToolbarControlDelegate* delegate);
+  explicit WebUIReloadControl(WebUIToolbarWebView* webui_toolbar_web_view);
   WebUIReloadControl(const WebUIReloadControl&) = delete;
   WebUIReloadControl& operator=(const WebUIReloadControl&) = delete;
   ~WebUIReloadControl() override;
@@ -67,7 +67,7 @@ class WebUIReloadControl : public ReloadControl {
 
   void UpdateState();
 
-  const raw_ptr<WebUIToolbarControlDelegate> delegate_;
+  const raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
 
   // The maximum time allowed before two clicks are considered separate clicks
   // instead of a double click. This is pulled from the OS on construction and
