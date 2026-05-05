@@ -26,6 +26,10 @@ BASE_DECLARE_FEATURE(kOnDeviceModelCpuBackend);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelLitertLmBackend);
 
+// Whether the GPU cache is enabled for the on-device model.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelGpuCache);
+
 }  // namespace on_device_model::features
 
 #endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_
