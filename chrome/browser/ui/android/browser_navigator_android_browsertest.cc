@@ -1178,6 +1178,42 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Disposition_SwitchToTab_BackgroundNtpCloses) {
+  // 1. Target URL in the foreground tab.
+  const GURL target_url = StartAtURL("/title1.html");
+  ASSERT_EQ(1, tab_list_->GetTabCount());
+  ASSERT_EQ(0, tab_list_->GetActiveIndex());
+
+  // 2. Open an NTP in a new background tab.
+  NavigateParams bg_params(browser_window_, chrome::ChromeUINewTabURLAsGURL(),
+                           ui::PAGE_TRANSITION_TYPED);
+  bg_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&bg_params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver bg_observer(handle->GetWebContents());
+  bg_observer.Wait();
+
+  ASSERT_EQ(2, tab_list_->GetTabCount());
+  ASSERT_EQ(0, tab_list_->GetActiveIndex());  // Target URL tab remains active
+  content::WebContents* background_ntp_contents =
+      tab_list_->GetTab(1)->GetContents();
+
+  // 3. Switch to the target URL, initiated by the background tab.
+  NavigateParams switch_params(browser_window_, target_url,
+                               ui::PAGE_TRANSITION_LINK);
+  switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  switch_params.source_contents = background_ntp_contents;
+  Navigate(&switch_params);
+
+  // 4. Verify the background NTP tab is closed, and the target URL tab (Tab 0)
+  // remains active.
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+  EXPECT_EQ(0, tab_list_->GetActiveIndex());
+  EXPECT_EQ(target_url,
+            tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_NoMatch_Sync) {
   const GURL url1 = StartAtURL("/title1.html");
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
