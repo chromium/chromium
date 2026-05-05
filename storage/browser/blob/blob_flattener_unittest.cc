@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -71,9 +72,8 @@ class BlobFlattenerTest : public testing::Test {
     return BlobDataItem::CreateBytesDescription(size);
   }
 
-  scoped_refptr<BlobDataItem> CreateDataItem(const char* memory, size_t size) {
-    return BlobDataItem::CreateBytes(
-        base::as_bytes(UNSAFE_TODO(base::span(memory, size))));
+  scoped_refptr<BlobDataItem> CreateDataItem(std::string_view memory) {
+    return BlobDataItem::CreateBytes(base::as_byte_span(memory));
   }
 
   scoped_refptr<BlobDataItem> CreateFileItem(size_t offset, size_t size) {
@@ -134,7 +134,7 @@ TEST_F(BlobFlattenerTest, NoBlobItems) {
   EXPECT_EQ(2u, builder.transport_quota_needed());
 
   ASSERT_EQ(2u, builder.items().size());
-  EXPECT_EQ(*CreateDataItem("hi", 2u), *builder.items()[0]->item());
+  EXPECT_EQ(*CreateDataItem("hi"), *builder.items()[0]->item());
   EXPECT_EQ(*CreateFileItem(0, 10u), *builder.items()[1]->item());
 }
 
@@ -225,7 +225,7 @@ TEST_F(BlobFlattenerTest, BlobWithSlices) {
   EXPECT_EQ(2u, builder.copy_quota_needed());
 
   ASSERT_EQ(8u, builder.items().size());
-  EXPECT_EQ(*CreateDataItem("hi", 2u), *builder.items()[0]->item());
+  EXPECT_EQ(*CreateDataItem("hi"), *builder.items()[0]->item());
   EXPECT_EQ(*CreateDataDescriptionItem(2u), *builder.items()[1]->item());
   EXPECT_EQ(*CreateFileItem(3u, 5u), *builder.items()[2]->item());
   EXPECT_EQ(GetItemInBlob(kDataBlob, 0), *builder.items()[3]);
