@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_string.h"
+#include "content/browser/android/drop_data_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/clipboard_types.h"
@@ -16,6 +17,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/android/drag_event_android.h"
 #include "ui/gfx/image/image_skia.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/jar_jni/DragEvent_jni.h"
 
 namespace content {
 
@@ -40,10 +44,27 @@ class MockWebContentsViewAndroid : public WebContentsViewAndroid {
     system_drag_ended_called_ = true;
   }
 
+  bool OnDragEvent(const ui::DragEventAndroid& event) override {
+    if (event.action() == DragEventJni::ACTION_DROP) {
+      mock_drop_data_ = std::make_unique<DropData>();
+      PopulateDropDataFromEvent(event, mock_drop_data_.get());
+      return true;
+    }
+    return WebContentsViewAndroid::OnDragEvent(event);
+  }
+
+  DropData* GetDropData() const override {
+    if (mock_drop_data_) {
+      return mock_drop_data_.get();
+    }
+    return WebContentsViewAndroid::GetDropData();
+  }
+
  private:
   bool was_called_ = false;
   bool system_drag_ended_called_ = false;
   bool allowed_ = false;
+  std::unique_ptr<DropData> mock_drop_data_;
 };
 
 class WebContentsViewAndroidTest : public RenderViewHostTestHarness {
@@ -95,8 +116,7 @@ TEST_F(WebContentsViewAndroidTest, StartDragging_BlockedByPolicy) {
   EXPECT_TRUE(view()->system_drag_ended_called());
 }
 
-// TODO(b/507788269): Re-enable this test once fixed.
-TEST_F(WebContentsViewAndroidTest, DISABLED_DropDataRestoredFromJava) {
+TEST_F(WebContentsViewAndroidTest, DropDataRestoredFromJava) {
   view()->set_allowed(true);
 
   // Simulate drop with custom data JSON and effectAllowed.
