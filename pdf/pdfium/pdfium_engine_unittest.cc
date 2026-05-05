@@ -3053,6 +3053,18 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
     CHECK_EQ(glyph_count, sk_glyphs.size());  // Since `text` is ASCII.
     return std::vector<uint32_t>(sk_glyphs.begin(), sk_glyphs.end());
   }
+
+  static InkTextBoxAttributes SampleInkTextBoxAttributes() {
+    return InkTextBoxAttributes(
+        /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+        /*color=*/SK_ColorBLACK,
+        /*css_font_size=*/10.0f,
+        /*typeface=*/TextTypeface::kSansSerif,
+        /*alignment=*/TextAlignment::kLeft,
+        /*orientation=*/0,
+        /*is_bold=*/false,
+        /*is_italic=*/false);
+  }
 };
 
 TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
@@ -3080,16 +3092,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
-      /*pdf_zoom=*/1.0,
-      InkTextBoxAttributes(
-          /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-          /*color=*/SK_ColorBLACK,
-          /*css_font_size=*/10.0f,
-          /*typeface=*/TextTypeface::kSansSerif,
-          /*alignment=*/TextAlignment::kLeft,
-          /*orientation=*/0,
-          /*is_bold=*/false,
-          /*is_italic=*/false));
+      /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
 
   // Verify the rendering of text for in-memory PDF.
   const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
@@ -3116,6 +3119,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
   ASSERT_FALSE(glyphs.empty());
 
   // Draw some orange text.
+  InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
+  attribute.color = SkColorSetRGB(0xFF, 0x63, 0x0C);
   engine->DrawText(
       kPageIndex, InkTextId(0),
       {InkTextInfo(
@@ -3123,16 +3128,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
           /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
           /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
           /*is_horizontal=*/true)},
-      /*pdf_zoom=*/1.0,
-      InkTextBoxAttributes(
-          /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-          /*color=*/SkColorSetRGB(0xFF, 0x63, 0x0C),
-          /*css_font_size=*/10.0f,
-          /*typeface=*/TextTypeface::kSansSerif,
-          /*alignment=*/TextAlignment::kLeft,
-          /*orientation=*/0,
-          /*is_bold=*/false,
-          /*is_italic=*/false));
+      /*pdf_zoom=*/1.0, attribute);
 
   // Verify the rendering of orange text for in-memory PDF.
   const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
@@ -3160,6 +3156,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   ASSERT_FALSE(glyphs2.empty());
 
   // Draw some text with two runs to force multiple text objects.
+  InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
+  attribute.is_bold = true;
   engine->DrawText(kPageIndex, InkTextId(1),
                    {InkTextInfo(font_id, glyphs1,
                                 std::vector<gfx::Vector2dF>(glyphs1.size()),
@@ -3167,16 +3165,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
                     InkTextInfo(font_id, glyphs2,
                                 std::vector<gfx::Vector2dF>(glyphs2.size()),
                                 gfx::RectF(80.0f, 0.0f, 20.0f, 20.0f), true)},
-                   /*pdf_zoom=*/1.0,
-                   InkTextBoxAttributes(
-                       /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-                       /*color=*/SK_ColorBLACK,
-                       /*css_font_size=*/10.0f,
-                       /*typeface=*/TextTypeface::kSansSerif,
-                       /*alignment=*/TextAlignment::kLeft,
-                       /*orientation=*/0,
-                       /*is_bold=*/true,
-                       /*is_italic=*/false));
+                   /*pdf_zoom=*/1.0, attribute);
 
   FPDF_PAGE pdf_page = page.GetPage();
   int obj_count = FPDFPage_CountObjects(pdf_page);
