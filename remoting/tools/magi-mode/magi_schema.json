@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "StateBlock": {
+      "type": "object",
+      "properties": {
+        "iteration": { "type": "integer" },
+        "stall_count": { "type": "integer" },
+        "active_constraints": { "type": "array", "items": { "type": "string" } },
+        "resolved_constraints": { "type": "array", "items": { "type": "string" } },
+        "personas": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["iteration", "stall_count", "active_constraints", "resolved_constraints", "personas"]
+    },
+    "ProjectSpec": {
+      "type": "object",
+      "properties": {
+        "goal": { "type": "string" },
+        "target_files": { "type": "array", "items": { "type": "string" } },
+        "anti_goals": { "type": "array", "items": { "type": "string" } },
+        "edge_cases": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["goal", "target_files", "anti_goals", "edge_cases"]
+    },
+    "ReviewFeedback": {
+      "type": "object",
+      "properties": {
+        "verdict": { "type": "string", "enum": ["ACCEPT", "REJECT"] },
+        "reasoning": { "type": "array", "items": { "type": "string" } },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": { "type": "string" },
+              "line": { "type": "integer" },
+              "comment": { "type": "string" }
+            },
+            "required": ["file", "comment"]
+          }
+        }
+      },
+      "required": ["verdict", "reasoning"]
+    },
+    "Constraints": {
+      "type": "object",
+      "properties": {
+        "iteration": { "type": "integer" },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["iteration", "constraints"]
+    }
+  }
+}

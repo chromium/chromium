@@ -26,213 +26,381 @@ MAX_MD_FILE_SIZE = 1 * 1024 * 1024  # 1MB
 
 
 def _IsSafePath(input_api, path, root):
-    """Normalizes and validates that a path is within a specific root."""
-    norm_path = input_api.os_path.normpath(path)
-    if norm_path == root:
-        return True
-    return norm_path.startswith(root + input_api.os_path.sep)
+  """Normalizes and validates that a path is within a specific root."""
+  norm_path = input_api.os_path.normpath(path)
+  if norm_path == root:
+    return True
+  return norm_path.startswith(root + input_api.os_path.sep)
 
 
 def CheckMarkdownFiles(input_api, output_api):
-    results = []
-    repo_root = input_api.change.RepositoryRoot()
-    magi_dir = input_api.PresubmitLocalPath()
+  results = []
+  repo_root = input_api.change.RepositoryRoot()
+  magi_dir = input_api.PresubmitLocalPath()
 
-    def FileFilter(affected_file):
-        return input_api.FilterSourceFile(
-            affected_file,
-            files_to_check=(r'.*\.md$',),
+  def FileFilter(affected_file):
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_check=(r'.*\.md$',),
+    )
+
+  # 1. Map affected files by absolute path for O(1) lookups.
+  affected_files_map = {
+      f.AbsoluteLocalPath(): f
+      for f in input_api.AffectedFiles(
+          file_filter=FileFilter, include_deletes=True
+      )
+  }
+
+  if not affected_files_map:
+    return []
+
+  # 2. Identify all markdown files in the directory for reachability.
+  all_markdown_files = set()
+  for root, _, files in os.walk(magi_dir):
+    for file in files:
+      if file.endswith('.md'):
+        abs_path = input_api.os_path.normpath(
+            input_api.os_path.join(root, file)
+        )
+        # Skip files that are currently being deleted.
+        if (
+            abs_path in affected_files_map
+            and affected_files_map[abs_path].Action() == 'D'
+        ):
+          continue
+        all_markdown_files.add(abs_path)
+
+  # 3. Process every file to build the graph and check formatting.
+  # Adjacency list: node (abs path) -> list of connected nodes (abs paths)
+  graph = {node: [] for node in all_markdown_files}
+  checked_existence = {}
+
+  for md_file in all_markdown_files:
+    if input_api.os_path.getsize(md_file) > MAX_MD_FILE_SIZE:
+      results.append(
+          output_api.PresubmitError(
+              f'File {md_file} exceeds max size 1MB (DoS mitigation).'
+          )
+      )
+      continue
+
+    is_modified = md_file in affected_files_map
+    content = None
+
+    if is_modified:
+      content = input_api.ReadFile(affected_files_map[md_file])
+    else:
+      try:
+        with open(md_file, 'r', encoding='utf-8') as f:
+          content = f.read()
+      except IOError:
+        continue
+
+    if not content:
+      continue
+
+    # Scenario 2: Trailing Newlines (Modified files only)
+    if is_modified:
+      if (
+          not content.endswith('\n')
+          or content.endswith(('\n\n', '\r\n\r\n'))
+          or '\r' in content
+      ):
+        results.append(
+            output_api.PresubmitError(
+                f'File {affected_files_map[md_file].LocalPath()} must use '
+                'Unix line endings (\\n) and end with exactly one newline.'
+            )
         )
 
-    # 1. Map affected files by absolute path for O(1) lookups.
-    affected_files_map = {
-        f.AbsoluteLocalPath(): f
-        for f in input_api.AffectedFiles(file_filter=FileFilter, include_deletes=True)
-    }
+    lines = content.splitlines(True)
+    in_fenced_block = False
+    in_indented_block = False
+    prev_line_empty = True
 
-    if not affected_files_map:
-        return []
+    for line_num, line in enumerate(lines, start=1):
+      line_stripped = line.rstrip('\r\n')
 
-    # 2. Identify all markdown files in the directory for reachability.
-    all_markdown_files = set()
-    for root, _, files in os.walk(magi_dir):
-        for file in files:
-            if file.endswith('.md'):
-                abs_path = input_api.os_path.normpath(
-                    input_api.os_path.join(root, file))
-                # Skip files that are currently being deleted.
-                if (abs_path in affected_files_map and
-                        affected_files_map[abs_path].Action() == 'D'):
-                    continue
-                all_markdown_files.add(abs_path)
+      # Fenced code block detection
+      if line_stripped.lstrip().startswith(('```', '~~~')):
+        in_fenced_block = not in_fenced_block
+        continue
 
-    # 3. Process every file to build the graph and check formatting.
-    # Adjacency list: node (abs path) -> list of connected nodes (abs paths)
-    graph = {node: [] for node in all_markdown_files}
-    checked_existence = {}
-
-    for md_file in all_markdown_files:
-        if input_api.os_path.getsize(md_file) > MAX_MD_FILE_SIZE:
-            results.append(output_api.PresubmitError(
-                f"File {md_file} exceeds max size 1MB (DoS mitigation)."))
-            continue
-
-        is_modified = md_file in affected_files_map
-        content = None
-
-        if is_modified:
-            content = input_api.ReadFile(affected_files_map[md_file])
-        else:
-            try:
-                with open(md_file, 'r', encoding='utf-8') as f:
-                    content = f.read()
-            except IOError:
-                continue
-
-        if not content:
-            continue
-
-        # Scenario 2: Trailing Newlines (Modified files only)
-        if is_modified:
-            if (not content.endswith('\n') or
-                    content.endswith(('\n\n', '\r\n\r\n')) or
-                    '\r' in content):
-                results.append(output_api.PresubmitError(
-                    f"File {affected_files_map[md_file].LocalPath()} must use "
-                    f"Unix line endings (\\n) and end with exactly one newline."
-                ))
-
-        lines = content.splitlines(True)
-        in_fenced_block = False
-        in_indented_block = False
+      # Indented code block detection
+      if not line_stripped.strip():
         prev_line_empty = True
+        continue
 
-        for line_num, line in enumerate(lines, start=1):
-            line_stripped = line.rstrip('\r\n')
+      if prev_line_empty and (line.startswith('    ') or line.startswith('\t')):
+        in_indented_block = True
+      elif not (line.startswith('    ') or line.startswith('\t')):
+        in_indented_block = False
 
-            # Fenced code block detection
-            if line_stripped.lstrip().startswith(('```', '~~~')):
-                in_fenced_block = not in_fenced_block
-                continue
+      prev_line_empty = False
 
-            # Indented code block detection
-            if not line_stripped.strip():
-                prev_line_empty = True
-                continue
+      if in_fenced_block or in_indented_block:
+        continue
 
-            if prev_line_empty and (line.startswith('    ') or
-                    line.startswith('\t')):
-                in_indented_block = True
-            elif not (line.startswith('    ') or line.startswith('\t')):
-                in_indented_block = False
+      # Scenario 1: 80-Character Limit (Modified files only)
+      if is_modified:
+        line_len = len(line_stripped)
+        for match in EXEMPT_TOKENS_RE.finditer(line_stripped):
+          line_len -= len(match.group(0))
+        if line_len > 80:
+          results.append(
+              output_api.PresubmitPromptWarning(
+                  f'Line {line_num} in '
+                  f'{affected_files_map[md_file].LocalPath()} '
+                  f'exceeds 80 characters ({len(line_stripped)} chars):\n'
+                  f'{line_stripped}'
+              )
+          )
 
-            prev_line_empty = False
+      # Scenario 3: Link Extraction & Validation
+      for match in EXEMPT_TOKENS_RE.finditer(line):
+        full_path = None
+        token = match.group(0)
 
-            if in_fenced_block or in_indented_block:
-                continue
+        # Group 1: Absolute src/...
+        if match.group(1):
+          token = match.group(1).rstrip('.')
+          full_path = input_api.os_path.normpath(
+              input_api.os_path.join(repo_root, token[4:])
+          )
+        # Group 3: Relative link
+        elif match.group(3):
+          token = match.group(3)
+          full_path = input_api.os_path.normpath(
+              input_api.os_path.join(input_api.os_path.dirname(md_file), token)
+          )
 
-            # Scenario 1: 80-Character Limit (Modified files only)
-            if is_modified:
-                line_len = len(line_stripped)
-                for match in EXEMPT_TOKENS_RE.finditer(line_stripped):
-                    line_len -= len(match.group(0))
-                if line_len > 80:
-                    results.append(output_api.PresubmitPromptWarning(
-                        f"Line {line_num} in "
-                        f"{affected_files_map[md_file].LocalPath()} "
-                        f"exceeds 80 characters ({len(line_stripped)} chars):\n"
-                        f"{line_stripped}"
-                    ))
+        if not full_path:
+          continue
 
-            # Scenario 3: Link Extraction & Validation
-            for match in EXEMPT_TOKENS_RE.finditer(line):
-                full_path = None
-                token = match.group(0)
+        # Security: Prevent path traversal
+        if not _IsSafePath(input_api, full_path, repo_root):
+          msg = (
+              f'Line {line_num} in '
+              f'{input_api.os_path.relpath(md_file, repo_root)} '
+              f'attempts path traversal: {token}'
+          )
+          if is_modified:
+            results.append(output_api.PresubmitError(msg))
+          else:
+            results.append(output_api.PresubmitPromptWarning(msg))
+          continue
 
-                # Group 1: Absolute src/...
-                if match.group(1):
-                    token = match.group(1).rstrip('.')
-                    full_path = input_api.os_path.normpath(
-                        input_api.os_path.join(repo_root, token[4:]))
-                # Group 3: Relative link
-                elif match.group(3):
-                    token = match.group(3)
-                    full_path = input_api.os_path.normpath(
-                        input_api.os_path.join(
-                        input_api.os_path.dirname(md_file), token))
+        # Add to reachability graph (only for local markdown files)
+        if full_path.endswith('.md') and _IsSafePath(
+            input_api, full_path, magi_dir
+        ):
+          graph[md_file].append(full_path)
 
-                if not full_path:
-                    continue
+        # Existence Check (Validate EVERY link in graph to catch
+        # deletion-breaks)
+        if full_path not in checked_existence:
+          checked_existence[full_path] = input_api.os_path.exists(full_path)
 
-                # Security: Prevent path traversal
-                if not _IsSafePath(input_api, full_path, repo_root):
-                    msg = (f"Line {line_num} in {input_api.os_path.relpath(md_file, repo_root)} "
-                           f"attempts path traversal: {token}")
-                    if is_modified:
-                        results.append(output_api.PresubmitError(msg))
-                    else:
-                        results.append(output_api.PresubmitPromptWarning(msg))
-                    continue
+        if not checked_existence[full_path]:
+          is_active = is_modified or full_path in affected_files_map
+          msg = (
+              f'Line {line_num} in '
+              f'{input_api.os_path.relpath(md_file, repo_root)} '
+              f'references a non-existent file: {token}'
+          )
+          if is_active:
+            results.append(output_api.PresubmitError(msg))
+          else:
+            results.append(output_api.PresubmitPromptWarning(msg))
 
-                # Add to reachability graph (only for local markdown files)
-                if full_path.endswith('.md') and \
-                        _IsSafePath(input_api, full_path, magi_dir):
-                    graph[md_file].append(full_path)
-
-                # Existence Check (Validate EVERY link in graph to catch deletion-breaks)
-                if full_path not in checked_existence:
-                    checked_existence[full_path] = \
-                            input_api.os_path.exists(full_path)
-
-                if not checked_existence[full_path]:
-                    is_active = is_modified or full_path in affected_files_map
-                    msg = (f"Line {line_num} in {input_api.os_path.relpath(md_file, repo_root)} "
-                           f"references a non-existent file: {token}")
-                    if is_active:
-                        results.append(output_api.PresubmitError(msg))
-                    else:
-                        results.append(output_api.PresubmitPromptWarning(msg))
-
-    # Scenario 4: Reachability (BFS from SKILL.md)
-    skill_md_path = input_api.os_path.normpath(
-        input_api.os_path.join(magi_dir, 'SKILL.md'))
-    if skill_md_path not in graph:
-        results.append(output_api.PresubmitError(
-            f"Critical Error: Entry point {skill_md_path} is missing."
-        ))
-        return results
-
-    visited = set()
-    queue = collections.deque([skill_md_path])
-    while queue:
-        node = queue.popleft()
-        if node not in visited:
-            visited.add(node)
-            for neighbor in graph.get(node, []):
-                if neighbor in all_markdown_files and neighbor not in visited:
-                    queue.append(neighbor)
-
-    for md_file in all_markdown_files:
-        if md_file not in visited:
-            rel_path = input_api.os_path.relpath(md_file, repo_root)
-            is_active_violation = md_file in affected_files_map
-
-            msg = (f"Unreachable Markdown File: {rel_path} cannot be reached "
-                   f"from SKILL.md. Even if it links to another file, it is "
-                   f"part of an isolated cycle. Please add a link to it in "
-                   f"PERSONAS.md or another connected document.")
-
-            if is_active_violation:
-                results.append(output_api.PresubmitError(msg))
-            else:
-                results.append(output_api.PresubmitPromptWarning(msg))
-
+  # Scenario 4: Reachability (BFS from SKILL.md)
+  skill_md_path = input_api.os_path.normpath(
+      input_api.os_path.join(magi_dir, 'SKILL.md')
+  )
+  if skill_md_path not in graph:
+    results.append(
+        output_api.PresubmitError(
+            f'Critical Error: Entry point {skill_md_path} is missing.'
+        )
+    )
     return results
+
+  visited = set()
+  queue = collections.deque([skill_md_path])
+  while queue:
+    node = queue.popleft()
+    if node not in visited:
+      visited.add(node)
+      for neighbor in graph.get(node, []):
+        if neighbor in all_markdown_files and neighbor not in visited:
+          queue.append(neighbor)
+
+  for md_file in all_markdown_files:
+    if md_file not in visited:
+      rel_path = input_api.os_path.relpath(md_file, repo_root)
+      is_active_violation = md_file in affected_files_map
+
+      msg = (
+          f'Unreachable Markdown File: {rel_path} cannot be reached '
+          'from SKILL.md. Even if it links to another file, it is '
+          'part of an isolated cycle. Please add a link to it in '
+          'PERSONAS.md or another connected document.'
+      )
+
+      if is_active_violation:
+        results.append(output_api.PresubmitError(msg))
+      else:
+        results.append(output_api.PresubmitPromptWarning(msg))
+
+  return results
+
+
+def CheckJsonFiles(input_api, output_api):
+  import json
+
+  results = []
+
+  magi_dir = input_api.PresubmitLocalPath()
+  schema_path = input_api.os_path.join(magi_dir, 'magi_schema.json')
+
+  schema_content_str = None
+  for f in input_api.AffectedFiles(include_deletes=False):
+    if f.AbsoluteLocalPath() == schema_path:
+      schema_content_str = input_api.ReadFile(f)
+      break
+
+  if schema_content_str is None:
+    try:
+      with open(schema_path, 'r', encoding='utf-8') as f:
+        schema_content_str = f.read()
+    except IOError:
+      pass
+
+  if not schema_content_str:
+    return []
+
+  try:
+    schema = json.loads(schema_content_str)
+  except ValueError as e:
+    results.append(output_api.PresubmitError(f'Invalid magi_schema.json: {e}'))
+    return results
+
+  if not isinstance(schema, dict):
+    results.append(
+        output_api.PresubmitError('magi_schema.json must be a JSON object.')
+    )
+    return results
+
+  state_block_schema = schema.get('definitions', {}).get('StateBlock', {})
+  project_spec_schema = schema.get('definitions', {}).get('ProjectSpec', {})
+  review_feedback_schema = schema.get('definitions', {}).get(
+      'ReviewFeedback', {}
+  )
+  constraints_schema = schema.get('definitions', {}).get('Constraints', {})
+
+  def FileFilter(affected_file):
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_check=(
+            r'.*(state_block|project|review(\..+)?|constraints)'
+            r'\.magi(\.\d+)?\.json$',
+        ),
+    )
+
+  for f in input_api.AffectedFiles(file_filter=FileFilter):
+    content_str = input_api.ReadFile(f)
+    if not content_str.strip():
+      continue
+    try:
+      content = json.loads(content_str)
+    except ValueError as e:
+      results.append(
+          output_api.PresubmitError(
+              f'File {f.LocalPath()} is not valid JSON: {e}'
+          )
+      )
+      continue
+
+    if not isinstance(content, dict):
+      results.append(
+          output_api.PresubmitError(
+              f'File {f.LocalPath()} must be a JSON object.'
+          )
+      )
+      continue
+
+    filename = input_api.os_path.basename(f.LocalPath())
+    if filename.startswith('state_block'):
+      active_schema = state_block_schema
+    elif filename.startswith('project'):
+      active_schema = project_spec_schema
+    elif filename.startswith('review'):
+      active_schema = review_feedback_schema
+    elif filename.startswith('constraints'):
+      active_schema = constraints_schema
+    else:
+      continue
+
+    required_keys = set(active_schema.get('required', []))
+    properties = active_schema.get('properties', {})
+
+    missing_keys = required_keys - set(content.keys())
+    if missing_keys:
+      results.append(
+          output_api.PresubmitError(
+              f'File {f.LocalPath()} is missing required keys: '
+              f"{', '.join(sorted(missing_keys))}"
+          )
+      )
+
+    # Validating simple type properties of top-level JSON
+    for key, value in content.items():
+      if key in properties:
+        expected_type = properties[key].get('type')
+        if expected_type == 'integer' and type(value) is not int:
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} key '{key}' should be integer."
+              )
+          )
+        elif expected_type == 'array' and not isinstance(value, list):
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} key '{key}' should be array."
+              )
+          )
+        elif expected_type == 'string' and not isinstance(value, str):
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} key '{key}' should be string."
+              )
+          )
+
+    # Specifically validate enum for verdict if active schema is
+    # ReviewFeedback
+    if active_schema is review_feedback_schema:
+      if 'verdict' in content and content['verdict'] not in active_schema.get(
+          'properties', {}
+      ).get('verdict', {}).get('enum', []):
+        results.append(
+            output_api.PresubmitError(
+                f"File {f.LocalPath()} key 'verdict' must be one of "
+                f"{active_schema.get('properties', {}).get('verdict', {}).get('enum', [])}."
+            )
+        )
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    return CheckMarkdownFiles(input_api, output_api)
+  results = []
+  results.extend(CheckMarkdownFiles(input_api, output_api))
+  results.extend(CheckJsonFiles(input_api, output_api))
+  return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    return CheckMarkdownFiles(input_api, output_api)
+  results = []
+  results.extend(CheckMarkdownFiles(input_api, output_api))
+  results.extend(CheckJsonFiles(input_api, output_api))
+  return results

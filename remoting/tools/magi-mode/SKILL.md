@@ -28,12 +28,14 @@ Each persona prompt MUST be anchored with the relevant **Platform** and
 To prevent context bloat and semantic drift, the Orchestrator MUST NOT write
 code or summarize state itself. It delegates to several auxiliary personas:
 1.  **The Scoping Lead:** Investigates the initial bug/feature request, searches
-    the codebase, and writes a strict `project.magi.md` specification document.
+    the codebase, and writes a strict `project.magi.json` specification document
+    conforming to `magi_schema.json`.
 2.  **The Synthesizing Architect:** Writes the actual C++ code by combining
     initial drafts and adhering to constraints provided by the Technical Program
     Manager.
 3.  **The Review Analyst:** Condenses raw feedback from multiple reviewers into
-    a strict list of actionable constraints.
+    a strict list of actionable constraints in
+    `constraints.magi.[iteration].json` conforming to `magi_schema.json`.
 4.  **The Technical Program Manager:** Maintains the State Block across rounds,
     explicitly checking for "flip-flopping" or stalled progress, and provides
     the final constraints to the Synthesizing Architect.
@@ -61,17 +63,22 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
   context window. Instead, invoke a "Scoping Lead" sub-agent.
 - **The Specification:** The Scoping Lead investigates the codebase
   (`grep_search`, `read_file`) to locate the relevant code and writes a strict
-  specification to `project.magi.md`. This file MUST contain:
-  *   **Goal:** A one-sentence summary of the fix/feature.
-  *   **Target Files:** Absolute paths to the files that must be modified.
-  *   **Out of Scope / Anti-Goals:** What should explicitly NOT be changed.
-  *   **Known Edge Cases / Gotchas:** Specific warnings from logs or code
-      context.
+  specification to `project.magi.json` conforming to `magi_schema.json`. This
+  file MUST contain:
+  ```json
+  {
+    "$schema": "./magi_schema.json#definitions/ProjectSpec",
+    "goal": "A one-sentence summary of the fix/feature.",
+    "target_files": ["Absolute paths to the files that must be modified."],
+    "anti_goals": ["What should explicitly NOT be changed."],
+    "edge_cases": ["Specific warnings from logs or code context."]
+  }
+  ```
 
 ### 1. Scaffolding (The Architect & Test Phase)
 - **Roughing In (The Architect):** First, invoke an Architect sub-agent. The
-  Architect MUST read `project.magi.md` to understand the goal. Their mandate is
-  to create necessary files, define class interfaces, set up Mojo pipes, and
+  Architect MUST read `project.magi.json` to understand the goal. Their mandate
+  is to create necessary files, define class interfaces, set up Mojo pipes, and
   GN/DEPS rules. Leave implementation details empty or stubbed (e.g.,
   `NOTIMPLEMENTED()`).
 - **Test-Driven Development (The Test Expert):** Second, invoke a Test Expert
@@ -80,14 +87,14 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
   critical test cases based on the Architect's scaffold.
 - **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
   the "Base Scaffold" so all parallel Domain Experts share the exact same
-  multi-file API and test boundaries. The Synthesizing Architect will eventually
-  amend or squash the final implementation into this scaffold, ensuring no
-  broken stubs land in the final CL.
+  multi-file API and test boundaries. The Synthesizing Architect will
+  eventually amend or squash the final implementation into this scaffold,
+  ensuring no broken stubs land in the final CL.
 
 ### 2. Preparation & Persona Selection (The Engineering Manager)
 - **Needs Assessment:** Now that the scope of the change is defined by the
   scaffold, the Orchestrator MUST act as or invoke an "Engineering Manager"
-  sub-agent. The Engineering Manager reads `project.magi.md` to understand the
+  sub-agent. The Engineering Manager reads `project.magi.json` to understand the
   requirements and `src/remoting/tools/magi-mode/PERSONAS.md` (the routing
   catalog) to assess and select the most appropriate Domain Experts required
   to implement the stubs. It returns the absolute file paths of their definition
@@ -109,7 +116,7 @@ of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
 ### 3. Parallel Implementation
 Invoke the selected expert sub-agents in parallel (`wait_for_previous: false`).
 Instruct each to implement the stubbed internals from the Base Scaffold.
-**File I/O:** Each sub-agent MUST read `project.magi.md` to ground their
+**File I/O:** Each sub-agent MUST read `project.magi.json` to ground their
 implementation in the actual requirements. They MUST securely save their draft
 to disk using the versioned naming convention
 `[filename].[persona].magi.[iteration]` (e.g., `host.cc.security.magi.1`).
@@ -119,41 +126,48 @@ priority requires it.*
 ### 4. The Synthesis Phase
 Once the Domain Experts finish:
 1.  **State Initialization:** The Orchestrator MUST directly write the initial
-    State Block to `state_block.magi.md` to prevent invoking a boilerplate
-    agent:
-    *   **Iteration:** 1
-    *   **Personas:** [Selected Experts]
-    *   **Resolved:** [None]
-    *   **Active Conflicts:** [None]
-    *   **Stall Count:** 0
+    State Block to `state_block.magi.json` using the schema defined in
+    `magi_schema.json` to prevent invoking a boilerplate agent:
+    ```json
+    {
+      "$schema": "./magi_schema.json#definitions/StateBlock",
+      "iteration": 1,
+      "stall_count": 0,
+      "active_constraints": [],
+      "resolved_constraints": [],
+      "personas": ["[Selected Experts]"]
+    }
+    ```
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
     drafts and synthesize them into "Draft A" in the original file.
 ### 5. The Consensus Loop (Expanded Review)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
     **File I/O:** Each reviewer MUST securely save their feedback to disk in a
-    unique file: `review.[persona].magi.[iteration].md`. Do NOT return feedback
-    as text to the Orchestrator.
+    unique file: `review.[persona].magi.[iteration].json` conforming to
+    `magi_schema.json`. Do NOT return feedback as text to the Orchestrator.
     **Prompt Template:**
     > Role Details: Read your mandate from `[persona_file_path]`.
-    > Project Spec: Read the requirements from `project.magi.md`.
+    > Project Spec: Read the requirements from `project.magi.json`.
     > Priority: [Priority].
-    > Task: Review Draft [filename]. Save `Verdict: [ACCEPT/REJECT]` and
-    > `Reasoning: [Bullet points]` to `review.[persona].magi.[iteration].md`.
+    > Task: Review Draft [filename]. Save a JSON object with `verdict`
+    >   ("ACCEPT" or "REJECT"), `reasoning` (array of bullet points), and
+    >   `comments` (array of objects with `file`, optional `line`, and
+    >   `comment`) to `review.[persona].magi.[iteration].json`.
 2.  **The Review Analyst:** If any agent rejects, this agent reads all
-    `review.*.magi.[iteration].md` files and saves a strict list of 3-5
-    Actionable Constraints to `constraints.magi.[iteration].md` on disk.
-3.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].md`
-    and updates `state_block.magi.md`. Checks for "flip-flopping" (e.g.,
-    Constraint 1 violates a constraint from Round 1).
+    `review.*.magi.[iteration].json` files and saves a strict list of 3-5
+    Actionable Constraints to `constraints.magi.[iteration].json` on disk.
+3.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
+    and updates `state_block.magi.json` conforming to `magi_schema.json`. Checks
+    for "flip-flopping" (e.g., Constraint 1 violates a constraint from Round 1).
     **Deadlock API:** If `Stall Count` exceeds 3, the Technical Program
     Manager's ONLY output must be the exact string `STATUS: DEADLOCK` followed
     by a structured report (Core Conflict, Blocked Personas, Human Decision
     Needed).
-4.  **Transparency:** The Orchestrator reads `constraints.magi.[iteration].md`
+4.  **Transparency:** The Orchestrator reads `constraints.magi.[iteration].json`
     and outputs it directly to the user as a status update. Do NOT invoke a
     separate Liaison agent.
 5.  **Convergence & Iteration:** The Synthesizing Architect reads
-    `state_block.magi.md` and `constraints.magi.[iteration].md` to generate
+    `state_block.magi.json` and `constraints.magi.[iteration].json` to generate
     the next iteration (e.g., "Draft B").
 6.  **Executive Tie-Breaker (Handover):** If the Orchestrator receives the
     `STATUS: DEADLOCK` string, it MUST immediately halt the loop, print the
