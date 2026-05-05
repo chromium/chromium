@@ -133,7 +133,10 @@ void KioskWebAppManager::UpdateApp(const AccountId& account_id,
       // This is populated by the KioskWebAppUpdateObserver which uses the raw
       // icon without any effects and populates the `any` map of icon_bitmaps.
       // As a result, it's fine to use `icon_bitmaps.any` here.
-      web_app->UpdateAppInfo(title, start_url, icon_bitmaps.any);
+      web_app->UpdateAppInfo(
+          title, start_url,
+          web_app::UnorderedSizeToBitmap(icon_bitmaps.any.begin(),
+                                         icon_bitmaps.any.end()));
       return;
     }
   }

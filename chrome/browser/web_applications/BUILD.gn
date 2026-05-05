@@ -634,6 +634,7 @@ source_set("web_applications") {
     "//services/network/public/cpp",
     "//services/preferences/public/cpp",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common",
     "//ui/base",
     "//ui/base/idle",

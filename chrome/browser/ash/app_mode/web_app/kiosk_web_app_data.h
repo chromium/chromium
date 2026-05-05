@@ -77,7 +77,7 @@ class KioskWebAppData : public KioskAppDataBase {
 
   void UpdateAppInfo(const std::string& title,
                      const GURL& start_url,
-                     const web_app::SizeToBitmap& icon_bitmaps);
+                     const web_app::UnorderedSizeToBitmap& icon_bitmaps);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 

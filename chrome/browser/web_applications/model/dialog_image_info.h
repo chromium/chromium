@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_MODEL_DIALOG_IMAGE_INFO_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_MODEL_DIALOG_IMAGE_INFO_H_
 
-#include <map>
-
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
@@ -16,14 +15,14 @@ namespace web_app {
 // the app has not been installed yet.
 struct DialogImageInfo {
   DialogImageInfo();
-  ~DialogImageInfo();
   DialogImageInfo(const DialogImageInfo& dialog_image_info);
   DialogImageInfo& operator=(const DialogImageInfo& dialog_image_info);
   DialogImageInfo(DialogImageInfo&& dialog_image_info);
   DialogImageInfo& operator=(DialogImageInfo&& dialog_image_info);
+  ~DialogImageInfo();
 
   // Bitmaps keyed by their square size in px.
-  std::map<int, SkBitmap> bitmaps;
+  UnorderedSizeToBitmap bitmaps;
   bool is_maskable = false;
 };
 

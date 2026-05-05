@@ -76,7 +76,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   DCHECK(!app_start_url.is_empty());
   DCHECK(app_start_url.is_valid());
 
-  web_app::SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+  web_app::UnorderedSizeToBitmap icon_bitmaps(icon_metadata.icons_map.begin(),
+                                              icon_metadata.icons_map.end());
   gfx::Size image_size{kIconSizeInDip, kIconSizeInDip};
   image_ = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                               kIconSizeInDip, std::move(icon_bitmaps)),

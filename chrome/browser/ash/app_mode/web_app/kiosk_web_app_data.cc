@@ -275,9 +275,10 @@ void KioskWebAppData::UpdateFromWebAppInfo(
                 app_info.GetIconBitmapsForSecureSurfaces().bitmaps);
 }
 
-void KioskWebAppData::UpdateAppInfo(const std::string& title,
-                                    const GURL& start_url,
-                                    const web_app::SizeToBitmap& icon_bitmaps) {
+void KioskWebAppData::UpdateAppInfo(
+    const std::string& title,
+    const GURL& start_url,
+    const web_app::UnorderedSizeToBitmap& icon_bitmaps) {
   name_ = title;
 
   auto it = icon_bitmaps.find(kIconSize);

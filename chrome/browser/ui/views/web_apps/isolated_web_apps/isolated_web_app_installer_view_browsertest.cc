@@ -94,7 +94,7 @@ const TestParam kTestParam[] = {
 SignedWebBundleMetadata CreateTestMetadata() {
   DialogImageInfo image_info;
   image_info.is_maskable = true;
-  AddGeneratedIcon(&image_info.bitmaps, 32, SK_ColorBLUE);
+  image_info.bitmaps.emplace(32, CreateSquareIcon(32, SK_ColorBLUE));
   return SignedWebBundleMetadata::CreateForTesting(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           web_package::SignedWebBundleId::CreateRandomForProxyMode()),

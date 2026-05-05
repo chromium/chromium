@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 
+#include <algorithm>
+#include <compare>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -92,31 +96,41 @@ std::ostream& operator<<(std::ostream& os, InstallOsType type) {
 
 namespace {
 
-// Resizes the closest matching bitmap from `bitmaps`, upscaling the largest
-// available if no matching size is found.
-gfx::ImageSkia CreateResizedIconImage(const std::map<int, SkBitmap>& bitmaps,
+// The defaulted <=> compares fields in declaration order: not needing
+// upscaling beats needing it, and within each group the smaller distance to
+// the target wins.
+struct BitmapSizeRank {
+  bool needs_upscaling;
+  SquareSizePx distance_to_target;
+
+  auto operator<=>(const BitmapSizeRank&) const = default;
+};
+
+// Selects a bitmap for each supported scale factor, preferring one that
+// doesn't require upscaling, and resizes it to the target pixel size.
+gfx::ImageSkia CreateResizedIconImage(const UnorderedSizeToBitmap& bitmaps,
                                       int target_size_dp) {
   gfx::ImageSkia resized_image;
+  if (bitmaps.empty()) {
+    return resized_image;
+  }
+
   for (const auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
-    float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
-    int target_size = base::saturated_cast<int>(target_size_dp * scale);
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
+    const int target_size = base::saturated_cast<int>(target_size_dp * scale);
 
-    auto it = bitmaps.lower_bound(target_size);
-    if (it == bitmaps.end()) {
-      if (!bitmaps.empty()) {
-        it = std::prev(bitmaps.end());
-      }
+    const auto it = std::ranges::min_element(
+        bitmaps, {}, [target_size](const auto& bitmap) -> BitmapSizeRank {
+          const SquareSizePx size = bitmap.first;
+          return {.needs_upscaling = size < target_size,
+                  .distance_to_target = std::abs(size - target_size)};
+        });
+    SkBitmap bitmap = it->second;
+    if (bitmap.width() != target_size) {
+      bitmap = skia::ImageOperations::Resize(
+          bitmap, skia::ImageOperations::RESIZE_BEST, target_size, target_size);
     }
-
-    if (it != bitmaps.end()) {
-      SkBitmap bitmap = it->second;
-      if (bitmap.width() != target_size) {
-        bitmap = skia::ImageOperations::Resize(
-            bitmap, skia::ImageOperations::RESIZE_BEST, target_size,
-            target_size);
-      }
-      resized_image.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
-    }
+    resized_image.AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
   }
   return resized_image;
 }
@@ -346,16 +360,14 @@ void WebAppInstallFlowDialogDelegate::Show(
   DialogImageInfo dialog_image_info =
       install_info->GetIconBitmapsForSecureSurfaces();
 
-  std::map<int, SkBitmap> bitmaps_copy = dialog_image_info.bitmaps;
+  // For Install Options view, we need a larger icon image.
+  gfx::ImageSkia icon_image_80 =
+      CreateResizedIconImage(dialog_image_info.bitmaps, kLargeImageSize);
 
   gfx::ImageSkia icon_image_32(
       std::make_unique<WebAppInfoImageSource>(
           kIconSize, std::move(dialog_image_info.bitmaps)),
       gfx::Size(kIconSize, kIconSize));
-
-  // For Install Options view, we need a larger icon image.
-  gfx::ImageSkia icon_image_80 =
-      CreateResizedIconImage(bitmaps_copy, kLargeImageSize);
 
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();

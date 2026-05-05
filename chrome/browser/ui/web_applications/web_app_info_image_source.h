@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_INFO_IMAGE_SOURCE_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_INFO_IMAGE_SOURCE_H_
 
-#include <map>
-
-#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/model/web_app_icon_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_source.h"
 
 // An image source which draws from a WebAppInstallInfo icons list.
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
-  WebAppInfoImageSource(int dip_size,
-                        std::map<web_app::SquareSizePx, SkBitmap> icons);
+  WebAppInfoImageSource(int dip_size, web_app::UnorderedSizeToBitmap icons);
 
   WebAppInfoImageSource(const WebAppInfoImageSource&) = delete;
   WebAppInfoImageSource& operator=(const WebAppInfoImageSource&) = delete;
@@ -27,7 +24,7 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override;
 
   int dip_size_;
-  std::map<web_app::SquareSizePx, SkBitmap> icons_;
+  web_app::UnorderedSizeToBitmap icons_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_INFO_IMAGE_SOURCE_H_

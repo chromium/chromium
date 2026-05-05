@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 
+#include <algorithm>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -123,13 +125,16 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
   }
 
   void operator()(const InstallabilityChecker::BundleInstallable& installable) {
-    if (!installable.metadata.image_info().bitmaps.empty()) {
-      // Get the last icon from available trusted icon bitmaps, size doesn't
-      // matter since Shelf will rescale the icon anyway.
+    const auto& image_info = installable.metadata.image_info();
+    const auto& bitmaps = image_info.bitmaps;
+    if (!bitmaps.empty()) {
+      // Pick the largest available icon bitmap for the Shelf. The Shelf will
+      // rescale the icon anyway, so we prefer the largest bitmap.
+      const auto largest_bitmap = std::ranges::max_element(
+          bitmaps, std::less<>{}, [](const auto& item) { return item.first; });
       controller_->SetIcon(
-          gfx::ImageSkia::CreateFrom1xBitmap(
-              installable.metadata.image_info().bitmaps.rbegin()->second),
-          installable.metadata.image_info().is_maskable);
+          gfx::ImageSkia::CreateFrom1xBitmap(largest_bitmap->second),
+          image_info.is_maskable);
       controller_->AddOrUpdateWindowToShelf();
     }
     model_->SetSignedWebBundleMetadata(installable.metadata);

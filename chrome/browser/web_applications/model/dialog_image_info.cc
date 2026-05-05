@@ -11,18 +11,19 @@
 namespace web_app {
 namespace {
 
-bool BitmapMapsEqual(const std::map<int, SkBitmap>& left,
-                     const std::map<int, SkBitmap>& right) {
-  return std::ranges::equal(left, right, [](const auto& lhs, const auto& rhs) {
-    return lhs.first == rhs.first &&
-           gfx::BitmapsAreEqual(lhs.second, rhs.second);
-  });
+bool BitmapMapsEqual(const UnorderedSizeToBitmap& left,
+                     const UnorderedSizeToBitmap& right) {
+  return left.size() == right.size() &&
+         std::ranges::all_of(left, [&right](const auto& item) {
+           const auto& [size, bitmap] = item;
+           auto it = right.find(size);
+           return it != right.end() && gfx::BitmapsAreEqual(bitmap, it->second);
+         });
 }
 
 }  // namespace
 
 DialogImageInfo::DialogImageInfo() = default;
-DialogImageInfo::~DialogImageInfo() = default;
 DialogImageInfo::DialogImageInfo(const DialogImageInfo& dialog_image_info) =
     default;
 DialogImageInfo& DialogImageInfo::operator=(
@@ -30,6 +31,7 @@ DialogImageInfo& DialogImageInfo::operator=(
 DialogImageInfo::DialogImageInfo(DialogImageInfo&& dialog_image_info) = default;
 DialogImageInfo& DialogImageInfo::operator=(
     DialogImageInfo&& dialog_image_info) = default;
+DialogImageInfo::~DialogImageInfo() = default;
 
 bool operator==(const DialogImageInfo& info1, const DialogImageInfo& info2) {
   return BitmapMapsEqual(info1.bitmaps, info2.bitmaps) &&

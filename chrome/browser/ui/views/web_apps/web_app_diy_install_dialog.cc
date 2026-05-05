@@ -103,8 +103,11 @@ void ShowDiyAppInstallDialog(
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(browser_context);
 
+  web_app::UnorderedSizeToBitmap dialog_icons(
+      web_app_info->icon_bitmaps.any.begin(),
+      web_app_info->icon_bitmaps.any.end());
   gfx::ImageSkia icon_image(std::make_unique<WebAppInfoImageSource>(
-                                kIconSize, web_app_info->icon_bitmaps.any),
+                                kIconSize, std::move(dialog_icons)),
                             gfx::Size(kIconSize, kIconSize));
   GURL start_url = web_app_info->start_url();
 

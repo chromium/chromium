@@ -284,19 +284,23 @@ void WebAppInstallInfo::SetManifestIdAndStartUrl(
 DialogImageInfo WebAppInstallInfo::GetIconBitmapsForSecureSurfaces() const {
   DialogImageInfo image_info;
   if (trusted_icon_bitmaps.empty()) {
-    image_info.bitmaps = icon_bitmaps.any;
+    image_info.bitmaps =
+        UnorderedSizeToBitmap(icon_bitmaps.any.begin(), icon_bitmaps.any.end());
     return image_info;
   }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   if (!trusted_icon_bitmaps.maskable.empty()) {
-    image_info.bitmaps = trusted_icon_bitmaps.maskable;
+    image_info.bitmaps =
+        UnorderedSizeToBitmap(trusted_icon_bitmaps.maskable.begin(),
+                              trusted_icon_bitmaps.maskable.end());
     image_info.is_maskable = true;
     return image_info;
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-  image_info.bitmaps = trusted_icon_bitmaps.any;
+  image_info.bitmaps = UnorderedSizeToBitmap(trusted_icon_bitmaps.any.begin(),
+                                             trusted_icon_bitmaps.any.end());
   return image_info;
 }
 

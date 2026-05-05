@@ -8,7 +8,7 @@
 
 WebAppInfoImageSource::WebAppInfoImageSource(
     int dip_size,
-    std::map<web_app::SquareSizePx, SkBitmap> icons)
+    web_app::UnorderedSizeToBitmap icons)
     : dip_size_(dip_size), icons_(std::move(icons)) {}
 
 WebAppInfoImageSource::~WebAppInfoImageSource() = default;
