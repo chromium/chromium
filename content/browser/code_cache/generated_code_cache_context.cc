@@ -47,6 +47,26 @@
 #include "components/persistent_cache/transaction_error.h"
 #endif
 
+namespace {
+
+scoped_refptr<base::SequencedTaskRunner> MakeTaskRunner(
+    const base::FilePath& path) {
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // Use a SequencedTaskRunner tied to the path resource. This ensures that if
+    // this StoragePartition is destroyed and recreated with the same path,
+    // operations (including deletions of old files and creation of new ones)
+    // are strictly sequenced, avoiding race conditions between distinct
+    // instances. MayBlock() because disk operations are happening on-thread
+    // under the experiment for now.
+    return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+        {base::TaskPriority::USER_BLOCKING, base::MayBlock()}, path);
+  }
+  return base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING});
+}
+
+}  // namespace
+
 namespace content {
 
 // static
@@ -74,25 +94,13 @@ GeneratedCodeCacheContext::GetTaskRunner(
 GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
-    // MayBlock() because disk operations are happening on-thread under the
-    // experiment for now.
-    // Dedicated because there doesn't seem to be a reason to not be
-    // dedicated and it should provide some isolation which is especially
-    // important if there is blocking involved.
-    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  } else {
-    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_BLOCKING});
-  }
 }
 
 void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,
                                            int max_bytes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!task_runner_);  // Only initialize once.
+  task_runner_ = MakeTaskRunner(path);
   RunOrPostTask(this, FROM_HERE,
                 base::BindOnce(&GeneratedCodeCacheContext::InitializeOnThread,
                                this, path, max_bytes));
@@ -140,24 +148,20 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
         }
       }
 
-      generated_webui_js_code_cache_ = {
-          new GeneratedCodeCache(
-              webui_js_code_cache_path, max_bytes_webui_js,
-              GeneratedCodeCache::CodeCacheType::kWebUIJavaScript),
-          base::OnTaskRunnerDeleter(task_runner_)};
+      generated_webui_js_code_cache_ = std::make_unique<GeneratedCodeCache>(
+          webui_js_code_cache_path, max_bytes_webui_js,
+          GeneratedCodeCache::CodeCacheType::kWebUIJavaScript);
 
       UMA_HISTOGRAM_BOOLEAN("WebUICodeCache.FeatureEnabled", true);
     }
 
-    generated_js_code_cache_ = {
-        new GeneratedCodeCache(generated_js_code_cache_path, max_bytes_js,
-                               GeneratedCodeCache::CodeCacheType::kJavaScript),
-        base::OnTaskRunnerDeleter(task_runner_)};
+    generated_js_code_cache_ = std::make_unique<GeneratedCodeCache>(
+        generated_js_code_cache_path, max_bytes_js,
+        GeneratedCodeCache::CodeCacheType::kJavaScript);
 
-    generated_wasm_code_cache_ = {
-        new GeneratedCodeCache(generated_wasm_code_cache_path, max_bytes,
-                               GeneratedCodeCache::CodeCacheType::kWebAssembly),
-        base::OnTaskRunnerDeleter(task_runner_)};
+    generated_wasm_code_cache_ = std::make_unique<GeneratedCodeCache>(
+        generated_wasm_code_cache_path, max_bytes,
+        GeneratedCodeCache::CodeCacheType::kWebAssembly);
 
 #if !BUILDFLAG(IS_FUCHSIA)
     // Delete the PersistentCache files that won't be used to avoid wasting
@@ -179,11 +183,10 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
                   base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
                   net::GENERATED_BYTE_CODE_CACHE);
 
-    persistent_cache_collection_ = {
-        new persistent_cache::PersistentCacheCollection(
+    persistent_cache_collection_ =
+        std::make_unique<persistent_cache::PersistentCacheCollection>(
             persistent_cache_collection_path, disk_cache_max_size,
-            persistent_cache::Client::kCodeCache),
-        base::OnTaskRunnerDeleter(task_runner_)};
+            persistent_cache::Client::kCodeCache);
 
     // Delete the GeneratedCodeCache files that won't be used to avoid wasting
     // space.

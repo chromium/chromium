@@ -86,7 +86,7 @@ class CodeCacheHostImplTest : public testing::Test,
     histogram_tester.ExpectTotalCount("SiteIsolatedCodeCache.JS.Behaviour", 0);
   }
 
-  bool IsSitePerProcessOrStricter() { return GetParam(); }
+  static bool IsSitePerProcessOrStricter() { return GetParam(); }
 
   void SetupRendererWithLock(ChildProcessId process_id,
                              const UrlInfo& url_info) {
@@ -123,6 +123,67 @@ class CodeCacheHostImplTest : public testing::Test,
 
 // PersistentCache is not supported on Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
+
+// Tests that back-to-back contexts operating in the same directory don't
+// conflict with one another.
+TEST_P(CodeCacheHostImplTest, PersistentCacheRecreationSequencing) {
+  base::FilePath cache_path =
+      temp_dir_.GetPath().AppendASCII("recreation_test");
+  const std::string data_str = "some data";
+  const GURL url("http://test.com/script.js");
+  net::NetworkIsolationKey nik(net::SchemefulSite{url},
+                               net::SchemefulSite{url});
+
+  // Create a context and put some data into it.
+  auto context_a = base::MakeRefCounted<GeneratedCodeCacheContext>();
+  context_a->Initialize(cache_path, 0);
+  GeneratedCodeCacheContext::RunOrPostTask(
+      context_a, FROM_HERE, base::BindLambdaForTesting([=]() {
+        auto host = CodeCacheHostImpl::Create(
+            ChildProcessId(1), context_a, nik,
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+        host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, url, base::Time::Now(),
+            mojo_base::BigBuffer(base::as_byte_span(data_str)));
+      }));
+
+  // Shut down the context, which posts a task to destroy the cache
+  // asynchronously.
+  context_a->Shutdown();
+  context_a.reset();
+
+  // Create a new context using the same path and use it.
+  auto context_b = base::MakeRefCounted<GeneratedCodeCacheContext>();
+  context_b->Initialize(cache_path, 0);
+  base::test::TestFuture<void> future;
+  GeneratedCodeCacheContext::RunOrPostTask(
+      context_b, FROM_HERE,
+      base::BindLambdaForTesting([context_b, &url, &nik,
+                                  quit = base::BindPostTaskToCurrentDefault(
+                                      future.GetCallback())]() mutable {
+        auto host = CodeCacheHostImpl::Create(
+            ChildProcessId(2), context_b, nik,
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+        host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript, url,
+                              base::BindOnce(
+                                  [](base::OnceClosure quit, base::Time time,
+                                     mojo_base::BigBuffer buf) {
+                                    // The data may or may not have been cached;
+                                    // but for sure the process didn't crash.
+                                    if (IsSitePerProcessOrStricter()) {
+                                      EXPECT_EQ(buf.size(), 0U);
+                                    } else {
+                                      EXPECT_NE(buf.size(), 0U);
+                                    }
+                                    std::move(quit).Run();
+                                  },
+                                  std::move(quit)));
+      }));
+  EXPECT_TRUE(future.Wait());
+
+  context_b->Shutdown();
+}
 
 // Validates that improper site isolation setup (no valid process lock in
 // renderer) leads to no use of the cache if full site isolation is activated.

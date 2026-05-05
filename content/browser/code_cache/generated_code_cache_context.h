@@ -118,15 +118,12 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   void ShutdownOnThread();
 
   // Created, used and deleted on the code cache thread.
-  std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
-      generated_js_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
-          nullptr, base::OnTaskRunnerDeleter(nullptr)};
-  std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
-      generated_wasm_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
-          nullptr, base::OnTaskRunnerDeleter(nullptr)};
-  std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
-      generated_webui_js_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
-          nullptr, base::OnTaskRunnerDeleter(nullptr)};
+  std::unique_ptr<GeneratedCodeCache> generated_js_code_cache_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<GeneratedCodeCache> generated_wasm_code_cache_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<GeneratedCodeCache> generated_webui_js_code_cache_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // When used instead of `generated_js_code_cache_` this stores the code
@@ -135,10 +132,8 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   // isolation context from the collection. This ensures that each isolation
   // context uses a separate database file. The second key is the prefixed
   // resource URL or the hash digest of a serialized script.
-  std::unique_ptr<persistent_cache::PersistentCacheCollection,
-                  base::OnTaskRunnerDeleter>
-      persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_){
-          nullptr, base::OnTaskRunnerDeleter(nullptr)};
+  std::unique_ptr<persistent_cache::PersistentCacheCollection>
+      persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
