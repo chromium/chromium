@@ -503,6 +503,8 @@ INSTANTIATE_TEST_SUITE_P(
         CreditCardCategoryBenefit::BenefitCategory::kTransit,
         CreditCardCategoryBenefit::BenefitCategory::kTravel,
         CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs,
+        CreditCardCategoryBenefit::BenefitCategory::kHotels,
+        CreditCardCategoryBenefit::BenefitCategory::kCarRentals,
         CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
 
 // Test suite for masked card syncing helpers that takes a boolean indicating

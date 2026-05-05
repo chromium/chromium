@@ -126,6 +126,7 @@ class CreditCardCategoryBenefit : public CreditCardBenefitBase {
   // Represents the category of purchases that the benefit can be applied to.
   // The category numbering should match
   // `google3/moneta/integrator/common/instrument/instrument_offer.proto`.
+  // LINT.IfChange(BenefitCategory)
   enum class BenefitCategory {
     kUnknownBenefitCategory = 0,
     kSubscription = 1,
@@ -142,7 +143,10 @@ class CreditCardCategoryBenefit : public CreditCardBenefitBase {
     kTransit = 12,
     kTravel = 13,
     kWholesaleClubs = 14,
+    kHotels = 15,
+    kCarRentals = 16,
   };
+  // LINT.ThenChange(//components/sync/protocol/autofill_specifics.proto:CategoryBenefitType)
 
   CreditCardCategoryBenefit(BenefitId benefit_id,
                             LinkedCardInstrumentId linked_card_instrument_id,

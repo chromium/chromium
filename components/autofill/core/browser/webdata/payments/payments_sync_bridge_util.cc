@@ -126,6 +126,10 @@ CategoryBenefitTypeFromBenefitCategory(
       return sync_pb::CardBenefit::TRAVEL;
     case CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs:
       return sync_pb::CardBenefit::WHOLESALE_CLUBS;
+    case CreditCardCategoryBenefit::BenefitCategory::kHotels:
+      return sync_pb::CardBenefit::HOTELS;
+    case CreditCardCategoryBenefit::BenefitCategory::kCarRentals:
+      return sync_pb::CardBenefit::CAR_RENTALS;
     case CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory:
       return sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN;
   }
@@ -163,6 +167,10 @@ BenefitCategoryFromCategoryBenefitType(
       return CreditCardCategoryBenefit::BenefitCategory::kTravel;
     case sync_pb::CardBenefit::WHOLESALE_CLUBS:
       return CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs;
+    case sync_pb::CardBenefit::HOTELS:
+      return CreditCardCategoryBenefit::BenefitCategory::kHotels;
+    case sync_pb::CardBenefit::CAR_RENTALS:
+      return CreditCardCategoryBenefit::BenefitCategory::kCarRentals;
     case sync_pb::CardBenefit::CATEGORY_BENEFIT_TYPE_UNKNOWN:
       return CreditCardCategoryBenefit::BenefitCategory::
           kUnknownBenefitCategory;

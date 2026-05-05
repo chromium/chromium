@@ -318,6 +318,7 @@ message CardBenefit {
 
   // For category benefits, represents the category of purchases that the
   // benefit can be applied to.
+  // LINT.IfChange(CategoryBenefitType)
   enum CategoryBenefitType {
     CATEGORY_BENEFIT_TYPE_UNKNOWN = 0;
     SUBSCRIPTION = 1;
@@ -334,7 +335,10 @@ message CardBenefit {
     TRANSIT = 12;
     TRAVEL = 13;
     WHOLESALE_CLUBS = 14;
+    HOTELS = 15;
+    CAR_RENTALS = 16;
   }
+  // LINT.ThenChange(//components/autofill/core/browser/data_model/payments/credit_card_benefit.h:BenefitCategory)
 
   // Proto containing data specific to a category benefit.
   message CategoryBenefit {

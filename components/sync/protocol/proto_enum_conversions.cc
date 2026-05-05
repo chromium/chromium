@@ -732,7 +732,7 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::CardBenefit::CategoryBenefitType category_benefit_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::CardBenefit, CategoryBenefitType,
-                     CATEGORY_BENEFIT_TYPE_UNKNOWN, WHOLESALE_CLUBS);
+                     CATEGORY_BENEFIT_TYPE_UNKNOWN, CAR_RENTALS);
   switch (category_benefit_type) {
     ENUM_CASE(sync_pb::CardBenefit, CATEGORY_BENEFIT_TYPE_UNKNOWN);
     ENUM_CASE(sync_pb::CardBenefit, SUBSCRIPTION);
@@ -749,6 +749,8 @@ const char* ProtoEnumToString(
     ENUM_CASE(sync_pb::CardBenefit, TRANSIT);
     ENUM_CASE(sync_pb::CardBenefit, TRAVEL);
     ENUM_CASE(sync_pb::CardBenefit, WHOLESALE_CLUBS);
+    ENUM_CASE(sync_pb::CardBenefit, HOTELS);
+    ENUM_CASE(sync_pb::CardBenefit, CAR_RENTALS);
   }
   NOTREACHED();
 }
