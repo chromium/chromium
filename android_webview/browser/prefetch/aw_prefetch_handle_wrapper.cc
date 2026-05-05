@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
 #include "base/state_transitions.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,8 +58,7 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
           std::move(prefetch_handle))),
       state_(State::kPrefetchHandleCommitted) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kWebViewPrefetchOffTheMainThread));
+  CHECK(!IsWebViewPrefetchOffTheMainThreadEnabled());
   CheckState();
 }
 

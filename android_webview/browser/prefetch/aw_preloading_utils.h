@@ -41,6 +41,8 @@ std::optional<int> GetVariationsIdFromPrefetchParameters(
 bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
                                          bool remove_header);
 
+bool IsWebViewPrefetchOffTheMainThreadEnabled();
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_BROWSER_PREFETCH_AW_PRELOADING_UTILS_H_

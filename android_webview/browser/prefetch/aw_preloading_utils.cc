@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_util.h"
+#include "content/public/common/content_features.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "third_party/jni_zero/common_apis.h"
 
@@ -108,6 +109,12 @@ bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
     return should_bypass;
   }
   return false;
+}
+
+bool IsWebViewPrefetchOffTheMainThreadEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kWebViewPrefetchOffTheMainThread) &&
+         base::FeatureList::IsEnabled(::features::kPrefetchOffTheMainThread);
 }
 
 }  // namespace android_webview

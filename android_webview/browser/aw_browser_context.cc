@@ -283,8 +283,7 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
   // Register to persist the latest prefetch info, ensuring `AwPrefetchManager`
   // can initialize `PrePrefetchService` with these as optimization hints for
   // the likely initial PrePrefetch request. Initialized with empty values.
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
+  if (IsWebViewPrefetchOffTheMainThreadEnabled()) {
     registry->RegisterStringPref(prefs::kAwPrefetchLatestOrigin, "");
     registry->RegisterBooleanPref(prefs::kAwPrefetchLatestJavascriptEnabled,
                                   false);
@@ -332,8 +331,7 @@ void AwBrowserContext::CreateUserPrefService() {
   // Register to persist the latest prefetch info, ensuring `AwPrefetchManager`
   // can initialize `PrePrefetchService` with these as optimization hints for
   // the likely initial PrePrefetch request.
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
+  if (IsWebViewPrefetchOffTheMainThreadEnabled()) {
     persistent_prefs.insert(prefs::kAwPrefetchLatestOrigin);
     persistent_prefs.insert(prefs::kAwPrefetchLatestJavascriptEnabled);
   }
