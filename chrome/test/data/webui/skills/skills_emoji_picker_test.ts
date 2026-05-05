@@ -48,7 +48,7 @@ suite('SkillsEmojiPicker', function() {
 
     // Wait for a frame to ensure the component's rAF-delayed setup
     // (like document click listeners) is complete.
-    await microtasksFinished();
+    await new Promise(resolve => requestAnimationFrame(resolve));
   });
 
   test('EmojiPickerLoadsData', function() {
