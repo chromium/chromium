@@ -21,13 +21,13 @@ class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
 
-class WebUIToolbarWebView;
+class WebUIToolbarControlDelegate;
 
 // WebUISplitTabsControl implements C++-side functionality for the WebUI-based
 // implementation of the split tabs button in the toolbar.
 class WebUISplitTabsControl : public TabStripModelObserver {
  public:
-  explicit WebUISplitTabsControl(WebUIToolbarWebView* toolbar_view);
+  explicit WebUISplitTabsControl(WebUIToolbarControlDelegate* delegate);
   WebUISplitTabsControl(const WebUISplitTabsControl&) = delete;
   WebUISplitTabsControl& operator=(const WebUISplitTabsControl&) = delete;
   ~WebUISplitTabsControl() override;
@@ -66,7 +66,7 @@ class WebUISplitTabsControl : public TabStripModelObserver {
                  ui::mojom::MenuSourceType source_type,
                  bool is_action_menu);
 
-  raw_ptr<WebUIToolbarWebView> toolbar_view_;
+  raw_ptr<WebUIToolbarControlDelegate> delegate_;
   BooleanPrefMember pin_state_;
   bool is_visible_ = false;
 

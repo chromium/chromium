@@ -15,9 +15,8 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-WebUIReloadControl::WebUIReloadControl(
-    WebUIToolbarWebView* webui_toolbar_web_view)
-    : webui_toolbar_web_view_(webui_toolbar_web_view) {
+WebUIReloadControl::WebUIReloadControl(WebUIToolbarControlDelegate* delegate)
+    : delegate_(delegate) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model_->AddItemWithStringId(IDC_RELOAD,
                                    IDS_RELOAD_MENU_NORMAL_RELOAD_ITEM);
@@ -63,9 +62,8 @@ bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
                                            const gfx::Rect& screen_rect,
                                            ui::mojom::MenuSourceType source) {
   if (is_dev_tools_connected_) {
-    menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
-                            screen_rect, views::MenuAnchorPosition::kTopLeft,
-                            source);
+    menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
+                            views::MenuAnchorPosition::kTopLeft, source);
     UpdateState();
   }
   return true;
@@ -86,13 +84,13 @@ bool WebUIReloadControl::IsCommandIdVisible(int command_id) const {
 bool WebUIReloadControl::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  return webui_toolbar_web_view_->GetWidget()->GetAccelerator(command_id,
-                                                              accelerator);
+  return delegate_->GetView()->GetWidget()->GetAccelerator(command_id,
+                                                           accelerator);
 }
 
 void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
-  CHECK(webui_toolbar_web_view_->controller());
-  webui_toolbar_web_view_->controller()->ExecuteCommandWithDisposition(
+  CHECK(delegate_->GetCommandController());
+  delegate_->GetCommandController()->ExecuteCommandWithDisposition(
       command_id, ui::DispositionFromEventFlags(event_flags));
 }
 
@@ -104,5 +102,5 @@ void WebUIReloadControl::UpdateState() {
   state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
   state->is_context_menu_visible = menu_runner_->IsRunning();
   state->state_token = state_token_;
-  webui_toolbar_web_view_->OnReloadControlStateChanged(std::move(state));
+  delegate_->OnReloadControlStateChanged(std::move(state));
 }

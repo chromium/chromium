@@ -15,15 +15,14 @@
 #include "ui/views/view.h"
 
 WebUIBackForwardControl::WebUIBackForwardControl(
-    WebUIToolbarWebView* webui_toolbar_web_view,
+    WebUIToolbarControlDelegate* delegate,
     BackForwardButton::Direction direction)
-    : webui_toolbar_web_view_(webui_toolbar_web_view),
+    : delegate_(delegate),
       direction_(direction),
-      menu_model_(
-          webui_toolbar_web_view->browser_->GetBrowserForMigrationOnly(),
-          direction == BackForwardButton::Direction::kBack
-              ? BackForwardMenuModel::ModelType::kBackward
-              : BackForwardMenuModel::ModelType::kForward) {}
+      menu_model_(delegate->GetBrowser()->GetBrowserForMigrationOnly(),
+                  direction == BackForwardButton::Direction::kBack
+                      ? BackForwardMenuModel::ModelType::kBackward
+                      : BackForwardMenuModel::ModelType::kForward) {}
 
 WebUIBackForwardControl::~WebUIBackForwardControl() = default;
 
@@ -36,19 +35,19 @@ void WebUIBackForwardControl::HandleContextMenu(
   menu_runner_.reset();
 
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
-      &menu_model_,
-      base::BindRepeating(&WebUIToolbarWebView::OnBackForwardStateChanged,
-                          base::Unretained(webui_toolbar_web_view_)));
+      &menu_model_, base::BindRepeating(
+                        &WebUIToolbarControlDelegate::OnBackForwardStateChanged,
+                        base::Unretained(delegate_)));
   std::unique_ptr<views::MenuItemView> root = menu_model_adapter_->CreateMenu();
   root->SetSubmenuId(direction_ == BackForwardButton::Direction::kBack
                          ? kToolbarBackButtonMenuElementId
                          : kToolbarForwardButtonMenuElementId);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       std::move(root), views::MenuRunner::HAS_MNEMONICS);
-  menu_runner_->RunMenuAt(webui_toolbar_web_view_->GetWidget(), nullptr,
-                          screen_rect, views::MenuAnchorPosition::kTopLeft,
-                          source);
-  webui_toolbar_web_view_->OnBackForwardStateChanged();
+  menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
+                          views::MenuAnchorPosition::kTopLeft, source);
+
+  delegate_->OnBackForwardStateChanged();
 }
 
 void WebUIBackForwardControl::SetEnabled(bool enabled) {
@@ -56,7 +55,7 @@ void WebUIBackForwardControl::SetEnabled(bool enabled) {
     return;
   }
   enabled_ = enabled;
-  webui_toolbar_web_view_->OnBackForwardStateChanged();
+  delegate_->OnBackForwardStateChanged();
 }
 
 void WebUIBackForwardControl::SetIsPinned(bool is_pinned) {
@@ -64,7 +63,7 @@ void WebUIBackForwardControl::SetIsPinned(bool is_pinned) {
     return;
   }
   is_pinned_ = is_pinned;
-  webui_toolbar_web_view_->OnBackForwardStateChanged();
+  delegate_->OnBackForwardStateChanged();
 }
 
 bool WebUIBackForwardControl::IsPinned() const {

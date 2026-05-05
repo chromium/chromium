@@ -662,7 +662,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   control_rect.Offset(-view_rect.OffsetFromOrigin());
 
   // Verify reload button background is transparent when not highlighted.
-  EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, control_rect) == SK_ColorTRANSPARENT;
+  }));
 
   // Show reload button context menu.
   webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
@@ -718,8 +720,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                   1);
 
   // Verify back button background is transparent when not highlighted.
-  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
 
   // Show back button context menu.
   webui_toolbar_view->HandleContextMenu(
@@ -777,8 +781,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                   1);
 
   // Verify forward button background is transparent when not highlighted.
-  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
 
   // Show forward button context menu.
   webui_toolbar_view->HandleContextMenu(
@@ -839,8 +845,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                   1);
 
   // Verify initial state is transparent.
-  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
 
   // Show context menu.
   webui_toolbar_view->HandleContextMenu(
@@ -894,8 +902,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                   1);
 
   // Verify initial state is transparent.
-  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
-            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
 
   // Show context menu.
   webui_toolbar_view->HandleContextMenu(
