@@ -116,8 +116,9 @@ ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
     case ComposeboxModelOption::kAuto:
       return ComposeboxMenuItemType::kModelAuto;
     case ComposeboxModelOption::kThinking:
-    case ComposeboxModelOption::kThinkingNoGenUI:
       return ComposeboxMenuItemType::kModelThinking;
+    case ComposeboxModelOption::kThinkingNoGenUI:
+      return ComposeboxMenuItemType::kModelThinkingNoGenUI;
     case ComposeboxModelOption::kNone:
       return ComposeboxMenuItemType::kUnknown;
   }

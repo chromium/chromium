@@ -15,6 +15,7 @@ enum class ComposeboxMenuItemType {
   kModelAuto,
   kModelThinking,
   kCurrentTab,
+  kModelThinkingNoGenUI,
   kAttachmentTabs,
   kAttachmentCamera,
   kAttachmentGallery,

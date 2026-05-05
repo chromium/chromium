@@ -134,6 +134,11 @@
       }
       break;
     }
+    case ComposeboxMenuItemType::kModelThinkingNoGenUI:
+      [self.delegate
+          composeboxMenuMediator:self
+                     didTapModel:ComposeboxModelOption::kThinkingNoGenUI];
+      break;
     case ComposeboxMenuItemType::kAttachmentTabs:
       [self.delegate composeboxMenuMediatorDidRequestTabSelection:self];
       break;
