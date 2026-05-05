@@ -6338,7 +6338,7 @@
       "ckitagawa@chromium.org",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "local-network-access-check",
@@ -7307,7 +7307,7 @@
   {
     "name": "on-demand-background-tab-context-capture",
     "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "on-device-app-controls",
@@ -9032,7 +9032,7 @@
   {
     "name": "tab-closure-method-refactor",
     "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tab-grid-new-transitions",
@@ -9102,7 +9102,7 @@
       "ckitagawa@google.com",
       "clank-large-form-factors@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tab-switcher-group-suggestions-android",
@@ -9110,7 +9110,7 @@
       "mfiaz@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tab-switcher-group-suggestions-test-mode-android",
@@ -9118,7 +9118,7 @@
       "mfiaz@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tabs-from-other-devices-side-panel",
