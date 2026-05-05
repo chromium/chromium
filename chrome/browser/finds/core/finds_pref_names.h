@@ -20,14 +20,6 @@ extern const char kFindsNotInterestedThemesLastTimestamp[];
 // indicating that we should not prompt them again.
 extern const char kFindsOptInPromoUserInteracted[];
 
-// Deprecated. Do not remove.
-// The number of times the finds opt in promo was interacted with by the user.
-extern const char kFindsOptInPromoInteractedCount[];
-
-// Deprecated. Do not remove.
-// The timestamp of the last time the finds opt in promo was interacted with.
-extern const char kFindsOptInPromoLastInteractedTimestamp[];
-
 // The number of times the finds opt in promo was shown to the user.
 extern const char kFindsOptInPromoShownCount[];
 

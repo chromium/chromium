@@ -28,12 +28,6 @@ public class FindsUtils {
     // LINT.IfChange(FindsOptInPromoInteractionPrefs)
     public static final String FINDS_OPT_IN_PROMO_USER_INTERACTED =
             "finds.opt_in_promo.user_interacted";
-    // Deprecated. Do not remove.
-    public static final String FINDS_OPT_IN_PROMO_INTERACTED_COUNT =
-            "finds.opt_in_promo.interacted_count";
-    // Deprecated. Do not remove.
-    public static final String FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP =
-            "finds.opt_in_promo.last_interacted_timestamp";
     public static final String FINDS_OPT_IN_PROMO_SHOWN_COUNT = "finds.opt_in_promo.shown_count";
     public static final String FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP =
             "finds.opt_in_promo.last_shown_timestamp";
