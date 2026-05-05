@@ -107,20 +107,23 @@ void DataPipeElementReader::OnHandleReadable(MojoResult result) {
   int read_result;
   if (result == MOJO_RESULT_OK) {
     read_result = ReadInternal(buf_.get(), buf_length_);
+    // Unclear if this can happen, but if it can, shouldn't clear `buf_` or
+    // `buf_length_`.
+    if (read_result == net::ERR_IO_PENDING) {
+      return;
+    }
   } else {
     read_result = net::ERR_FAILED;
   }
 
   buf_ = nullptr;
   buf_length_ = 0;
-
-  if (read_result != net::ERR_IO_PENDING)
-    std::move(read_callback_).Run(read_result);
+  std::move(read_callback_).Run(read_result);
 }
 
 int DataPipeElementReader::ReadInternal(net::IOBuffer* buf, int buf_length) {
-  DCHECK(buf);
-  DCHECK_GT(buf_length, 0);
+  CHECK(buf);
+  CHECK_GT(buf_length, 0);
 
   if (BytesRemaining() == 0)
     return net::OK;
