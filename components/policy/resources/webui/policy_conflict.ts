@@ -47,6 +47,14 @@ export function copyValue(element: CustomElement) {
   });
 }
 
+// Sets the accessibility attributes for the copy button.
+export function setCopyButtonAccessibilityAttributes(
+    button: Element, policyName: string) {
+  const copyLabel = loadTimeData.getStringF('policyCopyValue', policyName);
+  button.setAttribute('title', copyLabel);
+  button.setAttribute('aria-label', copyLabel);
+}
+
 export class PolicyConflictElement extends CustomElement {
   static override get template() {
     return getTemplate();
@@ -97,9 +105,7 @@ export class PolicyConflictElement extends CustomElement {
     // Set the label for the copy link.
     const copyLink = this.shadowRoot!.querySelector('.row .copy-value');
     if (copyLink) {
-      const copyLabel = loadTimeData.getStringF('policyCopyValue', _policyName);
-      copyLink.setAttribute('title', copyLabel);
-      copyLink.setAttribute('aria-label', copyLabel);
+      setCopyButtonAccessibilityAttributes(copyLink, _policyName);
     }
   }
 

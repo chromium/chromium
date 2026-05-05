@@ -10,7 +10,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {Conflict} from './policy_conflict.js';
-import {copyValue, stringifyPolicyValue} from './policy_conflict.js';
+import {copyValue, setCopyButtonAccessibilityAttributes, stringifyPolicyValue} from './policy_conflict.js';
 import {getTemplate} from './policy_row.html.js';
 
 export interface Policy {
@@ -140,7 +140,7 @@ export class PolicyRowElement extends CustomElement {
     valueDisplay!.textContent = truncatedValue;
 
     const copyLink = this.getRequiredElement('.copy .link');
-    copyLink.title = loadTimeData.getStringF('policyCopyValue', policy.name);
+    setCopyButtonAccessibilityAttributes(copyLink, policy.name);
 
     const valueRowContentDisplay =
         this.shadowRoot!.querySelector('.value.row .value');
