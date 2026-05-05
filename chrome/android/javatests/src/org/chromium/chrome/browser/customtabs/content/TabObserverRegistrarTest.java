@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -61,7 +60,6 @@ public class TabObserverRegistrarTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug/341026733")
     public void testObserveActiveTab() throws Throwable {
         EmbeddedTestServer testServer = mCustomTabActivityTestRule.getTestServer();
         final String windowOpenUrl =
@@ -81,7 +79,8 @@ public class TabObserverRegistrarTest {
                 () -> tabObserverRegistrar.registerActivityTabObserver(loadUrlTabObserver));
 
         final TabModelSelector tabSelector = customTabActivity.getTabModelSelector();
-        final Tab initialActiveTab = tabSelector.getCurrentTab();
+        final Tab initialActiveTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> tabSelector.getCurrentTab());
 
         // Open and wait for popup.
         final CallbackHelper openTabHelper = new CallbackHelper();
@@ -103,11 +102,10 @@ public class TabObserverRegistrarTest {
         DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "new_window");
         openTabHelper.waitForCallback(0, 1);
 
-        assertEquals(2, tabSelector.getModel(false).getCount());
-        final Tab activeTab = tabSelector.getCurrentTab();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    assertEquals(2, tabSelector.getModel(false).getCount());
+                    Tab activeTab = tabSelector.getCurrentTab();
                     initialActiveTab.loadUrl(new LoadUrlParams(url1));
                     activeTab.loadUrl(new LoadUrlParams(url2));
                 });
