@@ -20,8 +20,7 @@ class Browser;
 @protocol OmniboxPopupPresenterDelegate;
 
 // The coordinator for the compose box input plate.
-@interface ComposeboxInputPlateCoordinator
-    : ChromeCoordinator <TabPickerCommands>
+@interface ComposeboxInputPlateCoordinator : ChromeCoordinator
 
 // The view controller managed by this coordinator.
 @property(nonatomic, readonly)
