@@ -6594,7 +6594,7 @@
   {
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "mobile-ntp-promo-on-desktop",
@@ -9314,7 +9314,7 @@
   {
     "name": "undo-migration-of-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "unexportable-key-deletion",
