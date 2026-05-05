@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_URL_REQUEST_UTIL_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_URL_REQUEST_UTIL_H_
 
+#include "content/public/common/child_process_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,7 +45,7 @@ bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
     network::mojom::RequestDestination destination,
     ui::PageTransition page_transition,
-    int child_id,
+    content::ChildProcessId child_id,
     bool is_incognito,
     const Extension* extension,
     const ExtensionSet& extensions,

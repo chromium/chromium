@@ -138,7 +138,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const network::ResourceRequest& request,
       network::mojom::RequestDestination destination,
       ui::PageTransition page_transition,
-      int child_id,
+      content::ChildProcessId child_id,
       bool is_incognito,
       const Extension* extension,
       const ExtensionSet& extensions,

@@ -18,6 +18,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extension_protocols.h"
@@ -263,7 +264,7 @@ bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
     network::mojom::RequestDestination destination,
     ui::PageTransition page_transition,
-    int child_id,
+    content::ChildProcessId child_id,
     bool is_incognito,
     const Extension* extension,
     const ExtensionSet& extensions,

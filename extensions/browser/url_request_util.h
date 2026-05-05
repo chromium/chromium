@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "content/public/common/child_process_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -34,7 +35,7 @@ bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
     network::mojom::RequestDestination destination,
     ui::PageTransition page_transition,
-    int child_id,
+    content::ChildProcessId child_id,
     bool is_incognito,
     const Extension* extension,
     const ExtensionSet& extensions,

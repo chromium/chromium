@@ -6518,9 +6518,12 @@ void ChromeContentBrowserClient::
     return;
   }
 
-  factories->emplace(extensions::kExtensionScheme,
-                     extensions::CreateExtensionURLLoaderFactory(
-                         render_process_id, render_frame_id));
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  factories->emplace(
+      extensions::kExtensionScheme,
+      extensions::CreateExtensionURLLoaderFactory(
+          content::ChildProcessId::FromUnsafeValue(render_process_id),
+          render_frame_id));
 
   const extensions::Extension* extension = nullptr;
   if (request_initiator_origin != std::nullopt) {

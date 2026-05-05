@@ -38,7 +38,7 @@ bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
     network::mojom::RequestDestination destination,
     ui::PageTransition page_transition,
-    int child_id,
+    content::ChildProcessId child_id,
     bool is_incognito,
     const Extension* extension,
     const ExtensionSet& extensions,
@@ -50,7 +50,7 @@ bool AllowCrossRendererResourceLoad(
 
   // This logic is performed for main frame requests in
   // ExtensionNavigationThrottle::WillStartRequest.
-  if (child_id != -1 ||
+  if (child_id ||
       destination != network::mojom::RequestDestination::kDocument) {
     // Extensions with webview: allow loading certain resources by guest
     // renderers with privileged partition IDs as specified in owner's extension
@@ -62,11 +62,13 @@ bool AllowCrossRendererResourceLoad(
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     int owner_process_id;
     std::string owner_extension_id;
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     WebViewRendererState::GetInstance()->GetOwnerInfo(
-        child_id, &owner_process_id, &owner_extension_id);
+        child_id.GetUnsafeValue(), &owner_process_id, &owner_extension_id);
     owner_extension = extensions.GetByID(owner_extension_id);
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     is_guest = WebViewRendererState::GetInstance()->GetPartitionID(
-        child_id, &partition_id);
+        child_id.GetUnsafeValue(), &partition_id);
 #endif
 
     if (AllowCrossRendererResourceLoadHelper(
@@ -109,11 +111,8 @@ bool AllowCrossRendererResourceLoad(
 
   // When navigating in subframe, verify that the extension the resource is
   // loaded from matches the process loading it.
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (network::IsRequestDestinationEmbeddedFrame(destination) &&
-      process_map.Contains(
-          extension->id(),
-          content::ChildProcessId::FromUnsafeValue(child_id))) {
+      process_map.Contains(extension->id(), child_id)) {
     *allowed = true;
     return true;
   }
