@@ -72,6 +72,7 @@ export class TopToolbarElement extends CrLitElement {
       isExpandButtonEnabled: {type: Boolean},
       isPinButtonEnabled: {type: Boolean},
       isPinned: {type: Boolean},
+      contextManagementInComposeboxEnabled_: {type: Boolean},
     };
   }
 
@@ -93,6 +94,8 @@ export class TopToolbarElement extends CrLitElement {
       this.hideOverflowMenuOnAiPageEnabled_ && this.isAiPage;
   protected accessor isPinned: boolean =
       loadTimeData.getBoolean('isSidePanelPinned');
+  protected accessor contextManagementInComposeboxEnabled_: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
 
   override connectedCallback() {
     super.connectedCallback();
