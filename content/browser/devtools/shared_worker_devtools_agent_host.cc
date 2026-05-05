@@ -22,6 +22,7 @@
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/cookies/site_for_cookies.h"
@@ -45,7 +46,9 @@ SharedWorkerDevToolsAgentHost::SharedWorkerDevToolsAgentHost(
       state_(WORKER_NOT_READY),
       worker_host_(worker_host),
       devtools_worker_token_(devtools_worker_token),
-      instance_(worker_host->instance()) {
+      instance_(worker_host->instance()),
+      browser_context_token_(
+          worker_host->GetProcessHost()->GetBrowserContext()->UniqueToken()) {
   NotifyCreated();
 }
 
@@ -124,7 +127,10 @@ void SharedWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
 }
 
 bool SharedWorkerDevToolsAgentHost::Matches(SharedWorkerHost* worker_host) {
-  return instance_.Matches(worker_host->instance().url(),
+  return browser_context_token_ == worker_host->GetProcessHost()
+                                       ->GetBrowserContext()
+                                       ->UniqueToken() &&
+         instance_.Matches(worker_host->instance().url(),
                            worker_host->instance().name(),
                            worker_host->instance().creator_storage_key(),
                            worker_host->instance().same_site_cookies());

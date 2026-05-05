@@ -2672,6 +2672,7 @@ test("content_unittests") {
     "../browser/devtools/protocol_unittest.cc",
     "../browser/devtools/request_body_collector_unittest.cc",
     "../browser/devtools/shared_storage_worklet_devtools_agent_host_unittest.cc",
+    "../browser/devtools/shared_worker_devtools_agent_host_unittest.cc",
     "../browser/digital_credentials/digital_credential_environment_unittest.cc",
     "../browser/digital_credentials/digital_identity_request_impl_unittest.cc",
     "../browser/digital_credentials/virtual_wallet_unittest.cc",
