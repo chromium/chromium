@@ -157,6 +157,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
         'chrome/browser/resources/chromeos/emulator',
         'chrome/browser/resources/chromeos/power',
         'chrome/browser/resources/chromeos/slow',
+        'chrome/browser/resources/chromeos/smb_shares/',
         'chrome/browser/resources/chromeos/sys_internals',
         'chrome/test/data/webui/chromeos',
         'chrome/test/data/webui/chromeos/ash_common',

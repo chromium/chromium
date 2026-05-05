@@ -5385,7 +5385,6 @@ grit("resources") {
 
   if (is_chromeos) {
     deps += [
-      "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/ui/webui/ash/login/mojom:mojom_ts__generator",
       "//url/mojom:url_mojom_gurl_js",
     ]

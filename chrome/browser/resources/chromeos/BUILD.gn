@@ -51,6 +51,7 @@ group("resources") {
     "set_time_dialog:resources",
     "skyvault:resources",
     "slow:resources",
+    "smb_shares:resources",
     "supervision:resources",
     "sys_internals:resources",
     "vm:resources",
@@ -88,8 +89,5 @@ grit("multidevice_setup_resources") {
 }
 
 group("closure_compile") {
-  deps = [
-    "multidevice_internals:closure_compile",
-    "smb_shares:closure_compile",
-  ]
+  deps = [ "multidevice_internals:closure_compile" ]
 }

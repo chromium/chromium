@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/smb_shares_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -87,8 +87,11 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
                      chromeos::features::IsCrosComponentsEnabled());
 
   source->UseStringsJs();
-  source->SetDefaultResource(IDR_SMB_SHARES_DIALOG_CONTAINER_HTML);
-  source->AddResourcePath("smb_share_dialog.js", IDR_SMB_SHARES_DIALOG_JS);
+  source->SetDefaultResource(IDR_SMB_SHARES_SMB_SHARE_DIALOG_CONTAINER_HTML);
+  source->AddResourcePath("smb_share_dialog.js",
+                          IDR_SMB_SHARES_SMB_SHARE_DIALOG_JS);
+  source->AddResourcePath("smb_share_dialog.html.js",
+                          IDR_SMB_SHARES_SMB_SHARE_DIALOG_HTML_JS);
 
   web_ui->AddMessageHandler(std::make_unique<SmbHandler>(
       Profile::FromWebUI(web_ui), base::DoNothing()));

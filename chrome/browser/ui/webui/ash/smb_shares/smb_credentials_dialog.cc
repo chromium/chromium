@@ -12,8 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/smb_shares_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -112,9 +112,12 @@ SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
   AddSmbCredentialsDialogStrings(source);
 
   source->UseStringsJs();
-  source->SetDefaultResource(IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML);
+  source->SetDefaultResource(
+      IDR_SMB_SHARES_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML);
   source->AddResourcePath("smb_credentials_dialog.js",
-                          IDR_SMB_CREDENTIALS_DIALOG_JS);
+                          IDR_SMB_SHARES_SMB_CREDENTIALS_DIALOG_JS);
+  source->AddResourcePath("smb_credentials_dialog.html.js",
+                          IDR_SMB_SHARES_SMB_CREDENTIALS_DIALOG_HTML_JS);
 
   web_ui->AddMessageHandler(std::make_unique<SmbHandler>(
       Profile::FromWebUI(web_ui),

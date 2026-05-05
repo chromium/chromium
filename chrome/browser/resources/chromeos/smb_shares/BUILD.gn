@@ -2,43 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":smb_credentials_dialog",
-    ":smb_share_dialog",
-  ]
-}
+assert(is_chromeos)
 
-js_library("smb_share_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/smb_shares:add_smb_share_dialog",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
+build_webui("build") {
+  grd_prefix = "smb_shares"
 
-js_library("smb_credentials_dialog") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources/smb_shares:smb_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  static_files = [
+    "smb_credentials_dialog_container.html",
+    "smb_share_dialog_container.html",
   ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
 
-html_to_js("web_components") {
-  js_files = [
-    "smb_share_dialog.js",
+  web_component_files = [
     "smb_credentials_dialog.js",
+    "smb_share_dialog.js",
   ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+  ]
+
+  ts_composite = true
+
+  webui_context_type = "trusted"
 }
