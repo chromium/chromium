@@ -2054,8 +2054,6 @@ static_library("browser") {
       "download/android/duplicate_download_dialog_bridge_delegate.h",
       "download/android/insecure_download_dialog_bridge.cc",
       "download/android/insecure_download_dialog_bridge.h",
-      "download/android/intercept_oma_download_navigation_throttle.cc",
-      "download/android/intercept_oma_download_navigation_throttle.h",
       "download/android/items/offline_content_aggregator_factory_android.cc",
       "download/android/new_navigation_observer.cc",
       "download/android/new_navigation_observer.h",

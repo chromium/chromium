@@ -27,7 +27,6 @@ class DownloadUtils {
                                           const GURL& url,
                                           const std::string& file_name);
   static bool ShouldAutoOpenDownload(download::DownloadItem* item);
-  static bool IsOmaDownloadDescription(const std::string& mime_type);
   static bool IsDownloadUserInitiated(download::DownloadItem* download);
 };
 

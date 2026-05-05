@@ -3232,36 +3232,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_REMAINING_DURATION_ONE_SECOND" desc="Message to show remaining duration in 1 second">
         1 sec left
       </message>
-      <message name="IDS_PROCEED_OMA_DOWNLOAD_MESSAGE" desc="A message within a modal dialog that confirms the user want to download an OMA DRM file.">
-        Proceed to download the content?
-      </message>
-      <message name="IDS_OPEN_URL_POST_OMA_DOWNLOAD" desc="A message within a modal dialog to confirm that the user want to open the url specified in the OMA download descriptor.">
-        Open the suggested URL specified in the downloaded content?
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_INSUFFICIENT_MEMORY" desc="Error message displayed when there are not enough memory to download the OMA DRM content.">
-        Insufficient memory to download the selected content.
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_NON_ACCEPTABLE_CONTENT" desc="Error message displayed when the device cannot open the OMA DRM content.">
-        Device cannot open the content to be downloaded.
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_FAILED" desc="Error message displayed when the device cannot download the OMA request.">
-        An error occurred while downloading the content.
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_NAME_LABEL" desc="A text label to display the name of the OMA download.">
-        Name:
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_VENDOR_LABEL" desc="A text label to display the vendor of the OMA download.">
-        Vendor:
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_SIZE_LABEL" desc="A text label to display the size of the OMA download.">
-        Size:
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_TYPE_LABEL" desc="A text label to display the MIME tyoe of the OMA download.">
-        Type:
-      </message>
-      <message name="IDS_OMA_DOWNLOAD_DESCRIPTION_LABEL" desc="A text label to display the description of the OMA download.">
-        Description:
-      </message>
       <message name="IDS_OPEN_DOWNLOADED_LABEL" desc="A text label on the snackbar widget to open the downloaded file.">
         Open
       </message>

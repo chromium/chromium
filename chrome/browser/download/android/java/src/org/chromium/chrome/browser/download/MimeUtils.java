@@ -27,12 +27,6 @@ import java.util.List;
 /** Utility class for MIME type related operations. */
 @NullMarked
 public class MimeUtils {
-    // MIME types for OMA downloads.
-    public static final String OMA_DOWNLOAD_DESCRIPTOR_MIME = "application/vnd.oma.dd+xml";
-    public static final String OMA_DRM_MESSAGE_MIME = "application/vnd.oma.drm.message";
-    public static final String OMA_DRM_CONTENT_MIME = "application/vnd.oma.drm.content";
-    public static final String OMA_DRM_RIGHTS_MIME = "application/vnd.oma.drm.rights+wbxml";
-
     private static final String UNKNOWN_MIME_TYPE = "application/unknown";
 
     // Mime types that Android can't handle when tries to open the file. Chrome may deduct a better
@@ -52,7 +46,6 @@ public class MimeUtils {
     private static final List<String> MIME_TYPES_TO_OPEN =
             new ArrayList<>(
                     Arrays.asList(
-                            MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME,
                             "application/pdf",
                             "application/x-x509-ca-cert",
                             "application/x-x509-user-cert",
@@ -83,10 +76,6 @@ public class MimeUtils {
             String newMimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             if (newMimeType != null) {
                 mimeType = newMimeType;
-            } else if (extension.equals("dm")) {
-                mimeType = OMA_DRM_MESSAGE_MIME;
-            } else if (extension.equals("dd")) {
-                mimeType = OMA_DOWNLOAD_DESCRIPTOR_MIME;
             }
         }
         return mimeType;
@@ -135,18 +124,6 @@ public class MimeUtils {
                     .toString();
         }
         return null;
-    }
-
-    /**
-     * Returns true if the download is for OMA download description file.
-     *
-     * @param mimeType The mime type of the download.
-     * @return true if the downloaded is OMA download description, or false otherwise.
-     */
-    @CalledByNative
-    public static boolean isOMADownloadDescription(
-            @JniType("std::string") @Nullable String mimeType) {
-        return OMA_DOWNLOAD_DESCRIPTOR_MIME.equalsIgnoreCase(mimeType);
     }
 
     /**

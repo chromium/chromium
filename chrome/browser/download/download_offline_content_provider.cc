@@ -568,11 +568,6 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
   DownloadItem* item = GetDownload(download_guid);
   if (!item)
     return;
-  if (DownloadUtils::IsOmaDownloadDescription(item->GetMimeType())) {
-    DownloadManagerService::GetInstance()->HandleOMADownload(
-        item, system_download_id);
-    return;
-  }
 
   if (profile_ && profile_->GetDownloadManagerDelegate() &&
       profile_->GetDownloadManagerDelegate()->ShouldOpenPdfInline() &&

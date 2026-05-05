@@ -800,12 +800,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.download") {
 
   sources = [
     "src/org/chromium/chrome/browser/download/AutoDownloadsTest.java",
-    "src/org/chromium/chrome/browser/download/ChromeDownloadDelegateTest.java",
     "src/org/chromium/chrome/browser/download/DownloadLocationChangeEnd2EndTest.java",
     "src/org/chromium/chrome/browser/download/DownloadManagerServiceTest.java",
     "src/org/chromium/chrome/browser/download/DownloadSettingsTest.java",
     "src/org/chromium/chrome/browser/download/DownloadTest.java",
-    "src/org/chromium/chrome/browser/download/OMADownloadHandlerTest.java",
     "src/org/chromium/chrome/browser/download/ServicificationDownloadTest.java",
     "src/org/chromium/chrome/browser/download/dialogs/DownloadDialogIncognitoTest.java",
   ]

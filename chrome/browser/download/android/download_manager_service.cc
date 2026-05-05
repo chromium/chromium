@@ -226,19 +226,6 @@ void DownloadManagerService::OpenDownload(download::DownloadItem* download,
   Java_DownloadManagerService_openDownloadItem(env, java_ref_, j_item, source);
 }
 
-void DownloadManagerService::HandleOMADownload(download::DownloadItem* download,
-                                               int64_t system_download_id) {
-  if (java_ref_.is_null())
-    return;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_item =
-      JNI_DownloadManagerService_CreateJavaDownloadItem(env, download);
-
-  Java_DownloadManagerService_handleOMADownload(env, java_ref_, j_item,
-                                                system_download_id);
-}
-
 void DownloadManagerService::OpenDownload(JNIEnv* env,
                                           const std::string& download_guid,
                                           const JavaRef<jobject>& j_profile_key,

@@ -128,7 +128,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     private final ObserverList<DownloadObserver> mDownloadObservers = new ObserverList<>();
 
-    private final OMADownloadHandler mOMADownloadHandler;
     private final DownloadSnackbarController mDownloadSnackbarController;
     private DownloadMessageUiController mMessageUiController;
     private long mNativeDownloadManagerService;
@@ -209,14 +208,11 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     @VisibleForTesting
     protected DownloadManagerService(
             DownloadNotifier downloadNotifier, Handler handler, long updateDelayInMillis) {
-        Context applicationContext = ContextUtils.getApplicationContext();
         mDownloadNotifier = downloadNotifier;
         mUpdateDelayInMillis = updateDelayInMillis;
         mHandler = handler;
         mDownloadSnackbarController = new DownloadSnackbarController();
-        mOMADownloadHandler = new OMADownloadHandler(applicationContext);
         DownloadCollectionBridge.setDownloadDelegate(new DownloadDelegateImpl());
-        mOMADownloadHandler.clearPendingOMADownloads();
     }
 
     /** Initializes download related systems for background task. */
@@ -410,10 +406,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 new AsyncTask<>() {
                     @Override
                     public Boolean doInBackground() {
-                        boolean canResolve =
-                                MimeUtils.isOMADownloadDescription(
-                                                assumeNonNull(item.getDownloadInfo()).getMimeType())
-                                        || canResolveDownloadItem(item, isSupportedMimeType);
+                        boolean canResolve = canResolveDownloadItem(item, isSupportedMimeType);
                         return canResolve;
                     }
 
@@ -436,27 +429,15 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
     }
 
-    @CalledByNative
-    private void handleOMADownload(DownloadItem download, long systemDownloadId) {
-        mOMADownloadHandler.handleOMADownload(
-                assertNonNull(download.getDownloadInfo()), systemDownloadId);
-    }
-
     /**
-     * Handle auto opennable files after download completes.
-     * TODO(qinmin): move this to DownloadManagerBridge.
+     * Handle auto opennable files after download completes. TODO(qinmin): move this to
+     * DownloadManagerBridge.
      *
      * @param download A download item.
      */
     private void handleAutoOpenAfterDownload(DownloadItem download) {
-        if (MimeUtils.isOMADownloadDescription(
-                assumeNonNull(download.getDownloadInfo()).getMimeType())) {
-            mOMADownloadHandler.handleOMADownload(
-                    download.getDownloadInfo(), download.getSystemDownloadId());
-            return;
-        }
         openDownloadedContent(
-                download.getDownloadInfo(),
+                assumeNonNull(download.getDownloadInfo()),
                 download.getSystemDownloadId(),
                 DownloadOpenSource.AUTO_OPEN);
     }
@@ -1389,9 +1370,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         assumeNonNull(info);
                         boolean isSupportedMimeType = isSupportedMimeType(info.getMimeType());
                         boolean canResolve =
-                                MimeUtils.isOMADownloadDescription(info.getMimeType())
-                                        || canResolveDownloadItem(
-                                                downloadItem, isSupportedMimeType);
+                                canResolveDownloadItem(downloadItem, isSupportedMimeType);
                         return canResolve
                                 && MimeUtils.canAutoOpenMimeType(info.getMimeType())
                                 && info.hasUserGesture();

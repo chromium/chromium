@@ -9,7 +9,6 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread
 import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -32,7 +31,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -46,15 +44,12 @@ import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Tests Chrome download feature by attempting to download some files. */
@@ -307,20 +302,6 @@ public class DownloadTest {
                 });
     }
 
-    @Test
-    @LargeTest
-    @Feature({"Downloads"})
-    public void testUrlEscaping() throws Exception {
-        loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
-        waitForFocus();
-        View currentView = mActivityTestRule.getActivityTab().getView();
-
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        TouchCommon.singleClickView(currentView);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_WALLPAPER, null));
-    }
-
     private void loadUrl(String url) {
         mActivityTestRule.loadUrlInTab(
                 url,
@@ -328,47 +309,6 @@ public class DownloadTest {
                 mActivityTestRule.getActivityTab(),
                 20L // 20 seconds timeout
                 );
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Navigation"})
-    // TestWebServer hosts on [::1] (versus EmbeddedTestServer hosting on 127.0.0.1), so we need to
-    // set this to avoid Local Network Access (LNA) checks.
-    @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
-    public void testOMADownloadInterception() throws Exception {
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            final DownloadManagerRequestInterceptorForTest interceptor =
-                    new DownloadManagerRequestInterceptorForTest();
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            DownloadManagerService.getDownloadManagerService()
-                                    .setDownloadManagerRequestInterceptor(interceptor));
-            List<Pair<String, String>> headers = new ArrayList<>();
-            headers.add(Pair.create("Content-Type", "application/vnd.oma.drm.message"));
-            final String url = webServer.setResponse("/test.dm", "testdata", headers);
-            mActivityTestRule.loadUrl(
-                    UrlUtils.encodeHtmlDataUri(
-                            "<script>"
-                                    + "  function download() {"
-                                    + "    window.open( '"
-                                    + url
-                                    + "')"
-                                    + "  }"
-                                    + "</script>"
-                                    + "<body id='body' onclick='download()'></body>"));
-            DOMUtils.clickNode(mActivityTestRule.getWebContents(), "body");
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        Criteria.checkThat(interceptor.mDownloadItem, Matchers.notNullValue());
-                        Criteria.checkThat(
-                                interceptor.mDownloadItem.getDownloadInfo().getUrl().getSpec(),
-                                Matchers.is(url));
-                    });
-        } finally {
-            webServer.shutdown();
-        }
     }
 
     private void waitForFocus() {

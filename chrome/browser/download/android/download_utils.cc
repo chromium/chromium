@@ -108,12 +108,6 @@ bool DownloadUtils::ShouldAutoOpenDownload(download::DownloadItem* item) {
          IsDownloadUserInitiated(item) && item->AllowAutoOpenAfterCompletion();
 }
 
-// static
-bool DownloadUtils::IsOmaDownloadDescription(const std::string& mime_type) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_MimeUtils_isOMADownloadDescription(env, mime_type);
-}
-
 bool DownloadUtils::IsDownloadUserInitiated(download::DownloadItem* download) {
   ui::PageTransition page_transition = download->GetTransitionType();
   return download->HasUserGesture() ||

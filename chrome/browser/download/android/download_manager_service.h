@@ -70,11 +70,6 @@ class DownloadManagerService
 
   void OnProfileAdded(Profile* profile);
 
-  // Called to handle subsequent steps, after a download was determined as a OMA
-  // download type.
-  void HandleOMADownload(download::DownloadItem* download,
-                         int64_t system_download_id);
-
   // Called to open a given download item.
   void OpenDownload(download::DownloadItem* download, int source);
 
