@@ -300,4 +300,50 @@ TEST_F(ManifestSolutionFactoryTest, ModelContention) {
   }
 }
 
+TEST_F(ManifestSolutionFactoryTest, PropagatesModelCapabilities) {
+  auto solution_config = []() {
+    proto::SolutionConfig config;
+    config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT);
+    *config.mutable_feature() = SimpleComposeConfig();
+    return config;
+  }();
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddSafetyModel("safety")
+      .AddSafeSolution("case_A", "model_A", "safety", solution_config)
+      .Finish();
+  fake_.Startup();
+
+  auto& subscriber = fake_.client().GetSubscriber("case_A");
+  fake_.client().RequestAssetsFor("case_A");
+
+  base::test::TestFuture<base::WeakPtr<ModelClient>> client_future;
+  subscriber.WaitForClient(client_future.GetCallback());
+  ASSERT_TRUE(client_future.Take());
+
+  // Verify that a supported capability succeeds.
+  on_device_model::Capabilities required_caps;
+  required_caps.Put(on_device_model::CapabilityFlags::kImageInput);
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      future;
+  subscriber.CanCreateSession(required_caps, future.GetCallback());
+
+  auto [reason, detailed_reason] = future.Take();
+  // No unavailable reason because capability is supported.
+  EXPECT_FALSE(reason.has_value());
+
+  // Verify that an unsupported capability (e.g., Audio) fails.
+  on_device_model::Capabilities audio_caps;
+  audio_caps.Put(on_device_model::CapabilityFlags::kAudioInput);
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      audio_future;
+  subscriber.CanCreateSession(audio_caps, audio_future.GetCallback());
+
+  auto [audio_reason, audio_detailed_reason] = audio_future.Take();
+  EXPECT_EQ(audio_reason, mojom::ModelUnavailableReason::kNotSupported);
+}
+
 }  // namespace optimization_guide

@@ -183,6 +183,22 @@ class ManifestSolutionFactory::Solution : public ModelBrokerImpl::Solution {
         mojo_base::ProtoWrapper(state().config_.safety());
     config->model_versions =
         mojo_base::ProtoWrapper(state().config_.model_versions());
+    for (int c : state().config_.capabilities()) {
+      switch (c) {
+        case proto::OnDeviceModelCapability::
+            ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT:
+          config->model_capabilities.Put(
+              on_device_model::CapabilityFlags::kImageInput);
+          break;
+        case proto::OnDeviceModelCapability::
+            ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT:
+          config->model_capabilities.Put(
+              on_device_model::CapabilityFlags::kAudioInput);
+          break;
+        default:
+          break;
+      }
+    }
     return config;
   }
 

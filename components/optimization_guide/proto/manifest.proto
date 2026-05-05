@@ -109,6 +109,8 @@ message SolutionConfig {
   // Model version information, primarily for logging via MQLS.
   // This is optional, and may not be set if not needed for logging.
   OnDeviceModelVersions model_versions = 3;
+  // Base model capabilities supported by this solution.
+  repeated OnDeviceModelCapability capabilities = 4;
 }
 
 // A collection of recipes that can be loaded from Assets.
