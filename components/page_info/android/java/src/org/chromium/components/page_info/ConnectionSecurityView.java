@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.provider.Browser;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +25,11 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -110,11 +111,14 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
                 mDetails.setText(params.details);
             } else {
                 mDetails.setText(
-                        buildTextWithLink(params.details, mContext.getString(R.string.learn_more)));
+                        buildTextWithLink(
+                                params.details,
+                                mContext.getString(R.string.learn_more),
+                                (v) -> showConnectionSecurityInfo()));
+                mDetails.setMovementMethod(LinkMovementMethod.getInstance());
             }
         }
         mDetails.setVisibility(params.details.length() != 0 ? VISIBLE : GONE);
-        mDetails.setOnClickListener(this);
 
         if (params.resetDecisionsCallback != null) {
             Runnable resetCallback = params.resetDecisionsCallback;
@@ -123,9 +127,10 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
             CharSequence linkText =
                     mContext.getString(
                             R.string.page_info_reset_invalid_certificate_decisions_button);
-            mResetDecision.setText(buildTextWithLink(description, linkText));
+            mResetDecision.setText(
+                    buildTextWithLink(description, linkText, (v) -> resetCallback.run()));
+            mResetDecision.setMovementMethod(LinkMovementMethod.getInstance());
             mResetDecision.setVisibility(VISIBLE);
-            mResetDecision.setOnClickListener(v -> resetCallback.run());
         }
 
         mCertChain = params.certChain;
@@ -152,14 +157,14 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
         }
     }
 
-    private SpannableStringBuilder buildTextWithLink(CharSequence text, CharSequence linkText) {
+    private SpannableStringBuilder buildTextWithLink(
+            CharSequence text, CharSequence linkText, Callback<View> onClickCallback) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(text);
         builder.append(" ");
         SpannableString link = new SpannableString(linkText);
-        final ForegroundColorSpan blueSpan =
-                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(mContext));
-        link.setSpan(blueSpan, 0, link.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        ChromeClickableSpan clickableSpan = new ChromeClickableSpan(mContext, onClickCallback);
+        link.setSpan(clickableSpan, 0, link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         builder.append(link);
         return builder;
     }
@@ -168,8 +173,6 @@ public class ConnectionSecurityView extends FrameLayout implements OnClickListen
     public void onClick(View v) {
         if (v == mCertDetailsButton && mCertChain != null) {
             mCertificateViewer.showCertificateChain(mCertChain);
-        } else if (v == mDetails) {
-            showConnectionSecurityInfo();
         } else if (v == mQwacCertInfo && mTwoQwacCertChain != null) {
             mCertificateViewer.showCertificateChain(mTwoQwacCertChain);
         }

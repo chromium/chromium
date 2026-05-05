@@ -9,7 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +40,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Java side of Android implementation of the page info UI. */
@@ -144,9 +148,22 @@ public class ConnectionInfoView implements OnClickListener {
     private void setCertificateViewer(String label) {
         assert mCertificateViewerTextView == null;
         mCertificateViewerTextView = new AppCompatTextView(mContext);
-        mCertificateViewerTextView.setText(label);
-        mCertificateViewerTextView.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
-        mCertificateViewerTextView.setOnClickListener(this);
+
+        SpannableString spannable = new SpannableString(label);
+        var clickableSpan =
+                new ChromeClickableSpan(
+                        mContext,
+                        (view) -> {
+                            var certChain =
+                                    CertificateChainHelper.getCertificateChain(mWebContents);
+                            if (certChain != null) {
+                                mCertificateViewer.showCertificateChain(certChain);
+                            }
+                        });
+        spannable.setSpan(clickableSpan, 0, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        mCertificateViewerTextView.setText(spannable);
+        mCertificateViewerTextView.setMovementMethod(LinkMovementMethod.getInstance());
         mCertificateViewerTextView.setPadding(0, mPaddingVertical, 0, 0);
         assumeNonNull(mCertificateLayout);
         mCertificateLayout.addView(mCertificateViewerTextView);
@@ -171,10 +188,19 @@ public class ConnectionInfoView implements OnClickListener {
     private void addMoreInfoLink(String linkText) {
         mMoreInfoLink = new AppCompatTextView(mContext);
         mLinkUrl = HELP_URL;
-        mMoreInfoLink.setText(linkText);
-        mMoreInfoLink.setTextAppearance(R.style.TextAppearance_TextMedium_Link);
+
+        SpannableString spannable = new SpannableString(linkText);
+        ChromeClickableSpan clickableSpan =
+                new ChromeClickableSpan(
+                        mContext,
+                        (view) -> {
+                            showConnectionSecurityInfo();
+                        });
+        spannable.setSpan(clickableSpan, 0, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        mMoreInfoLink.setText(spannable);
+        mMoreInfoLink.setMovementMethod(LinkMovementMethod.getInstance());
         mMoreInfoLink.setPadding(0, mPaddingVertical, 0, 0);
-        mMoreInfoLink.setOnClickListener(this);
         assumeNonNull(mDescriptionLayout);
         mDescriptionLayout.addView(mMoreInfoLink);
     }
@@ -190,16 +216,6 @@ public class ConnectionInfoView implements OnClickListener {
         if (mResetCertDecisionsButton == v) {
             ConnectionInfoViewJni.get().resetCertDecisions(mNativeConnectionInfoView, mWebContents);
             mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
-        } else if (mCertificateViewerTextView == v) {
-            byte[][] certChain = CertificateChainHelper.getCertificateChain(mWebContents);
-            if (certChain == null) {
-                // The WebContents may have been destroyed/invalidated. If so,
-                // ignore this request.
-                return;
-            }
-            mCertificateViewer.showCertificateChain(certChain);
-        } else if (mMoreInfoLink == v) {
-            showConnectionSecurityInfo();
         }
     }
 
