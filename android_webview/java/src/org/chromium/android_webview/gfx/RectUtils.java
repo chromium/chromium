@@ -61,7 +61,7 @@ public final class RectUtils {
             if (mX == other.mX) {
                 return compareSegmentTypes(mSegmentType, other.mSegmentType);
             }
-            return mX - other.mX;
+            return Integer.compare(mX, other.mX);
         }
     }
 
@@ -87,7 +87,7 @@ public final class RectUtils {
             if (mY == other.mY) {
                 return compareSegmentTypes(mSegmentType, other.mSegmentType);
             }
-            return mY - other.mY;
+            return Integer.compare(mY, other.mY);
         }
     }
 
