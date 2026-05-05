@@ -9,12 +9,41 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 
+namespace segmentation_platform {
+struct ClassificationResult;
+}
+
+namespace notifications {
+class NotificationScheduleService;
+struct ClientOverview;
+}  // namespace notifications
+
+class Profile;
+
 class TipsAgentAndroid : public notifications::TipsAgent {
  public:
+  static void RunGetClassificationResultCallback(
+      Profile* profile,
+      notifications::NotificationScheduleService* service,
+      const segmentation_platform::ClassificationResult& result);
+
+  static void ScheduleNewNotification(
+      Profile* profile,
+      bool is_bottom_omnibox,
+      notifications::NotificationScheduleService* service);
+
+  static void OnGetClientOverview(
+      Profile* profile,
+      bool is_bottom_omnibox,
+      notifications::NotificationScheduleService* service,
+      notifications::ClientOverview overview);
+
   TipsAgentAndroid();
   ~TipsAgentAndroid() override;
 
  private:
+  friend class TipsAgentAndroidTest;
+
   void ShowTipsPromo(
       notifications::TipsNotificationsFeatureType feature_type) override;
 };

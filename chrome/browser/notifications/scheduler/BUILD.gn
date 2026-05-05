@@ -28,10 +28,33 @@ source_set("factory") {
   ]
 }
 
+if (is_android) {
+  source_set("unit_tests_local") {
+    testonly = true
+    sources = [ "tips_agent_android_unittest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/notifications/scheduler/public",
+      "//chrome/browser/notifications/scheduler/test:test_support",
+      "//chrome/browser/segmentation_platform",
+      "//chrome/test:test_support",
+      "//components/prefs:test_support",
+      "//components/segmentation_platform/public",
+      "//components/segmentation_platform/public:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
 group("unit_tests") {
   testonly = true
   deps = [
     "//chrome/browser/notifications/scheduler/internal:unit_tests",
     "//chrome/browser/notifications/scheduler/public:unit_tests",
   ]
+  if (is_android) {
+    deps += [ ":unit_tests_local" ]
+  }
 }

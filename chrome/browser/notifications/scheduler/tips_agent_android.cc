@@ -30,10 +30,6 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-TipsAgentAndroid::TipsAgentAndroid() = default;
-
-TipsAgentAndroid::~TipsAgentAndroid() = default;
-
 namespace {
 
 notifications::TipsNotificationsFeatureType GetFeatureType(
@@ -81,7 +77,10 @@ notifications::ScheduleParams GetCurrentScheduleParams() {
   return schedule_params;
 }
 
-void RunGetClassificationResultCallback(
+}  // namespace
+
+// static
+void TipsAgentAndroid::RunGetClassificationResultCallback(
     Profile* profile,
     notifications::NotificationScheduleService* service,
     const segmentation_platform::ClassificationResult& result) {
@@ -103,7 +102,8 @@ void RunGetClassificationResultCallback(
       std::move(schedule_params)));
 }
 
-void ScheduleNewNotification(
+// static
+void TipsAgentAndroid::ScheduleNewNotification(
     Profile* profile,
     bool is_bottom_omnibox,
     notifications::NotificationScheduleService* service) {
@@ -222,14 +222,16 @@ void ScheduleNewNotification(
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
       input_context,
-      base::BindOnce(&RunGetClassificationResultCallback, profile,
-                     base::Unretained(service)));
+      base::BindOnce(&TipsAgentAndroid::RunGetClassificationResultCallback,
+                     profile, base::Unretained(service)));
 }
 
-void OnGetClientOverview(Profile* profile,
-                         bool is_bottom_omnibox,
-                         notifications::NotificationScheduleService* service,
-                         notifications::ClientOverview overview) {
+// static
+void TipsAgentAndroid::OnGetClientOverview(
+    Profile* profile,
+    bool is_bottom_omnibox,
+    notifications::NotificationScheduleService* service,
+    notifications::ClientOverview overview) {
   // If there is a scheduled notification, reschedule it.
   if (!overview.scheduled_notifications.empty()) {
     // There will only ever be 1 notification scheduled at a time for tips.
@@ -246,11 +248,14 @@ void OnGetClientOverview(Profile* profile,
         notifications::SchedulerClientType::kTips, std::move(data),
         std::move(params)));
   } else {
-    ScheduleNewNotification(profile, is_bottom_omnibox, service);
+    TipsAgentAndroid::ScheduleNewNotification(profile, is_bottom_omnibox,
+                                              service);
   }
 }
 
-}  // namespace
+TipsAgentAndroid::TipsAgentAndroid() = default;
+
+TipsAgentAndroid::~TipsAgentAndroid() = default;
 
 void TipsAgentAndroid::ShowTipsPromo(
     notifications::TipsNotificationsFeatureType feature_type) {
@@ -276,8 +281,8 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
           [](Profile* profile, bool is_bottom_omnibox,
              notifications::NotificationScheduleService* service,
              notifications::ClientOverview overview) {
-            OnGetClientOverview(profile, is_bottom_omnibox, service,
-                                std::move(overview));
+            TipsAgentAndroid::OnGetClientOverview(profile, is_bottom_omnibox,
+                                                  service, std::move(overview));
           },
           profile, is_bottom_omnibox, base::Unretained(service)));
 }
