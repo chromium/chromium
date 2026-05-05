@@ -24,6 +24,13 @@ class PictureInPictureServiceMock {
       showPlayPauseButton, observer, sourceBounds, immersiveOptions) {
     return {session: null, size: {width: 0, height: 0}};
   }
+
+  async requestImmersivePlaybackConfirmation() {
+    return {result: {
+      status: 3, // kFailed
+      options: null,
+    }};
+  }
 };
 
 promise_test(async t => {

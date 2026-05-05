@@ -21,6 +21,7 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -602,6 +603,18 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public boolean isTrustedWebActivity(WebContents webContents) {
         return mDelegate.isTrustedWebActivity(webContents);
+    }
+
+    @CalledByNative
+    @Override
+    protected boolean isImmersivePlaybackEnabled() {
+        return mDelegate.isImmersivePlaybackEnabled();
+    }
+
+    @CalledByNative
+    @Override
+    public void requestImmersivePlaybackConfirmation(JniOnceCallback<Integer> callback) {
+        mDelegate.requestImmersivePlaybackConfirmation(callback);
     }
 
     @Override

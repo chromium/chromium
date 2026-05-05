@@ -80,7 +80,15 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     }
 
     /**
+     * @return whether immersive Picture-in-Picture playback is enabled.
+     */
+    protected boolean isImmersivePlaybackEnabled() {
+        return false;
+    }
+
+    /**
      * Return true if app banners are to be permitted in this tab. May need to be overridden.
+     *
      * @return true if app banners are permitted, and false otherwise.
      */
     protected boolean canShowAppBanners() {

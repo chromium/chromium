@@ -61,6 +61,11 @@ void PictureInPictureServiceImpl::StartSession(
   std::move(callback).Run(std::move(session_remote), window_size);
 }
 
+void PictureInPictureServiceImpl::RequestImmersivePlaybackConfirmation(
+    RequestImmersivePlaybackConfirmationCallback callback) {
+  GetController().RequestImmersivePlaybackConfirmation(std::move(callback));
+}
+
 PictureInPictureServiceImpl::PictureInPictureServiceImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver)

@@ -185,6 +185,10 @@ class MockPictureInPictureService
        mojom::blink::ImmersiveOptionsPtr,
        StartSessionCallback));
 
+  MOCK_METHOD(void,
+              RequestImmersivePlaybackConfirmation,
+              (RequestImmersivePlaybackConfirmationCallback));
+
   MockPictureInPictureSession& Session() { return *session_.get(); }
 
   void StartSessionInternal(

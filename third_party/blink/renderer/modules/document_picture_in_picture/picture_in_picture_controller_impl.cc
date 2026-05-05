@@ -57,11 +57,13 @@ PictureInPictureControllerImpl& PictureInPictureControllerImpl::From(
 }
 
 bool PictureInPictureControllerImpl::PictureInPictureEnabled() const {
-  return IsDocumentAllowed(/*report_failure=*/true) == Status::kEnabled;
+  return IsDocumentAllowed(/*is_immersive=*/false, /*report_failure=*/true) ==
+         Status::kEnabled;
 }
 
 PictureInPictureController::Status
-PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
+PictureInPictureControllerImpl::IsDocumentAllowed(bool is_immersive,
+                                                  bool report_failure) const {
   DCHECK(GetSupplementable());
 
   // If document has been detached from a frame, return kFrameDetached status.
@@ -77,11 +79,16 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
     return Status::kDocumentPip;
   }
 
-  // `GetPictureInPictureEnabled()` returns false when the embedder or the
-  // system forbids the page from using Picture-in-Picture.
-  DCHECK(GetSupplementable()->GetSettings());
-  if (!GetSupplementable()->GetSettings()->GetPictureInPictureEnabled())
+  const Settings* settings = GetSupplementable()->GetSettings();
+  DCHECK(settings);
+
+  // The settings return false when the embedder or the system forbids the page
+  // from using Picture-in-Picture or an immersive Picture-in-Picture session.
+  bool is_enabled = is_immersive ? settings->GetImmersiveVideoPlaybackEnabled()
+                                 : settings->GetPictureInPictureEnabled();
+  if (!is_enabled) {
     return Status::kDisabledBySystem;
+  }
 
   // If document is not allowed to use the policy-controlled feature named
   // "picture-in-picture", return kDisabledByPermissionsPolicy status.
@@ -99,7 +106,17 @@ PictureInPictureController::Status
 PictureInPictureControllerImpl::IsElementAllowed(
     const HTMLVideoElement& video_element,
     bool report_failure) const {
-  PictureInPictureController::Status status = IsDocumentAllowed(report_failure);
+  return IsElementAllowedInternal(video_element, /*is_immersive=*/false,
+                                  report_failure);
+}
+
+PictureInPictureController::Status
+PictureInPictureControllerImpl::IsElementAllowedInternal(
+    const HTMLVideoElement& video_element,
+    bool is_immersive,
+    bool report_failure) const {
+  PictureInPictureController::Status status =
+      IsDocumentAllowed(is_immersive, report_failure);
   if (status != Status::kEnabled)
     return status;
 
@@ -120,6 +137,14 @@ PictureInPictureControllerImpl::IsElementAllowed(
 
 void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLVideoElement* video_element,
+    ScriptPromiseResolver<PictureInPictureWindow>* resolver) {
+  EnterPictureInPictureInternal(video_element, /*immersive_options*/ nullptr,
+                                resolver);
+}
+
+void PictureInPictureControllerImpl::EnterPictureInPictureInternal(
+    HTMLVideoElement* video_element,
+    mojom::blink::ImmersiveOptionsPtr immersive_options,
     ScriptPromiseResolver<PictureInPictureWindow>* resolver) {
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
@@ -173,20 +198,23 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     video_bounds = video_element->BoundsInWidget();
   }
 
+  // Determines whether the current Picture-in-Picture session is immersive.
+  bool is_immersive = !immersive_options.is_null();
   picture_in_picture_service_->StartSession(
       video_element->GetWebMediaPlayer()->GetPlayerId(),
       std::move(media_player_remote),
       video_element->GetWebMediaPlayer()->GetSurfaceId().value(),
       video_element->GetWebMediaPlayer()->NaturalSize(),
       ShouldShowPlayPauseButton(*video_element), std::move(session_observer),
-      video_bounds, /*immersive_options=*/nullptr,
+      video_bounds, std::move(immersive_options),
       BindOnce(&PictureInPictureControllerImpl::OnEnteredPictureInPicture,
                WrapPersistent(this), WrapPersistent(video_element),
-               WrapPersistent(resolver)));
+               is_immersive, WrapPersistent(resolver)));
 }
 
 void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     HTMLVideoElement* element,
+    bool is_immersive,
     ScriptPromiseResolver<PictureInPictureWindow>* resolver,
     mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote,
     const gfx::Size& picture_in_picture_window_size) {
@@ -209,7 +237,8 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   picture_in_picture_session_.Bind(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
-  if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
+  if (IsElementAllowedInternal(*element, is_immersive,
+                               /*report_failure=*/true) != Status::kEnabled) {
     if (resolver &&
         IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
                                       resolver->GetScriptState())) {
@@ -628,6 +657,34 @@ bool PictureInPictureControllerImpl::EnsureService() {
   GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
+}
+
+void PictureInPictureControllerImpl::RequestImmersivePlaybackConfirmation(
+    HTMLVideoElement& video_element) {
+  if (!EnsureService()) {
+    return;
+  }
+
+  picture_in_picture_service_->RequestImmersivePlaybackConfirmation(BindOnce(
+      &PictureInPictureControllerImpl::OnImmersivePlaybackConfirmationResult,
+      WrapWeakPersistent(this), WrapWeakPersistent(&video_element)));
+}
+
+void PictureInPictureControllerImpl::OnImmersivePlaybackConfirmationResult(
+    HTMLVideoElement* video_element,
+    mojom::blink::ImmersivePlaybackConfirmationResultPtr result) {
+  if (!result ||
+      result->status !=
+          mojom::blink::ImmersivePlaybackConfirmationStatus::kConfirmed) {
+    return;
+  }
+
+  if (video_element &&
+      IsElementAllowedInternal(*video_element, /*is_immersive=*/true,
+                               /*report_failure=*/false) == Status::kEnabled) {
+    EnterPictureInPictureInternal(video_element, std::move(result->options),
+                                  /*resolver=*/nullptr);
+  }
 }
 
 }  // namespace blink

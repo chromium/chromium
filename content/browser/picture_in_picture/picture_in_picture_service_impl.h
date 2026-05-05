@@ -51,6 +51,8 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
       const gfx::Rect& source_bounds,
       blink::mojom::ImmersiveOptionsPtr immersive_options,
       StartSessionCallback) final;
+  void RequestImmersivePlaybackConfirmation(
+      RequestImmersivePlaybackConfirmationCallback) final;
 
  private:
   friend class PictureInPictureSession;

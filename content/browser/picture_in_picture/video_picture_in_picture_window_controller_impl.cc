@@ -365,6 +365,20 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   return result;
 }
 
+void VideoPictureInPictureWindowControllerImpl::
+    RequestImmersivePlaybackConfirmation(
+        RequestImmersivePlaybackConfirmationCallback callback) {
+  WebContentsDelegate* delegate = web_contents()->GetDelegate();
+  if (!delegate || !delegate->IsImmersivePlaybackEnabled()) {
+    auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
+    result->status = blink::mojom::ImmersivePlaybackConfirmationStatus::kFailed;
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  delegate->RequestImmersivePlaybackConfirmation(std::move(callback));
+}
+
 void VideoPictureInPictureWindowControllerImpl::OnServiceDeleted(
     PictureInPictureServiceImpl* service) {
   if (!active_session_ || active_session_->service() != service)

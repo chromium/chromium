@@ -32,6 +32,23 @@ struct ImmersiveOptions {
   ImmersiveProjectionType projection_type;
 };
 
+// Represents the result of an immersive Picture-in-Picture playback
+// confirmation request.
+enum ImmersivePlaybackConfirmationStatus {
+  kConfirmed = 0,
+  kDeclined = 1,
+  kCanceled = 2,
+  kFailed = 3,
+};
+
+// Represents the result of an immersive Picture-in-Picture playback
+// confirmation.
+struct ImmersivePlaybackConfirmationResult {
+  ImmersivePlaybackConfirmationStatus status;
+  ImmersiveOptions? options;
+};
+
+
 // PictureInPictureSessionObserver is associated to a PictureInPictureSession at
 // its creation. It receives all the events associated to the session lifetime.
 interface PictureInPictureSessionObserver {
@@ -108,4 +125,11 @@ interface PictureInPictureService {
       ImmersiveOptions? immersive_options)
           => (pending_remote<PictureInPictureSession>? session,
               gfx.mojom.Size size);
+
+  // Requests user confirmation to enter an immersive Picture-in-Picture session
+  // on Android XR.
+  // TODO(crbug.com/500441418): Move RequestImmersivePlaybackConfirmation and
+  // related data structures to an XR-specific service.
+  RequestImmersivePlaybackConfirmation()
+      => (ImmersivePlaybackConfirmationResult result);
 };

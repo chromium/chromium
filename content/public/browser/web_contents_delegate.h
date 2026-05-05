@@ -953,6 +953,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Returns true if immersive playback is enabled.
   virtual bool IsImmersivePlaybackEnabled() const;
 
+  // Requests a confirmation from the user to enter immersive playback.
+  virtual void RequestImmersivePlaybackConfirmation(
+      base::OnceCallback<
+          void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback);
+
  protected:
   virtual ~WebContentsDelegate();
 

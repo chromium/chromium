@@ -917,6 +917,7 @@ void HTMLVideoElement::OnExitedPictureInPicture() {
 
 void HTMLVideoElement::SetIsEffectivelyFullscreen(
     blink::WebFullscreenVideoStatus status) {
+  const bool was_effectively_fullscreen = is_effectively_fullscreen_;
   is_effectively_fullscreen_ =
       status != blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen;
   if (auto* wmp = GetWebMediaPlayer()) {
@@ -925,6 +926,18 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
 
     wmp->SetIsEffectivelyFullscreen(status);
     wmp->OnDisplayTypeChanged(GetDisplayType());
+  }
+
+  // If the video becomes effectively fullscreen, request user confirmation to
+  // enter an immersive Picture-in-Picture session if enabled.
+  if (is_effectively_fullscreen_ && !was_effectively_fullscreen) {
+    if (GetDocument().GetSettings() &&
+        GetDocument().GetSettings()->GetImmersiveVideoPlaybackEnabled()) {
+      if (!PictureInPictureController::IsElementInPictureInPicture(this)) {
+        PictureInPictureController::From(GetDocument())
+            .RequestImmersivePlaybackConfirmation(*this);
+      }
+    }
   }
 }
 

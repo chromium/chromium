@@ -520,4 +520,12 @@ bool WebContentsDelegate::IsImmersivePlaybackEnabled() const {
   return false;
 }
 
+void WebContentsDelegate::RequestImmersivePlaybackConfirmation(
+    base::OnceCallback<
+        void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback) {
+  auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
+  result->status = blink::mojom::ImmersivePlaybackConfirmationStatus::kFailed;
+  std::move(callback).Run(std::move(result));
+}
+
 }  // namespace content

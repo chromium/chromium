@@ -62,6 +62,11 @@ class PictureInPictureDelegate : public WebContentsDelegate {
               (override));
   MOCK_METHOD(bool, IsPictureInPictureEnabled, (), (const, override));
   MOCK_METHOD(bool, IsImmersivePlaybackEnabled, (), (const, override));
+  MOCK_METHOD(void,
+              RequestImmersivePlaybackConfirmation,
+              (base::OnceCallback<
+                  void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)>),
+              (override));
 };
 
 class TestOverlayWindow : public VideoOverlayWindow {
@@ -411,6 +416,29 @@ TEST_F(PictureInPictureServiceImplTest, EnterImmersivePlayback_NotSupported) {
 
   EXPECT_FALSE(session_remote);
   EXPECT_FALSE(controller->IsImmersive());
+}
+
+TEST_F(PictureInPictureServiceImplTest, RequestImmersivePlaybackConfirmation) {
+  EXPECT_CALL(delegate(), IsImmersivePlaybackEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate(), RequestImmersivePlaybackConfirmation(_))
+      .WillOnce([](base::OnceCallback<void(
+                       blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
+                       callback) {
+        auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
+        result->status =
+            blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed;
+        std::move(callback).Run(std::move(result));
+      });
+
+  base::RunLoop run_loop;
+  service().RequestImmersivePlaybackConfirmation(base::BindLambdaForTesting(
+      [&](blink::mojom::ImmersivePlaybackConfirmationResultPtr result) {
+        EXPECT_EQ(blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed,
+                  result->status);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace content

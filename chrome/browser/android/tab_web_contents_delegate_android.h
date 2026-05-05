@@ -170,6 +170,12 @@ class TabWebContentsDelegateAndroid
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
 
+  bool IsImmersivePlaybackEnabled() const override;
+  void RequestImmersivePlaybackConfirmation(
+      base::OnceCallback<
+          void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback)
+      override;
+
  private:
   std::unique_ptr<device::mojom::GeolocationContext>
       installed_webapp_geolocation_context_;

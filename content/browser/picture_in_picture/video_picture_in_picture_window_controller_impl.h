@@ -150,6 +150,13 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
           session_remote,
       gfx::Size* window_size);
 
+  using RequestImmersivePlaybackConfirmationCallback = base::OnceCallback<void(
+      blink::mojom::ImmersivePlaybackConfirmationResultPtr)>;
+
+  // Requests user confirmation to enter immersive Picture-in-Picture session.
+  void RequestImmersivePlaybackConfirmation(
+      RequestImmersivePlaybackConfirmationCallback callback);
+
   // Called by PictureInPictureServiceImpl when the service is about to be
   // destroyed. It allows |this| to close the |active_session_| if it is
   // associated with the service.

@@ -95,6 +95,13 @@ class VideoWakeLockPictureInPictureService final
     std::move(callback).Run(std::move(session_remote), gfx::Size());
   }
 
+  void RequestImmersivePlaybackConfirmation(
+      RequestImmersivePlaybackConfirmationCallback callback) override {
+    auto result = mojom::blink::ImmersivePlaybackConfirmationResult::New();
+    result->status = mojom::blink::ImmersivePlaybackConfirmationStatus::kFailed;
+    std::move(callback).Run(std::move(result));
+  }
+
  private:
   mojo::Receiver<mojom::blink::PictureInPictureService> receiver_;
   std::unique_ptr<VideoWakeLockPictureInPictureSession> session_;

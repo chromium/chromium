@@ -19,6 +19,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.blink.mojom.ImmersivePlaybackConfirmationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -129,6 +130,17 @@ public class WebContentsDelegateAndroid {
      */
     @CalledByNative
     public void showRepostFormWarningDialog() {}
+
+    /**
+     * Called when the page wants to start immersive Picture-in-Picture playback session.
+     *
+     * @param callback The callback to be called when the user confirms or cancels the request. The
+     *     callback expects a packed integer containing the status and options.
+     */
+    @CalledByNative
+    public void requestImmersivePlaybackConfirmation(JniOnceCallback<Integer> callback) {
+        callback.onResult(ImmersivePlaybackConfirmationStatus.FAILED);
+    }
 
     @CalledByNative
     public void enterFullscreenModeForTab(
