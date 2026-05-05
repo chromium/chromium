@@ -341,6 +341,51 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-surface-embed-rel",
+    description_html = (
+        "Runs web_tests and wpt_tests using surface embed " +
+        "with complete desktop Chrome browser on Linux."
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "remoteexec",
+            "minimal_symbols",
+            "linux",
+            "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_web_tests_surface_embed_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "se",
+    ),
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+ci.builder(
     name = "linux-blink-heap-verification",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),

@@ -63,6 +63,16 @@
     "smoke_file": "TestLists/trees-in-viz"
   },
   {
+    "name": "surface-embed",
+    "args": [
+          "--enable-features=SurfaceEmbed,Webium"
+    ],
+    "comments": [
+          "Used for testing web capabilities when a web page is embedded using",
+          "SurfaceEmbed, which embeds tabs in a Top Chrome WebUI."
+    ]
+  },
+  {
     "name": "webgpu",
     "args": [
           "--enable-unsafe-webgpu",

@@ -2301,6 +2301,21 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "chromium_web_tests_surface_embed_isolated_scripts",
+    targets = [
+        "surface_embed_chrome_wpt_tests",
+    ],
+    per_test_modifications = {
+        "surface_embed_chrome_wpt_tests": targets.mixin(
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 7,
+            ),
+        ),
+    },
+)
+
 # Pixel tests only enabled on Win 10. So this is
 # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
 # 'non_android_chromium_gtests_skia_gold'. When changing

@@ -685,6 +685,17 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "surface_embed_chrome_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--flag-specific=surface-embed",
+    ],
+    binary = "chrome_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
     name = "headless_shell_wpt_tests",
     mixins = [
         "has_native_resultdb_integration",
