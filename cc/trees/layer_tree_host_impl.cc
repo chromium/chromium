@@ -2889,9 +2889,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   {
-    TRACE_EVENT("cc", "DrawLayers.FrameViewerTracing",
-                perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
-                "snapshot", AsValueWithFrame(frame));
+    TRACE_EVENT0("cc", "DrawLayers.FrameViewerTracing");
+    TRACE_EVENT_INSTANT(frame_viewer_instrumentation::CategoryLayerTree(),
+                        "LayerTreeHostImpl:snapshot",
+                        perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
+                        "snapshot", AsValueWithFrame(frame));
   }
 
   const DrawMode draw_mode = GetDrawMode();
