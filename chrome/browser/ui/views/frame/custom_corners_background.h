@@ -90,8 +90,9 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // Sets the outline strokes to use.
   void SetOutline(const Outline& outline);
 
-  // Set a value for saving an alpha layer on the canvas before paint.
+  // Value in [0,1] for saving an alpha layer on the canvas before paint.
   void SetAlpha(float alpha) { alpha_ = alpha; }
+  float alpha() { return alpha_; }
 
   // Returns an appropriate window corner for the current platform.
   // Specify `upper` to switch between upper (true) and lower (false) corners,

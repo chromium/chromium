@@ -110,7 +110,6 @@ class VerticalTabStripRegionViewTest
   }
 };
 
-#if BUILDFLAG(IS_MAC)
 class VerticalTabStripRegionViewGlassFrameTest
     : public VerticalTabStripRegionViewTest {
  public:
@@ -122,7 +121,6 @@ class VerticalTabStripRegionViewGlassFrameTest
     return enabled_features;
   }
 };
-#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        SeparatorVisibilityChangesWithCollapsedState) {
@@ -1392,32 +1390,38 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   histogram_tester.ExpectTotalCount(
       "Tabs.VerticalTabs.ExpandOnHover.ShowDuration", 1);
 }
-
 #if BUILDFLAG(IS_MAC)
+#define MAYBE_GlassFrameAlphaTest GlassFrameAlphaTest
+#else
+#define MAYBE_GlassFrameAlphaTest DISABLED_GlassFrameAlphaTest
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewGlassFrameTest,
-                       GlassFrameBackgroundVisibleDuringExpandOnHover) {
+                       MAYBE_GlassFrameAlphaTest) {
   auto* const background =
       static_cast<CustomCornersBackground*>(region_view()->background());
 
+  // Background should be opaque during collapse and expand on hover,
+  // and transparent otherwise.
   state_controller()->SetExpandOnHoverEnabled(true);
   state_controller()->RequestCollapse(true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return state_controller()->IsCollapsed(); }));
   RunScheduledLayouts();
-  EXPECT_FALSE(background->visible_for_testing());
+  EXPECT_EQ(background->alpha(), 1.0f);
 
   region_view()->RequestFocus();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
   RunScheduledLayouts();
-  EXPECT_TRUE(background->visible_for_testing());
+  EXPECT_EQ(background->alpha(), 1.0f);
 
   state_controller()->SetExpandOnHoverEnabled(false);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !region_view()->is_expanded_on_hover(); }));
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  state_controller()->RequestCollapse(false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !region_view()->is_expanded_on_hover() &&
+           !state_controller()->IsCollapsed();
+  }));
   RunScheduledLayouts();
-  EXPECT_FALSE(background->visible_for_testing());
+  EXPECT_EQ(background->alpha(), 0.0f);
 }
-#endif  // BUILDFLAG(IS_MAC)

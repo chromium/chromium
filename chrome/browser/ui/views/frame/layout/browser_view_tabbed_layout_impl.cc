@@ -1282,9 +1282,6 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
         static_cast<CustomCornersBackground*>(
             views().vertical_tab_strip_region_view->background());
     CHECK(vertical_tabs_background);
-    const bool is_expand_on_hover_visible = animation.expand_on_hover > 0.0;
-    vertical_tabs_background->SetVisible(!features::IsGlassFrameEnabled() ||
-                                         is_expand_on_hover_visible);
 
     if (features::IsGlassFrameEnabled()) {
       float background_alpha = 0.0f;
