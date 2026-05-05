@@ -274,7 +274,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   // addition of a new object to the collection. That kind of KVO isn't
   // supported by ChromeBroadcaster.
   DCHECK([change[NSKeyValueChangeKindKey]
-      isEqualToValue:@(NSKeyValueChangeSetting)]);
+      isEqualToNumber:@(NSKeyValueChangeSetting)]);
 
   // If strings or other non-value types are being broadcast, then this will
   // need to change. Either value will be nil if they aren't actually NSValues.

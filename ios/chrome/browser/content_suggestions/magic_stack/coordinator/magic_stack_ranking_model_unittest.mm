@@ -98,6 +98,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/app_store_bundle/test_app_store_bundle_service.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -575,7 +576,7 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
-    EXPECT_EQ(@(int(config.type)), expectedModuleRank[i])
+    EXPECT_NSEQ(expectedModuleRank[i], @(int(config.type)))
         << "For Magic Stack order index " << i;
   }
 }
@@ -707,7 +708,7 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
-    EXPECT_EQ(@(int(config.type)), expectedModuleRank[i])
+    EXPECT_NSEQ(expectedModuleRank[i], @(int(config.type)))
         << "For Magic Stack order index " << i;
   }
 }
