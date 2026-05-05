@@ -59,9 +59,12 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -170,14 +173,22 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
       user->GetAccountId().GetGaiaId(), user->GetDisplayEmail());
 
   // 3. Set it as the Primary Account.
+  const signin::ConsentLevel consent_level =
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos) &&
+              base::FeatureList::IsEnabled(
+                  ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_id, signin::ConsentLevel::kSync,
+      account_id, consent_level,
       signin_metrics::AccessPoint::kAshChromeSessionManager);
 
-  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  CHECK_EQ(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia,
-      user->GetAccountId().GetGaiaId());
+  CHECK(identity_manager->HasPrimaryAccount(consent_level));
+  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(consent_level).gaia,
+           user->GetAccountId().GetGaiaId());
 
   DCHECK_EQ(account_id, identity_manager->GetPrimaryAccountId(
                             signin::ConsentLevel::kSignin));

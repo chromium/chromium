@@ -1606,17 +1606,27 @@ void UserSessionManager::InitProfilePreferences(
           base::FeatureList::IsEnabled(
               syncer::kEstimateNewSignInUsersWithFinchAvailablePopulation));
     }
+
+    const signin::ConsentLevel consent_level =
+        !identity_manager->HasPrimaryAccount(ConsentLevel::kSync) &&
+                base::FeatureList::IsEnabled(
+                    syncer::kReplaceSyncPromosWithSignInPromos) &&
+                base::FeatureList::IsEnabled(
+                    ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
+            ? ConsentLevel::kSignin
+            : ConsentLevel::kSync;
+
     const signin::PrimaryAccountMutator::PrimaryAccountError
         set_account_result =
             identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-                account_id, ConsentLevel::kSync,
+                account_id, consent_level,
                 signin_metrics::AccessPoint::kAshUserSessionManager);
     VLOG(1) << "SetPrimaryAccount result="
             << static_cast<int>(set_account_result);
 
     // TODO(http://crbug.com/40916881): Remove.
     const CoreAccountInfo& identity_manager_account_info =
-        identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync);
+        identity_manager->GetPrimaryAccountInfo(consent_level);
     if (identity_manager_account_info.gaia != gaia_id) {
       signin::PrimaryAccountMutator::PrimaryAccountError
           set_account_result_copy = set_account_result;
@@ -1640,8 +1650,8 @@ void UserSessionManager::InitProfilePreferences(
           identity_manager_account_info.account_id.ToString().c_str(), 32);
     }
 
-    CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-    CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
+    CHECK(identity_manager->HasPrimaryAccount(consent_level));
+    CHECK_EQ(identity_manager->GetPrimaryAccountInfo(consent_level).gaia,
              gaia_id);
 
     DCHECK_EQ(account_id,
