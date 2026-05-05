@@ -81,7 +81,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   std::u16string tooltip_;
   PermissionChipTheme theme_ = PermissionChipTheme::kNormalVisibility;
   permissions::PermissionAction user_decision_ =
-      permissions::PermissionAction::IGNORED;
+      permissions::PermissionAction::GRANTED;
   bool should_show_blocked_icon_ = false;
   PermissionPromptStyle prompt_style_ = PermissionPromptStyle::kChip;
 
@@ -94,6 +94,8 @@ class WebUIPermissionChip : public PermissionChipInterface {
   bool is_animating_ = false;
   std::u16string accessibility_name_;
   bool is_mouse_hovered_ = false;
+
+  raw_ptr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
 
   base::RepeatingClosure pressed_callback_;
   base::ObserverList<Observer> observers_;

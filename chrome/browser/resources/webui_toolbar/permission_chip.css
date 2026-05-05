@@ -1,0 +1,85 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: inline-flex;
+}
+
+#chip {
+  -webkit-tap-highlight-color: transparent;
+  align-items: center;
+  background-color: var(--chip-bg-color, var(--color-omnibox-chip-background));
+  border-radius: var(--location-bar-child-corner-radius);
+  box-shadow: var(--chip-box-shadow, none);
+  box-sizing: border-box;
+  color: var(
+      --chip-fg-color, var(--color-omnibox-chip-foreground-normal-visibility));
+  cursor: default;
+  display: inline-flex;
+  font-family: var(--omnibox-chip-font-family);
+  font-size: var(--omnibox-chip-font-size);
+  font-weight: var(--omnibox-chip-font-weight);
+  height: calc(
+      var(--location-bar-height) -
+      var(--location-bar-page-info-icon-vertical-padding) * 2);
+  overflow: hidden;
+  padding-block: var(--location-bar-chip-padding);
+  padding-inline-end: calc(var(--location-bar-chip-padding) * 2);
+  padding-inline-start: var(--location-bar-chip-padding);
+  position: relative;
+  user-select: none;
+}
+
+#chip:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color),
+              var(--chip-box-shadow, none);
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  #chip:focus-visible {
+    outline: var(--cr-focus-outline-hcm, 2px solid transparent);
+  }
+}
+
+#chip::before {
+  background-color: transparent;
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#chip:hover::before {
+  background-color:
+      var(--color-omnibox-chip-ink-drop-hover, rgba(0, 0, 0, 0.08));
+}
+
+#icon {
+  background-color: currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+  height: var(--location-bar-chip-icon-size);
+  margin-inline-end: var(--location-bar-child-internal-spacing, 4px);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  width: var(--location-bar-chip-icon-size);
+}
+
+#message {
+  overflow: hidden;
+  /* TODO(crbug.com/502598627): Native Views uses
+   * SetElideBehavior(gfx::ElideBehavior::FADE_TAIL). We currently use
+   * ellipsis. Probably implement a CSS linear-gradient mask if we want to
+   * strictly match the native fade-tail visual parity. */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

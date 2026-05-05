@@ -88,17 +88,13 @@
   }
 }
 
-/* Below are sketches of what the various LHS chips might look like,
- * to have the layout have roughly sensible for the middle portions.
- * Real ones will not hardcode their dimensions, but likely will need to
- * have similar flex behavior and margin adjustment for the curve handling.
- */
-#permissions-dashboard {
-  border: 1px solid red;
-  display: none;
+permission-dashboard {
   flex-shrink: 0;
-  height: 32px;
-  width: 40px;
+  /* TODO(qingxinwu): 5px and 8px match 'icon_left' and 'text_left'
+   * in LocationBarView::Layout(). Move these to layout_constants.cc and expose
+   * them via CSS variables */
+  margin-inline-end: 8px;
+  margin-inline-start: calc(5px - var(--border-radius));
 }
 
 location-icon {

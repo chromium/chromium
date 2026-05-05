@@ -257,8 +257,7 @@ views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
 }
 
 void WebUIPermissionChip::SetBubbleOwner(BubbleOwnerDelegate* owner) {
-  // TODO(crbug.com/495419742): Track bubble ownership to manage the active UI
-  // state (e.g. highlight) of the chip in the frontend.
+  bubble_owner_ = owner;
 }
 
 void WebUIPermissionChip::OnExpandAnimationEnded() {
@@ -305,6 +304,13 @@ void WebUIPermissionChip::OnClicked() {
 
 void WebUIPermissionChip::OnMouseEntered() {
   is_mouse_hovered_ = true;
+  if (bubble_owner_ &&
+      (bubble_owner_->IsBubbleShowing() || bubble_owner_->IsAnimating())) {
+    return;
+  }
+  if (bubble_owner_) {
+    bubble_owner_->RestartTimersOnMouseHover();
+  }
 }
 
 void WebUIPermissionChip::OnMouseExited() {

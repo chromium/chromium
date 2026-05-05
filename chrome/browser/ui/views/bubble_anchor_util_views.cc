@@ -60,9 +60,15 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(
     }
   }
 
-  if (anchor == Anchor::kLocationBar && location_bar_view->IsDrawn()) {
-    return {views::BubbleAnchor(location_bar_view), kLocationIconElementId,
-            views::BubbleBorder::TOP_LEFT};
+  if (anchor == Anchor::kLocationBar) {
+    LocationBar* location_bar =
+        browser_view ? browser_view->GetLocationBar() : nullptr;
+    if (location_bar && location_bar->IsDrawn()) {
+      if (ui::TrackedElement* element = location_bar->GetAnchorOrNull()) {
+        return {views::BubbleAnchor(element), kLocationIconElementId,
+                views::BubbleBorder::TOP_LEFT};
+      }
+    }
   }
 
   if (anchor == Anchor::kLocationBar &&
@@ -116,12 +122,8 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
       browser_view->GetLocationBar()
           ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
-    ui::TrackedElement* tracked_element =
-        browser_view->GetLocationBar()->GetAnchorOrNull();
-    if (tracked_element) {
-      return {views::BubbleAnchor(tracked_element),
-              PermissionChipView::kPermissionRequestChipElementId,
-              views::BubbleBorder::TOP_LEFT};
+    if (auto chip_anchor = browser_view->GetLocationBar()->GetChipAnchor()) {
+      return *chip_anchor;
     }
   }
   return GetPageInfoAnchorConfiguration(browser);

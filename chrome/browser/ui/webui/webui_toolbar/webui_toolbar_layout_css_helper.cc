@@ -242,6 +242,10 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
       typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
                                   views::style::STYLE_BODY_4_EMPHASIS),
       css_string);
+  AddFontVariables("--permission-chip",
+                   typography_provider.GetFont(views::style::CONTEXT_BUTTON_MD,
+                                               views::style::STYLE_PRIMARY),
+                   css_string);
 
   css_string.push_back('}');
   return css_string;

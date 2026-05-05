@@ -4,6 +4,7 @@
 
 import './readonly_omnibox.js';
 import './location_icon.js';
+import './permission_dashboard.js';
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
