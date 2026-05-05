@@ -33,13 +33,21 @@
   _attachmentView.accessibilityLabel = item.title;
 
   if (item.disabled) {
-    _attachmentView.image = SymbolWithPalette(
-        item.image, @[ [UIColor colorNamed:kTextSecondaryColor] ]);
+    if (item.favicon) {
+      _attachmentView.image = item.favicon;
+    } else {
+      _attachmentView.image = SymbolWithPalette(
+          item.image, @[ [UIColor colorNamed:kTextSecondaryColor] ]);
+    }
     _attachmentView.alpha = 0.5;
     self.userInteractionEnabled = NO;
   } else {
-    _attachmentView.image = SymbolWithPalette(
-        item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+    if (item.favicon) {
+      _attachmentView.image = item.favicon;
+    } else {
+      _attachmentView.image = SymbolWithPalette(
+          item.image, @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+    }
     _attachmentView.alpha = 1.0;
     self.userInteractionEnabled = YES;
   }

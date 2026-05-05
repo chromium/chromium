@@ -58,6 +58,8 @@ const CGFloat kSeparatorHeight = 1.0f;
 std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     ComposeboxMenuItemType type) {
   switch (type) {
+    case ComposeboxMenuItemType::kCurrentTab:
+      return ComposeboxAttachmentOption::kCurrentTab;
     case ComposeboxMenuItemType::kAttachmentTabs:
       return ComposeboxAttachmentOption::kTab;
     case ComposeboxMenuItemType::kAttachmentCamera:
@@ -398,6 +400,15 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 - (NSArray<ComposeboxMenuItem*>*)availableAttachmentItems {
   CHECK(_inputState);
+  ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION)
+              image:DefaultSymbolWithPointSize(kGlobeSymbol,
+                                               kSymbolActionPointSize)
+               type:ComposeboxMenuItemType::kCurrentTab
+           disabled:[_inputState isAttachmentDisabled:
+                                     ComposeboxAttachmentOption::kCurrentTab]
+            favicon:_inputState.currentTabFavicon];
   ComposeboxMenuItem* tabsItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
               image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
@@ -427,7 +438,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kFile]];
 
-  return @[ tabsItem, cameraItem, galleryItem, filesItem ];
+  return @[ currentTabItem, tabsItem, cameraItem, galleryItem, filesItem ];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -606,7 +617,6 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     cell.accessories = @[];
   }
 }
-
 
 - (void)configureHeaderView:(UICollectionReusableView*)view
                 atIndexPath:(NSIndexPath*)indexPath {

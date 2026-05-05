@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
+#import "ios/web/public/web_state.h"
 
 @implementation ComposeboxMenuMediator {
   // The entrypoint associated with this menu invocation.
@@ -121,6 +123,17 @@
       [self.delegate composeboxMenuMediator:self
                                 didTapModel:ComposeboxModelOption::kThinking];
       break;
+    case ComposeboxMenuItemType::kCurrentTab: {
+      if (_webStateList) {
+        web::WebState* activeWebState = _webStateList->GetActiveWebState();
+        if (activeWebState) {
+          web::WebStateID activeWebStateID =
+              activeWebState->GetUniqueIdentifier();
+          [self processWebStateIDs:{activeWebStateID} cachedWebStateIDs:{}];
+        }
+      }
+      break;
+    }
     case ComposeboxMenuItemType::kAttachmentTabs:
       [self.delegate composeboxMenuMediatorDidRequestTabSelection:self];
       break;

@@ -1748,6 +1748,9 @@
         =1 {Add up to 1 tab}
         other {Add up to {COUNT} tabs}}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
+        Current tab
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_TOOLS_SECTION_TITLE" desc="Title for the tools section in the composebox section [iOS only].">
         Tools
       </message>

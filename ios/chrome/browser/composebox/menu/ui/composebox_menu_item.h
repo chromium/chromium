@@ -20,6 +20,14 @@
 @property(nonatomic, assign, readonly) ComposeboxMenuItemType type;
 // Whether the composebox menu item is disabled.
 @property(nonatomic, readonly, getter=isDisabled) BOOL disabled;
+// The composebox menu item favicon.
+@property(nonatomic, strong, readonly) UIImage* favicon;
+
+- (instancetype)initWithTitle:(NSString*)title
+                        image:(UIImage*)image
+                         type:(ComposeboxMenuItemType)type
+                     disabled:(BOOL)disabled
+                      favicon:(UIImage*)favicon;
 
 - (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
