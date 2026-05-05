@@ -43,7 +43,8 @@ class DictationKeyedService : public KeyedService,
   // SessionControllerDelegate:
   std::unique_ptr<StreamProvider> CreateStreamProvider(
       SessionController& controller) const override;
-  std::unique_ptr<Ui> CreateUi(SessionController& controller) const override;
+  std::unique_ptr<SessionUi> CreateUi(
+      SessionController& controller) const override;
 
   // Starts a new session from the given target. It's the caller's
   // responsibility to ensure this never called while an existing session in

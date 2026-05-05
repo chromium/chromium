@@ -6,8 +6,9 @@
 
 #include <memory>
 
+#include "chrome/browser/dictation/session_controller_delegate.h"
+#include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
-#include "chrome/browser/dictation/ui.h"
 
 namespace dictation {
 

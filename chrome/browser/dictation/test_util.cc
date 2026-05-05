@@ -13,12 +13,12 @@ using ::testing::_;
 MockStreamProvider::MockStreamProvider() = default;
 MockStreamProvider::~MockStreamProvider() = default;
 
-MockUi::MockUi() = default;
-MockUi::~MockUi() = default;
+MockSessionUi::MockSessionUi() = default;
+MockSessionUi::~MockSessionUi() = default;
 
 MockSessionControllerDelegate::MockSessionControllerDelegate() {
   ON_CALL(*this, CreateUi(_)).WillByDefault([]() {
-    return std::make_unique<testing::NiceMock<MockUi>>();
+    return std::make_unique<testing::NiceMock<MockSessionUi>>();
   });
   ON_CALL(*this, CreateStreamProvider(_)).WillByDefault([]() {
     return std::make_unique<testing::NiceMock<MockStreamProvider>>();

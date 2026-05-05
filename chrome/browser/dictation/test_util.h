@@ -9,9 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
+#include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
-#include "chrome/browser/dictation/ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace dictation {
@@ -25,10 +25,10 @@ class MockStreamProvider : public StreamProvider {
   MOCK_METHOD(void, Stop, (), (override));
 };
 
-class MockUi : public Ui {
+class MockSessionUi : public SessionUi {
  public:
-  MockUi();
-  ~MockUi() override;
+  MockSessionUi();
+  ~MockSessionUi() override;
 };
 
 class MockSessionControllerDelegate : public SessionControllerDelegate {
@@ -40,7 +40,7 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
               CreateStreamProvider,
               (SessionController & controller),
               (const, override));
-  MOCK_METHOD(std::unique_ptr<Ui>,
+  MOCK_METHOD(std::unique_ptr<SessionUi>,
               CreateUi,
               (SessionController & controller),
               (const, override));

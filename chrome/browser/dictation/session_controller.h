@@ -10,11 +10,11 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/dictation/session_controller_delegate.h"
 
 namespace dictation {
 
 class SessionControllerDelegate;
+class SessionUi;
 class StreamProvider;
 class Target;
 
@@ -70,7 +70,7 @@ class SessionController {
   // to drive the current state of dictation in the UI.
   std::unique_ptr<StreamProvider> attached_stream_provider_;
 
-  std::unique_ptr<Ui> ui_;
+  std::unique_ptr<SessionUi> ui_;
 };
 
 }  // namespace dictation

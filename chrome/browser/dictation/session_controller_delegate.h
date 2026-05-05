@@ -12,8 +12,8 @@
 namespace dictation {
 
 class SessionController;
+class SessionUi;
 class StreamProvider;
-class Ui;
 
 // Interface for a Profile-level delegate for the dictation session. The
 // SessionControllerDelegate class is responsible creation of the concrete
@@ -24,7 +24,8 @@ class SessionControllerDelegate {
 
   virtual std::unique_ptr<StreamProvider> CreateStreamProvider(
       SessionController& controller) const = 0;
-  virtual std::unique_ptr<Ui> CreateUi(SessionController& controller) const = 0;
+  virtual std::unique_ptr<SessionUi> CreateUi(
+      SessionController& controller) const = 0;
 };
 
 }  // namespace dictation

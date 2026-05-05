@@ -4,7 +4,9 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +20,9 @@ DictationKeyedService* DictationKeyedService::Get(
 }
 
 DictationKeyedService::DictationKeyedService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  CHECK(base::FeatureList::IsEnabled(kDictation));
+}
 
 DictationKeyedService::~DictationKeyedService() = default;
 
@@ -31,7 +35,7 @@ std::unique_ptr<StreamProvider> DictationKeyedService::CreateStreamProvider(
   return nullptr;
 }
 
-std::unique_ptr<Ui> DictationKeyedService::CreateUi(
+std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
     SessionController& controller) const {
   return nullptr;
 }
