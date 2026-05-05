@@ -99,9 +99,6 @@ class WebStateID;
 // Disconnects the manager and cleans up resources.
 - (void)disconnect;
 
-// Sets the searchbox configuration.
-- (void)setSearchboxConfig:(const omnibox::SearchboxConfig&)searchboxConfig;
-
 // Sets the active model if eligible. If explicitUserAction is YES, records
 // metrics.
 - (void)setActiveModel:(ComposeboxModelOption)modelOption

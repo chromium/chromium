@@ -761,13 +761,6 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
              explicitUserAction:explicitUserAction];
 }
 
-- (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig {
-  if (!_contextualSearchSession || !searchboxConfig) {
-    return;
-  }
-  [_stateManager setSearchboxConfig:*searchboxConfig];
-}
-
 - (void)setOmniboxFocused:(bool)focused {
   if (_omniboxFocused == focused) {
     return;

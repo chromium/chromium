@@ -143,10 +143,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   // The coordinator for the bottom sheet menu.
   ComposeboxMenuCoordinator* _menuCoorinator;
 
-  // Service to check for AI mode eligibility.
-  raw_ptr<AimEligibilityService> _aimEligibilityService;
-  // Subscription for AIM eligibility changes.
-  base::CallbackListSubscription _aimEligibilitySubscription;
   // Parameters used to focus and initialize the composebox.
   ComposeboxFocusParams* _focusParams;
 
@@ -214,7 +210,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
-  _aimEligibilityService =
+  AimEligibilityService* aimEligibilityService =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(self.profile);
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
@@ -228,7 +224,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                           isIncognito:self.isOffTheRecord
                            modeHolder:_modeHolder
                    templateURLService:templateURLService
-                aimEligibilityService:_aimEligibilityService
+                aimEligibilityService:aimEligibilityService
                           prefService:self.profile->GetPrefs()
                               profile:self.profile
                  cobrowseBrowserAgent:CobrowseBrowserAgent::FromBrowser(
@@ -245,7 +241,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _mediator.delegate = self;
   _mediator.metricsRecorder = _metricsRecorder;
 
-  [self monitorSearchboxConfig];
 
   _viewController.mutator = _mediator;
   // Mediator is the voice search delegate to load queries in composebox.
@@ -306,8 +301,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [_menuCoorinator stop];
     _menuCoorinator = nil;
   }
-  _aimEligibilitySubscription = {};
-  _aimEligibilityService = nullptr;
   [_snackbarPresenter dismissAllSnackbars];
   [_snackbarPresenter stop];
   _snackbarPresenter = nil;
@@ -741,31 +734,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
   _snackbarPresenter =
       [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
-}
-
-// Observes the changes in eligibility and sends the searchbox config.
-- (void)monitorSearchboxConfig {
-  if (!_aimEligibilityService) {
-    return;
-  }
-
-  [self updateSearchboxConfig];
-  __weak __typeof(self) weakSelf = self;
-  _aimEligibilitySubscription =
-      _aimEligibilityService->RegisterEligibilityChangedCallback(
-          base::BindRepeating(^{
-            [weakSelf updateSearchboxConfig];
-          }));
-}
-
-// Propagates the searchbox config.
-- (void)updateSearchboxConfig {
-  if (!_aimEligibilityService) {
-    return;
-  }
-  const omnibox::SearchboxConfig* config =
-      _aimEligibilityService->GetSearchboxConfig();
-  [_mediator setSearchboxConfig:config];
 }
 
 #pragma mark - ComposeboxPickerPresenterDelegate

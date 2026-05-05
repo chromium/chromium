@@ -123,14 +123,6 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                    entrypoint:_entrypoint
                   isIncognito:profile->IsOffTheRecord()];
 
-    if (aimEligibilityService) {
-      const omnibox::SearchboxConfig* config =
-          aimEligibilityService->GetSearchboxConfig();
-      if (config) {
-        [_stateManager setSearchboxConfig:*config];
-      }
-    }
-
     std::set<web::WebStateID> emptySet;
     _inputState = [_stateManager computeUIInputStateWithFavicon:nil
                                             attachedWebStateIDs:emptySet];

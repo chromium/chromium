@@ -63,9 +63,6 @@ class WebStateID;
 - (void)setModelOption:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction;
 
-/// Sets the searchbox configuration to use.
-- (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig;
-
 /// Whether the omnibox is focused.
 - (void)setOmniboxFocused:(bool)focused;
 

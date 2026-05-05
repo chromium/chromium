@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -183,7 +184,8 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 }  // namespace
 
-@interface ComposeboxInputStateManager () <ComposeboxModeObserver>
+@interface ComposeboxInputStateManager () <ComposeboxModeObserver,
+                                           SearchEngineObserving>
 @end
 
 @implementation ComposeboxInputStateManager {
@@ -220,6 +222,12 @@ ComposeboxStrings* ServerStringsFromInputState(
   base::CallbackListSubscription _inputStateSubscription;
   // Cached server strings.
   ComposeboxStrings* _cachedStrings;
+  // Observer for the TemplateURLService.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  // Subscription for eligibility changes.
+  base::CallbackListSubscription _aimEligibilitySubscription;
+  // Cached DSE status.
+  BOOL _isDSEGoogle;
 }
 
 #pragma mark - Public
@@ -254,6 +262,21 @@ ComposeboxStrings* ServerStringsFromInputState(
     _entrypoint = entrypoint;
     _isIncognito = isIncognito;
     _activeModel = ComposeboxModelOption::kNone;
+
+    if (_templateURLService) {
+      _isDSEGoogle = search::DefaultSearchProviderIsGoogle(_templateURLService);
+      _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
+          self, _templateURLService);
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    _aimEligibilitySubscription =
+        _aimEligibilityService->RegisterEligibilityChangedCallback(
+            base::BindRepeating(^{
+              [weakSelf onAimEligibilityChanged];
+            }));
+
+    [self updateSearchboxConfig];
   }
   return self;
 }
@@ -272,34 +295,8 @@ ComposeboxStrings* ServerStringsFromInputState(
   _sessionHandle.reset();
   [_modeHolder removeObserver:self];
   _modeHolder = nil;
-}
-
-- (void)setSearchboxConfig:(const omnibox::SearchboxConfig&)searchboxConfig {
-  if (!_sessionHandle) {
-    return;
-  }
-
-  BOOL has_primary_account =
-      _identityManager &&
-      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-
-  _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *_sessionHandle, searchboxConfig, GURL(), _isIncognito,
-      has_primary_account);
-
-  [self startInputStateObservation];
-  // `Initialize` is synchronous and immediately notifies observers, updating
-  // the state.
-  _inputStateModel->Initialize();
-
-  // iOS doesn't rely on the active hint text from `_inputState`, strings only
-  // changes when `searchboxConfig` is updated.
-  NSString* customRegularSearchHintText =
-      CustomRegularSearchHintText([self isEligibleToAIM], _templateURLService);
-  _cachedStrings = ServerStringsFromInputState(
-      _inputStateModel->GetInputState(), customRegularSearchHintText);
-
-  [self.delegate inputStateManagerDidUpdateUIState:self];
+  _searchEngineObserver.reset();
+  _aimEligibilitySubscription = {};
 }
 
 - (ComposeboxModelOption)activeModel {
@@ -596,6 +593,21 @@ ComposeboxStrings* ServerStringsFromInputState(
 
 #pragma mark - Private
 
+#pragma mark - SearchEngineObserving
+
+- (void)searchEngineChanged {
+  BOOL isDSEGoogle = search::DefaultSearchProviderIsGoogle(_templateURLService);
+  if (isDSEGoogle != _isDSEGoogle) {
+    _isDSEGoogle = isDSEGoogle;
+    [self.delegate inputStateManagerDidUpdateUIState:self];
+  }
+}
+
+- (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
+  _searchEngineObserver.reset();
+  _templateURLService = nullptr;
+}
+
 #pragma mark - ComposeboxModeObserver
 
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
@@ -668,6 +680,47 @@ ComposeboxStrings* ServerStringsFromInputState(
   }
 
   return invalidatedItems;
+}
+
+#pragma mark AIMEligibilityService Observation
+
+- (void)onAimEligibilityChanged {
+  [self updateSearchboxConfig];
+}
+
+- (void)updateSearchboxConfig {
+  if (!_aimEligibilityService) {
+    return;
+  }
+
+  const omnibox::SearchboxConfig* searchboxConfig =
+      _aimEligibilityService->GetSearchboxConfig();
+
+  if (!_sessionHandle || !searchboxConfig) {
+    return;
+  }
+
+  BOOL has_primary_account =
+      _identityManager &&
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+
+  _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
+      *_sessionHandle, *searchboxConfig, GURL(), _isIncognito,
+      has_primary_account);
+
+  [self startInputStateObservation];
+  // `Initialize` is synchronous and immediately notifies observers, updating
+  // the state.
+  _inputStateModel->Initialize();
+
+  // iOS doesn't rely on the active hint text from `_inputState`, strings only
+  // changes when `searchboxConfig` is updated.
+  NSString* customRegularSearchHintText =
+      CustomRegularSearchHintText([self isEligibleToAIM], _templateURLService);
+  _cachedStrings = ServerStringsFromInputState(
+      _inputStateModel->GetInputState(), customRegularSearchHintText);
+
+  [self.delegate inputStateManagerDidUpdateUIState:self];
 }
 
 #pragma mark Observation

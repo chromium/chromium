@@ -140,6 +140,14 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
             pref_service_, template_url_service(),
             test_url_loader_factory->GetSafeWeakWrapper(),
             IdentityManagerFactory::GetForProfile(profile_.get()));
+
+    ON_CALL(*aim_eligibility_service_,
+            RegisterEligibilityChangedCallback(testing::_))
+        .WillByDefault([this](base::RepeatingClosure callback) {
+          this->aim_eligibility_callback_ = callback;
+          return base::CallbackListSubscription();
+        });
+
     auto session_handle = service_->CreateSession(
         std::move(config_params),
         contextual_search::ContextualSearchSource::kUnknown,
@@ -274,7 +282,11 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   }
 
   void ForwardSearchboxConfig() {
-    [mediator_ setSearchboxConfig:&searchbox_config_];
+    EXPECT_CALL(*aim_eligibility_service_, GetSearchboxConfig())
+        .WillRepeatedly(testing::Return(&searchbox_config_));
+    if (aim_eligibility_callback_) {
+      aim_eligibility_callback_.Run();
+    }
   }
 
   void EraseOmniboxText() { SetOmniboxText(u""); }
@@ -321,6 +333,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
+  base::RepeatingClosure aim_eligibility_callback_;
   std::unique_ptr<TestProfileIOS> profile_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

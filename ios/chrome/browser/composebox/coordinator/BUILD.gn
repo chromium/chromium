@@ -307,6 +307,7 @@ source_set("input_state_manager") {
     "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui:state",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",

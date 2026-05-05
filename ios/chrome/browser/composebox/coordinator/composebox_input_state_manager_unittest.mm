@@ -79,6 +79,13 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
     mode_holder_ = [[ComposeboxModeHolder alloc] init];
     mock_aim_service_ = std::make_unique<MockAimEligibilityService>(
         pref_service_, nullptr, nullptr, identity_test_env_.identity_manager());
+
+    ON_CALL(*mock_aim_service_, RegisterEligibilityChangedCallback(testing::_))
+        .WillByDefault([this](base::RepeatingClosure callback) {
+          this->aim_eligibility_callback_ = callback;
+          return base::CallbackListSubscription();
+        });
+
     manager_ = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:&web_state_list_
                    modeHolder:mode_holder_
@@ -108,6 +115,7 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
   std::unique_ptr<MockAimEligibilityService> mock_aim_service_;
   ComposeboxModeHolder* mode_holder_;
   ComposeboxInputStateManager* manager_;
+  base::RepeatingClosure aim_eligibility_callback_;
 };
 
 // Tests that the manager initializes with the expected default state.
@@ -143,7 +151,11 @@ TEST_F(ComposeboxInputStateManagerTest, StateObservation) {
   rule->set_allow_all_models(true);
 
   // Setting searchbox config should trigger the initial state update.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
@@ -171,12 +183,20 @@ TEST_F(ComposeboxInputStateManagerTest, StateObservationOnConfigChange) {
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // Reload config.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Verify delegate was notified again on config change.
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
@@ -205,7 +225,11 @@ TEST_F(ComposeboxInputStateManagerTest, Preselection) {
   rule->set_allow_all_models(true);
 
   // Load initial config.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // User selects a tool.
@@ -214,7 +238,11 @@ TEST_F(ComposeboxInputStateManagerTest, Preselection) {
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // Reload same config.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Verify that the user's choice is preserved (preselected).
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
@@ -243,7 +271,11 @@ TEST_F(ComposeboxInputStateManagerTest, PreselectionRestricted) {
   rule->set_allow_all_models(true);
 
   // Load initial config where Canvas is allowed.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // User selects Canvas.
@@ -254,7 +286,11 @@ TEST_F(ComposeboxInputStateManagerTest, PreselectionRestricted) {
 
   // Load new config where Canvas is NOT allowed.
   omnibox::SearchboxConfig new_config;
-  [manager_ setSearchboxConfig:new_config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&new_config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Verify that the tool falls back to regular search because it's no longer
   // allowed.
@@ -277,7 +313,11 @@ TEST_F(ComposeboxInputStateManagerTest, ToolAllowed_ServerSideEnabled) {
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
   // Setting searchbox config should trigger the initial state update.
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   std::optional<contextual_search::InputState> state_opt = manager_.inputState;
   ASSERT_TRUE(state_opt.has_value());
@@ -303,7 +343,11 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
 
   config.set_initial_model_mode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   std::optional<contextual_search::InputState> state_opt = manager_.inputState;
   ASSERT_TRUE(state_opt.has_value());
@@ -366,7 +410,11 @@ TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Set active mode to image generation.
   mode_holder_.mode = ComposeboxMode::kImageGeneration;
@@ -428,7 +476,11 @@ TEST_F(ComposeboxInputStateManagerTest, RemainingAttachmentCapacity_Default) {
   // Set a max total inputs limit in the config.
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(5);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_EQ([manager_ remainingAttachmentCapacity], 5u);
 }
@@ -439,7 +491,11 @@ TEST_F(ComposeboxInputStateManagerTest, RemainingAttachmentCapacity_WithItems) {
   // Set a max total inputs limit in the config.
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(5);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Add some items to the collection.
   ComposeboxInputItemCollection* collection =
@@ -470,7 +526,11 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Set active mode to image generation.
   mode_holder_.mode = ComposeboxMode::kImageGeneration;
@@ -497,7 +557,11 @@ TEST_F(ComposeboxInputStateManagerTest,
        RemainingNumberOfImagesAllowed_Default) {
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(5);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_EQ([manager_ remainingNumberOfImagesAllowed], 5u);
 }
@@ -515,7 +579,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   rule->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   rule->set_max_instance(2);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_EQ([manager_ remainingNumberOfImagesAllowed], 2u);
 }
@@ -533,7 +601,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   rule->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   rule->set_max_instance(2);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   ComposeboxInputItemCollection* collection =
       [[ComposeboxInputItemCollection alloc] init];
@@ -554,7 +626,11 @@ TEST_F(ComposeboxInputStateManagerTest,
 TEST_F(ComposeboxInputStateManagerTest, MaxTabAttachmentCount_Default) {
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(5);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_EQ([manager_ maxTabAttachmentCount], 5u);
 }
@@ -571,7 +647,11 @@ TEST_F(ComposeboxInputStateManagerTest, MaxTabAttachmentCount_ServerSideLimit) {
   rule->set_input_type(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   rule->set_max_instance(3);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   EXPECT_EQ([manager_ maxTabAttachmentCount], 3u);
 }
@@ -588,7 +668,11 @@ TEST_F(ComposeboxInputStateManagerTest, MaxTabAttachmentCount_WithItems) {
   rule->set_input_type(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   rule->set_max_instance(3);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   ComposeboxInputItemCollection* collection =
       [[ComposeboxInputItemCollection alloc] init];
@@ -609,7 +693,11 @@ TEST_F(ComposeboxInputStateManagerTest, MaxTabAttachmentCount_WithItems) {
 TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState) {
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(5);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   UIImage* favicon = [[UIImage alloc] init];
   std::set<web::WebStateID> attached_ids;
@@ -635,7 +723,11 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kCanvas;
 
@@ -659,7 +751,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   omnibox::ModelConfig* regular_config = config.add_model_configs();
   regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
   [manager_ setActiveModel:ComposeboxModelOption::kThinking
@@ -694,7 +790,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   config.mutable_rule_set()->add_allowed_models(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   UIImage* favicon = [[UIImage alloc] init];
   std::set<web::WebStateID> attached_ids;
@@ -720,7 +820,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   feature_list.InitAndDisableFeature(kComposeboxAdditionalAdvancedTools);
 
   omnibox::SearchboxConfig config;
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
                                                        attachedWebStateIDs:{}];
@@ -775,7 +879,11 @@ TEST_F(ComposeboxInputStateManagerTest,
        ComputeUIInputState_AttachmentEligibility_FullCapacity) {
   omnibox::SearchboxConfig config;
   config.mutable_rule_set()->set_max_total_inputs(1);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Add an item to fill capacity.
   ComposeboxInputItemCollection* collection =
@@ -832,7 +940,11 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_NotifiesDelegate) {
   model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   config.mutable_rule_set()->add_allowed_models(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   FakeComposeboxInputStateManagerDelegate* delegate =
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
@@ -857,7 +969,11 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_SwitchesToAIM) {
   model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   config.mutable_rule_set()->add_allowed_models(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kRegularSearch;
 
@@ -878,7 +994,11 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
 
   omnibox::SearchboxConfig config;
   config.set_initial_model_mode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
 
@@ -900,7 +1020,11 @@ TEST_F(ComposeboxInputStateManagerTest, Reconcile_NoOpWhenMatching) {
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Set mode to Canvas, which sets tool to Canvas.
   mode_holder_.mode = ComposeboxMode::kCanvas;
@@ -936,7 +1060,11 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kCanvas;
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
@@ -971,14 +1099,22 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = allow_config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
-  [manager_ setSearchboxConfig:allow_config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&allow_config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kCanvas;
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
 
   // 2. Load config that DOES NOT allow Canvas.
   omnibox::SearchboxConfig deny_config;
-  [manager_ setSearchboxConfig:deny_config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&deny_config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Now internal mode is kCanvas, but it is invalid in the new config.
   // And setSearchboxConfig: calls Initialize(), which triggers update with
@@ -999,7 +1135,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   config.mutable_rule_set()->add_allowed_models(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
   [manager_ setActiveModel:ComposeboxModelOption::kThinking
@@ -1036,7 +1176,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   allow_config.mutable_rule_set()->add_allowed_models(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-  [manager_ setSearchboxConfig:allow_config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&allow_config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
   [manager_ setActiveModel:ComposeboxModelOption::kThinking
@@ -1045,7 +1189,11 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   // 2. Load config that DOES NOT allow Gemini Pro.
   omnibox::SearchboxConfig deny_config;
-  [manager_ setSearchboxConfig:deny_config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&deny_config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   // Now internal model is kThinking, but it is invalid in the new config.
   // Reconciliation should see mismatch and invalid state, and fallback to
@@ -1061,7 +1209,11 @@ TEST_F(ComposeboxInputStateManagerTest,
   feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
 
   omnibox::SearchboxConfig config;
-  [manager_ setSearchboxConfig:config];
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
 
   mode_holder_.mode = ComposeboxMode::kRegularSearch;
   EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kNone);
