@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -418,6 +419,8 @@ public class GlicToolbarButtonControllerTest {
         ActorTask task = mock(ActorTask.class);
         when(task.getTitle()).thenReturn("Test Task");
         when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mTab.getId()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(1)).thenReturn(null);
 
         // Set up show hook.
         Runnable showHook = mock(Runnable.class);
@@ -429,5 +432,31 @@ public class GlicToolbarButtonControllerTest {
 
         // Verify popup was shown.
         verify(showHook).run();
+    }
+
+    @Test
+    public void testOnClick_WithActiveTaskOnActingTab_BypassesMenu() {
+        mController.get(mTab);
+
+        // Mock an active task.
+        ActorTask task = mock(ActorTask.class);
+        when(task.getTitle()).thenReturn("Test Task");
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+
+        // Set active tab as acting tab.
+        when(mTab.getId()).thenReturn(1);
+        when(mActorService.getActiveTaskIdOnTab(1)).thenReturn(123); // Some task ID.
+
+        // Set up show hook.
+        Runnable showHook = mock(Runnable.class);
+        AnchoredPopupWindow.setShowHookForTesting(showHook);
+
+        // Click should bypass menu.
+        View view = new View(mContext);
+        mController.onClick(view);
+
+        // Verify popup was NOT shown.
+        verify(showHook, never()).run();
+        verify(mToggleGlicCallback).onClick(false);
     }
 }
