@@ -1422,6 +1422,7 @@ function extractFrameData(
 
   frameData.frameInteractionInfo = extractFrameInteractionInfo(document);
   frameData.mediaData = extractMediaData(document);
+  frameData.isFocusedDocument = isDeepestFocusedDocument(document);
 
   return frameData;
 }
@@ -2743,6 +2744,19 @@ function generateAndPushContentNode(
   });
 }
 
+/**
+ * Checks if the current document is the deepest focused document.
+ *
+ * @param document The document to check.
+ * @return True if the document has focus and its active element is not an
+ *     iframe or frame.
+ */
+function isDeepestFocusedDocument(document: Document): boolean {
+  return document.hasFocus() &&
+      !(document.activeElement instanceof HTMLIFrameElement ||
+        document.activeElement instanceof HTMLFrameElement);
+}
+
 // TODO(crbug.com/485799759): Assess if we need the mouse position.
 /**
  * Extracts the page interaction info (focus, pointer position).
@@ -2756,6 +2770,8 @@ function extractPageInteractionInfo(document: Document):
 
   const focusedId = getFocusedNodeId(document);
   if (focusedId !== undefined) {
+    // TODO(crbug.com/507089815): Avoid dangling focusedDomNodeId for rejected
+    // elements.
     pageInteractionInfo.focusedDomNodeId = focusedId;
   }
 

@@ -19,7 +19,22 @@ namespace web {
 class WebState;
 }
 
+namespace autofill {
+class ChildFrameRegistrar;
+}
+
 class FrameGrafter;
+
+// Information about the focus status of a frame, collected during the initial
+// parsing of the annotated page content JSON payload.
+struct FrameFocusInfo {
+  // The identifier (remote frame token string) of the frame. This may be empty
+  // initially for cross-origin frames until they are resolved by the grafter.
+  std::string document_id;
+  // The local frame token of the frame. This is primarily used to resolve the
+  // `document_id` for cross-origin frames during the final assembly phase.
+  std::optional<autofill::LocalFrameToken> local_token;
+};
 
 // Util functions to populate the APC proto nodes out of the annotated page
 // content objects extracted from the renderer. Basically, maps from JSON to
@@ -29,17 +44,28 @@ class FrameGrafter;
 // dictionary content representing the annotated page content extracted from the
 // renderer. It recursively processes children, handles nodes with attributes
 // like text, anchors, images, and roles, and registers placeholders for remote
-// iframes if grafting is enabled.
+// iframes if grafting is enabled. Uses `on_frame_extracted` to notify the
+// caller when a frame with its focused status and document ID is extracted.
 void PopulateAPCNodeFromContentTree(
     const base::DictValue& node_content,
     const url::Origin& origin,
     FrameGrafter& grafter,
-    optimization_guide::proto::ContentNode* destination_node);
+    optimization_guide::proto::ContentNode* destination_node,
+    const base::RepeatingCallback<void(bool is_focused,
+                                       const std::string& document_id)>&
+        on_frame_extracted);
+
+// Result of populating a frame data node.
+struct FrameDataNodeResult {
+  // Whether the document inside this frame is the deepest focused document
+  // on the page.
+  bool is_focused = false;
+};
 
 // Populates `destination_frame_data_node` from the
 // `frame_data_content` (JSON dict) representing the frame data extracted
-// from the renderer.
-void PopulateFrameDataNode(
+// from the renderer. Returns a FrameDataNodeResult containing the focus state.
+FrameDataNodeResult PopulateFrameDataNode(
     const base::DictValue& frame_data_content,
     const url::Origin& origin,
     optimization_guide::proto::FrameData* destination_frame_data_node);
@@ -62,5 +88,21 @@ void PopulateViewportGeometryNode(
 void PopulateAutofillInformation(
     web::WebState* web_state,
     optimization_guide::proto::AutofillInformation* autofill_information);
+
+// Resolves all cross-site frame content by using `registrar` to map
+// placeholders to their content in `grafter`, and places them as children of
+// `apc`'s root node.
+void ResolveCrossSiteFrameContent(
+    FrameGrafter& grafter,
+    autofill::ChildFrameRegistrar* registrar,
+    optimization_guide::proto::AnnotatedPageContent* apc);
+
+// Resolves the focused frame by mapping local tokens to remote tokens and
+// sets the focused_frame in `apc`.
+void ResolveFocusedFrame(
+    std::vector<FrameFocusInfo>& focused_frame_infos,
+    const std::vector<autofill::RemoteFrameToken>& remote_frames,
+    autofill::ChildFrameRegistrar* registrar,
+    optimization_guide::proto::AnnotatedPageContent* apc);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_ANNOTATED_PAGE_CONTENT_EXTRACTION_UTILS_H_

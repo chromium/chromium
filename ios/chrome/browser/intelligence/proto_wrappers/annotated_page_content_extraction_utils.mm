@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
 
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -109,6 +111,7 @@ constexpr char kOuterBoundingBoxKey[] = "outerBoundingBox";
 constexpr char kVisibleBoundingBoxKey[] = "visibleBoundingBox";
 constexpr char kFragmentVisibleBoundingBoxesKey[] =
     "fragmentVisibleBoundingBoxes";
+constexpr char kIsFocusedDocumentKey[] = "isFocusedDocument";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -266,8 +269,10 @@ void PopulateMediaData(
       media_data.FindBool(kIsPlayingKey).value_or(false));
 }
 
-// Populates `destination_frame_data` from the `local_frame_data` content.
-void PopulateFrameData(
+// Populates the given `destination_frame_data` from the `local_frame_data`
+// JSON dictionary content representing the frame data extracted from the
+// renderer. Returns a FrameDataNodeResult containing the focus state.
+FrameDataNodeResult PopulateFrameData(
     const base::DictValue& local_frame_data,
     optimization_guide::proto::FrameData* destination_frame_data,
     const url::Origin& origin) {
@@ -349,14 +354,20 @@ void PopulateFrameData(
           local_frame_data.FindDict(kMediaDataKey)) {
     PopulateMediaData(*media_data, destination_frame_data);
   }
+
+  return {.is_focused =
+              local_frame_data.FindBool(kIsFocusedDocumentKey).value_or(false)};
 }
 
 // Populates the iframe data of the `destination_node` from the
-// `iframe_data` content.
+// `iframe_data` content. Calls `on_frame_extracted` with the extracted frame.
 void PopulateIframeData(
     const base::DictValue& iframe_data,
     optimization_guide::proto::ContentNode* destination_node,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    const base::RepeatingCallback<void(bool is_focused,
+                                       const std::string& document_id)>&
+        on_frame_extracted) {
   if (const base::DictValue* content = iframe_data.FindDict(kContentKey)) {
     if (const base::DictValue* local_frame_data =
             content->FindDict(kLocalFrameDataKey)) {
@@ -364,7 +375,13 @@ void PopulateIframeData(
           destination_node->mutable_content_attributes()
               ->mutable_iframe_data()
               ->mutable_frame_data();
-      PopulateFrameData(*local_frame_data, node_frame_data, origin);
+      FrameDataNodeResult result =
+          PopulateFrameData(*local_frame_data, node_frame_data, origin);
+      if (on_frame_extracted) {
+        on_frame_extracted.Run(
+            result.is_focused,
+            node_frame_data->document_identifier().serialized_token());
+      }
     }
   }
 }
@@ -649,7 +666,10 @@ void PopulateAPCNodeFromContentTree(
     const base::DictValue& node_content,
     const url::Origin& origin,
     FrameGrafter& grafter,
-    optimization_guide::proto::ContentNode* destination_node) {
+    optimization_guide::proto::ContentNode* destination_node,
+    const base::RepeatingCallback<void(bool is_focused,
+                                       const std::string& document_id)>&
+        on_frame_extracted) {
   if (!destination_node) {
     return;
   }
@@ -753,7 +773,8 @@ void PopulateAPCNodeFromContentTree(
             }
           }
         }
-        PopulateIframeData(*iframe_data, destination_node, origin);
+        PopulateIframeData(*iframe_data, destination_node, origin,
+                           on_frame_extracted);
       }
       break;
     }
@@ -839,20 +860,20 @@ void PopulateAPCNodeFromContentTree(
     for (const base::Value& child_value : *children_nodes) {
       if (child_value.is_dict()) {
         PopulateAPCNodeFromContentTree(child_value.GetDict(), origin, grafter,
-                                       destination_node->add_children_nodes());
+                                       destination_node->add_children_nodes(),
+                                       on_frame_extracted);
       }
     }
   }
-
-  return;
 }
 
-void PopulateFrameDataNode(
+FrameDataNodeResult PopulateFrameDataNode(
     const base::DictValue& frame_data_content,
     const url::Origin& origin,
     optimization_guide::proto::FrameData* destination_frame_data_node) {
   CHECK(destination_frame_data_node);
-  PopulateFrameData(frame_data_content, destination_frame_data_node, origin);
+  return PopulateFrameData(frame_data_content, destination_frame_data_node,
+                           origin);
 }
 
 // Populates `page_interaction_info_node` from the
@@ -921,5 +942,55 @@ void PopulateAutofillInformation(
     autofill_information->add_fillable_data(
         optimization_guide::proto::
             AutofillInformation_FillableData_CREDIT_CARD);
+  }
+}
+
+void ResolveCrossSiteFrameContent(
+    FrameGrafter& grafter,
+    autofill::ChildFrameRegistrar* registrar,
+    optimization_guide::proto::AnnotatedPageContent* apc) {
+  CHECK(registrar);
+  auto mapping_lookup = base::BindRepeating(
+      [](autofill::ChildFrameRegistrar* registrar,
+         autofill::RemoteFrameToken remote) {
+        return registrar->LookupChildFrame(remote);
+      },
+      registrar);
+
+  auto placer = base::BindRepeating(
+      [](optimization_guide::proto::ContentNode* parentNode,
+         FrameGrafter::FrameContent unregistered) {
+        *parentNode->add_children_nodes() = std::move(unregistered.content);
+      },
+      apc->mutable_root_node());
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+}
+
+void ResolveFocusedFrame(
+    std::vector<FrameFocusInfo>& focused_frame_infos,
+    const std::vector<autofill::RemoteFrameToken>& remote_frames,
+    autofill::ChildFrameRegistrar* registrar,
+    optimization_guide::proto::AnnotatedPageContent* apc) {
+  CHECK(registrar);
+  for (const autofill::RemoteFrameToken& remote_token : remote_frames) {
+    if (std::optional<autofill::LocalFrameToken> local_token =
+            registrar->LookupChildFrame(remote_token)) {
+      for (auto& info : focused_frame_infos) {
+        if (info.local_token && *info.local_token == *local_token) {
+          info.document_id = remote_token.ToString();
+        }
+      }
+    }
+  }
+
+  // Pick the first frame that is focused and has a document id as the
+  // focused_frame.
+  for (const auto& info : focused_frame_infos) {
+    if (!info.document_id.empty()) {
+      apc->mutable_page_interaction_info()
+          ->mutable_focused_frame()
+          ->set_serialized_token(info.document_id);
+      break;
+    }
   }
 }

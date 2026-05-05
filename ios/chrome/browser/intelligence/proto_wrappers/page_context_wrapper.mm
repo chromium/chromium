@@ -244,6 +244,11 @@ result.links = linksArray;
   // Graft frames across origins.
   FrameGrafter _grafter;
 
+  // TODO(crbug.com/507879464): Add a metric to record the number of focused
+  // frames per request to detect anomalies.
+  // The identifiers of the traversed frames that reported being focused.
+  std::vector<FrameFocusInfo> _focusedFrameInfos;
+
   // Whether the registration wait has completed or timed out.
   BOOL _registrationCompletedOrTimedOut;
 
@@ -824,29 +829,20 @@ result.links = linksArray;
     // TODO(crbug.com/483989948): Make screenshot failure blocking once
     // 'aw, snap' snackbar is fixed.
 
-    if (_config->graft_cross_origin_frame_content()) {
-      // Place the remaining unclaimed remote frame content nodes as direct
-      // children of the main frame node since they couldn't be grafted by
-      // this point.
-      auto mapping_lookup = base::BindRepeating(
-          [](autofill::ChildFrameRegistrar* registrar,
-             autofill::RemoteFrameToken remote) {
-            // If the registrar is null, return std::nullopt to trigger the
-            // fallback behavior of placing the node as a direct child.
-            if (!registrar) {
-              return std::optional<autofill::LocalFrameToken>();
-            }
-            return registrar->LookupChildFrame(remote);
-          },
-          [self frameRegistrar]);
+    // TODO(crbug.com/509589346): CHECK `registrar` since it is known here that
+    // there is a `_webState`.
+    // Set the focused frame based on the collected data on the same origin and
+    // cross-origin frames.
+    autofill::ChildFrameRegistrar* registrar = [self frameRegistrar];
+    if (_config->use_rich_extraction() && registrar) {
+      ResolveFocusedFrame(_focusedFrameInfos, _grafter.GetRemoteFrames(),
+                          registrar,
+                          _pageContext->mutable_annotated_page_content());
+    }
 
-      auto placer = base::BindRepeating(
-          [](optimization_guide::proto::ContentNode* parentNode,
-             FrameGrafter::FrameContent unregistered) {
-            *parentNode->add_children_nodes() = std::move(unregistered.content);
-          },
-          _pageContext->mutable_annotated_page_content()->mutable_root_node());
-      _grafter.ResolveUnregisteredContent(mapping_lookup, placer);
+    if (_config->graft_cross_origin_frame_content() && registrar) {
+      ResolveCrossSiteFrameContent(
+          _grafter, registrar, _pageContext->mutable_annotated_page_content());
     }
     response = base::ok(std::move(_pageContext));
     completionStatus = PageContextCompletionStatus::kSuccess;
@@ -942,6 +938,16 @@ result.links = linksArray;
           withCompletionStatus:PageContextCompletionStatus::kSuccess];
 }
 
+// Adds a frame's focus info to the flat array if it is focused.
+- (void)addFrameFocusInfo:(bool)isFocused
+               documentId:(const std::string&)documentId {
+  if (isFocused) {
+    FrameFocusInfo info;
+    info.document_id = documentId;
+    _focusedFrameInfos.push_back(std::move(info));
+  }
+}
+
 // Helper to populate the Rich Extraction content for both the main frame and
 // iframes.
 - (void)populateForRichExtractionWithValue:(const base::DictValue&)value
@@ -1012,13 +1018,37 @@ result.links = linksArray;
   // Having root node content is a must at this point.
   CHECK(rootNodeValue);
 
+  // Callback to collect the focus status of each traversed frame (same-origin
+  // nested frames and the current frame) into the flat array.
+  __weak __typeof(self) weakSelf = self;
+  base::RepeatingCallback<void(bool is_focused, const std::string& document_id)>
+      on_frame_extracted = base::BindRepeating(
+          ^(bool isFocusedChild, const std::string& documentId) {
+            [weakSelf addFrameFocusInfo:isFocusedChild documentId:documentId];
+          });
+
   // Populate the APC node from the tree walker output.
   PopulateAPCNodeFromContentTree(*rootNodeValue, securityOrigin, _grafter,
-                                 destinationContentNode);
+                                 destinationContentNode, on_frame_extracted);
 
+  // Populate the frame data for this frame and determine whether it is focused.
+  bool isFocused = false;
   if (frameDataValue) {
-    PopulateFrameDataNode(*frameDataValue, securityOrigin,
-                          destinationFrameData);
+    isFocused = PopulateFrameDataNode(*frameDataValue, securityOrigin,
+                                      destinationFrameData)
+                    .is_focused;
+  }
+
+  // Record focus status for later resolution if focused unless the frame is
+  // the main frame which can be resolved right away.
+  if (isFocused) {
+    FrameFocusInfo info;
+    info.local_token = localFrameToken;
+    if (isMainFrame) {
+      info.document_id =
+          destinationFrameData->document_identifier().serialized_token();
+    }
+    _focusedFrameInfos.push_back(std::move(info));
   }
 
   // Populate the page data extracted from the main frame.

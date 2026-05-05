@@ -297,6 +297,7 @@ export interface PageContentFrameData {
   // during iframe registration. Just populated for PageContentIframeContent.
   documentId?: string;
   mediaData?: PageContentMediaData;
+  isFocusedDocument?: boolean;
 }
 
 // The numbers are aligned with the RedactedFrameMetadata enum in

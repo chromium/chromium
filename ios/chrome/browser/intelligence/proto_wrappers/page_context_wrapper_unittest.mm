@@ -27,6 +27,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -3208,7 +3209,10 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
   auto select_text = [](web::WebFrame* frame, const std::string& text) {
     NSString* script =
         [NSString stringWithFormat:
-                      @"(() => {"
+                      @"(function() {"
+                      // Mock hasFocus() because the test web view isn't truly
+                      // focused by the OS. This avoids test flakiness.
+                      @"  Document.prototype.hasFocus = () => true;"
                       @"  const p = Array.from(document.querySelectorAll('p'))"
                       @"    .find(p => p.innerText.includes('%s'));"
                       @"  if (!p) return;"
@@ -3309,6 +3313,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FrameInteractionInfo) {
                   .has_focused_node_id());
 }
 
+// Tests focus extraction across frame boundaries.
 TEST_P(PageContextWrapperTest,
        PopulatePageContext_ApcV2_FrameData_FocusedNodeIdsMultipleFrames) {
   if (!IsRefactored()) {
@@ -3356,13 +3361,20 @@ TEST_P(PageContextWrapperTest,
   // This should:
   // 1. Set cross_frame.activeElement = paragraph
   // 2. Set main_frame.activeElement = <iframe>
-  NSString* script = @"(() => {"
+  NSString* script = @"(function() { "
+                     // Mock hasFocus() because the test web view isn't truly
+                     // focused by the OS. This avoids test flakiness.
+                     @"  Document.prototype.hasFocus = () => true; "
                      @"  const p = document.getElementById('cross_p');"
                      @"  if (!p) return;"
                      @"  p.tabIndex = 0;"
                      @"  p.focus();"
+                     @"  window.focus();"
                      @"})()";
   cross_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+  main_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() { Document.prototype.hasFocus = "
+                               @"() => true; })();"));
 
   PageContextWrapperConfig config =
       PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
@@ -6237,6 +6249,261 @@ TEST_P(PageContextWrapperTest,
                 .text_data()
                 .text_content(),
             "Accept 2");
+}
+
+// Tests that the focused frame on cross origin is correctly identified and its
+// token is populated in the PageInteractionInfo.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_FocusedFrame_CrossOrigin) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Main", Paragraph("Main frame text"),
+               Iframe(TestOrigin::kCrossA,
+                      HtmlPage("Child", RawHtml("<input id='i1' type='text'>")),
+                      "iframe_cross"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  GURL iframe_url = page_helper_->GetUrlForId("iframe_cross");
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  web::WebFrame* child_frame = nullptr;
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (frame->GetUrl() == iframe_url) {
+      child_frame = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(child_frame);
+
+  // Focus the input in the iframe and mock hasFocus() to return true.
+  [scoped_window_.Get() makeKeyAndVisible];
+  base::test::TestFuture<const base::Value*> js_call_future;
+  child_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() {"
+                               @"  Document.prototype.hasFocus = () => true;"
+                               @"  document.getElementById('i1').focus();"
+                               @"  window.focus();"
+                               @"})();"),
+      js_call_future.GetCallback());
+  ASSERT_TRUE(js_call_future.Wait());
+
+  base::test::TestFuture<const base::Value*> main_future;
+  main_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() {"
+                               @"  Document.prototype.hasFocus = () => true;"
+                               @"})();"),
+      main_future.GetCallback());
+  ASSERT_TRUE(main_future.Wait());
+
+  [web_state_->GetView() becomeFirstResponder];
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& apc = page_context->annotated_page_content();
+  EXPECT_TRUE(apc.has_page_interaction_info());
+  EXPECT_TRUE(apc.page_interaction_info().has_focused_frame());
+
+  const std::string& focused_frame_token =
+      apc.page_interaction_info().focused_frame().serialized_token();
+
+  // Find the iframe node and its token.
+  const auto& root = apc.root_node();
+  // root has children: [paragraph, iframe]
+  ASSERT_GE(root.children_nodes_size(), 2);
+  const auto& iframe_node = root.children_nodes(1);
+  const std::string& iframe_token = iframe_node.content_attributes()
+                                        .iframe_data()
+                                        .frame_data()
+                                        .document_identifier()
+                                        .serialized_token();
+
+  EXPECT_EQ(focused_frame_token, iframe_token);
+}
+
+// Tests that the focused frame on the same origin as the main frame is
+// correctly identified and its token is populated in the PageInteractionInfo
+// when focus is in a same-origin iframe.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_FocusedFrame_SameOrigin) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Main", Paragraph("Main frame text"),
+               Iframe(TestOrigin::kMain,
+                      HtmlPage("Child", RawHtml("<input id='i1' type='text'>")),
+                      "iframe_same"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  GURL iframe_url = page_helper_->GetUrlForId("iframe_same");
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  web::WebFrame* child_frame = nullptr;
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    if (frame->GetUrl() == iframe_url) {
+      child_frame = frame;
+      break;
+    }
+  }
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(child_frame);
+
+  // Focus the input in the iframe and mock hasFocus() to return true.
+  [scoped_window_.Get() makeKeyAndVisible];
+  base::test::TestFuture<const base::Value*> js_call_future;
+  child_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() {"
+                               @"  Document.prototype.hasFocus = () => true;"
+                               @"  document.getElementById('i1').focus();"
+                               @"  window.focus();"
+                               @"})();"),
+      js_call_future.GetCallback());
+  ASSERT_TRUE(js_call_future.Wait());
+
+  base::test::TestFuture<const base::Value*> main_future;
+  main_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() {"
+                               @"  Document.prototype.hasFocus = () => true;"
+                               @"})();"),
+      main_future.GetCallback());
+  ASSERT_TRUE(main_future.Wait());
+
+  [web_state_->GetView() becomeFirstResponder];
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& apc = page_context->annotated_page_content();
+  EXPECT_TRUE(apc.has_page_interaction_info());
+  EXPECT_TRUE(apc.page_interaction_info().has_focused_frame());
+
+  const std::string& focused_frame_token =
+      apc.page_interaction_info().focused_frame().serialized_token();
+
+  // Find the iframe node and its token.
+  const auto& root = apc.root_node();
+  // root has children: [paragraph, iframe]
+  ASSERT_GE(root.children_nodes_size(), 2);
+  const auto& iframe_node = root.children_nodes(1);
+  const std::string& iframe_token = iframe_node.content_attributes()
+                                        .iframe_data()
+                                        .frame_data()
+                                        .document_identifier()
+                                        .serialized_token();
+
+  EXPECT_EQ(focused_frame_token, iframe_token);
+}
+
+// Tests that the main frame is correctly identified as the focused frame.
+TEST_P(PageContextWrapperTest, PopulatePageContext_ApcV2_FocusedFrame_Main) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Main", RawHtml("<input id='i1' type='text'>"),
+               Iframe(TestOrigin::kCrossA,
+                      HtmlPage("Child", Paragraph("Child text")), "iframe_1"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return web_state()
+               ->GetWebFramesManager(web::ContentWorld::kIsolatedWorld)
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  web::WebFramesManager* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  // Focus the input in the main frame and mock hasFocus() to return true.
+  [scoped_window_.Get() makeKeyAndVisible];
+  base::test::TestFuture<const base::Value*> main_future;
+  main_frame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(@"(function() {"
+                               @"  Document.prototype.hasFocus = () => true;"
+                               @"  document.getElementById('i1').focus();"
+                               @"  window.focus();"
+                               @"})();"),
+      main_future.GetCallback());
+  ASSERT_TRUE(main_future.Wait());
+
+  [web_state_->GetView() becomeFirstResponder];
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  const auto& apc = page_context->annotated_page_content();
+  EXPECT_TRUE(apc.has_page_interaction_info());
+  EXPECT_TRUE(apc.page_interaction_info().has_focused_frame());
+
+  const std::string& focused_frame_token =
+      apc.page_interaction_info().focused_frame().serialized_token();
+
+  // The focused frame token should match the main frame token.
+  const auto& main_frame_data = apc.main_frame_data();
+  EXPECT_EQ(focused_frame_token,
+            main_frame_data.document_identifier().serialized_token());
 }
 
 // Tests extraction of document scoped z-order for actionable elements.

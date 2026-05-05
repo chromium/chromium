@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/test/values_test_util.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -49,8 +51,10 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
   )");
 
   ASSERT_TRUE(node_content.is_dict());
-  PopulateAPCNodeFromContentTree(node_content.GetDict(), origin, grafter,
-                                 &node);
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter, &node,
+      base::BindRepeating(
+          [](bool is_focused, const std::string& document_id) {}));
 
   ASSERT_TRUE(node.has_content_attributes());
   ASSERT_TRUE(node.content_attributes().has_geometry());
@@ -84,8 +88,10 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, EmptyGeometryIgnored) {
   )");
 
   ASSERT_TRUE(node_content.is_dict());
-  PopulateAPCNodeFromContentTree(node_content.GetDict(), origin, grafter,
-                                 &node);
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), origin, grafter, &node,
+      base::BindRepeating(
+          [](bool is_focused, const std::string& document_id) {}));
 
   ASSERT_TRUE(node.has_content_attributes());
   EXPECT_FALSE(node.content_attributes().has_geometry());
