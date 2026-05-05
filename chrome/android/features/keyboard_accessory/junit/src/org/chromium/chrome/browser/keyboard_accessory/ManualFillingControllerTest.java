@@ -1537,7 +1537,7 @@ public class ManualFillingControllerTest {
         simulateVisibleViewportSize(/* width= */ 1000, /* height= */ 1000);
         mController.setFieldBounds(new RectF(leftBound, topBound, rightBound, bottomBound));
 
-        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height))
                 .thenReturn(barHeight);
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
@@ -1580,7 +1580,7 @@ public class ManualFillingControllerTest {
         simulateVisibleViewportSize(/* width= */ 1000, /* height= */ 90);
         mController.setFieldBounds(new RectF(leftBound, topBound, rightBound, bottomBound));
 
-        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height))
                 .thenReturn(barHeight);
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
@@ -1892,10 +1892,9 @@ public class ManualFillingControllerTest {
         // Return the correct keyboard_accessory_height for the current density:
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height))
                 .thenReturn((int) (density * 48));
-        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height))
                 .thenReturn((int) (density * 48));
-        when(mMockResources.getDimensionPixelSize(
-                        R.dimen.keyboard_accessory_height_with_shadow_redesign))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow))
                 .thenReturn((int) (density * 48));
     }
 

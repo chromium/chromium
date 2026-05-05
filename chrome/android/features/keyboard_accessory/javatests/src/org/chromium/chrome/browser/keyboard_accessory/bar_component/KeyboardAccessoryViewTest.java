@@ -323,12 +323,10 @@ public class KeyboardAccessoryViewTest {
         LinearLayout barContents = view.findViewById(R.id.accessory_bar_contents);
         assertThat(
                 barContents.getMinimumHeight(),
-                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)));
+                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
         LinearLayout.LayoutParams params =
                 (LinearLayout.LayoutParams) barContents.getLayoutParams();
-        assertThat(
-                params.height,
-                is(getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)));
+        assertThat(params.height, is(getDimensionPixelSize(R.dimen.keyboard_accessory_height)));
     }
 
     @Test

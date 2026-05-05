@@ -861,7 +861,7 @@ class ManualFillingMediator
 
     private @Px int getBarWithNotchHeightPx() {
         Resources resources = mActivity.getResources();
-        return resources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign)
+        return resources.getDimensionPixelSize(R.dimen.keyboard_accessory_height)
                 + resources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height);
     }
 
@@ -1243,15 +1243,13 @@ class ManualFillingMediator
     }
 
     private @Px int getBarHeightWithoutShadow() {
-        return mActivity
-                .getResources()
-                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
+        return mActivity.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_height);
     }
 
     private @Px int getHeaderHeight() {
         return mActivity
                 .getResources()
-                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow_redesign);
+                .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow);
     }
 
     private @Px int getIdealSheetHeight() {

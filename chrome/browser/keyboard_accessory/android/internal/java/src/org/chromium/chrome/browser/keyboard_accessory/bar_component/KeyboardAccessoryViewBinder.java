@@ -203,8 +203,7 @@ class KeyboardAccessoryViewBinder {
             itemView.setMinimumHeight(
                     parent.getContext()
                             .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.keyboard_accessory_chip_min_height_redesign));
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_chip_min_height));
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;

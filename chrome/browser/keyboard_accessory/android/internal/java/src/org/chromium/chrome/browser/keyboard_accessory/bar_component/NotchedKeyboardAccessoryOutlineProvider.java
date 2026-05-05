@@ -42,8 +42,7 @@ public class NotchedKeyboardAccessoryOutlineProvider extends ViewOutlineProvider
 
         // Fallback for the old devices that don't support complex paths.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            float cornerRadius =
-                    res.getDimension(R.dimen.keyboard_accessory_corner_radius_redesign);
+            float cornerRadius = res.getDimension(R.dimen.keyboard_accessory_corner_radius);
             outline.setRoundRect(0, 0, width, height, (int) cornerRadius);
             return;
         }
@@ -74,7 +73,7 @@ public class NotchedKeyboardAccessoryOutlineProvider extends ViewOutlineProvider
         Path path = new Path();
 
         float notchHeight = res.getDimension(R.dimen.keyboard_accessory_notch_height);
-        float cornerRadius = res.getDimension(R.dimen.keyboard_accessory_corner_radius_redesign);
+        float cornerRadius = res.getDimension(R.dimen.keyboard_accessory_corner_radius);
         float notchX = res.getDimension(R.dimen.keyboard_accessory_notch_position) + notchOffsetX;
         float tipWidth = res.getDimension(R.dimen.keyboard_accessory_notch_tip_width);
         float baseWidth = res.getDimension(R.dimen.keyboard_accessory_notch_base_width);
