@@ -2048,6 +2048,13 @@ source_set("unit_tests") {
       sources += [ "external_registry_loader_win_unittest.cc" ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      sources += [
+        # Batch upload is only available on Windows, Mac and Linux.
+        "sync/extension_local_data_batch_uploader_unittest.cc",
+      ]
+    }
+
     if (is_chromeos) {
       sources += [
         "api/braille_display_private/braille_display_private_api_unittest.cc",
