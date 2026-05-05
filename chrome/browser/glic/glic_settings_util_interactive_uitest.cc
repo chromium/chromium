@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -197,9 +198,10 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
           kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
 }
 
-// TODO(crbug.com/494337994) Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
-                       DISABLED_RefreshSettingsAfterAcceptingFRE) {
+                       RefreshSettingsAfterAcceptingFRE) {
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
   const DeepQuery kPathToAiPageIndex{"settings-ui", "settings-main",
                                      "settings-ai-page-index"};
   const DeepQuery kPathToGlicPage{"settings-ui", "settings-main",

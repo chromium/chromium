@@ -817,6 +817,7 @@ if (!is_android) {
       "//chrome/browser/actor:tools_test_support",
       "//chrome/browser/autofill/actor:test_support",
       "//chrome/browser/background/glic",
+      "//chrome/browser/compose",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic:mojo_bindings",
