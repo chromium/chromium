@@ -405,6 +405,7 @@ if (is_chromeos) {
       "//chrome/browser",
       "//chrome/browser/sync",
       "//chrome/test:test_support",
+      "//chromeos/ash/components/login/login_state:test_support",
       "//components/app_constants",
       "//content/test:test_support",
       "//testing/gmock",
