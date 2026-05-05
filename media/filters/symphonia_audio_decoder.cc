@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -258,6 +259,30 @@ DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
   return status;
 }
 
+// A templated ExternalMemory implementation that wraps and owns a rust::Box<T>,
+// automatically deriving the span from the box's `data` member (expected to be
+// a contiguous buffer like rust::Vec<uint8_t>).
+template <typename T>
+class BoxedMemory : public AudioBuffer::ExternalMemory {
+ public:
+  explicit BoxedMemory(rust::Box<T> box)
+      : ExternalMemory(UNSAFE_BUFFERS(
+            base::span<uint8_t>(const_cast<uint8_t*>(box->data.data()),
+                                box->data.size()))),
+        box_(std::move(box)) {}
+  ~BoxedMemory() override = default;
+
+ private:
+  rust::Box<T> box_;
+};
+
+// Helper function to automatically deduce the template argument T from
+// rust::Box<T>.
+template <typename T>
+std::unique_ptr<BoxedMemory<T>> WrapBoxedMemory(rust::Box<T> box) {
+  return std::make_unique<BoxedMemory<T>>(std::move(box));
+}
+
 }  // namespace
 
 SymphoniaAudioDecoder::SymphoniaAudioDecoder(
@@ -490,7 +515,7 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // timestamp.
   const base::TimeDelta timestamp = buffer.timestamp();
   scoped_refptr<AudioBuffer> decoded_audio =
-      ToMediaAudioBuffer(*result.buffer, timestamp);
+      ToMediaAudioBuffer(std::move(result.buffer), timestamp);
   CHECK(decoded_audio);
 
   // Process potential discards.
@@ -508,25 +533,26 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
 }
 
 scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
-    const SymphoniaAudioBuffer& symphonia_buffer,
+    rust::Box<SymphoniaAudioBuffer> symphonia_buffer,
     base::TimeDelta timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create the AudioBuffer.
-  // TODO(crbug.com/40074653): long term we want a WrapOrCopy implementation,
-  // since we own the Symphonia audio buffer.
-  const uint8_t* data = symphonia_buffer.data.data();
+  const SampleFormat sample_format =
+      ToSampleFormat(symphonia_buffer->sample_format);
+  const int channel_count = symphonia_buffer->channel_count;
+  const int sample_rate = symphonia_buffer->sample_rate;
+  const int num_frames = symphonia_buffer->num_frames;
 
-  const bool count_changed = symphonia_buffer.channel_count !=
-                             static_cast<uint32_t>(config_.channels());
+  const bool count_changed = channel_count != config_.channels();
   const auto layout = count_changed
-                          ? ChannelMaskToLayout(symphonia_buffer.channel_mask)
+                          ? ChannelMaskToLayout(symphonia_buffer->channel_mask)
                           : config_.channel_layout();
 
-  return AudioBuffer::CopyFrom(
-      ToSampleFormat(symphonia_buffer.sample_format), layout,
-      symphonia_buffer.channel_count, symphonia_buffer.sample_rate,
-      symphonia_buffer.num_frames, &data, timestamp, pool_);
+  auto external_memory = WrapBoxedMemory(std::move(symphonia_buffer));
+
+  return AudioBuffer::CreateFromExternalMemory(
+      sample_format, layout, channel_count, sample_rate, num_frames, timestamp,
+      std::move(external_memory));
 }
 
 void SymphoniaAudioDecoder::ReleaseSymphoniaResources() {
