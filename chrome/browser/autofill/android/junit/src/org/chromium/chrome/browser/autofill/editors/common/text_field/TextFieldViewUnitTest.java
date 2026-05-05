@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -58,6 +60,7 @@ public final class TextFieldViewUnitTest {
     private View mOtherFocusableField;
 
     private static final String FIELD_LABEL = "label";
+    private static final String FIELD_VALUE = "value";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -71,10 +74,15 @@ public final class TextFieldViewUnitTest {
         mContentView.addView(mOtherFocusableField);
     }
 
+    @After
+    public void tearDown() {
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+    }
+
     private PropertyModel buildDefaultPropertyModel() {
         return new PropertyModel.Builder(TEXT_ALL_KEYS)
                 .with(LABEL, FIELD_LABEL)
-                .with(VALUE, "value")
+                .with(VALUE, FIELD_VALUE)
                 .with(VALUE_CHANGED_CALLBACK, mValueChangedCallback)
                 .build();
     }
@@ -372,23 +380,44 @@ public final class TextFieldViewUnitTest {
      * required.
      */
     @Test
-    public void testRequiredFieldHasCorrectLabelAndAccessibility() {
+    public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOff() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
-
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
         TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
+
+        // Hint should contain '*' when screen reader is off.
+        assertTrue(inputLayout.getHint().toString().contains(FieldView.REQUIRED_FIELD_INDICATOR));
+
+        // Accessibility text should be the value, not the label.
         AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
         assertNotNull(delegate);
-
         AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
-        delegate.onInitializeAccessibilityNodeInfo(inputLayout, infoNode);
+        delegate.onInitializeAccessibilityNodeInfo(inputLayout.getEditText(), infoNode);
+        assertEquals(FIELD_VALUE, infoNode.getText().toString());
+    }
 
-        assertEquals(
-                infoNode.getText().toString(),
+    @Test
+    public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOn() {
+        PropertyModel model = buildDefaultPropertyModel();
+        model.set(IS_REQUIRED, true);
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
+
+        // Hint should contain "required" text.
+        String hint = inputLayout.getHint().toString();
+        String expectedHint =
                 mActivity.getString(
                         R.string.autofill_address_edit_dialog_required_field_content_description,
-                        FIELD_LABEL));
-        assertTrue(inputLayout.getHint().toString().contains(FieldView.REQUIRED_FIELD_INDICATOR));
+                        FIELD_LABEL);
+        assertEquals(expectedHint, hint);
+
+        // Accessibility text should still be the value, not the label.
+        AccessibilityDelegate delegate = inputLayout.getEditText().getAccessibilityDelegate();
+        assertNotNull(delegate);
+        AccessibilityNodeInfo infoNode = AccessibilityNodeInfo.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(inputLayout.getEditText(), infoNode);
+        assertEquals(FIELD_VALUE, infoNode.getText().toString());
     }
 
     /**

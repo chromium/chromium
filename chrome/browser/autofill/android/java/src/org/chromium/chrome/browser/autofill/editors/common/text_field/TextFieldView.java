@@ -26,7 +26,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -37,6 +36,7 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -175,23 +175,14 @@ public class TextFieldView extends FrameLayout implements FieldView {
     public void setLabel(String label, boolean isRequired) {
         // Build up the label. Required fields are indicated by appending a '*'.
         if (isRequired) {
-            // TODO(crbug.com/417413188): Fix a bug where label is announced too many times.
-            // Build the accessibility description manually by combining "required" string with  the
-            // label, because '*' are not announced by the screen reader and it is more informative.
-            final int requiredFieldContentDescriptionId =
-                    R.string.autofill_address_edit_dialog_required_field_content_description;
-            final String labelForAccessibility =
-                    getContext().getString(requiredFieldContentDescriptionId, label);
-            mInputLayout.setTextInputAccessibilityDelegate(
-                    new TextInputLayout.AccessibilityDelegate(mInputLayout) {
-                        @Override
-                        public void onInitializeAccessibilityNodeInfo(
-                                View host, AccessibilityNodeInfoCompat info) {
-                            super.onInitializeAccessibilityNodeInfo(host, info);
-                            info.setText(labelForAccessibility);
-                        }
-                    });
-            label += FieldView.REQUIRED_FIELD_INDICATOR;
+            if (AccessibilityState.isTouchExplorationEnabled()
+                    || AccessibilityState.isPerformGesturesEnabled()) {
+                final int requiredFieldContentDescriptionId =
+                        R.string.autofill_address_edit_dialog_required_field_content_description;
+                label = getContext().getString(requiredFieldContentDescriptionId, label);
+            } else {
+                label += FieldView.REQUIRED_FIELD_INDICATOR;
+            }
         }
         mInputLayout.setHint(label);
     }
