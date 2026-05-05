@@ -2002,7 +2002,6 @@ component("base") {
       "win/shortcut.h",
       "win/sid.cc",
       "win/sid.h",
-      "win/sphelper.h",
       "win/startup_information.cc",
       "win/startup_information.h",
       "win/variant_conversions.h",
