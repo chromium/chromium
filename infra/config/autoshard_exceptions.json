@@ -13,10 +13,6 @@
             }
         },
         "android-16-x64-rel": {
-            "android_browsertests": {
-                "shards": 10,
-                "try_builder": "android-x64-rel"
-            },
             "chrome_public_test_apk": {
                 "shards": 56,
                 "try_builder": "android-x64-rel"

@@ -130,7 +130,7 @@ targets.bundle(
     per_test_modifications = {
         "chrome_public_test_apk_tablet": targets.mixin(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 3,
             ),
         ),
     },

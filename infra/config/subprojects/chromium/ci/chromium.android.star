@@ -4145,12 +4145,12 @@ ci.builder(
         per_test_modifications = {
             "android_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 10,
+                    shards = 25,
                 ),
             ),
             "android_sync_integration_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 2,
+                    shards = 4,
                 ),
             ),
             "base_unittests": targets.mixin(
@@ -4229,6 +4229,9 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
                 ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
             ),
             "webview_ui_test_app_test_apk_no_field_trial": targets.mixin(
                 ci_only = True,
