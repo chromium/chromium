@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_logger.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_snackbar_presenter.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 
 @interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
                                          UINavigationControllerDelegate,

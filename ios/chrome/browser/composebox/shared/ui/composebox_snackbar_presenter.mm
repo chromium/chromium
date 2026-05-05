@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 
-#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -51,11 +50,12 @@
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
-- (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
-    (CGFloat)bottomOffset {
+- (void)showAttachmentLimitForImageGenerationSnackbar:
+            (NSUInteger)attachmentLimit
+                                     withBottomOffset:(CGFloat)bottomOffset {
   NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_COMPOSEBOX_IMAGE_GEN_MAXIMUM_ATTACHMENTS_REACHED,
-      kAttachmentLimitForImageGeneration);
+      attachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
@@ -68,11 +68,6 @@
 #pragma mark - TabPickerSnackbarPresenter
 
 - (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
-  if (!EnableComposeboxServerSideState()) {
-    [self showSnackbarForAttachmentLimit:kAttachmentLimit];
-    return;
-  }
-
   NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED, attachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];

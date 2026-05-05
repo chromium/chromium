@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_
+#define IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -19,8 +19,9 @@ class Browser;
 
 // Shows a snackbar with the attachment limit message for an image generation
 // prompt with a bottom offset.
-- (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
-    (CGFloat)bottomOffset;
+- (void)showAttachmentLimitForImageGenerationSnackbar:
+            (NSUInteger)attachmentLimit
+                                     withBottomOffset:(CGFloat)bottomOffset;
 
 // Shows a snackbar with the attachment limit message with a bottom offset.
 - (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit
@@ -41,4 +42,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_SHARED_UI_COMPOSEBOX_SNACKBAR_PRESENTER_H_

@@ -15,7 +15,7 @@
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
-#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_ui_constants.h"
@@ -585,10 +585,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
   SelectTabWithTitle(firstPageTitle);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED,
-                     kAttachmentLimit))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED,
+                                   kAttachmentLimit))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that kAttachmentLimit tabs are selected.

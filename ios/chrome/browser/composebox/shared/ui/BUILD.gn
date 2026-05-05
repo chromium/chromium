@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "composebox_snackbar_presenter.h",
+    "composebox_snackbar_presenter.mm",
+  ]
+  public_deps = [
+    ":ui_constants",
+    "//ios/chrome/browser/tab_picker/coordinator",
+    "//ios/web/public",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/public:features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/web/public",
+  ]
+}
+
+source_set("ui_constants") {
+  sources = [
+    "composebox_ui_constants.h",
+    "composebox_ui_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
