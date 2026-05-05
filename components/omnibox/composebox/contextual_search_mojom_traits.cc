@@ -4,6 +4,7 @@
 
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "components/omnibox/composebox/composebox_query.mojom-shared.h"
 
@@ -179,7 +180,7 @@ UsedInputType EnumTraits<UsedInputType, omnibox::InputType>::ToMojom(
     case omnibox::InputType::InputType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  DUMP_WILL_BE_NOTREACHED();
+  DLOG(ERROR) << "Unexpected InputType in ToMojom: " << static_cast<int>(input);
   return UsedInputType::kUnspecified;
 }
 
@@ -198,7 +199,9 @@ omnibox::InputType EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
     case UsedInputType::kDrive:
       return omnibox::InputType::INPUT_TYPE_DRIVE;
   }
-  NOTREACHED();
+  DLOG(ERROR) << "Unexpected InputType in FromMojom: "
+              << static_cast<int>(input);
+  return omnibox::InputType::INPUT_TYPE_UNSPECIFIED;
 }
 
 // static
