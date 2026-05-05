@@ -72,20 +72,10 @@
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  if (progress == _fullscreenProgress) {
-    return;
-  }
   _fullscreenProgress = progress;
   [self updateLayout];
-}
-
-- (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  __weak __typeof(self) weakSelf = self;
-  CGFloat finalProgress = animator.finalProgress;
-  [animator addAnimations:^{
-    [weakSelf updateForFullscreenProgress:finalProgress];
-    [weakSelf.view layoutIfNeeded];
-  }];
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
