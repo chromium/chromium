@@ -1397,6 +1397,13 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   int totalBlockingDownloadCount = 0;
   auto removed = std::ranges::remove_if(
       profiles, [&totalBlockingDownloadCount](Profile* profile) {
+        // If it is not possible to open a browser window for a profile, then
+        // don't count that profile towards "downloads in progress".
+        if (Browser::GetCreationStatusForProfile(profile) !=
+            Browser::CreationStatus::kOk) {
+          return true;
+        }
+
         // `DownloadCoreService` can be nullptr for some irregular profiles,
         // e.g. the System Profile.
         DownloadCoreService* downloadCoreService =
