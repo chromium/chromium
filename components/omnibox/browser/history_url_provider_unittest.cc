@@ -1371,8 +1371,7 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
                             TestSchemeClassifier());
     if (input_prefer_keyword_mode) {
       input.set_prefer_keyword(true);
-      input.set_keyword_mode_entry_method(
-          metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+      input.set_in_keyword_mode(true);
     }
 
     provider_->Stop(AutocompleteStopReason::kClobbered);
@@ -1439,8 +1438,7 @@ TEST_F(HistoryURLProviderTest, MaxMatches) {
   EXPECT_EQ(matches_.size(), provider_->provider_max_matches());
 
   // Turn keyword mode on. we should be able to get more matches now.
-  input.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_in_keyword_mode(true);
   input.set_prefer_keyword(true);
   provider_->Start(input, false);
   if (!provider_->done()) {

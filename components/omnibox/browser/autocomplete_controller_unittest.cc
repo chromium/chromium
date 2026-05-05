@@ -2300,8 +2300,7 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_StarterPack) {
   }
 
   // Enter keyword mode.
-  controller_.input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  controller_.input_.set_in_keyword_mode(true);
 
   // In @tabs, run search, keyword, and open tab provider only.
   controller_.input_.UpdateText(u"@tabs", 0, {});
@@ -2375,8 +2374,7 @@ TEST_F(AutocompleteControllerTest,
   // In keyword mode, all limit provider params on by default, limit document
   // and history cluster suggestions as well.
   controller_.input_.UpdateText(u"keyword", 0, {});
-  controller_.input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  controller_.input_.set_in_keyword_mode(true);
   excluded_provider_types = {
       AutocompleteProvider::TYPE_OPEN_TAB,
       AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER,
@@ -2523,8 +2521,7 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_TRUE(controller_.ShouldRunProvider(document_provider.get()));
 
   // Enter keyword mode.
-  controller_.input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  controller_.input_.set_in_keyword_mode(true);
 
   // Aggregator not ran when in site search mode, regardless of
   // `enterprise_search_aggregator_settings.require_shortcut` pref value.
@@ -2713,8 +2710,7 @@ TEST_F(AutocompleteControllerTest,
   controller_.input_ =
       AutocompleteInput(u"@page Summar", metrics::OmniboxEventProto::OTHER,
                         TestSchemeClassifier());
-  controller_.input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto::SPACE_AT_END);
+  controller_.input_.set_in_keyword_mode(true);
 
   SetAutocompleteMatches({CreateContextualSearchMatch(u"Summary"),
                           CreateContextualSearchMatch(u"Summarize this page")});
@@ -3247,8 +3243,7 @@ TEST_F(AutocompleteControllerTest,
   controller_.input_ =
       AutocompleteInput(u"@page Summar", metrics::OmniboxEventProto::OTHER,
                         TestSchemeClassifier());
-  controller_.input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto::SPACE_AT_END);
+  controller_.input_.set_in_keyword_mode(true);
 
   AutocompleteMatch match1 = CreateContextualSearchMatch(u"Summary");
   match1.suggest_template = omnibox::SuggestTemplateInfo();

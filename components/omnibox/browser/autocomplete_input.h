@@ -315,18 +315,13 @@ class AutocompleteInput {
     allow_exact_keyword_match_ = allow_exact_keyword_match;
   }
 
-  // Provides public read-only access to the method that the user used to
-  // get into keyword mode (which includes INVALID if they didn't enter it.)
-  metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method()
-      const {
-    return keyword_mode_entry_method_;
-  }
+  // Provides public read-only access to whether the user entered keyword mode.
+  bool in_keyword_mode() const { return in_keyword_mode_; }
 
-  // Used by code handling keyword entry to set the method by which the user
-  // used to enter it.
-  void set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-    keyword_mode_entry_method_ = entry_method;
+  // Set by the edit model or driver of autocompletion to inform autocomplete
+  // providers & controller.
+  void set_in_keyword_mode(bool in_keyword_mode) {
+    in_keyword_mode_ = in_keyword_mode;
   }
 
   // Returns whether providers should avoid obtaining matches asynchronously
@@ -420,10 +415,6 @@ class AutocompleteInput {
   // Zero-Suggest state does NOT mean that `text_` is empty.
   bool IsZeroSuggest() const;
 
-  // Uses the keyword entry mode to decide if the user is currently in keyword
-  // mode.
-  bool InKeywordMode() const;
-
   // Whether the input might be matching featured keyword suggestions.
   FeaturedKeywordMode GetFeaturedKeywordMode() const;
 
@@ -451,7 +442,7 @@ class AutocompleteInput {
   bool prevent_inline_autocomplete_;
   bool prefer_keyword_;
   bool allow_exact_keyword_match_;
-  metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
+  bool in_keyword_mode_;
   bool omit_asynchronous_matches_;
   metrics::OmniboxFocusType focus_type_ =
       metrics::OmniboxFocusType::INTERACTION_DEFAULT;

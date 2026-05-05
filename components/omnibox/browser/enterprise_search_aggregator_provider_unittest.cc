@@ -704,9 +704,7 @@ AutocompleteInput CreateInput(const std::u16string& text,
                               bool in_keyword_mode) {
   AutocompleteInput input = {text, metrics::OmniboxEventProto::OTHER,
                              TestSchemeClassifier()};
-  if (in_keyword_mode) {
-    input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
-  }
+  input.set_in_keyword_mode(in_keyword_mode);
   return input;
 }
 

@@ -4,11 +4,14 @@
 
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -43,7 +46,7 @@ void UnscopedExtensionProvider::Start(const AutocompleteInput& input,
   }
 
   // Extension suggestions are not allowed in keyword mode.
-  if (input.InKeywordMode()) {
+  if (input.in_keyword_mode()) {
     return;
   }
 

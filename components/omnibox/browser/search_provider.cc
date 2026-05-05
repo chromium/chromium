@@ -661,7 +661,7 @@ void SearchProvider::Run(bool query_is_private) {
   // Start a new request with the current input.
   time_suggest_request_sent_ = base::TimeTicks::Now();
 
-  if (!query_is_private && !input_.InKeywordMode()) {
+  if (!query_is_private && !input_.in_keyword_mode()) {
     default_loader_ =
         CreateSuggestLoader(providers_.GetDefaultProviderURL(), input_);
   }

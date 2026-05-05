@@ -93,7 +93,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = autocomplete_input_.InKeywordMode()
+  size_t max_matches = autocomplete_input_.in_keyword_mode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
   if (autocomplete_input_.current_page_classification() ==
@@ -330,7 +330,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.fill_into_edit.insert(0, match.keyword + u" ");
   }
 
-  if (autocomplete_input_.InKeywordMode()) {
+  if (autocomplete_input_.in_keyword_mode()) {
     match.from_keyword = true;
   }
 

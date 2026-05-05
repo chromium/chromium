@@ -482,10 +482,7 @@ void BaseSearchProviderTest::QueryForInput(const std::u16string& text,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
   input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
   input.set_prefer_keyword(prefer_keyword);
-  if (keyword_mode) {
-    input.set_keyword_mode_entry_method(
-        metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
-  }
+  input.set_in_keyword_mode(keyword_mode);
 
   QueryForInput(input);
 }

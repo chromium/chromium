@@ -144,7 +144,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.SetAllowedToBeDefault(input);
   }
 
-  if (input.InKeywordMode()) {
+  if (input.in_keyword_mode()) {
     match.from_keyword = true;
   }
 

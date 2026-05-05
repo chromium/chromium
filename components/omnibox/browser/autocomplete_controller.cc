@@ -1141,7 +1141,7 @@ bool AutocompleteController::ShouldRunProvider(
     return true;
   }
 
-  if (input_.InKeywordMode()) {
+  if (input_.in_keyword_mode()) {
     // Only a subset of providers are run when we're in a starter pack keyword
     // mode. Try to grab the TemplateURL to determine if we're in starter pack
     // mode and whether this provider should be run.
@@ -1762,7 +1762,7 @@ void AutocompleteController::AttachActions() {
       internal_result_.AttachContextualSearchOpenLensActionToMatches();
     }
 
-  } else if (input_.InKeywordMode()) {
+  } else if (input_.in_keyword_mode()) {
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
         AutocompleteInput::GetSubstitutingTemplateURLForInput(

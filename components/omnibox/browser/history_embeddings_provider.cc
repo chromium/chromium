@@ -144,7 +144,7 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
 
   bool answers_enabled =
       history_embeddings::GetFeatureParameters().answers_in_omnibox_scoped &&
-      input_.InKeywordMode();
+      input_.in_keyword_mode();
   if (answers_enabled) {
     auto optional_match = CreateAnswerMatch(
         search_result.answerer_result,

@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_in_keyword_mode(true);
   controller()->Start(input);
 
   // Respond for SearchAggregator request.
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_in_keyword_mode(true);
   controller()->Start(input);
 
   std::vector<std::string> request_bodies = {};
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_in_keyword_mode(true);
   controller()->Start(input);
 
   // 3. Respond with an invalid javascript: URL.
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxSearchAggregatorSingleRequestTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_in_keyword_mode(true);
   controller()->Start(input);
 
   // Redirect response.
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxSearchAggregatorHTTPErrorTest,
   AutocompleteInput input(
       kSearchInput, metrics::OmniboxEventProto::NTP,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_in_keyword_mode(true);
   controller()->Start(input);
 
   // Respond to the first SearchAggregator request (1 - query).

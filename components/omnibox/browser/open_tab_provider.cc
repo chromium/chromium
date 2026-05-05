@@ -175,7 +175,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
   // If there were no open tab results found, and we're in keyword mode,
   // generate a NULL_RESULT_MESSAGE suggestion to keep the user in keyword mode
   // and display a no results message.
-  if (adjusted_input.InKeywordMode() && matches_.empty() && template_url) {
+  if (adjusted_input.in_keyword_mode() && matches_.empty() && template_url) {
     matches_.push_back(
         CreateNullResultMessageMatch(adjusted_input, template_url));
   }
@@ -229,7 +229,7 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
       description_terms, match.description.size(), ACMatchClassification::MATCH,
       ACMatchClassification::NONE);
 
-  if (input.InKeywordMode()) {
+  if (input.in_keyword_mode()) {
     match.from_keyword = true;
   }
 

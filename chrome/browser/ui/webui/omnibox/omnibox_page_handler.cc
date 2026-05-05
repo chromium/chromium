@@ -221,9 +221,7 @@ void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
   input.set_current_title(base::UTF8ToUTF16(current_url));
   input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
   input.set_prefer_keyword(prefer_keyword);
-  if (prefer_keyword) {
-    input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
-  }
+  input.set_in_keyword_mode(prefer_keyword);
   input.set_focus_type(zero_suggest
                            ? metrics::OmniboxFocusType::INTERACTION_FOCUS
                            : metrics::OmniboxFocusType::INTERACTION_DEFAULT);

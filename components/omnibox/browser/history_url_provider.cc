@@ -474,7 +474,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   }
 
   what_you_typed_match.relevance = CalculateRelevance(WHAT_YOU_TYPED, 0);
-  if (autocomplete_input.InKeywordMode()) {
+  if (autocomplete_input.in_keyword_mode()) {
     // TODO(yoangela): We may want to suppress what you typed matches when in
     // keyword mode.
     what_you_typed_match.from_keyword = true;
@@ -621,7 +621,7 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = params->input.InKeywordMode()
+  size_t max_matches = params->input.in_keyword_mode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
 
@@ -1171,7 +1171,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
     match.SetAllowedToBeDefault(params.input_before_fixup);
   }
 
-  if (params.input.InKeywordMode()) {
+  if (params.input.in_keyword_mode()) {
     match.from_keyword = true;
   }
 

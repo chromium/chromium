@@ -180,8 +180,7 @@ TEST_F(OpenTabProviderTest, KeywordMode) {
   AutocompleteInput input(u"@tabs google", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_prefer_keyword(true);
-  input.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_in_keyword_mode(true);
   open_tab_provider().Start(input, /*minimal_changes=*/false);
 
   ASSERT_EQ(open_tab_provider().matches().size(), 1UL);

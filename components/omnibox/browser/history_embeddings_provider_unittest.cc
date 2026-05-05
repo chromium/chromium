@@ -500,8 +500,7 @@ TEST_F(HistoryEmbeddingsProviderTest,
 
   history_embeddings_provider_->done_ = false;
   history_embeddings_provider_->input_ = CreateAutocompleteInput(u"query");
-  history_embeddings_provider_->input_.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  history_embeddings_provider_->input_.set_in_keyword_mode(true);
   history_embeddings_provider_->OnReceivedSearchResult(result.Clone());
 
   // Set up expected matches.

@@ -590,8 +590,7 @@ TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
                            metrics::OmniboxEventProto::OTHER,
                            TestSchemeClassifier());
   input4.set_prefer_keyword(true);
-  input4.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input4.set_in_keyword_mode(true);
   provider_->Start(input4, /*minimal_changes=*/false);
 
   matches = provider_->matches();
@@ -619,8 +618,7 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
   EXPECT_EQ(matches.size(), provider_->provider_max_matches());
 
   // Turn keyword mode on. we should be able to get more matches now.
-  input.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
+  input.set_in_keyword_mode(true);
   input.set_prefer_keyword(true);
   provider_->Start(input, /*minimal_changes=*/false);
 
@@ -630,8 +628,7 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
   // The provider should not limit the number of suggestions when ML scoring
   // w/increased candidates is enabled. Any matches beyond the limit should be
   // marked as culled_by_provider and have a relevance of 0.
-  input.set_keyword_mode_entry_method(
-      metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  input.set_in_keyword_mode(false);
   input.set_prefer_keyword(false);
 
   base::test::ScopedFeatureList scoped_feature_list;
