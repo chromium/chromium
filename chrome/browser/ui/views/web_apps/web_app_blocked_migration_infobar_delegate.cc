@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
 namespace web_app {
 
 // static
@@ -70,11 +71,11 @@ bool WebAppBlockedMigrationInfoBarDelegate::ShouldExpire(
   return false;
 }
 
-// TODO(crbug.com/488031001) Find learn more link with more context.
 WebAppBlockedMigrationInfoBarDelegate::WebAppBlockedMigrationInfoBarDelegate(
     base::OnceClosure on_dismiss_callback)
     : on_dismiss_callback_(std::move(on_dismiss_callback)),
-      learn_more_url_("https://support.google.com/chrome") {
+      learn_more_url_(
+          "https://support.google.com/chrome/a/?p=pwa_origin_migration") {
   CHECK(on_dismiss_callback_);
 }
 
