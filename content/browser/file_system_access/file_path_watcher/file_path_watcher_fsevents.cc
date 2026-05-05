@@ -12,12 +12,15 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,6 +31,42 @@
 namespace content {
 
 namespace {
+
+// Ref-counted context to hold state needed by the static `FSEventsCallback`,
+// which is invoked by MacOS FSEvents API on a background libdispatch thread.
+struct FSEventsContext : public base::RefCountedThreadSafe<FSEventsContext> {
+  FSEventsContext(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  base::WeakPtr<FilePathWatcherFSEvents> weak_ptr,
+                  base::RepeatingClosure test_callback)
+      : task_runner(std::move(task_runner)),
+        weak_ptr(std::move(weak_ptr)),
+        test_callback(std::move(test_callback)) {}
+
+  // C-style wrappers required by `FSEventStreamContext`
+  static const void* RetainContext(const void* info) {
+    static_cast<const FSEventsContext*>(info)->AddRef();
+    return info;
+  }
+  static void ReleaseContext(const void* info) {
+    static_cast<const FSEventsContext*>(info)->Release();
+  }
+
+  // Holds reference to task_runner. Since the FSEventsCallback runs on an
+  // external OS thread, we must allow it to use this TaskRunner to post a task
+  // back to the original Chromium sequence where the FilePathWatcher resides.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner;
+  // Holds weakptr to the `FilePathWatcherFSEvents` object. It may be destroyed
+  // on the Chromium sequence while the FSEventsCallback is running or while a
+  // task is pending.
+  // Accessing via this ensures the task `OnFilePathsChanged` will only execute
+  // if the watcher object is still valid.
+  const base::WeakPtr<FilePathWatcherFSEvents> weak_ptr;
+  const base::RepeatingClosure test_callback;
+
+ private:
+  friend class base::RefCountedThreadSafe<FSEventsContext>;
+  ~FSEventsContext() = default;
+};
 
 // The latency parameter passed to FSEventsStreamCreate().
 const CFAbsoluteTime kEventLatencySeconds = 0.7;
@@ -146,8 +185,20 @@ void FilePathWatcherFSEvents::FSEventsCallback(
     void* event_paths,
     const FSEventStreamEventFlags flags[],
     const FSEventStreamEventId event_ids[]) {
-  FilePathWatcherFSEvents* watcher =
-      reinterpret_cast<FilePathWatcherFSEvents*>(event_watcher);
+  // The MacOS framework holds a reference to the ref-counted `FSEventsContext`,
+  // created in `UpdateEventStream()`, as long as the `FSEventStream` is active.
+  // The context connects this static callback to the `FilePathWatcherFSEvents`
+  // object via a WeakPtr in `UpdateEventStream()`.
+  //
+  // If the `FilePathWatcherFSEvents` object is destroyed concurrently on the
+  // Chromium thread, it releases the stream, which causes the OS to drop its
+  // reference to the context.
+  //
+  // By holding a local `scoped_refptr` here, we guarantee that the
+  // `FSEventsContext` object stays alive until this static function returns,
+  // even if the `FilePathWatcherFSEvents` object is deleted mid-flight.
+  scoped_refptr<FSEventsContext> context =
+      base::WrapRefCounted(static_cast<FSEventsContext*>(event_watcher));
   bool is_root_changed_event = false;
 
   // The `root_changed_at` value represents the highest-numbered FSEvents event
@@ -209,11 +260,22 @@ void FilePathWatcherFSEvents::FSEventsCallback(
     }
     events[event_id] = ChangeEvent(event_flags, event_path, std::nullopt);
   }
-  watcher->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FilePathWatcherFSEvents::OnFilePathsChanged,
-                     watcher->weak_factory_.GetWeakPtr(), is_root_changed_event,
-                     root_change_at, std::move(events)));
+
+  if (context->test_callback) {
+    CHECK_IS_TEST();
+    context->test_callback.Run();
+  }
+
+  // Note: It is safe to pass `context->weak_ptr` across threads here.
+  // `base::BindOnce` merely copies the `WeakPtr` into its bound state without
+  // dereferencing it or checking its validity on this background thread.
+  // The actual validity check and dereference will only occur when the
+  // `OnFilePathsChanged()` is executed on the destination sequence, the origin
+  // task runner, which is the correct and safe sequence for that `WeakPtr`.
+  context->task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::OnFilePathsChanged,
+                                context->weak_ptr, is_root_changed_event,
+                                root_change_at, std::move(events)));
 }
 
 void FilePathWatcherFSEvents::OnFilePathsChanged(
@@ -259,12 +321,16 @@ WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));
 
+  auto context_obj = base::MakeRefCounted<FSEventsContext>(
+      task_runner(), weak_factory_.GetWeakPtr(),
+      on_fsevents_callback_for_testing_);
+
   FSEventStreamContext context;
   context.version = 0;
-  context.info = this;
-  context.retain = NULL;
-  context.release = NULL;
-  context.copyDescription = NULL;
+  context.info = context_obj.get();
+  context.retain = FSEventsContext::RetainContext;
+  context.release = FSEventsContext::ReleaseContext;
+  context.copyDescription = nullptr;
 
   // Ensure that if more `FSEventStreamCreate` calls are added that
   // `kNumberOfFSEventStreamCreateCalls` is updated to match.

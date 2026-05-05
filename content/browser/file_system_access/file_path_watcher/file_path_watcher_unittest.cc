@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -34,6 +35,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -987,6 +989,80 @@ TEST_F(FilePathWatcherTest, DeletedFile) {
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
 }
+
+#if BUILDFLAG(IS_MAC)
+// Tests that deleting a FilePathWatcher while an FSEvents callback is pending
+// or executing does not result in a UAF.
+//
+// This test uses a hook to deterministically force the race condition. The
+// callback hook blocks the FSEvents thread while the watcher is being
+// destroyed. If the destruction process were to wait for the FSEvents thread to
+// complete, e.g., via a thread join, a deadlock would occur. This test
+// sequence is explicitly ordered to trigger such a deadlock if the
+// implementation is vulnerable.
+//
+// It operates as follows:
+// 1. Create a FilePathWatcher and set a testing hook via
+//    `FilePathWatcher::CreateWithFSEventsHookForTesting()`. This hook will
+//    pause the OS callback execution using a `base::WaitableEvent()`.
+// 2. Start watching a file using `SetupWatch()` and trigger a file system event
+//    by writing to it with `WriteFile()`.
+// 3. Wait for the OS to invoke `FSEventsCallback()` on its background thread
+//    and hit our hook by calling `hook_called_event.Wait()`.
+// 4. While `FSEventsCallback()` is paused in mid-flight on the OS thread,
+//    destroy the `FilePathWatcher` instance on the main test sequence by
+//    calling `watcher.reset()`.
+// 5. Unblock the paused OS callback by calling
+//    `watcher_destroyed_event.Signal()`, allowing it to proceed to post tasks.
+//
+// Expected behavior:
+// - Without fix: The resumed `FSEventsCallback()` attempts to access the
+//   destroyed watcher's raw pointer or `TaskRunner`, triggering a crash.
+// - With fix: The callback accesses the ref-counted `FSEventsContext`,
+//   which the OS keeps alive, sees that the `WeakPtr` to the watcher is now
+//   invalidated, and safely aborts.
+//
+// See also https://crbug.com/495782021.
+TEST_F(FilePathWatcherTest, DeleteWhileFSEventsPendingDeterministic) {
+  auto delegate = std::make_unique<TestDelegate>();
+
+  base::WaitableEvent hook_called_event;
+  base::WaitableEvent watcher_destroyed_event;
+
+  // Create the watcher and set the hook all in one go.
+  auto watcher =
+      FilePathWatcher::CreateWithFSEventsHookForTesting(base::BindRepeating(
+          [](base::WaitableEvent* hook_called,
+             base::WaitableEvent* watcher_destroyed) {
+            VLOG(1) << "Triggering FSEventsHook callback";
+            hook_called->Signal();
+            watcher_destroyed->Wait();
+          },
+          &hook_called_event, &watcher_destroyed_event));
+
+  ASSERT_TRUE(SetupWatch(test_file(), watcher.get(), delegate.get(),
+                         FilePathWatcher::Type::kRecursive));
+
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  // Wait for the hook to be called on the FSEvents queue.
+  VLOG(1) << "Waiting for FSEventsHook callback";
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+  hook_called_event.Wait();
+
+  // Concurrently destroy the watcher.
+  VLOG(1) << "Destroying watcher";
+  watcher.reset();
+
+  // Unblock the FSEvents callback so it can proceed to PostTask.
+  VLOG(1) << "Unblocking FSEvents callback";
+  watcher_destroyed_event.Signal();
+
+  SpinEventLoopForABit();
+
+  // Expect no crashes.
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(FilePathWatcherTest, WindowsBufferOverflow) {

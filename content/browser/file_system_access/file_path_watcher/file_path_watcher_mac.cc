@@ -86,4 +86,14 @@ size_t FilePathWatcher::GetQuotaLimitImpl() {
          features::kFileSystemObserverQuotaLimitMacPercent.Get();
 }
 
+// static
+std::unique_ptr<FilePathWatcher>
+FilePathWatcher::CreateWithFSEventsHookForTesting(base::RepeatingClosure hook) {
+  auto delegate = std::make_unique<FilePathWatcherFSEvents>();
+  delegate->SetOnFSEventsCallbackForTesting(std::move(hook));
+
+  // Use the private constructor of FilePathWatcher
+  return base::WrapUnique(new FilePathWatcher(std::move(delegate)));
+}
+
 }  // namespace content
