@@ -793,7 +793,7 @@ PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
                           int id,
                           SingleThreadTaskRunnerThreadMode thread_mode) {
   return std::make_unique<WorkerThreadDelegate>(
-      StringPrintf("ThreadPoolSingleThread%s%d", name.c_str(), id),
+      StringPrintf("ThreadPoolSingleThread%s", name.c_str()),
       thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
           ? WorkerThread::ThreadLabel::DEDICATED
           : WorkerThread::ThreadLabel::SHARED,
@@ -808,7 +808,7 @@ PooledSingleThreadTaskRunnerManager::CreateWorkerThreadDelegate<
                              int id,
                              SingleThreadTaskRunnerThreadMode thread_mode) {
   return std::make_unique<WorkerThreadCOMDelegate>(
-      StringPrintf("ThreadPoolSingleThreadCOMSTA%s%d", name.c_str(), id),
+      StringPrintf("ThreadPoolSingleThreadCOMSTA%s", name.c_str()),
       thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
           ? WorkerThread::ThreadLabel::DEDICATED_COM
           : WorkerThread::ThreadLabel::SHARED_COM,
