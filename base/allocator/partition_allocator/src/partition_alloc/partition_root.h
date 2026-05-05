@@ -1109,6 +1109,8 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   friend class internal::PartitionRootEnumerator;
 #endif  // PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
+  std::atomic<uint64_t> intended_leak_size_;
+
   friend class ThreadCache;
   friend class internal::BatchFreeQueue;
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1585,7 +1587,16 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
                         slot_span->GetUtilizedSlotSize());
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
-  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+  if constexpr (ContainsFlags(flags, FreeFlags::kIntendedLeak)) {
+    // Must not enable `thread_cache` and `brp` to use `kIntendedLeak`.
+    PA_CHECK(!settings_.with_thread_cache);
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PA_CHECK(!brp_enabled());
+#endif
+    intended_leak_size_.fetch_add(size_details.slot_size);
+    return;  // Leak
+  } else if constexpr (ContainsFlags(flags,
+                                     FreeFlags::kSchedulerLoopQuarantine)) {
     ThreadCache* thread_cache = GetThreadCache();
     if (ThreadCache::IsValid(thread_cache)) [[likely]] {
       thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(

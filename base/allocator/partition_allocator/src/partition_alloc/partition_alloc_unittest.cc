@@ -4093,6 +4093,45 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantineDisabled) {
   root->Free(ptr_to_keep_slot_span);
 }
 
+TEST_P(PartitionAllocTest, IntendedLeak) {
+  PartitionOptions opts = GetCommonPartitionOptions();
+  opts.thread_cache = PartitionOptions::kDisabled;
+  opts.backup_ref_ptr = PartitionOptions::kDisabled;
+  std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(opts, {});
+
+  // This allocation is required to prevent slot span from being empty and
+  // decomitted. Because we want to confirm `ptr` will not be appended to a free
+  // list, but decomitting a page also seems that `ptr` is not in a free list.
+  void* ptr_to_keep_slot_span = root->Alloc(kTestAllocSize, type_name);
+  void* ptr = root->Alloc(kTestAllocSize, type_name);
+
+  // Remember `total_intended_leak_bytes` of the custom root.
+  SimplePartitionStatsDumper dumper;
+  root->DumpStats("CustomTestRoot", true, false, &dumper);
+  uint64_t total_intended_leak_bytes = dumper.stats().total_intended_leak_bytes;
+
+  auto* slot_span =
+      SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(), root.get());
+  root->Free<FreeFlags::kIntendedLeak>(ptr);
+
+  // Leaked objects will be never found in the freelist of the `slot_span`.
+  EXPECT_NE(SlotStart::Unchecked(ptr).Untag().value(),
+            UntagPtr(slot_span->get_freelist_head()));
+
+  // Compare `total_intended_leak_bytes` between before and after
+  // `Free<kIntendedLeak>`.
+  root->DumpStats("CustomTestRoot", true, false, &dumper);
+  EXPECT_EQ(dumper.stats().total_intended_leak_bytes,
+            total_intended_leak_bytes + slot_span->bucket->slot_size);
+
+  root->Free(ptr_to_keep_slot_span);
+  // Normal objects will be found in the freelist of the `slot_span`.
+  // Because of leaked objects, `num_allocated` of the `slot_span` will
+  // never be equal to 0, the page will not be decommitted.
+  EXPECT_EQ(SlotStart::Unchecked(ptr_to_keep_slot_span).Untag().value(),
+            UntagPtr(slot_span->get_freelist_head()));
+}
+
 TEST_P(PartitionAllocTest, ZapOnFree) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);

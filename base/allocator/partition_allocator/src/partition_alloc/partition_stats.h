@@ -99,6 +99,8 @@ struct PartitionMemoryStats {
   // be reported on all platforms.
   uint64_t syscall_count;
   uint64_t syscall_total_time_ns;
+
+  uint64_t total_intended_leak_bytes;  // Total intended leaked memory.
 };
 
 // Struct used to retrieve memory statistics about a partition bucket. Used by

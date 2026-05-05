@@ -1514,6 +1514,9 @@ void PartitionRoot::DumpStats(const char* partition_name,
   stats.syscall_total_time_ns =
       syscall_total_time_ns_.load(std::memory_order_relaxed);
 
+  stats.total_intended_leak_bytes =
+      intended_leak_size_.load(std::memory_order_relaxed);
+
   // Collect data with the lock held, cannot allocate or call third-party code
   // below.
   {

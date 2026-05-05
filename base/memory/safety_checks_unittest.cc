@@ -204,6 +204,38 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   branch.Purge();
 }
 
+namespace {
+
+class TestClass1 {
+  LEAKED_SANITIZED_OBJECT();
+
+ public:
+  TestClass1() = default;
+
+ private:
+  uintptr_t value1_ = 0u;
+  uintptr_t value2_ = 1u;
+};
+
+}  // namespace
+
+TEST(MemorySafetyCheckTest, InfiniteQuarantine) {
+  TestClass1* obj1 = new TestClass1;
+  ASSERT_NE(obj1, nullptr);
+  // Firstly confirm that the `obj1` was allocated by PartitionAllocator
+  // RegularPool. Not BRPPool.
+  EXPECT_TRUE(partition_alloc::IsManagedByPartitionAllocRegularPool(
+      reinterpret_cast<uintptr_t>(partition_alloc::UntagPtr(obj1))));
+  delete obj1;
+
+  auto* root =
+      partition_alloc::PartitionRoot::GetRootFromAddressInFirstSuperpage(obj1);
+  ASSERT_NE(root, nullptr);
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
+  EXPECT_FALSE(branch.IsQuarantined(obj1));
+}
+
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace

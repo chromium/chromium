@@ -72,7 +72,8 @@ enum class FreeFlags {
   // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
   // to use an aligned free function.
   kAlignedFreeForMemoryTool = 1 << 4,  // Internal.
-  kMaxValue = kAlignedFreeForMemoryTool,
+  kIntendedLeak = 1 << 5,              // Internal.
+  kMaxValue = kIntendedLeak,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
 }  // namespace internal
