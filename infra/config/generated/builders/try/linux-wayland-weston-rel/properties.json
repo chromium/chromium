@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m149"
             },
             "builder_spec": {
               "builder_group": "chromium.linux",
@@ -37,7 +37,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-wayland-weston-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m149"
             },
             "builder_spec": {
               "builder_group": "chromium.linux",
@@ -60,7 +60,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
-                "project": "chromium"
+                "project": "chromium-m149"
               }
             }
           }
@@ -70,14 +70,14 @@
         {
           "bucket": "ci",
           "builder": "Linux Builder (Wayland)",
-          "project": "chromium"
+          "project": "chromium-m149"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "linux-wayland-weston-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m149"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/linux-wayland-weston-rel/targets"

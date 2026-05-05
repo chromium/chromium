@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-desktop-arm64-compile-rel",
-              "project": "chromium"
+              "project": "chromium-m149"
             },
             "builder_spec": {
               "builder_group": "chromium.android.desktop",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "android-desktop-arm64-compile-rel",
-          "project": "chromium"
+          "project": "chromium-m149"
         }
       ],
       "mirroring_builder_group_and_names": [

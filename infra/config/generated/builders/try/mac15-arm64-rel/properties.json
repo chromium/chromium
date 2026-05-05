@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m149"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -42,7 +42,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac15-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m149"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -63,7 +63,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "mac-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m149"
               }
             }
           }
@@ -73,14 +73,14 @@
         {
           "bucket": "ci",
           "builder": "mac-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m149"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "mac15-arm64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m149"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/mac15-arm64-rel/targets"
