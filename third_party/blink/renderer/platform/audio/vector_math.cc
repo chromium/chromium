@@ -34,8 +34,6 @@
 #include "third_party/blink/renderer/platform/audio/mac/vector_math_mac.h"
 #elif defined(CPU_ARM_NEON)
 #include "third_party/blink/renderer/platform/audio/cpu/arm/vector_math_neon.h"
-#elif defined(HAVE_MIPS_MSA_INTRINSICS)
-#include "third_party/blink/renderer/platform/audio/cpu/mips/vector_math_msa.h"
 #elif defined(ARCH_CPU_X86_FAMILY)
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_x86.h"
 #else
@@ -49,8 +47,6 @@ namespace {
 namespace impl = mac;
 #elif defined(CPU_ARM_NEON)
 namespace impl = neon;
-#elif defined(HAVE_MIPS_MSA_INTRINSICS)
-namespace impl = msa;
 #elif defined(ARCH_CPU_X86_FAMILY)
 namespace impl = x86;
 #else

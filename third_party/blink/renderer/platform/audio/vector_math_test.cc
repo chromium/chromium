@@ -44,8 +44,6 @@ constexpr size_t kMemoryLayoutCount =
     (kMemoryLayouts.size() * sizeof(decltype(kMemoryLayouts)::value_type)) /
     sizeof(kMemoryLayouts[0]);
 
-// This is the minimum vector size in bytes needed for MSA instructions on
-// MIPS.
 constexpr size_t kMaxVectorSizeInBytes = 1024u;
 constexpr auto kVectorSizesInBytes = std::to_array<size_t>(
     {kMaxVectorSizeInBytes,

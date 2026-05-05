@@ -386,7 +386,6 @@ component("platform") {
     "audio/cone_effect.cc",
     "audio/cone_effect.h",
     "audio/cpu/arm/vector_math_neon.h",
-    "audio/cpu/mips/vector_math_msa.h",
     "audio/cpu/x86/vector_math_avx.cc",
     "audio/cpu/x86/vector_math_avx.h",
     "audio/cpu/x86/vector_math_impl.h",
