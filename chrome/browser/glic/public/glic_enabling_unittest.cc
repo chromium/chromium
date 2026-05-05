@@ -742,13 +742,13 @@ TEST_F(GlicEnablingProfileEligibilityTest,
 
   glic::GlicKeyedService::Get(profile())
       ->enabling()
-      .SetExperimentalTriggeringEnabled(false);
+      .SetExperimentalTriggeringEnabled(true);
   EXPECT_TRUE(callback_called);
 
   callback_called = false;
   glic::GlicKeyedService::Get(profile())
       ->enabling()
-      .SetExperimentalTriggeringEnabled(true);
+      .SetExperimentalTriggeringEnabled(false);
   EXPECT_TRUE(callback_called);
 }
 
