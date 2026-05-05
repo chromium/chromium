@@ -873,7 +873,15 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
                        didTapTool:(ComposeboxMode)toolMode {
-  _modeHolder.mode = toolMode;
+  if (_modeHolder.mode == toolMode) {
+    ComposeboxMode defaultMode = _entrypoint == ComposeboxEntrypoint::kCobrowse
+                                     ? ComposeboxMode::kAIM
+                                     : ComposeboxMode::kRegularSearch;
+    _modeHolder.mode = defaultMode;
+
+  } else {
+    _modeHolder.mode = toolMode;
+  }
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
