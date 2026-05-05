@@ -20,7 +20,7 @@
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
   padding: 20px;
 }
@@ -32,4 +32,24 @@
   padding: 15px;
   font-weight: bold;
   color: var(--cr-primary-text-color);
+}
+
+.ep-title {
+  text-decoration: underline;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.ep {
+  margin-top: 10px;
+  border: solid 1px var(--cr-secondary-text-color);
+  padding: 10px;
+}
+
+.ep-detail {
+  font-weight: normal;
+}
+
+.first-selected {
+  border-color: var(--cr-fallback-color-primary);
 }

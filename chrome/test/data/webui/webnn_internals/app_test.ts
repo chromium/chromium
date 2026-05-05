@@ -52,7 +52,26 @@ suite('WebnnInternalsUITest', function() {
   test('ShowActiveContexts', async function() {
     // Simulate the browser sending two active contexts.
     testProxy.page.onUpdateExistingContextDetails([
-      {contextId: 1, contextBackend: 'Test Backend', executionProviders: []},
+      {
+        contextId: 1,
+        contextBackend: 'Test Backend',
+        executionProviders: [
+          {
+            name: 'Test EP 1',
+            vendor: 'Vendor 1',
+            hardwareType: 'GPU',
+            version: '1.0',
+            firstSelected: true,
+          },
+          {
+            name: 'Test EP 2',
+            vendor: 'Vendor 2',
+            hardwareType: 'CPU',
+            version: '',
+            firstSelected: false,
+          },
+        ],
+      },
       {contextId: 2, contextBackend: 'Test Backend 2', executionProviders: []},
     ]);
     await microtasksFinished();
@@ -70,6 +89,31 @@ suite('WebnnInternalsUITest', function() {
     assertEquals('Context ID: 2', contexts[2]!.textContent.trim());
     assertEquals(
         'Runtime Backend: Test Backend 2', contexts[3]!.textContent.trim());
+    const epTitles = contextsTab.shadowRoot.querySelectorAll('.ep-title');
+    // Only the first context has EPs, and it has 2 EPs. If the context has no
+    // EPs, the EP title should not be rendered.
+    assertEquals(1, epTitles.length);
+    const epDetailsList = contextsTab.shadowRoot.querySelectorAll('.ep');
+    // The first context has 2 EPs, the second context has no EP, total 2 EPs.
+    assertEquals(2, epDetailsList.length);
+    // First EP has 4 details (name, vendor, hardware type, version).
+    let epDetails = epDetailsList[0]!.querySelectorAll('.ep-detail');
+    assertEquals(4, epDetails.length);
+    assertEquals('Name: Test EP 1', epDetails[0]!.textContent.trim());
+    assertEquals('Vendor: Vendor 1', epDetails[1]!.textContent.trim());
+    assertEquals('Hardware Type: GPU', epDetails[2]!.textContent.trim());
+    assertEquals('Version: 1.0', epDetails[3]!.textContent.trim());
+    // The first EP is marked as first selected, it should have the
+    // 'first-selected' class.
+    assertTrue(epDetailsList[0]!.classList.contains('first-selected'));
+    // Second EP has 3 details, version may be empty so let's make sure
+    // we don't render the label.
+    epDetails = epDetailsList[1]!.querySelectorAll('.ep-detail');
+    assertEquals(3, epDetails.length);
+    assertEquals('Name: Test EP 2', epDetails[0]!.textContent.trim());
+    assertEquals('Vendor: Vendor 2', epDetails[1]!.textContent.trim());
+    assertEquals('Hardware Type: CPU', epDetails[2]!.textContent.trim());
+    assertFalse(epDetailsList[1]!.classList.contains('first-selected'));
     const noContextText =
         contextsTab.shadowRoot.querySelector<HTMLElement>('.no-context');
     // The no contexts label should not exist.
