@@ -67,6 +67,7 @@ OneTimeTokenSharingHandler::HandleOneTimeTokenNotification(
           /*email_received_timestamp=*/
           FromSharingProtoTimestamp(
               gmail_message_reference.email_received_timestamp()),
-          /*notification_received_timestamp=*/base::Time::Now()));
+          /*notification_received_timestamp=*/base::Time::Now(),
+          /*notification_received_timeticks=*/base::TimeTicks::Now()));
   return OneTimeTokenValidationResult::kSuccess;
 }
