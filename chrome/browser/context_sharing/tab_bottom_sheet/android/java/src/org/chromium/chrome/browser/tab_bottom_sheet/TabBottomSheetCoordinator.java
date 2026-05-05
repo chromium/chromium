@@ -55,20 +55,6 @@ public class TabBottomSheetCoordinator {
         void onBottomSheetOpened(boolean isExpanded);
     }
 
-    private final ComponentCallbacks mComponentsCallbacks =
-            new ComponentCallbacks() {
-                @Override
-                public void onConfigurationChanged(Configuration configuration) {
-                    Log.i(TAG, "onConfigurationChanged: isShowing = " + mIsShowingTabBottomSheet);
-                    if (mIsShowingTabBottomSheet) {
-                        mExpectingLayoutChange = true;
-                    }
-                }
-
-                @Override
-                public void onLowMemory() {}
-            };
-
     private final GestureDetector mGestureDetector;
     private final GestureDetector.SimpleOnGestureListener mGestureListener =
             new GestureDetector.SimpleOnGestureListener() {
@@ -150,6 +136,7 @@ public class TabBottomSheetCoordinator {
     private @Nullable SheetEventsCallback mSheetEventsCallback;
     private @Nullable TabBottomSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
+    private @Nullable ComponentCallbacks mComponentsCallbacks;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
     private @Nullable View mContentView;
 
@@ -246,10 +233,14 @@ public class TabBottomSheetCoordinator {
                         }
                     });
 
-            mSheetObserver = buildBottomSheetObserver();
-            mBottomSheetController.addObserver(mSheetObserver);
-
-            mContext.registerComponentCallbacks(mComponentsCallbacks);
+            if (mSheetObserver == null) {
+                mSheetObserver = buildBottomSheetObserver();
+                mBottomSheetController.addObserver(mSheetObserver);
+            }
+            if (mComponentsCallbacks == null) {
+                mComponentsCallbacks = buildComponentsCallback();
+                mContext.registerComponentCallbacks(mComponentsCallbacks);
+            }
 
             mIsShowingTabBottomSheet = true;
             return true;
@@ -321,8 +312,10 @@ public class TabBottomSheetCoordinator {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
         }
-
-        mContext.unregisterComponentCallbacks(mComponentsCallbacks);
+        if (mComponentsCallbacks != null) {
+            mContext.unregisterComponentCallbacks(mComponentsCallbacks);
+            mComponentsCallbacks = null;
+        }
         stopObservingCompositorViewInteractions();
 
         if (mSheetContent != null) {
@@ -339,6 +332,21 @@ public class TabBottomSheetCoordinator {
     }
 
     // Observer methods.
+    private ComponentCallbacks buildComponentsCallback() {
+        return new ComponentCallbacks() {
+            @Override
+            public void onConfigurationChanged(Configuration configuration) {
+                Log.i(TAG, "onConfigurationChanged: isShowing = " + mIsShowingTabBottomSheet);
+                if (mIsShowingTabBottomSheet) {
+                    mExpectingLayoutChange = true;
+                }
+            }
+
+            @Override
+            public void onLowMemory() {}
+        };
+    }
+
     private BottomSheetObserver buildBottomSheetObserver() {
         return new EmptyBottomSheetObserver() {
             @Override

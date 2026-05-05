@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -591,5 +592,40 @@ public class TabBottomSheetManagerTest {
                 () -> {
                     coBrowseViews2.destroy();
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void testTabSwitcherSuppression_OnlyOneObserverActive() {
+        NativeInterfaceDelegate mockDelegate = mock(NativeInterfaceDelegate.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mockDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        // 1. Open tab switcher (First suppression)
+        RegularTabSwitcherStation tabSwitcher = mInitialStation.openRegularTabSwitcher();
+
+        // Verify it was suppressed once
+        verify(mockDelegate, times(1)).onBottomSheetSuppressed();
+
+        // 2. Close tab switcher (Return to tab)
+        WebPageStation pageStation =
+                tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        // 3. Open tab switcher again (Second suppression)
+        tabSwitcher = pageStation.openRegularTabSwitcher();
+
+        // Verify that it was called exactly 2 times in total.
+        verify(mockDelegate, times(2)).onBottomSheetSuppressed();
+
+        // Clean up by leaving the tab switcher
+        tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
     }
 }
