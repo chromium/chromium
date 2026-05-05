@@ -118,7 +118,6 @@ class AddressSuggestionGeneratorTest : public testing::Test {
 
     std::vector<Suggestion> suggestions;
     AddressSuggestionGenerator address_suggestion_generator(
-        /*log_manager=*/nullptr,
         mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     auto on_suggestions_generated =
@@ -1430,7 +1429,6 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
   test_api(*form_structure).SetFieldTypes({NAME_FULL});
 
   AddressSuggestionGenerator generator(
-      /*log_manager=*/nullptr,
       mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   EXPECT_CALL(

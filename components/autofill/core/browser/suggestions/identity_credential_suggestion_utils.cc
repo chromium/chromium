@@ -10,7 +10,7 @@ namespace autofill {
 
 std::vector<Suggestion> GetIdentityCredentialSuggestionsForType(
     const IdentityCredentialDelegate* delegate,
-    const AutofillClient& autofill_client,
+    AutofillClient& autofill_client,
     const FieldType& field_type) {
   if (!delegate) {
     return {};

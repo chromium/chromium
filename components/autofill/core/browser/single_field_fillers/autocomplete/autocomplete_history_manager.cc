@@ -43,7 +43,7 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     const FormStructure* form_structure,
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
   // Cancel the pending query if there is one.

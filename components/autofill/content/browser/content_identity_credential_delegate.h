@@ -34,7 +34,7 @@ class ContentIdentityCredentialDelegate : public IdentityCredentialDelegate {
       const FormStructure* form_structure,
       const FormFieldData& field,
       const AutofillField* autofill_field,
-      const AutofillClient& client) const override;
+      AutofillClient& client) const override;
 
   void NotifySuggestionAccepted(
       const Suggestion& suggestion,

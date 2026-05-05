@@ -24,7 +24,7 @@ class MockIdentityCredentialDelegate : public IdentityCredentialDelegate {
                const FormStructure* form_structure,
                const FormFieldData& field,
                const AutofillField* autofill_field,
-               const AutofillClient& client),
+               AutofillClient& client),
               (const override));
   MOCK_METHOD(void,
               NotifySuggestionAccepted,

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -158,7 +159,7 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     const PasswordFormClassification& password_form_classification,
-    const AutofillClient& client) {
+    AutofillClient& client) {
   if (!client.GetValuablesDataManager()) {
     return {};
   }
@@ -266,7 +267,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
@@ -280,7 +281,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!trigger_autofill_field || !client.GetValuablesDataManager() ||
       trigger_autofill_field->Type().GetTypes().contains_none(

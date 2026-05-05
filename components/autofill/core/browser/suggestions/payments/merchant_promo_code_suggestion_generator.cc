@@ -86,7 +86,7 @@ void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
@@ -100,7 +100,7 @@ void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   // The field is eligible only if it's focused on a merchant promo code.
   if (!form_structure || !trigger_autofill_field ||

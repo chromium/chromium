@@ -19,7 +19,7 @@ namespace autofill {
 // generation is migrated to the new architecture.
 std::vector<Suggestion> GetIdentityCredentialSuggestionsForType(
     const IdentityCredentialDelegate* delegate,
-    const AutofillClient& autofill_client,
+    AutofillClient& autofill_client,
     const FieldType& field_type);
 
 }  // namespace autofill

@@ -217,7 +217,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
 // TODO(crbug.com/455788947): Check that address Autofill is not turned off.
 [[nodiscard]] ActorSuggestions GetAddressSuggestions(
     base::span<const FieldGlobalId> fields,
-    const AutofillManager& autofill_manager,
+    AutofillManager& autofill_manager,
     LogManager* log_manager,
     actor::SectionSplitPart split_part) {
   if (fields.empty()) {
@@ -253,7 +253,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
       },
       std::ref(suggestions));
   AddressSuggestionGenerator generator(
-      /*log_manager=*/nullptr, mojom::AutofillSuggestionTriggerSource::kGlic);
+      mojom::AutofillSuggestionTriggerSource::kGlic);
   generator.GenerateSuggestions(form, *autofill_field, form_structure,
                                 autofill_field, autofill_manager.client(),
                                 std::move(save_suggestions));
@@ -311,7 +311,7 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
 // TODO(crbug.com/455788947): Improve suggestion generation.
 [[nodiscard]] ActorSuggestions GetCreditCardSuggestions(
     base::span<const FieldGlobalId> fields,
-    const AutofillManager& autofill_manager,
+    AutofillManager& autofill_manager,
     LogManager* log_manager) {
   if (fields.empty()) {
     LOG_AF(log_manager)

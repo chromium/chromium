@@ -60,7 +60,7 @@ class AutofillComposeDelegate {
   virtual Suggestion GetSuggestion(
       const FormData& form,
       const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+      AutofillSuggestionTriggerSource trigger_source) const = 0;
 
   // Checks if the popup (aka nudge) should be presented for `field` in `form`.
   virtual bool ShouldTriggerComposePopup(

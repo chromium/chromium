@@ -38,7 +38,7 @@ class FormFieldData;
 // TODO(crbug.com/409962888): Remove once the new suggestion generation logic is
 // launched.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
-    const AutofillClient& client,
+    AutofillClient& client,
     const FormData& form,
     const FormFieldData& trigger_field);
 
@@ -74,8 +74,8 @@ bool ContainsProfileSuggestionWithRecordType(
 // suggestions should be done only through this class.
 class AddressSuggestionGenerator : public SuggestionGenerator {
  public:
-  AddressSuggestionGenerator(LogManager* log_manager,
-                             AutofillSuggestionTriggerSource trigger_source);
+  explicit AddressSuggestionGenerator(
+      AutofillSuggestionTriggerSource trigger_source);
   ~AddressSuggestionGenerator() override;
 
   void GenerateSuggestions(
@@ -83,7 +83,7 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
@@ -93,23 +93,10 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
-  // Returns a vector of `AutofillProfile`s that will be suggested on a
-  // `trigger_field` in a `form`. Can be empty if there is no data available for
-  // filling or the filling conditions were not met.
-  std::vector<AutofillProfile> MaybeFetchRegularAddressSuggestionData(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      const FormStructure* form_structure,
-      const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
-      FieldTypeSet field_types);
-
-  raw_ptr<LogManager> log_manager_;
-
   AutofillSuggestionTriggerSource trigger_source_;
 };
 

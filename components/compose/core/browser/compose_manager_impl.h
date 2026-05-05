@@ -42,7 +42,7 @@ class ComposeManagerImpl : public ComposeManager {
   autofill::Suggestion GetSuggestion(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+      autofill::AutofillSuggestionTriggerSource trigger_source) const override;
   bool ShouldTriggerComposePopup(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,

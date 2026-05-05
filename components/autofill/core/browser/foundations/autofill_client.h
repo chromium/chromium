@@ -384,6 +384,7 @@ class AutofillClient {
 
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
+  const AutofillComposeDelegate* GetComposeDelegate() const;
 
   // Attempts to the annotated page content for the current tab and calls
   // `callback` with the results.
@@ -432,6 +433,8 @@ class AutofillClient {
   // password suggestions for the given `field_id`.
   virtual PasswordManagerDelegate* GetPasswordManagerDelegate(
       const FieldGlobalId& field_id);
+  const PasswordManagerDelegate* GetPasswordManagerDelegate(
+      const FieldGlobalId& field_id) const;
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

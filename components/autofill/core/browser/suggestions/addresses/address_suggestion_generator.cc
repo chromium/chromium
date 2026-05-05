@@ -869,15 +869,67 @@ std::vector<Suggestion> GenerateAddressSuggestions(
   return suggestions;
 }
 
+// Returns a vector of `AutofillProfile`s that will be suggested on a
+// `trigger_field` in a `form`. Can be empty if there is no data available for
+// filling or the filling conditions were not met.
+std::vector<AutofillProfile> MaybeFetchRegularAddressSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    AutofillClient& client,
+    FieldTypeSet field_types) {
+  if (!form_structure || !trigger_autofill_field) {
+    return {};
+  }
+  if (trigger_autofill_field->Type().GetAddressType() == UNKNOWN_TYPE) {
+    return {};
+  }
+  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
+    return {};
+  }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool should_suppress =
+      client.GetPersonalDataManager()
+          .address_data_manager()
+          .AreAddressSuggestionsBlocked(
+              CalculateFormSignature(form),
+              CalculateFieldSignatureForField(trigger_field), form.url());
+  base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
+                            should_suppress);
+  if (should_suppress &&
+      !base::FeatureList::IsEnabled(
+          features::debug::kAutofillDisableSuggestionStrikeDatabase)) {
+    if (LogManager* log_manager = client.GetCurrentLogManager()) {
+      LOG_AF(log_manager) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: strike limit reached.";
+    }
+    // If the user already reached the strike limit on this particular field,
+    // address suggestions are suppressed.
+    return {};
+  }
+#endif
+
+  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
+      client.GetPersonalDataManager().address_data_manager(), trigger_field,
+      trigger_autofill_field->Type().GetAddressType(), field_types);
+
+  // Add devtools test addresses if it exists. A test addresses will
+  // exist if devtools is open and therefore test addresses were set.
+  base::Extend(profiles_to_suggest, client.GetTestAddresses());
+  return profiles_to_suggest;
+}
+
 }  // namespace
 
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
-    const AutofillClient& client,
+    AutofillClient& client,
     const FormData& form,
     const FormFieldData& trigger_field) {
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
-      /*log_manager=*/nullptr,
       // AddressOnTyping suggestions do not depend on the trigger source.
       /*trigger_source=*/
       mojom::AutofillSuggestionTriggerSource::kUnspecified);
@@ -945,9 +997,8 @@ bool ContainsProfileSuggestionWithRecordType(
 }
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
-    LogManager* log_manager,
     AutofillSuggestionTriggerSource trigger_source)
-    : log_manager_(log_manager), trigger_source_(trigger_source) {}
+    : trigger_source_(trigger_source) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
 
@@ -956,7 +1007,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
@@ -970,7 +1021,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   FieldTypeSet field_types = [&]() -> FieldTypeSet {
     if (!form_structure || !trigger_autofill_field) {
@@ -1026,57 +1077,6 @@ void AddressSuggestionGenerator::GenerateSuggestions(
   }
 
   callback({SuggestionDataSource::kAddress, {}});
-}
-
-std::vector<AutofillProfile>
-AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
-    const FormData& form,
-    const FormFieldData& trigger_field,
-    const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
-    FieldTypeSet field_types) {
-  if (!form_structure || !trigger_autofill_field) {
-    return {};
-  }
-  if (trigger_autofill_field->Type().GetAddressType() == UNKNOWN_TYPE) {
-    return {};
-  }
-  if (SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
-    return {};
-  }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  bool should_suppress =
-      client.GetPersonalDataManager()
-          .address_data_manager()
-          .AreAddressSuggestionsBlocked(
-              CalculateFormSignature(form),
-              CalculateFieldSignatureForField(trigger_field), form.url());
-  base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
-                            should_suppress);
-  if (should_suppress &&
-      !base::FeatureList::IsEnabled(
-          features::debug::kAutofillDisableSuggestionStrikeDatabase)) {
-    if (log_manager_) {
-      LOG_AF(log_manager_) << LoggingScope::kFilling
-                           << LogMessage::kSuggestionSuppressed
-                           << " Reason: strike limit reached.";
-    }
-    // If the user already reached the strike limit on this particular field,
-    // address suggestions are suppressed.
-    return {};
-  }
-#endif
-
-  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
-      client.GetPersonalDataManager().address_data_manager(), trigger_field,
-      trigger_autofill_field->Type().GetAddressType(), field_types);
-
-  // Add devtools test addresses if it exists. A test addresses will
-  // exist if devtools is open and therefore test addresses were set.
-  base::Extend(profiles_to_suggest, client.GetTestAddresses());
-  return profiles_to_suggest;
 }
 
 }  // namespace autofill

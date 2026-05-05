@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/suggestions/at_memory/at_memory_nudge_generator.h"
 
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -22,7 +21,7 @@ void AtMemoryNudgeGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   std::vector<Suggestion> suggestions;
   // TODO(crbug.com/489659527): Localize the string.

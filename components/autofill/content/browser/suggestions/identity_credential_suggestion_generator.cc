@@ -116,7 +116,7 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
       form, trigger_field, form_structure, trigger_autofill_field, client,
@@ -130,7 +130,7 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!trigger_autofill_field) {
     callback({SuggestionDataSource::kIdentityCredential, {}});

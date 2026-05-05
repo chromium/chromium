@@ -31,7 +31,7 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
               (const FormData&,
                const FormFieldData&,
                AutofillSuggestionTriggerSource),
-              (override));
+              (const override));
   MOCK_METHOD(bool,
               ShouldTriggerComposePopup,
               (const FormData&,

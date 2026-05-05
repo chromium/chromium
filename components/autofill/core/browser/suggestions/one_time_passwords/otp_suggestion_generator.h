@@ -32,14 +32,14 @@ class OtpSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
  private:
   void OnOtpReturned(base::OnceCallback<void(ReturnedSuggestions)> callback,
                      std::vector<std::string> one_time_passwords);
 
-  const base::raw_ref<OtpManager> otp_manager_;
+  raw_ref<OtpManager> otp_manager_;
 
   base::WeakPtrFactory<OtpSuggestionGenerator> weak_ptr_factory_{this};
 };

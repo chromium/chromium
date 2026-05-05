@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
@@ -30,7 +28,7 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     const PasswordFormClassification& password_form_classification,
-    const AutofillClient& client);
+    AutofillClient& client);
 
 // Extends `email_suggestions` with loyalty cards suggestions.
 // TODO(crbug.com/409962888): Remove after new suggestion generation logic is
@@ -60,7 +58,7 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
@@ -70,15 +68,13 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
   // Contains the password form classification for which the generator is
   // currently building suggestions.
   PasswordFormClassification password_form_classification_;
-
-  base::WeakPtrFactory<LoyaltyCardSuggestionGenerator> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

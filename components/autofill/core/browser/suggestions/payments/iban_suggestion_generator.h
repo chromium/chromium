@@ -20,7 +20,7 @@ class IbanSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
@@ -30,7 +30,7 @@ class IbanSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const AutofillClient& client,
+      AutofillClient& client,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 };
 

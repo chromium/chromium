@@ -59,7 +59,7 @@ class IdentityCredentialDelegate {
       const FormStructure* form_structure,
       const FormFieldData& field,
       const AutofillField* autofill_field,
-      const AutofillClient& client) const = 0;
+      AutofillClient& client) const = 0;
 
   // Notifies the delegate that a suggestion from an identity credential
   // conditional request was accepted.

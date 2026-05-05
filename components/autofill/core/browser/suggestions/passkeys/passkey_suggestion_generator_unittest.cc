@@ -35,9 +35,10 @@ class PasskeySuggestionGeneratorTest : public testing::Test {
         ::password_manager::features::
             kAutofillReintroduceHybridPasskeyDropdownItem);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    generator_ =
-        std::make_unique<PasskeySuggestionGenerator>(password_delegate());
+    generator_ = std::make_unique<PasskeySuggestionGenerator>();
     form_ = test::CreateTestHybridSignUpFormData();
+    test_autofill_client_.set_password_manager_delegate(
+        std::make_unique<testing::NiceMock<MockPasswordManagerDelegate>>());
   }
 
   void DisableHybridEntryPoint() {
@@ -50,12 +51,13 @@ class PasskeySuggestionGeneratorTest : public testing::Test {
   }
 
   MockPasswordManagerDelegate& password_delegate() {
-    return password_manager_delegate_;
+    return static_cast<MockPasswordManagerDelegate&>(
+        *client().GetPasswordManagerDelegate(FieldGlobalId()));
   }
 
   PasskeySuggestionGenerator& generator() { return *generator_; }
 
-  const AutofillClient& client() { return test_autofill_client_; }
+  AutofillClient& client() { return test_autofill_client_; }
 
   FormData& form() { return form_; }
 
@@ -66,7 +68,6 @@ class PasskeySuggestionGeneratorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment test_environment_;
   TestAutofillClient test_autofill_client_;
-  MockPasswordManagerDelegate password_manager_delegate_;
   std::unique_ptr<PasskeySuggestionGenerator> generator_;
   FormData form_;
 };
@@ -82,7 +83,8 @@ TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(SuggestionDataSource::kPasskey,
                                     ElementsAre(suggestion))));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
+  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -97,7 +99,8 @@ TEST_F(PasskeySuggestionGeneratorTest, NoHybridPasskeyAvailability) {
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb,
               Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
+  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   generate_cb.Get());
 }
 
@@ -117,7 +120,8 @@ TEST_F(PasskeySuggestionGeneratorTest,
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb,
               Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
+  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -133,7 +137,8 @@ TEST_F(PasskeySuggestionGeneratorTest,
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb,
               Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
+  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

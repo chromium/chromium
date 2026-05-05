@@ -36,11 +36,17 @@ class ComposeSuggestionGeneratorTest : public testing::Test {
         url::Origin::Create(GURL("https://www.example.com")));
     form_structure_ = std::make_unique<FormStructure>(form_data);
     autofill_field_ = form_structure_->field(0);
+    client().set_compose_delegate(
+        std::make_unique<MockAutofillComposeDelegate>());
   }
 
   TestAutofillClient& client() { return autofill_client_; }
   AutofillField& field() { return *autofill_field_; }
   FormStructure& form() { return *form_structure_; }
+  MockAutofillComposeDelegate& compose_delegate() {
+    return static_cast<MockAutofillComposeDelegate&>(
+        *client().GetComposeDelegate());
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -57,14 +63,12 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  MockAutofillComposeDelegate compose_delegate;
-  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+  EXPECT_CALL(compose_delegate(), ShouldTriggerComposePopup)
       .WillOnce(Return(true));
-  EXPECT_CALL(compose_delegate, GetSuggestion)
+  EXPECT_CALL(compose_delegate(), GetSuggestion)
       .WillOnce(Return(Suggestion(SuggestionType::kComposeProactiveNudge)));
 
   ComposeSuggestionGenerator generator(
-      &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
 
   EXPECT_CALL(suggestions_generated_callback,
@@ -81,13 +85,11 @@ TEST_F(ComposeSuggestionGeneratorTest, NoComposeSuggestionIfFeatureDisabled) {
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  MockAutofillComposeDelegate compose_delegate;
-  EXPECT_CALL(compose_delegate, ShouldTriggerComposePopup)
+  EXPECT_CALL(compose_delegate(), ShouldTriggerComposePopup)
       .WillOnce(Return(false));
-  EXPECT_CALL(compose_delegate, GetSuggestion).Times(0);
+  EXPECT_CALL(compose_delegate(), GetSuggestion).Times(0);
 
   ComposeSuggestionGenerator generator(
-      &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
 
   EXPECT_CALL(suggestions_generated_callback,

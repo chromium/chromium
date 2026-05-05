@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_PASSWORD_MANAGER_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_MOCK_PASSWORD_MANAGER_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"

@@ -56,7 +56,7 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   if (!trigger_field.should_autocomplete()) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});

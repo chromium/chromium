@@ -29,9 +29,7 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
 
 }  // namespace
 
-PasskeySuggestionGenerator::PasskeySuggestionGenerator(
-    PasswordManagerDelegate& password_manager_delegate)
-    : password_manager_delegate_(password_manager_delegate) {}
+PasskeySuggestionGenerator::PasskeySuggestionGenerator() = default;
 PasskeySuggestionGenerator::~PasskeySuggestionGenerator() = default;
 
 void PasskeySuggestionGenerator::GenerateSuggestions(
@@ -39,16 +37,18 @@ void PasskeySuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  if (!ShouldShowWebauthnHybridEntryPoint(trigger_field)) {
+  const PasswordManagerDelegate* password_delegate =
+      client.GetPasswordManagerDelegate(trigger_field.global_id());
+  if (!password_delegate ||
+      !ShouldShowWebauthnHybridEntryPoint(trigger_field)) {
     std::move(callback).Run({SuggestionDataSource::kPasskey, {}});
     return;
   }
   std::vector<Suggestion> suggestions;
   if (std::optional<Suggestion> suggestion =
-          password_manager_delegate_
-              ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+          password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
     suggestions.push_back(*std::move(suggestion));
   }
   std::move(callback).Run(

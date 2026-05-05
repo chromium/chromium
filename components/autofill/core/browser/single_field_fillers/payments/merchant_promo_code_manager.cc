@@ -22,7 +22,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillField& autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     SingleFieldFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   MerchantPromoCodeSuggestionGenerator merchant_promo_code_suggestion_generator;

@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
+#include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
@@ -229,6 +230,10 @@ class TestAutofillClientTemplate : public T {
   PasswordManagerDelegate* GetPasswordManagerDelegate(
       const autofill::FieldGlobalId& field_id) override {
     return password_manager_delegate_.get();
+  }
+
+  AutofillComposeDelegate* GetComposeDelegate() override {
+    return compose_delegate_.get();
   }
 
   test::AutofillTestingPrefService* GetPrefs() override {
@@ -638,6 +643,11 @@ class TestAutofillClientTemplate : public T {
     password_manager_delegate_ = std::move(password_manager_delegate);
   }
 
+  void set_compose_delegate(
+      std::unique_ptr<AutofillComposeDelegate> compose_delegate) {
+    compose_delegate_ = std::move(compose_delegate);
+  }
+
   void set_suggestion_ui_session_id(
       std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
     suggestion_ui_session_id_ = session_id;
@@ -700,6 +710,7 @@ class TestAutofillClientTemplate : public T {
           accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
+  std::unique_ptr<AutofillComposeDelegate> compose_delegate_;
   TestAddressNormalizer test_address_normalizer_;
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuideDecider>>
       mock_autofill_optimization_guide_decider_ = std::make_unique<

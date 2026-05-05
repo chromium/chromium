@@ -47,7 +47,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     const AutofillField& autofill_field,
-    const AutofillClient& client,
+    AutofillClient& client,
     SingleFieldFillRouter::OnSuggestionsReturnedCallback&
         on_suggestions_returned) {
   IbanSuggestionGenerator iban_suggestion_generator;

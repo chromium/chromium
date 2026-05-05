@@ -110,6 +110,9 @@ AutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
 AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }
+const AutofillComposeDelegate* AutofillClient::GetComposeDelegate() const {
+  return const_cast<AutofillClient*>(this)->GetComposeDelegate();
+}
 
 accessibility_annotator::AccessibilityQueryService*
 AutofillClient::GetAccessibilityQueryService() {
@@ -125,6 +128,12 @@ AutofillClient::GetAccessibilityAnnotatorEnablementState() const {
 PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(
     const FieldGlobalId& field_id) {
   return nullptr;
+}
+
+const PasswordManagerDelegate* AutofillClient::GetPasswordManagerDelegate(
+    const FieldGlobalId& field_id) const {
+  return const_cast<AutofillClient*>(this)->GetPasswordManagerDelegate(
+      field_id);
 }
 
 void AutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {

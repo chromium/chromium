@@ -42,7 +42,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FormStructure* form_structure,
     const FormFieldData& field,
     const AutofillField* autofill_field,
-    const AutofillClient& client) const {
+    AutofillClient& client) const {
   std::vector<Suggestion> suggestions;
   IdentityCredentialSuggestionGenerator
       identity_credential_suggestion_generator(source_);

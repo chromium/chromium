@@ -22,7 +22,7 @@ class MockIbanManager : public IbanManager {
               (const FormStructure& form,
                const FormFieldData& field,
                const AutofillField& autofill_field,
-               const AutofillClient& client,
+               AutofillClient& client,
                SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),
               (override));
   MOCK_METHOD(void,
