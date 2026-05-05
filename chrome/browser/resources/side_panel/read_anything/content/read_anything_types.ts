@@ -4,6 +4,17 @@
 
 import type {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+export enum ContentPositionSource {
+  SELECTION = 0,
+  LINE_FOCUS = 1,
+}
+
+export interface ContentPosition {
+  node: Node;
+  offset: number;
+  source: ContentPositionSource;
+}
+
 export enum LineFocusType {
   NONE = 0,
   LINE = 1,

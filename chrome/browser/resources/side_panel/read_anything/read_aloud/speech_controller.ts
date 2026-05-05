@@ -5,7 +5,7 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {NodeStore} from '../content/node_store.js';
-import {SelectionController} from '../content/selection_controller.js';
+import type {ContentPosition} from '../content/read_anything_types.js';
 import {getWordCount, playFromSelectionTimeout} from '../shared/common.js';
 import {ReadAnythingLogger, SpeechControls} from '../shared/read_anything_logger.js';
 
@@ -56,8 +56,6 @@ export class SpeechController {
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
-  private selectionController_: SelectionController =
-      SelectionController.getInstance();
   private listeners_: SpeechListener[] = [];
   private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
   private engineTimeoutId_: number|null = null;
@@ -179,7 +177,8 @@ export class SpeechController {
     this.readAloudModel_.init(contextNode);
   }
 
-  onSelectionChange() {
+  onSelectionChange(position: ContentPosition|null) {
+    this.model_.setCurrentContentPosition(position);
     this.highlighter_.clearHighlightFormatting();
   }
 
@@ -307,13 +306,10 @@ export class SpeechController {
   }
 
   private resumeSpeech_() {
-    let playedFromSelection = false;
-    if (this.selectionController_.hasSelection()) {
+    const playedFromPosition = this.playFromContentPosition_();
+    if (playedFromPosition) {
       this.wordBoundaries_.resetToDefaultState();
-      playedFromSelection = this.playFromSelection_();
-    }
-
-    if (!playedFromSelection) {
+    } else {
       if (this.isPausedFromButton() && !this.wordBoundaries_.hasBoundaries()) {
         // If word boundaries aren't supported for the given voice, we should
         // still continue to use synth.resume, as this is preferable to
@@ -340,7 +336,7 @@ export class SpeechController {
     // If the current read highlight has been cleared from a call to
     // updateContent, such as via a preference change, rehighlight the nodes
     // after a pause.
-    if (!playedFromSelection) {
+    if (!playedFromPosition) {
       this.highlightCurrentGranularity_(
           this.readAloudModel_.getCurrentTextSegments());
     }
@@ -360,14 +356,13 @@ export class SpeechController {
     this.setHasSpeechBeenTriggered(true);
     this.model_.setIsSpeechBeingRepositioned(false);
 
-    // When the TS segmentation flag is enabled, playFromSelection_ needs to
-    // called after initializeSpeechTree. While this change is probably okay
-    // to introduce for the non-TS segmentation flag case, the original
+    // When the TS segmentation flag is enabled, playFromContentPosition_ needs
+    // to be called after initializeSpeechTree. While this change is probably
+    // okay to introduce for the non-TS segmentation flag case, the original
     // order is maintained when the flag is disabled to reduce the risk of
     // introducing unexpected bugs to the V8 segmentation method.
     if (chrome.readingMode.isPhraseHighlightingEnabled) {
-      const playedFromSelection = this.playFromSelection_();
-      if (playedFromSelection) {
+      if (this.playFromContentPosition_()) {
         return;
       }
     }
@@ -381,8 +376,7 @@ export class SpeechController {
     }
 
     if (!chrome.readingMode.isPhraseHighlightingEnabled) {
-      const playedFromSelection = this.playFromSelection_();
-      if (playedFromSelection) {
+      if (this.playFromContentPosition_()) {
         return;
       }
     }
@@ -392,15 +386,13 @@ export class SpeechController {
     }
   }
 
-  private playFromSelection_(): boolean {
-    if (!this.isSpeechTreeInitialized() ||
-        !this.selectionController_.hasSelection()) {
+  private playFromContentPosition_(): boolean {
+    if (!this.isSpeechTreeInitialized()) {
       return false;
     }
 
-    const selectionStart = this.selectionController_.getCurrentSelectionStart();
-    const startingNodeId = selectionStart.nodeId;
-    if (!startingNodeId) {
+    const position = this.model_.getCurrentContentPosition();
+    if (!position) {
       return false;
     }
 
@@ -413,15 +405,11 @@ export class SpeechController {
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      const domNode = this.nodeStore_.getDomNode(startingNodeId);
-      if (!domNode) {
-        return;
-      }
-      const readAloudNode = ReadAloudNode.create(domNode);
+      const readAloudNode = ReadAloudNode.create(position.node);
       if (!readAloudNode) {
         return;
       }
-      this.movePlaybackToNode_(readAloudNode, selectionStart.offset);
+      this.movePlaybackToNode_(readAloudNode, position.offset);
       // Play the next granularity, which includes the selection.
       if (this.highlightAndPlayMessage_()) {
         this.logger_.logSpeechControlClick(SpeechControls.PLAY_FROM_SELECTION);

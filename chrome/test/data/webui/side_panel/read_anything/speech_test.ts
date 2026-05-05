@@ -226,6 +226,8 @@ suite('Speech', () => {
       const selectionController = SelectionController.getInstance();
       selectionController.updateSelection(app.getSelection(), app.$.container);
       selectionController.onSelectionChange(app.getSelection());
+      speechController.onSelectionChange(
+          selectionController.getCurrentSelectionStart());
     }
 
     function playFromSelection() {

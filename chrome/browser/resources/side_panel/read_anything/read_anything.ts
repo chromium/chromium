@@ -21,8 +21,8 @@ export {LineFocusCursorMoveMode, LineFocusMoveMode, LineFocusNoneMoveMode, LineF
 export type {MoveModeDelegate} from './content/line_focus_move_mode.js';
 export {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusStyleMode, LineFocusWindowStyleMode, WINDOW_DIFF_THRESHOLD} from './content/line_focus_style_mode.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './content/node_store.js';
-export type {SettingsPrefs} from './content/read_anything_types.js';
-export {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, LineFocusType, SettingsOption, ToolbarEvent} from './content/read_anything_types.js';
+export type {ContentPosition, SettingsPrefs} from './content/read_anything_types.js';
+export {ContentPositionSource, DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, LineFocusType, SettingsOption, ToolbarEvent} from './content/read_anything_types.js';
 export {removeExtraneousElementsFrom} from './content/readability_content_processing.js';
 export {ReadabilityImageClassifier} from './content/readability_image_classifier.js';
 export {SelectionController} from './content/selection_controller.js';

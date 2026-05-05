@@ -127,11 +127,9 @@ suite('SelectionController', () => {
       assertFalse(selectionController.hasSelection());
     });
 
-    test('current selection start with no selection', () => {
+    test('current selection start with no selection returns null', () => {
       chrome.readingMode.isImmersiveEnabled = true;
-      const selectionStart = selectionController.getCurrentSelectionStart();
-      assertEquals(0, selectionStart.nodeId);
-      assertEquals(-1, selectionStart.offset);
+      assertFalse(!!selectionController.getCurrentSelectionStart());
     });
 
     test('current selection start with forward selection in one node', () => {
@@ -144,7 +142,8 @@ suite('SelectionController', () => {
       selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
       const selectionStart = selectionController.getCurrentSelectionStart();
 
-      assertEquals(node.id, selectionStart.nodeId);
+      assertTrue(!!selectionStart);
+      assertEquals(node.node, selectionStart.node);
       assertEquals(expectedAnchorOffset, selectionStart.offset);
     });
 
@@ -158,7 +157,8 @@ suite('SelectionController', () => {
       selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
       const selectionStart = selectionController.getCurrentSelectionStart();
 
-      assertEquals(node.id, selectionStart.nodeId);
+      assertTrue(!!selectionStart);
+      assertEquals(node.node, selectionStart.node);
       assertEquals(expectedFocusOffset, selectionStart.offset);
     });
 
@@ -174,7 +174,8 @@ suite('SelectionController', () => {
       selectNodes(node1, expectedAnchorOffset, node2, expectedFocusOffset);
       const selectionStart = selectionController.getCurrentSelectionStart();
 
-      assertEquals(node1.id, selectionStart.nodeId);
+      assertTrue(!!selectionStart);
+      assertEquals(node1.node, selectionStart.node);
       assertEquals(expectedAnchorOffset, selectionStart.offset);
     });
 
@@ -190,7 +191,8 @@ suite('SelectionController', () => {
       selectNodes(node2, expectedFocusOffset, node1, expectedAnchorOffset);
       const selectionStart = selectionController.getCurrentSelectionStart();
 
-      assertEquals(node1.id, selectionStart.nodeId);
+      assertTrue(!!selectionStart);
+      assertEquals(node1.node, selectionStart.node);
       assertEquals(expectedAnchorOffset, selectionStart.offset);
     });
 

@@ -7,6 +7,7 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {ContentController, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -240,10 +241,9 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
     let mockTimer: MockTimer;
 
-    function selectAndPlay(
+    async function selectAndPlay(
         anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number): void {
-      mockTimer.install();
+        focusOffset: number): Promise<void> {
       const selectedTree = Object.assign(
           {
             selection: {
@@ -257,6 +257,9 @@ suite('ReadAloudHighlight', () => {
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
       selectionController.updateSelection(app.getSelection(), app.$.container);
+      await microtasksFinished();
+
+      mockTimer.install();
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();
@@ -264,7 +267,7 @@ suite('ReadAloudHighlight', () => {
 
     setup(() => {
       mockTimer = new MockTimer();
-      selectAndPlay(3, 1, 3, 5);
+      return selectAndPlay(3, 1, 3, 5);
     });
 
     test('shows correct highlights', () => {

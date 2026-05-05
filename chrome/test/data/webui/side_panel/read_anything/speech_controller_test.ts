@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
@@ -819,24 +819,19 @@ suite('SpeechController', () => {
     assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
   });
 
-  test('playFromSelection logs metric', async () => {
+  test('playFromContentPosition logs selection metric', async () => {
     const text = 'This is a selection.';
     setContent(text, readAloudModel);
-
-    // Set a selection
-    const nodeId = 2;  // setContent uses id 2
-    selectionController.getCurrentSelectionStart = () => {
-      return {nodeId: nodeId, offset: 0};
-    };
-    selectionController.hasSelection = () => true;
-
+    const node = nodeStore.getDomNode(2)!;  // setContent uses id 2
+    speechController.onSelectionChange(
+        {node, offset: 0, source: ContentPositionSource.SELECTION});
     const element = document.createElement('p');
     element.textContent = text;
 
     // Trigger play
     speechController.onPlayPauseToggle(element);
 
-    // We need to wait for the setTimeout in playFromSelection_
+    // Wait for the setTimeout in playFromContentPosition_
     await new Promise(resolve => setTimeout(resolve, 500));
 
     assertEquals(1, metrics.getCallCount('incrementMetricCount'));

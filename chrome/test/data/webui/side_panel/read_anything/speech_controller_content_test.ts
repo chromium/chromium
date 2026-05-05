@@ -308,6 +308,8 @@ suite('SpeechController', () => {
     range.setEnd(textNode, text1.length + text2.length + 8);
     selection.addRange(range);
     selectionController.onSelectionChange(selection);
+    speechController.onSelectionChange(
+        selectionController.getCurrentSelectionStart());
     readAloudModel.setInitialized(true);
     readAloudModel.setCurrentTextContent(text3);
     const node = ReadAloudNode.create(textNode);
@@ -381,6 +383,8 @@ suite('SpeechController', () => {
     range.setEnd(newTextNode, text1.length + text2.length + 8);
     selection.addRange(range);
     selectionController.onSelectionChange(selection);
+    speechController.onSelectionChange(
+        selectionController.getCurrentSelectionStart());
     readAloudModel.setCurrentTextContent(text3);
 
     let calls = 0;
