@@ -41,11 +41,32 @@
 
 @end
 
+/// Data source for providing information to the pickers.
+@protocol ComposeboxPickerPresenterDataSource
+
+// Returns the associated IDs for all currently attached tabs.
+- (std::set<web::WebStateID>)allAttachedWebStateIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter;
+
+// Returns the associated IDs for currently attached tabs from the current web
+// state context.
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContextForPresenter:
+    (ComposeboxPickerPresenter*)presenter;
+
+// Returns the max number of tab attachments.
+- (NSUInteger)maxTabAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter;
+
+@end
+
 /// Presents the various composebox pickers.
 @interface ComposeboxPickerPresenter : NSObject
 
 /// Delegate for this class.
 @property(nonatomic, weak) id<ComposeboxPickerPresenterDelegate> delegate;
+
+/// Data source for this class.
+@property(nonatomic, weak) id<ComposeboxPickerPresenterDataSource> dataSource;
 
 // Creates a new object of this type.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

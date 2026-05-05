@@ -186,26 +186,21 @@
   [self.delegate composeboxPickerPresenter:self didPickFilesWithURLs:urls];
 }
 
-#pragma mark - TabPickerSelectionDelegate
-
 // Returns the associated IDs for all currently attached tabs.
 - (std::set<web::WebStateID>)allAttachedWebStateIDs {
-  std::set<web::WebStateID> ids;
-  return ids;
+  return [self.dataSource allAttachedWebStateIDsForPresenter:self];
 }
 
 // Returns the associated IDs for currently attached tabs from the current web
 // state context. Tabs attached from different web states (not visible in the
 // tab picker) will be excluded.
 - (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContext {
-  std::set<web::WebStateID> ids;
-  return ids;
+  return [self.dataSource attachedWebStateIDsInCurrentContextForPresenter:self];
 }
 
 // Returns the max number of tab attachments.
 - (NSUInteger)maxTabAttachmentCount {
-  // TODO(crbug.com/506956060): Add correct limit.
-  return 5;
+  return [self.dataSource maxTabAttachmentCountForPresenter:self];
 }
 
 // Attaches the selected tabs. `cachedWebStateIDs` contains the IDs of the

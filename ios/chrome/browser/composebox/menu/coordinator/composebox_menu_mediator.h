@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
 
+class WebStateList;
 @class ComposeboxAttachmentSelection;
 @class ComposeboxMenuMediator;
 @class ComposeboxUIInputState;
@@ -63,9 +64,13 @@
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ComposeboxMenuConsumer> consumer;
 
-// Creates a new instance with an entrypoint and the initial UI state.
+// Creates a new instance with an entrypoint, the initial UI state, the web
+// state list, and any preselected attachments.
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
-                        inputState:(ComposeboxUIInputState*)inputState;
+                        inputState:(ComposeboxUIInputState*)inputState
+                      webStateList:(WebStateList*)webStateList
+            preselectedAttachments:
+                (ComposeboxAttachmentSelection*)preselectedAttachments;
 
 /// Processes the given `imageItems`.
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems;
@@ -80,9 +85,16 @@
 /// Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;
 
-// Returns the maximum number of images allowed based on the current
-// composebox mode and current number of attachments.
+/// Returns the maximum number of images allowed based on the current
+/// composebox mode and current number of attachments.
 - (NSUInteger)remainingNumberOfImagesAllowed;
+
+/// Returns the associated IDs for all currently attached tabs.
+- (std::set<web::WebStateID>)allAttachedWebStateIDs;
+
+/// Returns the attached tab IDs that exist within the current WebStateList
+/// context.
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContext;
 
 @end
 

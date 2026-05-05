@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/web_state_id.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 
@@ -39,6 +40,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 
 @interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
                                          ComposeboxPickerPresenterDelegate,
+                                         ComposeboxPickerPresenterDataSource,
                                          UISheetPresentationControllerDelegate>
 @end
 
@@ -130,17 +132,16 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
     }
 
     std::set<web::WebStateID> emptySet;
-    ComposeboxUIInputState* inputState =
-        [_stateManager computeUIInputStateWithFavicon:nil
-                                  attachedWebStateIDs:emptySet];
-
-    _mediator = [[ComposeboxMenuMediator alloc] initWithEntrypoint:_entrypoint
-                                                        inputState:inputState];
-  } else {
-    CHECK(_inputState);
-    _mediator = [[ComposeboxMenuMediator alloc] initWithEntrypoint:_entrypoint
-                                                        inputState:_inputState];
+    _inputState = [_stateManager computeUIInputStateWithFavicon:nil
+                                            attachedWebStateIDs:emptySet];
   }
+
+  CHECK(_inputState);
+  _mediator = [[ComposeboxMenuMediator alloc]
+          initWithEntrypoint:_entrypoint
+                  inputState:_inputState
+                webStateList:self.browser->GetWebStateList()
+      preselectedAttachments:_preselection];
   _mediator.delegate = self;
 
   _viewController.sheetPresentationController.prefersGrabberVisible = YES;
@@ -169,6 +170,7 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
       initWithBaseViewController:_viewController
                          browser:self.browser];
   _pickerPresenter.delegate = self;
+  _pickerPresenter.dataSource = self;
 }
 
 - (void)stop {
@@ -344,6 +346,24 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
                         (std::set<web::WebStateID>)cachedWebStateIDs {
   [_mediator processWebStateIDs:selectedWebStateIDs
               cachedWebStateIDs:cachedWebStateIDs];
+}
+
+#pragma mark - ComposeboxPickerPresenterDataSource
+
+- (std::set<web::WebStateID>)allAttachedWebStateIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator allAttachedWebStateIDs];
+}
+
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContextForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator attachedWebStateIDsInCurrentContext];
+}
+
+- (NSUInteger)maxTabAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  CHECK(_inputState);
+  return _inputState.maxTabAttachmentCount;
 }
 
 #pragma mark - Private

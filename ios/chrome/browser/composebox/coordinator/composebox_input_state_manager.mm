@@ -518,6 +518,7 @@ ComposeboxStrings* ServerStringsFromInputState(
   state.currentTabFavicon = currentTabFavicon;
   state.remainingAttachmentCapacity = [self remainingAttachmentCapacity];
   state.remainingNumberOfImagesAllowed = [self remainingNumberOfImagesAllowed];
+  state.maxTabAttachmentCount = [self maxTabAttachmentCount];
   state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
 
   state.activeTool = [self activeMode];

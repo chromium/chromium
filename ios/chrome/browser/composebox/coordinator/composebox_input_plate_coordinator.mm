@@ -110,6 +110,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxInputPlateMediatorDelegate,
     ComposeboxInputPlateViewControllerDelegate,
     ComposeboxPickerPresenterDelegate,
+    ComposeboxPickerPresenterDataSource,
     ComposeboxMenuCoordinatorInputPlateDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
@@ -183,6 +184,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       initWithBaseViewController:_viewController
                          browser:self.browser];
   _pickerPresenter.delegate = self;
+  _pickerPresenter.dataSource = self;
 
   if (_entrypoint == ComposeboxEntrypoint::kNTPAIMButton) {
     [_metricsRecorder
@@ -866,7 +868,25 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
         (std::set<web::WebStateID>)selectedWebStateIDs
                     cachedWebStateIDs:
                         (std::set<web::WebStateID>)cachedWebStateIDs {
-  // TODO: Implement.
+  [_mediator attachSelectedTabsWithWebStateIDs:selectedWebStateIDs
+                             cachedWebStateIDs:cachedWebStateIDs];
+}
+
+#pragma mark - ComposeboxPickerPresenterDataSource
+
+- (std::set<web::WebStateID>)allAttachedWebStateIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator allAttachedWebStateIDs];
+}
+
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContextForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator attachedWebStateIDsInCurrentContext];
+}
+
+- (NSUInteger)maxTabAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator maxTabAttachmentCount];
 }
 
 #pragma mark - ComposeboxMenuCoordinatorInputPlateDelegate

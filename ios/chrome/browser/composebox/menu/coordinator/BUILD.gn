@@ -30,6 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/web/public",
   ]
   public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]

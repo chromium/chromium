@@ -52,6 +52,9 @@
 /// The remaining number of images allowed.
 @property(nonatomic, assign) NSUInteger remainingNumberOfImagesAllowed;
 
+/// The absolute maximum number of tabs allowed to be attached.
+@property(nonatomic, assign) NSUInteger maxTabAttachmentCount;
+
 /// Whether the model picker is allowed to be shown.
 @property(nonatomic, assign) BOOL allowModelPicker;
 
