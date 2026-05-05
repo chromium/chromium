@@ -183,9 +183,6 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   navigate_params.tabstrip_index = index;
   navigate_params.user_gesture = false;
 
-  // TODO(https://crbug.com/430344931): `NavigateParams::tabstrip_add_types`
-  // isn't supported on android builds yet.
-#if !BUILDFLAG(IS_ANDROID)
   // Default to not pinning the tab. Setting the 'pinned' property to true
   // will override this default.
   bool pinned = params.pinned.value_or(false);
@@ -196,7 +193,6 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     add_types |= AddTabTypes::ADD_PINNED;
   }
   navigate_params.tabstrip_add_types = add_types;
-#endif
 
   // Ensure that this navigation will not get 'captured' into PWA windows, as
   // this means that `browser` could be ignored. It may be useful/desired in

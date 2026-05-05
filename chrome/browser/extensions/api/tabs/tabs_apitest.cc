@@ -151,8 +151,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Update) {
 // TODO(https://crbug.com/449095632): Enable these tests.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Desktop Android does not yet support creating a tab in the pinned state.
-// See OpenTabHelper for details.
+// Fails on desktop android (assumed synchrnous tab removal, then causes crash).
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Pinned) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/pinned")) << message_;
 }
