@@ -348,8 +348,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         NtpThemeColorInfo colorInfo1 =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorId1);
 
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
 
         createCoordinator();
         assertEquals(
@@ -451,8 +450,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
 
         createCoordinator();
         // Verifies the primary color of the chrome color bottom sheet matches the current color
@@ -497,8 +495,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
         int expectedPosition = NtpThemeColorId.NTP_COLORS_BLUE - 1;
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
 
         // Verifies that the Chrome color bottom sheet is opened with highlighted item.
         verifyIsDailyRefreshCheckedState(
@@ -630,8 +627,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
         mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 5);
         mPropertyModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);

@@ -137,8 +137,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
 
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
 
         verify(mNtpBackgroundDataManager)
                 .saveUserSelectedBackgroundTypeToSharedPreference(
@@ -156,8 +155,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         NtpThemeColorFromHexInfo colorFromHexInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
 
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorFromHexInfo, NtpBackgroundType.COLOR_FROM_HEX);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorFromHexInfo);
 
         verify(mNtpBackgroundDataManager)
                 .saveUserSelectedBackgroundTypeToSharedPreference(
@@ -273,8 +271,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         @ColorInt int backgroundColor = Color.BLUE;
         NtpThemeColorFromHexInfo colorFromHexInfo =
                 new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorFromHexInfo, NtpBackgroundType.COLOR_FROM_HEX);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorFromHexInfo);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
 
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
@@ -389,8 +386,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
 
         // Test case for choosing a new customized color.
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
         assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         verify(mListener)
                 .onBackgroundColorChanged(
@@ -431,8 +427,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
 
         // Test case for choosing a new customized color.
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorFromHexInfo, NtpBackgroundType.COLOR_FROM_HEX);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorFromHexInfo);
         assertEquals(
                 backgroundColor,
                 NtpCustomizationUtils.getBackgroundColorFromSharedPreference(Color.WHITE));
@@ -460,16 +455,14 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertFalse(
                 NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
 
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
         assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
 
         // Test case for daily refresh enabled.
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(mContext, colorInfo);
         assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
         assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
         assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());

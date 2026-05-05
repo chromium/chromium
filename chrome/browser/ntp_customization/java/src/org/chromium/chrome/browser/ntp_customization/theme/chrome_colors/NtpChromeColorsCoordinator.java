@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -184,21 +183,9 @@ public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
         mDelegate.onNewColorSelected(
                 !NtpThemeColorUtils.isPrimaryColorMatched(
                         mContext, mPrimaryColorInfo, ntpThemeColorInfo));
-        @NtpBackgroundType
-        int newType =
-                ntpThemeColorInfo instanceof NtpThemeColorFromHexInfo
-                        ? NtpBackgroundType.COLOR_FROM_HEX
-                        : NtpBackgroundType.CHROME_COLOR;
 
-        // Applies the primary theme color to the activity before calculating the background color
-        // which is a themed color depending on the activity's theme.
-        if (mContext instanceof Activity activity) {
-            NtpCustomizationUtils.applyDynamicColorToActivity(
-                    activity,
-                    NtpThemeColorUtils.getPrimaryColorFromColorInfo(mContext, ntpThemeColorInfo));
-        }
         NtpCustomizationConfigManager.getInstance()
-                .onBackgroundColorChanged(mContext, ntpThemeColorInfo, newType);
+                .onBackgroundColorChanged(mContext, ntpThemeColorInfo);
 
         mOnChromeColorSelectedCallback.run();
         mLastClickedColorInfo = ntpThemeColorInfo;
