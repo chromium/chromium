@@ -92,6 +92,10 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.pageHandler_.setShowErrorAllowed(allowed);
   }
 
+  protected onExperimentalOptInClick_() {
+    this.pageHandler_.showExperimentalOptIn();
+  }
+
   protected onAutopushInputChange(e: Event) {
     this.data_!.config.autopushGuestUrl = (e.target as HTMLInputElement).value;
   }

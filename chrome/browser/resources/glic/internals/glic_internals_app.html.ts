@@ -214,6 +214,14 @@ export function getHtml(this: GlicInternalsAppElement) {
             ${this.invokeLogs_.map(
               log => html`<pre style="margin: 0;">${log}</pre>`)}
           </div>
+          ${this.data_?.experimentalTriggeringEnabled ? html`
+            <h3>Experimental Opt-In</h3>
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <cr-button @click="${this.onExperimentalOptInClick_}">
+                Show Experimental Opt-In
+              </cr-button>
+            </div>
+          ` : html``}
         </div>
       </div>
 

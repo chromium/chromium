@@ -13,6 +13,7 @@ struct InternalsDataPayload {
   ProfileEnablement enablement;
   ConfigInfo config;
   bool show_error_allowed;
+  bool experimental_triggering_enabled;
 };
 
 // Configuration options for invoking Glic from the internals page.
@@ -56,6 +57,9 @@ interface InternalsPageHandler {
 
   // Sets whether errors are allowed to be shown.
   SetShowErrorAllowed(bool allowed);
+
+  // Shows the experimental opt-in dialog.
+  ShowExperimentalOptIn();
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

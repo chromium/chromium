@@ -47,6 +47,8 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
 
   void SetShowErrorAllowed(bool allowed) override;
 
+  void ShowExperimentalOptIn() override;
+
  private:
   GlicKeyedService* GetGlicService();
 

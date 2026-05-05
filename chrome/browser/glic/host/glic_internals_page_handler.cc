@@ -28,9 +28,14 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#endif
 
 namespace glic {
 
@@ -144,6 +149,9 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   payload->show_error_allowed = Profile::FromBrowserContext(browser_context_)
                                     ->GetPrefs()
                                     ->GetBoolean(prefs::kGlicShowErrorAllowed);
+
+  payload->experimental_triggering_enabled =
+      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
 
   payload->config = std::move(config);
 
@@ -290,6 +298,17 @@ void GlicInternalsPageHandler::SetShowErrorAllowed(bool allowed) {
   Profile::FromBrowserContext(browser_context_)
       ->GetPrefs()
       ->SetBoolean(prefs::kGlicShowErrorAllowed, allowed);
+}
+
+void GlicInternalsPageHandler::ShowExperimentalOptIn() {
+#if !BUILDFLAG(IS_ANDROID)
+  GlicKeyedService* service = GetGlicService();
+  if (!service) {
+    return;
+  }
+
+  service->opt_in_controller().ShowDialog(webui_contents_);
+#endif
 }
 
 }  // namespace glic
