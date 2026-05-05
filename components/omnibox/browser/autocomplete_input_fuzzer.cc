@@ -11,6 +11,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -22,9 +23,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment icu_env;
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<IcuEnvironment> icu_env;
   // Enforce a reasonable bound on what we believe it takes to trigger
   // an error.
   if (size > 4096)
