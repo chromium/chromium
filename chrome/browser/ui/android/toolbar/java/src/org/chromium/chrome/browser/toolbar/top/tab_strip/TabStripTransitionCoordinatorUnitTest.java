@@ -1015,7 +1015,6 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
                 + ":adjust_tab_strip_on_startup/true"
@@ -1040,7 +1039,6 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
                 + ":adjust_tab_strip_on_startup/false"
@@ -1061,7 +1059,6 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
                 + ":adjust_tab_strip_on_startup/true"

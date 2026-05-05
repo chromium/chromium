@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 import java.lang.annotation.ElementType;
@@ -263,8 +262,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     @VisibleForTesting
     void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
-        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
-
         recalculateHeights();
         recalculateLayerRestingOffsets();
         prepForAnimation(animate);
@@ -696,9 +693,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        // No-op by default until refactor work is enabled.
-        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
-
         // Inform any controls that there was a change to the top controls height.
         for (TopControlLayer topControlLayer : mControls.values()) {
             topControlLayer.onTopControlLayerHeightChanged(topControlsHeight, topControlsMinHeight);
@@ -711,8 +705,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints,
             boolean shouldUpdateOffsets) {
-        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
-
         if (mTopControlsOffsetTagInfo == offsetTagsInfo && mBrowserControlsState == constraints) {
             return;
         }

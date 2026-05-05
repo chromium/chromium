@@ -1579,7 +1579,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testPushAndUpdateStrip_RefactorEnabled() {

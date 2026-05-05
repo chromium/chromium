@@ -38,8 +38,7 @@ public class BrowserControlsUtils {
             return sSyncMinHeightWithTotalHeightForTesting;
         }
 
-        if (!ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()
-                || !ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
+        if (!ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
             return false;
         }
 
@@ -49,8 +48,7 @@ public class BrowserControlsUtils {
 
     /** Whether use TopControlsStacker to drive the y offset for top control layers. */
     public static boolean isTopControlsRefactorOffsetEnabled() {
-        return ChromeFeatureList.sTopControlsRefactor.isEnabled()
-                && ChromeFeatureList.sTopControlsRefactorV2.isEnabled();
+        return ChromeFeatureList.sTopControlsRefactorV2.isEnabled();
     }
 
     /** Whether force adjusting top chrome height is allowed based on feature flags. */

@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
 import org.chromium.ui.util.TokenHolder;
@@ -127,9 +126,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         mLockTopControlsTokenJar = lockTopControlsTokenJar;
         mSupplier = ObservableSuppliers.createNonNull(tabStripHeight);
 
-        if (ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
-            mTopControlsStacker.addControl(this);
-        }
+        mTopControlsStacker.addControl(this);
     }
 
     /** Destroy the instance and remove all dependencies. */

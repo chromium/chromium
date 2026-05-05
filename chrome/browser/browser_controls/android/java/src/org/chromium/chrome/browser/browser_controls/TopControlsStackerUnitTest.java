@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({
-    ChromeFeatureList.TOP_CONTROLS_REFACTOR,
     ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
 })
 public class TopControlsStackerUnitTest {

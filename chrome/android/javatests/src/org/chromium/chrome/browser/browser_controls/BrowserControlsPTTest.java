@@ -38,7 +38,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
 })
 @EnableFeatures({
-    ChromeFeatureList.TOP_CONTROLS_REFACTOR,
     ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
 })
 @DisableFeatures({ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS})

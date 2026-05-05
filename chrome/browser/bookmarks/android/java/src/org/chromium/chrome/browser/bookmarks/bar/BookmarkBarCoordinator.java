@@ -446,9 +446,6 @@ public class BookmarkBarCoordinator
 
     @Override
     public void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        assert ChromeFeatureList.sTopControlsRefactor.isEnabled()
-                : "onTopControlLayerHeightChanged should not be called unless refactor is enabled";
-
         // Here we are subtracting the height of the TopControl, |mView|, to bottom align the
         // BookmarkBar relative to the other TopControls.
         // TODO(crbug.com/417238089): We should not hardcode this offset functionality since it

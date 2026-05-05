@@ -9192,11 +9192,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "top-controls-refactor",
-    "owners": [ "mschillaci@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "top-controls-refactor-v2",
     "owners": [ "mschillaci@google.com", "wenyufu@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 150

@@ -496,7 +496,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testOffsetTagAndConstraintChanges_topControlsRefactor() {
@@ -556,7 +555,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testContentOffset_topControlsRefactorEnabled() {
@@ -578,7 +576,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testContentOffset_topControlsRefactorEnabled_manuallyControlled() {
@@ -614,7 +611,6 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
         ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
     })
     public void testContentOffset_topControlsRefactorEnabled_ControlsAtBottom() {

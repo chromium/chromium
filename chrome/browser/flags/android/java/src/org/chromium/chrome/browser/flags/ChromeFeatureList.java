@@ -686,7 +686,6 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_SNAPSHOT_REFACTOR = "ToolbarSnapshotRefactor";
     public static final String TOOLBAR_STALE_CAPTURE_BUG_FIX = "ToolbarStaleCaptureBugFix";
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
-    public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
     public static final String TOP_CONTROLS_REFACTOR_V2 = "TopControlsRefactorV2";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
@@ -1178,11 +1177,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarTabletResizeRefactor =
             newCachedFlag(TOOLBAR_TABLET_RESIZE_REFACTOR, /* defaultValue= */ true);
-    public static final CachedFlag sTopControlsRefactor =
-            newCachedFlag(
-                    TOP_CONTROLS_REFACTOR,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTopControlsRefactorV2 =
             newCachedFlag(
                     TOP_CONTROLS_REFACTOR_V2,
@@ -1384,7 +1378,6 @@ public abstract class ChromeFeatureList {
                     sToolbarSnapshotRefactor,
                     sToolbarStaleCaptureBugFix,
                     sToolbarTabletResizeRefactor,
-                    sTopControlsRefactor,
                     sTopControlsRefactorV2,
                     sTouchToSearchCallout,
                     sUnparcelIntentFileDescriptors,
@@ -1844,8 +1837,6 @@ public abstract class ChromeFeatureList {
                             "activity_creation_timestamp_diff_threshold_ms",
                             1000);
 
-    public static final IntCachedFeatureParam sTopControlsRefactorNarrowWidthTransitionThreshold =
-            newIntCachedFeatureParam(TOP_CONTROLS_REFACTOR, "min_width_transition_threshold", 0);
 
     /** Always register to push notification service. */
     public static final BooleanCachedFeatureParam sUseChimeAndroidSdkAlwaysRegister =
@@ -1952,7 +1943,6 @@ public abstract class ChromeFeatureList {
                     sTabGroupListContainment,
                     sTabStorageSqlitePrototypePhase,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
-                    sTopControlsRefactorNarrowWidthTransitionThreshold,
                     sTouchToSearchCalloutIph,
                     sTouchToSearchCalloutSnippetAsSubtitle,
                     sUseChimeAndroidSdkAlwaysRegister,
