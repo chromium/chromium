@@ -1466,6 +1466,14 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         IdentityRequestDialogController::DismissReason::kCloseButton);
   }
 
+  void CallRedirectTo(const GURL& idp_config_url,
+                      blink::mojom::RedirectParams::Tag method,
+                      const GURL& redirect_to,
+                      const std::string& request_body) {
+    federated_auth_request_impl_->RedirectTo(idp_config_url, method,
+                                             redirect_to, request_body);
+  }
+
   void CompleteDisconnectRequest() {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
@@ -9061,5 +9069,41 @@ INSTANTIATE_TEST_SUITE_P(
                                                /*show_modal=*/true},
                       NotifyAutofillTestParams{/*unknown_idp=*/false,
                                                /*show_modal=*/false}));
+
+TEST_F(RequestServiceTest, DismissIgnoredDuringRedirectTo) {
+  base::HistogramTester histogram_tester;
+
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  federated_auth_request_impl_->SetForceAllowRedirectToForTesting(true);
+
+  // Start the request flow.
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, config);
+
+  content::MockWebContentsObserver observer(web_contents());
+  EXPECT_CALL(observer, DidStartNavigation(_))
+      .WillOnce([&](content::NavigationHandle* handle) { CloseDialog(); });
+
+  // Call RedirectTo. This should trigger navigation and thus the observer.
+  CallRedirectTo(GURL(kProviderUrlFull),
+                 blink::mojom::RedirectParams::Tag::kGet,
+                 GURL("https://rp.example/redirect"), "");
+
+  WaitForCurrentAuthRequest(/*should_fast_forward=*/true);
+
+  // Verify that the request completed successfully.
+  EXPECT_EQ(auth_helper_->status(), RequestTokenStatus::kSuccess);
+  // In the success case via RedirectTo, the token is explicitly returned as a
+  // null base::Value (type NONE). So token().has_value() is true (it contains
+  // the null value), but is_none() is true.
+  EXPECT_TRUE(auth_helper_->token().has_value());
+  EXPECT_TRUE(auth_helper_->token()->is_none());
+
+  // Verify that the histogram records success (53) instead of dismiss (5).
+  histogram_tester.ExpectUniqueSample(
+      "Blink.FedCm.Status.RequestIdToken",
+      static_cast<int>(RequestIdTokenStatus::kSuccessUsingRedirectTo), 1);
+}
 
 }  // namespace content::webid

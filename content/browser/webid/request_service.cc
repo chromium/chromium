@@ -1680,6 +1680,16 @@ void RequestService::OnDismissErrorDialog(
 
 void RequestService::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  // If the request has already completed, ignore any subsequent dismissals.
+  if (!auth_request_token_callback_) {
+    return;
+  }
+
+  // Ignore dismissals triggered during the synchronous execution of RedirectTo.
+  if (in_redirect_to_) {
+    return;
+  }
+
   if (has_sent_token_request_) {
     verifying_dialog_result_ = identity_selection_type_ == kExplicit
                                    ? VerifyingDialogResult::kCancelExplicit
@@ -1900,6 +1910,7 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
     params.extra_headers =
         "Content-Type: application/x-www-form-urlencoded\r\n";
   }
+  in_redirect_to_ = true;
   web_contents->GetController().LoadURLWithParams(params);
 
   CompleteRequest(FederatedAuthRequestResult::kSuccess,
@@ -2284,6 +2295,7 @@ void RequestService::CleanUp() {
   accounts_dialog_shown_time_ = std::nullopt;
   mismatch_dialog_shown_time_ = std::nullopt;
   has_shown_mismatch_ = false;
+  in_redirect_to_ = false;
   idp_accounts_.clear();
   accounts_.clear();
   idp_login_infos_.clear();
