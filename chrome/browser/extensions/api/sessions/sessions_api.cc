@@ -330,6 +330,9 @@ api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
       group = CreateGroupModel(
           static_cast<const sessions::tab_restore::Group&>(entry));
       break;
+    case sessions::tab_restore::Type::SPLIT:
+      // TODO(crbug.com/508688799): Support split tabs restore for sessions API.
+      break;
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
                                   std::move(window), std::move(group));

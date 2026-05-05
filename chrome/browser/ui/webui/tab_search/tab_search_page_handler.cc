@@ -575,6 +575,10 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
         recently_closed_item_count += 1;
         break;
       }
+      case sessions::tab_restore::Type::SPLIT: {
+        // TODO(crbug.com/509526704): Support Split Tabs for Tab Search Menu.
+        break;
+      }
     }
   }
 }

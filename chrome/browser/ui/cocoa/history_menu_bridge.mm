@@ -179,6 +179,11 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
         }
         break;
       }
+      case sessions::tab_restore::Type::SPLIT: {
+        // TODO(crbug.com/509526064): Support split tabs in the MacOS History
+        // Menu.
+        break;
+      }
     }
   }
 

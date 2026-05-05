@@ -410,6 +410,10 @@ mojom::TabRestoreDataPtr BuildTabRestoreData(
             mojom::TabRestoreEntry::NewGroup(BuildTabRestoreGroup(*group));
         break;
       }
+      case sessions::tab_restore::Type::SPLIT: {
+        // TODO(crbug.com/509526732): Support Split Tabs in TabStripInternals.
+        break;
+      }
     }
 
     data->entries.push_back(std::move(mojo_entry));

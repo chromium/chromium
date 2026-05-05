@@ -577,6 +577,10 @@ void DbusAppmenu::TabRestoreServiceChanged(
         ++added_count;
         break;
       }
+      case sessions::tab_restore::Type::SPLIT: {
+        // TODO(crbug.com/509527553). Support Split Tabs in Dbus App Menu.
+        break;
+      }
     }
   }
 

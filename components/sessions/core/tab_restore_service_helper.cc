@@ -422,6 +422,10 @@ void TabRestoreServiceHelper::DeleteNavigationEntries(
         }
         break;
       }
+      case tab_restore::Type::SPLIT: {
+        // TODO(crbug.com/508275923): Support split tabs restore.
+        break;
+      }
     }
   }
   entries_ = std::move(new_entries);
@@ -799,6 +803,10 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       context->ShowBrowserWindow();
       break;
     }
+    case tab_restore::Type::SPLIT: {
+      // TODO(crbug.com/508275923): Support split tabs restore.
+      break;
+    }
   }
 
   if (entry_id_matches_restore_id) {
@@ -953,6 +961,10 @@ bool TabRestoreServiceHelper::OnMemoryDump(
       case tab_restore::Type::GROUP:
         type_string = "group";
         break;
+      case tab_restore::Type::SPLIT:
+        // TODO(crbug.com/508275923): Support split tabs restore.
+        type_string = "split";
+        break;
     }
 
     std::string entry_dump_name = base::StringPrintf(
@@ -985,6 +997,8 @@ bool TabRestoreServiceHelper::ValidateEntry(const Entry& entry) {
       return ValidateWindow(static_cast<const Window&>(entry));
     case tab_restore::Type::GROUP:
       return ValidateGroup(static_cast<const Group&>(entry));
+    case tab_restore::Type::SPLIT:
+      return ValidateSplit(static_cast<const Split&>(entry));
   }
   NOTREACHED();
 }
@@ -1127,6 +1141,11 @@ bool TabRestoreServiceHelper::ValidateGroup(const Group& group) {
   return true;
 }
 
+bool TabRestoreServiceHelper::ValidateSplit(const Split& split) {
+  return split.leading_tab && split.trailing_tab &&
+         ValidateTab(*split.leading_tab) && ValidateTab(*split.trailing_tab);
+}
+
 bool TabRestoreServiceHelper::IsTabInteresting(const Tab& tab) {
   if (tab.navigations.empty()) {
     return false;
@@ -1156,6 +1175,11 @@ bool TabRestoreServiceHelper::IsGroupInteresting(const Group& group) {
   return !group.tabs.empty();
 }
 
+bool TabRestoreServiceHelper::IsSplitInteresting(const Split& split) {
+  return (split.leading_tab && IsTabInteresting(*split.leading_tab)) ||
+         (split.trailing_tab && IsTabInteresting(*split.trailing_tab));
+}
+
 bool TabRestoreServiceHelper::FilterEntry(const Entry& entry) {
   if (!ValidateEntry(entry)) {
     return false;
@@ -1168,6 +1192,8 @@ bool TabRestoreServiceHelper::FilterEntry(const Entry& entry) {
       return IsWindowInteresting(static_cast<const Window&>(entry));
     case tab_restore::Type::GROUP:
       return IsGroupInteresting(static_cast<const Group&>(entry));
+    case tab_restore::Type::SPLIT:
+      return IsSplitInteresting(static_cast<const Split&>(entry));
   }
   NOTREACHED();
 }

@@ -443,6 +443,11 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
           BuildLocalGroupItem(group, ++last_local_model_index_);
           break;
         }
+        case sessions::tab_restore::Type::SPLIT: {
+          // TODO(crbug.com/509546479): Support split tabs in the Recent Tabs
+          // Menu Model.
+          break;
+        }
       }
       ++added_count;
     }

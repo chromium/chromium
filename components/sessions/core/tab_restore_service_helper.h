@@ -40,6 +40,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   typedef tab_restore::TimeFactory TimeFactory;
   typedef tab_restore::Window Window;
   typedef tab_restore::Group Group;
+  typedef tab_restore::Split Split;
 
   // Provides a way for the client to add behavior to the tab restore service
   // helper (e.g. implementing tabs persistence).
@@ -197,6 +198,9 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Validates all the tabs in a group.
   static bool ValidateGroup(const Group& group);
 
+  // Validates the two tabs in a split.
+  static bool ValidateSplit(const Split& split);
+
   // Removes all navigation entries matching |predicate| from |tab|.
   // Returns true if |tab| should be deleted because it is empty.
   static bool DeleteFromTab(const DeletionPredicate& predicate, Tab* tab);
@@ -220,6 +224,10 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Checks whether |group| is interesting -- as long as it contains tabs,
   // it is.
   bool IsGroupInteresting(const Group& group);
+
+  // Checks whether |split| is interesting -- as long as it contains at least
+  // one interesting tab, it is.
+  bool IsSplitInteresting(const Split& split);
 
   // Validates and checks |entry| for interesting.
   bool FilterEntry(const Entry& entry);

@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kTabGroupHome);
 // to be broken crbug.com/413080225#comment8).
 BASE_DECLARE_FEATURE(kSessionRestoreShowThrobberOnVisible);
 
+// Whether or not a split view should restore together.
+BASE_DECLARE_FEATURE(kSplitViewTabRestore);
+
 // This feature will be used for the LE rollout of Vertical Tabs. It will have
 // an earlier min version than kVerticalTabsLaunch.
 BASE_DECLARE_FEATURE(kVerticalTabs);

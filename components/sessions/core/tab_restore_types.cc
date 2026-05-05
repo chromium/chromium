@@ -46,6 +46,14 @@ size_t Group::EstimateMemoryUsage() const {
   return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title());
 }
 
+Split::Split() : Entry(SPLIT) {}
+Split::~Split() = default;
+
+size_t Split::EstimateMemoryUsage() const {
+  using base::trace_event::EstimateMemoryUsage;
+  return EstimateMemoryUsage(leading_tab) + EstimateMemoryUsage(trailing_tab);
+}
+
 // static
 std::unique_ptr<Group> Group::FromTab(const Tab& tab) {
   auto group = std::make_unique<Group>();

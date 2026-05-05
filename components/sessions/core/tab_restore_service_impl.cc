@@ -691,6 +691,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnWillSaveCommands() {
         case tab_restore::Type::GROUP:
           ScheduleCommandsForGroup(static_cast<tab_restore::Group&>(entry));
           break;
+        case tab_restore::Type::SPLIT:
+          // TODO(crbug.com/508275923): Support split tabs restore.
+          break;
       }
       entries_written_++;
     }

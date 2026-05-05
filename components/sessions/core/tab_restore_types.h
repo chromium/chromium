@@ -17,6 +17,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -41,6 +42,7 @@ class SESSIONS_EXPORT PlatformSpecificTabData {
 // The type of entry.
 enum Type {
   TAB,
+  SPLIT,
   GROUP,
   WINDOW,
 };
@@ -123,6 +125,9 @@ struct SESSIONS_EXPORT Tab : public Entry {
   // The user agent override used for the tab's navigations (if applicable).
   sessions::SerializedUserAgentOverride user_agent_override;
 
+  // The split view the tab belonged to, if any.
+  std::optional<split_tabs::SplitTabId> split_id = std::nullopt;
+
   // The group the tab belonged to, if any.
   std::optional<tab_groups::TabGroupId> group;
 
@@ -131,6 +136,24 @@ struct SESSIONS_EXPORT Tab : public Entry {
 
   // The group metadata for the tab, if any.
   std::optional<tab_groups::TabGroupVisualData> group_visual_data;
+};
+
+// Represents a previously open split view.
+// If you add a new field that can allocate memory also add
+// it to the EstimatedMemoryUsage() implementation.
+struct SESSIONS_EXPORT Split : public Entry {
+  Split();
+  ~Split() override;
+
+  // Entry:
+  size_t EstimateMemoryUsage() const override;
+
+  // The unique identifier for this split view instance.
+  std::optional<split_tabs::SplitTabId> split_id = std::nullopt;
+
+  // The two tabs that make up the split view.
+  std::unique_ptr<Tab> leading_tab;
+  std::unique_ptr<Tab> trailing_tab;
 };
 
 // Represents a previously open group.
