@@ -302,4 +302,44 @@ public class BottomSheetControllerImplUnitTest {
         assertTrue("Request should return true as high priority content can be suppressed", result);
         verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
     }
+
+    @Test
+    public void testRequestShowContent_newCobrowse_closesCurrentSheet() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.COBROWSE);
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        when(currentContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
+        when(currentContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+
+        boolean result = mController.requestShowContent(newContent, /* animate= */ true);
+
+        assertTrue("Request should return true as COBROWSE closes current sheet", result);
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+    }
+
+    @Test
+    public void testRequestShowContent_newCobrowse_alreadySuppressed_clearsContent() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent newContent = mock(BottomSheetContent.class);
+        when(newContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.COBROWSE);
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        when(currentContent.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
+
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+
+        // Suppress the sheet
+        mController.suppressSheet(StateChangeReason.NONE);
+
+        boolean result = mController.requestShowContent(newContent, /* animate= */ true);
+
+        assertFalse("Request should return false as sheet is suppressed", result);
+        verify(mBottomSheet).showContent(null);
+    }
 }
