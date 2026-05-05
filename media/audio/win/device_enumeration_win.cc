@@ -129,12 +129,11 @@ static bool GetDeviceNamesWinImpl(
     return true;
   }
 
-  AudioDeviceName device;
-
-  // Loop over all active devices and add friendly name and unique ID to the
-  // |device_names| list. We only add the device if both the unique ID and the
-  // friendly name can be successfully retrieved.
+  // Iterate over all active devices to extract their unique ID and friendly
+  // name. Devices that fail to provide a valid unique ID or friendly name
+  // are skipped and not added to the |device_names| list.
   for (UINT i = 0; i < number_of_active_devices; ++i) {
+    AudioDeviceName device;
     // Retrieve unique name of endpoint device.
     // Example: "{0.0.1.00000000}.{8db6020f-18e3-4f25-b6f5-7726c9122574}".
     Microsoft::WRL::ComPtr<IMMDevice> audio_device;
@@ -178,6 +177,9 @@ static bool GetDeviceNamesWinImpl(
     // Store the user-friendly name.
     if (friendly_name.get().vt == VT_LPWSTR && friendly_name.get().pwszVal) {
       device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
+    } else {
+      send_log(" => (WARNING: friendly name is not a valid string)");
+      continue;
     }
 
     // Append a suffix to USB and Bluetooth devices.  For USB devices, the
