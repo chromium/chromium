@@ -32,4 +32,8 @@ base::Time LocalStateHelperImpl::GetPrefTime(const char* pref_name) const {
   return local_state_ ? local_state_->GetTime(pref_name) : base::Time::Max();
 }
 
+PrefService* LocalStateHelperImpl::GetLocalStatePrefs() {
+  return local_state_;
+}
+
 }  // namespace segmentation_platform

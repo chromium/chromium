@@ -25,6 +25,7 @@ class LocalStateHelper {
   // Sets and gets time in local state for the given pref name.
   virtual void SetPrefTime(const char* pref_name, base::Time time) = 0;
   virtual base::Time GetPrefTime(const char* pref_name) const = 0;
+  virtual PrefService* GetLocalStatePrefs() = 0;
 
   virtual ~LocalStateHelper() = default;
 };

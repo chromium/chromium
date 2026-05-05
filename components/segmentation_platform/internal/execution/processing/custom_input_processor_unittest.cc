@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
+
 #include <memory>
 #include <utility>
 
@@ -12,11 +13,15 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/execution/processing/processing_utils.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/public/input_delegate.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,6 +48,8 @@ class CustomInputProcessorTest : public testing::Test {
   ~CustomInputProcessorTest() override = default;
 
   void SetUp() override {
+    prefs_.registry()->RegisterInt64Pref(metrics::prefs::kInstallDate, 0);
+    LocalStateHelper::GetInstance().Initialize(&prefs_);
     clock_.SetNow(base::Time::Now());
     feature_processor_state_ = std::make_unique<FeatureProcessorState>();
     custom_input_processor_sql_ = std::make_unique<CustomInputProcessor>(
@@ -138,6 +145,7 @@ class CustomInputProcessorTest : public testing::Test {
   InputDelegateHolder input_delegate_holder_;
   std::unique_ptr<FeatureProcessorState> feature_processor_state_;
   std::unique_ptr<CustomInputProcessor> custom_input_processor_sql_;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(CustomInputProcessorTest, IntTypeIndex) {
@@ -321,6 +329,27 @@ TEST_F(CustomInputProcessorTest, InputDelegate) {
   EXPECT_CALL(*delegate, Process(_, _, _))
       .WillOnce(RunOnceCallback<2>(false, result));
   base::flat_map<int, QueryProcessor::Tensor> expected_result{{index, result}};
+  ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
+                             expected_result);
+}
+
+TEST_F(CustomInputProcessorTest, ClientAgeCustomInput) {
+  // Create custom inputs data.
+  int index = 0;
+  base::flat_map<int, Data> data;
+  data.emplace(index, CreateCustomInputData(
+                          1, proto::CustomInput::FILL_CLIENT_AGE_DAYS, {}, {}));
+
+  // Set install date in prefs.
+  int64_t install_timestamp = (clock_.Now() - base::Days(10)).ToTimeT();
+  LocalStateHelper::GetInstance().GetLocalStatePrefs()->SetInt64(
+      metrics::prefs::kInstallDate, install_timestamp);
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[index] = {ProcessedValue(10.0f)};
+
+  // Process the custom inputs and verify using expected result.
   ExpectProcessedCustomInput(std::move(data), /*expected_error=*/false,
                              expected_result);
 }

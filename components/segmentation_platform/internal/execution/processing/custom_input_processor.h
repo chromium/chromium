@@ -103,6 +103,11 @@ class CustomInputProcessor : public QueryProcessor {
   bool AddRandom(const proto::CustomInput& custom_input,
                  std::vector<ProcessedValue>& out_tensor);
 
+  // Add the client age in days for CustomInput::FILL_CLIENT_AGE_DAYS and return
+  // whether it succeeded.
+  bool AddClientAgeInDays(const proto::CustomInput& custom_input,
+                          std::vector<ProcessedValue>& out_tensor);
+
   const raw_ptr<InputDelegateHolder, AcrossTasksDanglingUntriaged>
       input_delegate_holder_;
 

@@ -24,6 +24,7 @@ class LocalStateHelperImpl : public LocalStateHelper {
   void Initialize(PrefService* local_state) override;
   void SetPrefTime(const char* pref_name, base::Time time) override;
   base::Time GetPrefTime(const char* pref_name) const override;
+  PrefService* GetLocalStatePrefs() override;
 
  private:
   friend base::NoDestructor<LocalStateHelperImpl>;
