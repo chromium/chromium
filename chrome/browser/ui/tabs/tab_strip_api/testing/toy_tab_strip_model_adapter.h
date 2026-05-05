@@ -57,8 +57,9 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
       tabs::TabCollectionHandle collection_handle) const override;
   InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const override;
-  void ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
-                         int tab_to_insert_index) override;
+  base::expected<void, mojo_base::mojom::ErrorPtr> ReplaceTabInSplit(
+      tabs::TabHandle tab_to_replace,
+      int tab_to_insert_index) override;
   const tabs::TabCollection* GetRoot() const override;
 
  private:

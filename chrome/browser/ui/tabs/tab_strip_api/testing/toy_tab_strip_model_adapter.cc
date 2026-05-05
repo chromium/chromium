@@ -153,9 +153,11 @@ InsertionParams ToyTabStripModelAdapter::CalculateInsertionParams(
   return tabs_api::InsertionParams();
 }
 
-void ToyTabStripModelAdapter::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
-                                                int tab_to_insert_index) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+ToyTabStripModelAdapter::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
+                                           int tab_to_insert_index) {
   NOTIMPLEMENTED();
+  return base::ok();
 }
 
 const tabs::TabCollection* ToyTabStripModelAdapter::GetRoot() const {

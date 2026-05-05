@@ -331,10 +331,12 @@ InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(
           .pinned = false};
 }
 
-void AndroidTabStripModelAdapter::ReplaceTabInSplit(
-    tabs::TabHandle tab_to_replace,
-    int tab_to_insert_index) {
-  NOTREACHED() << "not implemented";
+base::expected<void, mojo_base::mojom::ErrorPtr>
+AndroidTabStripModelAdapter::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
+                                               int tab_to_insert_index) {
+  return base::unexpected(
+      mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                   "split tabs are not supported on Android"));
 }
 
 const tabs::TabCollection* AndroidTabStripModelAdapter::GetRoot() const {

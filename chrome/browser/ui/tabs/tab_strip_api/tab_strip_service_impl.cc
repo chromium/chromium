@@ -443,8 +443,8 @@ TabStripServiceImpl::ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
         mojo_base::mojom::Code::kInvalidArgument, "invalid tabs"));
   }
 
-  tab_strip_model_adapter().ReplaceTabInSplit(replace_handle,
-                                              insert_index.value());
+  RETURN_IF_ERROR(tab_strip_model_adapter().ReplaceTabInSplit(
+      replace_handle, insert_index.value()));
 
   return std::monostate();
 }
