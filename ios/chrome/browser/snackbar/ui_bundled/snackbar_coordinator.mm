@@ -139,6 +139,13 @@
   [self showSnackbarMessage:message];
 }
 
+- (void)dismissSnackbarWithMessage:(NSString*)messageText
+                          animated:(BOOL)animated {
+  if ([_snackbarView.message.title isEqualToString:messageText]) {
+    [self dismissSnackbar:_snackbarView animated:animated];
+  }
+}
+
 - (void)dismissAllSnackbars {
   [self dismissSnackbar:_snackbarView animated:NO];
 }

@@ -121,6 +121,9 @@ GURL GetValidUrl(NSString* urlString) {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
   LayoutGuideCenter* _layoutGuideCenter;
+  // The last snackbar message displayed that is related to the most visited
+  // tiles.
+  NSString* _lastSnackbarMessage;
   // Tracker for cancellable tasks initiated by the mediator.
   base::CancelableTaskTracker _cancelableTaskTracker;
 }
@@ -175,6 +178,10 @@ GURL GetValidUrl(NSString* urlString) {
 }
 
 - (void)disconnect {
+  if (_lastSnackbarMessage) {
+    [self.snackbarHandler dismissSnackbarWithMessage:_lastSnackbarMessage
+                                            animated:YES];
+  }
   _cancelableTaskTracker.TryCancelAll();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
@@ -690,6 +697,7 @@ GURL GetValidUrl(NSString* urlString) {
   SnackbarMessage* snackbar = [[SnackbarMessage alloc] initWithTitle:message];
   snackbar.action = action;
   [self.snackbarHandler showSnackbarMessage:snackbar];
+  _lastSnackbarMessage = message;
 }
 
 // Display an in-product help on the first tile of the most visited tiles if

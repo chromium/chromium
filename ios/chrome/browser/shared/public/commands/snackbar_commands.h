@@ -59,6 +59,12 @@
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction;
 
+// Dismisses the snackbar displaying `messageText`.
+// TODO(crbug.com/509919378): Introduce snackbar ID and use that as a reference
+// instead of the `messageText`.
+- (void)dismissSnackbarWithMessage:(NSString*)messageText
+                          animated:(BOOL)animated;
+
 // Dismisses all presented snackbars.
 - (void)dismissAllSnackbars;
 

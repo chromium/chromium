@@ -206,7 +206,15 @@ NSString* DisplayName() {
 - (void)showSnackbarMessageAfterDismissingKeyboard:(NSString*)messageText {
 }
 
+- (void)dismissSnackbarWithMessage:(NSString*)messageText
+                          animated:(BOOL)animated {
+  if ([self.snackbarMessage isEqualToString:messageText]) {
+    self.snackbarMessage = nil;
+  }
+}
+
 - (void)dismissAllSnackbars {
+  self.snackbarMessage = nil;
 }
 
 @end

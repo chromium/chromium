@@ -351,8 +351,8 @@ using segmentation_platform::TipIdentifier;
   _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
              scenario:kMenuScenarioHistogramMostVisitedEntry];
-  _mostVisitedTilesMediator.snackbarHandler =
-      static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
+  _mostVisitedTilesMediator.snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
   _mostVisitedTilesMediator.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   _mostVisitedTilesMediator.NTPActionsDelegate = self.NTPActionsDelegate;
