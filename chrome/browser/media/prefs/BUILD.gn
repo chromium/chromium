@@ -7,7 +7,6 @@ source_set("prefs") {
   visibility = [
     ":unit_tests",
     "//chrome/browser",
-    "//chrome/browser:core",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/prefs:impl",
     "//chrome/browser/ui",
