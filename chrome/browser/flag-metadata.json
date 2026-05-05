@@ -328,11 +328,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "android-hub-search-tab-groups",
-    "owners": [ "wylieb@google.com", "bjfong@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-media-picker",
     "owners": [ "hscham@chromium.org", "mbujak@google.com" ],
     "expiry_milestone": 160

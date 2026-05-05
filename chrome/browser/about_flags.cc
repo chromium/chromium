@@ -4022,17 +4022,6 @@ const FeatureEntry::FeatureVariation kCCTResetTimeoutVariations[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidHubSearchTabGroupsPane[] = {
-    {"enable_hub_search_tab_groups_pane", "true"}};
-const FeatureEntry::FeatureParam kAndroidHubSearchTabGroupStrings[] = {
-    {"enable_hub_search_tab_group_strings", "true"}};
-const FeatureEntry::FeatureVariation kAndroidHubSearchTabGroupsVariations[] = {
-    {"on Tab Groups Pane", kAndroidHubSearchTabGroupsPane, nullptr},
-    {"with Tab Group Strings", kAndroidHubSearchTabGroupStrings, nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidBottomBarDisableOnNtpParam[] = {
     {"disable_on_ntp", "false"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
@@ -9803,15 +9792,6 @@ const FeatureEntry kFeatureEntries[] = {
          unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"android-hub-search-tab-groups",
-     flag_descriptions::kAndroidHubSearchTabGroupsName,
-     flag_descriptions::kAndroidHubSearchTabGroupsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAndroidHubSearchTabGroups,
-                                    kAndroidHubSearchTabGroupsVariations,
-                                    "AndroidHubSearchTabGroups")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
     {"compose-selection-nudge", flag_descriptions::kComposeSelectionNudgeName,

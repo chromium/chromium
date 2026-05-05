@@ -31,7 +31,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
@@ -70,10 +69,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/419289558): Re-enable color surface feature flags.
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
-})
+@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
@@ -365,7 +361,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestion() {
@@ -415,7 +410,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestionByURLMatch() {
@@ -465,9 +459,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS + ":enable_hub_search_tab_groups_pane/true"
-    })
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {

@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -435,11 +434,6 @@ public class HubToolbarMediator {
     }
 
     private boolean maybeExcludeHubSearchForTabGroupsPane(@PaneId int focusedPaneId) {
-        if (!OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
-                || !OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
-            return true;
-        }
-
         return focusedPaneId != PaneId.TAB_GROUPS;
     }
 

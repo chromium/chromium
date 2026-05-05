@@ -36,7 +36,6 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -46,8 +45,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS
+    ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {

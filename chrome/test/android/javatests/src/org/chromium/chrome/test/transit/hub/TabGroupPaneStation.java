@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** The tab groups pane station. */
 public class TabGroupPaneStation extends HubBaseStation {
@@ -46,23 +45,20 @@ public class TabGroupPaneStation extends HubBaseStation {
         newTabGroupButtonElement =
                 declareView(toolbarElement.descendant(withId(R.id.toolbar_action_button)));
 
-        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
-                && OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
-            declareElementFactory(
-                    mActivityElement,
-                    delayedElements -> {
-                        Matcher<View> searchBox = withId(R.id.search_box);
-                        ViewSpec<View> searchLoupe =
-                                toolbarElement.descendant(withId(R.id.search_loupe));
-                        if (shouldHubSearchBoxBeVisible()) {
-                            searchElement = delayedElements.declareView(searchLoupe);
-                            delayedElements.declareNoView(searchBox);
-                        } else {
-                            searchElement = delayedElements.declareView(searchBox);
-                            delayedElements.declareNoView(searchLoupe);
-                        }
-                    });
-        }
+        declareElementFactory(
+                mActivityElement,
+                delayedElements -> {
+                    Matcher<View> searchBox = withId(R.id.search_box);
+                    ViewSpec<View> searchLoupe =
+                            toolbarElement.descendant(withId(R.id.search_loupe));
+                    if (shouldHubSearchBoxBeVisible()) {
+                        searchElement = delayedElements.declareView(searchLoupe);
+                        delayedElements.declareNoView(searchBox);
+                    } else {
+                        searchElement = delayedElements.declareView(searchBox);
+                        delayedElements.declareNoView(searchLoupe);
+                    }
+                });
     }
 
     @Override

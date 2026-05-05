@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -82,14 +81,12 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
                 new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
 
-        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()) {
-            registerType(
-                    OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
-                    parent ->
-                            new BaseSuggestionView<>(
-                                    parent.getContext(), R.layout.omnibox_basic_suggestion),
-                    new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
-        }
+        registerType(
+                OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
+                parent ->
+                        new BaseSuggestionView<>(
+                                parent.getContext(), R.layout.omnibox_basic_suggestion),
+                new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
 
         registerType(
                 OmniboxSuggestionUiType.TILE_NAVSUGGEST,

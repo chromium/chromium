@@ -416,9 +416,6 @@ BASE_FEATURE(kJumpStartOmnibox, DISABLED);
 // the volume of JNI jumps.
 BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices, DISABLED);
 
-// (Android only) Show tab groups via the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearchTabGroups, ENABLED);
-
 // When enabled, delay focusTab to prioritize navigation
 // (https://crbug.com/374852568).
 BASE_FEATURE(kPostDelayedTaskFocusTab, ENABLED);
@@ -451,7 +448,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kUrlBarWithoutLigatures,
       &kUseFusedLocationProvider,
       &kJumpStartOmnibox,
-      &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdateV2,
       &kOmniboxXGeoPermissionGranularity,

@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
@@ -689,11 +688,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void setHubSearchBoxUrlBarElements() {
         boolean isIncognito = mSearchBoxDataProvider.isIncognitoBranded();
-        @StringRes
-        int regularHintTextRes =
-                OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.getValue()
-                        ? R.string.hub_search_empty_hint_with_tab_groups
-                        : R.string.hub_search_empty_hint;
+        @StringRes int regularHintTextRes = R.string.hub_search_empty_hint;
         @StringRes
         int hintTextRes =
                 isIncognito ? R.string.hub_search_empty_hint_incognito : regularHintTextRes;

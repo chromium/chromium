@@ -68,7 +68,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
@@ -78,8 +77,6 @@ import org.chromium.chrome.browser.ui.actions.button.DisplayButtonData;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.actions.button.ResourceButtonData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -315,19 +312,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
-    public void testMenuButtonContainerVisibility() {
-        mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
-        assertEquals(View.INVISIBLE, mMenuButtonContainer.getVisibility());
-
-        mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
-        assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
-    }
-
-    @Test
-    @EnableFeatures({
-        OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS + ":enable_hub_search_tab_groups_pane/true"
-    })
     public void testMenuButtonWrapperVisibility() {
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
         assertEquals(View.INVISIBLE, mMenuButtonWrapper.getVisibility());
@@ -390,7 +374,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @DisableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testUpdateIncognitoElements() {
         mPropertyModel.set(IS_INCOGNITO, true);
         assertEquals(
@@ -399,22 +382,6 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(IS_INCOGNITO, false);
         assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mSearchBoxText.getHint());
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
-    public void testUpdateIncognitoElementsWithTabGroups() {
-        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
-
-        mPropertyModel.set(IS_INCOGNITO, true);
-        assertEquals(
-                mActivity.getString(R.string.hub_search_empty_hint_incognito),
-                mSearchBoxText.getHint());
-
-        mPropertyModel.set(IS_INCOGNITO, false);
-        assertEquals(
-                mActivity.getString(R.string.hub_search_empty_hint_with_tab_groups),
-                mSearchBoxText.getHint());
     }
 
     @Test

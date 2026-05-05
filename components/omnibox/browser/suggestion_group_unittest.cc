@@ -159,8 +159,8 @@ TEST(SuggestionGroupTest, AndroidHubTypedTabGroups) {
   omnibox::ResetDefaultGroupsForTest();
 
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({omnibox::kAndroidHubSearchTabGroups},
-                            {omnibox::kMostVisitedTilesHorizontalRenderGroup});
+  features.InitWithFeatures({omnibox::kMostVisitedTilesHorizontalRenderGroup},
+                            {});
 
   using OEP = ::metrics::OmniboxEventProto;
   AutocompleteInput input(u"test", OEP::ANDROID_HUB, TestingSchemeClassifier());

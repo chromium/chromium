@@ -125,9 +125,7 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(new EntitySuggestionProcessor(uiContext));
         registerSuggestionProcessor(new TailSuggestionProcessor(uiContext));
         registerSuggestionProcessor(new MostVisitedTilesProcessor(uiContext));
-        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()) {
-            registerSuggestionProcessor(new TabGroupSuggestionProcessor(uiContext));
-        }
+        registerSuggestionProcessor(new TabGroupSuggestionProcessor(uiContext));
         registerSuggestionProcessor(new BasicSuggestionProcessor(uiContext));
     }
 

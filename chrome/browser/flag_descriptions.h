@@ -5211,11 +5211,6 @@ inline constexpr char kAndroidGrammarCheckDescription[] =
     "When typing, allows spellcheckers to highlight grammar errors and suggest "
     "corrections on browser text input.";
 
-inline constexpr char kAndroidHubSearchTabGroupsName[] =
-    "Android Hub Tab Group Search";
-inline constexpr char kAndroidHubSearchTabGroupsDescription[] =
-    "Enables searching through tab groups in the hub.";
-
 inline constexpr char kAndroidMediaInsertionName[] =
     "Enable IME media insertion";
 inline constexpr char kAndroidMediaInsertionDescription[] =

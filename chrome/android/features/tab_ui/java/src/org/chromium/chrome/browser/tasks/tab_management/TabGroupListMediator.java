@@ -32,7 +32,6 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService.P
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -313,15 +312,9 @@ public class TabGroupListMediator {
     }
 
     private void setIsTabletOrLandscape() {
-        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
-                && OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
-            Configuration config = mContext.getResources().getConfiguration();
-            boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
-            mPropertyModel.set(TabGroupListProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
-        } else {
-            // No search box to make space for.
-            mPropertyModel.set(TabGroupListProperties.IS_TABLET_OR_LANDSCAPE, true);
-        }
+        Configuration config = mContext.getResources().getConfiguration();
+        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        mPropertyModel.set(TabGroupListProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {

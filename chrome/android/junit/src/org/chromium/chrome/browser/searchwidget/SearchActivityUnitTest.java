@@ -55,7 +55,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -87,8 +86,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -819,7 +816,6 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    @DisableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void finishNativeInitialization_setHubSearchBoxUrlBarElements() {
         mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
 
@@ -827,22 +823,6 @@ public class SearchActivityUnitTest {
         mActivity.finishNativeInitialization();
 
         String expectedText = mActivity.getResources().getString(R.string.hub_search_empty_hint);
-
-        verify(mUrlCoordinator).setUrlBarHintText(expectedText);
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
-    public void finishNativeInitialization_setHubSearchBoxUrlBarElements_withTabGroups() {
-        OmniboxFeatures.sAndroidHubSearchEnableTabGroupStrings.setForTesting(true);
-
-        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
-
-        setProfile(mProfile);
-        mActivity.finishNativeInitialization();
-
-        String expectedText =
-                mActivity.getResources().getString(R.string.hub_search_empty_hint_with_tab_groups);
 
         verify(mUrlCoordinator).setUrlBarHintText(expectedText);
     }
