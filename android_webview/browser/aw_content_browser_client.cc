@@ -748,8 +748,8 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
           android_webview::features::kWebViewContentRestrictionSupport)) {
     registry.AddThrottle(
         std::make_unique<AwContentRestrictionNavigationThrottle>(
-            registry,
-            context->GetContentRestrictionBlockedNavigationTracker()));
+            registry, context->GetContentRestrictionBlockedNavigationTracker(),
+            context->GetContentRestrictionManagerClient()));
   }
 }
 

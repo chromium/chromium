@@ -171,5 +171,13 @@
                       android:targetActivity="org.chromium.android_webview.shell.AwShellActivity"
                       android:enabled="false" />
     <!-- End of SafeMode related components -->
+    <!-- Opt-in flags used by AwContentRestrictionTest -->
+    <service android:name="android.webkit.MetaDataHolderService"
+             android:enabled="false"
+             android:exported="false">
+        <meta-data android:name="android.webkit.WebView.EnableContentRestriction"
+                   android:value="true" />
+    </service>
+    <!-- End of Opt-in flags used by AwContentRestrictionTest -->
   </application>
 </manifest>

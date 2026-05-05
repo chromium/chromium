@@ -33,6 +33,11 @@ class AwContentRestrictionManagerClient {
   virtual void RequestContentClassification(
       const network::ResourceRequest& request,
       ContentClassificationCallback callback);
+
+  // Sends an intent to the Android platform to display a dialog about the
+  // restricted content. Returns true if the intent was sent successfully, false
+  // otherwise.
+  virtual bool SendShowRestrictedContentIntent(const GURL& url);
 };
 
 }  // namespace android_webview

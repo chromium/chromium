@@ -133,6 +133,8 @@ source_set("browser") {
     "component_updater/registration.h",
     "content_restriction/aw_content_restriction_blocked_navigation_tracker.cc",
     "content_restriction/aw_content_restriction_blocked_navigation_tracker.h",
+    "content_restriction/aw_content_restriction_blocking_page.cc",
+    "content_restriction/aw_content_restriction_blocking_page.h",
     "content_restriction/aw_content_restriction_manager_client.cc",
     "content_restriction/aw_content_restriction_manager_client.h",
     "content_restriction/aw_content_restriction_navigation_throttle.cc",

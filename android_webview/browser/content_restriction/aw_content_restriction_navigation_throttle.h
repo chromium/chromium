@@ -10,7 +10,9 @@
 #include "content/public/browser/navigation_throttle_registry.h"
 
 namespace android_webview {
+
 class AwContentRestrictionBlockedNavigationTracker;
+class AwContentRestrictionManagerClient;
 
 // Navigation throttle implementation that presents a custom error page when a
 // navigation is blocked through content restriction.
@@ -19,7 +21,8 @@ class AwContentRestrictionNavigationThrottle
  public:
   explicit AwContentRestrictionNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
-      AwContentRestrictionBlockedNavigationTracker* tracker);
+      AwContentRestrictionBlockedNavigationTracker* tracker,
+      AwContentRestrictionManagerClient* content_restriction_manager_client);
   AwContentRestrictionNavigationThrottle(
       const AwContentRestrictionNavigationThrottle&) = delete;
   AwContentRestrictionNavigationThrottle& operator=(
@@ -31,7 +34,9 @@ class AwContentRestrictionNavigationThrottle
   const char* GetNameForLogging() override;
 
  private:
-  raw_ptr<AwContentRestrictionBlockedNavigationTracker> tracker_;
+  const raw_ptr<AwContentRestrictionBlockedNavigationTracker> tracker_;
+  const raw_ptr<AwContentRestrictionManagerClient>
+      content_restriction_manager_client_;
 };
 
 }  // namespace android_webview

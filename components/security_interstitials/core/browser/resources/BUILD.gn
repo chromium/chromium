@@ -26,6 +26,7 @@ group("bundle_js_internal") {
   ]
   public_deps = [
     ":bundle_js_interstitial_large",
+    ":bundle_js_interstitial_webview_content_restriction",
     ":bundle_js_interstitial_webview_quiet",
     ":bundle_js_interstitial_webview_supervised_user",
   ]
@@ -41,6 +42,7 @@ if (optimize_webui) {
       "interstitial_large/interstitial_large.rollup.js",
       "interstitial_webview_quiet/interstitial_webview_quiet.rollup.js",
       "interstitial_webview_supervised_user/interstitial_webview_supervised_user.rollup.js",
+      "interstitial_webview_content_restriction/interstitial_webview_content_restriction.rollup.js",
     ]
     deps = [ ":bundle_js_internal" ]
   }
@@ -93,6 +95,23 @@ bundle_js("bundle_js_interstitial_webview_supervised_user") {
   input = rebase_path(".", root_build_dir)
   out_folder = "${target_gen_dir}/interstitial_webview_supervised_user"
   js_module_in_files = [ "interstitial_webview_supervised_user.js" ]
+
+  external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}
+
+bundle_js("bundle_js_interstitial_webview_content_restriction") {
+  visibility = [ ":bundle_js_internal" ]
+
+  # Using a placeholder value for `host`. The value is ignored since the bundled
+  # code is not served from any host.
+  host = "_ignored_"
+  input = rebase_path(".", root_build_dir)
+  out_folder = "${target_gen_dir}/interstitial_webview_content_restriction"
+  js_module_in_files = [ "interstitial_webview_content_restriction.js" ]
 
   external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
   deps = [

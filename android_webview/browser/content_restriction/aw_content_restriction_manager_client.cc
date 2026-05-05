@@ -43,4 +43,12 @@ void AwContentRestrictionManagerClient::RequestContentClassification(
       base::android::ToJniCallback(env, std::move(callback)));
 }
 
+bool AwContentRestrictionManagerClient::SendShowRestrictedContentIntent(
+    const GURL& url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_AwContentRestrictionManagerBridge_sendShowRestrictedContentIntent(
+      env, url.spec());
+}
+
 }  // namespace android_webview
