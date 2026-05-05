@@ -165,6 +165,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_WEB_APP_UNINSTALL_BUTTON_FRAME_TOOLTIP));
     uninstall_button_ = button;
+    views::SetHitTestComponent(uninstall_button_, static_cast<int>(HTCLIENT));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
