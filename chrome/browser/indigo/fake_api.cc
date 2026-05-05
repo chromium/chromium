@@ -54,6 +54,14 @@ void FakeApi::SendSuccessResponse(const GURL& image_url) {
   controllable_response_->Done();
 }
 
+void FakeApi::SendErrorResponse() {
+  DCHECK(controllable_response_);
+  std::string response_body =
+      R"({"error": {"code": "INTERNAL", "message": "Generation failed"}})";
+  controllable_response_->Send(net::HTTP_OK, "application/json", response_body);
+  controllable_response_->Done();
+}
+
 testing::AssertionResult FakeApi::RequestHasValidProductImage(
     base::span<const uint8_t> expected_image_bytes) {
   const net::test_server::HttpRequest* request =

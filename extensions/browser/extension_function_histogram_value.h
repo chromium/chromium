@@ -2027,6 +2027,7 @@ enum HistogramValue {
   INDIGOPRIVATE_READYTORENDER = 1964,
   MIMEHANDLER_GETSTREAMINFO = 1965,
   INDIGOPRIVATE_GETORIGINALIMAGE = 1966,
+  INDIGOPRIVATE_GETREPLACEMENTIMAGE = 1967,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

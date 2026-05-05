@@ -45,6 +45,27 @@ class IndigoPrivateGetOriginalImageFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class IndigoPrivateGetReplacementImageFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("indigoPrivate.getReplacementImage",
+                             INDIGOPRIVATE_GETREPLACEMENTIMAGE)
+
+  IndigoPrivateGetReplacementImageFunction();
+  IndigoPrivateGetReplacementImageFunction(
+      const IndigoPrivateGetReplacementImageFunction&) = delete;
+  IndigoPrivateGetReplacementImageFunction& operator=(
+      const IndigoPrivateGetReplacementImageFunction&) = delete;
+
+ protected:
+  ~IndigoPrivateGetReplacementImageFunction() override;
+
+  // Override from ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnReplacementImageAvailable(GURL replacement_image_url);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_INDIGO_PRIVATE_INDIGO_PRIVATE_API_H_

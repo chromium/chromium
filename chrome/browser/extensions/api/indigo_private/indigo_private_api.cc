@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/indigo_private/indigo_private_api.h"
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/common/extensions/api/indigo_private.h"
@@ -66,9 +67,61 @@ ExtensionFunction::ResponseAction IndigoPrivateGetOriginalImageFunction::Run() {
   }
 
   api::indigo_private::ImageData result;
-  result.webp_bytes = std::move(image_bytes);
+  api::indigo_private::ImageData::Value value;
+  value.as_binary = std::move(image_bytes);
+  result.value = std::move(value);
   return RespondNow(ArgumentList(
       api::indigo_private::GetOriginalImage::Results::Create(result)));
+}
+
+IndigoPrivateGetReplacementImageFunction::
+    IndigoPrivateGetReplacementImageFunction() = default;
+
+IndigoPrivateGetReplacementImageFunction::
+    ~IndigoPrivateGetReplacementImageFunction() = default;
+
+ExtensionFunction::ResponseAction
+IndigoPrivateGetReplacementImageFunction::Run() {
+  indigo::IndigoImageReplacement* replacement =
+      GetImageReplacement(render_frame_host());
+  if (!replacement) {
+    return RespondNow(Error("No image replacement found"));
+  }
+
+  GURL url = replacement->TakeReplacementImageURL();
+  if (!url.is_empty()) {
+    api::indigo_private::ImageData result;
+    api::indigo_private::ImageData::Value value;
+    value.as_string = url.spec();
+    result.value = std::move(value);
+    return RespondNow(ArgumentList(
+        api::indigo_private::GetReplacementImage::Results::Create(result)));
+  }
+
+  if (!replacement->SetPendingReplacementImageCallback(
+          base::BindOnce(&IndigoPrivateGetReplacementImageFunction::
+                             OnReplacementImageAvailable,
+                         this))) {
+    return RespondNow(Error("Already waiting for replacement image"));
+  }
+  return RespondLater();
+}
+
+void IndigoPrivateGetReplacementImageFunction::OnReplacementImageAvailable(
+    GURL replacement_image_url) {
+  if (!browser_context()) {
+    return;
+  }
+  if (replacement_image_url.is_empty()) {
+    Respond(Error("Image replacement cancelled"));
+    return;
+  }
+  api::indigo_private::ImageData result;
+  api::indigo_private::ImageData::Value value;
+  value.as_string = replacement_image_url.spec();
+  result.value = std::move(value);
+  Respond(ArgumentList(
+      api::indigo_private::GetReplacementImage::Results::Create(result)));
 }
 
 }  // namespace extensions

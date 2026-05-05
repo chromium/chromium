@@ -58,6 +58,7 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
   void StartReplacement(mojo::PendingRemote<blink::mojom::ImageReplacementHost>
                             host_remote) override {
     host_remote_.Bind(std::move(host_remote));
+    host_remote_.set_disconnect_handler(disconnect_future_.GetCallback());
 
     // Create a subframe in the main frame.
     EXPECT_TRUE(
@@ -104,11 +105,14 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
     EXPECT_TRUE(render_replacement_future_.Wait());
   }
 
+  void WaitForDisconnect() { EXPECT_TRUE(disconnect_future_.Wait()); }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   mojo::Remote<blink::mojom::ImageReplacementHost> host_remote_;
   base::test::TestFuture<void> start_replacement_future_;
   base::test::TestFuture<void> render_replacement_future_;
+  base::test::TestFuture<void> disconnect_future_;
   content::FrameTreeNodeId frame_tree_node_id_;
 };
 
@@ -133,6 +137,9 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
             browser()->profile());
     identity_test_env_adaptor_->identity_test_env()
         ->SetAutomaticIssueOfAccessTokens(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
     fake_api_.StartAcceptingConnections();
   }
 
@@ -196,9 +203,6 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        SendsGenerateRequest) {
-  identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
-      "user@gmail.com", signin::ConsentLevel::kSignin);
-
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -269,6 +273,88 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
     actual_bytes.push_back(static_cast<uint8_t>(value.GetInt()));
   }
   EXPECT_EQ(actual_bytes, kImageBytes);
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       SetsReplacementImageUrlInComponentExtension) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes));
+  GURL success_url(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+
+  std::string actual_src = content::EvalJs(subframe.get(), R"js(
+    (async () => {
+      const app = document.body.querySelector('indigo-image-replacement-app');
+      if (!app) return 'no app';
+      const img = app.$.image;
+      if (img.src.startsWith('data:')) {
+        return img.src;
+      }
+      return new Promise(resolve => {
+        const observer = new MutationObserver(() => {
+          if (img.src.startsWith('data:')) {
+            observer.disconnect();
+            resolve(img.src);
+          }
+        });
+        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+      });
+    })();
+  )js")
+                               .ExtractString();
+
+  EXPECT_EQ(actual_src, success_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       HandlesFailureFromGenerateRequest) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  fake_api_.SendErrorResponse();
+
+  mock_replacement.WaitForDisconnect();
 }
 
 }  // namespace indigo

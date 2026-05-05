@@ -7,9 +7,11 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
+#include "url/gurl.h"
 
 namespace indigo {
 
@@ -28,10 +30,14 @@ class IndigoImageReplacement {
   }
   void ReplacementFrameAttached(content::FrameTreeNodeId frame_tree_node_id,
                                 std::vector<uint8_t> original_image_webp_bytes);
+  void SetReplacementImageUrl(GURL replacement_image_url);
 
   // Methods called by indigoPrivate extension functions:
   void OnReadyToRender();
   std::vector<uint8_t> TakeOriginalImageWebpBytes();
+  GURL TakeReplacementImageURL();
+  bool SetPendingReplacementImageCallback(
+      base::OnceCallback<void(GURL)> callback);
 
  private:
   mojo::Remote<blink::mojom::ImageReplacement> remote_;
@@ -39,6 +45,8 @@ class IndigoImageReplacement {
   // ReplacementFrameAttached is called, and stays constant after.
   content::FrameTreeNodeId frame_tree_node_id_;
   std::vector<uint8_t> original_image_webp_bytes_;
+  GURL replacement_image_url_;
+  base::OnceCallback<void(GURL)> pending_replacement_image_callback_;
 };
 
 }  // namespace indigo
