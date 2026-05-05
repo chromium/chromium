@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import pathlib
+import textwrap
 import unittest
 from pyfakefs import fake_filesystem_unittest
 
@@ -123,6 +124,80 @@ class FilterGrdsTest(unittest.TestCase):
     }
     filtered = check_grd_for_unused_strings.filter_grds(results_by_path)
     self.assertEqual({}, filtered)
+
+
+class RemoveStringsTest(fake_filesystem_unittest.TestCase):
+
+  def setUp(self):
+    self.setUpPyfakefs()
+
+  def test_remove_strings(self):
+    grd_path = pathlib.Path('/a/test.grd')
+    content = textwrap.dedent("""\
+        <grit>
+          <release>
+            <messages>
+              <message name = "IDS_REMOVE">Remove</message>
+              <!-- Keep -->
+              <message name="IDS_KEEP">Keep</message>
+            </messages>
+          </release>
+        </grit>
+        """)
+    self.fs.create_file(grd_path, contents=content)
+    self.fs.create_file('/a/test_grd/IDS_REMOVE.png.sha1', contents='67676767')
+    self.fs.create_file('/a/test_grd/IDS_KEEP.png.sha1', contents='67676767')
+
+    check_grd_for_unused_strings.remove_strings(grd_path, ['IDS_REMOVE'])
+    with grd_path.open() as grd_file:
+      new_content = grd_file.read()
+    expected = textwrap.dedent("""\
+        <grit>
+          <release>
+            <messages>
+              <!-- Keep -->
+              <message name="IDS_KEEP">Keep</message>
+            </messages>
+          </release>
+        </grit>
+        """)
+    self.assertEqual(expected, new_content)
+    self.assertFalse(pathlib.Path('/a/test_grd/IDS_REMOVE.png.sha1').exists())
+    self.assertTrue(pathlib.Path('/a/test_grd/IDS_KEEP.png.sha1').exists())
+
+  def test_remove_empty_tags(self):
+    grd_path = pathlib.Path('/test.grd')
+    content = textwrap.dedent("""\
+        <grit>
+          <releases>
+            <messages>
+              <!-- Keep this comment -->
+              <if expr="is_android">
+                <message name="IDS_REMOVE">
+                  Remove
+                </message>
+              </if>
+              <message name="IDS_KEEP">Keep</message>
+            </messages>
+          <releases>
+        </grit>
+        """)
+    self.fs.create_file(grd_path, contents=content)
+
+    check_grd_for_unused_strings.remove_strings(grd_path, ['IDS_REMOVE'])
+    with grd_path.open() as grd_file:
+      new_content = grd_file.read()
+    expected = textwrap.dedent("""\
+        <grit>
+          <releases>
+            <messages>
+              <!-- Keep this comment -->
+              <message name="IDS_KEEP">Keep</message>
+            </messages>
+          <releases>
+        </grit>
+        """)
+    self.assertEqual(expected, new_content)
 
 
 if __name__ == '__main__':

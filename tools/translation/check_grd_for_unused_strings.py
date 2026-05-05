@@ -5,12 +5,12 @@
 
 """Detect strings in `.grd(p)` files that are likely unused.
 
-If unused strings are found, write their IDs to stdout (one per line) and exit
-with code 1. Otherwise, exit successfully.
+If unused strings are found and not fixed, write their IDs to stdout (one per
+line) and exit with code 1. Otherwise, exit successfully.
 """
 
 import argparse
-from collections.abc import Iterator, Mapping, MutableSet
+from collections.abc import Collection, Iterator, Mapping, MutableSet
 from concurrent.futures import ProcessPoolExecutor
 import dataclasses
 import itertools
@@ -39,6 +39,8 @@ _GRD_SKIP_LIST = {
     # This example is not shipped.
     pathlib.Path('ui', 'views', 'examples', 'views_examples_resources.grd'),
 }
+
+_EMPTY_IF_PATTERN = re.compile(r'<if[^>]*>\s*</if>\s*', flags=re.DOTALL)
 
 
 def _should_analyze(path: pathlib.Path) -> bool:
@@ -158,12 +160,41 @@ def parse_used_ids(path: pathlib.Path) -> set[str]:
     return set()
 
 
+def remove_strings(grd_path: pathlib.Path,
+                   ids_to_remove: Collection[str]) -> None:
+  with grd_path.open() as grd_file:
+    grd_content = grd_file.read()
+  # Use regex instead of structured parsing because comments don't survive
+  # round-tripping.
+  names_pattern = '|'.join(map(re.escape, ids_to_remove))
+  pattern = (r'<message\s+[^>]*name\s*=\s*'
+             f'[\'"]({names_pattern})[\'"].*?</message>\\s*')
+  grd_content = re.sub(pattern, '', grd_content, flags=re.DOTALL)
+  grd_content = _EMPTY_IF_PATTERN.sub('', grd_content)
+  with grd_path.open('w') as grd_file:
+    grd_file.write(grd_content)
+
+  screenshots_dir = grd_path.parent / grd_path.name.replace('.', '_')
+  for msg_id in ids_to_remove:
+    try:
+      (screenshots_dir / f'{msg_id}.png.sha1').unlink()
+    except OSError:
+      # Some very old strings may not have screenshots.
+      pass
+
+
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--max-workers',
                       type=int,
                       default=8,
                       help='Maximum number of workers to use.')
+  parser.add_argument(
+      '--fix',
+      action='store_true',
+      help=('Try removing orphaned strings from `.grd(p)` files. You should '
+            'review the output because of imperfect formatting and comments '
+            "that can't be checked for validity."))
   parser.add_argument(
       'include_paths',
       nargs='*',
@@ -197,6 +228,15 @@ def main() -> int:
     orphaned_ids = declared_ids - used_ids
     for orphan in sorted(orphaned_ids):
       print(orphan)
+
+    if args.fix:
+      futures = []
+      for grd_path, result in grd_results_by_path.items():
+        ids_to_remove = orphaned_ids & result.ids
+        futures.append(pool.submit(remove_strings, grd_path, ids_to_remove))
+      for future in futures:
+        future.result()
+      return 0
 
   return 1 if orphaned_ids else 0
 
