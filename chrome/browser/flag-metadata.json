@@ -2211,7 +2211,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "default-browser-framework",
@@ -2219,7 +2219,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "default-browser-off-cycle-promo",
@@ -2252,7 +2252,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/default_browser/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "default-search-engine-prewarm",
