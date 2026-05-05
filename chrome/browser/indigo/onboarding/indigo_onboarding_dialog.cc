@@ -225,7 +225,13 @@ void IndigoOnboardingDialog::BindOnboardingDialogHost(
     mojo::PendingAssociatedReceiver<chrome::mojom::IndigoOnboardingDialogHost>
         receiver,
     content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->IsInPrimaryMainFrame()) {
+  // Note: This method can be called while `render_frame_host` is still
+  // speculative. There is no good way to check if it's speculative outside of
+  // content/, so we just fallback to using GetParentOrOuterDocument instead
+  // of !IsInPrimaryMainFrame(). We do ensure the RFH is primary (and no longer
+  // speculative) when processing subsequent IPC calls (i.e. in
+  // AcknowledgeChromeDisclaimer()).
+  if (render_frame_host->GetParentOrOuterDocument()) {
     return;
   }
   content::WebContents* web_contents =
