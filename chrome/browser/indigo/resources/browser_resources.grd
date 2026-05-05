@@ -15,7 +15,7 @@ found in the LICENSE file.
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_INDIGO_TEXT_LAYER_ENTRY_ICON" file="text_layer_entry_icon.svg" type="BINDATA" resource_path="indigo/text_layer_entry_icon.svg" />
+      <include name="IDR_INDIGO_TEXT_LAYER_ENTRY_ICON" file="text_layer_entry_icon.png" type="BINDATA" resource_path="indigo/text_layer_entry_icon.png" />
     </includes>
   </release>
 </grit>
