@@ -277,7 +277,7 @@ ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
 std::optional<ActionChipPtr> CreateCanvasChipIfEligible(
     std::string_view suggestion,
     const AimEligibilityService* aim_eligibility_service) {
-  if (!ntp_features::kNtpNextEnableCanvasChipParam.Get() ||
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpNextCanvasChip) ||
       aim_eligibility_service == nullptr ||
       !aim_eligibility_service->IsCanvasEligible()) {
     return std::nullopt;
@@ -338,7 +338,7 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
   };
 
   const base::span<GeneratorFn> generators =
-      ntp_features::kNtpNextEnableCanvasChipParam.Get()
+      base::FeatureList::IsEnabled(ntp_features::kNtpNextCanvasChip)
           ? base::span<GeneratorFn>(kNewGenerators)
           : base::span<GeneratorFn>(kOldGenerators);
   for (const GeneratorFn generator : generators) {

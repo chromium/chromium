@@ -307,12 +307,10 @@ const base::FeatureParam<PlaceholderText> kSteadyPlaceholder(
     PlaceholderText::ASK,
     &kSteadyPlaceholderOptions);
 
-const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
-                                                    "CyclingPlaceholders",
-                                                    false);
-
 const base::FeatureParam<bool> kMultiLineEnabled(&kNtpRealboxNext,
                                                  "MultiLineEnabled",
                                                  true);
+
+BASE_FEATURE(kNtpRealboxCyclingPlaceholders, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace ntp_realbox

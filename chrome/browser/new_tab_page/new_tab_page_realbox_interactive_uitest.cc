@@ -959,20 +959,10 @@ class NtpRealboxCyclingPlaceholderInteractiveTest
     : public NtpRealboxUiTestBase {
  public:
   NtpRealboxCyclingPlaceholderInteractiveTest() {
-    std::vector<base::test::FeatureRefAndParams> default_features =
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetEnabledFeatures();
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    for (const auto& feature_ref_and_params : default_features) {
-      if (feature_ref_and_params.feature->name ==
-          ntp_realbox::kNtpRealboxNext.name) {
-        base::FieldTrialParams new_params = feature_ref_and_params.params;
-        new_params[ntp_realbox::kCyclingPlaceholders.name] = "true";
-        enabled_features.emplace_back(*feature_ref_and_params.feature,
-                                      new_params);
-      } else {
-        enabled_features.push_back(feature_ref_and_params);
-      }
-    }
+    enabled_features.emplace_back(ntp_realbox::kNtpRealboxCyclingPlaceholders,
+                                  base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 GetDisabledFeatures());
   }

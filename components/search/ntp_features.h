@@ -71,6 +71,7 @@ BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold);
 BASE_DECLARE_FEATURE(kNtpMicrosoftAuthenticationModule);
 BASE_DECLARE_FEATURE(kNtpNextFeatures);
+BASE_DECLARE_FEATURE(kNtpNextCanvasChip);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBarAsyncBarParts);
 BASE_DECLARE_FEATURE(kNtpFooter);
 BASE_DECLARE_FEATURE(kNtpTabGroupsModule);
@@ -236,9 +237,6 @@ extern const base::FeatureParam<bool> kNtpNextShowStaticTextParam;
 // Parameter determining if the recent tab should be run through client-side
 // sensitivity check.
 extern const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam;
-
-// Parameter determining if the Canvas action chip should be enabled.
-extern const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam;
 
 // Parameter determining if a recent tab chip/row should be generated in the
 // steady state in NTP. If false, one is NOT generated in the steady state,
