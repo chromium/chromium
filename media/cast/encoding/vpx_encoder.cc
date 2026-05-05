@@ -124,6 +124,7 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
       config_.g_h = frame_size.height();
       config_.rc_min_quantizer = codec_params_->min_qp;
       if (vpx_codec_enc_config_set(&encoder_, &config_) == VPX_CODEC_OK) {
+        last_init_size_ = frame_size;
         return;
       }
       DVLOG(1) << "libvpx rejected the attempt to use a smaller frame size in "
@@ -189,9 +190,9 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
         {media::EncoderStatus::Codes::kEncoderInitializationError,
          base::StrCat(
              {"libvpx failed to initialize: ", vpx_codec_err_to_string(ret)})});
-  } else {
-    last_init_size_ = frame_size;
+    return;
   }
+  last_init_size_ = frame_size;
 
   // Raise the threshold for considering macroblocks as static.  The default is
   // zero, so this setting makes the encoder less sensitive to motion.  This
@@ -245,6 +246,10 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   const gfx::Size frame_size = video_frame->visible_rect().size();
   if (!is_initialized() || *last_init_size_ != frame_size) {
     ConfigureForNewFrameSize(frame_size);
+  }
+
+  if (!is_initialized()) {
+    return;
   }
 
   // Wrapper for vpx_codec_encode() to access the YUV data in the |video_frame|.
@@ -322,12 +327,12 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
           &encoder_, &vpx_image, 0, predicted_frame_duration.InMicroseconds(),
           key_frame_requested_ ? VPX_EFLAG_FORCE_KF : 0, VPX_DL_REALTIME);
       ret != VPX_CODEC_OK) {
+    const char* error_detail = vpx_codec_error_detail(&encoder_);
     metrics_provider_->SetError(
         {media::EncoderStatus::Codes::kEncoderFailedEncode,
-         base::StrCat(
-             {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
-              vpx_codec_error_detail(&encoder_)})});
-    LOG(FATAL) << "BUG: Invalid arguments passed to vpx_codec_encode().";
+         base::StrCat({"libvpx failed to encode: ", vpx_codec_err_to_string(ret),
+                       " - ", error_detail ? error_detail : "none"})});
+    return;
   }
 
   // Pull data from the encoder, populating a new EncodedFrame.
