@@ -9,12 +9,15 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/host/host.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,7 +41,8 @@ class GlicKeyedService;
 
 class GlicSelectionObserver
     : public content::WebContentsObserver,
-      public content::RenderWidgetHost::InputEventObserver {
+      public content::RenderWidgetHost::InputEventObserver,
+      public Host::Observer {
  public:
   explicit GlicSelectionObserver(content::WebContents* web_contents);
   ~GlicSelectionObserver() override;
@@ -73,9 +77,14 @@ class GlicSelectionObserver
       content::RenderWidgetHost::InputEventObserver::InputEventSource source)
       override;
 
+  // Host::Observer:
+  void WebClientConnected() override;
+
  private:
   void ProcessPendingSelection();
   void ResetPendingSelection();
+
+  void OnPanelStateChanged();
 
   static void InvokeGlicFromSelectionAffordance(
       std::u16string selected_text,
@@ -87,6 +96,8 @@ class GlicSelectionObserver
                                BrowserWindowInterface* bwi);
 
   raw_ptr<GlicKeyedService> glic_keyed_service_;
+  base::CallbackListSubscription panel_state_subscription_;
+  std::u16string last_selected_text_;
 
   // Timer to process the selection after a timeout.
   base::OneShotTimer selection_debounce_timer_;
@@ -105,6 +116,10 @@ class GlicSelectionObserver
   bool has_sent_selection_context_ = false;
 
   base::WeakPtr<views::Widget> selection_widget_;
+
+  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
+
+  base::WeakPtrFactory<GlicSelectionObserver> weak_ptr_factory_{this};
 
   friend class GlicSelectionObserverTest;
 };
