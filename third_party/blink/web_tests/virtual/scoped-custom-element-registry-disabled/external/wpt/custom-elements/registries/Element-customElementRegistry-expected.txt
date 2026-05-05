@@ -22,3 +22,4 @@ This is a testharness.js-based test.
 [FAIL] customElementRegistry inside a custom element constructor should return the correct registry
   Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
+

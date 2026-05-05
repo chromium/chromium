@@ -64,7 +64,33 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
   bool is_document_unmodified_and_uninteracted =
       IsDocumentEligibleForFastAdoption(old_document);
 
+  // Pre-check for scoped custom element registry handling during tree scope
+  // changes (both cross-document adoption and within-document scope changes).
+  bool handle_registry =
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      (old_document.ScopedCustomElementRegistryUsed() ||
+       new_document.ScopedCustomElementRegistryUsed());
+  if (handle_registry && will_move_to_new_document &&
+      old_document.ScopedCustomElementRegistryUsed()) {
+    new_document.SetScopedCustomElementRegistryUsed();
+  }
+
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
+    // Capture the element's registry BEFORE tree scope change. This is
+    // necessary because UpdateTreeScope() below changes the element's tree
+    // scope, and customElementRegistry() would then resolve through the new
+    // tree scope instead of the original one. For example:
+    // - An element from a template document (no browsing context, null registry)
+    //   moved into a scoped shadow root would resolve to the scoped registry.
+    // - A freshly created element (global registry) appended within-document
+    //   into a scoped shadow root would inherit the scoped registry.
+    CustomElementRegistry* pre_move_registry = nullptr;
+    bool need_registry_assignment = false;
+    if (handle_registry && node.IsElementNode()) {
+      pre_move_registry = To<Element>(node).customElementRegistry();
+      need_registry_assignment = true;
+    }
+
     UpdateTreeScope(node);
 
     if (will_move_to_new_document) {
@@ -90,20 +116,30 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
     // 3-2. If inclusiveDescendant's custom element registry is a global custom
     // element registry then set inclusiveDescendant's custom element registry
     // to document's effective global custom element registry.
-    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-        (old_document.ScopedCustomElementRegistryUsed() ||
-         new_document.ScopedCustomElementRegistryUsed())) {
-      // If the original document is using scoped custom element registry, we
-      // need to make sure the new document is also prepared to run SCER related
-      // operations.
-      if (old_document.ScopedCustomElementRegistryUsed()) {
-        new_document.SetScopedCustomElementRegistryUsed();
-      }
+    if (need_registry_assignment) {
       if (will_move_to_new_document) {
-        auto* registry = element->customElementRegistry();
-        if (!registry || registry->IsGlobalRegistry()) {
+        // Cross-document: elements with null registry (e.g., from a template
+        // document with no browsing context) or global registry should get the
+        // new document's effective global registry.
+        if (!pre_move_registry || pre_move_registry->IsGlobalRegistry()) {
           element->SetCustomElementRegistry(
-              new_document.EffectiveGlobalCustomElementRegistry());
+              new_document.EffectiveGlobalCustomElementRegistry(),
+              /*explicitly_set=*/true);
+        }
+      } else {
+        // Within-document scope change (e.g., document scope -> shadow root
+        // scope). If the element doesn't have an explicitly set registry, it
+        // was implicitly using the old scope's registry. Since UpdateTreeScope()
+        // already changed the tree scope, the implicit fallback now returns the
+        // new scope's registry. Explicitly save the old scope's registry to
+        // preserve the element's original registry association.
+        ElementRareDataVector* rare_data = element->RareData();
+        if (!rare_data || !rare_data->HasCustomElementRegistrySet()) {
+          auto* new_registry = NewScope().customElementRegistry();
+          if (pre_move_registry != new_registry) {
+            element->SetCustomElementRegistry(pre_move_registry,
+                                              /*explicitly_set=*/true);
+          }
         }
       }
     }

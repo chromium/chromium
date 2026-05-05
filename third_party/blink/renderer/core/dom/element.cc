@@ -4314,9 +4314,9 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   }
 
   // Clean up the unnecessary explicitly set custom element registry
-  // in element rare data set in RemovedFrom. Note that we only need
-  // to do such bookkeeping when scoped custom element registry is actually
-  // used.
+  // in element rare data set in RemovedFrom or TreeScopeAdopter. Note that
+  // we only need to do such bookkeeping when scoped custom element registry
+  // is actually used.
   if (GetDocument().ScopedCustomElementRegistryUsed()) {
     DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     if (ElementRareDataVector* rare_data = RareData()) {

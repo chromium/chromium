@@ -15,4 +15,8 @@ This is a testharness.js-based test.
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
 [FAIL] Inserting a node from another document with null registry results in the custom element registry to be set and upgraded.
   assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] Inserting a node cloned from a template with null registry into a scoped shadow root should set global registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] adoptNode then inserting into a scoped shadow root should preserve global registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
