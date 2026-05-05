@@ -52,8 +52,6 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
                        alignment:(BubbleAlignment)alignment
                       bubbleType:(BubbleViewType)type
     backgroundCutoutCornerRadius:(CGFloat)cornerRadius
-               dismissalCallback:
-                   (CallbackWithIPHDismissalReasonType)dismissalCallback
               completionCallback:(ProceduralBlock)completionCallback {
   self = [super initWithText:text
                        title:titleString
@@ -61,7 +59,7 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
                    alignment:alignment
                   bubbleType:type
              pageControlPage:BubblePageControlPageForStep(step)
-           dismissalCallback:dismissalCallback];
+           dismissalCallback:nil];
   if (self) {
     _completionCallback = completionCallback;
     _cornerRadius = cornerRadius;
@@ -96,19 +94,11 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
   if (!self.presenting) {
     return;
   }
-  __weak GuidedTourBubbleViewControllerPresenter* weakSelf = self;
-  [_parentViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           GuidedTourBubbleViewControllerPresenter* strongSelf =
-                               weakSelf;
-                           if (strongSelf) {
-                             strongSelf.dismissalCallback(
-                                 IPHDismissalReasonType::kTappedIPH);
-                           }
-                         }];
+  [_parentViewController dismissViewControllerAnimated:YES completion:nil];
   self.presenting = NO;
-  _completionCallback();
+  if (_completionCallback) {
+    _completionCallback();
+  }
 }
 
 #pragma mark - BubbleViewControllerPresenter

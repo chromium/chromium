@@ -175,7 +175,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @interface TabGridCoordinator () <BringAndroidTabsCommands,
                                   GridCoordinatorAudience,
                                   GridMediatorDelegate,
-                                  GuidedTourCoordinatorDelegate,
+
                                   HistoryCoordinatorDelegate,
                                   HistoryPresentationDelegate,
                                   InactiveTabsCoordinatorDelegate,
@@ -276,8 +276,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @implementation TabGridCoordinator {
   // Coordinator for the long press step of the guided tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
-  // Completion block for when the `_guidedTourCoordinator` finishes.
-  ProceduralBlock _guidedTourCompletionBlock;
 
   // The view controller for the Tab Grid, defined manually so that the type can
   // be specified.
@@ -674,6 +672,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 #pragma mark - Private
+
+// Handles the completion of a guided tour step.
+- (void)guidedTourStepCompleted {
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+}
 
 // Hides tab group views.
 - (void)hideTabGroupsViews {
@@ -1847,17 +1851,22 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showGuidedTourLongPressStepWithDismissalCompletion:
     (ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completionBlock = ^{
+    [weakSelf guidedTourStepCompleted];
+    if (completion) {
+      completion();
+    }
+  };
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridLongPress
       baseViewController:_viewController
                  browser:self.regularBrowser
-                delegate:self];
+         completionBlock:completionBlock];
   [_guidedTourCoordinator start];
-  _guidedTourCompletionBlock = completion;
 }
 
 - (void)hideTabGridGuidedTour {
-  _guidedTourCompletionBlock = nil;
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
 }
@@ -1885,16 +1894,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.pageActionMenuCoordinator start];
 }
 
-#pragma mark - GuidedTourCoordinatorDelegate
 
-- (void)nextTappedForStep:(GuidedTourStep)step {
-}
 
-- (void)stepCompleted:(GuidedTourStep)step {
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
-  _guidedTourCompletionBlock();
-}
 
 #pragma mark - TabGroupPositioner
 

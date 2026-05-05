@@ -25,8 +25,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface TabGridToolbarsCoordinator () <GuidedTourCoordinatorDelegate,
-                                          TabGridToolbarCommands>
+@interface TabGridToolbarsCoordinator () <TabGridToolbarCommands>
 @end
 
 @implementation TabGridToolbarsCoordinator {
@@ -34,7 +33,6 @@
   TabGridToolbarsMediator* _mediator;
   // Coordinator for the first step of the guided tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
-  ProceduralBlock _guidedTourCompletionBlock;
 }
 
 - (void)start {
@@ -117,48 +115,50 @@
 - (void)showGuidedTourIncognitoStepWithDismissalCompletion:
     (ProceduralBlock)completion {
   [self.topToolbar highlightPageControlItem:TabGridPageIncognitoTabs];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completionBlock = ^{
+    [weakSelf guidedTourStepCompletedForCompletion:completion];
+  };
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridIncognito
       baseViewController:self.baseViewController
                  browser:self.browser
-                delegate:self];
+         completionBlock:completionBlock];
   [_guidedTourCoordinator start];
-  _guidedTourCompletionBlock = completion;
 }
 
 - (void)showGuidedTourTabGroupStepWithDismissalCompletion:
     (ProceduralBlock)completion {
   [self.topToolbar highlightPageControlItem:TabGridPageTabGroups];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completionBlock = ^{
+    [weakSelf guidedTourStepCompletedForCompletion:completion];
+  };
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridTabGroup
       baseViewController:self.baseViewController
                  browser:self.browser
-                delegate:self];
+         completionBlock:completionBlock];
   [_guidedTourCoordinator start];
-  _guidedTourCompletionBlock = completion;
 }
 
 - (void)hideTabGridToolbarGuidedTour {
   [self.topToolbar resetLastPageControlHighlight];
-  _guidedTourCompletionBlock = nil;
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
-}
-
-#pragma mark - GuidedTourCoordinatorDelegate
-
-- (void)nextTappedForStep:(GuidedTourStep)step {
-  [self.topToolbar resetLastPageControlHighlight];
-}
-
-// Indicates to the delegate that the `step` was dismissed.
-- (void)stepCompleted:(GuidedTourStep)step {
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
-  _guidedTourCompletionBlock();
 }
 
 #pragma mark - Private
+
+// Handles the completion of a guided tour step.
+- (void)guidedTourStepCompletedForCompletion:(ProceduralBlock)completion {
+  [self.topToolbar resetLastPageControlHighlight];
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+  if (completion) {
+    completion();
+  }
+}
 
 // Callback for when the saved tab group IPH is dismissed.
 - (void)savedTabGroupIPHDismissed {

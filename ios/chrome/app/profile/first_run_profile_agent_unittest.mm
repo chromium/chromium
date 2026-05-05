@@ -170,11 +170,16 @@ TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
       startDispatchingToTarget:scene_commands_handler
                    forProtocol:@protocol(SceneCommands)];
 
+  id guided_tour_handler = OCMProtocolMock(@protocol(GuidedTourCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:guided_tour_handler
+                   forProtocol:@protocol(GuidedTourCommands)];
+
   base::HistogramTester tester;
 
   // Start and stop step 1 (NTP).
   [profile_agent_ startGuidedTour];
-  [profile_agent_ stepCompleted:GuidedTourStep::kNTP];
+  [profile_agent_ guidedTourNTPStepCompleted];
   tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 0, 1);
 
   // Tab grid being presented is the signal to start step 2.

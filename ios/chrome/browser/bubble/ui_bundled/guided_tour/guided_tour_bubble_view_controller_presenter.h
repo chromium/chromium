@@ -40,8 +40,6 @@ enum class GuidedTourStep;
                        alignment:(BubbleAlignment)alignment
                       bubbleType:(BubbleViewType)type
     backgroundCutoutCornerRadius:(CGFloat)cornerRadius
-               dismissalCallback:
-                   (CallbackWithIPHDismissalReasonType)dismissalCallback
               completionCallback:(ProceduralBlock)completionCallback
     NS_DESIGNATED_INITIALIZER;
 

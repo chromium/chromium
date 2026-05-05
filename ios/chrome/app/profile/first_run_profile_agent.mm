@@ -83,7 +83,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 }  // namespace
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
-                                    GuidedTourCoordinatorDelegate,
                                     GuidedTourPromoCoordinatorDelegate,
                                     SafariDataImportUIHandler,
                                     SceneStateObserver>
@@ -261,37 +260,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   [self showFirstRunUI];
 }
 
-#pragma mark - GuidedTourCoordinatorDelegate
 
-- (void)stepCompleted:(GuidedTourStep)step {
-  CHECK(_currentGuidedTourStep);
-  CHECK_EQ(step, _currentGuidedTourStep.value());
-  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
-  if (step == GuidedTourStep::kNTP) {
-    [_guidedTourCoordinator stop];
-    _guidedTourCoordinator = nil;
-
-    _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
-    id<SceneCommands> sceneHandler =
-        HandlerForProtocol([self commandDispatcher], SceneCommands);
-    [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
-  }
-}
-
-- (void)nextTappedForStep:(GuidedTourStep)step {
-  if (IsManualUploadForBestOfAppEnabled()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
-          metricsHelper.StartOutOfBandUploadIfPossible();
-        }));
-  }
-  if (step == GuidedTourStep::kNTP) {
-    id<GuidedTourCommands> handler =
-        HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
-    [handler stepCompleted:GuidedTourStep::kNTP];
-  }
-}
 
 #pragma mark - GuidedTourPromoCoordinatorDelegate
 
@@ -472,14 +441,42 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   id<BrowserProvider> presentingInterface =
       _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completionBlock = ^{
+    [weakSelf guidedTourNTPStepCompleted];
+  };
+
   _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
             initWithStep:GuidedTourStep::kNTP
       baseViewController:
           [presentingInterface
               viewController:FirstRunProfileAgentHelper::CreateKey()]
                  browser:presentingInterface.browser
-                delegate:self];
+         completionBlock:completionBlock];
   [_guidedTourCoordinator start];
+}
+
+// Handles the completion of the NTP step of the Guided Tour.
+- (void)guidedTourNTPStepCompleted {
+  if (IsManualUploadForBestOfAppEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          first_run::FirstRunProfileAgentMetricsHelper metricsHelper;
+          metricsHelper.StartOutOfBandUploadIfPossible();
+        }));
+  }
+  id<GuidedTourCommands> handler =
+      HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
+  [handler stepCompleted:GuidedTourStep::kNTP];
+
+  [self stepCompleted:GuidedTourStep::kNTP];
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+
+  _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol([self commandDispatcher], SceneCommands);
+  [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
 }
 
 // Shows the Long Press step of the Guided Tour in the tab grid..
@@ -513,6 +510,13 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   _currentGuidedTourStep = std::nullopt;
   [self releaseUILocks];
   [self performNextPostFirstRunAction];
+}
+
+// Handles the dismissal completion of a step in the guided tour.
+- (void)stepCompleted:(GuidedTourStep)step {
+  CHECK(_currentGuidedTourStep);
+  CHECK_EQ(step, _currentGuidedTourStep.value());
+  base::UmaHistogramEnumeration(kGuidedTourStepDidFinishHistogram, step);
 }
 
 // Shows the entry point to import data from Safari.

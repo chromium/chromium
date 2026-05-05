@@ -28,18 +28,18 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 @implementation GuidedTourCoordinator {
   GuidedTourStep _step;
-  __weak id<GuidedTourCoordinatorDelegate> _delegate;
   GuidedTourBubbleViewControllerPresenter* _presenter;
+  ProceduralBlock _completionBlock;
 }
 
 - (instancetype)initWithStep:(GuidedTourStep)step
           baseViewController:(UIViewController*)baseViewController
                      browser:(Browser*)browser
-                    delegate:(id<GuidedTourCoordinatorDelegate>)delegate {
+             completionBlock:(ProceduralBlock)completionBlock {
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
     _step = step;
-    _delegate = delegate;
+    _completionBlock = completionBlock;
   }
   return self;
 }
@@ -47,24 +47,18 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  __weak GuidedTourCoordinator* weakSelf = self;
   BubbleArrowDirection direction = [self shouldPointArrowDown]
                                        ? BubbleArrowDirectionDown
                                        : BubbleArrowDirectionUp;
   _presenter = [[GuidedTourBubbleViewControllerPresenter alloc]
-      initWithText:[self bodyString]
-      title:[self titleString]
-      guidedTourStep:_step
-      arrowDirection:direction
-      alignment:[self bubbleAlignment]
-      bubbleType:BubbleViewTypeRichWithNext
+                      initWithText:[self bodyString]
+                             title:[self titleString]
+                    guidedTourStep:_step
+                    arrowDirection:direction
+                         alignment:[self bubbleAlignment]
+                        bubbleType:BubbleViewTypeRichWithNext
       backgroundCutoutCornerRadius:[self backgroundCutoutCornerRadius]
-      dismissalCallback:^(IPHDismissalReasonType reason) {
-        [weakSelf dismissFinished];
-      }
-      completionCallback:^{
-        [weakSelf nextTapped];
-      }];
+                completionCallback:_completionBlock];
   _presenter.delegate = self;
   _presenter.maximumContentSizeCategory =
       UIContentSizeCategoryExtraExtraExtraLarge;
@@ -78,9 +72,6 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }
 
 - (void)stop {
-  // Dismissing the presenter could trigger the dismiss callback, so break the
-  // connection to the delegate to avoid infinite loops.
-  _delegate = nil;
   [_presenter dismiss];
   _presenter = nil;
 }
@@ -138,15 +129,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
   return [anchorView.superview convertPoint:anchorPoint toView:nil];
 }
 
-// Handle the user tapping on the next button.
-- (void)nextTapped {
-  [_delegate nextTappedForStep:_step];
-}
 
-// Handle the dismissal completion of this step.
-- (void)dismissFinished {
-  [_delegate stepCompleted:_step];
-}
 
 // Returns the title string used for this step's Bubble View.
 - (NSString*)titleString {

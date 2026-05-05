@@ -12,7 +12,7 @@ enum class GuidedTourStep;
 @interface FirstRunProfileAgent (Testing)
 
 - (void)dismissGuidedTourPromo;
-- (void)stepCompleted:(GuidedTourStep)step;
+- (void)guidedTourNTPStepCompleted;
 - (void)showSyncedSetUp;
 - (void)showFirstRunUI;
 - (void)startGuidedTour;
