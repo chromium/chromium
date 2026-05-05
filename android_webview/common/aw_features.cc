@@ -318,6 +318,10 @@ BASE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded,
 BASE_FEATURE(kWebViewPassNullFaviconToOnPageStarted,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, certain static methods in SharedStatics do not trigger startup.
+BASE_FEATURE(kWebViewStaticMethodsNotTriggerStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables non-blocking WebView constructor.
 BASE_FEATURE(kStartupNonBlockingWebViewConstructor,
              base::FEATURE_DISABLED_BY_DEFAULT);

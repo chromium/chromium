@@ -80,6 +80,7 @@ BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewSaveStateIncludeHeaders);
 BASE_DECLARE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded);
 BASE_DECLARE_FEATURE(kWebViewPassNullFaviconToOnPageStarted);
+BASE_DECLARE_FEATURE(kWebViewStaticMethodsNotTriggerStartup);
 BASE_DECLARE_FEATURE(kStartupNonBlockingWebViewConstructor);
 BASE_DECLARE_FEATURE(kPostChromiumStartupInWebViewConstructor);
 BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);

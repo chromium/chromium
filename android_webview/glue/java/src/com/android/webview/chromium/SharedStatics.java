@@ -17,10 +17,12 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -136,13 +138,33 @@ public class SharedStatics {
         }
     }
 
+    private boolean shouldEnableStaticMethodsNotTriggerStartup() {
+        return CommandLine.getInstance()
+                        .hasSwitch(AwSwitches.WEBVIEW_STATIC_METHODS_NOT_TRIGGER_STARTUP)
+                || WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(
+                                AwFeatures.WEBVIEW_STATIC_METHODS_NOT_TRIGGER_STARTUP);
+    }
+
+    private boolean shouldPost() {
+        // TODO(437338203): When we clean this up after it ships to 100%, we can remove all the
+        // triggerAndWaitForChromiumStarted calls in the methods that use shouldPost, since they
+        // will always be no-ops.
+        return shouldEnableStaticMethodsNotTriggerStartup() && !mAwInit.isChromiumInitStarted();
+    }
+
     public void setWebContentsDebuggingEnabled(boolean enable) {
+        if (shouldPost()) {
+            mAwInit.getRunQueue().addTask(() -> setWebContentsDebuggingEnabled(enable));
+            return;
+        }
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_SET_WEB_CONTENTS_DEBUGGING_ENABLED);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEB_CONTENTS_DEBUGGING_ENABLED")) {
             recordStaticApiCall(ApiCall.SET_WEB_CONTENTS_DEBUGGING_ENABLED);
-            // On debug builds, Web Contents debugging is enabled elsewhere, and cannot be disabled.
+            // On debug builds, Web Contents debugging is enabled elsewhere, and cannot
+            // be disabled.
             if (ApkInfo.isDebugAndroidOrApp()) return;
             setWebContentsDebuggingEnabledUnconditionally(enable);
         }
@@ -162,6 +184,10 @@ public class SharedStatics {
     }
 
     public void clearClientCertPreferences(Runnable onCleared) {
+        if (shouldPost()) {
+            mAwInit.getRunQueue().addTask(() -> clearClientCertPreferences(onCleared));
+            return;
+        }
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_CLEAR_CLIENT_CERT_PREFERENCES);
         try (TraceEvent event =
@@ -188,6 +214,10 @@ public class SharedStatics {
     }
 
     public void enableSlowWholeDocumentDraw() {
+        if (shouldPost()) {
+            mAwInit.getRunQueue().addTask(() -> enableSlowWholeDocumentDraw());
+            return;
+        }
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_ENABLE_SLOW_WHOLE_DOCUMENT_DRAW);
         try (TraceEvent event =
@@ -226,6 +256,10 @@ public class SharedStatics {
     }
 
     public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
+        if (shouldPost()) {
+            mAwInit.getRunQueue().addTask(() -> setSafeBrowsingAllowlist(urls, callback));
+            return;
+        }
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_SET_SAFE_BROWSING_ALLOWLIST);
         try (TraceEvent event =
@@ -289,6 +323,7 @@ public class SharedStatics {
         }
     }
 
+    // TODO(b/428680502): This method should be removed as we decided that this will not be shipped.
     public void setRendererLibraryPrefetchMode(int mode) {
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE);
@@ -297,6 +332,7 @@ public class SharedStatics {
         AwContentsStatics.setRendererLibraryPrefetchMode(mode);
     }
 
+    // TODO(b/428680502): This method should be removed as we decided that this will not be shipped.
     public int getRendererLibraryPrefetchMode() {
         mAwInit.triggerAndWaitForChromiumStarted(
                 WebViewChromiumAwInit.CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE);

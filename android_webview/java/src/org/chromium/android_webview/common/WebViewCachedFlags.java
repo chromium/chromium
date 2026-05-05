@@ -190,6 +190,9 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_STATIC_METHODS_NOT_TRIGGER_STARTUP,
                                             DefaultState.DISABLED)));
         }
     }
