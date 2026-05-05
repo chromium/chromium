@@ -52,6 +52,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -224,33 +225,9 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-class StubSendTabToSelfSyncService
-    : public send_tab_to_self::SendTabToSelfSyncService {
- public:
-  StubSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
-  ~StubSendTabToSelfSyncService() override = default;
-
-  send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel() override {
-    return &model_fake_;
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return fake_delegate_.GetWeakPtr();
-  }
-
-  send_tab_to_self::FakeSendTabToSelfModel* GetModelFake() {
-    return &model_fake_;
-  }
-
- protected:
-  syncer::FakeDataTypeControllerDelegate fake_delegate_;
-  send_tab_to_self::FakeSendTabToSelfModel model_fake_;
-};
-
 std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<StubSendTabToSelfSyncService>();
+  return std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>();
 }
 
 class FaviconServiceMock : public favicon::MockFaviconService {

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/views/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,6 +29,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -101,7 +101,10 @@ class SendTabToSelfBubbleControllerBrowserTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildStubSyncService));
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<StubSendTabToSelfSyncService>();
+        }));
   }
 
   void ExpectToastShown() {
@@ -146,9 +149,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  sync_service->GetModelFake()->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-      "device_name_1", "device_1", syncer::DeviceInfo::FormFactor::kDesktop,
-      base::Time::Now())});
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {TargetDeviceInfo("device_name_1", "device_1",
+                        syncer::DeviceInfo::FormFactor::kDesktop,
+                        base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
@@ -170,9 +174,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
           SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
   ASSERT_TRUE(sync_service);
 
-  sync_service->GetModelFake()->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-      "device_name_1", "device_1", syncer::DeviceInfo::FormFactor::kDesktop,
-      base::Time::Now())});
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {TargetDeviceInfo("device_name_1", "device_1",
+                        syncer::DeviceInfo::FormFactor::kDesktop,
+                        base::Time::Now())});
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());

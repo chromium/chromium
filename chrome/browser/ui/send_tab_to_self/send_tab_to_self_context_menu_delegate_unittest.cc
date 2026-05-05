@@ -22,6 +22,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -36,19 +37,6 @@ namespace {
 
 using testing::ElementsAre;
 using testing::Field;
-
-// A stub sync service that simply returns our stub model.
-class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
- public:
-  StubSendTabToSelfSyncService() = default;
-  ~StubSendTabToSelfSyncService() override = default;
-
-  SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_; }
-  FakeSendTabToSelfModel* GetModelFake() { return &model_; }
-
- private:
-  FakeSendTabToSelfModel model_;
-};
 
 class SendTabToSelfContextMenuDelegateTest
     : public ChromeRenderViewHostTestHarness {
@@ -77,7 +65,7 @@ class SendTabToSelfContextMenuDelegateTest
   FakeSendTabToSelfModel* model() {
     return static_cast<StubSendTabToSelfSyncService*>(
                SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
-        ->GetModelFake();
+        ->GetFakeSendTabToSelfModel();
   }
 
  private:

@@ -14,6 +14,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -34,33 +35,6 @@ using send_tab_to_self::SendTabToSelfEntry;
 
 namespace {
 
-// TODO (crbug/974040): Move TestSendTabToSelfSyncService to components and
-// reuse in both ios/chrome and chrome tests
-class TestSendTabToSelfSyncService
-    : public send_tab_to_self::SendTabToSelfSyncService {
- public:
-  TestSendTabToSelfSyncService()
-      : model_(std::make_unique<FakeSendTabToSelfModel>()) {}
-  ~TestSendTabToSelfSyncService() override = default;
-
-  static std::unique_ptr<KeyedService> Build(ProfileIOS* profile) {
-    return std::make_unique<TestSendTabToSelfSyncService>();
-  }
-
-  send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel() override {
-    return model_.get();
-  }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return nullptr;
-  }
-
-  FakeSendTabToSelfModel* GetModel() { return model_.get(); }
-
- private:
-  std::unique_ptr<FakeSendTabToSelfModel> model_;
-};
 
 class SendTabToSelfBrowserAgentTest : public PlatformTest {
  public:
@@ -68,7 +42,11 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&::TestSendTabToSelfSyncService::Build));
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  send_tab_to_self::StubSendTabToSelfSyncService>();
+            }));
 
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

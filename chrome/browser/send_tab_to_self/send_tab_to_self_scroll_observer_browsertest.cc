@@ -30,6 +30,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,27 +58,9 @@ void SimulateOpeningReceivedTab(Browser* browser,
   controller->bubble()->OpenInNewTab();
 }
 
-class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
- public:
-  StubSendTabToSelfSyncService() = default;
-  ~StubSendTabToSelfSyncService() override = default;
-
-  SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_fake_; }
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
-      override {
-    return nullptr;
-  }
-
-  FakeSendTabToSelfModel& model_fake() { return model_fake_; }
-
- protected:
-  FakeSendTabToSelfModel model_fake_;
-};
-
 std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<StubSendTabToSelfSyncService>();
+  return std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>();
 }
 
 class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {

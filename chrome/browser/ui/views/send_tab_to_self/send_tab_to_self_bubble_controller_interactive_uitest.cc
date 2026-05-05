@@ -21,13 +21,13 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
-#include "chrome/browser/ui/views/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
@@ -69,7 +69,10 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildStubSyncService));
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<StubSendTabToSelfSyncService>();
+        }));
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
@@ -127,10 +130,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
             static_cast<StubSendTabToSelfSyncService*>(
                 SendTabToSelfSyncServiceFactory::GetForProfile(
                     browser()->profile()));
-        sync_service->GetModelFake()->SetTargetDeviceInfoSortedList(
-            {TargetDeviceInfo("device_1", "device_1",
-                              syncer::DeviceInfo::FormFactor::kDesktop,
-                              base::Time::Now())});
+        sync_service->GetFakeSendTabToSelfModel()
+            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
+                "device_1", "device_1",
+                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
       }),
       ShowBubble(),
       WaitForShow(SendTabToSelfDevicePickerBubbleView::

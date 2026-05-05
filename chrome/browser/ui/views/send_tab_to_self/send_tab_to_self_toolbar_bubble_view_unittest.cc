@@ -17,6 +17,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,19 +26,6 @@
 namespace send_tab_to_self {
 
 namespace {
-
-class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
- public:
-  explicit StubSendTabToSelfSyncService(FakeSendTabToSelfModel* model)
-      : model_(model) {}
-  ~StubSendTabToSelfSyncService() override = default;
-
-  SendTabToSelfModel* GetSendTabToSelfModel() override { return model_; }
-  FakeSendTabToSelfModel* GetModelFake() { return model_; }
-
- private:
-  raw_ptr<FakeSendTabToSelfModel> model_;
-};
 
 class StubReceivingUiHandler : public ReceivingUiHandler {
  public:
@@ -81,27 +69,34 @@ class SendTabToSelfToolbarBubbleViewTestBase : public TestWithBrowserView {
         TestWithBrowserView::GetTestingFactories();
     factories.emplace_back(
         SendTabToSelfSyncServiceFactory::GetInstance(),
-        base::BindLambdaForTesting([&](content::BrowserContext* context)
-                                       -> std::unique_ptr<KeyedService> {
-          return std::make_unique<StubSendTabToSelfSyncService>(&test_model_);
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<StubSendTabToSelfSyncService>();
         }));
     factories.emplace_back(
         SendTabToSelfClientServiceFactory::GetInstance(),
         base::BindLambdaForTesting([&](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
+              SendTabToSelfSyncServiceFactory::GetForProfile(profile));
           return std::make_unique<SendTabToSelfClientService>(
-              std::make_unique<StubReceivingUiHandler>(), &test_model_);
+              std::make_unique<StubReceivingUiHandler>(),
+              sync_service->GetFakeSendTabToSelfModel());
         }));
     return factories;
   }
 
   views::Widget* anchor_widget() { return anchor_widget_.get(); }
-  FakeSendTabToSelfModel* test_model() { return &test_model_; }
+  FakeSendTabToSelfModel* test_model() {
+    return static_cast<StubSendTabToSelfSyncService*>(
+               SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
+        ->GetFakeSendTabToSelfModel();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  FakeSendTabToSelfModel test_model_;
 };
 
 class SendTabToSelfToolbarBubbleViewTest

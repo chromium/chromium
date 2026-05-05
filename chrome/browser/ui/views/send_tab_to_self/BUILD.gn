@@ -82,8 +82,6 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "send_tab_to_self_bubble_controller_interactive_uitest.cc",
-    "stub_send_tab_to_self_sync_service.cc",
-    "stub_send_tab_to_self_sync_service.h",
   ]
   deps = [
     ":impl",
