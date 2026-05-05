@@ -242,9 +242,7 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
@@ -252,12 +250,7 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              alpha_type,
                              color_space,
                              delegate),
-      is_accelerated_(is_accelerated),
-      context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
-  }
-}
+      is_accelerated_(is_accelerated) {}
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     gfx::Size size,
@@ -291,16 +284,7 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
     return;
   }
 
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
-
   GetFlushForImageListener()->RemoveObserver(this);
-
-  // Last chance for outstanding GPU timers to record metrics.
-  if (RasterInterface()) {
-    CheckGpuTimers(RasterInterface());
-  }
 }
 
 base::WeakPtr<CanvasResourceProviderSharedImage>
@@ -2116,13 +2100,13 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         format,
                                         alpha_type,
                                         color_space,
-                                        context_provider_wrapper,
                                         is_accelerated,
-                                        shared_image_usage_flags,
-                                        delegate) {
+                                        delegate),
+      context_provider_wrapper_(std::move(context_provider_wrapper)) {
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
+    context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
@@ -2230,9 +2214,18 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
 }
 
 Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+  }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
+
+  // Last chance for outstanding GPU timers to record metrics.
+  if (RasterInterface()) {
+    CheckGpuTimers(RasterInterface());
+  }
+
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }
@@ -2270,14 +2263,14 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         format,
                                         alpha_type,
                                         color_space,
-                                        context_provider_wrapper,
                                         is_accelerated,
-                                        shared_image_usage_flags,
                                         delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)) {
+                                                       /*client=*/nullptr)),
+      context_provider_wrapper_(std::move(context_provider_wrapper)) {
   if (context_provider_wrapper_) {
+    context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
     // Graphite can handle a large buffer size.
@@ -2385,9 +2378,18 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() {
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+  }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
+
+  // Last chance for outstanding GPU timers to record metrics.
+  if (RasterInterface()) {
+    CheckGpuTimers(RasterInterface());
+  }
+
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
 }

@@ -382,7 +382,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
 // * Layers may be overlay candidates.
 class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     : public CanvasResourceProvider,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public BitmapGpuChannelLostObserver,
       public CanvasResourceSharedImage::Client,
       public FlushForImageObserver {
@@ -392,9 +391,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       viz::SharedImageFormat,
       SkAlphaType,
       const gfx::ColorSpace&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       bool is_accelerated,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate*);
   CanvasResourceProviderSharedImage(gfx::Size,
                                     viz::SharedImageFormat,
@@ -429,9 +426,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const {
-    return context_provider_wrapper_;
-  }
+  ContextProviderWrapper() const = 0;
   virtual gpu::raster::RasterInterface* RasterInterface() const;
   virtual void EnsureWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
@@ -445,7 +440,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   bool current_resource_has_write_access_ = false;
   bool is_software_ = false;
   bool is_cleared_ = false;
@@ -481,6 +475,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
     : public CanvasResourceProviderSharedImage,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver {
  public:
   // The returned instance will have been cleared at creation.
@@ -590,6 +585,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
 
  private:
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const override {
+    return context_provider_wrapper_;
+  }
+
   // viz::ContextLostObserver implementation.
   void OnContextLost() override {
     CanvasResourceProviderSharedImage::OnContextLost();
@@ -615,6 +615,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
   // GPU context is lost. Without this, instances of this class would not get
@@ -631,6 +633,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 // * by non-Canvas2D clients.
 class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
     : public CanvasResourceProviderSharedImage,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver {
  public:
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
@@ -775,6 +778,11 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
 
  private:
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const override {
+    return context_provider_wrapper_;
+  }
+
   // viz::ContextLostObserver implementation.
   void OnContextLost() override {
     CanvasResourceProviderSharedImage::OnContextLost();
@@ -797,6 +805,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
   // `raster_context_provider_` holds a reference on the shared
   // `RasterContextProvider`, to keep it alive until it notifies us after the
