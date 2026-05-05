@@ -26,8 +26,6 @@ import org.chromium.android_webview.common.origin_trial.DisableOriginTrialsSafeM
 import org.chromium.android_webview.test.util.DisableOriginTrialsSafeModeTestUtilsJni;
 import org.chromium.base.test.util.Feature;
 
-import java.util.Set;
-
 /** Tests for WebView DisableOriginTrialsSafeMode. */
 @JNINamespace("android_webview")
 @RunWith(Parameterized.class)
@@ -59,7 +57,7 @@ public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
                         .isActionEnabled(SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
 
         // When
-        controller.executeActions(Set.of(SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
+        controller.enableAllRegisteredActionsForTesting();
 
         // Then
         assertTrue(
@@ -75,7 +73,7 @@ public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new DisableOriginTrialsSafeModeAction()});
-        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
+        safeModeController.enableAllRegisteredActionsForTesting();
 
         // Then
         assertTrue(
