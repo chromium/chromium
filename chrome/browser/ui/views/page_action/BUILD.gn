@@ -32,8 +32,8 @@ source_set("page_action") {
     "//chrome/browser/profiles",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/page_action:icon_type",
-    "//chrome/browser/ui/page_actions",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
@@ -80,7 +80,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/lens",
-    "//chrome/browser/ui/page_actions:page_actions_impl",
+    "//chrome/browser/ui/page_action:page_action_impl",
     "//chrome/browser/ui/search",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/user_education",
@@ -122,7 +122,7 @@ source_set("test_support") {
 
   public_deps = [
     ":page_action",
-    "//chrome/browser/ui/page_actions:test_support",
+    "//chrome/browser/ui/page_action:test_support",
   ]
 
   deps = [
@@ -147,7 +147,7 @@ source_set("unit_tests") {
     ":page_action",
     ":test_support",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/page_actions:unit_tests",
+    "//chrome/browser/ui/page_action:unit_tests",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
