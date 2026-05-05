@@ -689,7 +689,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
     registry.ForWebUI<WebUIToolbarUI>()
         .Add<browser_controls_api::mojom::BrowserControlsService>()
         .Add<toolbar_ui_api::mojom::ToolbarUIService>()
-        .Add<tracked_element::mojom::TrackedElementHandler>();
+        .Add<tracked_element::mojom::TrackedElementHandler>()
+        .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
 
   // TODO(crbug.com/452983498): Migrate all remaining

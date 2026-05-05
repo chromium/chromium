@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
@@ -32,7 +33,8 @@ class CommandUpdater;
 // The webui controller for the webui toolbar. This class has a two part
 // initialization. The controller is not ready to use until after
 // Init() is called.
-class WebUIToolbarUI : public TopChromeWebUIController {
+class WebUIToolbarUI : public TopChromeWebUIController,
+                       public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   // Provides dependencies to this controller during init.
   class DependencyProvider {
@@ -69,6 +71,12 @@ class WebUIToolbarUI : public TopChromeWebUIController {
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);
 
+  // Implements support for help bubbles (IPH, tutorials, etc.) in settings
+  // pages.
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          receiver);
+
   void OnNavigationControlsStateChanged(
       const toolbar_ui_api::mojom::NavigationControlsState& state);
 
@@ -88,6 +96,12 @@ class WebUIToolbarUI : public TopChromeWebUIController {
 
   void WebUIRenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override;
+
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
 
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
@@ -136,6 +150,10 @@ class WebUIToolbarUI : public TopChromeWebUIController {
       browser_controls_channel_client_end_;
   mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
       browser_controls_channel_service_end_;
+
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_service_{this};
 
   /////////////////////////////////////////////////////////////////////////////
 

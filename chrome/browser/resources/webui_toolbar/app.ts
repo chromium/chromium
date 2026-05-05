@@ -15,6 +15,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -62,7 +63,9 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
 ];
 
-export class ToolbarAppElement extends CrLitElement {
+const AppElementBase = HelpBubbleMixinLit(CrLitElement);
+
+export class ToolbarAppElement extends AppElementBase {
   static get is() {
     return 'toolbar-app';
   }
@@ -213,6 +216,7 @@ export class ToolbarAppElement extends CrLitElement {
             el.classList.toggle('anchor-highlight', highlighted);
           },
         });
+        this.registerHelpBubble(id, el);
       }
     }
   }
@@ -228,10 +232,11 @@ export class ToolbarAppElement extends CrLitElement {
         this.navigationStateListenerHandle_);
 
     this.metricsRecorder_.stopObserving();
-    for (const {selector} of TRACKED_ELEMENTS) {
+    for (const {selector, id} of TRACKED_ELEMENTS) {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
         this.trackedElementManager_.stopTracking(el);
+        this.unregisterHelpBubble(id);
       }
     }
   }

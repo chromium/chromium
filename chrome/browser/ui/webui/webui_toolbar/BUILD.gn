@@ -30,6 +30,7 @@ source_set("webui_toolbar") {
     "//chrome/browser:primitives",
     "//chrome/browser/ui/tabs:tab_model",
     "//ui/views",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
 }
 
@@ -53,6 +54,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/webui:webui_util",
+    "//components/user_education/webui",
     "//ui/base",
   ]
 }
