@@ -70,11 +70,6 @@ specific_include_rules = {
     "+components/sampling_profiler",
     "+ios/chrome/browser/tracing/ios_tracing_controller.h",
   ],
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "forms_egtest\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
   "ios_thread_profiler\.(h|cc)": [
     "+components/sampling_profiler",
   ],

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/ios/ios_util.h"
+#import "base/path_service.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -17,14 +18,14 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/http_server/data_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::TapWebElement;
@@ -50,102 +51,132 @@ constexpr char kFormHtmlTemplate[] =
     "<input type='submit' value='submit' id='submit'>"
     "</form>";
 
-// GURL of a generic website in the user navigation flow.
-const GURL GetGenericUrl() {
-  return web::test::HttpServer::MakeUrl("http://generic");
+std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
+    const std::string& content) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  response->set_content(content);
+  return response;
 }
 
-// GURL of a page with a form that posts data to `GetDestinationUrl`.
-const GURL GetFormUrl() {
-  return web::test::HttpServer::MakeUrl("http://form");
+std::unique_ptr<net::test_server::HttpResponse> HandleRedirectRequest(
+    net::test_server::EmbeddedTestServer* server,
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_FOUND);
+  response->AddCustomHeader("Location", server->GetURL("/destination").spec());
+  return response;
 }
 
-// GURL of a page with a form that posts data to `GetDestinationUrl`.
-const GURL GetFormPostOnSamePageUrl() {
-  return web::test::HttpServer::MakeUrl("http://form");
+std::unique_ptr<net::test_server::HttpResponse> HandleGenericRequest(
+    const net::test_server::HttpRequest& request) {
+  return CreateHttpResponse("A generic page");
 }
 
-// GURL of the page to which the `GetFormUrl` posts data to.
-const GURL GetDestinationUrl() {
-  return web::test::HttpServer::MakeUrl("http://destination");
+std::unique_ptr<net::test_server::HttpResponse> HandleFormRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.method == net::test_server::METHOD_POST) {
+    return CreateHttpResponse("POST " + request.content);
+  }
+  return CreateHttpResponse(
+      "<form method='post'>"
+      "<input value='button' type='submit' id='button'></form>");
 }
 
-#pragma mark - TestFormResponseProvider
-
-// URL that redirects to `GetDestinationUrl` with a 302.
-const GURL GetRedirectUrl() {
-  return web::test::HttpServer::MakeUrl("http://redirect");
+std::unique_ptr<net::test_server::HttpResponse> HandleFormRedirectRequest(
+    net::test_server::EmbeddedTestServer* server,
+    const net::test_server::HttpRequest& request) {
+  return CreateHttpResponse(base::StringPrintf(
+      "<form method='post' action='%s'> submit: "
+      "<input value='textfield' id='textfield' type='text'></label>"
+      "<input type='submit' value='submit' id='submit'>"
+      "</form>",
+      server->GetURL("/redirect").spec().c_str()));
 }
 
-// URL to return a page that posts to `GetRedirectUrl`.
-const GURL GetRedirectFormUrl() {
-  return web::test::HttpServer::MakeUrl("http://formRedirect");
+std::unique_ptr<net::test_server::HttpResponse> HandleDestinationRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.method == net::test_server::METHOD_POST) {
+    return CreateHttpResponse("POST " + request.content);
+  }
+  return CreateHttpResponse("GET ");
 }
 
-// A ResponseProvider that provides html response, post response or a redirect.
-class TestFormResponseProvider : public web::DataResponseProvider {
- public:
-  // TestResponseProvider implementation.
-  bool CanHandleRequest(const Request& request) override;
-  void GetResponseHeadersAndBody(
-      const Request& request,
-      scoped_refptr<net::HttpResponseHeaders>* headers,
-      std::string* response_body) override;
-};
-
-bool TestFormResponseProvider::CanHandleRequest(const Request& request) {
-  const GURL& url = request.url;
-  return url == GetDestinationUrl() || url == GetRedirectUrl() ||
-         url == GetRedirectFormUrl() || url == GetFormPostOnSamePageUrl() ||
-         url == GetGenericUrl();
-}
-
-void TestFormResponseProvider::GetResponseHeadersAndBody(
-    const Request& request,
-    scoped_refptr<net::HttpResponseHeaders>* headers,
-    std::string* response_body) {
-  const GURL& url = request.url;
-  if (url == GetRedirectUrl()) {
-    *headers = web::ResponseProvider::GetRedirectResponseHeaders(
-        GetDestinationUrl().spec(), net::HTTP_FOUND);
-    return;
+std::unique_ptr<net::test_server::HttpResponse> HandleFormsRequest(
+    std::map<std::string, std::string>* responses,
+    net::test_server::EmbeddedTestServer* server,
+    const net::test_server::HttpRequest& request) {
+  const std::string path{request.GetURL().path()};
+  auto it = responses->find(path);
+  if (it != responses->end()) {
+    return CreateHttpResponse(it->second);
   }
 
-  *headers = web::ResponseProvider::GetDefaultResponseHeaders();
-  if (url == GetGenericUrl()) {
-    *response_body = kGenericText;
-    return;
+  if (path == "/redirect") {
+    return HandleRedirectRequest(server, request);
   }
-  if (url == GetFormPostOnSamePageUrl()) {
-    if (request.method == "POST") {
-      *response_body = request.method + std::string(" ") + request.body;
-    } else {
-      *response_body =
-          "<form method='post'>"
-          "<input value='button' type='submit' id='button'></form>";
-    }
-    return;
+  if (path == "/generic") {
+    return HandleGenericRequest(request);
+  }
+  if (path == "/form") {
+    return HandleFormRequest(request);
+  }
+  if (path == "/formRedirect") {
+    return HandleFormRedirectRequest(server, request);
+  }
+  if (path == "/destination") {
+    return HandleDestinationRequest(request);
   }
 
-  if (url == GetRedirectFormUrl()) {
-    *response_body =
-        base::StringPrintf(kFormHtmlTemplate, GetRedirectUrl().spec().c_str());
-    return;
-  }
-  if (url == GetDestinationUrl()) {
-    *response_body = request.method + std::string(" ") + request.body;
-    return;
-  }
-  NOTREACHED();
+  return nullptr;
 }
-
 }  // namespace
 
 // Tests submition of HTTP forms POST data including cases involving navigation.
-@interface FormsTestCase : WebHttpServerChromeTestCase
+@interface FormsTestCase : ChromeTestCase {
+  std::map<std::string, std::string> _responses;
+}
 @end
 
 @implementation FormsTestCase
+
+- (GURL)genericUrl {
+  return self.testServer->GetURL("/generic");
+}
+
+- (GURL)formUrl {
+  return self.testServer->GetURL("/form");
+}
+
+- (GURL)formPostOnSamePageUrl {
+  return self.testServer->GetURL("/form");
+}
+
+- (GURL)destinationUrl {
+  return self.testServer->GetURL("/destination");
+}
+
+- (GURL)redirectUrl {
+  return self.testServer->GetURL("/redirect");
+}
+
+- (GURL)redirectFormUrl {
+  return self.testServer->GetURL("/formRedirect");
+}
+
+- (void)setUp {
+  [super setUp];
+  _responses.clear();
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS));
+
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &HandleFormsRequest, base::Unretained(&_responses), self.testServer));
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
 
 // Matcher for a Go button that is interactable.
 id<GREYMatcher> GoButtonMatcher() {
@@ -174,19 +205,22 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // `GetFormUrl`, and posts data to `GetDestinationUrl` upon submission.
 - (void)setUpFormTestSimpleHttpServer {
   std::map<GURL, std::string> responses;
-  responses[GetGenericUrl()] = kGenericText;
-  responses[GetFormUrl()] =
-      base::StringPrintf(kFormHtmlTemplate, GetDestinationUrl().spec().c_str());
-  responses[GetDestinationUrl()] = kDestinationText;
-  web::test::SetUpSimpleHttpServer(responses);
+  responses[[self genericUrl]] = kGenericText;
+  responses[[self formUrl]] = base::StringPrintf(
+      kFormHtmlTemplate, [self destinationUrl].spec().c_str());
+  responses[[self destinationUrl]] = kDestinationText;
+
+  for (const auto& pair : responses) {
+    _responses[std::string(pair.first.path())] = pair.second;
+  }
 }
 
 // Tests that a POST followed by reloading the destination page resends data.
 - (void)testRepostFormAfterReload {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
@@ -221,15 +255,15 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // to the form result page resends data.
 - (void)testRepostFormAfterTappingBack {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Go to a new page and go back and check that the data is reposted.
-  [ChromeEarlGrey loadURL:GetGenericUrl()];
+  [ChromeEarlGrey loadURL:[self genericUrl]];
   [ChromeEarlGrey goBack];
 
   // NavigationManager doesn't trigger repost on `goForward` due to WKWebView's
@@ -263,9 +297,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // forward to the result page resends data.
 - (void)testRepostFormAfterTappingBackAndForward {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
@@ -304,15 +338,15 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // back to the result page resends data.
 - (void)testRepostFormAfterIndexNavigation {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Go to a new page and go back to destination through back history.
-  [ChromeEarlGrey loadURL:GetGenericUrl()];
+  [ChromeEarlGrey loadURL:[self genericUrl]];
   [self openBackHistory];
 
   // Mimic `web::GetDisplayTitleForUrl` behavior which uses FormatUrl
@@ -336,9 +370,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // When data is not reposted, the request is canceled.
 - (void)testRepostFormCancelling {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
@@ -386,9 +420,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // A new navigation dismisses the repost dialog.
 - (void)testRepostFormDismissedByNewNavigation {
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
@@ -414,7 +448,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   // Starting a new navigation while the repost dialog is presented should not
   // crash.
-  [ChromeEarlGrey loadURL:GetGenericUrl()];
+  [ChromeEarlGrey loadURL:[self genericUrl]];
   [ChromeEarlGrey waitForWebStateContainingText:kGenericText];
 
   // Repost dialog should not be visible anymore.
@@ -426,9 +460,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // the back button works as expected afterwards.
 - (void)testGoBackButtonAfterFormSubmission {
   [self setUpFormTestSimpleHttpServer];
-  GURL destinationURL = GetDestinationUrl();
+  GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
   [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
@@ -437,7 +471,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:(base::SysNSStringToUTF8(
                                                     kSubmitButtonLabel))];
-  [ChromeEarlGrey waitForWebStateVisibleURL:GetFormUrl()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:[self formUrl]];
 }
 
 // Tests that a POST followed by a redirect does not show the popup.
@@ -455,10 +489,10 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
   }
 #endif
-  web::test::SetUpHttpServer(std::make_unique<TestFormResponseProvider>());
-  const GURL destinationURL = GetDestinationUrl();
 
-  [ChromeEarlGrey loadURL:GetRedirectFormUrl()];
+  const GURL destinationURL = [self destinationUrl];
+
+  [ChromeEarlGrey loadURL:[self redirectFormUrl]];
 
   // Submit the form, which redirects before printing the data.
   [ChromeEarlGrey tapWebStateElementWithID:kSubmitButtonLabel];
@@ -481,11 +515,10 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // does not change the page URL and that the back button works as expected
 // afterwards.
 - (void)testPostFormToSamePage {
-  web::test::SetUpHttpServer(std::make_unique<TestFormResponseProvider>());
-  const GURL formURL = GetFormPostOnSamePageUrl();
+  const GURL formURL = [self formPostOnSamePageUrl];
 
   // Open the first URL so it's in history.
-  [ChromeEarlGrey loadURL:GetGenericUrl()];
+  [ChromeEarlGrey loadURL:[self genericUrl]];
 
   // Open the second URL, tap the button, and verify the browser navigates to
   // the expected URL.
@@ -500,7 +533,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   // Go back a second time and verify the browser navigates to the first URL.
   [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateVisibleURL:GetGenericUrl()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:[self genericUrl]];
 }
 
 // Tests that submitting a POST-based form by tapping the 'Go' button on the
@@ -514,9 +547,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   }
 
   [self setUpFormTestSimpleHttpServer];
-  const GURL destinationURL = GetDestinationUrl();
+  const GURL destinationURL = [self destinationUrl];
 
-  [ChromeEarlGrey loadURL:GetFormUrl()];
+  [ChromeEarlGrey loadURL:[self formUrl]];
   [self submitFormUsingKeyboardGoButtonWithInputID:"textfield"];
 
   // Verify that the browser navigates to the expected URL.
@@ -525,7 +558,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   // Go back and verify that the browser navigates to the original URL.
   [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateVisibleURL:GetFormUrl()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:[self formUrl]];
 }
 
 // Tap the text field indicated by `ID` to open the keyboard, and then
