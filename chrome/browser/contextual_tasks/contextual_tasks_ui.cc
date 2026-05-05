@@ -84,6 +84,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
@@ -529,6 +530,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // Preload the serialized handshake message so it doesn't have to be fetched
   // at runtime.
   source->AddString("handshakeMessage", GetEncodedHandshakeMessage());
+
+  source->AddBoolean("isSmallDeviceFormFactor",
+                     ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
 
   // Force a host for any URL opened in the embedded page. If empty, no change
   // is made to the URL.
