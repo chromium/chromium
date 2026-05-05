@@ -753,9 +753,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   __weak __typeof(self) weakSelf = self;
   // Add open URL menu item.
   UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
-    if ([weakSelf isIncognitoForced]) {
-      return;
-    }
     [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
   }];
   if ([self isIncognitoForced]) {
@@ -765,9 +762,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // Add open URL in incognito menu item.
   UIAction* openInIncognito =
       [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-        if (![weakSelf isIncognitoAvailable]) {
-          return;
-        }
         [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
       }];
   if (![self isIncognitoAvailable]) {
@@ -948,10 +942,15 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   _UIDisabled = YES;
 }
 
+// Opens the urls. If `inIncognito` is YES but incognito is unavailable, or if
+// `inIncognito` is NO but incognito is forced, do nothing.
 - (void)openAllURLs:(std::vector<GURL>)urls
         inIncognito:(BOOL)inIncognito
              newTab:(BOOL)newTab {
   if (inIncognito) {
+    if (![self isIncognitoAvailable]) {
+      return;
+    }
     SceneState* scene = _browser.get()->GetSceneState();
     if (scene.incognitoState.authenticationRequired) {
       __weak BookmarksHomeViewController* weakSelf = self;
@@ -965,6 +964,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
           }];
       return;
     }
+  } else if ([self isIncognitoForced]) {
+    return;
   }
 
   [self cacheIndexPathRow];
@@ -2515,9 +2516,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                   if (!strongSelf) {
                     return;
                   }
-                  if ([strongSelf isIncognitoForced]) {
-                    return;
-                  }
                   std::vector<const BookmarkNode*> selectedNodesForEditMode =
                       [strongSelf selectedNodesForEditMode];
                   [strongSelf
@@ -2535,9 +2533,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                   [weakSelf dismissActionSheetCoordinator];
                   BookmarksHomeViewController* strongSelf = weakSelf;
                   if (!strongSelf) {
-                    return;
-                  }
-                  if (![strongSelf isIncognitoAvailable]) {
                     return;
                   }
                   std::vector<const BookmarkNode*> selectedNodesForEditMode =
@@ -2593,9 +2588,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf dismissActionSheetCoordinator];
-                           if ([weakSelf isIncognitoForced]) {
-                             return;
-                           }
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:NO
                                           newTab:YES];
@@ -2621,9 +2613,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [coordinator addItemWithTitle:titleString
                          action:^{
                            [weakSelf dismissActionSheetCoordinator];
-                           if (![weakSelf isIncognitoAvailable]) {
-                             return;
-                           }
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:YES
                                           newTab:YES];
