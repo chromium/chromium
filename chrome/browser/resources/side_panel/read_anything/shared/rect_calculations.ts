@@ -52,7 +52,7 @@ function combineIntersectingRects(unsortedRects: DOMRect[]): DOMRect[] {
   }
 
   const sortedRects =
-      Array.from(new Set(unsortedRects)).sort((a, b) => a.bottom - b.bottom);
+      unsortedRects.sort((a, b) => a.bottom - b.bottom);
   const combinedRects: DOMRect[] = [sortedRects[0]!];
   // The smaller the line spacing, the larger the threshold needs to be, since
   // it is more likely for lines to have overlapping bounds. Thus, invert the
@@ -66,16 +66,24 @@ function combineIntersectingRects(unsortedRects: DOMRect[]): DOMRect[] {
     const currentRect = sortedRects[i]!;
     const lastRect = combinedRects[combinedRects.length - 1]!;
 
+    // If the rects have nearly identical top and bottom, they are on the same
+    // line (e.g. side-by-side words). Merge them into a single rect.
+    if (Math.abs(lastRect.top - currentRect.top) < 2 &&
+        Math.abs(lastRect.bottom - currentRect.bottom) < 2) {
+      combinedRects[combinedRects.length - 1] = new DOMRect(
+          Math.min(lastRect.left, currentRect.left),
+          Math.min(lastRect.top, currentRect.top),
+          Math.max(lastRect.right, currentRect.right) -
+              Math.min(lastRect.left, currentRect.left),
+          Math.max(lastRect.bottom, currentRect.bottom) -
+              Math.min(lastRect.top, currentRect.top));
+      continue;
+    }
+
     // The rects are sorted by their bottom values. If the current rect top is
     // above the previous rect top, then it encompasses the previous line (or
     // more), so this rect is not a single line of text.
     if (currentRect.top < lastRect.top) {
-      continue;
-    }
-
-    // Skip duplicate rects.
-    if (lastRect.top === currentRect.top &&
-        lastRect.bottom === currentRect.bottom) {
       continue;
     }
 

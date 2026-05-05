@@ -91,8 +91,8 @@ export abstract class LineFocusMoveMode {
       return;
     }
     const rect = rects[0]!;
-    if (this.model_.getFocalPoint() !==
-        this.styleMode_.getFocalPointForRect(rect)) {
+    if (Math.abs(this.model_.getFocalPoint() -
+                 this.styleMode_.getFocalPointForRect(rect)) > 0.1) {
       chrome.readingMode.incrementLineFocusSpeechLines();
     }
     this.moveToRect(rect);
