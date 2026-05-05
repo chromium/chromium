@@ -142,10 +142,12 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Now exempt the leaf SPKI from being blocked by setting policy.
-  net::SHA256HashValue leaf_hash = net::x509_util::CalculateSha256SpkiHash(
-      https_server_ok.GetCertificate()->cert_buffer());
+  net::HashValue leaf_hash(
+      net::HashValueTag::HASH_VALUE_SHA256,
+      net::x509_util::CalculateSha256SpkiHash(
+          https_server_ok.GetCertificate()->cert_buffer()));
   base::ListValue disabled_spkis;
-  disabled_spkis.Append(net::HashValue(leaf_hash).ToString());
+  disabled_spkis.Append(leaf_hash.ToString());
 
   PolicyMap policies;
   policies.Set(key::kCertificateTransparencyEnforcementDisabledForCas,
