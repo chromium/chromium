@@ -493,7 +493,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Keyboard shortcut
       </message>
       <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_DESCRIPTION" desc="Explanation for the 'Keyboard Shortcut' section.">
-        In the address bar, use this keyboard shortcut with shortcuts for search engines and site search
+        In the address bar, use this keyboard shortcut with shortcuts for search engines and site search.
       </message>
       <message name="IDS_SITE_SEARCH_KEYBOARD_SHORTCUT_SPACE_OR_TAB" desc="Label for the 'Space or Tab' keyboard shortcut option.">
         Space or Tab
@@ -544,7 +544,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Extensions
       </message>
       <message name="IDS_SITE_SEARCH_EXTENSIONS_DESCRIPTION" desc="Explanation for 'Extensions' section">
-        Some extensions can add search engines to Chrome
+        Some extensions can add search engines to Chrome.
       </message>
       <if expr="enable_extensions_core">
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_MESSAGE_TITLE_SINGLE_EXTENSION" desc="The title of the request access message banner that appears on the toolbar when an extension requests access to the site" formatter_data="android_java">
