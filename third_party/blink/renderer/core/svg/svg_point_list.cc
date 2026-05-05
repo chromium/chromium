@@ -90,17 +90,18 @@ SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   return status;
 }
 
-void SVGPointList::Add(const SVGPropertyBase* other,
+bool SVGPointList::Add(const SVGPropertyBase* other,
                        const SVGElement* context_element) {
   auto* other_list = To<SVGPointList>(other);
 
   if (length() != other_list->length())
-    return;
+    return true;
 
   for (uint32_t i = 0; i < length(); ++i) {
     at(i)->SetValue(at(i)->Value() +
                     other_list->at(i)->Value().OffsetFromOrigin());
   }
+  return true;
 }
 
 void SVGPointList::CalculateAnimatedValue(

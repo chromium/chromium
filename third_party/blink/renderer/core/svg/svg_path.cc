@@ -134,26 +134,28 @@ SVGParsingError SVGPath::SetValueAsString(const String& string) {
   return parse_status;
 }
 
-void SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {
   const auto& other_path_byte_stream = To<SVGPath>(other)->ByteStream();
 
-  if (ByteStream().IsEmpty() || other_path_byte_stream.IsEmpty()) {
-    return;
+  if (ByteStream().IsEmpty()) {
+    return false;
+  }
+
+  // Empty other (e.g. absent from in by-animation) acts as neutral value.
+  if (other_path_byte_stream.IsEmpty()) {
+    return true;
   }
 
   if (ByteStream().size() != other_path_byte_stream.size()) {
-    // Mismatched sizes - signal invalid animation.
-    path_value_ = CSSPathValue::EmptyPathValue();
-    return;
+    return false;
   }
 
   auto result = AddPathByteStreams(ByteStream(), other_path_byte_stream);
-  if (result) {
-    path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(*result));
-  } else {
-    // Addition failed (e.g., mismatched commands) - signal invalid animation.
-    path_value_ = CSSPathValue::EmptyPathValue();
+  if (!result) {
+    return false;
   }
+  path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(*result));
+  return true;
 }
 
 void SVGPath::CalculateAnimatedValue(

@@ -80,13 +80,14 @@ void SVGNumberOptionalNumber::SetInitial(unsigned value) {
   second_number_->SetInitial(value);
 }
 
-void SVGNumberOptionalNumber::Add(const SVGPropertyBase* other,
+bool SVGNumberOptionalNumber::Add(const SVGPropertyBase* other,
                                   const SVGElement* context_element) {
   auto* other_number_optional_number = To<SVGNumberOptionalNumber>(other);
   first_number_->Add(other_number_optional_number->FirstNumber(),
                      context_element);
   second_number_->Add(other_number_optional_number->SecondNumber(),
                       context_element);
+  return true;
 }
 
 void SVGNumberOptionalNumber::CalculateAnimatedValue(

@@ -66,7 +66,7 @@ uint16_t SVGEnumeration::MaxInternalEnumValue() const {
   return map_.ValueOfLast();
 }
 
-void SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {
+bool SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {
   NOTREACHED();
 }
 

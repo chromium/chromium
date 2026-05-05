@@ -52,7 +52,7 @@ String SVGPoint::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
   // SVGPoint is not animated by itself.
   NOTREACHED();
 }

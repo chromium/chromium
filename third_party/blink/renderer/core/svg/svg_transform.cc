@@ -206,7 +206,7 @@ String SVGTransform::ValueAsString() const {
   return builder.ReleaseString();
 }
 
-void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
+bool SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 }

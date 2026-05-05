@@ -57,7 +57,7 @@ class SVGTransformList final
   bool Parse(const base::span<const LChar> chars, size_t& position);
 
   // SVGPropertyBase:
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

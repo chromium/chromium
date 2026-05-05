@@ -438,14 +438,14 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
   return parse_error;
 }
 
-void SVGTransformList::Add(const SVGPropertyBase* other,
+bool SVGTransformList::Add(const SVGPropertyBase* other,
                            const SVGElement* context_element) {
   if (IsEmpty())
-    return;
+    return true;
 
   auto* other_list = To<SVGTransformList>(other);
   if (length() != other_list->length())
-    return;
+    return true;
 
   DCHECK_EQ(length(), 1u);
   const SVGTransform* from_transform = at(0);
@@ -454,6 +454,7 @@ void SVGTransformList::Add(const SVGPropertyBase* other,
   DCHECK_EQ(from_transform->TransformType(), to_transform->TransformType());
   Clear();
   Append(SVGTransformDistance::AddSVGTransforms(from_transform, to_transform));
+  return true;
 }
 
 void SVGTransformList::CalculateAnimatedValue(

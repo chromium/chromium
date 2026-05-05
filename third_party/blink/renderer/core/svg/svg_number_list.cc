@@ -67,13 +67,14 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   return status;
 }
 
-void SVGNumberList::Add(const SVGPropertyBase* other,
+bool SVGNumberList::Add(const SVGPropertyBase* other,
                         const SVGElement* context_element) {
   auto* other_list = To<SVGNumberList>(other);
   if (length() != other_list->length())
-    return;
+    return true;
   for (uint32_t i = 0; i < length(); ++i)
     at(i)->Add(other_list->at(i), context_element);
+  return true;
 }
 
 void SVGNumberList::CalculateAnimatedValue(

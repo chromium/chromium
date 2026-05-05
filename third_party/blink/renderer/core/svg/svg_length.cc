@@ -308,17 +308,18 @@ bool SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
   return no_negative_values_set.Contains(attr_name);
 }
 
-void SVGLength::Add(const SVGPropertyBase* other,
+bool SVGLength::Add(const SVGPropertyBase* other,
                     const SVGElement* context_element) {
   SVGLengthContext length_context(context_element);
   const float sum =
       Value(length_context) + To<SVGLength>(other)->Value(length_context);
   if (IsCalculated()) {
     SetValueAsNumber(sum);
-    return;
+    return true;
   }
   SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
       sum, UnitMode(), NumericLiteralType()));
+  return true;
 }
 
 void SVGLength::CalculateAnimatedValue(

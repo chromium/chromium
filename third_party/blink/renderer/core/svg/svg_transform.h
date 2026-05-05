@@ -94,7 +94,7 @@ class SVGTransform final : public SVGListablePropertyBase {
 
   String ValueAsString() const override;
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

@@ -83,7 +83,7 @@ class SVGPreserveAspectRatio final : public SVGPropertyBase {
   bool Parse(base::span<const UChar>& span, bool validate);
   bool Parse(base::span<const LChar>& span, bool validate);
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

@@ -62,7 +62,8 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
 
   // FIXME: remove below and just have this inherit AnimatableValue in
   // WebAnimations transition.
-  virtual void Add(const SVGPropertyBase*, const SVGElement*) = 0;
+  // Returns false if addition fails (e.g. structurally incompatible values).
+  virtual bool Add(const SVGPropertyBase*, const SVGElement*) = 0;
   virtual void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

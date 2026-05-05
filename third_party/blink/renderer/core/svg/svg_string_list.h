@@ -71,7 +71,7 @@ class SVGStringListBase : public SVGPropertyBase {
   virtual SVGParsingError SetValueAsString(const String&) = 0;
 
   // SVGPropertyBase:
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

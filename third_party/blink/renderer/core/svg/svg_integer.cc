@@ -58,8 +58,9 @@ SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   return parsed ? SVGParseStatus::kNoError : SVGParseStatus::kExpectedInteger;
 }
 
-void SVGInteger::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGInteger::Add(const SVGPropertyBase* other, const SVGElement*) {
   SetValue(value_ + To<SVGInteger>(other)->Value());
+  return true;
 }
 
 void SVGInteger::CalculateAnimatedValue(

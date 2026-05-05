@@ -55,7 +55,7 @@ class SVGIntegerOptionalInteger final : public SVGPropertyBase {
   void SetInitial(unsigned);
   static constexpr int kInitialValueBits = SVGInteger::kInitialValueBits;
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

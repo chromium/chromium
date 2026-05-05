@@ -81,13 +81,14 @@ void SVGIntegerOptionalInteger::SetInitial(unsigned value) {
   second_integer_->SetInitial(value);
 }
 
-void SVGIntegerOptionalInteger::Add(const SVGPropertyBase* other,
+bool SVGIntegerOptionalInteger::Add(const SVGPropertyBase* other,
                                     const SVGElement* context_element) {
   auto* other_integer_optional_integer = To<SVGIntegerOptionalInteger>(other);
   first_integer_->Add(other_integer_optional_integer->FirstInteger(),
                       context_element);
   second_integer_->Add(other_integer_optional_integer->SecondInteger(),
                        context_element);
+  return true;
 }
 
 void SVGIntegerOptionalInteger::CalculateAnimatedValue(

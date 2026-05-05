@@ -109,7 +109,7 @@ SVGParsingError SVGColorProperty::SetValueAsString(const String& value) {
   return SVGParseStatus::kParsingFailed;
 }
 
-void SVGColorProperty::Add(const SVGPropertyBase* other,
+bool SVGColorProperty::Add(const SVGPropertyBase* other,
                            const SVGElement* context_element) {
   DCHECK(context_element);
 
@@ -121,6 +121,7 @@ void SVGColorProperty::Add(const SVGPropertyBase* other,
   const auto addend = ToRGBATuple(style_color_, fallback_color, color_scheme);
   Accumulate(base, addend);
   style_color_ = ToStyleColor(base);
+  return true;
 }
 
 void SVGColorProperty::CalculateAnimatedValue(

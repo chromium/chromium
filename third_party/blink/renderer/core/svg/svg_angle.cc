@@ -334,16 +334,17 @@ void SVGAngle::ConvertToSpecifiedUnits(SVGAngleType new_unit) {
   NewValueSpecifiedUnits(new_unit, new_value);
 }
 
-void SVGAngle::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGAngle::Add(const SVGPropertyBase* other, const SVGElement*) {
   auto* other_angle = To<SVGAngle>(other);
 
   // Only respect by animations, if from and by are both specified in angles
   // (and not, for example, 'auto').
   if (!IsNumeric() || !other_angle->IsNumeric()) {
-    return;
+    return true;
   }
 
   SetValue(Value() + other_angle->Value());
+  return true;
 }
 
 void SVGAngle::Assign(const SVGAngle& other) {

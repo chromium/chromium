@@ -441,7 +441,7 @@ String SVGPreserveAspectRatio::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGPreserveAspectRatio::Add(const SVGPropertyBase* other,
+bool SVGPreserveAspectRatio::Add(const SVGPropertyBase* other,
                                  const SVGElement*) {
   NOTREACHED();
 }

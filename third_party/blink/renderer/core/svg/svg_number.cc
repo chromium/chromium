@@ -73,8 +73,9 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
 }
 
-void SVGNumber::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGNumber::Add(const SVGPropertyBase* other, const SVGElement*) {
   SetValue(value_ + To<SVGNumber>(other)->Value());
+  return true;
 }
 
 void SVGNumber::CalculateAnimatedValue(

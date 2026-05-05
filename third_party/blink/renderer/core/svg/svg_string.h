@@ -55,7 +55,7 @@ class SVGString final : public SVGPropertyBase {
     return SVGParseStatus::kNoError;
   }
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

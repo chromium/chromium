@@ -50,7 +50,7 @@ SVGParsingError SVGBoolean::SetValueAsString(const String& value) {
   return SVGParseStatus::kExpectedBoolean;
 }
 
-void SVGBoolean::Add(const SVGPropertyBase*, const SVGElement*) {
+bool SVGBoolean::Add(const SVGPropertyBase*, const SVGElement*) {
   NOTREACHED();
 }
 

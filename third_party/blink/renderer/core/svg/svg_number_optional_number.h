@@ -53,7 +53,7 @@ class SVGNumberOptionalNumber final : public SVGPropertyBase {
   void SetInitial(unsigned);
   static constexpr int kInitialValueBits = SVGNumber::kInitialValueBits;
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

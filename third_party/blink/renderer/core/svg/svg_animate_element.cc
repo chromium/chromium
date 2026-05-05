@@ -712,7 +712,9 @@ bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   from_property_value_type_ = from_parsed_value.property_value_type;
   to_property_ = to_parsed_value.property;
   to_property_value_type_ = to_parsed_value.property_value_type;
-  to_property_->Add(from_property_, targetElement());
+  if (!to_property_->Add(from_property_, targetElement())) {
+    return false;
+  }
   return true;
 }
 

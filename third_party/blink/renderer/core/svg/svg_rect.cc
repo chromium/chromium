@@ -86,9 +86,10 @@ String SVGRect::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGRect::Add(const SVGPropertyBase* other, const SVGElement*) {
+bool SVGRect::Add(const SVGPropertyBase* other, const SVGElement*) {
   auto* other_rect = To<SVGRect>(other);
   Add(other_rect->x_, other_rect->y_, other_rect->width_, other_rect->height_);
+  return true;
 }
 
 void SVGRect::Set(float x, float y, float width, float height) {

@@ -23,7 +23,7 @@
 
 namespace blink {
 
-void SVGString::Add(const SVGPropertyBase*, const SVGElement*) {
+bool SVGString::Add(const SVGPropertyBase*, const SVGElement*) {
   NOTREACHED();
 }
 

@@ -54,7 +54,7 @@ class SVGLengthList final
   SVGLengthList* Clone() const override;
   SVGLengthMode UnitMode() const { return mode_; }
 
-  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  bool Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
       const SMILAnimationEffectParameters&,
       float percentage,

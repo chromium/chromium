@@ -100,7 +100,7 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
   return builder.ReleaseString();
 }
 
-void SVGStringListBase::Add(const SVGPropertyBase* other,
+bool SVGStringListBase::Add(const SVGPropertyBase* other,
                             const SVGElement* context_element) {
   // SVGStringList is never animated.
   NOTREACHED();
