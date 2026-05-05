@@ -58,6 +58,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
   EXPECT_EQ(entity_instance.attributes()[0].type(), attribute_type);
   EXPECT_EQ(entity_instance.attributes()[0].GetCompleteRawInfo(),
             passport_name);
+  EXPECT_FALSE(entity_instance.IsMaskedEntity());
+  EXPECT_FALSE(entity_instance.IsServerInstance());
 }
 
 // Test that if an existing entity attribute did not change when converting an

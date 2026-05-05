@@ -306,8 +306,8 @@ bool EntityTable::AddOrUpdateEntityMetadata(
 }
 
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
-  // Unmasked server entities must never be persisted on disk.
-  CHECK(!entity.IsUnmaskedServerEntity());
+  // Unmasked entities must never be persisted on disk.
+  CHECK(!entity.IsUnmaskedEntity());
 
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {

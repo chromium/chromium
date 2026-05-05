@@ -72,7 +72,8 @@ void HandleWalletUpsertResponse(
   using enum UiAction;
 
   CHECK(IsMaskedStorageSupported(entity.type(), entity.record_type()));
-  CHECK(!entity.IsMaskedServerEntity());
+  CHECK(entity.IsServerInstance());
+  CHECK(!entity.IsMaskedEntity());
 
   if (!entity_manager) {
     UpdateUi(client, kNoNotification);
@@ -101,7 +102,8 @@ void HandleWalletUpsertResponse(
   // The Wallet server API must always return a masked entity. This CHECK can be
   // enforced on the client even though it involves server data because the bit
   // whether an attribute is masked is purely determined client-side.
-  CHECK(!wallet_response->IsUnmaskedServerEntity());
+  CHECK(!wallet_response->IsUnmaskedEntity());
+  CHECK(wallet_response->IsServerInstance());
   switch (prompt_type) {
     case kMigrate:
       entity_manager->RemoveEntityInstance(entity.guid());

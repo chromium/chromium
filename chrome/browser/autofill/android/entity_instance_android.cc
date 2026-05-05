@@ -70,7 +70,8 @@ EntityInstanceAndroid::EntityInstanceAndroid(
       metadata(entity_instance.date_modified(),
                static_cast<int>(entity_instance.use_count())),
       requires_reauth_to_see(requires_reauth_to_see),
-      is_masked_server_entity(entity_instance.IsMaskedServerEntity()) {
+      is_masked_server_entity(entity_instance.IsMaskedEntity() &&
+                              entity_instance.IsServerInstance()) {
   for (const auto& attr : entity_instance.attributes()) {
     attribute_instances.emplace_back(attr);
   }

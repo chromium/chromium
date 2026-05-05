@@ -57,30 +57,30 @@ TEST_P(AutofillEntityInstanceTest, MaskedAttribute) {
   EXPECT_TRUE(attribute.masked());
 }
 
-TEST_P(AutofillEntityInstanceTest, MaskedServerEntityWithMaskedAttributes) {
+TEST_P(AutofillEntityInstanceTest, MaskedEntityWithMaskedAttributes) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
   test_api(attribute).mark_as_masked();
 
   EntityInstance entity = test::GetEntityInstance(
       {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
-  EXPECT_TRUE(entity.IsMaskedServerEntity());
-  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+  EXPECT_TRUE(entity.IsMaskedEntity());
+  EXPECT_FALSE(entity.IsUnmaskedEntity());
 
   // Local entities must never have masked attributes.
   EntityInstance invalid_entity = test::GetEntityInstance(
       {attribute}, {.record_type = EntityInstance::RecordType::kLocal});
-  EXPECT_CHECK_DEATH(invalid_entity.IsMaskedServerEntity());
+  EXPECT_CHECK_DEATH(invalid_entity.IsMaskedEntity());
 }
 
-TEST_P(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedServerEntity) {
+TEST_P(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedEntity) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
 
   EntityInstance entity = test::GetEntityInstance(
       {attribute}, {.record_type = EntityInstance::RecordType::kLocal});
-  EXPECT_FALSE(entity.IsMaskedServerEntity());
-  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+  EXPECT_FALSE(entity.IsMaskedEntity());
+  EXPECT_FALSE(entity.IsUnmaskedEntity());
 }
 
 TEST_P(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
@@ -89,8 +89,8 @@ TEST_P(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
 
   EntityInstance entity = test::GetEntityInstance(
       {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
-  EXPECT_FALSE(entity.IsMaskedServerEntity());
-  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+  EXPECT_FALSE(entity.IsMaskedEntity());
+  EXPECT_FALSE(entity.IsUnmaskedEntity());
 }
 
 TEST_P(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
@@ -99,8 +99,8 @@ TEST_P(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
 
   EntityInstance entity = test::GetEntityInstance(
       {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
-  EXPECT_FALSE(entity.IsMaskedServerEntity());
-  EXPECT_TRUE(entity.IsUnmaskedServerEntity());
+  EXPECT_FALSE(entity.IsMaskedEntity());
+  EXPECT_TRUE(entity.IsUnmaskedEntity());
 }
 
 TEST_P(AutofillEntityInstanceTest, Attributes) {

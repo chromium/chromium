@@ -434,7 +434,7 @@ TEST_F(EntityTableTest, GetEntityType) {
 TEST_F(EntityTableTest, NoUnmaskedServerEntities) {
   EntityInstance server_pp = GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
-  ASSERT_TRUE(server_pp.IsUnmaskedServerEntity());
+  ASSERT_TRUE(server_pp.IsUnmaskedEntity());
   EXPECT_CHECK_DEATH(table().AddOrUpdateEntityInstance(server_pp));
 }
 
@@ -443,12 +443,12 @@ TEST_F(EntityTableTest, NoUnmaskedServerEntities) {
 TEST_F(EntityTableTest, GetEntityInstanceMaskedServerEntity) {
   EntityInstance masked_pp = test::MaskEntityInstance(GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet}));
-  ASSERT_TRUE(masked_pp.IsMaskedServerEntity());
+  ASSERT_TRUE(masked_pp.IsMaskedEntity());
 
   EXPECT_TRUE(table().AddOrUpdateEntityInstance(masked_pp));
   std::vector<EntityInstance> entities = table().GetEntityInstances();
   ASSERT_THAT(entities, ElementsAre(masked_pp));
-  EXPECT_TRUE(entities[0].IsMaskedServerEntity());
+  EXPECT_TRUE(entities[0].IsMaskedEntity());
 }
 
 // Tests that when private passes support is disabled (for example, because a

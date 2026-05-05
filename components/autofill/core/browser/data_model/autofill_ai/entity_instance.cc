@@ -632,14 +632,14 @@ bool EntityInstance::IsSubsetOf(const EntityInstance& other) const {
   return true;
 }
 
-bool EntityInstance::IsMaskedServerEntity() const {
+bool EntityInstance::IsMaskedEntity() const {
   const bool masked =
       std::ranges::any_of(attributes_, &AttributeInstance::masked);
   CHECK(!masked || IsMaskableRecordType(record_type_));
   return masked;
 }
 
-bool EntityInstance::IsUnmaskedServerEntity() const {
+bool EntityInstance::IsUnmaskedEntity() const {
   return IsMaskableRecordType(record_type_) &&
          std::ranges::any_of(
              attributes_, [](const AttributeInstance& attribute) {

@@ -425,20 +425,19 @@ class EntityInstance final {
   // are compared.
   bool IsSubsetOf(const EntityInstance& other) const;
 
-  // Returns whether any of the attributes are masked. This can only happen
-  // if `record_type()` is `kServerWallet`.
+  // Returns whether any of the attributes is masked.
   //
-  // Note that there can be entities with `record_type()` `kServerWallet` for
-  // which `IsMaskedServerEntity() == IsUnmaskedServerEntity() == false`.
-  // Examples include vehicle information, flight reservation entities,
-  // passport entities without a saved number, etc.
-  bool IsMaskedServerEntity() const;
+  // Note that there can be entities for which
+  // `IsMaskedEntity() == IsUnmaskedEntity() == false`.
+  // These entities do not contain obfuscated attributes and can be safely
+  // persisted to disk. Examples include: vehicle information, flight
+  // reservation entities, passport entities without a saved number, etc.
+  bool IsMaskedEntity() const;
 
-  // Returns whether `this` has `record_type() == kServerWallet` and any of
-  // its obfuscated attributes is not `masked()`.
-  // That is, `this` is an `EntityInstance` returned unmasked from a Wallet
-  // server; it is strictly transient and must never be persisted to disk.
-  bool IsUnmaskedServerEntity() const;
+  // Returns true if `this` has a maskable record type and contains at least
+  // one unmasked obfuscated attribute. Unmasked entities are transient and
+  // must never be persisted to disk.
+  bool IsUnmaskedEntity() const;
 
   // Returns a copy of `this` with a new `id`.
   EntityInstance CopyWithNewEntityId(EntityId id) const;

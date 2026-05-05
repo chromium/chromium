@@ -63,6 +63,8 @@ struct EntityInstanceAndroid {
   std::vector<AttributeInstanceAndroid> attribute_instances;
   EntityMetadataAndroid metadata;
   bool requires_reauth_to_see = false;
+  // TODO(crbug.com/501037715): Break this down to is_masked_entity and
+  // is_server_instance to decouple the masked status from storage type.
   bool is_masked_server_entity = false;
 };
 

@@ -318,7 +318,7 @@ bool WillRequireServerFetch(const EntityInstance& entity,
                             const FormStructure& form,
                             const Section& section,
                             std::string_view app_locale) {
-  return entity.IsMaskedServerEntity() &&
+  return entity.IsMaskedEntity() && entity.IsServerInstance() &&
          WillFillSensitiveAttributes(entity, form, section, app_locale) &&
          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
 }
