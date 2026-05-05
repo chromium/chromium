@@ -25361,6 +25361,24 @@
             ]
         }
     ],
+    "WebRTC-CorruptionDetectionFrameSelector": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled:true,low_overhead_lower_bound:500ms,low_overhead_upper_bound:1500ms,high_overhead_lower_bound:500ms,high_overhead_upper_bound:1500ms,asynchronous_evaluation:true"
+                }
+            ]
+        }
+    ],
     "WebRTC-EncoderSpeed": [
         {
             "platforms": [
