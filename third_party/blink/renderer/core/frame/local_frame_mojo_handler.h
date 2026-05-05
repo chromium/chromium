@@ -272,7 +272,6 @@ class LocalFrameMojoHandler
       double randomized_trigger_rate,
       mojom::blink::ConfidenceLevel confidence) final;
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
-  void NotifyRelatedPagesFinalized(bool has_other_related_pages) final;
 
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;

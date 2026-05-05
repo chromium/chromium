@@ -72,10 +72,6 @@ class TextFragmentGenerationNavigationTest
 void TextFragmentGenerationNavigationTest::SetUp() {
   SimTest::SetUp();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  if (WebView().GetPage()) {
-    WebView().GetPage()->related_pages_mutation_from_previous_page_finalized_ =
-        true;
-  }
 }
 
 void TextFragmentGenerationNavigationTest::RunAsyncMatchingTasks() {
