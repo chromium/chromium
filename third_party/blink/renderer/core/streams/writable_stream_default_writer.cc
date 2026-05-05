@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -12,20 +15,24 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 namespace {
 
-String CreateWriterLockReleasedMessage(const char* verbed) {
-  return UNSAFE_TODO(String::Format(
-      "This writable stream writer has been released and cannot be %s",
-      verbed));
+String CreateWriterLockReleasedMessage(std::string_view verbed) {
+  StringBuilder builder;
+  builder.Append(
+      "This writable stream writer has been released and cannot be ");
+  builder.Append(base::as_byte_span(verbed));
+  return builder.ToString();
 }
 
-v8::Local<v8::Value> CreateWriterLockReleasedException(v8::Isolate* isolate,
-                                                       const char* verbed) {
+v8::Local<v8::Value> CreateWriterLockReleasedException(
+    v8::Isolate* isolate,
+    std::string_view verbed) {
   return v8::Exception::TypeError(
       V8String(isolate, CreateWriterLockReleasedMessage(verbed)));
 }
