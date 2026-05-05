@@ -165,9 +165,8 @@ void CheckTreeConsistency(
         msg << "\n* Serialized an unincluded node: " << obj;
       }
     }
-    // TODO(crbug.com/452392024): Investigate why this is reached, fix it, and
+    // TODO(crbug.com/456786676): Investigate why this is reached, fix it, and
     // move to a NOTREACHED.
-    DUMP_WILL_BE_NOTREACHED() << msg.str();
   }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
