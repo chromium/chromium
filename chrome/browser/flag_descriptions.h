@@ -4948,6 +4948,14 @@ inline constexpr const char* kAIAPIsForGeminiNanoLinks[2] = {
     "https://goo.gle/chrome-ai-dev-preview",
     "https://policies.google.com/terms/generative-ai/use-policy"};
 
+inline constexpr char kGemma4ForBuiltInAIName[] = "Gemma 4 for Built-in AI";
+inline constexpr char kGemma4ForBuiltInAIDescription[] =
+    "Enables all built-in AI APIs (Prompt, Summarizer, Writer, etc.) with the "
+    "Gemma 4 model.";
+inline constexpr const char* kGemma4ForBuiltInAILinks[2] = {
+    "https://goo.gle/chrome-ai-dev-preview",
+    "https://policies.google.com/terms/generative-ai/use-policy"};
+
 inline constexpr char kPromptAPIForGeminiNanoMultimodalInputName[] =
     "Prompt API for Gemini Nano with Multimodal Input";
 inline constexpr char kPromptAPIForGeminiNanoMultimodalInputDescription[] =

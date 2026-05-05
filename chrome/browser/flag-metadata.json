@@ -5136,6 +5136,11 @@
     "expiry_milestone": 156
   },
   {
+    "name": "gemma4-for-built-in-ai",
+    "owners": [ "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "generalized-gemini-entry-flow",
     "owners": [
       "kanouche@google.com",
