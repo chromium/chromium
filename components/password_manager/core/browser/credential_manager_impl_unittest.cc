@@ -116,9 +116,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetDeviceAuthenticator,
               (),
               (override));
-#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
-#endif
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -1360,7 +1358,6 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_NE(CredentialType::CREDENTIAL_TYPE_EMPTY, credential_1->type);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(CredentialManagerImplTest, CredentialManagerRequestWhenActorIsActive) {
   store_->AddLogin(form_);
 
@@ -1401,8 +1398,6 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_EQ(CredentialManagerError::SUCCESS, error);
   EXPECT_NE(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
   // Turn on the global zero-click flag, and add two credentials in separate

@@ -578,6 +578,8 @@ class PasswordManagerClient {
 
   virtual UndoPasswordChangeController* GetUndoPasswordChangeController();
 
+  // TODO(crbug.com/509852350): Figure out if this is needed on iOS and
+  //  implement it.
   virtual bool IsActorTaskActive();
 };
 
