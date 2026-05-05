@@ -5,7 +5,7 @@ Version: 22.11.0
 Revision: 4e0f2773ff9465148a654dd0a2c1668104c20fec
 Update Mechanism: Manual
 Date: 2024-10-29
-License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
+License: Artistic-2.0, BSD-2-Clause, BSD-3-Clause, HPND, ICU, ISC, MIT, NAIST-2003, OpenSSL, SSLeay, Unicode-DFS-2016, Zlib
 License File: LICENSE
 Security Critical: no
 Shipped: no

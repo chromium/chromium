@@ -6,7 +6,7 @@ Revision: DEPS
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: no
-License: Khronos
+License: MIT-Khronos-old
 License File: LICENSE
 
 Description:

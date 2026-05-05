@@ -5,7 +5,7 @@ Version: N/A
 Revision: 6184f4484a826724b5293837134ab9492261b941
 Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.32
-License: BSD-3-Clause, Patent
+License: WebM-Project-Patent, BSD-3-Clause
 License File: source/LICENSE.TXT, source/PATENTS.TXT
 Security Critical: yes
 Shipped: yes

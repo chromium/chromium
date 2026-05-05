@@ -6,7 +6,7 @@ Date: 2026-02-11
 Revision: 6d0a494110fe0c47dcc75a1a4dfa110c25097827
 SHA-512: 87f3ec6c43f0b65a76b65a6c6c3f4b1f130440a5a3c0084a45387c5ce1d7d9f3e02a13e54d6897fd50a20cda28ae1a37e10b5a6b5fe8c34b3894ce09f41bb562
 Update Mechanism: Manual
-License: Apache-2.0
+License: Apache-2.0, MIT
 License File: LICENSE
 Shipped: yes
 Security Critical: no

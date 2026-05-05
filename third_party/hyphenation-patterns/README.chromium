@@ -7,7 +7,7 @@ Revision: 06ce8d348f9145e41e8f52ff9f83470fe3563084
 Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
-License: Unicode-DFS-2015, LGPL-2.1, Unlicense, MPL-1.1, GNU-All-permissive-Copying-License, MIT, CC-BY-3.0, BSD-3-Clause, zxing, MPL-2.0
+License: BSD-3-Clause, CC-BY-3.0, FSFAP, LGPL-2.1, MIT, MPL-1.1, MPL-2.0, Unicode-DFS-2015, Unlicense, zxing
 License File: LICENSE
 License Android Compatible: yes
 

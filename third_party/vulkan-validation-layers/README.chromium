@@ -7,7 +7,7 @@ Revision: DEPS
 Update Mechanism: Manual
 Security Critical: no
 Shipped: no
-License: Apache-2.0, MIT
+License: Apache-2.0, MIT, BSL-1.0
 License File: src/LICENSE.txt
 
 Description:

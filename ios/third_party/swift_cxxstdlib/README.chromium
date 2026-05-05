@@ -6,7 +6,7 @@ Revision: 7f91815fb875c8bca266b895e45b4b95aff238c8
 Update Mechanism: Manual
 Security Critical: no
 Shipped: no
-License: Apache-2.0
+License: Apache-with-Runtime-Exception
 License File: src/LICENSE.txt
 
 Description:

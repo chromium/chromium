@@ -3,7 +3,7 @@ URL: https://libc.llvm.org/
 Version: N/A
 Revision: deb95b5e48e875920a2eaae799c8dbcd76a6a4db
 Update Mechanism: Autoroll
-License: MIT, NCSA
+License: Apache-with-LLVM-Exception, NCSA
 License File: src/LICENSE.TXT
 Security Critical: yes
 Shipped: yes

@@ -4,7 +4,7 @@ URL: https://gitlab.freedesktop.org/xorg/lib/libx11
 Version: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
 Revision: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
 Update Mechanism: Manual
-License: MIT
+License: X11
 License File: LICENSE
 Security Critical: no
 Shipped: yes

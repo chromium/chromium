@@ -4,7 +4,7 @@ Version: r28
 Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
-License: Unicode-DFS-2016, NAIST-2003, IBM-DHCP, BSD-3-Clause, Unicode-DFS-2015, NCSA, Zlib, ISC, Apache-with-LLVM-Exception, BSD-2-Clause, BSD-4-Clause-UC, BSD-4-Clause-Wasabi, Apache-2.0, MIT, MPL-2.0, CERN, SunPro, Caffe, ICU
+License: Apache-2.0, MIT, SunPro, BSD-2-Clause, BSD-3-Clause, Apache-with-LLVM-Exception, NCSA, CERN, ISC, BSD-4-Clause-UC, Martin-Birgmeier, BSD-4-Clause-Wasabi, IBM-DHCP, Unicode-DFS-2015, Unicode-DFS-2016, ICU, NAIST-2003, MPL-2.0, Caffe, Zlib
 License File: NOTICE
 
 Description:

@@ -3,7 +3,7 @@ URL: https://pagure.io/lohit, http://www.nongnu.org/freebangfont/downloads.html#
 Version: N/A
 Revision: DEPS
 Update Mechanism: Manual
-License: Apache-2.0, LicenseRef-AMSFonts-2.2, OFL-1.1, AhemFont, Bitstream, test_fonts, GPL-2.0
+License: OFL-1.1, GPL-2.0, Bitstream-Vera, Bitstream-Charter, AMSFonts-2.2, Apache-2.0, AhemFont, test_fonts
 License File: LICENSE
 Security Critical: no
 Shipped: no

@@ -3,7 +3,7 @@ URL: http://www.freedesktop.org/wiki/Software/fontconfig/
 Version: d62c2ab268d1679335daa8fb0ea6970f35224a76
 Update Mechanism: Manual
 CPEPrefix: cpe:/a:fontconfig_project:fontconfig:2.17.1
-License: public-domain-md5, MIT-Modern-Variant, HPND-sell-variant, MIT
+License: HPND-sell-variant, MIT, MIT-Modern-Variant, Public-Domain-MD5, Public-Domain-ftglue, Unicode-TOU
 License File: src/COPYING
 Security Critical: yes
 Shipped: yes

@@ -5,7 +5,7 @@ Version: v0.10.35
 Revision: f8ef212d5c962c0e853db7e59d217056b187084b
 Update Mechanism: Manual
 Date: 2026-04-30
-License: Apache-2.0, X11-Lucent
+License: Apache-2.0, dtoa
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes

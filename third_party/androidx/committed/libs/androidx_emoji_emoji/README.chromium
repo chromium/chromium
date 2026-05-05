@@ -3,7 +3,7 @@ Short Name: emoji
 URL: https://dl.google.com/dl/android/maven2/androidx/emoji/emoji/1.2.0/emoji-1.2.0.aar
 Version: 1.2.0
 Update Mechanism: Autoroll
-License: Apache-2.0, SIL Open Font License, Version 1.1, Unicode, Inc. License
+License: Apache-2.0, OFL-1.1, Unicode-DFS-2016
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

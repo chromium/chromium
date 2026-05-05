@@ -3,7 +3,7 @@ Short Name: checker-compat-qual
 URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-compat-qual/2.5.5/checker-compat-qual-2.5.5.jar
 Version: 2.5.5
 Update Mechanism: Manual
-License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
+License: GPL-2.0-with-classpath-exception, MIT
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no

@@ -3,7 +3,7 @@ URL: https://boringssl.googlesource.com/boringssl
 Version: N/A
 Revision: e20b0220e903a1dbe32846eb29018253721f1bf8
 Update Mechanism: Autoroll
-License: MIT, BSD-3-Clause, OpenSSL, ISC, SSLeay
+License: Apache-2.0, BSD-3-Clause
 License File: src/LICENSE
 License Android Compatible: yes
 CPEPrefix: cpe:/a:google:boringssl:0.20260413.0

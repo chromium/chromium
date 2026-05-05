@@ -5,7 +5,7 @@ Version: v0.3.4
 Revision: 50869df0ea703b4f41b238bfe26aec6ec9c86889
 Update Mechanism: Autoroll
 Security critical: yes
-License: Apache-2.0
+License: MIT, Apache-2.0
 License File: src/LICENSE
 Shipped: yes
 

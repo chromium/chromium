@@ -1,8 +1,8 @@
 Name: url_parse
 URL: https://github.com/mozilla-firefox/firefox.git
 Revision: c7df6606be1bfdf6d6cec37a4ff644a9841c3ec2
-Update Mechanism: Static.HardFork
-License: MPL-2.0
+Version: N/A
+License: BSD-3-Clause, MPL-1.1
 License File: LICENSE.txt
 Update Mechanism: Static (https://crbug.com/419415029)
 Shipped: yes

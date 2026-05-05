@@ -4,7 +4,7 @@ Version: N/A
 Revision: 640d4ce27ba918783e28a0da46a8a37abe4a65b6
 Update Mechanism: Manual
 CPEPrefix: cpe:/a:webmproject:libvpx:1.16.0
-License: BSD-3-Clause, Patent
+License: BSD-3-Clause, WebM-Project-Patent
 License Android Compatible: yes
 License File: source/libvpx/LICENSE, source/libvpx/PATENTS
 Security Critical: yes

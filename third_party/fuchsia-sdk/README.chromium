@@ -5,7 +5,7 @@ Revision: DEPS
 Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: yes
-License: BSD-2-Clause, Apache-2.0, MIT
+License: BSD-2-Clause
 License File: sdk/LICENSE
 License Android Compatible: yes
 Local Modifications: None
