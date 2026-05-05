@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -385,32 +386,32 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
 uint32_t EstimateAmountOfTotalDiskSpaceMB() {
   const base::BasePathKey kPathKeys[] = {base::DIR_EXE, base::DIR_TEMP,
                                          base::DIR_HOME};
-  std::vector<uint32_t> total_space_vector, free_space_vector;
-  uint32_t sum = 0;
+  std::vector<base::ByteSize> total_space_vector, free_space_vector;
+  base::ByteSize sum;
   for (const auto& path_key : kPathKeys) {
     base::FilePath path;
     if (base::PathService::Get(path_key, &path)) {
-      uint32_t total_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfTotalDiskSpace(path).value_or(0) / 1024 /
-          1024);
-      uint32_t free_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfFreeDiskSpace(path).value_or(0) / 1024 / 1024);
+      std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+          base::SysInfo::AmountOfDiskSpace(path);
+      if (!disk_space.has_value()) {
+        continue;
+      }
       bool duplicated = false;
       for (size_t ii = 0; ii < total_space_vector.size(); ++ii) {
-        if (total_space == total_space_vector[ii] &&
-            free_space == free_space_vector[ii]) {
+        if (disk_space->total == total_space_vector[ii] &&
+            disk_space->available == free_space_vector[ii]) {
           duplicated = true;
           break;
         }
       }
       if (!duplicated) {
-        total_space_vector.push_back(total_space);
-        free_space_vector.push_back(free_space);
-        sum += total_space;
+        total_space_vector.push_back(disk_space->total);
+        free_space_vector.push_back(disk_space->available);
+        sum += disk_space->total;
       }
     }
   }
-  return sum;
+  return static_cast<uint32_t>(sum.InMiB());
 }
 
 // Only record Nvidia GPUs.
