@@ -977,7 +977,7 @@ TEST_F(ContextualTasksUiTest, SetComposeboxHandler) {
   controller.SetComposeboxHandler(nullptr);
 }
 
-TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnConstruction) {
+TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnInitComplete) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   GURL url(chrome::kChromeUIContextualTasksURL);
   url = net::AppendQueryParameter(url, kTaskQueryParam,
@@ -988,12 +988,23 @@ TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnConstruction) {
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
 
+  ContextualTasksUI controller(&web_ui);
+
+  // The signal should NOT be sent upon construction.
+  EXPECT_CALL(*service_for_nav_, OnWebUIReady(_, _, _)).Times(0);
+  testing::Mock::VerifyAndClearExpectations(service_for_nav_);
+
+  // The signal SHOULD be sent upon CreatePageHandler (which calls
+  // OnInitComplete).
   EXPECT_CALL(*service_for_nav_, OnWebUIReady(_, task_id, _)).Times(1);
   // Expect OnWebUIDestroyed when controller goes out of scope.
   EXPECT_CALL(*service_for_nav_, OnWebUIDestroyed(_, std::optional(task_id)))
       .Times(1);
 
-  ContextualTasksUI controller(&web_ui);
+  testing::NiceMock<MockContextualTasksPage> page;
+  mojo::PendingReceiver<mojom::PageHandler> handler_receiver;
+  controller.CreatePageHandler(page.BindAndGetRemote(),
+                               std::move(handler_receiver));
 }
 
 class MockMPArchNavigationHandle : public content::MockNavigationHandle {
