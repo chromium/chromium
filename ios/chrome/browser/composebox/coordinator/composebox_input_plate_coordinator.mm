@@ -108,6 +108,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxInputPlateViewControllerDelegate,
     ComposeboxPickerPresenterDelegate,
     ComposeboxPickerPresenterDataSource,
+    ComposeboxMenuCoordinatorDelegate,
     ComposeboxMenuCoordinatorInputPlateDelegate,
     LocationBarModelDelegateWebStateProvider,
     LocationBarURLLoader,
@@ -301,6 +302,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)stop {
+  if (_menuCoorinator) {
+    [_menuCoorinator stop];
+    _menuCoorinator = nil;
+  }
   _aimEligibilitySubscription = {};
   _aimEligibilityService = nullptr;
   [_snackbarPresenter dismissAllSnackbars];
@@ -462,6 +467,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                         inputState:state
                         entrypoint:_entrypoint];
     _menuCoorinator.inputPlateDelegate = self;
+    _menuCoorinator.delegate = self;
     [_menuCoorinator start];
   }
 }
@@ -888,6 +894,14 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   if (attachments) {
     [_mediator updateAttachments:attachments];
   }
+}
+
+#pragma mark - ComposeboxMenuCoordinatorDelegate
+
+- (void)composeboxMenuCoordinatorDidDismissMenu:
+    (ComposeboxMenuCoordinator*)composeboxMenuCoordinator {
+  [_menuCoorinator stop];
+  _menuCoorinator = nil;
 }
 
 @end
