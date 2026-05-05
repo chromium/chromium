@@ -4154,68 +4154,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             gfx::Range(0, 1));
 }
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       RevertSplitTabDragWhileDetachedWithGroupShift) {
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails on Mac with InitialWebUI "
-                    "enabled. See b/464087732.";
-  }
-#endif
-
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-
-  TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  TabStripModel* model = browser()->tab_strip_model();
-  // Start with 4 tabs: 0, 1, 2, 3
-  AddTabsAndResetBrowser(browser(), 3);
-  // Group tabs 1, 2, 3
-  tab_groups::TabGroupId group = model->AddToNewGroup({1, 2, 3});
-  // Turn 2, 3 into a split tab.
-  model->ActivateTabAt(2);
-  split_tabs::SplitTabId split_id =
-      model->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
-                           split_tabs::SplitTabCreatedSource::kToolbarButton);
-
-  StopAnimating(tab_strip);
-  EnsureFocusToTabStrip(tab_strip);
-
-  ui_test_utils::BrowserDestroyedObserver browser_removed_observer;
-  AsyncBrowserWaiter waiter(
-      base::BindLambdaForTesting([this](BrowserWindowInterface* new_browser) {
-        if (!new_browser) {
-          new_browser = ui_test_utils::GetBrowserNotInSet({this->browser()});
-        }
-        CHECK(new_browser);
-        // Shift the group in the source window.
-        // Current source: [0] [G: 1]
-        // Move 1 to 0: [G: 1] [0]
-        this->browser()->tab_strip_model()->MoveWebContentsAt(1, 0, false);
-
-        new AsyncEscapePresser(
-            BrowserView::GetBrowserViewForBrowser(new_browser)->GetWidget());
-      }));
-
-  test::QuitDraggingObserver observer(tab_strip);
-  // Split tab is at model index 2.
-  Tab* split_tab = tab_strip->tab_at(2);
-  ASSERT_TRUE(PressInputAtCenter(split_tab));
-  ASSERT_TRUE(DragInputToCenterNotifyWhenDone(
-      split_tab, base::BindLambdaForTesting([]() {
-        test::PostTaskToRunMoveLoop(base::DoNothing());
-      }),
-      gfx::Vector2d(0, GetDetachY(tab_strip))));
-  observer.Wait();
-
-  // Ensure completion of asynchronous browser closure.
-  browser_removed_observer.Wait();
-
-  EXPECT_EQ("1 2 3 0", IDString(model));
-  EXPECT_EQ(model->GetSplitData(split_id)->ListTabs().size(), 2u);
-  EXPECT_EQ(model->group_model()->GetTabGroup(group)->ListTabs(),
-            gfx::Range(0, 3));
-}
-
 // Creates a browser with four tabs where the second and third tab is in a
 // collapsed group. Drag the fourth tab to the left past the group header. The
 // fourth tab should swap places with the collapsed group header.

@@ -2187,16 +2187,6 @@ void TabDragController::RevertSplitAt(size_t drag_index) {
   if (attached_context_ != source_context_) {
     // The Split was inserted into another TabDragContext. We need to
     // put it back into the original one.
-    if (tab_data.tab_group_data.has_value()) {
-      const TabGroup* group =
-          source_context_->GetTabStripModel()->group_model()->GetTabGroup(
-              tab_data.tab_group_data->group_id);
-      if (group) {
-        target_index =
-            group->ListTabs().start() + tab_data.tab_group_data->index_in_group;
-      }
-    }
-
     std::unique_ptr<DetachedTabCollection> detached_split =
         attached_context_->GetTabStripModel()->DetachSplitTabForInsertion(
             split_id);
