@@ -82,6 +82,10 @@
   outline: none;
 }
 
+:host dialog[open] ::slotted(.dropdown-item) {
+  user-select: auto;
+}
+
 :host ::slotted(.dropdown-item:focus-visible) {
   outline: solid 2px var(--cr-focus-outline-color);
   outline-offset: -2px;
