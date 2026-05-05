@@ -29,7 +29,7 @@ const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.7;
  * Time in milliseconds to wait before closing the UI if no interaction
  * has occurred since start, OR last word spoken. Matches Google3.
  */
-const IDLE_TIMEOUT_MS: number = 1500;
+const IDLE_TIMEOUT_MS: number = 3000;
 
 /**
  * Maximum number of characters recognized before force-submitting a query.
