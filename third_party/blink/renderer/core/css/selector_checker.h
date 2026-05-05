@@ -537,7 +537,7 @@ class CORE_EXPORT SelectorChecker {
 // The set of supported selectors is formally given as “anything IsEasy()
 // returns true for”, but roughly encompasses the following:
 //
-//  - Tag matches (e.g. div).
+//  - Tag matches (e.g. div), possibly negated (e.g. :not(div)).
 //  - ID matches (e.g. #id).
 //  - Class matches (e.g. .c).
 //  - Case-sensitive attribute is-set and exact matches ([foo] and [foo="bar"]).
@@ -576,6 +576,8 @@ class CORE_EXPORT EasySelectorChecker {
  private:
   ALWAYS_INLINE static bool MatchOne(const CSSSelector* selector,
                                      const Element* element);
+  ALWAYS_INLINE static bool MatchesTagName(const QualifiedName& tag_q_name,
+                                           const Element* element);
   ALWAYS_INLINE static bool AttributeIsSet(const Element& element,
                                            const QualifiedName& attr);
   ALWAYS_INLINE static bool AttributeMatches(const Element& element,

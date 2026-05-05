@@ -52,6 +52,22 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
           return false;
         }
         break;
+      case CSSSelector::kPseudoClass: {
+        // We support exactly :not(tag) and nothing else.
+        if (selector->GetPseudoType() != CSSSelector::kPseudoNot) {
+          return false;
+        }
+        const CSSSelectorList* sublist = selector->SelectorList();
+        if (!sublist || !sublist->IsSingleComplexSelector()) {
+          return false;
+        }
+        const CSSSelector* sub_selector = sublist->First();
+        if (!sub_selector->IsLastInComplexSelector() ||
+            selector->Match() != CSSSelector::kTag) {
+          return false;
+        }
+        break;
+      }
       default:
         // Unsupported selector.
         return false;
@@ -130,32 +146,40 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
   return true;
 }
 
+bool EasySelectorChecker::MatchesTagName(const QualifiedName& tag_q_name,
+                                         const Element* element) {
+  if (element->namespaceURI() != tag_q_name.NamespaceURI() &&
+      tag_q_name.NamespaceURI() != g_star_atom) {
+    // Namespace mismatch.
+    return false;
+  }
+  if (element->localName() == tag_q_name.LocalName()) {
+    return true;
+  }
+  if (!element->IsHTMLElement() && IsA<HTMLDocument>(element->GetDocument())) {
+    // If we have a non-HTML element in a HTML document, we need to
+    // also check case-insensitively (see MatchesTagName()). Ideally,
+    // we'd like to not have to handle this case in easy selector matching,
+    // but it turns out to be hard to reliably check that a tag in a
+    // descendant selector doesn't hit this issue (the subject element
+    // could be checked once, outside EasySelectorChecker).
+    return element->TagQName().LocalNameUpper() == tag_q_name.LocalNameUpper();
+  } else {
+    return false;
+  }
+}
+
 bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
                                    const Element* element) {
   switch (selector->Match()) {
     case CSSSelector::kTag: {
-      const QualifiedName& tag_q_name = selector->TagQName();
-      if (element->namespaceURI() != tag_q_name.NamespaceURI() &&
-          tag_q_name.NamespaceURI() != g_star_atom) {
-        // Namespace mismatch.
-        return false;
-      }
-      if (element->localName() == tag_q_name.LocalName()) {
-        return true;
-      }
-      if (!element->IsHTMLElement() &&
-          IsA<HTMLDocument>(element->GetDocument())) {
-        // If we have a non-HTML element in a HTML document, we need to
-        // also check case-insensitively (see MatchesTagName()). Ideally,
-        // we'd like to not have to handle this case in easy selector matching,
-        // but it turns out to be hard to reliably check that a tag in a
-        // descendant selector doesn't hit this issue (the subject element
-        // could be checked once, outside EasySelectorChecker).
-        return element->TagQName().LocalNameUpper() ==
-               tag_q_name.LocalNameUpper();
-      } else {
-        return false;
-      }
+      return MatchesTagName(selector->TagQName(), element);
+    }
+    case CSSSelector::kPseudoClass: {  // not(tag).
+      DCHECK_EQ(selector->GetPseudoType(), CSSSelector::kPseudoNot);
+      const CSSSelector* sub_selector = selector->SelectorList()->First();
+      DCHECK_EQ(sub_selector->Match(), CSSSelector::kTag);
+      return !MatchesTagName(sub_selector->TagQName(), element);
     }
     case CSSSelector::kUniversalTag: {
       const QualifiedName& tag_q_name = selector->TagQName();
