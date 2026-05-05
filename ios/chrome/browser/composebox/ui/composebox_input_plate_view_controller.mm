@@ -972,12 +972,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
   config.contentInsets = insets;
   config.background.backgroundColor =
-      [_theme aimButtonBackgroundColorWithAIMEnabled:isAIModeEnabled];
+      [_theme toolButtonBackgroundColorWithActiveState:isAIModeEnabled];
   config.baseForegroundColor =
-      [_theme aimButtonTextColorWithAIMEnabled:isAIModeEnabled];
+      [_theme toolButtonTextColorWithActiveState:isAIModeEnabled];
   config.background.strokeWidth = isAIModeEnabled ? 0 : 1;
   config.background.strokeColor =
-      [_theme aimButtonBorderColorWithAIMEnabled:isAIModeEnabled];
+      [_theme toolButtonBorderColorWithActiveState:isAIModeEnabled];
 
   _aimButton.accessibilityLabel = l10n_util::GetNSString(
       isAIModeEnabled
@@ -985,6 +985,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
           : IDS_IOS_COMPOSEBOX_AIM_BUTTON_ENABLE_ACTION_ACCESSIBILITY_LABEL);
 
   _aimButton.configuration = config;
+  _aimButton.tintColor =
+      [_theme toolButtonTextColorWithActiveState:isAIModeEnabled];
 
   // Setup the X mark only after the config was aplied, otherwise the
   // constraints applied relative to the title label will be wrong for iOS 18.
@@ -1015,6 +1017,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
   // The parent button view is the relevant element.
   xMarkImageView.isAccessibilityElement = NO;
+  xMarkImageView.tintColor = button.tintColor;
   [button addSubview:xMarkImageView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -1774,9 +1777,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                    image:GetBananaIcon(kSymbolActionPointSize)];
   config.contentInsets = kImageGenerationButtonInsets;
   config.background.backgroundColor =
-      [_theme imageGenerationButtonBackgroundColor];
-  config.baseForegroundColor = [_theme imageGenerationButtonTextColor];
-  button.tintColor = [_theme imageGenerationButtonTextColor];
+      [_theme toolButtonBackgroundColorWithActiveState:YES];
+  config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
+  button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
 
   button.configuration = config;
   [self setupXMarkInButton:button];
@@ -1824,9 +1827,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
   config.contentInsets = insets;
 
-  config.background.backgroundColor = [_theme canvasButtonBackgroundColor];
-  config.baseForegroundColor = [_theme canvasButtonTextColor];
-  button.tintColor = [_theme canvasButtonTextColor];
+  config.background.backgroundColor =
+      [_theme toolButtonBackgroundColorWithActiveState:YES];
+  config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
+  button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
 
   button.configuration = config;
 
@@ -1863,9 +1867,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
   config.contentInsets = insets;
 
-  config.background.backgroundColor = [_theme deepSearchButtonBackgroundColor];
-  config.baseForegroundColor = [_theme deepSearchButtonTextColor];
-  button.tintColor = [_theme deepSearchButtonTextColor];
+  config.background.backgroundColor =
+      [_theme toolButtonBackgroundColorWithActiveState:YES];
+  config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
+  button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
 
   button.configuration = config;
 
@@ -1894,7 +1899,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button addTarget:self
                 action:@selector(askAboutThisPageButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
-  button.tintColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
+  button.tintColor = [_theme toolButtonTextColorWithActiveState:NO];
 
   [button
       setContentCompressionResistancePriority:UILayoutPriorityRequired
@@ -1907,10 +1912,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                              kMagnifyingglassSparkSymbol,
                                              kAIMButtonSymbolPointSize)];
   config.background.backgroundColor = [UIColor clearColor];
-  config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
+  config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:NO];
   config.background.strokeWidth = 1;
   config.background.strokeColor =
-      [_theme aimButtonBorderColorWithAIMEnabled:NO];
+      [_theme toolButtonBorderColorWithActiveState:NO];
 
   button.configuration = config;
 

@@ -64,68 +64,25 @@
   return [UIColor colorNamed:kTextfieldBackgroundColor];
 }
 
-- (UIColor*)aimButtonTextColorWithAIMEnabled:(BOOL)AIMEnabled {
-  if (AIMEnabled) {
-    return [UIColor colorNamed:kBlue600Color];
-  } else {
-    return [UIColor colorNamed:kTextPrimaryColor];
-  }
-}
-
-- (UIColor*)aimButtonBackgroundColorWithAIMEnabled:(BOOL)AIMEnabled {
-  if (AIMEnabled) {
-    if (self.isTopInputPlate) {
-      return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
-    } else {
-      return [[UIColor colorNamed:kDestinationHighlightColor]
-          colorWithAlphaComponent:0.7];
-    }
-  } else {
-    return [UIColor clearColor];
-  }
-}
-
-- (UIColor*)aimButtonBorderColorWithAIMEnabled:(BOOL)AIMEnabled {
-  if (AIMEnabled) {
-    return [UIColor clearColor];
-  } else {
-    return [UIColor colorNamed:kGrey400Color];
-  }
-}
-
-- (UIColor*)imageGenerationButtonBackgroundColor {
+- (UIColor*)toolButtonBackgroundColorWithActiveState:(BOOL)active {
   if (self.isTopInputPlate) {
-    return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
+    return active ? [UIColor colorNamed:kAimComposeboxButtonBackgroundColor]
+                  : [UIColor clearColor];
   } else {
-    return [UIColor colorNamed:kSecondaryBackgroundColor];
+    return active ? [UIColor colorNamed:kSecondaryBackgroundColor]
+                  : [UIColor clearColor];
   }
 }
 
-- (UIColor*)imageGenerationButtonTextColor {
+- (UIColor*)toolButtonTextColorWithActiveState:(BOOL)active {
   return [UIColor colorNamed:kTextPrimaryColor];
 }
 
-- (UIColor*)canvasButtonTextColor {
-  return [UIColor colorNamed:kBlue600Color];
-}
-
-- (UIColor*)canvasButtonBackgroundColor {
-  if (self.isTopInputPlate) {
-    return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
+- (UIColor*)toolButtonBorderColorWithActiveState:(BOOL)active {
+  if (active) {
+    return [UIColor clearColor];
   } else {
-    return [UIColor colorNamed:kSecondaryBackgroundColor];
-  }
-}
-
-- (UIColor*)deepSearchButtonTextColor {
-  return [UIColor colorNamed:kBlue600Color];
-}
-
-- (UIColor*)deepSearchButtonBackgroundColor {
-  if (self.isTopInputPlate) {
-    return [UIColor colorNamed:kAimComposeboxButtonBackgroundColor];
-  } else {
-    return [UIColor colorNamed:kSecondaryBackgroundColor];
+    return [UIColor colorNamed:kGrey400Color];
   }
 }
 

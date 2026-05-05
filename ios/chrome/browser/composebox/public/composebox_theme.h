@@ -39,32 +39,14 @@
 // The background color for the close button.
 @property(nonatomic, readonly) UIColor* closeButtonBackgroundColor;
 
-// The color of the text in AIM button.
-- (UIColor*)aimButtonTextColorWithAIMEnabled:(BOOL)AIMEnabled;
+// The background color of the tool buttons.
+- (UIColor*)toolButtonBackgroundColorWithActiveState:(BOOL)active;
 
-// The background color of the AIM button when enabled.
-- (UIColor*)aimButtonBackgroundColorWithAIMEnabled:(BOOL)AIMEnabled;
+// The text color of the tool buttons.
+- (UIColor*)toolButtonTextColorWithActiveState:(BOOL)active;
 
-// The border color of the AIM button when enabled.
-- (UIColor*)aimButtonBorderColorWithAIMEnabled:(BOOL)AIMEnabled;
-
-// The color of the text in the image generation button.
-- (UIColor*)imageGenerationButtonTextColor;
-
-// The background color of the image generation button.
-- (UIColor*)imageGenerationButtonBackgroundColor;
-
-// The color of the text in the canvas button.
-- (UIColor*)canvasButtonTextColor;
-
-// The background color of the canvas button.
-- (UIColor*)canvasButtonBackgroundColor;
-
-// The color of the text in the deep search button.
-- (UIColor*)deepSearchButtonTextColor;
-
-// The background color of the deep search button.
-- (UIColor*)deepSearchButtonBackgroundColor;
+// The border color of the tool buttons.
+- (UIColor*)toolButtonBorderColorWithActiveState:(BOOL)active;
 
 // The foreground color for the send button.
 - (UIColor*)sendButtonForegroundColorHighlighted:(BOOL)highlighted;
