@@ -1214,12 +1214,6 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     return;
   }
 
-  if ([self.tableView isEditing]) {
-    // Turn off edit mode.
-    [self setEditing:NO animated:NO];
-  }
-
-  [self updateUIForEditState];
   [self reloadData];
 }
 
