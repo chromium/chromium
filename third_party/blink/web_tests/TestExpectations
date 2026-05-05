@@ -9783,4 +9783,5 @@ crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-3.
 
 # Gardener 2026-05-05
 crbug.com/509675206 [ Debug Linux ] webaudio/OfflineAudioContext/onstatechange.html [ Failure ]
+crbug.com/448806999 [ Mac12 ] external/wpt/content-security-policy/report-hash/reportonly-script-src-none.https.window.html [ Failure ]
 
