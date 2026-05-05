@@ -129,11 +129,15 @@ def _SymbolDiffHelper(title_fragment, symbols):
 
 
 def _CreateMutableConstantsDelta(symbols):
+  # Exclude Rust symbols. Path filtering (.rs) is preferred, but some Rust
+  # symbols (like lazy_static/once_cell internals) lack path info in SuperSize
+  # (showing as {no path}), so we also filter by name patterns.
   symbols = symbols \
       .WhereInSection('d') \
       .WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$') \
       .WhereFullNameMatches('abi:logically_const').Inverted() \
-      .WhereSourcePathMatches(r'\.rs$').Inverted()
+      .WhereSourcePathMatches(r'\.rs$').Inverted() \
+      .WhereFullNameMatches(r'::.*LAZY$|once_cell|lazy_static').Inverted()
   lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
   return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)

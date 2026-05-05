@@ -58,6 +58,78 @@ pkg.Clz -> Ja1:
             'pkg2.Clz#setForTests',
         ])
 
+  def testCreateMutableConstantsDelta(self):
+    Symbol = trybot_commit_size_checker.models.Symbol
+    DeltaSymbol = trybot_commit_size_checker.models.DeltaSymbol
+    DeltaSymbolGroup = trybot_commit_size_checker.models.DeltaSymbolGroup
+
+    # Create dummy symbols (Added status: before_symbol=None)
+    rust_lazy = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='<>::deref::__stability::LAZY',
+               name='LAZY',
+               source_path=''))
+    rust_once = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='once_cell::race::OnceBox',
+               name='OnceBox',
+               source_path=''))
+    rust_lazy_static = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='lazy_static::lazy::Lazy',
+               name='Lazy',
+               source_path=''))
+    rust_with_path = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='some_rust_crate::kConst',
+               name='kConst',
+               source_path='lib.rs'))
+
+    cpp_mutable_k = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='net::kMaxHeaderSize',
+               name='kMaxHeaderSize',
+               source_path='net.cc'))
+    cpp_mutable_upper = DeltaSymbol(
+        None,
+        Symbol('.data',
+               8,
+               full_name='MY_MUTABLE_GLOBAL',
+               name='MY_MUTABLE_GLOBAL',
+               source_path='main.cc'))
+
+    symbols = DeltaSymbolGroup([
+        rust_lazy,
+        rust_once,
+        rust_lazy_static,
+        rust_with_path,
+        cpp_mutable_k,
+        cpp_mutable_upper,
+    ])
+
+    lines, delta = trybot_commit_size_checker._CreateMutableConstantsDelta(
+        symbols)
+
+    self.assertEqual(2, delta.actual)
+
+    output_text = '\n'.join(lines)
+    self.assertIn('kMaxHeaderSize', output_text)
+    self.assertIn('MY_MUTABLE_GLOBAL', output_text)
+    self.assertNotIn('LAZY', output_text)
+    self.assertNotIn('OnceBox', output_text)
+    self.assertNotIn('Lazy', output_text)
+    self.assertNotIn('kConst', output_text)
+
 
 if __name__ == '__main__':
   unittest.main()
