@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -129,6 +130,18 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     inspector_task_runner_->AppendTask(
         CrossThreadBindOnce(&::blink::DevToolsSession::UnpauseAndTerminate,
                             MakeUnwrappingCrossThreadWeakHandle(session_)));
+  }
+
+  void AddScriptToEvaluateOnNewDocument(
+      const String& identifier,
+      mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
+      bool run_immediately,
+      AddScriptToEvaluateOnNewDocumentCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void RemoveScriptToEvaluateOnNewDocument(const String& identifier) override {
+    NOTIMPLEMENTED();
   }
 
  private:
@@ -444,6 +457,19 @@ void DevToolsSession::UnpauseAndTerminate() {
   }
   v8_session_->setSkipAllPauses(true);
   v8_session_->resume(true /* terminate on resume */);
+}
+
+void DevToolsSession::AddScriptToEvaluateOnNewDocument(
+    const String& identifier,
+    mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
+    bool run_immediately,
+    AddScriptToEvaluateOnNewDocumentCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void DevToolsSession::RemoveScriptToEvaluateOnNewDocument(
+    const String& identifier) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace blink

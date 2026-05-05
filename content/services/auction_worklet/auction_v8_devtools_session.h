@@ -87,6 +87,13 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
                                const std::string& method,
                                base::span<const uint8_t> message) override;
   void UnpauseAndTerminate() override;
+  void AddScriptToEvaluateOnNewDocument(
+      const std::string& identifier,
+      blink::mojom::ScriptToEvaluateOnNewDocumentPtr script,
+      bool run_immediately,
+      AddScriptToEvaluateOnNewDocumentCallback callback) override;
+  void RemoveScriptToEvaluateOnNewDocument(
+      const std::string& identifier) override;
 
   // V8Inspector::Channel implementation:
   void sendResponse(

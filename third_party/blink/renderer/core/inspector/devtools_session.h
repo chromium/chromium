@@ -112,6 +112,12 @@ class CORE_EXPORT DevToolsSession
                                const String& method,
                                base::span<const uint8_t> message) override;
   void UnpauseAndTerminate() override;
+  void AddScriptToEvaluateOnNewDocument(
+      const String& identifier,
+      mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
+      bool run_immediately,
+      AddScriptToEvaluateOnNewDocumentCallback callback) override;
+  void RemoveScriptToEvaluateOnNewDocument(const String& identifier) override;
 
   void DispatchProtocolCommandImpl(int call_id,
                                    const String& method,

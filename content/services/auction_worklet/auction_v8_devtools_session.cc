@@ -131,6 +131,19 @@ class AuctionV8DevToolsSession::IOSession
 
   void UnpauseAndTerminate() override { NOTREACHED(); }
 
+  void AddScriptToEvaluateOnNewDocument(
+      const std::string& identifier,
+      blink::mojom::ScriptToEvaluateOnNewDocumentPtr script,
+      bool run_immediately,
+      AddScriptToEvaluateOnNewDocumentCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void RemoveScriptToEvaluateOnNewDocument(
+      const std::string& identifier) override {
+    NOTIMPLEMENTED();
+  }
+
  private:
   IOSession(scoped_refptr<DebugCommandQueue> debug_command_queue,
             RunDispatch v8_thread_dispatch)
@@ -260,6 +273,19 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
 void AuctionV8DevToolsSession::UnpauseAndTerminate() {
   // This is currently only invoked for frame targets.
   NOTREACHED();
+}
+
+void AuctionV8DevToolsSession::AddScriptToEvaluateOnNewDocument(
+    const std::string& identifier,
+    blink::mojom::ScriptToEvaluateOnNewDocumentPtr script,
+    bool run_immediately,
+    AddScriptToEvaluateOnNewDocumentCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void AuctionV8DevToolsSession::RemoveScriptToEvaluateOnNewDocument(
+    const std::string& identifier) {
+  NOTIMPLEMENTED();
 }
 
 void AuctionV8DevToolsSession::sendResponse(
