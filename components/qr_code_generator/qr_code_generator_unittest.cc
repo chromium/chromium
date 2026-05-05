@@ -4,6 +4,7 @@
 
 #include "components/qr_code_generator/qr_code_generator.h"
 
+#include <array>
 #include <limits>
 #include <optional>
 
@@ -21,20 +22,20 @@ TEST(QRCodeGeneratorTest, Generate) {
   // written to.
 
   constexpr size_t kMaxInputLen = 210;
-  uint8_t input[kMaxInputLen];
+  std::array<uint8_t, kMaxInputLen> input;
   std::optional<int> smallest_size;
   std::optional<int> largest_size;
 
   for (const bool use_alphanum : {false, true}) {
     SCOPED_TRACE(use_alphanum);
     // 'A' is in the alphanumeric set, but 'a' is not.
-    UNSAFE_TODO(memset(input, use_alphanum ? 'A' : 'a', sizeof(input)));
+    input.fill(use_alphanum ? 'A' : 'a');
 
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      base::expected<GeneratedCode, Error> qr_code = GenerateCode(
-          UNSAFE_TODO(base::span<const uint8_t>(input, input_len)));
+      base::expected<GeneratedCode, Error> qr_code =
+          GenerateCode(base::span(input).first(input_len));
       ASSERT_TRUE(qr_code.has_value());
       auto& qr_data = qr_code->data;
 
