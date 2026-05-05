@@ -548,6 +548,12 @@ cargo_crate("compiler_builtins") {
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/build.rs"
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/build.rs" ]
   build_script_inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
+
+  # TODO(crbug.com/507831026): Remove this and always use the new path next time we roll rust.
+  if (rust_force_head_revision) {
+    build_script_inputs -= [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
+    build_script_inputs += [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/configure.rs" ]
+  }
   rustenv = [
     "CFG_DISABLE_UNSTABLE_FEATURES=0",
     "STD_ENV_ARCH=$rust_target_arch",
