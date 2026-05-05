@@ -56,9 +56,14 @@ static void SwapInNodePreservingAttributesAndChildren(
   for (const auto& child : children)
     new_element->AppendChild(child);
 
-  // FIXME: Fix this to send the proper MutationRecords when MutationObservers
-  // are present.
-  new_element->CloneAttributesFrom(element_to_replace);
+  new_element->RemoveAllAttributes();
+  // Make a copy of element_to_replace's attributes since setting attributes
+  // on new_element could run script and thus modify attributes on either
+  // element.
+  AttributeVector attributes(element_to_replace.Attributes());
+  for (const Attribute& attr : attributes) {
+    new_element->SetAttributeWithoutValidation(attr.GetName(), attr.Value());
+  }
 
   parent_node->RemoveChild(&element_to_replace, ASSERT_NO_EXCEPTION);
 }

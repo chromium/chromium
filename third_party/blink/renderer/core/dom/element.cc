@@ -1282,6 +1282,16 @@ void Element::removeAttribute(const QualifiedName& name) {
   RemoveAttributeInternal(index, AttributeModificationReason::kDirectly);
 }
 
+void Element::RemoveAllAttributes() {
+  while (hasAttributes()) {
+    const AttributeCollection& attributes = GetElementData()->Attributes();
+    // Use a reason of kByCloning since our caller is going to use the cloning
+    // process to restore a different set of attributes.
+    RemoveAttributeInternal(attributes.size() - 1,
+                            AttributeModificationReason::kByCloning);
+  }
+}
+
 void Element::SetBooleanAttribute(const QualifiedName& name, bool value) {
   if (value) {
     setAttribute(name, g_empty_atom);
@@ -4095,9 +4105,14 @@ void Element::StripScriptingAttributes(
 
 void Element::ParserSetAttributes(
     const Vector<Attribute, kAttributePrealloc>& attribute_vector) {
+  // We must start with a newly-created element.  If we don't, it would not be
+  // safe to batch the AttributeChanged notifications the way we do, since on
+  // elements that are not newly-created, AttributeChanged might run script.
   DCHECK(!isConnected());
   DCHECK(!parentNode());
   DCHECK(!element_data_);
+  DCHECK(!HasChildren());
+  DCHECK_EQ(attribute_or_class_bloom_, 0u);
 
   if (!attribute_vector.empty()) {
     if (ElementDataCache* cache = GetDocument().GetElementDataCache()) {
@@ -4108,15 +4123,9 @@ void Element::ParserSetAttributes(
           ShareableElementData::CreateWithAttributes(attribute_vector);
     }
 
-    DCHECK_EQ(nullptr, ElementTraversal::FirstChild(*this));
-
-    // NOTE: AttributeChanged() will add back the class names (if any),
-    // so it is safe to reset the filter here.
-    attribute_or_class_bloom_ = 0;
     for (const Attribute& attribute : attribute_vector) {
       attribute_or_class_bloom_ |= FilterForAttribute(attribute.GetName());
     }
-    UpdateSubtreeBloomFilterAfterInsert();
   }
 
   ParserDidSetAttributes();
@@ -11851,22 +11860,6 @@ void Element::DetachAttrNodeFromElementWithValue(Attr* attr_node,
   }
 }
 
-void Element::DetachAllAttrNodesFromElement() {
-  AttrNodeList* list = GetAttrNodeList();
-  if (!list) {
-    return;
-  }
-
-  AttributeCollection attributes = GetElementData()->Attributes();
-  for (const Attribute& attr : attributes) {
-    if (Attr* attr_node = AttrIfExists(attr.GetName())) {
-      attr_node->DetachFromElementWithValue(attr.Value());
-    }
-  }
-
-  RemoveAttrNodeList();
-}
-
 void Element::WillRecalcStyle(const StyleRecalcChange) {
   DCHECK(HasCustomStyleCallbacks());
 }
@@ -11886,9 +11879,16 @@ void Element::AdjustStyle(ComputedStyleBuilder&) {
 }
 
 void Element::CloneAttributesFrom(const Element& other) {
-  if (RareData()) {
-    DetachAllAttrNodesFromElement();
-  }
+  // We must start with a newly-created element.  If we don't, it would not be
+  // safe to batch the AttributeChanged notifications the way we do, since on
+  // elements that are not newly-created, AttributeChanged might run script.
+  DCHECK(!isConnected());
+  DCHECK(!parentNode());
+  DCHECK(!element_data_);
+  DCHECK(!HasChildren());
+  CHECK_EQ(attribute_or_class_bloom_, 0u);
+  CHECK(!hasAttributes());
+  CHECK(!GetAttrNodeList());
 
   other.SynchronizeAllAttributes();
   if (!other.element_data_) {
@@ -11940,19 +11940,6 @@ void Element::CloneAttributesFrom(const Element& other) {
     element_data_ = other.element_data_->MakeUniqueCopy();
   }
 
-  // Since we're going through the list of attributes now, we use the
-  // opportunity to recreate the Bloom filter; in particular, it may
-  // be different from the source's Bloom filter if it came from a document
-  // with different quirks mode setting.
-  Element* first_child = ElementTraversal::FirstChild(*this);
-  if (!first_child) {
-    attribute_or_class_bloom_ = 0;
-  } else if (!first_child->nextSibling()) {
-    attribute_or_class_bloom_ = first_child->attribute_or_class_bloom_;
-  } else {
-    // Two or more children left; we don't consider it worth it
-    // to try to reset the filter fully.
-  }
   for (wtf_size_t i = 0; i < element_data_->Attributes().size(); ++i) {
     const Attribute& attr = element_data_->Attributes().at(i);
     attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
@@ -11960,7 +11947,6 @@ void Element::CloneAttributesFrom(const Element& other) {
         AttributeModificationParams(attr.GetName(), g_null_atom, attr.Value(),
                                     AttributeModificationReason::kByCloning));
   }
-  UpdateSubtreeBloomFilterAfterInsert();
 
   if (other.nonce() != g_null_atom) {
     setNonce(other.nonce());
