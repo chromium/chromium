@@ -118,12 +118,19 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   glic_keyed_service_ = GlicKeyedService::Get(profile);
 
-  if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
-    web_contents->ForEachRenderFrameHost(
-        [this](content::RenderFrameHost* render_frame_host) {
-          RenderFrameCreated(render_frame_host);
-        });
+  web_contents->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
+        RenderFrameCreated(render_frame_host);
+      });
+}
+
+bool GlicSelectionObserver::IsSelectionPromptEnabled() const {
+  if (!web_contents()) {
+    return false;
   }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return GlicEnabling::IsSelectionPromptEnabledForProfile(profile);
 }
 
 GlicSelectionObserver::~GlicSelectionObserver() {
@@ -147,9 +154,6 @@ GlicSelectionObserver::~GlicSelectionObserver() {
 
 void GlicSelectionObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
-    return;
-  }
   if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
     bool already_observing = false;
     for (const auto& frame_token : observed_frames_) {
@@ -222,7 +226,7 @@ void GlicSelectionObserver::OnInputEvent(
     const content::RenderWidgetHost& host,
     const blink::WebInputEvent& event,
     content::RenderWidgetHost::InputEventObserver::InputEventSource source) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+  if (!IsSelectionPromptEnabled()) {
     return;
   }
 
@@ -298,7 +302,7 @@ void GlicSelectionObserver::OnInputEvent(
 void GlicSelectionObserver::OnTextSelectionChanged(
     content::RenderFrameHost* render_frame_host,
     std::u16string_view selected_text) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+  if (!IsSelectionPromptEnabled()) {
     return;
   }
 

@@ -176,6 +176,9 @@ class GlicEnabling : public signin::IdentityManager::Observer,
   // Deprecated, Multi-instance is always enabled.
   static bool IsMultiInstanceEnabledByFlags();
 
+  // Whether the selection prompt is enabled.
+  static bool IsSelectionPromptEnabledForProfile(Profile* profile);
+
   // Returns true if Glic is enabled for the profile, the feature is enabled,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);

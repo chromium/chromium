@@ -699,6 +699,11 @@ bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
   return true;
 }
 
+bool GlicEnabling::IsSelectionPromptEnabledForProfile(Profile* profile) {
+  return IsEnabledForProfile(profile) &&
+         base::FeatureList::IsEnabled(features::kGlicSelectionPrompt);
+}
+
 bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
   auto enablement = EnablementForProfile(profile);
   return enablement.IsEnabled() && enablement.EligibleForShareImage() &&
