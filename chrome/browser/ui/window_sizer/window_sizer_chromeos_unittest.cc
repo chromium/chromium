@@ -22,7 +22,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -800,25 +799,4 @@ TEST_F(WindowSizerChromeOSTest, DefaultBoundsInTargetDisplay) {
                                                     &bounds, &show_state);
     EXPECT_TRUE(second_root->GetBoundsInScreen().Contains(bounds));
   }
-}
-
-TEST_F(WindowSizerChromeOSTest, TrustedPopupBehavior) {
-  Browser::CreateParams trusted_popup_create_params(Browser::TYPE_POPUP,
-                                                    &profile_, true);
-  trusted_popup_create_params.trusted_source = true;
-
-  auto trusted_popup = CreateWindowlessBrowser(trusted_popup_create_params);
-  // Trusted popup windows should follow the saved show state and ignore the
-  // last show state.
-  EXPECT_EQ(
-      ui::mojom::WindowShowState::kDefault,
-      GetBrowserWindowShowState(ui::mojom::WindowShowState::kDefault,
-                                ui::mojom::WindowShowState::kNormal, BOTH,
-                                trusted_popup.get(), p1280x1024, p1600x1200));
-  // A popup that is sized to occupy the whole work area has default state.
-  EXPECT_EQ(
-      ui::mojom::WindowShowState::kDefault,
-      GetBrowserWindowShowState(ui::mojom::WindowShowState::kDefault,
-                                ui::mojom::WindowShowState::kNormal, BOTH,
-                                trusted_popup.get(), p1600x1200, p1600x1200));
 }

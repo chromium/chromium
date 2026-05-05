@@ -9,17 +9,21 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
@@ -126,6 +130,30 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
           ->GetDisplayNearestWindow(new_browser->GetWindow()->GetNativeWindow())
           .id());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
+}
+
+IN_PROC_BROWSER_TEST_F(WindowSizerTest, TrustedPopupBehavior) {
+  // Maximize the existing normal browser.
+  ASSERT_FALSE(browser()->GetWindow()->IsMaximized());
+  browser()->GetWindow()->Maximize();
+  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
+
+  // Create a trusted popup browser.
+  Browser::CreateParams trusted_popup_create_params(Browser::TYPE_POPUP,
+                                                    browser()->profile(), true);
+  trusted_popup_create_params.trusted_source = true;
+
+  BrowserWindowInterface* trusted_popup =
+      Browser::Create(trusted_popup_create_params);
+  chrome::AddTabAt(trusted_popup, GURL(), -1, true);
+  trusted_popup->GetWindow()->Show();
+
+  // Trusted popup windows should follow the saved show state and ignore the
+  // last show state.
+  EXPECT_FALSE(trusted_popup->GetWindow()->IsMaximized());
+
+  // Cleanup.
+  CloseBrowserSynchronously(trusted_popup);
 }
 
 }  // namespace

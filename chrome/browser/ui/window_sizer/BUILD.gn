@@ -104,7 +104,7 @@ source_set("unit_tests") {
 }
 
 if (is_chromeos) {
-  source_set("browser_tests") {
+  source_set("interactive_ui_tests") {
     testonly = true
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -116,6 +116,7 @@ if (is_chromeos) {
       "//ash:test_support",
       "//base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/window_sizer",
       "//chrome/test:test_support_ui",
       "//components/keep_alive_registry",
       "//content/test:test_support",

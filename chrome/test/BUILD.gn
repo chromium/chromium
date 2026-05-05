@@ -5854,7 +5854,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui/ash/skyvault",
         "//chrome/browser/ui/webui/nearby_share:browser_tests",
         "//chrome/browser/ui/webui/signin/ash:browser_tests",
-        "//chrome/browser/ui/window_sizer:browser_tests",
         "//chrome/browser/web_applications/app_service",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
@@ -11989,6 +11988,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash:interactive_ui_tests",
           "//chrome/browser/ui/ash:interactive_ui_tests",
           "//chrome/browser/ui/webui/ash:interactive_ui_tests",
+          "//chrome/browser/ui/window_sizer:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:interactive_ui_tests",
         ]
 
