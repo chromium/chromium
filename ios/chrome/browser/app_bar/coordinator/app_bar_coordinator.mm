@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -89,10 +90,14 @@
   SceneState* sceneState = _regularBrowser->GetSceneState();
   ProfileIOS* profile = _regularBrowser->GetProfile();
 
-  FullscreenController* regularFullscreenController =
-      FullscreenController::FromBrowser(_regularBrowser);
-  FullscreenController* incognitoFullscreenController =
-      FullscreenController::FromBrowser(_incognitoBrowser);
+  FullscreenController* regularFullscreenController = nullptr;
+  FullscreenController* incognitoFullscreenController = nullptr;
+  if (!IsFullscreenRefactoringEnabled()) {
+    regularFullscreenController =
+        FullscreenController::FromBrowser(_regularBrowser);
+    incognitoFullscreenController =
+        FullscreenController::FromBrowser(_incognitoBrowser);
+  }
 
   BrowserActionFactory* regularActionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:_regularBrowser
@@ -135,6 +140,12 @@
   _mediator.settingsHandler =
       HandlerForProtocol(regularDispatcher, SettingsCommands);
   _mediator.geminiHandler = geminiHandler;
+  if (IsFullscreenRefactoringEnabled()) {
+    _mediator.regularFullscreenHandler =
+        HandlerForProtocol(regularDispatcher, FullscreenCommands);
+    _mediator.incognitoFullscreenHandler =
+        HandlerForProtocol(incognitoDispatcher, FullscreenCommands);
+  }
   _mediator.baseViewController = _viewController;
   _mediator.regularTabGroupsCommands =
       HandlerForProtocol(regularDispatcher, TabGroupsCommands);
@@ -227,6 +238,10 @@
                          : nullptr;
     [_mediator setIncognitoFullscreenBrowserAgent:incognitoAgent];
     [_containerMediator setIncognitoFullscreenBrowserAgent:incognitoAgent];
+    _mediator.incognitoFullscreenHandler =
+        incognitoDispatcher
+            ? HandlerForProtocol(incognitoDispatcher, FullscreenCommands)
+            : nil;
   } else {
     FullscreenController* incognitoFullscreenController =
         incognitoBrowser ? FullscreenController::FromBrowser(incognitoBrowser)
