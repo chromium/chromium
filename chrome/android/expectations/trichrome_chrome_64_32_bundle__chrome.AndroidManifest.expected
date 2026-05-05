@@ -11,15 +11,10 @@
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <queries>  # DIFF-ANCHOR: 46eb35d4
-    <intent>  # DIFF-ANCHOR: dd112d1c
-      <action android:name="android.intent.action.VIEW"/>
-      <category android:name="android.intent.category.BROWSABLE"/>
-      <data android:scheme="https"/>
-    </intent>  # DIFF-ANCHOR: dd112d1c
+  <queries>  # DIFF-ANCHOR: a4b06bd5
     <package android:name="com.google.android.aicore"/>
     <package android:name="com.google.android.gms.policy_cast_dynamite"/>
-  </queries>  # DIFF-ANCHOR: 46eb35d4
+  </queries>  # DIFF-ANCHOR: a4b06bd5
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -883,11 +878,6 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
-    <service  # DIFF-ANCHOR: 5d82e3ff
-        android:name="androidx.pdf.service.PdfDocumentServiceImpl"
-        android:exported="false"
-        android:isolatedProcess="true">
-    </service>  # DIFF-ANCHOR: 5d82e3ff
     <service  # DIFF-ANCHOR: 293d124f
         android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
         android:exported="false"

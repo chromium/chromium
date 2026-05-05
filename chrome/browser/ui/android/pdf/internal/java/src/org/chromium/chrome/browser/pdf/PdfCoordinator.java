@@ -56,7 +56,8 @@ import java.util.Set;
  */
 @SuppressLint("NewApi")
 @NullMarked
-public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDelegate {
+public class PdfCoordinator
+        implements PdfCoordinatorInterface, PdfActionsDelegate, PdfToolbarActionsDelegate {
     private static final String TAG = "PdfCoordinator";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
 
@@ -95,6 +96,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     private String mTitle;
     private final String mUrl;
     private final boolean mIsIncognito;
+
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
 
@@ -227,7 +229,6 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                             }
                         }
                     });
-
             // Add a persistent listener to track page changes.
             capturedView.addOnViewportChangedListener(
                     (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) ->
@@ -313,6 +314,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     }
 
     /** Returns the intended view for PdfPage tab. */
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public View getView() {
         return mView;
@@ -323,7 +325,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      *
      * @return whether the pdf specific find in page UI is shown.
      */
-    boolean findInPage() {
+    @Override
+    public boolean findInPage() {
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.mIsLoadDocumentSuccess) {
             mChromePdfViewerFragment.setTextSearchActive(true);
             PdfUtils.recordFindInPage(mFindInPageCount++);
@@ -335,8 +338,9 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     /**
      * Called after a pdf page has been removed from the view hierarchy and will no longer be used.
      */
+    @Override
     @SuppressWarnings({"NullAway"})
-    void destroy() {
+    public void destroy() {
         mPdfSandboxHandle.close();
         mPdfSandboxHandle = null;
         if (mToolbarCoordinator != null) {
@@ -367,13 +371,16 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      * @param pdfFilePath The filepath of the downloaded pdf document.
      * @param pdfFileName The filename of the downloaded pdf document.
      */
-    void onDownloadComplete(String pdfFilePath, String pdfFileName) {
+    @Override
+    public void onDownloadComplete(String pdfFilePath, String pdfFileName) {
         mTitle = pdfFileName;
         loadPdfFile(pdfFilePath);
     }
 
     /** Returns the filepath of the pdf document. */
-    @Nullable String getFilepath() {
+    @Nullable
+    @Override
+    public String getFilepath() {
         return mPdfFilePath;
     }
 
@@ -397,7 +404,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         loadPdfInternal();
     }
 
-    void reload() {
+    @Override
+    public void reload() {
         if (mUri == null) {
             return;
         }
@@ -457,7 +465,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
      *     assistant package is used.
      * @return The URI of the PDF file, or null if the URI is not available.
      */
-    @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
+    @Override
+    public @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
         if (mUri == null) {
             return null;
         }
@@ -475,7 +484,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         return mUri;
     }
 
-    @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
+    @Override
+    public @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
         if (mUri == null) {
             return null;
         }
@@ -486,9 +496,9 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
                             .put(
                                     JSON_KEY_FILE_METADATA,
                                     new JSONObject()
+                                            .put(JSON_KEY_FILE_NAME, filename)
                                             .put(JSON_KEY_FILE_URI, mUri.toString())
                                             .put(JSON_KEY_MIME_TYPE, MimeTypeUtils.PDF_MIME_TYPE)
-                                            .put(JSON_KEY_FILE_NAME, filename)
                                             .put(JSON_KEY_IS_WORK_PROFILE, isWorkProfile))
                             .toString();
         } catch (JSONException e) {
@@ -504,7 +514,8 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         return structuredData;
     }
 
-    @Nullable Uri getUri() {
+    @Override
+    public @Nullable Uri getUri() {
         return mUri;
     }
 
