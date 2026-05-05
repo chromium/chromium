@@ -4023,11 +4023,6 @@ inline constexpr char kRecordWebAppDebugInfoDescription[] =
     "Enables recording additional web app related debugging data to be "
     "displayed in: chrome://web-app-internals";
 
-inline constexpr char kReduceUserAgentDataLinuxPlatformVersionName[] =
-    "Reduce Linux platform version Client Hint";
-inline constexpr char kReduceUserAgentDataLinuxPlatformVersionDescription[] =
-    "Set platform version Client Hint on Linux to empty string.";
-
 inline constexpr char kReplaceSyncPromosWithSignInPromosName[] =
     "Replace all sync-related UI with sign-in ones";
 inline constexpr char kReplaceSyncPromosWithSignInPromosDescription[] =

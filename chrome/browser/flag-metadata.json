@@ -8174,11 +8174,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "reduce-user-agent-data-linux-platform-version",
-    "owners": [ "bershanskyi@gmail.com", "miketaylr@chromium.org", "victortan@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor@chromium.org", "xingliu@chromium.org" ],
     "expiry_milestone": 90

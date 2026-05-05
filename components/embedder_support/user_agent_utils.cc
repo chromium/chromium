@@ -579,14 +579,6 @@ bool GetMobileBitForUAMetadata() {
 }
 
 std::string GetPlatformVersion() {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/40245146): Remove this Blink feature
-  if (base::FeatureList::IsEnabled(
-          blink::features::kReduceUserAgentDataLinuxPlatformVersion)) {
-    return std::string();
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::device_info::is_desktop() ||
       base::android::device_info::is_xr()) {
@@ -596,7 +588,7 @@ std::string GetPlatformVersion() {
 
 #if BUILDFLAG(IS_WIN)
   return GetWindowsPlatformVersion();
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   return std::string();
 #else
 
