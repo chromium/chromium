@@ -23,9 +23,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -684,19 +685,21 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
   const omnibox::SearchboxConfig* config =
       service ? service->GetSearchboxConfig() : nullptr;
 
-  const signin::IdentityManager* identity_manager =
-      profile_ ? IdentityManagerFactory::GetForProfile(profile_) : nullptr;
-  bool has_primary_account =
-      identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-
+  auto* ui_service = profile_
+                         ? contextual_tasks::ContextualTasksUiServiceFactory::
+                               GetForBrowserContext(profile_)
+                         : nullptr;
   GURL url = web_contents_ ? web_contents_->GetLastCommittedURL() : GURL();
+  bool browser_identity_matches_aim_identity =
+      ui_service && ui_service->IsSignedInToBrowserWithValidCredentials() &&
+      ui_service->IsUrlForPrimaryAccount(url);
+
   bool is_off_the_record = profile_ && profile_->IsOffTheRecord();
 
   // Create the model with clean arguments
   input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
       *session_handle, config ? *config : omnibox::SearchboxConfig(), url,
-      is_off_the_record, has_primary_account);
+      is_off_the_record, browser_identity_matches_aim_identity);
 
   if (profile_) {
     input_state_model_->SetPrefService(profile_->GetPrefs());

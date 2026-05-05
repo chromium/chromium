@@ -145,10 +145,11 @@ InputStateModel::InputStateModel(
     const SearchboxConfig& config,
     const GURL& active_url,
     bool is_off_the_record,
-    bool is_signed_in)
+    bool browser_identity_matches_aim_identity)
     : session_handle_(session_handle.AsWeakPtr()),
       is_off_the_record_(is_off_the_record),
-      is_signed_in_(is_signed_in) {
+      browser_identity_matches_aim_identity_(
+          browser_identity_matches_aim_identity) {
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
@@ -254,7 +255,8 @@ InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& new_session_handle)
     : session_handle_(new_session_handle.AsWeakPtr()),
       is_off_the_record_(new_input_state_model.is_off_the_record_),
-      is_signed_in_(new_input_state_model.is_signed_in_) {
+      browser_identity_matches_aim_identity_(
+          new_input_state_model.browser_identity_matches_aim_identity_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   pref_service_ = new_input_state_model.pref_service_;
@@ -382,9 +384,10 @@ void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
 }
 
 bool InputStateModel::IsDriveSupported() const {
-  // Drive is only supported when the user is signed in, not in an
-  // off-the-record (incognito) session, and the feature flag is enabled.
-  return is_signed_in_ && !is_off_the_record_ &&
+  // Drive is only supported when the browser identity matches the aim identity,
+  // not in an off-the-record (incognito) session, and the feature flag is
+  // enabled.
+  return browser_identity_matches_aim_identity_ && !is_off_the_record_ &&
          base::FeatureList::IsEnabled(
              omnibox::kComposeboxDriveContextMenuOption);
 }

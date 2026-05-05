@@ -315,6 +315,9 @@ class ContextualTasksUiService : public KeyedService {
   virtual void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface);
 
+  // Returns whether the provided URL is for the primary account in Chrome.
+  virtual bool IsUrlForPrimaryAccount(const GURL& url);
+
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -328,9 +331,6 @@ class ContextualTasksUiService : public KeyedService {
                                     tabs::TabInterface* tab,
                                     bool is_from_embedded_page,
                                     bool is_to_new_tab);
-
-  // Returns whether the provided URL is for the primary account in Chrome.
-  virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
   virtual void LoadUrlInWebContents(const GURL& url,
