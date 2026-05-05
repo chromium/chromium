@@ -8,6 +8,7 @@ include_rules = [
   "+net/base",
   "+third_party/flatbuffers",
   "+third_party/protobuf",
+  "+third_party/rapidhash",
 ]
 
 specific_include_rules = {

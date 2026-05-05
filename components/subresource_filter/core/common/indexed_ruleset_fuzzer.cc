@@ -51,7 +51,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   subresource_filter::UnindexedRulesetReader reader(&input_stream);
 
   // Use the unindexed ruleset to build a flat indexed ruleset.
-  subresource_filter::RulesetIndexer indexer;
+  subresource_filter::RulesetIndexer indexer(0);
   url_pattern_index::proto::FilteringRules ruleset_chunk;
   while (reader.ReadNextChunk(&ruleset_chunk)) {
     for (const auto& rule : ruleset_chunk.url_rules()) {

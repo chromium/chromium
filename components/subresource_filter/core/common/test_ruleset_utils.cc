@@ -7,6 +7,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
+
 namespace subresource_filter {
 namespace testing {
 
@@ -85,6 +87,29 @@ proto::UrlRule CreateAllowlistRuleForDocument(
   return CreateRuleForDocumentImpl(pattern, activation_types, initiator_domains,
                                    /*is_allowlist_rule=*/true,
                                    /*is_suffix_rule=*/false);
+}
+
+proto::StyleRule CreateStyleRule(std::string_view selector,
+                                 const std::vector<std::string>& domains,
+                                 bool is_exclusion,
+                                 const std::vector<std::string>& classes,
+                                 const std::vector<std::string>& ids) {
+  proto::StyleRule rule;
+  rule.set_selector(std::string(selector));
+  rule.set_semantics(is_exclusion ? proto::RULE_SEMANTICS_ALLOWLIST
+                                  : proto::RULE_SEMANTICS_BLOCKLIST);
+  for (const auto& domain : domains) {
+    DCHECK(domain.empty() || domain[0] != '~');
+    auto* item = rule.add_domains();
+    item->set_domain(domain);
+  }
+  for (const auto& class_name : classes) {
+    rule.add_classes(class_name);
+  }
+  for (const auto& id_name : ids) {
+    rule.add_ids(id_name);
+  }
+  return rule;
 }
 
 }  // namespace testing

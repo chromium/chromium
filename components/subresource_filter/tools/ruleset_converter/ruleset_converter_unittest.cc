@@ -23,13 +23,12 @@ std::vector<std::string> GetSomeRules() {
       "||ex.com$image",
       "|http://example.com/?key=value$~third-party,domain=ex.com",
       "&key1=value1&key2=value2|$script,image,font",
-      "domain1.com,domain1.com###id",
       "@@allowlisted.com$document,domain=example.com|~sub.example.com",
-      "###absolute_evil_id",
       "@@allowlisted.com$match-case,document,domain=another.example.com",
-      "domain.com,~sub.domain.com,sub.sub.domain.com#@#id",
-      "#@#absolute_good_id",
       "host$websocket",
+      "###absolute_evil_id",
+      "#@#absolute_good_id",
+      "domain1.com,domain1.com###id",
   };
 }
 

@@ -143,6 +143,8 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule);
 //    evaluate and often act as pseudo-universal selectors.
 // 4. Global unanchored rules (e.g., ##div, ##*, ##[attr]) are rejected as
 //    they would be evaluated on every element of every page.
+// 5. Rules with domain exclusions (e.g., ~example.com##.ad) are not
+//    supported for style rules.
 //
 // IMPORTANT: Since this is not a perfect parser, it is feasible for classes
 // and ids to be incorrectly parsed. Therefore, do not use the output of this

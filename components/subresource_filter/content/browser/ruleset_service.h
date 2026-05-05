@@ -42,6 +42,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
@@ -245,6 +246,7 @@ class RulesetService {
   // injecting faults in tests.
   static decltype(&IndexRuleset) g_index_ruleset_func;
   static decltype(&base::ReplaceFile) g_replace_file_func;
+  static decltype(&base::RandUint64) g_get_ruleset_id_func;
 
   // Runs as a BEST_EFFORT task to complete portions of the initialization that
   // could potentially block Chrome startup.  Once this task is reached, the

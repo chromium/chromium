@@ -434,7 +434,12 @@ RuleType RuleParser::ParseStyleRule(std::string_view origin,
                                          base::SPLIT_WANT_NONEMPTY);
     for (std::string_view domain : pieces) {
       CHECK(!domain.empty());
-      style_rule_.domains.push_back(std::string(domain));
+      // Style rules do not support domain exclusions (~).
+      if (domain[0] == '~') {
+        SetParseError(ParseError::UNSUPPORTED_FEATURE, origin, domain.data());
+        return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
+      }
+      style_rule_.domains.emplace_back(domain);
     }
   }
 
