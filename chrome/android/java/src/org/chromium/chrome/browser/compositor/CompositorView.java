@@ -638,7 +638,8 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView);
 
         if (mScreenStateReceiver != null) {
-            mScreenStateReceiver.maybeResetCompositorSurfaceManager();
+            ThreadUtils.postOnUiThread(
+                    () -> mScreenStateReceiver.maybeResetCompositorSurfaceManager());
         }
         if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
             SurfaceInputTransferHandlerMap.remove(mSurfaceId);
