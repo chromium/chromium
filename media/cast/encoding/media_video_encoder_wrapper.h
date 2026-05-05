@@ -96,6 +96,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                             media::VideoEncoder::EncodeOptions encode_options,
                             base::TimeTicks reference_time,
                             FrameEncodedCallback frame_encoded_callback,
+                            int encoder_version,
                             std::optional<double> estimated_quantizer);
 
   // Once we know the frame size on the first call to `EncodeVideoFrame`, we
@@ -201,6 +202,10 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // Pending encodes to be run when options are updated.
   std::vector<base::OnceClosure> pending_encodes_;
+
+  // The version of the current encoder. Incremented every time the encoder
+  // is reconstructed. Used to detect and drop race-conditioned frames.
+  int encoder_version_ = 0;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaVideoEncoderWrapper> weak_factory_{this};
