@@ -4822,17 +4822,17 @@
   {
     "name": "first-run-desktop-choice-screen-refresh",
     "owners": [ "kbajkiewicz@google.com", "saskekun@google.com", "ernn@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 162
   },
   {
     "name": "first-run-desktop-refresh",
     "owners": [ "kbajkiewicz@google.com", "saskekun@google.com", "ernn@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 162
   },
   {
     "name": "first-run-desktop-revamp",
     "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 162
   },
     {
     "name": "fix-static-ip-for-two-managed-ethernet-ports",
