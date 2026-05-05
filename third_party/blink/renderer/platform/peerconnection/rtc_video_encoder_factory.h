@@ -53,7 +53,9 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
   webrtc::VideoEncoderFactory::CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      std::optional<std::string> scalability_mode) const override;
+      std::optional<std::string> scalability_mode,
+      std::optional<webrtc::Resolution> resolution =
+          std::nullopt) const override;
 
   // Some platforms don't allow hardware encoding for certain profiles. Tests
   // exercising VP9 or AV1 likely want to clear this list.

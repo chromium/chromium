@@ -40,11 +40,13 @@ class InstrumentedSimulcastAdapter::EncoderFactoryAdapter
     DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
     return encoder_factory_->GetImplementations();
   }
-  CodecSupport QueryCodecSupport(
-      const webrtc::SdpVideoFormat& format,
-      std::optional<std::string> scalability_mode) const override {
+  CodecSupport QueryCodecSupport(const webrtc::SdpVideoFormat& format,
+                                 std::optional<std::string> scalability_mode,
+                                 std::optional<webrtc::Resolution> resolution =
+                                     std::nullopt) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_);
-    return encoder_factory_->QueryCodecSupport(format, scalability_mode);
+    return encoder_factory_->QueryCodecSupport(format, scalability_mode,
+                                               resolution);
   }
   std::unique_ptr<webrtc::VideoEncoder> Create(
       const webrtc::Environment& env,

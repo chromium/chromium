@@ -374,8 +374,10 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
 }
 
 webrtc::VideoDecoderFactory::CodecSupport
-RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
-                                          bool reference_scaling) const {
+RTCVideoDecoderFactory::QueryCodecSupport(
+    const webrtc::SdpVideoFormat& format,
+    bool reference_scaling,
+    std::optional<webrtc::Resolution> resolution) const {
   CheckAndWaitDecoderSupportStatusIfNeeded();
 
   media::VideoCodec codec =
@@ -406,11 +408,15 @@ RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
 
   media::VideoCodecProfile codec_profile =
       WebRtcVideoFormatToMediaVideoCodecProfile(format);
+
+  const gfx::Size size = resolution
+                             ? gfx::Size(resolution->width, resolution->height)
+                             : kDefaultSize;
+
   media::VideoDecoderConfig config(
       codec, codec_profile, media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-      media::VideoColorSpace(), media::kNoTransformation, kDefaultSize,
-      gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
-      media::EncryptionScheme::kUnencrypted);
+      media::VideoColorSpace(), media::kNoTransformation, size, gfx::Rect(size),
+      size, media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 
   webrtc::VideoDecoderFactory::CodecSupport codec_support;
   // Check gpu_factories for powerEfficient.

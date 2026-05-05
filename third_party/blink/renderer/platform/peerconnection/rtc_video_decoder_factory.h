@@ -49,7 +49,9 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
 
   webrtc::VideoDecoderFactory::CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      bool reference_scaling) const override;
+      bool reference_scaling,
+      std::optional<webrtc::Resolution> resolution =
+          std::nullopt) const override;
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;

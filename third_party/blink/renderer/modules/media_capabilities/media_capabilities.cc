@@ -842,6 +842,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
       int video_pixels = 0;
       int frames_per_second = 0;
+      std::optional<gfx::Size> video_resolution;
       if (config->hasVideo()) {
         sdp_video_format =
             std::make_optional(ToSdpVideoFormat(config->video()));
@@ -852,8 +853,10 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
         // Additional information needed for lookup in WebrtcVideoPerfHistory.
         codec_profile =
             WebRtcVideoFormatToMediaVideoCodecProfile(*sdp_video_format);
-        video_pixels = config->video()->width() * config->video()->height();
         frames_per_second = base::ClampRound(config->video()->framerate());
+        video_resolution =
+            gfx::Size(config->video()->width(), config->video()->height());
+        video_pixels = video_resolution->GetCheckedArea().ValueOrDefault(0);
       }
       media::mojom::blink::WebrtcPredictionFeaturesPtr features =
           media::mojom::blink::WebrtcPredictionFeatures::New(
@@ -862,6 +865,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
 
       handler->DecodingInfo(
           sdp_audio_format, sdp_video_format, spatial_scalability,
+          video_resolution,
           BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
                    WrapPersistent(this), callback_id, std::move(features),
                    frames_per_second, OperationType::kDecoding));
@@ -1074,6 +1078,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
       int video_pixels = 0;
       int frames_per_second = 0;
+      std::optional<gfx::Size> video_resolution;
       if (config->hasVideo()) {
         sdp_video_format =
             std::make_optional(ToSdpVideoFormat(config->video()));
@@ -1086,6 +1091,8 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
             WebRtcVideoFormatToMediaVideoCodecProfile(*sdp_video_format);
         video_pixels = config->video()->width() * config->video()->height();
         frames_per_second = base::ClampRound(config->video()->framerate());
+        video_resolution =
+            gfx::Size(config->video()->width(), config->video()->height());
       }
       media::mojom::blink::WebrtcPredictionFeaturesPtr features =
           media::mojom::blink::WebrtcPredictionFeatures::New(
@@ -1094,6 +1101,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
 
       handler->EncodingInfo(
           sdp_audio_format, sdp_video_format, scalability_mode,
+          video_resolution,
           BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
                    WrapPersistent(this), callback_id, std::move(features),
                    frames_per_second, OperationType::kEncoding));

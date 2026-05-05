@@ -112,6 +112,11 @@ class MockGpuVideoDecodeAcceleratorFactories
 
   Supported IsDecoderConfigSupported(
       const media::VideoDecoderConfig& config) override {
+    if (config.coded_size().width() > 4096 ||
+        config.coded_size().height() > 4096) {
+      return Supported::kFalse;
+    }
+
     if (config.codec() == media::VideoCodec::kVP9 ||
         config.codec() == media::VideoCodec::kAV1) {
       return Supported::kTrue;
@@ -219,6 +224,21 @@ TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
           true /*reference_scaling*/),
       kUnsupported));
 
+  // Test with resolution
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                                false /*reference_scaling*/,
+                                                webrtc::Resolution{1920, 1080}),
+             kSupportedPowerEfficient));
+
+  // Absurdly high resolution should NOT be power efficient (supported in this
+  // mock means power efficient).
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                                false /*reference_scaling*/,
+                                                webrtc::Resolution{8192, 8192}),
+             kUnsupported));
+
 #if BUILDFLAG(RTC_USE_H265)
   // H265 decode should be supported without reference scaling.
   EXPECT_TRUE(
@@ -243,6 +263,20 @@ TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "2"}}),
                          false /*reference_scaling*/),
                      kUnsupported));
+
+  // Test with resolution
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("H265"),
+                                                false /*reference_scaling*/,
+                                                webrtc::Resolution{1920, 1080}),
+             kSupportedPowerEfficient));
+
+  // Absurdly high resolution should NOT be power efficient.
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("H265"),
+                                                false /*reference_scaling*/,
+                                                webrtc::Resolution{8192, 8192}),
+             kUnsupported));
 #endif  // BUILDFLAG(RTC_USE_H265)
 }
 

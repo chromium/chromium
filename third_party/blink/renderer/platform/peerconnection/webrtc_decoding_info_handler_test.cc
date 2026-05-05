@@ -46,7 +46,9 @@ class MockVideoDecoderFactory : public webrtc::VideoDecoderFactory {
               (const));
   MOCK_METHOD(webrtc::VideoDecoderFactory::CodecSupport,
               QueryCodecSupport,
-              (const webrtc::SdpVideoFormat& format, bool spatial_scalability),
+              (const webrtc::SdpVideoFormat& format,
+               bool spatial_scalability,
+               std::optional<webrtc::Resolution> resolution),
               (const, override));
 };
 
@@ -83,19 +85,28 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const bool video_spatial_scalability,
-      const CodecSupport support) {
+      const CodecSupport support,
+      std::optional<gfx::Size> video_resolution = std::nullopt) {
     auto video_decoder_factory = std::make_unique<MockVideoDecoderFactory>();
     webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory =
         blink::CreateWebrtcAudioDecoderFactory();
     if (sdp_video_format) {
+      std::optional<webrtc::Resolution> expected_resolution;
+      if (video_resolution) {
+        expected_resolution = {video_resolution->width(),
+                               video_resolution->height()};
+      }
       ON_CALL(*video_decoder_factory, QueryCodecSupport)
-          .WillByDefault([sdp_video_format, video_spatial_scalability, support](
-                             const webrtc::SdpVideoFormat& format,
-                             bool spatial_scalability) {
-            EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
-            EXPECT_EQ(spatial_scalability, video_spatial_scalability);
-            return support;
-          });
+          .WillByDefault(
+              [sdp_video_format, video_spatial_scalability, expected_resolution,
+               support](const webrtc::SdpVideoFormat& format,
+                        bool spatial_scalability,
+                        std::optional<webrtc::Resolution> resolution) {
+                EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
+                EXPECT_EQ(spatial_scalability, video_spatial_scalability);
+                EXPECT_EQ(resolution, expected_resolution);
+                return support;
+              });
       EXPECT_CALL(*video_decoder_factory, QueryCodecSupport)
           .Times(::testing::AtMost(1));
     }
@@ -105,6 +116,7 @@ class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
 
     decoding_info_handler.DecodingInfo(
         sdp_audio_format, sdp_video_format, video_spatial_scalability,
+        video_resolution,
         base::BindOnce(
             &MediaCapabilitiesDecodingInfoCallback::OnWebrtcDecodingInfoSupport,
             base::Unretained(&decoding_info_callback)));

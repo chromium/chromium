@@ -46,7 +46,8 @@ class MockVideoEncoderFactory : public webrtc::VideoEncoderFactory {
   MOCK_METHOD(webrtc::VideoEncoderFactory::CodecSupport,
               QueryCodecSupport,
               (const webrtc::SdpVideoFormat& format,
-               std::optional<std::string> scalability_mode),
+               std::optional<std::string> scalability_mode,
+               std::optional<webrtc::Resolution> resolution),
               (const, override));
 };
 
@@ -83,7 +84,8 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const String video_scalability_mode,
-      const CodecSupport support) {
+      const CodecSupport support,
+      std::optional<gfx::Size> video_resolution = std::nullopt) {
     auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
     webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
         blink::CreateWebrtcAudioEncoderFactory();
@@ -92,15 +94,23 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
           !video_scalability_mode.IsNull()
               ? std::make_optional(video_scalability_mode.Utf8())
               : std::nullopt;
+      std::optional<webrtc::Resolution> expected_resolution;
+      if (video_resolution) {
+        expected_resolution = {video_resolution->width(),
+                               video_resolution->height()};
+      }
 
       ON_CALL(*video_encoder_factory, QueryCodecSupport)
-          .WillByDefault([sdp_video_format, expected_scalability_mode, support](
-                             const webrtc::SdpVideoFormat& format,
-                             std::optional<std::string> scalability_mode) {
-            EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
-            EXPECT_EQ(scalability_mode, expected_scalability_mode);
-            return support;
-          });
+          .WillByDefault(
+              [sdp_video_format, expected_scalability_mode, expected_resolution,
+               support](const webrtc::SdpVideoFormat& format,
+                        std::optional<std::string> scalability_mode,
+                        std::optional<webrtc::Resolution> resolution) {
+                EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
+                EXPECT_EQ(scalability_mode, expected_scalability_mode);
+                EXPECT_EQ(resolution, expected_resolution);
+                return support;
+              });
       EXPECT_CALL(*video_encoder_factory, QueryCodecSupport)
           .Times(::testing::AtMost(1));
     }
@@ -110,6 +120,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 
     encoding_info_handler.EncodingInfo(
         sdp_audio_format, sdp_video_format, video_scalability_mode,
+        video_resolution,
         base::BindOnce(
             &MediaCapabilitiesEncodingInfoCallback::OnWebrtcEncodingInfoSupport,
             base::Unretained(&encoding_info_callback)));

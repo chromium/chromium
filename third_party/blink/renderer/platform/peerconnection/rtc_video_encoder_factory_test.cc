@@ -292,6 +292,26 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
       kUnsupported));
 }
 
+TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportWithResolution) {
+  ClearDisabledProfilesForTesting();
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  // VP9 supported at max resolution.
+  EXPECT_TRUE(Equals(
+      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                         /*scalability_mode=*/std::nullopt,
+                                         webrtc::Resolution{1920, 1080}),
+      kSupportedPowerEfficient));
+
+  // VP9 NOT supported above max resolution.
+  EXPECT_TRUE(Equals(
+      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                         /*scalability_mode=*/std::nullopt,
+                                         webrtc::Resolution{4096, 2160}),
+      kUnsupported));
+}
+
 #if BUILDFLAG(RTC_USE_H265)
 TEST_F(RTCVideoEncoderFactoryTest,
        QueryCodecSupportH265WithWebRtcAllowH265SendDisabled) {

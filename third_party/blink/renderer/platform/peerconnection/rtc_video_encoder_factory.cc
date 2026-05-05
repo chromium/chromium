@@ -208,6 +208,10 @@ struct SupportedFormats {
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
   std::vector<webrtc::SdpVideoFormat> sdp_formats
       ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
+  std::vector<gfx::Size> min_resolutions
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
+  std::vector<gfx::Size> max_resolutions
+      ALLOW_DISCOURAGED_TYPE("Matches webrtc API");
 };
 
 #if BUILDFLAG(RTC_USE_H265)
@@ -219,7 +223,9 @@ struct SupportedFormats {
 void InsertOrReplaceWithHigherLevelH265Format(
     SupportedFormats* supported_formats,
     const webrtc::SdpVideoFormat& format,
-    media::VideoCodecProfile profile) {
+    media::VideoCodecProfile profile,
+    const gfx::Size& min_resolution,
+    const gfx::Size& max_resolution) {
   std::optional<webrtc::H265ProfileTierLevel> new_profile_tier_level =
       webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
   if (!new_profile_tier_level.has_value()) {
@@ -228,6 +234,10 @@ void InsertOrReplaceWithHigherLevelH265Format(
 
   DCHECK_EQ(supported_formats->profiles.size(),
             supported_formats->sdp_formats.size());
+  DCHECK_EQ(supported_formats->profiles.size(),
+            supported_formats->min_resolutions.size());
+  DCHECK_EQ(supported_formats->profiles.size(),
+            supported_formats->max_resolutions.size());
 
   std::optional<webrtc::H265ProfileTierLevel> existing_profile_tier_level;
   auto profile_it = std::find(supported_formats->profiles.begin(),
@@ -241,10 +251,14 @@ void InsertOrReplaceWithHigherLevelH265Format(
     if (existing_profile_tier_level.has_value() &&
         new_profile_tier_level->level > existing_profile_tier_level->level) {
       supported_formats->sdp_formats[index] = format;
+      supported_formats->min_resolutions[index] = min_resolution;
+      supported_formats->max_resolutions[index] = max_resolution;
     }
   } else {
     supported_formats->sdp_formats.push_back(format);
     supported_formats->profiles.push_back(profile);
+    supported_formats->min_resolutions.push_back(min_resolution);
+    supported_formats->max_resolutions.push_back(max_resolution);
   }
 }
 #endif
@@ -277,7 +291,17 @@ SupportedFormats GetSupportedFormatsInternal(
 
     std::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
-      if (format->IsCodecInList(supported_formats.sdp_formats)) {
+      auto it = std::find_if(
+          supported_formats.sdp_formats.begin(),
+          supported_formats.sdp_formats.end(),
+          [&format](const auto& f) { return format->IsSameCodec(f); });
+      if (it != supported_formats.sdp_formats.end()) {
+        const size_t index =
+            std::distance(supported_formats.sdp_formats.begin(), it);
+        supported_formats.min_resolutions[index].SetToMin(
+            profile.min_resolution);
+        supported_formats.max_resolutions[index].SetToMax(
+            profile.max_resolution);
         continue;
       }
       // Supported H.265 formats must be added to the end of supported codecs.
@@ -287,12 +311,15 @@ SupportedFormats GetSupportedFormatsInternal(
         // Also ensure only the highest level format is reported for the same
         // H.265 profile.
         InsertOrReplaceWithHigherLevelH265Format(
-            &low_priority_formats, format.value(), profile.profile);
+            &low_priority_formats, format.value(), profile.profile,
+            profile.min_resolution, profile.max_resolution);
         continue;
       }
 #endif  // BUILDFLAG(RTC_USE_H265)
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.sdp_formats.push_back(std::move(*format));
+      supported_formats.min_resolutions.push_back(profile.min_resolution);
+      supported_formats.max_resolutions.push_back(profile.max_resolution);
 
       const bool kShouldAddH264Cbp =
           IsH264ConstrainedBaselineProfileAvailableForAcceleratedEncoder() &&
@@ -302,6 +329,8 @@ SupportedFormats GetSupportedFormatsInternal(
         supported_formats.profiles.push_back(profile.profile);
         webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats(
             &supported_formats.sdp_formats);
+        supported_formats.min_resolutions.push_back(profile.min_resolution);
+        supported_formats.max_resolutions.push_back(profile.max_resolution);
       }
     }
   }
@@ -312,9 +341,21 @@ SupportedFormats GetSupportedFormatsInternal(
   supported_formats.sdp_formats.insert(supported_formats.sdp_formats.end(),
                                        low_priority_formats.sdp_formats.begin(),
                                        low_priority_formats.sdp_formats.end());
+  supported_formats.min_resolutions.insert(
+      supported_formats.min_resolutions.end(),
+      low_priority_formats.min_resolutions.begin(),
+      low_priority_formats.min_resolutions.end());
+  supported_formats.max_resolutions.insert(
+      supported_formats.max_resolutions.end(),
+      low_priority_formats.max_resolutions.begin(),
+      low_priority_formats.max_resolutions.end());
 
   DCHECK_EQ(supported_formats.profiles.size(),
             supported_formats.sdp_formats.size());
+  DCHECK_EQ(supported_formats.profiles.size(),
+            supported_formats.min_resolutions.size());
+  DCHECK_EQ(supported_formats.profiles.size(),
+            supported_formats.max_resolutions.size());
 
   return supported_formats;
 }
@@ -463,7 +504,8 @@ RTCVideoEncoderFactory::GetSupportedFormats() const {
 webrtc::VideoEncoderFactory::CodecSupport
 RTCVideoEncoderFactory::QueryCodecSupport(
     const webrtc::SdpVideoFormat& format,
-    std::optional<std::string> scalability_mode) const {
+    std::optional<std::string> scalability_mode,
+    std::optional<webrtc::Resolution> resolution) const {
   CheckAndWaitEncoderSupportStatusIfNeeded();
   SupportedFormats supported_formats =
       GetSupportedFormatsInternal(gpu_factories_, disabled_profiles_);
@@ -490,6 +532,18 @@ RTCVideoEncoderFactory::QueryCodecSupport(
         }
       }
 #endif  // BUILDFLAG(RTC_USE_H265)
+
+      if (resolution) {
+        if (resolution->width < supported_formats.min_resolutions[i].width() ||
+            resolution->height <
+                supported_formats.min_resolutions[i].height() ||
+            resolution->width > supported_formats.max_resolutions[i].width() ||
+            resolution->height >
+                supported_formats.max_resolutions[i].height()) {
+          return {/*is_supported=*/false, /*is_power_efficient=*/false};
+        }
+      }
+
       std::optional<webrtc::ScalabilityMode> mode =
           scalability_mode.has_value()
               ? webrtc::ScalabilityModeFromString(scalability_mode.value())

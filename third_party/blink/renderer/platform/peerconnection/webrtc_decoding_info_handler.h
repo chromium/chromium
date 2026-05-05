@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -45,6 +46,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const bool video_spatial_scalability,
+      std::optional<gfx::Size> video_resolution,
       OnMediaCapabilitiesDecodingInfoCallback callback) const;
 
  private:
