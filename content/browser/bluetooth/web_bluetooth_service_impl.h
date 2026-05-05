@@ -165,6 +165,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            TwoWatchAdvertisementsReqFail);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           WatchAdvertisementsReqAbortedWhenTabHidden);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            SecWatchAdvertisementsReqAfterFirstSuccess);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            WatchAdvertisementsFastPathChecksPermission);

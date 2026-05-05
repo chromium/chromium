@@ -1161,6 +1161,30 @@ TEST_F(WebBluetoothServiceImplTest, TwoWatchAdvertisementsReqFail) {
 }
 
 TEST_F(WebBluetoothServiceImplTest,
+       WatchAdvertisementsReqAbortedWhenTabHidden) {
+  TestFuture<WebBluetoothResult> future;
+
+  const auto battery_device_id = AddTestDevice(battery_device_bundle());
+
+  mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
+      client_remote;
+
+  battery_device_bundle().advertisement_client().BindReceiver(
+      client_remote.InitWithNewEndpointAndPassReceiver());
+
+  // Install SUCCESS result for StartScanWithFilter
+  adapter_->SetStartScanWithFilterResult(
+      device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+
+  service_ptr_->WatchAdvertisementsForDevice(
+      battery_device_id, std::move(client_remote), future.GetCallback());
+
+  contents()->SetVisibilityAndNotifyObservers(Visibility::HIDDEN);
+
+  EXPECT_EQ(future.Get(), WebBluetoothResult::WATCH_ADVERTISEMENTS_ABORTED);
+}
+
+TEST_F(WebBluetoothServiceImplTest,
        SecWatchAdvertisementsReqAfterFirstSuccess) {
   // Install SUCCESS result for StartScanWithFilter
   adapter_->SetStartScanWithFilterResult(

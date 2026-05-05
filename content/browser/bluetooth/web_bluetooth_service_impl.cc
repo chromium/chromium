@@ -2391,6 +2391,13 @@ bool WebBluetoothServiceImpl::AreScanFiltersAllowed(
 void WebBluetoothServiceImpl::ClearAdvertisementClients() {
   scanning_clients_.clear();
   watch_advertisements_clients_.clear();
+
+  auto pending_clients = std::move(watch_advertisements_pending_clients_);
+  for (auto& pending_client : pending_clients) {
+    pending_client->RunCallback(
+        blink::mojom::WebBluetoothResult::WATCH_ADVERTISEMENTS_ABORTED);
+  }
+
   allowed_scan_filters_.clear();
   accept_all_advertisements_ = false;
 }
