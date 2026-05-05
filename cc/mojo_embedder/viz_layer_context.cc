@@ -349,6 +349,7 @@ void ComputePropertyTreeUpdate(const PropertyTrees& trees,
                                const TreeType& new_tree,
                                ContainerType& updates,
                                uint32_t& new_num_nodes) {
+  CHECK(!(new_tree.size() == 0 && old_tree.size() > 0));
   using NodeType = typename TreeType::NodeType;
   new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
   for (size_t i = 0; i < new_tree.size(); ++i) {
@@ -362,6 +363,7 @@ void ComputeTransformTreeUpdate(
     const TransformTree& new_tree,
     std::vector<viz::mojom::TransformNodePtr>& updates,
     uint32_t& new_num_nodes) {
+  CHECK(!(new_tree.size() == 0 && old_tree.size() > 0));
   new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
 
   const auto& new_nodes = new_tree.nodes();
@@ -397,6 +399,7 @@ void ComputeEffectTreeUpdate(const PropertyTrees& trees,
                              EffectTree& new_tree,
                              std::vector<::viz::mojom::EffectNodePtr>& updates,
                              uint32_t& new_num_nodes) {
+  CHECK(!(new_tree.size() == 0 && old_tree.size() > 0));
   // Take any copy output requests from `new_tree` to push over the wire.
   auto copy_requests = new_tree.TakeCopyRequests();
 

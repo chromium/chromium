@@ -4807,7 +4807,7 @@ TEST_F(LayerContextImplTest, UpdateScrollTreeRootWithValidParentFails) {
             "Root property node must have an invalid parent ID");
 }
 
-TEST_F(LayerContextImplTest, EmptyTransformTreeSucceeds) {
+TEST_F(LayerContextImplTest, EmptyTransformTreeFails) {
   auto update = CreateDefaultUpdate();
   // Clear all trees.
   update->num_transform_nodes = 0;
@@ -4832,10 +4832,11 @@ TEST_F(LayerContextImplTest, EmptyTransformTreeSucceeds) {
   update->outer_scroll = cc::kInvalidPropertyNodeId;
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Property tree size must be at least 1");
 }
 
-TEST_F(LayerContextImplTest, EmptyClipTreeSucceeds) {
+TEST_F(LayerContextImplTest, EmptyClipTreeFails) {
   auto update = CreateDefaultUpdate();
   // Transform tree has nodes from CreateDefaultUpdate.
   update->num_clip_nodes = 0;
@@ -4856,10 +4857,11 @@ TEST_F(LayerContextImplTest, EmptyClipTreeSucceeds) {
   update->outer_scroll = cc::kInvalidPropertyNodeId;
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Property tree size must be at least 1");
 }
 
-TEST_F(LayerContextImplTest, EmptyEffectTreeSucceeds) {
+TEST_F(LayerContextImplTest, EmptyEffectTreeFails) {
   auto update = CreateDefaultUpdate();
   // Effect tree MUST have at least one node.
   update->num_effect_nodes = 0;
@@ -4881,10 +4883,11 @@ TEST_F(LayerContextImplTest, EmptyEffectTreeSucceeds) {
   update->outer_scroll = cc::kInvalidPropertyNodeId;
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Property tree size must be at least 1");
 }
 
-TEST_F(LayerContextImplTest, EmptyScrollTreeSucceeds) {
+TEST_F(LayerContextImplTest, EmptyScrollTreeFails) {
   auto update = CreateDefaultUpdate();
   // All other trees have root nodes from CreateDefaultUpdate.
   update->num_scroll_nodes = 0;
@@ -4898,7 +4901,8 @@ TEST_F(LayerContextImplTest, EmptyScrollTreeSucceeds) {
   update->outer_scroll = cc::kInvalidPropertyNodeId;
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Property tree size must be at least 1");
 }
 
 TEST_F(LayerContextImplTest, DoUpdateDisplayTreeEarlyReturnUAF) {
