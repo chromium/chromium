@@ -381,7 +381,9 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     private void handleGlicDismissNudgeButtonClick() {
-        setGlicButtonText(mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
+        setGlicButtonText(
+                mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label),
+                /* isActor= */ false);
         setGlicDismissNudgeButtonVisible(false);
     }
 
@@ -441,7 +443,10 @@ public class StripLayoutTrailingButtonsCoordinator {
     public void setLayerTitleCache(@Nullable LayerTitleCache titleCache) {
         mLayerTitleCache = titleCache;
         if (mGlicButton != null) {
-            updateGlicButtonTextProperties();
+            updateButtonTextProperties(mGlicButton);
+        }
+        if (mGlicActorButton != null) {
+            updateButtonTextProperties(mGlicActorButton);
         }
     }
 
@@ -484,20 +489,23 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     @VisibleForTesting
-    /* package */ void setGlicButtonText(@Nullable String text) {
-        if (mGlicButton == null || TextUtils.equals(mGlicButton.getText(), text)) return;
-        mGlicButton.setText(text);
-        updateGlicButtonTextProperties();
+    /* package */ void setGlicButtonText(@Nullable String text, boolean isActor) {
+        TintedCompositorTextButton button = isActor ? mGlicActorButton : mGlicButton;
+        if (button == null || TextUtils.equals(button.getText(), text)) return;
+
+        button.setText(text);
+        updateButtonTextProperties(button);
     }
 
-    private void updateGlicButtonTextProperties() {
-        if (mGlicButton == null) return;
-        String text = mGlicButton.getText();
+    private void updateButtonTextProperties(TintedCompositorTextButton button) {
+        String text = button.getText();
 
         if (mLayerTitleCache != null && !TextUtils.isEmpty(text)) {
-            mGlicButton.setTextResourceId(mLayerTitleCache.getUpdatedGlicButtonText(text));
+            button.setTextResourceId(
+                    mLayerTitleCache.getUpdatedGlicButtonText(
+                            text, /* isActor= */ button == mGlicActorButton));
         } else {
-            mGlicButton.setTextResourceId(Resources.ID_NULL);
+            button.setTextResourceId(Resources.ID_NULL);
         }
 
         updateGlicButtonWidth(mLayerTitleCache);
@@ -506,29 +514,35 @@ public class StripLayoutTrailingButtonsCoordinator {
     }
 
     private void updateGlicButtonWidth(@Nullable LayerTitleCache titleCache) {
-        if (mGlicButton == null) return;
-        String glicButtonText = mGlicButton.getText();
+        if (mGlicButton != null) {
+            mGlicButton.setWidth(calculateButtonWidth(mGlicButton, titleCache));
+        }
 
+        if (mGlicActorButton != null) {
+            mGlicActorButton.setWidth(calculateButtonWidth(mGlicActorButton, titleCache));
+        }
+    }
+
+    private float calculateButtonWidth(
+            TintedCompositorTextButton button, @Nullable LayerTitleCache titleCache) {
+        String text = button.getText();
         float width = GLIC_BUTTON_BACKGROUND_WIDTH_DP;
-        if (!TextUtils.isEmpty(glicButtonText) && titleCache != null) {
-            float desiredEndPadding =
-                    isGlicDismissNudgeButtonVisible()
-                            ? GLIC_BUTTON_SHORTENED_END_PADDING_DP
-                            : GLIC_BUTTON_STANDARD_END_PADDING_DP;
-            float textWidthDp = titleCache.getButtonTextWidth(glicButtonText) / mDensity;
+
+        if (!TextUtils.isEmpty(text) && titleCache != null) {
             width =
                     GLIC_BUTTON_START_PADDING_DP
                             + GLIC_ICON_WIDTH_DP
                             + GLIC_ICON_TEXT_PADDING_DP
-                            + textWidthDp
-                            + desiredEndPadding;
+                            + (titleCache.getButtonTextWidth(text) / mDensity);
+
+            if (isGlicDismissNudgeButtonVisible() && button == mGlicButton) {
+                width += GLIC_BUTTON_SHORTENED_END_PADDING_DP + GLIC_DISMISS_ICON_WIDTH_DP;
+            } else {
+                width += GLIC_BUTTON_STANDARD_END_PADDING_DP;
+            }
         }
 
-        if (isGlicDismissNudgeButtonVisible()) {
-            width += GLIC_DISMISS_ICON_WIDTH_DP;
-        }
-
-        mGlicButton.setWidth(width);
+        return width;
     }
 
     /**
@@ -693,9 +707,11 @@ public class StripLayoutTrailingButtonsCoordinator {
         mGlicActorButton.setVisible(visible);
 
         if (visible) {
-            setGlicButtonText(null);
+            setGlicButtonText(null, /* isActor= */ false);
         } else {
-            setGlicButtonText(mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
+            setGlicButtonText(
+                    mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label),
+                    /* isActor= */ false);
         }
 
         // TODO(crbug.com/496678704): When Actor button visibility is driven by task list, these 3

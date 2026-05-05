@@ -60,6 +60,7 @@ public class LayerTitleCache {
     private final Map<Token, Integer> mSharedAvatarResIds = new HashMap<>();
     private final HashSet<Integer> mTabBubbles = new HashSet<>();
     private final BitmapDynamicResource mGlicButtonTextRes;
+    private final BitmapDynamicResource mGlicActorButtonTextRes;
     private final int mFaviconSize;
     private final int mSharedGroupAvatarPaddingPx;
     private final int mBubbleOuterCircleSize;
@@ -109,6 +110,7 @@ public class LayerTitleCache {
         mDarkTitleBitmapFactory =
                 new TitleBitmapFactory(context, /* incognito= */ true, tabStripHeightPx);
         mGlicButtonTextRes = new BitmapDynamicResource(View.generateViewId());
+        mGlicActorButtonTextRes = new BitmapDynamicResource(View.generateViewId());
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mBubbleOuterCircleSize =
                 res.getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_bubble_outer_size);
@@ -317,26 +319,23 @@ public class LayerTitleCache {
      * Updates the Glic button text texture.
      *
      * @param titleString the text to be displayed on the button
+     * @param isActor whether the button is the actor button
      * @return the resource ID for the generated text bitmap.
      */
-    public int getUpdatedGlicButtonText(@Nullable String titleString) {
+    public int getUpdatedGlicButtonText(@Nullable String titleString, boolean isActor) {
+        BitmapDynamicResource res = isActor ? mGlicActorButtonTextRes : mGlicButtonTextRes;
         if (TextUtils.isEmpty(titleString)) {
-            mResourceManager
-                    .getDynamicResourceLoader()
-                    .unregisterResource(mGlicButtonTextRes.getResId());
+            mResourceManager.getDynamicResourceLoader().unregisterResource(res.getResId());
             return Resources.ID_NULL;
         }
 
         Bitmap titleBitmap = mStandardTitleBitmapFactory.getButtonTextBitmap(titleString);
-        mGlicButtonTextRes.setBitmap(titleBitmap);
-        if (mResourceManager.getDynamicResourceLoader().getResource(mGlicButtonTextRes.getResId())
-                == null) {
-            mResourceManager
-                    .getDynamicResourceLoader()
-                    .registerResource(mGlicButtonTextRes.getResId(), mGlicButtonTextRes);
+        res.setBitmap(titleBitmap);
+        if (mResourceManager.getDynamicResourceLoader().getResource(res.getResId()) == null) {
+            mResourceManager.getDynamicResourceLoader().registerResource(res.getResId(), res);
         }
 
-        return mGlicButtonTextRes.getResId();
+        return res.getResId();
     }
 
     private void fetchFaviconForTab(final Tab tab) {

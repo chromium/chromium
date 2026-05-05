@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
     private TintedCompositorTextButton mGlicButton;
+    private TintedCompositorTextButton mGlicActorButton;
     private TintedCompositorButton mGlicDismissButton;
     private final long mBwiPtr = 123L;
     private boolean mIsIncognito;
@@ -124,6 +126,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
         mGlicButton = mCoordinator.getGlicButton();
+        mGlicActorButton = mCoordinator.getGlicActorButton();
         if (mGlicButton != null) mGlicDismissButton = mGlicButton.getDismissButton();
     }
 
@@ -147,26 +150,37 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testSetGlicButtonText() {
-        assertNotNull("Glic button should be created.", mGlicButton);
+        verifySetButtonText(mGlicButton, "Glic Text", /* isActor= */ false);
+    }
 
-        // Start with with no-text state button
-        mCoordinator.setGlicButtonText(null);
-        float initialWidth = mGlicButton.getWidth();
-        when(mLayerTitleCache.getUpdatedGlicButtonText(any())).thenReturn(123);
+    @Test
+    public void testSetGlicActorButtonText() {
+        verifySetButtonText(mGlicActorButton, "Actor Text", /* isActor= */ true);
+    }
+
+    private void verifySetButtonText(
+            TintedCompositorTextButton button, String text, boolean isActor) {
+        assertNotNull("Button should be created.", button);
+
+        // Start with no-text state button
+        mCoordinator.setGlicButtonText(null, isActor);
+        float initialWidth = button.getWidth();
+        when(mLayerTitleCache.getUpdatedGlicButtonText(any(), anyBoolean())).thenReturn(123);
         when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
-        mCoordinator.setGlicButtonText("Glic Text");
 
-        verify(mLayerTitleCache).getUpdatedGlicButtonText("Glic Text");
+        mCoordinator.setGlicButtonText(text, isActor);
+
+        verify(mLayerTitleCache).getUpdatedGlicButtonText(text, isActor);
         assertTrue(
-                "Glic button width should increase to accommodate text.",
-                mGlicButton.getWidth() > initialWidth);
+                "Button width should increase to accommodate text.",
+                button.getWidth() > initialWidth);
 
-        mCoordinator.setGlicButtonText(null);
+        mCoordinator.setGlicButtonText(null, isActor);
 
         assertEquals(
-                "Glic button width should return to original singular icon width.",
+                "Button width should return to original singular icon width.",
                 initialWidth,
-                mGlicButton.getWidth(),
+                button.getWidth(),
                 MathUtils.EPSILON);
     }
 
@@ -226,7 +240,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
 
     @Test
     public void testGlicDismissNudgeButton() {
-        mCoordinator.setGlicButtonText("Glic Nudge Text");
+        mCoordinator.setGlicButtonText("Glic Nudge Text", /* isActor= */ false);
         mCoordinator.setGlicDismissNudgeButtonVisible(true);
 
         // Verify initial state: Dismiss button visible, Glic button text correct.

@@ -53,6 +53,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       glic_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       glic_actor_button_(cc::slim::UIResourceLayer::Create()),
       glic_actor_button_background_(cc::slim::SolidColorLayer::Create()),
+      glic_actor_button_text_(cc::slim::UIResourceLayer::Create()),
       glic_actor_button_keyboard_focus_ring_(
           cc::slim::UIResourceLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
@@ -69,6 +70,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   glic_dismiss_nudge_button_->SetIsDrawable(true);
   glic_actor_button_->SetIsDrawable(true);
   glic_actor_button_background_->SetIsDrawable(true);
+  glic_actor_button_text_->SetIsDrawable(true);
   model_selector_button_->SetIsDrawable(true);
   model_selector_button_background_->SetIsDrawable(true);
 
@@ -136,6 +138,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(glic_dismiss_nudge_button_keyboard_focus_ring_);
   tab_strip_layer_->AddChild(glic_actor_button_background_);
   tab_strip_layer_->AddChild(glic_actor_button_);
+  tab_strip_layer_->AddChild(glic_actor_button_text_);
   tab_strip_layer_->AddChild(glic_actor_button_keyboard_focus_ring_);
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
@@ -449,12 +452,13 @@ void TabStripSceneLayer::UpdateGlicActorButton(
     float corner_radius_outer,
     float corner_radius_inner) {
   UpdateGlicButtonInternal(
-      glic_actor_button_background_, glic_actor_button_, nullptr,
-      glic_actor_button_keyboard_focus_ring_, resource_id, x, y, button_width,
-      button_height, visible, tint, should_tint, background_tint, button_alpha,
-      is_keyboard_focused, keyboard_focus_ring_resource_id,
-      keyboard_focus_ring_color, text_texture_id, button_start_padding,
-      icon_text_padding, corner_radius_outer, corner_radius_inner);
+      glic_actor_button_background_, glic_actor_button_,
+      glic_actor_button_text_, glic_actor_button_keyboard_focus_ring_,
+      resource_id, x, y, button_width, button_height, visible, tint,
+      should_tint, background_tint, button_alpha, is_keyboard_focused,
+      keyboard_focus_ring_resource_id, keyboard_focus_ring_color,
+      text_texture_id, button_start_padding, icon_text_padding,
+      corner_radius_outer, corner_radius_inner);
 }
 
 void TabStripSceneLayer::UpdateGlicButtonInternal(

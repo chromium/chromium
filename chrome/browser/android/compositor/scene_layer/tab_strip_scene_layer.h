@@ -325,6 +325,7 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::UIResourceLayer> glic_actor_button_;
   scoped_refptr<cc::slim::SolidColorLayer> glic_actor_button_background_;
+  scoped_refptr<cc::slim::UIResourceLayer> glic_actor_button_text_;
   scoped_refptr<cc::slim::UIResourceLayer>
       glic_actor_button_keyboard_focus_ring_;
 
