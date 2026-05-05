@@ -63,12 +63,10 @@ OWNER will be automatically assigned.
 
 ## New transitive dependencies
 
-Notes from `//third_party/rust/OWNERS-review-checklist.md` apply:
-
-* The dependency will need to go through security review.
-* An FYI email should be sent to
-  [chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
-  in order to record the addition.
+Notes from `//third_party/rust/OWNERS-review-checklist.md` apply, in
+particular, an FYI email should be sent to
+[chrome-atls-discuss@google.com](mailto:chrome-atls-discuss@google.com)
+in order to record the addition.
 
 ### Optional: Adding the transitive dependency in its own CL
 
