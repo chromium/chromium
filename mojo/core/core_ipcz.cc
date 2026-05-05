@@ -651,8 +651,11 @@ MojoResult MojoWrapPlatformSharedMemoryRegionIpcz(
   if (!platform_handles || !num_bytes || !guid || !mojo_handle) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
+  // SAFETY: The caller is a C-API which cannot be spanified further
+  // up the stack. The caller guarantees that `platform_handles` points to
+  // `num_platform_handles` elements.
   auto buffer = ipcz_driver::SharedBuffer::CreateForMojoWrapper(
-      UNSAFE_TODO(base::span(platform_handles, num_platform_handles)),
+      UNSAFE_BUFFERS(base::span(platform_handles, num_platform_handles)),
       num_bytes, *guid, access_mode);
   if (!buffer) {
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -761,8 +764,11 @@ MojoResult MojoAttachMessagePipeToInvitationIpcz(
       (options && options->struct_size < sizeof(*options))) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
+  // SAFETY: The caller is a C-API which cannot be spanified further
+  // up the stack. The caller guarantees that `name` points to
+  // `name_num_bytes` bytes.
   return invitation->Attach(
-      UNSAFE_TODO(
+      UNSAFE_BUFFERS(
           base::span(static_cast<const uint8_t*>(name), name_num_bytes)),
       message_pipe_handle);
 }
@@ -778,8 +784,11 @@ MojoResult MojoExtractMessagePipeFromInvitationIpcz(
       (options && options->struct_size < sizeof(*options))) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
+  // SAFETY: The caller is a C-API which cannot be spanified further
+  // up the stack. The caller guarantees that `name` points to
+  // `name_num_bytes` bytes.
   return invitation->Extract(
-      UNSAFE_TODO(
+      UNSAFE_BUFFERS(
           base::span(static_cast<const uint8_t*>(name), name_num_bytes)),
       message_pipe_handle);
 }
