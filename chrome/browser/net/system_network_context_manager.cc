@@ -760,6 +760,9 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxyForWebSocket, -1);
 
+  registry->RegisterBooleanPref(
+      prefs::kAllowSocketPoolSizeRandomizationForProxies, true);
+
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -852,10 +855,10 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
           ? std::optional<uint32_t>(
                 base::saturated_cast<uint32_t>(max_connections_websocket))
           : std::nullopt;
-  if (max_connections_normal_clamp || max_connections_websocket_clamp) {
-    network_service->SetMaxConnectionsPerProxyChain(
-        max_connections_normal_clamp, max_connections_websocket_clamp);
-  }
+  network_service->SetMaxConnectionsPerProxyChain(
+      max_connections_normal_clamp, max_connections_websocket_clamp,
+      local_state_->GetBoolean(
+          prefs::kAllowSocketPoolSizeRandomizationForProxies));
 
   network_service_network_context_.reset();
   content::CreateNetworkContextInNetworkService(

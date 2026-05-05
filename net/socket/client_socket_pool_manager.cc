@@ -79,6 +79,8 @@ std::array<size_t, kSocketPoolTypesSize>& GlobalMaxSocketPerProxyChain() {
   return g_max_sockets_per_proxy_chain;
 }
 
+bool g_allow_size_randomization_for_proxy = true;
+
 // TODO(crbug.com/40609237) In order to resolve longstanding issues
 // related to pooling distinguishable sockets together, get rid of SocketParams
 // entirely.
@@ -193,6 +195,11 @@ size_t ClientSocketPoolManager::max_sockets_per_proxy_chain(
 }
 
 // static
+bool ClientSocketPoolManager::allow_size_randomization_for_proxy() {
+  return g_allow_size_randomization_for_proxy;
+}
+
+// static
 void ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
     HttpNetworkSession::SocketPoolType pool_type,
     size_t socket_count) {
@@ -203,6 +210,12 @@ void ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
   CHECK_LE(socket_count, 256u);
   // LINT.ThenChange(/net/socket/client_socket_pool_manager.cc:SetMaxConnectionsPerProxyChain)
   GlobalMaxSocketPerProxyChain()[std::to_underlying(pool_type)] = socket_count;
+}
+
+// static
+void ClientSocketPoolManager::set_allow_size_randomization_for_proxy(
+    bool allow) {
+  g_allow_size_randomization_for_proxy = allow;
 }
 
 // static

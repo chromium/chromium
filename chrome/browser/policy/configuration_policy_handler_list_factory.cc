@@ -486,6 +486,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMaxConnectionsPerProxyForWebSocket,
     prefs::kMaxConnectionsPerProxyForWebSocket,
     base::Value::Type::INTEGER },
+  { key::kAllowSocketPoolSizeRandomizationForProxies,
+    prefs::kAllowSocketPoolSizeRandomizationForProxies,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

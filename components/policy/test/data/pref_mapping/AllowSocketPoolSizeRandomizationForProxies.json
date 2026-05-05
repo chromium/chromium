@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos",
+      "win",
+      "linux",
+      "mac",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "default_value": true,
+      "pref_location":  "local_state",
+      "pref_name": "net.allow_socket_pool_size_randomization_for_proxies",
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

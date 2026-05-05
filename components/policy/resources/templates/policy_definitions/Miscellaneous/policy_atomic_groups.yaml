@@ -3,3 +3,4 @@ SocketPoolSizeSettings:
   policies:
   - MaxConnectionsPerProxy
   - MaxConnectionsPerProxyForWebSocket
+  - AllowSocketPoolSizeRandomizationForProxies

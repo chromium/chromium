@@ -1212,6 +1212,10 @@ static size_t GetGlobalMaxConnectionsPerProxyChainForWebSocket() {
       net::HttpNetworkSession::SocketPoolType::kWebSocket);
 }
 
+static bool GetGlobalAllowSizeRandomizationForProxy() {
+  return net::ClientSocketPoolManager::allow_size_randomization_for_proxy();
+}
+
 // Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
 // globals in net::ClientSocketPoolManager (2) saturates out of bound values.
 TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
@@ -1222,44 +1226,52 @@ TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
   // Starts off at default value.
   EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(true, GetGlobalAllowSizeRandomizationForProxy());
 
   // Anything less than kMin saturates to kMin.
-  service()->SetMaxConnectionsPerProxyChain(kMin - 1, kMin - 1);
+  service()->SetMaxConnectionsPerProxyChain(kMin - 1, kMin - 1, false);
   EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(false, GetGlobalAllowSizeRandomizationForProxy());
 
   // Anything larger than kMax saturates to kMax
-  service()->SetMaxConnectionsPerProxyChain(kMax + 1, kMax + 1);
+  service()->SetMaxConnectionsPerProxyChain(kMax + 1, kMax + 1, true);
   EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(true, GetGlobalAllowSizeRandomizationForProxy());
 
   // Anything in between kMin and kMax should be set exactly.
-  service()->SetMaxConnectionsPerProxyChain(58, 58);
+  service()->SetMaxConnectionsPerProxyChain(58, 58, false);
   EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(false, GetGlobalAllowSizeRandomizationForProxy());
 
   // It's possible to update neither if that's you're thing.
-  service()->SetMaxConnectionsPerProxyChain(std::nullopt, std::nullopt);
+  service()->SetMaxConnectionsPerProxyChain(std::nullopt, std::nullopt, true);
   EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(true, GetGlobalAllowSizeRandomizationForProxy());
 
   // It's possible to update just one or the other.
-  service()->SetMaxConnectionsPerProxyChain(56, std::nullopt);
+  service()->SetMaxConnectionsPerProxyChain(56, std::nullopt, false);
   EXPECT_EQ(56u, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(false, GetGlobalAllowSizeRandomizationForProxy());
 
   // It's possible to update just one or the other.
-  service()->SetMaxConnectionsPerProxyChain(std::nullopt, 60);
+  service()->SetMaxConnectionsPerProxyChain(std::nullopt, 60, true);
   EXPECT_EQ(56u, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(60u, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(true, GetGlobalAllowSizeRandomizationForProxy());
 
   // It's possible to update both to different values.
-  service()->SetMaxConnectionsPerProxyChain(57, 59);
+  service()->SetMaxConnectionsPerProxyChain(57, 59, false);
   EXPECT_EQ(57u, GetGlobalMaxConnectionsPerProxyChain());
   EXPECT_EQ(59u, GetGlobalMaxConnectionsPerProxyChainForWebSocket());
+  EXPECT_EQ(false, GetGlobalAllowSizeRandomizationForProxy());
 
   // Restore the default value to minize sideffects.
-  service()->SetMaxConnectionsPerProxyChain(kDefault, kDefault);
+  service()->SetMaxConnectionsPerProxyChain(kDefault, kDefault, true);
 }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)

@@ -17,6 +17,8 @@ desc: |-
   The value should be equal to or lower than 256 (99 in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 147 and earlier).
   Setting a value above that limit will cause 256 (99 in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 147 and earlier) to be used.
   Raise above the default (128) at your own risk.
+
+  Please note that the enforced limits are impacted by <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME">AllowSocketPoolSizeRandomizationForProxies</ph>.
 example_value: 128
 features:
   dynamic_refresh: false

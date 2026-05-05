@@ -52,12 +52,14 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
 
   static size_t max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type);
-  // Unlike the other `set_` methods, this one is used in production code and
+  static bool allow_size_randomization_for_proxy();
+  // Unlike the other `set_` methods, these ones are used in production code and
   // thus cannot be marked as `_for_test`. Usage should be carefully audited.
   // Caller is responsible for following max/min CHECKs on socket_count.
   static void set_max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type,
       size_t socket_count);
+  static void set_allow_size_randomization_for_proxy(bool allow);
 
   static base::TimeDelta unused_idle_socket_timeout(
       HttpNetworkSession::SocketPoolType pool_type);

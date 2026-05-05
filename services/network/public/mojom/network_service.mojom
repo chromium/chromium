@@ -297,13 +297,21 @@ interface NetworkService {
   SetRawHeadersAccess(network.mojom.RendererProcessId process_id,
                       array<url.mojom.Origin> origins);
 
+  // `max_connections_normal` and `max_connections_websocket`:
   // Sets the maximum number of connections for a proxy chain.
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
   // Normal and WebSocket pools are limited independently.
   // If a parameter is nullopt it will not be changed.
+  // `allow_size_randomization`:
+  // Controls whether size randomization is allowed. This setting applies
+  // to both types of proxy pools whether or not other parameters are set.
+  //
+  // Note: Settings only impact pools not yet created, those which pre-date the
+  // call to this function will be in no way impacted.
   SetMaxConnectionsPerProxyChain(
-      uint32? max_connections_normal, uint32? max_connections_websocket);
+      uint32? max_connections_normal, uint32? max_connections_websocket,
+      bool allow_size_randomization);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(

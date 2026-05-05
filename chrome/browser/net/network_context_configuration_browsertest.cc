@@ -2097,7 +2097,12 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
  public:
   const size_t kTestMaxConnectionsPerProxy = 16;
 
-  NetworkContextConfigurationManagedProxySettingsBrowserTest() = default;
+  NetworkContextConfigurationManagedProxySettingsBrowserTest() {
+    // The test still works as this is overridden by the policy
+    // kPermitSocketPoolSizeRandomizationForProxies below.
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kTcpSocketPoolLimitRandomization);
+  }
 
   NetworkContextConfigurationManagedProxySettingsBrowserTest(
       const NetworkContextConfigurationManagedProxySettingsBrowserTest&) =
@@ -2123,6 +2128,10 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
                  policy::POLICY_SOURCE_CLOUD,
                  base::Value(static_cast<int>(kTestMaxConnectionsPerProxy)),
                  /*external_data_fetcher=*/nullptr);
+    policies.Set(policy::key::kAllowSocketPoolSizeRandomizationForProxies,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(false),
+                 /*external_data_fetcher=*/nullptr);
     UpdateChromePolicy(policies);
   }
 
@@ -2133,6 +2142,9 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   size_t GetExpectedMaxConnectionsPerProxyForWebSocket() const override {
     return kTestMaxConnectionsPerProxy;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(

@@ -2490,6 +2490,8 @@ inline constexpr char kMaxConnectionsPerProxy[] =
     "net.max_connections_per_proxy";
 inline constexpr char kMaxConnectionsPerProxyForWebSocket[] =
     "net.max_connections_per_proxy_for_websocket";
+inline constexpr char kAllowSocketPoolSizeRandomizationForProxies[] =
+    "net.allow_socket_pool_size_randomization_for_proxies";
 
 #if BUILDFLAG(IS_MAC)
 // A boolean that tracks whether to show a notification when trying to quit

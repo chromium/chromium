@@ -825,7 +825,8 @@ void NetworkService::SetRawHeadersAccess(
 
 void NetworkService::SetMaxConnectionsPerProxyChain(
     std::optional<uint32_t> max_connection_normal,
-    std::optional<uint32_t> max_connection_websocket) {
+    std::optional<uint32_t> max_connection_websocket,
+    bool allow_size_randomization) {
   // LINT.IfChange(SetMaxConnectionsPerProxyChain)
   // We set out explicit limits here because they are hard coded in the
   // enterprise policy MaxConnectionsPerProxy(ForWebSocket).
@@ -842,6 +843,8 @@ void NetworkService::SetMaxConnectionsPerProxyChain(
         net::HttpNetworkSession::SocketPoolType::kWebSocket, new_limit);
   }
   // LINT.ThenChange(/net/socket/client_socket_pool_manager.cc:set_max_sockets_per_proxy_chain)
+  net::ClientSocketPoolManager::set_allow_size_randomization_for_proxy(
+      allow_size_randomization);
 }
 
 bool NetworkService::HasRawHeadersAccess(

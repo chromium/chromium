@@ -28434,39 +28434,50 @@ TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
   SocketPoolAdditionalCapacity real_poll_128 =
       SocketPoolAdditionalCapacity::CreateForTest(
           /*base=*/0.1, /*capacity=*/128, /*minimum=*/0.3, /*noise=*/0.4);
-  for (bool proxy_pool_randomization : {true, false}) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(
-        features::kTcpSocketPoolLimitRandomizationForProxy,
-        proxy_pool_randomization);
-    std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
-    EXPECT_EQ(session
-                  ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
-                                  ProxyChain::Direct())
-                  ->AdditionalCapacityForTest(),
-              real_poll_256);
-    EXPECT_EQ(
-        session
-            ->GetSocketPool(HttpNetworkSession::SocketPoolType::kWebSocket,
-                            ProxyChain::Direct())
-            ->AdditionalCapacityForTest(),
-        real_poll_256);
-    EXPECT_EQ(session
-                  ->GetSocketPool(
-                      HttpNetworkSession::SocketPoolType::kNormal,
-                      ProxyChain(ProxyServer::SCHEME_HTTPS,
-                                 SameProxyWithDifferentSchemesProxyResolver::
-                                     ProxyHostPortPair()))
-                  ->AdditionalCapacityForTest(),
-              proxy_pool_randomization ? real_poll_128 : empty_pool);
-    EXPECT_EQ(session
-                  ->GetSocketPool(
-                      HttpNetworkSession::SocketPoolType::kWebSocket,
-                      ProxyChain(ProxyServer::SCHEME_HTTPS,
-                                 SameProxyWithDifferentSchemesProxyResolver::
-                                     ProxyHostPortPair()))
-                  ->AdditionalCapacityForTest(),
-              proxy_pool_randomization ? real_poll_128 : empty_pool);
+  for (bool allow_proxy_pool_randomization : {true, false}) {
+    ClientSocketPoolManager::set_allow_size_randomization_for_proxy(
+        allow_proxy_pool_randomization);
+    for (bool proxy_pool_randomization_feature : {true, false}) {
+      base::test::ScopedFeatureList feature_list;
+      feature_list.InitWithFeatureState(
+          features::kTcpSocketPoolLimitRandomizationForProxy,
+          proxy_pool_randomization_feature);
+      std::unique_ptr<HttpNetworkSession> session =
+          CreateSession(&session_deps_);
+      EXPECT_EQ(session
+                    ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
+                                    ProxyChain::Direct())
+                    ->AdditionalCapacityForTest(),
+                real_poll_256);
+      EXPECT_EQ(
+          session
+              ->GetSocketPool(HttpNetworkSession::SocketPoolType::kWebSocket,
+                              ProxyChain::Direct())
+              ->AdditionalCapacityForTest(),
+          real_poll_256);
+      EXPECT_EQ(
+          session
+              ->GetSocketPool(
+                  HttpNetworkSession::SocketPoolType::kNormal,
+                  ProxyChain(ProxyServer::SCHEME_HTTPS,
+                             SameProxyWithDifferentSchemesProxyResolver::
+                                 ProxyHostPortPair()))
+              ->AdditionalCapacityForTest(),
+          allow_proxy_pool_randomization && proxy_pool_randomization_feature
+              ? real_poll_128
+              : empty_pool);
+      EXPECT_EQ(
+          session
+              ->GetSocketPool(
+                  HttpNetworkSession::SocketPoolType::kWebSocket,
+                  ProxyChain(ProxyServer::SCHEME_HTTPS,
+                             SameProxyWithDifferentSchemesProxyResolver::
+                                 ProxyHostPortPair()))
+              ->AdditionalCapacityForTest(),
+          allow_proxy_pool_randomization && proxy_pool_randomization_feature
+              ? real_poll_128
+              : empty_pool);
+    }
   }
 }
 
