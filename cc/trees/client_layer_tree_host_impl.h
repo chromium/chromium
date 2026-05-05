@@ -24,7 +24,7 @@ class CC_EXPORT ClientLayerTreeHostImpl : public LayerTreeHostImpl {
       RasterDarkModeFilter* dark_mode_filter,
       int id,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      LayerTreeHostSchedulingClient* scheduling_client);
+      LayerTreeHostSchedulingDelegate* scheduling_delegate);
 
   using LayerTreeHostImpl::LayerTreeHostImpl;
   ~ClientLayerTreeHostImpl() override;

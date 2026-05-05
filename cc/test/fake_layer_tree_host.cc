@@ -88,7 +88,7 @@ FakeLayerTreeHost::CreateLayerTreeHostImplInternal(
     int,
     raw_ptr<TaskGraphRunner>& task_graph_runner,
     scoped_refptr<base::SequencedTaskRunner>,
-    LayerTreeHostSchedulingClient*,
+    LayerTreeHostSchedulingDelegate*,
     RenderingStatsInstrumentation*,
     base::WeakPtr<CompositorDelegateForInput>&) {
   DCHECK(!host_impl_);

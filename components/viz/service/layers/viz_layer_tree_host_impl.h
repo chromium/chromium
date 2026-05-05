@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT VizLayerTreeHostImpl : public cc::LayerTreeHostImpl {
       cc::RasterDarkModeFilter* dark_mode_filter,
       int id,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      cc::LayerTreeHostSchedulingClient* scheduling_client);
+      cc::LayerTreeHostSchedulingDelegate* scheduling_delegate);
   using LayerTreeHostImpl::LayerTreeHostImpl;
   ~VizLayerTreeHostImpl() override;
 

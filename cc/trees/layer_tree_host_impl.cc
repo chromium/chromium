@@ -474,9 +474,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     RasterDarkModeFilter* dark_mode_filter,
     int id,
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-    LayerTreeHostSchedulingClient* scheduling_client)
+    LayerTreeHostSchedulingDelegate* scheduling_delegate)
     : delegate_(delegate),
-      scheduling_client_(scheduling_client),
+      scheduling_delegate_(scheduling_delegate),
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(FROM_HERE),
       settings_(settings),

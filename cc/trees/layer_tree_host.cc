@@ -146,7 +146,7 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       compositor_mode_(mode),
       ui_resource_manager_(std::make_unique<UIResourceManager>()),
       client_(params.client),
-      scheduling_client_(params.scheduling_client),
+      scheduling_delegate_(params.scheduling_delegate),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
       pending_commit_state_(std::make_unique<CommitState>()),
       thread_unsafe_commit_state_(params.mutator_host),
@@ -675,7 +675,7 @@ std::unique_ptr<ClientLayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
   return CreateLayerTreeHostImplInternal(
       delegate, thread_unsafe_commit_state_.mutator_host, settings_,
       task_runner_provider_.get(), dark_mode_filter_, id_, task_graph_runner_,
-      image_worker_task_runner_, scheduling_client_,
+      image_worker_task_runner_, scheduling_delegate_,
       rendering_stats_instrumentation_.get(), compositor_delegate_weak_ptr_);
 }
 
@@ -689,7 +689,7 @@ LayerTreeHost::CreateLayerTreeHostImplInternal(
     int id,
     raw_ptr<TaskGraphRunner>& task_graph_runner,
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-    LayerTreeHostSchedulingClient* scheduling_client,
+    LayerTreeHostSchedulingDelegate* scheduling_delegate,
     RenderingStatsInstrumentation* rendering_stats_instrumentation,
     base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr) {
   std::unique_ptr<MutatorHost> mutator_host_impl =
@@ -705,7 +705,7 @@ LayerTreeHost::CreateLayerTreeHostImplInternal(
           settings, delegate, task_runner_provider,
           rendering_stats_instrumentation, task_graph_runner,
           std::move(mutator_host_impl), dark_mode_filter, id,
-          std::move(image_worker_task_runner), scheduling_client);
+          std::move(image_worker_task_runner), scheduling_delegate);
 
   task_graph_runner = nullptr;
   dark_mode_filter = nullptr;

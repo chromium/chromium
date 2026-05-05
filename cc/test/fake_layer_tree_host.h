@@ -77,7 +77,7 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
       int id,
       raw_ptr<TaskGraphRunner>& task_graph_runner,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      LayerTreeHostSchedulingClient* scheduling_client,
+      LayerTreeHostSchedulingDelegate* scheduling_delegate,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr)
       override;

@@ -40,7 +40,7 @@ class WidgetScheduler;
 class PLATFORM_EXPORT LayerTreeView
     : public cc::LayerTreeHostDelegate,
       public cc::LayerTreeHostSingleThreadClient,
-      public cc::LayerTreeHostSchedulingClient {
+      public cc::LayerTreeHostSchedulingDelegate {
  public:
   LayerTreeView(LayerTreeViewDelegate* delegate,
                 scoped_refptr<scheduler::WidgetScheduler> scheduler);
@@ -131,7 +131,7 @@ class PLATFORM_EXPORT LayerTreeView
   void DidLoseLayerTreeFrameSink() override;
   void ScheduleAnimationForWebTests() override;
 
-  // cc::LayerTreeHostSchedulingClient implementation.
+  // cc::LayerTreeHostSchedulingDelegate implementation.
   void DidRunBeginMainFrame() override;
 
   // Registers a callback that will be run on the first successful presentation

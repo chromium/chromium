@@ -47,7 +47,7 @@ FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
           nullptr,
           0,
           std::move(image_worker_task_runner),
-          /*scheduling_client=*/nullptr),
+          /*scheduling_delegate=*/nullptr),
       notify_tile_state_changed_called_(false) {
   // Explicitly clear all debug settings.
   SetDebugState(LayerTreeDebugState());

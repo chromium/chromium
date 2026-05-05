@@ -34,18 +34,18 @@ std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplForTesting(
     RasterDarkModeFilter* dark_mode_filter,
     int id,
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-    LayerTreeHostSchedulingClient* scheduling_client) {
+    LayerTreeHostSchedulingDelegate* scheduling_delegate) {
   if (settings.trees_in_viz_in_viz_process) {
     return TestVizLayerTreeHostImpl::Create(
         settings, delegate, task_runner_provider,
         rendering_stats_instrumentation, task_graph_runner,
         std::move(mutator_host), dark_mode_filter, id,
-        std::move(image_worker_task_runner), scheduling_client);
+        std::move(image_worker_task_runner), scheduling_delegate);
   }
   return ClientLayerTreeHostImpl::Create(
       settings, delegate, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
-      std::move(image_worker_task_runner), scheduling_client);
+      std::move(image_worker_task_runner), scheduling_delegate);
 }
 
 TestFrameData::TestFrameData() {

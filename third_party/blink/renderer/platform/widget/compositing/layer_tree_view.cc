@@ -76,7 +76,7 @@ void LayerTreeView::Initialize(
 
   cc::LayerTreeHost::InitParams params;
   params.client = this;
-  params.scheduling_client = this;
+  params.scheduling_delegate = this;
   params.settings = &settings;
   params.task_graph_runner = task_graph_runner;
   params.main_task_runner = std::move(main_thread);

@@ -879,7 +879,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       RasterDarkModeFilter* dark_mode_filter,
       int id,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      LayerTreeHostSchedulingClient* scheduling_client);
+      LayerTreeHostSchedulingDelegate* scheduling_delegate);
 
   // Virtual for testing.
   virtual bool AnimateLayers(base::TimeTicks monotonic_time,
@@ -897,7 +897,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   static void RemoveRenderPasses(FrameData* frame);
 
   const raw_ptr<LayerTreeHostImplDelegate> delegate_;
-  const raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
+  const raw_ptr<LayerTreeHostSchedulingDelegate> scheduling_delegate_;
   const raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   BeginFrameTracker current_begin_frame_tracker_;

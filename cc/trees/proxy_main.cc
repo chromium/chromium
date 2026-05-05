@@ -189,8 +189,9 @@ void ProxyMain::BeginMainFrame(
                                       base::SampleMetadataScope::kProcess);
 
   // This needs to run unconditionally, so do it before any early-returns.
-  if (layer_tree_host_->scheduling_client())
-    layer_tree_host_->scheduling_client()->DidRunBeginMainFrame();
+  if (layer_tree_host_->scheduling_delegate()) {
+    layer_tree_host_->scheduling_delegate()->DidRunBeginMainFrame();
+  }
 
   // We need to issue image decode callbacks whether or not we will abort this
   // update and commit, since the request ids are only stored in

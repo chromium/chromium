@@ -153,7 +153,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     InitParams& operator=(InitParams&&);
 
     raw_ptr<LayerTreeHostDelegate> client = nullptr;
-    raw_ptr<LayerTreeHostSchedulingClient> scheduling_client = nullptr;
+    raw_ptr<LayerTreeHostSchedulingDelegate> scheduling_delegate = nullptr;
     raw_ptr<TaskGraphRunner> task_graph_runner = nullptr;
     raw_ptr<const LayerTreeSettings> settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
@@ -846,9 +846,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     DCHECK(IsMainThread());
     return client_;
   }
-  LayerTreeHostSchedulingClient* scheduling_client() {
+  LayerTreeHostSchedulingDelegate* scheduling_delegate() {
     DCHECK(IsMainThread());
-    return scheduling_client_;
+    return scheduling_delegate_;
   }
 
   void CollectRenderingStats(RenderingStats* stats) const;
@@ -1049,7 +1049,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       int id,
       raw_ptr<TaskGraphRunner>& task_graph_runner,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
-      LayerTreeHostSchedulingClient* scheduling_client,
+      LayerTreeHostSchedulingDelegate* scheduling_delegate,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr);
 
@@ -1079,7 +1079,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::unique_ptr<UIResourceManager> ui_resource_manager_;
 
   raw_ptr<LayerTreeHostDelegate> client_;
-  raw_ptr<LayerTreeHostSchedulingClient> scheduling_client_;
+  raw_ptr<LayerTreeHostSchedulingDelegate> scheduling_delegate_;
   std::unique_ptr<Proxy> proxy_;
   std::unique_ptr<TaskRunnerProvider> task_runner_provider_;
 

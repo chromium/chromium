@@ -1599,7 +1599,7 @@ LayerContextImpl::LayerContextImpl(
           /*dark_mode_filter=*/nullptr,
           GenerateNextDisplayTreeId(),
           /*image_worker_task_runner=*/nullptr,
-          /*scheduling_client=*/nullptr)) {
+          /*scheduling_delegate=*/nullptr)) {
   if (receiver_pipe.is_valid() && client_pipe.is_valid()) {
     receiver_ = std::make_unique<mojo::AssociatedReceiver<mojom::LayerContext>>(
         this, std::move(receiver_pipe));
