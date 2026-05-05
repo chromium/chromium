@@ -696,7 +696,7 @@
 # File: obj/third_party/androidx/androidx_tracing_tracing_android_java/proguard.txt
 # Tracing assertions are meant to be zero cost in release mode.
 -assumenosideeffects class androidx.tracing.ThreadTrack {
-    public assertThreadIdWhenNotOptimized(...);
+    public void assertThreadIdWhenNotOptimized(...);
 }
 
 # File: obj/third_party/androidx/androidx_transition_transition_java/proguard.txt
