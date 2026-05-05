@@ -428,7 +428,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
-  gpu::raster::RasterInterface* RasterInterface() const;
+  virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+  ContextProviderWrapper() const {
+    return context_provider_wrapper_;
+  }
+  virtual gpu::raster::RasterInterface* RasterInterface() const;
   virtual void EnsureWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
 

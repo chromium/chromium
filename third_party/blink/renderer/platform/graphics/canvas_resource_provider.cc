@@ -1931,9 +1931,10 @@ CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
 
 gpu::raster::RasterInterface*
 CanvasResourceProviderSharedImage::RasterInterface() const {
-  if (!context_provider_wrapper_)
+  if (!ContextProviderWrapper()) {
     return nullptr;
-  return context_provider_wrapper_->ContextProvider().RasterInterface();
+  }
+  return ContextProviderWrapper()->ContextProvider().RasterInterface();
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
