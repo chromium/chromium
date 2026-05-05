@@ -161,10 +161,14 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   double grain_offset_ = 0.0;  // in seconds
   double grain_duration_;      // in seconds
   // True if `grain_duration_` is given explicitly (via 3 arg start method).
-  bool is_duration_given_;
+  bool is_duration_given_ = false;
 
   // The minimum playbackRate value ever used for this source.
   double min_playback_rate_ = 1.0;
+
+  // The number of source frames currently output by this node.
+  // This is used for keeping track of the rate invariate duration of the node.
+  double buffer_played_frames_ = 0.0;
 
   // True if the `buffer` attribute has ever been set to a non-null
   // value.  Defaults to false.

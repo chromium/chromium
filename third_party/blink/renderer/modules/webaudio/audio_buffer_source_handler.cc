@@ -250,14 +250,33 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // if necessary.
   if (start_time_offset < 0) {
     if (computed_playback_rate != 0) {
-      virtual_read_index +=
+      double skipped_frames =
           std::abs(start_time_offset * computed_playback_rate);
+      virtual_read_index += skipped_frames;
+      buffer_played_frames_ = skipped_frames;
     }
   }
 
   // Render loop - reading from the source buffer to the destination using
   // linear interpolation.
   int frames_to_process = number_of_frames;
+  bool is_stopping_this_quantum = false;
+
+  if (is_duration_given_ && Loop()) {
+    double max_source_frames = grain_duration_ * buffer_sample_rate;
+    double source_frames_left = max_source_frames - buffer_played_frames_;
+    if (source_frames_left <= 0.0) {
+      frames_to_process = 0;
+      is_stopping_this_quantum = true;
+    } else if (computed_playback_rate != 0.0) {
+      double frames_until_limit =
+          std::ceil(source_frames_left / std::abs(computed_playback_rate));
+      if (frames_until_limit < frames_to_process) {
+        frames_to_process = static_cast<int>(frames_until_limit);
+        is_stopping_this_quantum = true;
+      }
+    }
+  }
 
   auto source_channels = source_channels_.as_span();
   auto destination_channels = destination_channels_.as_span();
@@ -385,6 +404,24 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
 
   bus->ClearSilentFlag();
 
+  // Update tracking exactly once per loop block to save per-sample arithmetic.
+  if (computed_playback_rate != 0) {
+    uint32_t frames_processed = write_index - destination_frame_offset;
+    buffer_played_frames_ +=
+        frames_processed * std::abs(computed_playback_rate);
+  }
+
+  if (is_stopping_this_quantum) {
+    for (unsigned i = 0; i < number_of_channels; ++i) {
+      std::ranges::fill(
+          destination_channels[i].subspan(
+              write_index,
+              (destination_frame_offset + number_of_frames) - write_index),
+          0.0f);
+    }
+    Finish();
+  }
+
   virtual_read_index_ = virtual_read_index;
 
   return true;
@@ -463,6 +500,7 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
   }
 
   virtual_read_index_ = 0;
+  buffer_played_frames_ = 0;
 }
 
 unsigned AudioBufferSourceHandler::NumberOfChannels() {
@@ -487,13 +525,10 @@ void AudioBufferSourceHandler::ClampGrainParameters(
   }
 
   if (is_duration_given_ && Loop()) {
-    // We're looping a grain with a grain duration specified. Schedule the loop
-    // to stop after grainDuration seconds after starting, possibly running the
-    // loop multiple times if grainDuration is larger than the buffer duration.
-    // The net effect is as if the user called stop(when + grainDuration).
+    // We're looping a grain with a grain duration specified. The node will stop
+    // after playing for grain_duration_ seconds.
     grain_duration_ =
         ClampTo(grain_duration_, 0.0, std::numeric_limits<double>::infinity());
-    end_time_ = start_time_ + grain_duration_;
   } else {
     grain_duration_ =
         ClampTo(grain_duration_, 0.0, buffer_duration - grain_offset_);
@@ -701,12 +736,15 @@ void AudioBufferSourceHandler::HandleStoppableSourceNode() {
   // easily determine how long we looped so we don't know the actual duration
   // thus far, so don't try to do anything fancy.
   double min_playback_rate = GetMinPlaybackRate();
-  if (!DidSetLooping() && Buffer() && IsPlayingOrScheduled() &&
+  bool is_finite = !DidSetLooping() || is_duration_given_;
+  if (is_finite && Buffer() && IsPlayingOrScheduled() &&
       min_playback_rate > 0) {
     // Adjust the duration to include the playback rate. Only need to account
     // for rate < 1 which makes the sound last longer.  For rate >= 1, the
     // source stops sooner, but that's ok.
-    double actual_duration = Buffer()->duration() / min_playback_rate;
+    double source_duration =
+        is_duration_given_ ? grain_duration_ : Buffer()->duration();
+    double actual_duration = source_duration / min_playback_rate;
 
     double stop_time = start_time_ + actual_duration;
 
