@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SyncConfirmationAppRefreshElement} from './sync_confirmation_app_refresh.js';
 
 export function getHtml(this: SyncConfirmationAppRefreshElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 
 <!--
@@ -26,7 +27,7 @@ export function getHtml(this: SyncConfirmationAppRefreshElement) {
           ?hidden="${this.isPending_()}">
       <div id="badge" class="work-badge"
           ?hidden="${this.shouldHideEnterpriseBadge_()}">
-        <cr-icon icon="cr:domain" alt=""></cr-icon>
+        <cr-icon icon="cr:domain" aria-hidden="true"></cr-icon>
       </div>
     </div>
     <h1 class="title" consent-description>
@@ -39,7 +40,7 @@ export function getHtml(this: SyncConfirmationAppRefreshElement) {
       ${this.syncBenefitsList_.map(item => html`
         <div class="sync-benefit">
           <cr-icon class="sync-benefit-icon" icon="${item.iconName}"
-              alt="">
+              aria-hidden="true">
           </cr-icon>
           <div class="sync-benefit-text" consent-description>
             ${this.i18n(item.title)}
@@ -90,4 +91,5 @@ export function getHtml(this: SyncConfirmationAppRefreshElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }
