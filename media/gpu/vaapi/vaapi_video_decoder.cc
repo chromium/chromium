@@ -922,16 +922,20 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
 
   if (!surface)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
-  auto pixmap_and_info =
+  auto maybe_pixmap_and_info =
       vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface.get());
-  if (!pixmap_and_info)
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
+  if (!maybe_pixmap_and_info.has_value()) {
+    return {CroStatus::Codes::kFailedToCreateVideoFrame,
+            std::move(maybe_pixmap_and_info).error()};
+  }
 
+  auto pixmap_and_info = std::move(maybe_pixmap_and_info).value();
   scoped_refptr<FrameResource> frame = NativePixmapFrameResource::Create(
       visible_rect, natural_size, timestamp,
       gfx::BufferUsage::SCANOUT_VDA_WRITE, std::move(pixmap_and_info->pixmap));
-  if (!frame)
+  if (!frame) {
     return CroStatus::Codes::kFailedToCreateVideoFrame;
+  }
 
   allocated_va_surfaces_.insert_or_assign(frame->tracking_token(),
                                           std::move(surface));

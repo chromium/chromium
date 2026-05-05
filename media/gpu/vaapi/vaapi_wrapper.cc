@@ -2634,7 +2634,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
                                            va_rt_format);
 }
 
-std::unique_ptr<NativePixmapAndSizeInfo>
+VaapiStatus::Or<std::unique_ptr<NativePixmapAndSizeInfo>>
 VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     VASurfaceID va_surface_id,
     const gfx::Size& va_surface_size) {
@@ -2645,13 +2645,14 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   {
     base::AutoLockMaybe auto_lock(va_lock_.get());
     VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
-    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, nullptr);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface,
+                         VaapiStatus::Codes::kNoSurface);
     va_res = vaExportSurfaceHandle(
         va_display_, va_surface_id, VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2,
         VA_EXPORT_SURFACE_READ_ONLY | VA_EXPORT_SURFACE_SEPARATE_LAYERS,
         &descriptor);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAExportSurfaceHandle,
-                         nullptr);
+                         VaapiStatus::Codes::kFailedToExportSurface);
   }
 
   // Translate the pixel format to a viz::SharedImageFormat.
@@ -2676,9 +2677,12 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
       si_format = viz::SinglePlaneFormat::kBGRA_8888;
       break;
     default:
-      LOG(ERROR) << "Cannot export a surface with FOURCC "
-                 << FourccToString(descriptor.fourcc);
-      return nullptr;
+      // TODO(crbug.com/508312480): This might be leaking file descriptors
+      // allocated by vaExportSurfaceHandle. This should be investigated and
+      // fixed.
+      return VaapiStatus{VaapiStatus::Codes::kFailedToExportSurface,
+                         "Cannot export surface with unknown FOURCC", "fourcc",
+                         FourccToString(descriptor.fourcc)};
   }
 
   gfx::NativePixmapHandle handle;
@@ -2741,24 +2745,24 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
       base::strict_cast<size_t>(descriptor.objects[0].size);
   if (!gfx::Rect(exported_pixmap->va_surface_resolution)
            .Contains(gfx::Rect(va_surface_size))) {
-    LOG(ERROR) << "A " << va_surface_size.ToString()
-               << " surface cannot be contained by a "
-               << exported_pixmap->va_surface_resolution.ToString()
-               << " buffer";
-    return nullptr;
+    VaapiStatus error = {VaapiStatus::Codes::kFailedToExportSurface,
+                         "Surface is too large for buffer"};
+    return std::move(error)
+        .WithData("surface_size", va_surface_size.ToString())
+        .WithData("buffer_size",
+                  exported_pixmap->va_surface_resolution.ToString());
   }
   exported_pixmap->pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
       va_surface_size, si_format, std::move(handle));
   return exported_pixmap;
 }
 
-std::unique_ptr<NativePixmapAndSizeInfo>
+VaapiStatus::Or<std::unique_ptr<NativePixmapAndSizeInfo>>
 VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
     const ScopedVASurface& scoped_va_surface) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!scoped_va_surface.IsValid()) {
-    LOG(ERROR) << "Cannot export an invalid surface";
-    return nullptr;
+    return VaapiStatus::Codes::kFailedToExportSurface;
   }
   return ExportVASurfaceAsNativePixmapDmaBufUnwrapped(scoped_va_surface.id(),
                                                       scoped_va_surface.size());

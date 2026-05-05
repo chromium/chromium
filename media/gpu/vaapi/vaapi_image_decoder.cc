@@ -92,14 +92,16 @@ VaapiImageDecoder::ExportAsNativePixmapDmaBuf(VaapiImageDecodeStatus* status) {
   }
   DCHECK(temp_scoped_va_surface->IsValid());
 
-  std::unique_ptr<NativePixmapAndSizeInfo> exported_pixmap =
+  auto maybe_exported_pixmap =
       vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(
           *temp_scoped_va_surface);
-  if (!exported_pixmap) {
+
+  if (!maybe_exported_pixmap.has_value()) {
     *status = VaapiImageDecodeStatus::kCannotExportSurface;
     return nullptr;
   }
 
+  auto exported_pixmap = std::move(maybe_exported_pixmap).value();
   DCHECK_EQ(temp_scoped_va_surface->size(),
             exported_pixmap->pixmap->GetBufferSize());
   *status = VaapiImageDecodeStatus::kSuccess;

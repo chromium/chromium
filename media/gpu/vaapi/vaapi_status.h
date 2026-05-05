@@ -24,6 +24,7 @@ enum class VaapiStatusCode : StatusCodeType {
   kBadImageSize = 12,
   kNoTexture = 13,
   kUnsupportedProfile = 14,
+  kFailedToExportSurface = 15,
 };
 
 struct VaapiStatusTraits {

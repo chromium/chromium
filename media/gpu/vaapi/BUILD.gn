@@ -123,6 +123,7 @@ source_set("vaapi_status") {
   sources = [ "vaapi_status.h" ]
 
   visibility = [
+    ":common",
     ":vaapi",
     "//media/mojo/mojom/stable:*",
   ]
@@ -152,6 +153,7 @@ source_set("common") {
     ":libva_stubs",
     "//gpu/config",
     "//media/gpu/chromeos:video_frame_resource",
+    "//media/gpu/vaapi:vaapi_status",
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
