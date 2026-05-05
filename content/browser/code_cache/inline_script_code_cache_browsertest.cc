@@ -394,13 +394,9 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest, MAYBE_NeverCacheHint) {
 }
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
-#define MAYBE_CacheProducedOnSecondAttempt DISABLED_CacheProducedOnSecondAttempt
-#else
-#define MAYBE_CacheProducedOnSecondAttempt CacheProducedOnSecondAttempt
-#endif
+// TODO(crbug.com/499507137): Disabled everywhere due to flakiness.
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       MAYBE_CacheProducedOnSecondAttempt) {
+                       DISABLED_CacheProducedOnSecondAttempt) {
   GURL url =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
 
@@ -458,13 +454,9 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 }
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
-#define MAYBE_CacheSharedOnDifferentPage DISABLED_CacheSharedOnDifferentPage
-#else
-#define MAYBE_CacheSharedOnDifferentPage CacheSharedOnDifferentPage
-#endif
+// TODO(crbug.com/499208353): Disabled everywhere for flakiness.
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       MAYBE_CacheSharedOnDifferentPage) {
+                       DISABLED_CacheSharedOnDifferentPage) {
   GURL url_1 =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
   GURL url_2 =
@@ -551,12 +543,9 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 }
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
-#define MAYBE_IsolatedByNik DISABLED_IsolatedByNik
-#else
-#define MAYBE_IsolatedByNik IsolatedByNik
-#endif
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, MAYBE_IsolatedByNik) {
+// TODO(crbug.com/499371224): Disabled everywhere for flakiness.
+IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+                       DISABLED_IsolatedByNik) {
   GURL top_domain_a =
       embedded_test_server()->GetURL("a.example", "/empty.html");
   GURL iframe_domain_b =
