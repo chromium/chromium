@@ -44,7 +44,7 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   }
 
   // Parse dac3 box using reader.
-  BitReader reader(data);
+  BitReader reader(&data[0], data.size());
 
   // skip fscod, bsid, bsmod
   RCHECK(reader.SkipBits(2 + 5 + 3));
@@ -58,7 +58,7 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   uint8_t lfeon;
   RCHECK(reader.ReadBits(1, &lfeon));
 
-  channel_layout_ = kAC3AudioCodingModeTable[lfeon][acmod];
+  channel_layout_ = UNSAFE_TODO(kAC3AudioCodingModeTable[lfeon][acmod]);
   RCHECK(channel_layout_ > CHANNEL_LAYOUT_UNSUPPORTED);
   channel_count_ = ChannelLayoutToChannelCount(channel_layout_);
   RCHECK(channel_count_ >= 1 && channel_count_ <= limits::kMaxChannels);
