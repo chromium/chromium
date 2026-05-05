@@ -3607,13 +3607,6 @@ def create_cc_defaults_module():
         # Required to correctly compile quiche tests.
         # TODO(crbug.com/433273929): Remove once fixed.
         "-Wno-nonnull",
-        # Work around std::vector __swap_layouts _LIBCPP_NODEBUG breakage
-        # causing the build to fail with:
-        #   Function profile not used [-Werror,-Wbackend-plugin]
-        # See https://crbug.com/506893855
-        # TODO(https://crbug.com/506893855): remove this once the root cause is
-        # fixed.
-        "-Wno-backend-plugin",
     ]
     defaults.build_file_path = ""
     defaults.include_build_directory = False
