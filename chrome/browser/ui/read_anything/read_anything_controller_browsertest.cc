@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
@@ -731,6 +732,54 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 5. Verify the FindTabHelper successfully received the forwarded reply.
   EXPECT_EQ(2, observer.number_of_matches());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       FindBarTarget_UpdatesOnSplitViewFocusChange) {
+  // Setup split view
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandAddToSplit));
+  tab_strip_model->ExecuteContextMenuCommand(0,
+                                             TabStripModel::CommandAddToSplit);
+  ASSERT_EQ(1, tab_strip_model->active_index());
+
+  // Switch to Tab A and open IRM
+  tab_strip_model->ActivateTabAt(0);
+  tabs::TabInterface* tab_a = tab_strip_model->GetActiveTab();
+  auto* controller_a = ReadAnythingController::From(tab_a);
+  controller_a->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  // Open FindBar explicitly
+  FindBarController* find_bar_controller =
+      browser()->GetFeatures().GetFindBarController();
+  ASSERT_TRUE(find_bar_controller);
+  find_bar_controller->Show();
+
+  // Verify FindBar targets IRM on Tab A
+  EXPECT_EQ(find_bar_controller->web_contents(), GetImmersiveWebContents());
+  EXPECT_TRUE(find_bar_controller->find_bar()->IsFindBarVisible());
+
+  // Activate Tab B
+  tab_strip_model->ActivateTabAt(1);
+
+  // Verify find bar controller targets the Tab B main webcontents.
+  EXPECT_EQ(find_bar_controller->web_contents(),
+            tab_strip_model->GetActiveTab()->GetContents());
+
+  // Activate Tab A again
+  tab_strip_model->ActivateTabAt(0);
+
+  AwaitAndAssertOverlayVisibilityForTab(/*tab_index=*/0, /*visible=*/true);
+
+  // Verify find bar controller correctly targets the IRM WebContents again.
+  EXPECT_EQ(find_bar_controller->web_contents(), GetImmersiveWebContents());
+
+  // Verify that the FindBar remains visible.
+  EXPECT_TRUE(find_bar_controller->find_bar()->IsFindBarVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

@@ -262,8 +262,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   base::ObserverList<ReadAnythingImmersiveActivationObserver>
       immersive_activation_observers_;
 
-  // Holds subscriptions for TabInterface callbacks.
-  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  // Holds subscription for TabInterface callbacks.
+  base::CallbackListSubscription tab_did_activate_subscription_;
 
   PresentationState presentation_state_ = PresentationState::kUndefined;
   // When a tab becomes inactive and hides IRM, this is set to true to let us

@@ -118,6 +118,14 @@ ReadAnythingController::ReadAnythingController(
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
 
+  // Point the FindBar to IRM's WebContents, if it's open. We already call
+  // MaybeUpdateFindBarController when IRM opens and closes, but if IRM is open
+  // on a split view, it can stay open even if the tab is not active, so we need
+  // this to update the FindBar when the IRM tab is reactivated.
+  tab_did_activate_subscription_ = tab_->RegisterDidActivate(
+      base::IgnoreArgs<tabs::TabInterface*>(base::BindRepeating(
+          &ReadAnythingController::MaybeUpdateFindBarController,
+          base::Unretained(this))));
 
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
