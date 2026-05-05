@@ -578,6 +578,20 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnDistilled_Screen2x_LogsMetric) {
+  base::HistogramTester histogram_tester;
+  const int word_count = 100;
+  // Ensure we are using Screen2x.
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  controller().OnDistilled(word_count);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledOnNewPage", word_count, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.WordsDistilledByReadability", 0);
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeHidden_LogsLineFocusSessionWithFlag) {
   EnableLineFocus();
@@ -4906,6 +4920,8 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.WordsDistilledByReadability", word_count, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledOnNewPage", word_count, 1);
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,

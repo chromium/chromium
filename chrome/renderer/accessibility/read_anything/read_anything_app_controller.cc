@@ -2247,6 +2247,9 @@ void ReadAnythingAppController::OnDistilled(int word_count) {
         "Accessibility.ReadAnything.WordsDistilledByReadability", word_count, 1,
         kMaxWordsConsumed, kWordsConsumedBuckets);
   }
+  base::UmaHistogramCustomCounts(
+      "Accessibility.ReadAnything.WordsDistilledOnNewPage", word_count, 1,
+      kMaxWordsConsumed, kWordsConsumedBuckets);
 }
 
 void ReadAnythingAppController::UpdateWordsSeen(int words_seen) {

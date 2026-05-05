@@ -3548,29 +3548,30 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.WordsDistilledAfterOmnibox"
-    units="words" expires_after="2026-10-04">
+<histogram name="Accessibility.ReadAnything.WordsDistilled{Type}" units="words"
+    expires_after="2027-01-01">
+  <owner>lwinston@google.com</owner>
   <owner>kristislee@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records an estimate of how many words were distilled in Reading mode for the
-    page opened via the omnibox entrypoint. Uses built-in web segmenter to count
-    words using the page language. (See
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.WordsDistilledByReadability"
-    units="words" expires_after="2027-01-01">
   <owner>martinglopez@google.com</owner>
+  <owner>komo-eng@google.com</owner>
   <owner>chrome-irm-devs@google.com</owner>
   <summary>
-    Records the word count of the distilled content when using the Readability
-    distillation algorithm. This is recorded when the content is successfully
-    updated in the Reading Mode panel. Uses built-in web segmenter to count
-    words using the page language. (See
+    Records the word count of the distilled content {Type}. Uses built-in web
+    segmenter to count words using the page language. (See
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter)
   </summary>
+  <token key="Type">
+    <variant name="AfterOmnibox"
+        summary="for a page opened via the omnibox entrypoint (estimated
+                 value)"/>
+    <variant name="ByReadability"
+        summary="when using the Readability distillation algorithm, recorded
+                 when the content is successfully updated in the Reading Mode
+                 panel"/>
+    <variant name="OnNewPage"
+        summary="regardless of distillation method, recorded when the content
+                 is successfully updated in the Reading Mode panel"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
