@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
@@ -51,6 +52,7 @@
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,8 +72,6 @@
 #include "url/origin.h"
 
 namespace web_app {
-
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPwaInstallDialogCancelButtonId);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallFlowDialogDelegate,
                                       kInstallDialogFlowViewId);
@@ -213,7 +213,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       // Hide buttons on progress step.
       dialog_model()->SetVisible(kLearnMoreButtonId, false);
       dialog_model()->SetVisible(kPwaInstallDialogInstallButton, false);
-      dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, false);
+      dialog_model()->SetVisible(kCancelButtonId, false);
       break;
 
     case InstallDialogStep::kSuccessful:
@@ -225,13 +225,13 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
             l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_OPEN_APP));
       }
       ui::DialogModel::Button* cancel_button =
-          dialog_model()->GetButtonByUniqueId(kPwaInstallDialogCancelButtonId);
+          dialog_model()->GetButtonByUniqueId(kCancelButtonId);
       if (cancel_button) {
         dialog_model()->SetButtonLabel(cancel_button,
                                        l10n_util::GetStringUTF16(IDS_CLOSE));
       }
       dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
-      dialog_model()->SetVisible(kPwaInstallDialogCancelButtonId, true);
+      dialog_model()->SetVisible(kCancelButtonId, true);
       break;
   }
 
@@ -321,6 +321,11 @@ void WebAppInstallFlowDialogDelegate::OnInstallResult(
   }
   install_success_ = true;
   reparent_closure_ = std::move(reparent_closure);
+  IntentPickerTabHelper* helper =
+      IntentPickerTabHelper::FromWebContents(web_contents());
+  if (helper) {
+    helper->MaybeShowIntentPickerIcon();
+  }
   UpdateProgressAndMaybeAdvance();
 }
 
@@ -464,8 +469,7 @@ void WebAppInstallFlowDialogDelegate::Show(
               WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
       .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
                                       delegate_weak_ptr),
-                       ui::DialogModel::Button::Params().SetId(
-                           kPwaInstallDialogCancelButtonId))
+                       ui::DialogModel::Button::Params().SetId(kCancelButtonId))
       .SetCloseActionCallback(base::BindOnce(
           &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
       .SetDialogDestroyingCallback(base::BindOnce(

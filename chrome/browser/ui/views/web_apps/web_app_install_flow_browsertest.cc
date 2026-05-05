@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -210,6 +212,62 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DiyInstallFlow) {
   EXPECT_EQ(FindAppWithUrlInScope(app_url), app_id);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
+                       InstallFlowShowsIntentPickerOnClose) {
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* icon = GetPwaInstallIconView();
+    return icon && icon->GetVisible();
+  }));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppInstallFlowDialog");
+  web_app::WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening();
+
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  auto* dialog_delegate = widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  dialog_delegate->AcceptDialog();
+
+  if (ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          WebAppInstallOptionsView::kViewId)) {
+    dialog_delegate->AcceptDialog();
+  }
+
+  // Wait for the progress view to complete and reach the success view.
+  views::View* progress_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          WebAppInstallProgressView::kProgressBarId,
+          views::ElementTrackerViews::GetContextForWidget(widget));
+  ASSERT_NE(progress_view, nullptr);
+
+  views::ProgressBar* install_progress_bar =
+      views::AsViewClass<views::ProgressBar>(progress_view);
+  ASSERT_NE(install_progress_bar, nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([install_progress_bar]() -> bool {
+    return (install_progress_bar->GetValue() >= 0.9);
+  }));
+
+  // Wait for all background install commands to complete.
+  WebAppProvider::GetForWebApps(browser()->profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
+
+  dialog_delegate->CancelDialog();
+  ASSERT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
+  EXPECT_TRUE(
+      web_app::GetIntentPickerButton(browser()->GetBrowserForMigrationOnly())
+          ->GetVisible());
+}
 #if BUILDFLAG(IS_WIN)
 
 enum class CheckboxOptions { kNeither, kShortcutOnly, kTaskbarOnly, kBoth };
