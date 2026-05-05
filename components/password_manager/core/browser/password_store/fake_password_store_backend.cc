@@ -343,8 +343,7 @@ PasswordStoreChangeList FakePasswordStoreBackend::AddLoginInternal(
   auto& passwords_for_signon_realm = stored_passwords_[cred.signon_realm];
   auto iter = std::ranges::find_if(
       passwords_for_signon_realm, [&cred](const auto& password) {
-        return ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
-                                              ToPasswordForm(password));
+        return AreStoredCredentialUniqueKeysEqual(cred, password);
       });
 
   if (iter != passwords_for_signon_realm.end()) {
@@ -373,8 +372,7 @@ PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
   PasswordStoreChangeList changes;
   std::vector<StoredCredential>& creds = stored_passwords_[cred.signon_realm];
   for (auto& stored_cred : creds) {
-    if (ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
-                                       ToPasswordForm(stored_cred))) {
+    if (AreStoredCredentialUniqueKeysEqual(cred, stored_cred)) {
       bool password_changed = cred.password_value != stored_cred.password_value;
       bool insecure_credentials_changed = false;
 
@@ -420,8 +418,7 @@ PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
   std::vector<StoredCredential>& creds = stored_passwords_[cred.signon_realm];
   auto it = creds.begin();
   while (it != creds.end()) {
-    if (ArePasswordFormUniqueKeysEqual(ToPasswordForm(cred),
-                                       ToPasswordForm(*it))) {
+    if (AreStoredCredentialUniqueKeysEqual(cred, *it)) {
       it = creds.erase(it);
       changes.emplace_back(PasswordStoreChange::REMOVE,
                            CloneStoredCredential(cred),

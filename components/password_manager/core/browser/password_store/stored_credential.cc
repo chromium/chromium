@@ -14,4 +14,9 @@ StoredCredential& StoredCredential::operator=(StoredCredential&&) = default;
 
 StoredCredential::~StoredCredential() = default;
 
+bool AreStoredCredentialUniqueKeysEqual(const StoredCredential& left,
+                                        const StoredCredential& right) {
+  return StoredCredentialUniqueKey(left) == StoredCredentialUniqueKey(right);
+}
+
 }  // namespace password_manager

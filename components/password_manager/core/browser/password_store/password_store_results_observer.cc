@@ -6,8 +6,7 @@
 
 #include <utility>
 
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -18,10 +17,9 @@ void PasswordStoreResultsObserver::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
   if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-    results_ = std::vector<PasswordForm>();
+    results_ = std::vector<StoredCredential>();
   } else {
-    results_ =
-        ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)));
+    results_ = std::get<LoginsResult>(std::move(results_or_error));
   }
   run_loop_.Quit();
 }
@@ -31,7 +29,7 @@ PasswordStoreResultsObserver::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-std::vector<PasswordForm> PasswordStoreResultsObserver::WaitForResults() {
+std::vector<StoredCredential> PasswordStoreResultsObserver::WaitForResults() {
   run_loop_.Run();
   return std::move(results_);
 }

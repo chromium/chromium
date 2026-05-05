@@ -2219,8 +2219,8 @@ FormRetrievalResult LoginDatabase::StatementToStoredCredentials(
     cred.password_value = std::move(plaintext_password);
     cred.in_store = GetPasswordFormStore(is_account_store_);
 
-    if (matched_form && GetMatchResult(ToPasswordForm(cred), *matched_form) ==
-                            MatchResult::NO_MATCH) {
+    if (matched_form &&
+        GetMatchResult(cred, *matched_form) == MatchResult::NO_MATCH) {
       continue;
     }
 

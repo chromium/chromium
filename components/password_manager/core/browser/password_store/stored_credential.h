@@ -100,6 +100,14 @@ struct StoredCredential {
 #endif
 };
 
+inline auto StoredCredentialUniqueKey(const StoredCredential& f) {
+  return std::tie(f.signon_realm, f.url, f.username_element, f.username_value,
+                  f.password_element);
+}
+
+bool AreStoredCredentialUniqueKeysEqual(const StoredCredential& left,
+                                        const StoredCredential& right);
+
 using BackendLoginsResult = std::vector<StoredCredential>;
 using BackendLoginsResultOrError =
     std::variant<BackendLoginsResult, PasswordStoreBackendError>;
