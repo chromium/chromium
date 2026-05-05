@@ -154,6 +154,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
+    "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]

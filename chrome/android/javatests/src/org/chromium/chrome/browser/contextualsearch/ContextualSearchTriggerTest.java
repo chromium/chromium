@@ -104,6 +104,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testNonResolveTrigger() throws Exception {
         triggerNonResolve("states");
 
@@ -150,6 +151,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky and disabled 4/2021.  https://crbug.com/40757167
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTapGestureFollowedByInvalidTextTapCloses() throws Exception {
         clickWordNode("states-far");
         waitForPanelToPeek();
@@ -174,6 +176,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTapGestureFarAwayTogglesSelecting() throws Exception {
         clickWordNode("states");
         Assert.assertEquals("States", getSelectedText());
@@ -220,6 +223,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testLongPressGestureFollowedByScrollMaintainsSelection() throws Exception {
         longPressNode("intelligence");
         waitForPanelToPeek();
@@ -316,6 +320,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testExpandBeforeSearchTermResolution() throws Exception {
         simulateSlowResolveSearch("states");
         assertNoWebContents();
@@ -371,6 +376,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky and disabled 4/2021.  https://crbug.com/40750236
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testSelectionExpansionOnSearchTermResolution() throws Exception {
         triggerResolve("intelligence");
         waitForPanelToPeek();

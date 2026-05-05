@@ -1167,7 +1167,9 @@ android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//base:base_java_test_support",
     "//chrome/browser/ui/android/hats:factory_java",
+    "//ui/android:ui_java",
   ]
 }
 

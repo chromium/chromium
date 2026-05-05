@@ -96,6 +96,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 // TODO(donnd): Create class with limited API to encapsulate the internals of simulations.
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
