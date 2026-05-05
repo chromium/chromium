@@ -26,6 +26,7 @@ suite('AppTest', function() {
     loadTimeData.overrideValues({
       hideClassicContextButton: false,
       composeboxShowContextMenuDescription: false,
+      omniboxShowContextButtonSuggestionLabel: false,
       addContext: 'Add tabs and more',
     });
 
@@ -98,6 +99,7 @@ suite('AppTest', function() {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         omniboxAimPopupEnabled: true,
+        omniboxShowContextButtonSuggestionLabel: false,
         searchboxLayoutMode: 'TallBottomContext',
       });
 
@@ -158,6 +160,7 @@ suite('AppTest', function() {
 
     test('RecentTabChipShown', async () => {
       loadTimeData.overrideValues({
+        omniboxShowContextButtonSuggestionLabel: false,
         searchboxLayoutMode: 'TallBottomContext',
         composeboxShowRecentTabChip: true,
         addTabUploadDelayOnRecentTabChipClick: true,
@@ -198,6 +201,7 @@ suite('AppTest', function() {
       // Re-create app with `hideClassicContextButton` set to true.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
+        omniboxShowContextButtonSuggestionLabel: false,
         hideClassicContextButton: true,
       });
       localApp = document.createElement('omnibox-popup-app');
@@ -221,6 +225,7 @@ suite('AppTest', function() {
       // Re-create app with `composeboxShowContextMenuDescription` set to true.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
+        omniboxShowContextButtonSuggestionLabel: false,
         composeboxShowContextMenuDescription: true,
       });
       localApp = document.createElement('omnibox-popup-app');
@@ -279,6 +284,7 @@ suite('AppTestSelectionControl', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
+      omniboxShowContextButtonSuggestionLabel: false,
       webuiOmniboxPopupSelectionControlEnabled: true,
     });
     testProxy = new TestSearchboxBrowserProxy();

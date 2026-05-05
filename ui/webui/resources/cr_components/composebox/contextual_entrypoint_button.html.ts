@@ -11,7 +11,8 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}">
-    ${this.showContextMenuDescription && !this.windowWidthBelowThreshold_ ? html`
+    ${(this.showContextMenuDescription || this.showSuggestionLabel)
+        && !this.windowWidthBelowThreshold_ ? html`
       <cr-button id="entrypoint" class="ai-mode-button" part="entrypoint-button"
           @click="${this.onEntrypointClick_}"
           title="${this.i18n('addContextTitle')}"
@@ -20,7 +21,8 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
         <span id="description"
             @animationend="${this.onDescriptionAnimationend_}">
-          ${this.i18n('addContext')}
+          ${this.showSuggestionLabel ?
+             this.i18n('searchBoxHintMultimodal') : this.i18n('addContext')}
         </span>
       </cr-button>
     ` : html`

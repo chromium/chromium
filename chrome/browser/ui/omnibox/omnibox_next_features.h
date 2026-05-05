@@ -93,7 +93,7 @@ extern const base::FeatureParam<bool> kContextButtonHasBackground;
 // Whether the button should be an oblong shape vs circular.
 extern const base::FeatureParam<bool> kContextButtonShapeIsOblong;
 // Whether to show the "Ask about tabs" label for the context menu entrypoint.
-extern const base::FeatureParam<bool> kContextButtonShowAskAboutTabsLabel;
+extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // Whether to show the "Ask about tabs" action in the context menu.
 extern const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction;
 

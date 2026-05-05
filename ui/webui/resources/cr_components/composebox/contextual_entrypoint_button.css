@@ -250,11 +250,18 @@ cr-icon-button {
       var(--cr-composebox-entrypoint-background-color, transparent);
 }
 
-:host([is-oblong-shape_]) cr-icon-button#entrypoint {
+:host([show-suggestion-label]) #entrypoint {
+  gap: 16px;
+}
+
+:host([is-oblong-shape_]) #entrypoint {
   border-radius: 100px;
   /* This line handles specific margin spacing for the oblong shape in omnibox
      and the composebox. */
   margin-inline-start: var(--contextual-entrypoint-oblong-margin-inline-start, 0);
+}
+
+:host([is-oblong-shape_]) cr-icon-button#entrypoint {
   padding-inline: 4px;
 }
 
