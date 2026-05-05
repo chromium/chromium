@@ -251,10 +251,8 @@ PersistableLog::~PersistableLog() {
 }
 
 void PersistableLog::Append(base::DictValue object) {
-  if (!object.contains("timestamp_ms")) {
-    object.Set("timestamp_ms",
-               base::saturated_cast<int>(
-                   clock_->Now().ToDeltaSinceWindowsEpoch().InMilliseconds()));
+  if (!object.contains("timestamp")) {
+    object.Set("timestamp", base::TimeFormatAsIso8601(clock_->Now()));
   }
 #if DCHECK_IS_ON()
   // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
