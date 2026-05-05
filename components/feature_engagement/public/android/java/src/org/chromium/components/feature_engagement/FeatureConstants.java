@@ -93,7 +93,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
-    FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION,
     FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE,
     FeatureConstants.MENU_ADD_TO_GROUP,
     FeatureConstants.MOST_VISITED_TILES_CUSTOMIZATION_PIN,
@@ -356,8 +355,6 @@ public @interface FeatureConstants {
             "IPH_AutofillDisabledVirtualCardSuggestion";
 
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
-
-    String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION = "IPH_PlusAddressCreateSuggestion";
 
     String KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE =
             "IPH_AutofillVirtualCardCVCSuggestion";

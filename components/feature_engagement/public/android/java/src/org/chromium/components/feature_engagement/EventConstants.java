@@ -182,10 +182,6 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED =
             "autofill_card_info_retrieval_suggestion_accepted";
 
-    /** The keyboard accessory was used to create a new plus address. */
-    public static final String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION =
-            "plus_address_create_suggestion_feature_used";
-
     /** Voice search button click on NTP. */
     public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
 
