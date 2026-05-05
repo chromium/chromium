@@ -3941,6 +3941,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-proxy-authentication-service",
+    "owners": [ "xzonghan@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
     // This flag is used by network administrators to debug

@@ -112,6 +112,7 @@
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/networking/features.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -13134,6 +13135,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos)},
+
+    {"enable-proxy-authentication-service",
+     flag_descriptions::kEnableProxyAuthenticationServiceName,
+     flag_descriptions::kEnableProxyAuthenticationServiceDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise::kEnableProxyAuthenticationService)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
