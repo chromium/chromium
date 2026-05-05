@@ -341,4 +341,7 @@ BASE_FEATURE(kWebViewPersistHttpServerProperties,
 // arrive without the intermediate I/O thread hop.
 BASE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for the WebView Navigate method.
+BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace android_webview::features

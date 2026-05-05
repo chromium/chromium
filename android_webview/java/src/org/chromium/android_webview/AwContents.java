@@ -2393,6 +2393,10 @@ public class AwContents implements SmartClipProvider {
 
     @Nullable
     public AwNavigation navigate(AwNavigationParams params) {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_NAVIGATE)) {
+            throw new IllegalStateException("Navigate is disabled");
+        }
+
         if (isDestroyed(NO_WARN)) {
             throw new IllegalStateException("Called navigate on a destroyed WebView.");
         }

@@ -90,6 +90,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void navigates() throws TimeoutException {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -104,6 +105,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void navigationCallback() throws TimeoutException {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
         AtomicReference<AwNavigation> navigationRef = new AtomicReference<>();
@@ -124,6 +126,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void shouldReplaceCurrentEntry_false() throws TimeoutException {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -147,6 +150,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void shouldReplaceCurrentEntry_true() throws TimeoutException {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -172,6 +176,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders() throws TimeoutException {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -190,6 +195,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_reusedOnBack() throws Exception {
         // Disable caches so going back will trigger a network request.
         mActivityTestRule
@@ -219,6 +225,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_notReusedOnSubsequentNavigation() throws Exception {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -239,6 +246,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_handlingRedirects() throws Exception {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -283,6 +291,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_notSentToSubResources() throws Exception {
         String cssPath = "/style.css";
         mWebServer.setResponse(cssPath, "body { color: red; }", null);
@@ -316,6 +325,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_notSentToIframes() throws Exception {
         String iframePath = "/iframe.html";
         mWebServer.setResponse(iframePath, "<html></html>", null);
@@ -346,6 +356,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate"})
     public void extraHeaders_sentToShouldInterceptRequest() throws Exception {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
@@ -365,7 +376,7 @@ public class NavigateApiTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewSaveStateIncludeHeaders"})
+    @CommandLineFlags.Add({"enable-features=WebViewNavigate, WebViewSaveStateIncludeHeaders"})
     public void extraHeaders_saveRestoreState() throws Throwable {
         int currentCallCount = mOnPageLoadFinished.getCallCount();
 
