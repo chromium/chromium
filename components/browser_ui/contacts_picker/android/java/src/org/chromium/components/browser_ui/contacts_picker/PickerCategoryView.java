@@ -11,7 +11,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -27,6 +29,8 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,6 +45,7 @@ import org.chromium.content.browser.contacts.ContactsPickerProperties;
 import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
+import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.OptimizedFrameLayout;
@@ -49,9 +54,15 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /**
  * A class for keeping track of common data associated with showing contact details in the contacts
@@ -467,9 +478,40 @@ public class PickerCategoryView extends OptimizedFrameLayout
                         return;
                     }
 
-                    new SystemContactsWorkerTask(
-                                    getContext().getContentResolver(), sessionUri, this)
-                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    SystemContactsWorkerTask workerTask =
+                            new SystemContactsWorkerTask(
+                                    getContext().getContentResolver(), sessionUri);
+                    WeakReference<PickerCategoryView> viewRef = new WeakReference<>(this);
+                    FutureTask<SystemContactsWorkerTask.Result> futureTask =
+                            new FutureTask<SystemContactsWorkerTask.Result>(workerTask) {
+                                @Override
+                                protected void done() {
+                                    try {
+                                        SystemContactsWorkerTask.Result result = get();
+                                        PostTask.postTask(
+                                                TaskTraits.UI_DEFAULT,
+                                                () -> {
+                                                    PickerCategoryView view = viewRef.get();
+                                                    if (view == null) return;
+                                                    for (Map.Entry<String, Bitmap> entry :
+                                                            result.bitmaps.entrySet()) {
+                                                        view.getIconCache()
+                                                                .putBitmap(
+                                                                        entry.getKey(),
+                                                                        entry.getValue());
+                                                    }
+                                                    view.onSystemContactsRetrieved(result.contacts);
+                                                });
+                                    } catch (CancellationException e) {
+                                        // Ignore
+                                    } catch (ExecutionException e) {
+                                        throw new RuntimeException(e);
+                                    } catch (InterruptedException e) {
+                                        // Ignore
+                                    }
+                                }
+                            };
+                    PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, futureTask);
                 },
                 null);
     }
@@ -497,7 +539,25 @@ public class PickerCategoryView extends OptimizedFrameLayout
         }
     }
 
-    static class SystemContactsWorkerTask extends AsyncTask<SystemContactsWorkerTask.Result> {
+    private static class ContactDetailsBuilder {
+        public final String id;
+        public String displayName = "";
+        public final List<String> emails = new ArrayList<>();
+        public final List<String> phoneNumbers = new ArrayList<>();
+        public final List<PaymentAddress> addresses = new ArrayList<>();
+        public byte @Nullable [] photoBytes;
+
+        public ContactDetailsBuilder(String id, String displayName) {
+            this.id = id;
+            if (displayName != null) this.displayName = displayName;
+        }
+
+        public ContactDetails build() {
+            return new ContactDetails(id, displayName, emails, phoneNumbers, addresses);
+        }
+    }
+
+    static class SystemContactsWorkerTask implements Callable<SystemContactsWorkerTask.Result> {
         public static class Result {
             public final List<ContactDetails> contacts;
             public final Map<String, Bitmap> bitmaps;
@@ -508,30 +568,140 @@ public class PickerCategoryView extends OptimizedFrameLayout
             }
         }
 
-        private final WeakReference<PickerCategoryView> mPickerCategoryViewRef;
+        private final ContentResolver mContentResolver;
+        private final Uri mSessionUri;
 
-        public SystemContactsWorkerTask(
-                ContentResolver contentResolver,
-                Uri sessionUri,
-                PickerCategoryView pickerCategoryView) {
-            mPickerCategoryViewRef = new WeakReference<>(pickerCategoryView);
+        public SystemContactsWorkerTask(ContentResolver contentResolver, Uri sessionUri) {
+            mContentResolver = contentResolver;
+            mSessionUri = sessionUri;
         }
 
         @Override
-        protected Result doInBackground() {
-            return new Result(Collections.emptyList(), Collections.emptyMap());
+        public Result call() throws Exception {
+            Map<String, ContactDetailsBuilder> builders = new LinkedHashMap<>();
+            try (Cursor cursor = mContentResolver.query(mSessionUri, null, null, null, null)) {
+                if (cursor == null) {
+                    return new Result(Collections.emptyList(), Collections.emptyMap());
+                }
+
+                int idColumn = cursor.getColumnIndexOrThrow(ContactsContract.Data.CONTACT_ID);
+                int mimetypeColumn = cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE);
+                int displayNameColumn =
+                        cursor.getColumnIndexOrThrow(ContactsContract.Data.DISPLAY_NAME_PRIMARY);
+                int data1Column = cursor.getColumnIndexOrThrow(ContactsContract.Data.DATA1);
+
+                while (cursor.moveToNext()) {
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new InterruptedException();
+                    }
+                    String id = cursor.getString(idColumn);
+                    String mimetype = cursor.getString(mimetypeColumn);
+                    String displayName = cursor.getString(displayNameColumn);
+
+                    if (id == null || mimetype == null) {
+                        continue;
+                    }
+
+                    ContactDetailsBuilder builder = builders.get(id);
+                    if (builder == null) {
+                        builder = new ContactDetailsBuilder(id, displayName);
+                        builders.put(id, builder);
+                    }
+
+                    if (mimetype.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                        String email = cursor.getString(data1Column);
+                        if (email != null) builder.emails.add(email);
+                    } else if (mimetype.equals(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                        String phone = cursor.getString(data1Column);
+                        if (phone != null) builder.phoneNumbers.add(phone);
+                    } else if (mimetype.equals(
+                            ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)) {
+                        int cityIdx =
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.StructuredPostal.CITY);
+                        int countryIdx =
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY);
+                        int formattedIdx =
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.StructuredPostal
+                                                .FORMATTED_ADDRESS);
+                        int postcodeIdx =
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE);
+                        int regionIdx =
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.StructuredPostal.REGION);
+
+                        String city = cityIdx != -1 ? cursor.getString(cityIdx) : "";
+                        String country = countryIdx != -1 ? cursor.getString(countryIdx) : "";
+                        String formattedAddress =
+                                formattedIdx != -1 ? cursor.getString(formattedIdx) : "";
+                        String postcode = postcodeIdx != -1 ? cursor.getString(postcodeIdx) : "";
+                        String region = regionIdx != -1 ? cursor.getString(regionIdx) : "";
+
+                        builder.addresses.add(
+                                createAddress(city, country, formattedAddress, postcode, region));
+                    } else if (mimetype.equals(
+                            ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)) {
+                        int photoIdx =
+                                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO);
+                        byte[] photo = photoIdx != -1 ? cursor.getBlob(photoIdx) : null;
+                        // Cap the photo size at 1 MB to prevent OutOfMemoryErrors from malicious
+                        // or excessively large blobs.
+                        if (photo != null && photo.length <= 1024 * 1024) {
+                            builder.photoBytes = photo;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error querying system picker results", e);
+                return new Result(Collections.emptyList(), Collections.emptyMap());
+            }
+
+            List<ContactDetails> contacts = new ArrayList<>();
+            Map<String, Bitmap> bitmaps = new LinkedHashMap<>();
+            for (ContactDetailsBuilder builder : builders.values()) {
+                contacts.add(builder.build());
+                Bitmap bitmap = null;
+                if (builder.photoBytes != null && builder.photoBytes.length > 0) {
+                    try {
+                        bitmap =
+                                BitmapFactory.decodeByteArray(
+                                        builder.photoBytes, 0, builder.photoBytes.length);
+                    } catch (OutOfMemoryError e) {
+                        Log.e(TAG, "OutOfMemoryError while decoding contact photo");
+                    }
+                }
+                bitmaps.put(builder.id, bitmap);
+            }
+            return new Result(contacts, bitmaps);
         }
 
-        @Override
-        protected void onPostExecute(Result result) {
-            PickerCategoryView pickerCategoryView = mPickerCategoryViewRef.get();
-            if (pickerCategoryView == null) {
-                return;
-            }
-            for (Map.Entry<String, Bitmap> entry : result.bitmaps.entrySet()) {
-                pickerCategoryView.getIconCache().putBitmap(entry.getKey(), entry.getValue());
-            }
-            pickerCategoryView.onSystemContactsRetrieved(result.contacts);
+        private PaymentAddress createAddress(
+                String city,
+                String country,
+                String formattedAddress,
+                String postcode,
+                String region) {
+            PaymentAddress address = new PaymentAddress();
+
+            address.city = Objects.requireNonNullElse(city, "");
+            address.country = Objects.requireNonNullElse(country, "");
+            address.addressLine =
+                    Objects.requireNonNullElse(new String[] {formattedAddress}, new String[] {});
+            address.postalCode = Objects.requireNonNullElse(postcode, "");
+            address.region = Objects.requireNonNullElse(region, "");
+
+            // The other fields are required.
+            address.dependentLocality = "";
+            address.sortingCode = "";
+            address.organization = "";
+            address.recipient = "";
+            address.phone = "";
+
+            return address;
         }
     }
 

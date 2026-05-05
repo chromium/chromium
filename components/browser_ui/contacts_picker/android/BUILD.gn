@@ -98,6 +98,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialogTest.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/FakeAconfigFlaggedApiDelegate.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsPickerTest.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsWorkerTaskTest.java",
   ]
   deps = [
     ":java",
