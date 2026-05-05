@@ -744,7 +744,14 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
     // https://crbug.com/352744596
     base::RunLoop bound_session_params_update;
     ExpectSessionParamsUpdate(bound_session_params_update.QuitClosure());
-    bound_session_params_update.Run();
+    if (service()
+            ->GetBoundSessionThrottlerParams()[0]
+            ->cookie_expiry_date.is_null()) {
+      bound_session_params_update.Run();
+    } else {
+      ExpectSessionParamsUpdate({});
+    }
+
     std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
         throttler_params = service()->GetBoundSessionThrottlerParams();
     ASSERT_EQ(throttler_params.size(), 1U);
