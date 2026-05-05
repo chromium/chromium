@@ -156,7 +156,6 @@ void SwitchToNormalMode() {
 
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
-  [ChromeEarlGrey removeBrowsingCache];
 
   _slowResponseDelay = base::TimeDelta();
 
@@ -178,6 +177,8 @@ void SwitchToNormalMode() {
           response->set_code(net::HTTP_OK);
           response->set_content_type("text/html");
           response->set_content("Slow Page");
+          response->AddCustomHeader("Cache-Control",
+                                    "no-cache, no-store, must-revalidate");
           return response;
         }
         auto it = responses->find(request.relative_url);
@@ -187,6 +188,8 @@ void SwitchToNormalMode() {
           response->set_code(net::HTTP_OK);
           response->set_content_type("text/html");
           response->set_content(it->second);
+          response->AddCustomHeader("Cache-Control",
+                                    "no-cache, no-store, must-revalidate");
           return response;
         }
         return nullptr;
@@ -463,7 +466,6 @@ void SwitchToNormalMode() {
 
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey evictOtherBrowserTabs];
-  [ChromeEarlGrey removeBrowsingCache];
 
   SwitchToNormalMode();
   // TODO(crbug.com/41271925): EarlGrey synchronize on some animations when a
@@ -505,7 +507,6 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey evictOtherBrowserTabs];
 
-  [ChromeEarlGrey removeBrowsingCache];
 
   SwitchToNormalMode();
   // Wait for the page starting to load. It is possible that the page finish
@@ -546,7 +547,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey evictOtherBrowserTabs];
 
-  [ChromeEarlGrey removeBrowsingCache];
+
   SwitchToNormalMode();
   // Wait for the page starting to load. It is possible that the page finish
   // loading before this test. In that case the wait will timeout. Ignore the
