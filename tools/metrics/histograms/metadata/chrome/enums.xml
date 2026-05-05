@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="No update"/>
   <int value="2" label="One window, one tab"/>
   <int value="3" label="Multiple tabs or windows"/>
-  <int value="5" label="Backgrounded"/>
+  <int value="4" label="Backgrounded"/>
 </enum>
 
 <enum name="RemoteHungProcessTerminateReason">
