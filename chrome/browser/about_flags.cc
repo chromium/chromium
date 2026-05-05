@@ -13146,6 +13146,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidShareFullLinkDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidShareFullLink)},
 #endif
+
+    {"autofill-enable-travel-category-and-merchant-benefits-from-curinos",
+     flag_descriptions::
+         kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName,
+     flag_descriptions::
+         kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

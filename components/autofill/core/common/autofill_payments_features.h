@@ -96,6 +96,9 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl);
 #endif
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVcn3dsAuthentication);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager);

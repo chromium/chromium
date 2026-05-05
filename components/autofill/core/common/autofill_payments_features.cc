@@ -242,6 +242,11 @@ BASE_FEATURE(kAutofillEnableTouchToFillReshowForBnpl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When enabled, travel category and merchant benefits sourced from Curinos will
+// be shown in Autofill.
+BASE_FEATURE(kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will trigger 3DS authentication during a virtual card
 // retrieval if a challenge is required, 3DS authentication is available for
 // the card, and FIDO is not.

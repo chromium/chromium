@@ -1057,6 +1057,14 @@ inline constexpr char kAutofillEnableTouchToFillReshowForBnplDescription[] =
     "When enabled, the Touch To Fill bottom sheet on Android can be reshown "
     "after a BNPL flow is dismissed by a user.";
 
+inline constexpr char
+    kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName[] =
+        "Enable travel category and merchant benefits from Curinos";
+inline constexpr char
+    kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosDescription[] =
+        "When enabled, travel category and merchant benefits sourced from "
+        "Curinos will be shown in Autofill.";
+
 inline constexpr char kAutofillEnableVcn3dsAuthenticationName[] =
     "Enable 3DS authentication for virtual cards";
 inline constexpr char kAutofillEnableVcn3dsAuthenticationDescription[] =

@@ -999,6 +999,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-travel-category-and-merchant-benefits-from-curinos",
+    "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-vcn-3ds-authentication",
     "owners": ["vinnypersky@google.com", "hdhandapani@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 149
