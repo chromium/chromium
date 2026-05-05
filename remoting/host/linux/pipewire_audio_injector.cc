@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/jitter_buffer.h"
 #include "remoting/host/linux/pipewire_utils.h"
 #include "remoting/proto/audio.pb.h"
 
@@ -36,6 +37,20 @@ namespace {
 constexpr uint32_t kAudioRate = 48000;
 constexpr uint32_t kAudioChannels = 2;
 constexpr size_t kBytesPerFrame = kAudioChannels * sizeof(int16_t);
+
+static constexpr JitterBuffer::Config kJitterBufferConfig = {
+    // 256KB is about 1.3s of audio. This must be a power of two.
+    .capacity = 256 * 1024,
+    .frame_size = kBytesPerFrame,
+    // 30ms of audio: 48000 * 4 * 0.03 = 5760 bytes.
+    .max_starvation_bytes = 5760,
+    // 150ms of audio: 192000 * 150 / 1000 = 28800 bytes.
+    .max_latency_bytes = 28800,
+    // 100ms of audio: 48000 * 0.1 * 4 = 19200 bytes.
+    // TODO: crbug.com/502327751 - this is a rather high latency for real-time
+    // audio streaming. See if we can bring it down to ~20ms.
+    .minimum_threshold = 19200,
+};
 }  // namespace
 
 // The core object is started and destroyed on the caller's sequence. `delegate`
@@ -99,11 +114,9 @@ class PipewireAudioInjector::Core {
   // `stream_node_id_` is known. Cleared once `stream_node_id_` is known.
   std::map<uint32_t, uint32_t> pending_links_;
 
-  // Use a deque of string to prevent unnecessary copying. The data is
-  // std::move'd from the AudioPacket.
-  std::deque<std::string> audio_buffers_;
-  size_t total_audio_bytes_ = 0;
-  size_t read_offset_ = 0;
+  JitterBuffer jitter_buffer_{kJitterBufferConfig};
+
+  std::atomic<bool> has_consumers_{false};
 };
 
 PipewireAudioInjector::Core::Core() {
@@ -201,6 +214,10 @@ bool PipewireAudioInjector::Core::Start(base::WeakPtr<Delegate> delegate) {
 
 void PipewireAudioInjector::Core::InjectAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
+  if (!has_consumers_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
   if (packet->encoding() != AudioPacket::ENCODING_RAW) {
     NOTIMPLEMENTED_LOG_ONCE()
         << "Unsupported audio encoding: " << packet->encoding();
@@ -219,39 +236,12 @@ void PipewireAudioInjector::Core::InjectAudioPacket(
     return;
   }
 
-  ScopedThreadLoopLock lock(pw_main_loop_.get());
-  for (std::string& data : *packet->mutable_data()) {
+  for (const std::string& data : packet->data()) {
     if (data.size() % kBytesPerFrame != 0) {
       LOG(ERROR) << "Dropped misaligned audio data packet.";
       continue;
     }
-    total_audio_bytes_ += data.size();
-    audio_buffers_.push_back(std::move(data));
-  }
-
-  // Limit the buffer size to ~1 second of audio to avoid memory bloat if
-  // PipeWire is not consuming data fast enough.
-  constexpr size_t kMaxBufferSize = kAudioRate * kBytesPerFrame;
-  if (total_audio_bytes_ > kMaxBufferSize) {
-    size_t stride = kBytesPerFrame;
-    size_t excess_bytes = total_audio_bytes_ - kMaxBufferSize;
-    size_t bytes_to_drop = excess_bytes;
-    DCHECK_EQ(bytes_to_drop % stride, 0u);
-
-    while (bytes_to_drop > 0 && !audio_buffers_.empty()) {
-      std::string& front = audio_buffers_.front();
-      size_t available = front.size() - read_offset_;
-      if (available <= bytes_to_drop) {
-        total_audio_bytes_ -= available;
-        bytes_to_drop -= available;
-        audio_buffers_.pop_front();
-        read_offset_ = 0;
-      } else {
-        total_audio_bytes_ -= bytes_to_drop;
-        read_offset_ += bytes_to_drop;
-        bytes_to_drop = 0;
-      }
-    }
+    jitter_buffer_.Write(base::as_byte_span(data));
   }
 }
 
@@ -290,6 +280,8 @@ void PipewireAudioInjector::Core::HandleStreamStateChanged(
     pending_links_.clear();
 
     if (was_empty && !active_links_.empty()) {
+      jitter_buffer_.Clear();
+      has_consumers_.store(true, std::memory_order_relaxed);
       on_audio_injector_consumers_changed_cb_.Run(true);
     }
   }
@@ -302,64 +294,49 @@ void PipewireAudioInjector::Core::OnStreamProcess(void* data) {
 
 DISABLE_CFI_DLSYM
 void PipewireAudioInjector::Core::HandleStreamProcess() {
-  struct pw_buffer* b = pw_->pw_stream_dequeue_buffer(pw_stream_.get());
-  if (!b) {
-    return;
-  }
+  while (struct pw_buffer* b =
+             pw_->pw_stream_dequeue_buffer(pw_stream_.get())) {
+    struct spa_buffer* buf = b->buffer;
+    if (!buf->datas[0].data) {
+      pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
+      continue;
+    }
 
-  struct spa_buffer* buf = b->buffer;
-  if (!buf->datas[0].data) {
+    uint32_t stride = kBytesPerFrame;
+    uint32_t n_frames = buf->datas[0].maxsize / stride;
+    if (b->requested > 0) {
+      n_frames = std::min(n_frames, static_cast<uint32_t>(b->requested));
+    } else {
+      // If PipeWire doesn't request a specific size, use a default period
+      // (10ms).
+      n_frames = std::min(n_frames, kAudioRate / 100u);
+    }
+
+    uint32_t target_bytes = n_frames * stride;
+
+    // SAFETY: `buf->datas[0].data` is guaranteed by PipeWire to point to a
+    // buffer of at least `buf->datas[0].maxsize` bytes.
+    auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
+        static_cast<uint8_t*>(buf->datas[0].data), buf->datas[0].maxsize));
+
+    size_t bytes_read = jitter_buffer_.Read(dst_span.first(target_bytes));
+
+    if (bytes_read < target_bytes) {
+      // Fill the rest of the buffer with silence.
+      std::ranges::fill(dst_span.subspan(bytes_read, target_bytes - bytes_read),
+                        0);
+    }
+
+    buf->datas[0].chunk->offset = 0;
+    buf->datas[0].chunk->stride = stride;
+    buf->datas[0].chunk->size = target_bytes;
+
     pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
-    return;
-  }
 
-  uint32_t stride = kBytesPerFrame;
-  uint32_t n_frames = buf->datas[0].maxsize / stride;
-  if (b->requested > 0) {
-    n_frames = std::min(n_frames, static_cast<uint32_t>(b->requested));
-  }
-
-  uint32_t frames_to_write =
-      std::min(static_cast<uint32_t>(total_audio_bytes_ / stride), n_frames);
-  uint32_t bytes_to_write = frames_to_write * stride;
-
-  // SAFETY: `buf->datas[0].data` is guaranteed by PipeWire to point to a buffer
-  // of at least `buf->datas[0].maxsize` bytes.
-  auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
-      static_cast<uint8_t*>(buf->datas[0].data), buf->datas[0].maxsize));
-
-  uint32_t bytes_written = 0;
-  while (bytes_written < bytes_to_write && !audio_buffers_.empty()) {
-    std::string& front = audio_buffers_.front();
-    size_t available = front.size() - read_offset_;
-    size_t to_copy = std::min(
-        available, static_cast<size_t>(bytes_to_write - bytes_written));
-
-    dst_span.subspan(bytes_written, to_copy)
-        .copy_from(base::as_byte_span(front).subspan(read_offset_, to_copy));
-
-    bytes_written += to_copy;
-    read_offset_ += to_copy;
-    total_audio_bytes_ -= to_copy;
-
-    if (read_offset_ >= front.size()) {
-      audio_buffers_.pop_front();
-      read_offset_ = 0;
+    if (bytes_read < target_bytes) {
+      break;
     }
   }
-
-  uint32_t target_bytes = b->requested > 0 ? n_frames * stride : bytes_written;
-
-  if (bytes_written < target_bytes) {
-    std::ranges::fill(
-        dst_span.subspan(bytes_written, target_bytes - bytes_written), 0);
-  }
-
-  buf->datas[0].chunk->offset = 0;
-  buf->datas[0].chunk->stride = stride;
-  buf->datas[0].chunk->size = target_bytes;
-
-  pw_->pw_stream_queue_buffer(pw_stream_.get(), b);
 }
 
 // static
@@ -401,6 +378,8 @@ void PipewireAudioInjector::Core::HandleRegistryGlobal(
     return;
   }
   if (active_links_.empty()) {
+    jitter_buffer_.Clear();
+    has_consumers_.store(true, std::memory_order_relaxed);
     on_audio_injector_consumers_changed_cb_.Run(true);
   }
   active_links_.insert(id);
@@ -415,6 +394,8 @@ void PipewireAudioInjector::Core::OnRegistryGlobalRemove(void* data,
 void PipewireAudioInjector::Core::HandleRegistryGlobalRemove(uint32_t id) {
   pending_links_.erase(id);
   if (active_links_.erase(id) > 0 && active_links_.empty()) {
+    has_consumers_.store(false, std::memory_order_relaxed);
+    jitter_buffer_.Clear();
     on_audio_injector_consumers_changed_cb_.Run(false);
   }
 }
