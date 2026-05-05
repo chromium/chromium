@@ -376,7 +376,8 @@ void NavigationManagerImpl::AddPendingItem(
 
   bool is_form_post =
       is_post_navigation &&
-      (navigation_type & ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT);
+      ui::PageTransitionCoreTypeIs(
+          navigation_type, ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT);
   if (proxy.backForwardList.currentItem && isCurrentURLSameAsPending &&
       !is_form_post && !is_error_navigation) {
     pending_item_index_ = web_view_cache_.GetCurrentItemIndex();

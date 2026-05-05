@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -149,7 +150,7 @@ class ListenerDeferredTest : public InProcessBrowserTest {
     return test_tab_->GetContents()->GetLastCommittedURL();
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList features_;
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
@@ -249,4 +250,55 @@ IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
   ForegroundTestTab();
   WaitForNavigationCompleted();
   EXPECT_EQ(GURL(kThirdURL), CurrentTabURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest, KeywordNavigationClearsTabState) {
+  ForegroundTestTab();
+  SaveGroup();
+
+  // 1. Simulate a navigation from sync to set up a "restricted" tab state.
+  // This likely creates the TabGroupSyncTabState.
+  AttemptNavigationFromSync(GURL(kSecondURL));
+
+  // Verify the tab state exists.
+  ASSERT_TRUE(TabGroupSyncTabState::FromWebContents(test_tab_->GetContents()));
+
+  // 2. Perform a browser-initiated navigation with PAGE_TRANSITION_KEYWORD
+  // and no user gesture.
+  content::NavigationController::LoadURLParams params((GURL(kThirdURL)));
+  params.transition_type = ui::PAGE_TRANSITION_KEYWORD;
+  params.has_user_gesture = false;
+
+  content::TestNavigationObserver navigation_observer(test_tab_->GetContents());
+  test_tab_->GetContents()->GetController().LoadURLWithParams(params);
+  navigation_observer.Wait();
+
+  // 3. Verify that the tab state WAS cleared.
+  // In the old code, KEYWORD (9) would have matched RELOAD (8) & mask,
+  // returning false and failing to clear the state.
+  // With the fix, it correctly identifies it as NOT a reload and clears it.
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(test_tab_->GetContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(ListenerDeferredTest,
+                       ReloadNavigationDoesNotClearTabState) {
+  ForegroundTestTab();
+  SaveGroup();
+
+  // 1. Simulate a navigation from sync.
+  AttemptNavigationFromSync(GURL(kSecondURL));
+
+  ASSERT_TRUE(TabGroupSyncTabState::FromWebContents(test_tab_->GetContents()));
+
+  // 2. Perform a browser-initiated navigation with PAGE_TRANSITION_RELOAD.
+  content::NavigationController::LoadURLParams params((GURL(kSecondURL)));
+  params.transition_type = ui::PAGE_TRANSITION_RELOAD;
+  params.has_user_gesture = false;
+
+  content::TestNavigationObserver navigation_observer(test_tab_->GetContents());
+  test_tab_->GetContents()->GetController().LoadURLWithParams(params);
+  navigation_observer.Wait();
+
+  // 3. Verify that the tab state was NOT cleared.
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(test_tab_->GetContents()));
 }
