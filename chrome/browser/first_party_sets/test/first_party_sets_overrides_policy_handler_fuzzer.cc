@@ -5,11 +5,13 @@
 #include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 
 #include <stdlib.h>
+
 #include <iostream>
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
+#include "base/no_destructor.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/policy_map.h"
@@ -27,9 +29,8 @@ struct IcuEnvironment {
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* test_case = new IcuEnvironment();
-
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
+  static base::NoDestructor<IcuEnvironment> test_case;
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
   FirstPartySetsOverridesPolicyHandler fps_handler(
