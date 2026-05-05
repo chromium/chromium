@@ -25,8 +25,11 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -51,12 +54,10 @@ MATCHER_P2(MatchesFolder, expected_type, expected_unmodifiable, "") {
 
 class ExtensionBookmarksTest : public testing::Test {
  public:
-  ExtensionBookmarksTest()
-      : managed_(nullptr),
-        model_(nullptr),
-        node_(nullptr),
-        node2_(nullptr),
-        folder_(nullptr) {}
+  ExtensionBookmarksTest() = default;
+  ExtensionBookmarksTest(const ExtensionBookmarksTest&) = delete;
+  ExtensionBookmarksTest& operator=(const ExtensionBookmarksTest&) = delete;
+  ~ExtensionBookmarksTest() override = default;
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -106,13 +107,21 @@ class ExtensionBookmarksTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<bookmarks::ManagedBookmarkService> managed_;
-  raw_ptr<BookmarkModel> model_;
-  raw_ptr<const BookmarkNode> node_;
-  raw_ptr<const BookmarkNode> node2_;
-  raw_ptr<const BookmarkNode> folder_;
+  raw_ptr<bookmarks::ManagedBookmarkService> managed_ = nullptr;
+  raw_ptr<BookmarkModel> model_ = nullptr;
+  raw_ptr<const BookmarkNode> node_ = nullptr;
+  raw_ptr<const BookmarkNode> node2_ = nullptr;
+  raw_ptr<const BookmarkNode> folder_ = nullptr;
 };
 
+// TODO(crbug.com/414844449): This test depends on which permanent folders are
+// visible when empty (e.g. the bookmarks bar). This behaviour is different on
+// Android Desktop vs. other Desktop platforms. It results in different node
+// counts when you count from the root. That's why only this test is affected,
+// the others count children from a different node. Once the behavior for
+// Android Desktop has been decided this test should be re-enabled. See also
+// bookmarks_apitest.cc.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {
   BookmarkTreeNode tree =
       GetBookmarkTreeNode(model_, managed_, model_->root_node(),
@@ -120,6 +129,7 @@ TEST_F(ExtensionBookmarksTest, GetFullTreeFromRoot) {
                           /*only_folders=*/false);
   ASSERT_EQ(4U, tree.children->size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ExtensionBookmarksTest, GetTreeFromOtherPermanentNode) {
   BookmarkTreeNode tree =
