@@ -4,6 +4,8 @@
 
 #include "remoting/host/native_messaging/log_message_handler.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -107,7 +109,7 @@ void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
                                                const std::string& str) {
   suppress_logging_ = true;
 
-  std::string severity_string = "log";
+  std::string_view severity_string = "log";
   switch (severity) {
     case logging::LOGGING_WARNING:
       severity_string = "warn";
@@ -118,8 +120,8 @@ void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
       break;
   }
 
-  std::string message = str.substr(message_start);
-  base::TrimWhitespaceASCII(message, base::TRIM_ALL, &message);
+  std::string_view message = std::string_view(str).substr(message_start);
+  message = base::TrimWhitespaceASCII(message, base::TRIM_ALL);
 
   base::DictValue dictionary;
   dictionary.Set("type", kDebugMessageTypeName);
