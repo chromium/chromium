@@ -328,15 +328,6 @@ external/wpt/css/css-shadow/css-scoping-shadow-with-rules.html
 external/wpt/css/css-shadow/css-scoping-shadow-with-rules-no-style-leak.html
 external/wpt/css/css-shadow/part/interaction-with-nested-pseudo-class.html
 external/wpt/css/css-shadow/shadow-host-with-before-after.html
-external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-004.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-005.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-computed-shape-000.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-004.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-005.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-inset-003.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html
-external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html
 # Known to be very flaky: https://crbug.com/375344326
 external/wpt/css/css-sizing/*
 external/wpt/css/css-tables/tentative/baseline-table.html
