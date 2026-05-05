@@ -1234,8 +1234,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
       suggestion_controller_, delegate, web_contents(),
       PopupControllerCommon(
           element_bounds_in_screen_space, open_args.text_direction,
-          web_contents()->GetNativeView(), open_args.anchor_type,
-          open_args.show_tabbed_popup,
+          open_args.anchor_type, open_args.show_tabbed_popup,
           open_args.prefer_prev_arrow_side_on_suggestions_update),
       open_args.form_control_ax_id, open_args.trigger_source);
 

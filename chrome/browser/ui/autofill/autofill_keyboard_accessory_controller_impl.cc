@@ -255,7 +255,7 @@ AutofillSuggestionController::GetOrCreate(
   if (AutofillKeyboardAccessoryControllerImpl* previous_impl =
           static_cast<AutofillKeyboardAccessoryControllerImpl*>(previous.get());
       previous_impl && previous_impl->delegate_.get() == delegate.get() &&
-      previous_impl->container_view() == controller_common.container_view &&
+      previous_impl->container_view() == web_contents->GetNativeView() &&
       previous_impl->GetSuggestionTriggerSource() == trigger_source) {
     if (previous_impl->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
       previous_impl->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -354,7 +354,7 @@ void AutofillKeyboardAccessoryControllerImpl::ViewDestroyed() {
 
 gfx::NativeView AutofillKeyboardAccessoryControllerImpl::container_view()
     const {
-  return controller_common_.container_view;
+  return web_contents_ ? web_contents_->GetNativeView() : gfx::NativeView();
 }
 
 content::WebContents* AutofillKeyboardAccessoryControllerImpl::GetWebContents()

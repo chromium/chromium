@@ -185,7 +185,7 @@ AutofillSuggestionController::GetOrCreate(
   if (AutofillPopupControllerImpl* previous_impl =
           static_cast<AutofillPopupControllerImpl*>(previous.get());
       previous_impl && previous_impl->delegate_.get() == delegate.get() &&
-      previous_impl->container_view() == controller_common.container_view &&
+      previous_impl->container_view() == web_contents->GetNativeView() &&
       previous_impl->GetSuggestionTriggerSource() == trigger_source) {
     if (previous_impl->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
       previous_impl->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -497,7 +497,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
-  return controller_common_.container_view;
+  return web_contents_ ? web_contents_->GetNativeView() : gfx::NativeView();
 }
 
 content::WebContents* AutofillPopupControllerImpl::GetWebContents() const {

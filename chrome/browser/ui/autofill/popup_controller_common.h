@@ -19,7 +19,6 @@ struct PopupControllerCommon {
   PopupControllerCommon(
       gfx::RectF element_bounds,
       base::i18n::TextDirection text_direction,
-      gfx::NativeView container_view,
       PopupAnchorType anchor_type = PopupAnchorType::kField,
       bool show_tabbed_popup = false,
       bool prefer_prev_arrow_side_on_suggestions_update = false);
@@ -36,9 +35,6 @@ struct PopupControllerCommon {
 
   // The direction of the <input>.
   base::i18n::TextDirection text_direction;
-
-  // Weak reference
-  gfx::NativeView container_view;
 
   // The type of the element to anchor the popup on.
   PopupAnchorType anchor_type;

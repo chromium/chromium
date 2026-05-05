@@ -44,13 +44,11 @@ AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
     : AutofillSuggestionControllerForTestBase(
           external_delegate,
           web_contents,
-          PopupControllerCommon(element_bounds,
-                                base::i18n::UNKNOWN_DIRECTION,
-                                gfx::NativeView())
+          PopupControllerCommon(element_bounds, base::i18n::UNKNOWN_DIRECTION)
 #if !BUILDFLAG(IS_ANDROID)
-      // The comma has to be inside the #if or the compile fails.
-      ,
-      /*form_control_ax_id=*/0
+          // The comma has to be inside the #if or the compile fails.
+          ,
+          /*form_control_ax_id=*/0
 #endif
       ) {
 }
