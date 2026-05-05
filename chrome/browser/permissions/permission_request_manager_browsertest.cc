@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
-                       RequestApproximateGeolocation) {
+                       RequestApproximateAndPreciseGeolocation) {
   content::PermissionResult approx_only_permission_result(
       blink::mojom::PermissionStatus::GRANTED,
       content::PermissionStatusSource::UNSPECIFIED,
@@ -2361,6 +2361,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
                 IsEmpty());
   }
 
+  content::PermissionResult precise_permission_result(
+      blink::mojom::PermissionStatus::GRANTED,
+      content::PermissionStatusSource::UNSPECIFIED,
+      GeolocationSetting({.approximate = PermissionOption::kAllowed,
+                          .precise = PermissionOption::kAllowed}));
+
   // Now request precise geolocation permission. This should trigger a prompt.
   {
     base::HistogramTester histograms;
@@ -2369,17 +2375,25 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
     request_manager->set_auto_response_prompt_options_for_test(
         GeolocationPromptOptions{.selected_accuracy =
                                      GeolocationAccuracy::kPrecise});
-    content::PermissionResult precise_permission_result(
-        blink::mojom::PermissionStatus::GRANTED,
-        content::PermissionStatusSource::UNSPECIFIED,
-        GeolocationSetting({.approximate = PermissionOption::kAllowed,
-                            .precise = PermissionOption::kAllowed}));
     EXPECT_EQ(RequestPermissionFromCurrentDocumentSync(
                   kPreciseGeolocationDescriptor.Clone()),
               precise_permission_result);
     histograms.ExpectUniqueSample(
         permissions::PermissionUmaUtil::kPermissionsPromptShown,
         permissions::RequestTypeForUma::PERMISSION_GEOLOCATION, 1);
+  }
+
+  // Now request approximate permission. This should not trigger another prompt.
+  {
+    base::HistogramTester histograms;
+    request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+    EXPECT_EQ(RequestPermissionFromCurrentDocumentSync(
+                  kApproximateGeolocationDescriptor.Clone()),
+              precise_permission_result);
+    EXPECT_THAT(histograms.GetAllSamples(
+                    permissions::PermissionUmaUtil::kPermissionsPromptShown),
+                IsEmpty());
   }
 }
 

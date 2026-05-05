@@ -12,6 +12,10 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 
+namespace content {
+struct PermissionResult;
+}  // namespace content
+
 namespace permissions {
 struct PermissionPromptDecision;
 
@@ -38,14 +42,17 @@ class WebXrPermissionContext : public ContentSettingPermissionContextBase {
       const PermissionRequestData& request_data,
       BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override;
 
   void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 
-  void OnAndroidPermissionDecided(const PermissionRequestData& request_data,
-                                  BrowserPermissionCallback callback,
-                                  bool permission_granted);
+  void OnAndroidPermissionDecided(
+      const PermissionRequestData& request_data,
+      const content::PermissionResult& website_permission_result,
+      BrowserPermissionCallback callback,
+      bool permission_granted);
 #endif
 
   ContentSettingsType content_settings_type_;

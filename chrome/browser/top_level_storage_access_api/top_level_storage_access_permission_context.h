@@ -81,6 +81,7 @@ class TopLevelStorageAccessPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override;
 
   // PermissionContextBase

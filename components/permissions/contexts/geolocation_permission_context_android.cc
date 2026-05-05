@@ -133,6 +133,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     NotifyPermissionSet(
         *request_data, std::move(callback),
         /*persist=*/false,
+        /*permission_result=*/nullptr,
         PermissionPromptDecision{.overall_decision = PermissionDecision::kDeny,
                                  .prompt_options = std::monostate(),
                                  .is_final = true});
@@ -205,6 +206,7 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
+    const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
   DCHECK(decision.is_final);
 
@@ -222,10 +224,11 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(
           request_data, std::move(callback),
           /*persist=*/false,
+          // Force recomputing PermissionResult since we are changing the
+          // decision.
+          /*permission_result=*/nullptr,
           permissions::PermissionPromptDecision{
-              .overall_decision = PermissionDecision::kDeny,
-              .prompt_options = decision.prompt_options,
-              .is_final = true});
+              .overall_decision = PermissionDecision::kDeny, .is_final = true});
       return;
     }
 
@@ -245,10 +248,11 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(
           request_data, std::move(callback),
           /*persist=*/false,
+          // Force recomputing PermissionResult since we are
+          // changing the decision.
+          /*permission_result=*/nullptr,
           permissions::PermissionPromptDecision{
-              .overall_decision = PermissionDecision::kDeny,
-              .prompt_options = decision.prompt_options,
-              .is_final = true});
+              .overall_decision = PermissionDecision::kDeny, .is_final = true});
       return;
     }
 
@@ -259,12 +263,15 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
         base::BindOnce(
             &GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown,
             weak_factory_.GetWeakPtr(), request_data.Clone(), persist,
+            permission_result ? std::make_unique<content::PermissionResult>(
+                                    *permission_result)
+                              : nullptr,
             decision));
     return;
   }
 
   FinishNotifyPermissionSet(request_data, std::move(callback), persist,
-                            decision);
+                            permission_result, decision);
 }
 
 content::PermissionResult
@@ -413,6 +420,7 @@ void GeolocationPermissionContextAndroid::HandleUpdateAndroidPermissions(
   NotifyPermissionSet(
       *request_data, std::move(callback),
       /*persist=*/false,
+      /*permission_result=*/nullptr,
       permissions::PermissionPromptDecision{.overall_decision = result_decision,
                                             .prompt_options = prompt_options,
                                             .is_final = true});
@@ -437,6 +445,7 @@ bool GeolocationPermissionContextAndroid::CanShowLocationSettingsDialog(
 void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
     const PermissionRequestData& request_data,
     bool persist,
+    std::unique_ptr<content::PermissionResult> permission_result,
     const permissions::PermissionPromptDecision& decision,
     LocationSettingsDialogOutcome prompt_outcome) {
   bool is_default_search =
@@ -445,6 +454,9 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
   if (prompt_outcome == GRANTED) {
     ResetLocationSettingsBackOff(is_default_search);
   } else {
+    // Force overriding PermissionResult in NotifyPermissionSet if the
+    // permission is not granted.
+    permission_result = nullptr;
     UpdateLocationSettingsBackOff(is_default_search);
     result_decision.overall_decision = PermissionDecision::kDeny;
     persist = false;
@@ -457,16 +469,17 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
 
   FinishNotifyPermissionSet(request_data,
                             std::move(location_settings_dialog_callback_),
-                            persist, result_decision);
+                            persist, permission_result.get(), result_decision);
 }
 
 void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
+    const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
   GeolocationPermissionContext::NotifyPermissionSet(
-      request_data, std::move(callback), persist, decision);
+      request_data, std::move(callback), persist, permission_result, decision);
 }
 
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(

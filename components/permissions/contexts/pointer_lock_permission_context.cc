@@ -23,6 +23,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
+    const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
   if (decision.overall_decision == PermissionDecision::kAllowThisTime) {
     // When `persist` is true, one-time permissions persist for a short period
@@ -32,7 +33,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     persist = false;
   }
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), persist, decision);
+      request_data, std::move(callback), persist, permission_result, decision);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

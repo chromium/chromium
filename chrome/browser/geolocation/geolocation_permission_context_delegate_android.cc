@@ -60,7 +60,7 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
             context->GetWeakPtr(), request_data.Clone(), std::move(*callback),
-            /*persist=*/false);
+            /*persist=*/false, /*permission_result=*/nullptr);
     InstalledWebappBridge::DecidePermission(type, requesting_origin,
                                             web_contents->GetLastCommittedURL(),
                                             std::move(permission_callback));

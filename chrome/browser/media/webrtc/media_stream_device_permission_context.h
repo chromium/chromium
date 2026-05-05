@@ -15,6 +15,10 @@ namespace permissions {
 struct PermissionPromptDecision;
 struct PermissionRequestData;
 }  // namespace permissions
+
+namespace content {
+struct PermissionResult;
+}
 #endif
 
 // Common class which handles the mic and camera permissions.
@@ -37,6 +41,7 @@ class MediaStreamDevicePermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override;
 #endif
   void ResetPermission(const GURL& requesting_origin,
@@ -59,7 +64,7 @@ class MediaStreamDevicePermissionContext
 
   void OnAndroidPermissionDecided(
       const permissions::PermissionRequestData& request_data,
-      const permissions::PermissionPromptDecision& website_permission_decision,
+      const content::PermissionResult& website_permission_result,
       permissions::BrowserPermissionCallback callback,
       bool permission_granted);
 #endif

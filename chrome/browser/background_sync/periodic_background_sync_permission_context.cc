@@ -141,12 +141,13 @@ void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
+    const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
   DCHECK(!persist);
   DCHECK(decision.is_final);
 
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), persist, decision);
+      request_data, std::move(callback), persist, permission_result, decision);
 }
 
 void PeriodicBackgroundSyncPermissionContext::OnContentSettingChanged(

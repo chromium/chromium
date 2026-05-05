@@ -70,6 +70,7 @@ void PersistentStoragePermissionContext::DecidePermission(
   if (request_data->requesting_origin != request_data->embedding_origin) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false,
+                        /*permission_result=*/nullptr,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kNone,
                             .prompt_options = std::monostate(),
@@ -95,6 +96,7 @@ void PersistentStoragePermissionContext::DecidePermission(
           rfh->GetStorageKey().ToCookiePartitionKey())) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false,
+                        /*permission_result=*/nullptr,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kNone,
                             .prompt_options = std::monostate(),
@@ -117,6 +119,7 @@ void PersistentStoragePermissionContext::DecidePermission(
   if (installed_registerable_domains.contains(registerable_domain)) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/true,
+                        /*permission_result=*/nullptr,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kAllow,
                             .prompt_options = std::monostate(),
@@ -135,6 +138,7 @@ void PersistentStoragePermissionContext::DecidePermission(
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(*request_data, std::move(callback),
                           /*persist=*/true,
+                          /*permission_result=*/nullptr,
                           permissions::PermissionPromptDecision{
                               .overall_decision = PermissionDecision::kAllow,
                               .prompt_options = std::monostate(),
@@ -145,6 +149,7 @@ void PersistentStoragePermissionContext::DecidePermission(
 
   NotifyPermissionSet(*request_data, std::move(callback),
                       /*persist=*/false,
+                      /*permission_result=*/nullptr,
                       permissions::PermissionPromptDecision{
                           .overall_decision = PermissionDecision::kNone,
                           .prompt_options = std::monostate(),

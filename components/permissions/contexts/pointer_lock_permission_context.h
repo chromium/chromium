@@ -27,6 +27,7 @@ class PointerLockPermissionContext
       const PermissionRequestData& request_data,
       BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override;
 
 #if !BUILDFLAG(IS_ANDROID)

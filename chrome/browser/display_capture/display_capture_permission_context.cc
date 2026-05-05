@@ -22,6 +22,7 @@ void DisplayCapturePermissionContext::DecidePermission(
     permissions::BrowserPermissionCallback callback) {
   NotifyPermissionSet(*request_data, std::move(callback),
                       /*persist=*/false,
+                      /*permission_result=*/nullptr,
                       permissions::PermissionPromptDecision{
                           .overall_decision = PermissionDecision::kNone,
                           .prompt_options = std::monostate(),

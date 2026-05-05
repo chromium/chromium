@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_DECISION_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_DECISION_H_
 
+#include <variant>
+
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 
@@ -23,7 +25,7 @@ struct PermissionPromptDecision {
   bool operator==(const PermissionPromptDecision&) const = default;
 
   PermissionDecision overall_decision;
-  PromptOptions prompt_options;
+  PromptOptions prompt_options = std::monostate();
   bool is_final;
 };
 

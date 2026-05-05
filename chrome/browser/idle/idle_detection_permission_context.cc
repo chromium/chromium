@@ -73,6 +73,7 @@ void IdleDetectionPermissionContext::DecidePermission(
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
                         /*persist=*/true,
+                        /*permission_result=*/nullptr,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kDeny,
                             .prompt_options = std::monostate(),

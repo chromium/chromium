@@ -203,12 +203,24 @@ class PermissionContextBase : public content_settings::Observer {
       std::unique_ptr<PermissionRequestData> request_data,
       BrowserPermissionCallback callback);
 
-  // Updates stored setting if persist is set, updates tab indicators
-  // and runs the callback to finish the request.
+  // Computes the new PermissionResult based on the current value and a decision
+  // made on a permission request.
+  content::PermissionResult ComputeNewPermissionResult(
+      const PermissionRequestData& request_data,
+      const permissions::PermissionPromptDecision& decision);
+
+  // Called when the permission decision has been made. Updates stored setting
+  // if persist is set, updates tab indicators and runs the callback to finish
+  // the request.
+  //
+  // If `permission_result` is non null, it will be used as the final result.
+  // Otherwise, a new result will be computed using
+  // `ComputeNewPermissionResult()`.
   virtual void NotifyPermissionSet(
       const PermissionRequestData& request_data,
       BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision);
 
   // Implementors can override this method to update the icons on the
@@ -299,7 +311,8 @@ class PermissionContextBase : public content_settings::Observer {
       const PermissionRequestID& id,
       BrowserPermissionCallback callback,
       PermissionDecision decision,
-      PermissionSetting new_value);
+      const content::PermissionResult& permission_result);
+
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
   void PermissionDecided(const permissions::PermissionPromptDecision& decision,

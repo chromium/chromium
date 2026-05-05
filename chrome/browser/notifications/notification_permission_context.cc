@@ -190,6 +190,7 @@ void NotificationPermissionContext::DecidePermission(
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
                         /*persist=*/true,
+                        /*permission_result=*/nullptr,
                         permissions::PermissionPromptDecision{
                             .overall_decision = PermissionDecision::kDeny,
                             .prompt_options = std::monostate(),
@@ -229,7 +230,8 @@ void NotificationPermissionContext::DecidePermission(
                            request_data->requesting_origin,
                            request_data->embedding_origin),
                        std::move(callback),
-                       /*persist=*/false));
+                       /*persist=*/false,
+                       /*permission_result=*/nullptr));
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -35,6 +35,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
     if (extension_decision->permission_set) {
       context->NotifyPermissionSet(request_data, std::move(*callback),
                                    /*persist=*/false,
+                                   /*permission_result=*/nullptr,
                                    extension_decision->decision);
     }
     return true;

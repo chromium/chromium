@@ -97,6 +97,7 @@ class GeolocationPermissionContextAndroid
       const PermissionRequestData& request_data,
       BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override;
   content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::WebContents* web_contents,
@@ -140,6 +141,7 @@ class GeolocationPermissionContextAndroid
   void OnLocationSettingsDialogShown(
       const PermissionRequestData& request_data,
       bool persist,
+      std::unique_ptr<content::PermissionResult> permission_result,
       const permissions::PermissionPromptDecision& decision,
       LocationSettingsDialogOutcome prompt_outcome);
 
@@ -147,6 +149,7 @@ class GeolocationPermissionContextAndroid
       const PermissionRequestData& request_data,
       BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision);
 
   std::unique_ptr<LocationSettings> location_settings_;

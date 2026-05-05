@@ -190,6 +190,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
     const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback callback,
     bool persist,
+    const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
   CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
   CHECK(decision.is_final);

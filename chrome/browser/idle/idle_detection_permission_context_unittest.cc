@@ -50,12 +50,14 @@ class TestIdleDetectionPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
+      const content::PermissionResult* permission_result,
       const permissions::PermissionPromptDecision& decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_set_decision_ = decision.overall_decision;
     IdleDetectionPermissionContext::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision);
+        request_data, std::move(callback), persist, permission_result,
+        decision);
   }
 
   int permission_set_count_ = 0;
