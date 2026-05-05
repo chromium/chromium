@@ -5678,9 +5678,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_VR)
 #if BUILDFLAG(ENABLE_OPENXR)
-    {"openxr-spatial-entities", flag_descriptions::kOpenXrSpatialEntitiesName,
-     flag_descriptions::kOpenXrSpatialEntitiesDescription, kOsWin | kOsAndroid,
-     FEATURE_VALUE_TYPE(device::features::kOpenXrSpatialEntities)},
     {"spatial-entities-depth-hit-test",
      flag_descriptions::kSpatialEntitesDepthHitTestName,
      flag_descriptions::kSpatialEntitesDepthHitTestDescription,

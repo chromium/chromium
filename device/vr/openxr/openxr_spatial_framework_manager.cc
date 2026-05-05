@@ -18,7 +18,6 @@
 #include "device/vr/openxr/openxr_spatial_plane_manager.h"
 #include "device/vr/openxr/openxr_spatial_utils.h"
 #include "device/vr/openxr/openxr_util.h"
-#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -258,11 +257,6 @@ OpenXrSpatialFrameworkManagerFactory::~OpenXrSpatialFrameworkManagerFactory() =
 
 const base::flat_set<std::string_view>&
 OpenXrSpatialFrameworkManagerFactory::GetRequestedExtensions() const {
-  if (!base::FeatureList::IsEnabled(features::kOpenXrSpatialEntities)) {
-    static base::NoDestructor<base::flat_set<std::string_view>> kEmptySet({});
-    return *kEmptySet;
-  }
-
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions({
       XR_EXT_FUTURE_EXTENSION_NAME,
       XR_EXT_SPATIAL_ENTITY_EXTENSION_NAME,
@@ -281,10 +275,6 @@ void OpenXrSpatialFrameworkManagerFactory::CheckAndUpdateEnabledState(
     XrSystemId system_id) {
   supported_features_.clear();
   SetEnabled(false);
-
-  if (!base::FeatureList::IsEnabled(features::kOpenXrSpatialEntities)) {
-    return;
-  }
 
   if (!extension_enum->ExtensionSupported(
           XR_EXT_SPATIAL_ENTITY_EXTENSION_NAME)) {

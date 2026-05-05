@@ -23,7 +23,6 @@ COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrVisibleBlurred);
 // Note that this feature can be overridden by logic contained within
 // `IsOpenXrEnabled` and therefore should generally not be queried directly.
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXR);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrSpatialEntities);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kSpatialEntitesDepthHitTest);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrAndroidSmoothDepth);
