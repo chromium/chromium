@@ -12,6 +12,7 @@
 
 namespace signin {
 class AvatarProvider;
+class IdentityManager;
 }
 
 // Mediator for the Age Mismatch prompt.
@@ -19,6 +20,7 @@ class AvatarProvider;
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
           identityAvatarProvider:(signin::AvatarProvider*)identityAvatarProvider
+                 identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

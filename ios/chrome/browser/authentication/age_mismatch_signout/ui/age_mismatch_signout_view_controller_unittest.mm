@@ -55,7 +55,7 @@ TEST_F(AgeMismatchSignoutViewControllerTest, TestHideStaySignedOutButton) {
   AgeMismatchSignoutViewController* vc =
       [[AgeMismatchSignoutViewController alloc]
           initWithMode:AgeMismatchPromptMode::kSigninFlow];
-  vc.hideStaySignedOutButton = YES;
+  [vc setShowStaySignedOutButton:NO];
   [vc view];
 
   EXPECT_TRUE(vc.configuration.secondaryActionString == nil ||

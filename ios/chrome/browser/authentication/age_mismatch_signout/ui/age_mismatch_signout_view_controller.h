@@ -24,9 +24,6 @@
 // Adds a spinner on the screen and blocks all UI interactions.
 - (void)blockUI;
 
-// Hides the "Stay signed out" button if YES.
-@property(nonatomic, assign) BOOL hideStaySignedOutButton;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_SIGNOUT_VIEW_CONTROLLER_H_
