@@ -35,6 +35,7 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
@@ -121,15 +122,7 @@ bool BluetoothLowEnergyAdapterApple::IsPresent() const {
 
 BluetoothAdapter::PermissionStatus
 BluetoothLowEnergyAdapterApple::GetOsPermissionStatus() const {
-  switch (CBCentralManager.authorization) {
-    case CBManagerAuthorizationNotDetermined:
-      return PermissionStatus::kUndetermined;
-    case CBManagerAuthorizationRestricted:
-    case CBManagerAuthorizationDenied:
-      return PermissionStatus::kDenied;
-    case CBManagerAuthorizationAllowedAlways:
-      return PermissionStatus::kAllowed;
-  }
+  return BluetoothAdapterFactory::GetOsPermissionStatus();
 }
 
 void BluetoothLowEnergyAdapterApple::RequestSystemPermission(

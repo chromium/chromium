@@ -120,7 +120,8 @@ void FakeSerialPortManager::SetClient(
   clients_.Add(std::move(client));
 }
 
-void FakeSerialPortManager::GetDevices(GetDevicesCallback callback) {
+void FakeSerialPortManager::GetDevices(bool allow_bluetooth_system_prompt,
+                                       GetDevicesCallback callback) {
   std::vector<mojom::SerialPortInfoPtr> ports;
   for (const auto& map_entry : ports_)
     ports.push_back(map_entry.second.Clone());

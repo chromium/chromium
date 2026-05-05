@@ -20,6 +20,9 @@
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
+#if BUILDFLAG(IS_MAC)
+#include "device/bluetooth/bluetooth_adapter_mac_permission.h"
+#endif
 #if BUILDFLAG(IS_WIN)
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #endif
@@ -52,6 +55,16 @@ bool BluetoothAdapterFactory::IsBluetoothSupported() {
     return true;
   }
   return kBluetoothSupportedByPlatform;
+}
+
+// static
+BluetoothAdapter::PermissionStatus
+BluetoothAdapterFactory::GetOsPermissionStatus() {
+#if BUILDFLAG(IS_MAC)
+  return GetMacBluetoothPermissionStatus();
+#else
+  return BluetoothAdapter::PermissionStatus::kAllowed;
+#endif
 }
 
 bool BluetoothAdapterFactory::IsLowEnergySupported() {

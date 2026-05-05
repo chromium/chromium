@@ -162,7 +162,12 @@ interface SerialPortManager {
   SetClient(pending_remote<SerialPortManagerClient> client);
 
   // Returns the list of serial ports currently available on the host.
-  GetDevices() => (array<SerialPortInfo> devices);
+  // If `allow_bluetooth_system_prompt` is true, it may trigger a system
+  // permission prompt on platforms that require it (e.g. macOS) to discover
+  // Bluetooth devices. If false, it will skip Bluetooth devices if permission
+  // is undetermined.
+  GetDevices(bool allow_bluetooth_system_prompt)
+      => (array<SerialPortInfo> devices);
 
   // Opens the port represented by |token| using |options| and returns a
   // connection to it as |port|. If |use_alternate_path| is specified then the

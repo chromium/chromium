@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
@@ -81,13 +82,24 @@ void SerialPortManagerImpl::SetClient(
   clients_.Add(std::move(client));
 }
 
-void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
+void SerialPortManagerImpl::GetDevices(bool allow_bluetooth_system_prompt,
+                                       GetDevicesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enumerator_) {
     enumerator_ = SerialDeviceEnumerator::Create(ui_task_runner_);
     observed_enumerator_.AddObservation(enumerator_.get());
   }
   auto devices = enumerator_->GetDevices();
+
+  if (base::FeatureList::IsEnabled(features::kAvoidBluetoothPromptInGetPorts) &&
+      !allow_bluetooth_system_prompt) {
+    if (BluetoothAdapterFactory::GetOsPermissionStatus() ==
+        BluetoothAdapter::PermissionStatus::kUndetermined) {
+      std::move(callback).Run(std::move(devices));
+      return;
+    }
+  }
+
   if (!bluetooth_enumerator_) {
     bluetooth_enumerator_ =
         std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);

@@ -74,9 +74,10 @@ void SerialService::GetPorts(GetPortsCallback callback) {
   }
 
   delegate->GetPortManager(&render_frame_host())
-      ->GetDevices(base::BindOnce(&SerialService::FinishGetPorts,
-                                  weak_factory_.GetWeakPtr(),
-                                  std::move(callback)));
+      ->GetDevices(
+          /*allow_bluetooth_system_prompt=*/false,
+          base::BindOnce(&SerialService::FinishGetPorts,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SerialService::RequestPort(

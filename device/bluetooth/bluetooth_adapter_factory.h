@@ -40,6 +40,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   // if there is a Bluetooth radio present.
   static bool IsBluetoothSupported();
 
+  // Returns the OS permission status for Bluetooth.
+  static BluetoothAdapter::PermissionStatus GetOsPermissionStatus();
+
   // Returns true if the platform supports Bluetooth Low Energy. This is
   // independent of whether or not there is a Bluetooth radio present e.g.
   // Windows 7 does not support BLE so IsLowEnergySupported would return

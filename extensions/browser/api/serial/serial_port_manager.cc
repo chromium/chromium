@@ -79,7 +79,11 @@ void SerialPortManager::GetDevices(
     device::mojom::SerialPortManager::GetDevicesCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   EnsureConnection();
-  port_manager_->GetDevices(std::move(callback));
+  // Pass false for `allow_bluetooth_system_prompt` to avoid unexpected system
+  // prompts in extensions when they list devices. Extensions will only see
+  // Bluetooth ports if permission has already been granted.
+  port_manager_->GetDevices(/*allow_bluetooth_system_prompt=*/false,
+                            std::move(callback));
 }
 
 void SerialPortManager::OpenPort(
@@ -89,9 +93,14 @@ void SerialPortManager::OpenPort(
     OpenPortCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   EnsureConnection();
-  port_manager_->GetDevices(base::BindOnce(
-      &SerialPortManager::OnGotDevicesToGetPort, weak_factory_.GetWeakPtr(),
-      path, std::move(options), std::move(client), std::move(callback)));
+  // Pass false for `allow_bluetooth_system_prompt` to avoid unexpected system
+  // prompts in extensions. This means extensions can only use Bluetooth ports
+  // if permission has already been granted.
+  port_manager_->GetDevices(
+      /*allow_bluetooth_system_prompt=*/false,
+      base::BindOnce(&SerialPortManager::OnGotDevicesToGetPort,
+                     weak_factory_.GetWeakPtr(), path, std::move(options),
+                     std::move(client), std::move(callback)));
 }
 
 void SerialPortManager::StartConnectionPolling(const ExtensionId& extension_id,

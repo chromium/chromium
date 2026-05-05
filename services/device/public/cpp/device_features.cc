@@ -27,6 +27,10 @@ BASE_FEATURE(kSerialPortConnected,
 #endif  // !BUILDFLAG(IS_ANDROID)
 );
 
+// Avoid triggering the macOS Bluetooth permission prompt when
+// navigator.serial.getPorts() is called and permission is undetermined.
+BASE_FEATURE(kAvoidBluetoothPromptInGetPorts, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This feature allows to dynamically introduce an additional list of devices
 // blocked by WebUSB via a Finch parameter. This parameter should be specified
 // in the Finch configuration to manage the list of blocked devices.

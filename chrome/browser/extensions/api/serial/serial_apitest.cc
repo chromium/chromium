@@ -314,7 +314,8 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
     NOTIMPLEMENTED();
   }
 
-  void GetDevices(GetDevicesCallback callback) override {
+  void GetDevices(bool allow_bluetooth_system_prompt,
+                  GetDevicesCallback callback) override {
     std::vector<device::mojom::SerialPortInfoPtr> ports;
     for (const auto& port : ports_) {
       ports.push_back(port.second->info().Clone());

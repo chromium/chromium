@@ -206,8 +206,10 @@ TEST_F(SerialPortManagerImplTest, SimpleEnumerationTest) {
       port_manager.BindNewPipeAndPassReceiver());
 
   base::RunLoop loop;
-  port_manager->GetDevices(base::BindLambdaForTesting(
-      [&](std::vector<mojom::SerialPortInfoPtr> results) { loop.Quit(); }));
+  port_manager->GetDevices(
+      /*allow_bluetooth_system_prompt=*/true,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SerialPortInfoPtr> results) { loop.Quit(); }));
   loop.Run();
 }
 
@@ -220,15 +222,18 @@ TEST_F(SerialPortManagerImplTest, GetDevices) {
       base::FilePath::FromASCII(kDeviceAddress)};
 
   base::RunLoop loop;
-  port_manager->GetDevices(base::BindLambdaForTesting(
-      [&](std::vector<mojom::SerialPortInfoPtr> results) {
-        EXPECT_EQ(expected_paths.size(), results.size());
-        std::set<base::FilePath> actual_paths;
-        for (size_t i = 0; i < results.size(); ++i)
-          actual_paths.insert(results[i]->path);
-        EXPECT_EQ(expected_paths, actual_paths);
-        loop.Quit();
-      }));
+  port_manager->GetDevices(
+      /*allow_bluetooth_system_prompt=*/true,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SerialPortInfoPtr> results) {
+            EXPECT_EQ(expected_paths.size(), results.size());
+            std::set<base::FilePath> actual_paths;
+            for (size_t i = 0; i < results.size(); ++i) {
+              actual_paths.insert(results[i]->path);
+            }
+            EXPECT_EQ(expected_paths, actual_paths);
+            loop.Quit();
+          }));
   loop.Run();
 }
 
@@ -262,16 +267,18 @@ TEST_F(SerialPortManagerImplTest, PortRemovedAndAdded) {
   base::UnguessableToken port1_token;
   {
     base::RunLoop run_loop;
-    port_manager->GetDevices(base::BindLambdaForTesting(
-        [&](std::vector<mojom::SerialPortInfoPtr> results) {
-          for (const auto& port : results) {
-            if (port->path == kFakeDevicePath1) {
-              port1_token = port->token;
-              break;
-            }
-          }
-          run_loop.Quit();
-        }));
+    port_manager->GetDevices(
+        /*allow_bluetooth_system_prompt=*/true,
+        base::BindLambdaForTesting(
+            [&](std::vector<mojom::SerialPortInfoPtr> results) {
+              for (const auto& port : results) {
+                if (port->path == kFakeDevicePath1) {
+                  port1_token = port->token;
+                  break;
+                }
+              }
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
   ASSERT_FALSE(port1_token.is_empty());
@@ -321,8 +328,10 @@ TEST_F(SerialPortManagerImplTest, OpenBluetoothDevicePort) {
 
   mojo::Remote<mojom::SerialPort> serial_port;
   base::RunLoop loop;
-  port_manager->GetDevices(base::BindLambdaForTesting(
-      [&](std::vector<mojom::SerialPortInfoPtr> results) {
+  port_manager->GetDevices(
+      /*allow_bluetooth_system_prompt=*/true,
+      base::BindLambdaForTesting([&](std::vector<mojom::SerialPortInfoPtr>
+                                         results) {
         EXPECT_EQ(expected_paths.size(), results.size());
         std::set<base::FilePath> actual_paths;
         for (size_t i = 0; i < results.size(); ++i)
@@ -361,16 +370,18 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   base::UnguessableToken port1_token;
   {
     base::RunLoop run_loop;
-    port_manager->GetDevices(base::BindLambdaForTesting(
-        [&](std::vector<mojom::SerialPortInfoPtr> results) {
-          for (const auto& port : results) {
-            if (port->path == base::FilePath::FromASCII(kDeviceAddress)) {
-              port1_token = port->token;
-              break;
-            }
-          }
-          run_loop.Quit();
-        }));
+    port_manager->GetDevices(
+        /*allow_bluetooth_system_prompt=*/true,
+        base::BindLambdaForTesting(
+            [&](std::vector<mojom::SerialPortInfoPtr> results) {
+              for (const auto& port : results) {
+                if (port->path == base::FilePath::FromASCII(kDeviceAddress)) {
+                  port1_token = port->token;
+                  break;
+                }
+              }
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
   ASSERT_FALSE(port1_token.is_empty());
@@ -420,7 +431,8 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
   port_manager->SetClient(client.BindNewPipeAndPassRemote());
 
   TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
-  port_manager->GetDevices(get_devices_future.GetCallback());
+  port_manager->GetDevices(/*allow_bluetooth_system_prompt=*/true,
+                           get_devices_future.GetCallback());
   auto port_it =
       std::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
         return port->path == base::FilePath::FromASCII(kDeviceAddress);
@@ -460,7 +472,8 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceConnectedStateChanged) {
   // Call GetDevices to ensure the port manager is initialized and the client is
   // set.
   TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
-  port_manager->GetDevices(get_devices_future.GetCallback());
+  port_manager->GetDevices(/*allow_bluetooth_system_prompt=*/true,
+                           get_devices_future.GetCallback());
   auto port_it =
       std::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
         return port->path == base::FilePath::FromASCII(kDeviceAddress);

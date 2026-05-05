@@ -263,6 +263,8 @@ component("bluetooth") {
     sources += [
       "bluetooth_adapter_mac.h",
       "bluetooth_adapter_mac.mm",
+      "bluetooth_adapter_mac_permission.h",
+      "bluetooth_adapter_mac_permission.mm",
       "bluetooth_channel_mac.h",
       "bluetooth_channel_mac.mm",
       "bluetooth_classic_device_mac.h",
