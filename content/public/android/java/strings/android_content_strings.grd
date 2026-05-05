@@ -177,6 +177,9 @@
       <message name="IDS_ACTIONBAR_WEB_SEARCH" desc="Contextual action bar item for using the selected text in a internet search. [CHAR_LIMIT=24]">
         Web search
       </message>
+      <message name="IDS_ACTIONBAR_TRANSLATE" desc="Contextual action bar item for translating the selected text. [CHAR_LIMIT=24]">
+        Translate
+      </message>
       <message name="IDS_ACTIONBAR_TEXTSELECTION_TITLE" desc="Title of the text selection contextual action bar on tablets. [CHAR_LIMIT=30]">
         Text selection
       </message>
