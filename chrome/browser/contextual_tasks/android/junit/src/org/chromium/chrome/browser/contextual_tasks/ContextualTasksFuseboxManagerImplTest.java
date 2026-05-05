@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +43,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ContextualTasksFuseboxManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,6 +60,8 @@ public class ContextualTasksFuseboxManagerImplTest {
     @Mock private ComposeboxQueryControllerBridge mBridge;
     @Mock private ContextualTasksBridge.Natives mMockJni;
     @Mock private Profile mProfile;
+    @Mock private ContextualTasksFusebox mFusebox;
+    @Mock private View mFuseboxView;
 
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
@@ -91,13 +96,16 @@ public class ContextualTasksFuseboxManagerImplTest {
         doReturn(mSessionState).when(mManager).createSessionState();
         // For testing visibility logic.
         when(mMockJni.isContextualTasksUrl(any())).thenReturn(true);
+        when(mFusebox.getFuseboxView()).thenReturn(mFuseboxView);
+        mManager.setFuseboxForTesting(mFusebox);
     }
 
     @Test
-    public void testOnWebUIReady_CreatesNewSession() {
+    public void testOnWebUIReady_CreatesNewSessionAndActivates() {
         mManager.onWebUIReady(TASK_ID_1, mWebContents);
 
         verify(mManager).createSessionState();
+        verify(mSessionState).activate(any(), any(), any(), any());
         assertEquals(mSessionState, mManager.getFuseboxDataProvider().getFuseboxSessionState());
         assertEquals(mWebContents, mManager.getFuseboxDataProvider().getWebContents());
     }
@@ -148,20 +156,70 @@ public class ContextualTasksFuseboxManagerImplTest {
     }
 
     @Test
-    public void testUpdateFuseboxVisibility_ShowsWhenTaskIdPresent() {
-        when(mMockJni.getTaskIdForTab(mWebContents)).thenReturn(TASK_ID_1);
-        // Simulate lazy initialization of mFusebox.
-        mManager.onWebUIReady(TASK_ID_1, mWebContents); // This also sets session in DataProvider.
+    public void testUpdateFuseboxVisibility_ReadyFirstLogic() {
+        Tab tab = mock(Tab.class);
+        WebContents tabWebContents = mock(WebContents.class);
+        when(tab.getWebContents()).thenReturn(tabWebContents);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mMockJni.getTaskIdForTab(tabWebContents)).thenReturn(TASK_ID_1);
 
-        // Trigger visibility update.
-        mManager.onTaskChanged(null, TASK_ID_1);
+        // 1. Initial navigation (WebUI not ready yet).
+        mTabSupplier.set(tab);
 
-        // Simulating the observer trigger.
+        // Under Ready-First logic, we wait for onWebUIReady. No session should be created yet.
+        verify(mManager, never()).createSessionState();
+        assertNull(mManager.getFuseboxDataProvider().getFuseboxSessionState());
+
+        // 2. WebUI becomes ready.
         mManager.onWebUIReady(TASK_ID_1, mWebContents);
 
-        // Since updateFuseboxVisibility is private, we rely on existing paths.
-        // For now, let's verify ensureFuseboxSessionState which is called by visibility logic.
-        mManager.ensureFuseboxSessionState(TASK_ID_1, mWebContents);
+        // Now session should be created and WebContents set.
         verify(mManager).createSessionState();
+        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getWebContents());
+
+        // 3. Switch away to non-task tab.
+        when(mMockJni.getTaskIdForTab(any())).thenReturn(null);
+        mTabSupplier.set(mock(Tab.class));
+        assertNull(mManager.getFuseboxDataProvider().getFuseboxSessionState());
+        assertNull(mManager.getFuseboxDataProvider().getWebContents());
+
+        // 4. Switch back to task tab.
+        when(mMockJni.getTaskIdForTab(tabWebContents)).thenReturn(TASK_ID_1);
+        when(mSessionState.getContextualTasksWebContents()).thenReturn(mWebContents);
+        mTabSupplier.set(tab);
+
+        // Should restore context.
+        assertEquals(mSessionState, mManager.getFuseboxDataProvider().getFuseboxSessionState());
+        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getWebContents());
+    }
+
+    @Test
+    public void testUpdateFuseboxVisibility_BrowsingTabWithTask() {
+        Tab tab = mock(Tab.class);
+        WebContents tabWebContents = mock(WebContents.class);
+        when(tab.getWebContents()).thenReturn(tabWebContents);
+        // Regular browsing URL (NOT contextual tasks).
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mMockJni.getTaskIdForTab(tabWebContents)).thenReturn(TASK_ID_1);
+
+        // 1. WebUI is ready for this task.
+        mManager.onWebUIReady(TASK_ID_1, mWebContents);
+        verify(mFuseboxView).setVisibility(View.VISIBLE);
+        when(mSessionState.getContextualTasksWebContents()).thenReturn(mWebContents);
+
+        // 2. Ensure next calls to isContextualTasksUrl return false.
+        when(mMockJni.isContextualTasksUrl(any())).thenReturn(false);
+
+        // 3. Switch to the browsing tab.
+        mTabSupplier.set(tab);
+        mManager.updateFuseboxVisibility(tab);
+
+        // Plumbing should be ACTIVE.
+        assertEquals(mSessionState, mManager.getFuseboxDataProvider().getFuseboxSessionState());
+        assertEquals(mWebContents, mManager.getFuseboxDataProvider().getWebContents());
+
+        // UI should be HIDDEN.
+        verify(mFuseboxView).setVisibility(View.GONE);
+        verify(mFusebox).endInput();
     }
 }

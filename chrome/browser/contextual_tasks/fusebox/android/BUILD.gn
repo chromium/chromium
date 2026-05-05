@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksFusebox.java",
     "java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksFuseboxDataProvider.java",
     "java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksFuseboxManager.java",
+    "java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksSessionState.java",
   ]
   deps = [
     "//base:base_java",

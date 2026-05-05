@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxDataProvider;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
+import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksSessionState;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -109,7 +110,17 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
      */
     @Override
     public void onWebUIReady(String taskId, WebContents webContents) {
-        ensureFuseboxSessionState(taskId, webContents);
+        var session = setTaskContext(taskId, webContents);
+
+        // Manual Activation to pre-initialize native controllers.
+        session.activate(mActivity, webContents, mProfileSupplier, /* onFullyActivated= */ null);
+
+        // UI is now fully functional, so show it.
+        ensureFuseboxInitialized();
+        setFuseboxVisible(true);
+        if (mFusebox != null) {
+            mFusebox.beginInput();
+        }
     }
 
     /**
@@ -122,8 +133,11 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
         FuseboxSessionState sessionState = mTaskSessionMap.remove(taskId);
         if (sessionState != null) {
             if (mFuseboxDataProvider.getFuseboxSessionState() == sessionState) {
-                mFuseboxDataProvider.setFuseboxSessionState(null);
-                mFuseboxDataProvider.setWebContents(null);
+                clearTaskContext();
+                setFuseboxVisible(false);
+                if (mFusebox != null) {
+                    mFusebox.endInput();
+                }
             }
             ComposeboxQueryControllerBridge bridge =
                     sessionState.getComposeboxQueryControllerBridge();
@@ -149,25 +163,29 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
     }
 
     /**
-     * Called to initialize the {@ link FuseboxSessionState} associated with a task. Ignored if the
-     * task is already associated with a {@link FuseboxSessionState}.
+     * Set the task context for the fusebox. Ensures the session exists and the data provider is
+     * correctly configured.
      *
      * @param taskId The ID of the task.
-     * @param webContents The WebContents of the contextual tasks WebUI associated with the fusebox.
+     * @param webContents The WebContents of the contextual tasks WebUI.
+     * @return The {@link FuseboxSessionState} for the task.
      */
-    public void ensureFuseboxSessionState(String taskId, WebContents webContents) {
-        FuseboxSessionState fuseboxSessionState = mTaskSessionMap.get(taskId);
-        if (fuseboxSessionState == null) {
-            fuseboxSessionState = createSessionState();
-            mTaskSessionMap.put(taskId, fuseboxSessionState);
-        }
-        mFuseboxDataProvider.setFuseboxSessionState(fuseboxSessionState);
+    private FuseboxSessionState setTaskContext(String taskId, WebContents webContents) {
+        var session = mTaskSessionMap.computeIfAbsent(taskId, k -> createSessionState());
+        mFuseboxDataProvider.setFuseboxSessionState(session);
         mFuseboxDataProvider.setWebContents(webContents);
+        return session;
+    }
+
+    /** Clears the task context from the data provider. */
+    private void clearTaskContext() {
+        mFuseboxDataProvider.setFuseboxSessionState(null);
+        mFuseboxDataProvider.setWebContents(null);
     }
 
     @VisibleForTesting
     FuseboxSessionState createSessionState() {
-        return new FuseboxSessionState();
+        return new ContextualTasksSessionState();
     }
 
     @Override
@@ -184,21 +202,52 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
         return ContextualTasksBridge.getTaskIdForTab(tab);
     }
 
-    private void updateFuseboxVisibility(@Nullable Tab currentTab) {
+    /**
+     * Central method to configure the correct session state after an event. Used by both full tab
+     * mode and bottom sheet / side panel mode. Normally called after tab switch / navigation events
+     * upon which it will 1. Find the task ID associated with the tab (regardless of full tab or
+     * bottom sheet mode). 2. Updates the LocationBarDataProvider with the correct
+     * FuseboxSessionState and WebContents. 3. Updates visibility of the full tab fusebox, i.e.
+     * visible if AIM page is showing, hidden otherwise. Hidden for bottom sheet mode as well since
+     * bottom sheet has its own fusebox.
+     */
+    @VisibleForTesting
+    void updateFuseboxVisibility(@Nullable Tab currentTab) {
         String taskId = getTaskIdForTab(currentTab);
-        if (currentTab != null
-                && currentTab.getWebContents() != null
-                && !TextUtils.isEmpty(taskId)
-                && isContextualTasksUrl(currentTab.getUrl())) {
 
-            ensureFuseboxSessionState(taskId, currentTab.getWebContents());
+        // Check if the WebUI is already ready for this task.
+        var session = !TextUtils.isEmpty(taskId) ? mTaskSessionMap.get(taskId) : null;
+        WebContents contextualTasksWebContents =
+                (session != null) ? session.getContextualTasksWebContents() : null;
 
-            ensureFuseboxInitialized();
-            setFuseboxVisible(true);
+        if (!TextUtils.isEmpty(taskId) && contextualTasksWebContents != null) {
+            // 1. Plumbing Sync: Connection between fusebox and WebUI.
+            // This ensures follow-up queries from browsing contexts are sent to the AI bridge.
+            // Applies to both full tab and bottom sheet.
+            setTaskContext(taskId, contextualTasksWebContents);
+
+            // 2. Visibility Sync: Show the physical fusebox UI only on full tab AIM page.
+            boolean isOnAimPage = currentTab != null && isContextualTasksUrl(currentTab.getUrl());
+            setFuseboxVisible(isOnAimPage);
+
+            // 3. Input State: Focus fusebox if on the AIM page.
+            if (isOnAimPage) {
+                ensureFuseboxInitialized();
+                if (mFusebox != null) {
+                    mFusebox.beginInput();
+                }
+            } else {
+                if (mFusebox != null) {
+                    mFusebox.endInput();
+                }
+            }
         } else {
-            mFuseboxDataProvider.setFuseboxSessionState(/* fuseboxSessionState= */ null);
-            mFuseboxDataProvider.setWebContents(null);
+            // No task or WebUI not ready yet.
+            clearTaskContext();
             setFuseboxVisible(false);
+            if (mFusebox != null) {
+                mFusebox.endInput();
+            }
         }
     }
 
@@ -209,6 +258,10 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
     private void setFuseboxVisible(boolean visible) {
         if (mFusebox == null) return;
         mFusebox.getFuseboxView().setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setFuseboxForTesting(ContextualTasksFusebox fusebox) {
+        mFusebox = fusebox;
     }
 
     private void ensureFuseboxInitialized() {

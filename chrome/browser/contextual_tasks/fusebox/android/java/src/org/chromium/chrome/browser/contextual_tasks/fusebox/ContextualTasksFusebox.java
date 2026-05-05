@@ -163,6 +163,19 @@ public class ContextualTasksFusebox {
         mLocationBarCoordinator.destroy();
     }
 
+    /** Triggers the start of an Omnibox input session for Contextual Tasks. */
+    public void beginInput() {
+        var session = mDataProvider.getFuseboxSessionState();
+        if (session != null) {
+            mLocationBarCoordinator.setUrlBarFocus(session.getAutocompleteInput());
+        }
+    }
+
+    /** Ends the current Omnibox input session for Contextual Tasks. */
+    public void endInput() {
+        mLocationBarCoordinator.setUrlBarFocus(null);
+    }
+
     private boolean onUrlLoad(String url, Callback<String> loadUrlCallback) {
         ComposeboxQueryControllerBridge bridge = mDataProvider.getComposeboxQueryControllerBridge();
         if (bridge == null) {
