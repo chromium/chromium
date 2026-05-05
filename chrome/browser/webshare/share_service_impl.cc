@@ -184,6 +184,13 @@ void ShareServiceImpl::Share(const std::string& title,
     return;
   }
 
+  if (!share_url.is_empty() && !share_url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    ReportBadMessageAndDeleteThis(
+        "Web Share URL scheme must be http or https.");
+    return;
+  }
+
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {

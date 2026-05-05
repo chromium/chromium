@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/test_renderer_host.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -163,6 +164,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 #if BUILDFLAG(IS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
+ protected:
   mojo::Remote<blink::mojom::ShareService> share_service_remote_;
 };
 
@@ -212,6 +214,28 @@ TEST_F(ShareServiceUnitTest, Multimedia) {
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".flac", "audio/flac"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".webm", "video/webm"));
+}
+
+TEST_F(ShareServiceUnitTest, ShareInvalidURLScheme) {
+  const std::string kTitle = "Title";
+  const std::string kText = "Text";
+  const GURL kUrl = GURL("file:///etc/passwd");
+  std::vector<blink::mojom::SharedFilePtr> files;
+
+  base::RunLoop run_loop;
+  share_service_remote_.set_disconnect_handler(run_loop.QuitClosure());
+
+  bool callback_called = false;
+  share_service_remote_->Share(
+      kTitle, kText, kUrl, std::move(files),
+      base::BindLambdaForTesting([&callback_called](ShareError error) {
+        callback_called = true;
+        EXPECT_EQ(error, ShareError::PERMISSION_DENIED);
+      }));
+
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(share_service_remote_.is_connected());
 }
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
