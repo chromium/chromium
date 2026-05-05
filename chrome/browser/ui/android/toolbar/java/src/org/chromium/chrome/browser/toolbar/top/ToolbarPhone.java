@@ -1248,13 +1248,18 @@ public class ToolbarPhone extends ToolbarLayout
 
         int toolbarButtonVisibility = getToolbarButtonVisibility();
         mToolbarButtonsContainer.setVisibility(toolbarButtonVisibility);
-        if (mHomeButton.getVisibility() != GONE) {
+        boolean showBackButtonOutside = shouldShowBackButtonOutside();
+        // Enforce mutual exclusivity: if the back button should be shown outside,
+        // we must hide the home button to prevent them from overlapping during transitions.
+        if (showBackButtonOutside) {
+            mHomeButton.setVisibility(View.GONE);
+        } else if (mHomeButton.getVisibility() != GONE) {
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setVisibility(
-                    toolbarButtonVisibility == VISIBLE && shouldShowBackButtonOutside());
+                    toolbarButtonVisibility == VISIBLE && showBackButtonOutside);
         }
 
         updateLocationBarLayoutForExpansionAnimation();
@@ -2089,8 +2094,12 @@ public class ToolbarPhone extends ToolbarLayout
         boolean shouldModifyToolbarButtons =
                 ToolbarVariationUtils.shouldModifyToolbarButtons(
                         getContext(), isNtpVisualState(mVisualState));
+        boolean showBackButtonOutside = shouldShowBackButtonOutside();
+        // Enforce mutual exclusivity: if the back button should be shown outside,
+        // we must hide the home button to prevent them from overlapping.
         boolean hideHomeButton =
                 !mIsHomeButtonEnabled
+                        || showBackButtonOutside
                         || (shouldModifyToolbarButtons
                                 && !ToolbarVariationUtils.shouldHomeButtonBeAtStartOfToolbar());
         if (hideHomeButton) {
@@ -2098,8 +2107,6 @@ public class ToolbarPhone extends ToolbarLayout
         } else {
             mHomeButton.setVisibility(urlHasFocus() ? View.INVISIBLE : View.VISIBLE);
         }
-
-        boolean showBackButtonOutside = shouldModifyToolbarButtons && shouldShowBackButtonOutside();
         if (mBackButtonCoordinator != null) {
             mBackButtonCoordinator.setHasSpaceToShow(true);
             mBackButtonCoordinator.setVisibility(showBackButtonOutside);
@@ -2113,7 +2120,9 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean shouldShowBackButtonOutside() {
-        return ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())
+        return ToolbarVariationUtils.shouldModifyToolbarButtons(
+                        getContext(), isNtpVisualState(mVisualState))
+                && ToolbarVariationUtils.isToolbarUiRefactorEnabled(getContext())
                 && !ToolbarVariationUtils.shouldBackButtonBeInOmnibox()
                 && !isLocationBarShownInNtp()
                 && !urlHasFocus();
@@ -2683,6 +2692,7 @@ public class ToolbarPhone extends ToolbarLayout
         TransitionSet buttonsTransition =
                 new TransitionSet()
                         .addTransition(new Slide(Gravity.START).addTarget(mHomeButton))
+                        .addTransition(new Slide(Gravity.START).addTarget(mToolbarBackButton))
                         .addTransition(new Slide(Gravity.END).addTarget(mToolbarButtonsContainer))
                         .addTransition(new Fade().addTarget(mToolbarButtonsContainer))
                         .setDuration(toolbarBtnTransitionDuration)
@@ -2737,10 +2747,24 @@ public class ToolbarPhone extends ToolbarLayout
 
         // Update button properties.
         int toolbarBtnsVis = hasFocus ? INVISIBLE : VISIBLE;
-        int homeBtnVis =
-                mHomeButton.getVisibility() != GONE ? toolbarBtnsVis : mHomeButton.getVisibility();
+        boolean showBackButtonOutside = shouldShowBackButtonOutside();
+        int homeBtnVis = GONE;
+        // Enforce mutual exclusivity: if the back button should be shown outside,
+        // we must hide the home button to prevent them from overlapping.
+        if (!showBackButtonOutside && mHomeButton.getVisibility() != GONE) {
+            homeBtnVis = toolbarBtnsVis;
+        }
         mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
         mHomeButton.setVisibility(homeBtnVis);
+
+        if (mToolbarBackButton != null) {
+            int backBtnVis = GONE;
+            if (showBackButtonOutside) {
+                // During focus, we make it INVISIBLE to take space/fade out smoothly.
+                backBtnVis = hasFocus ? INVISIBLE : VISIBLE;
+            }
+            mToolbarBackButton.setVisibility(backBtnVis);
+        }
 
         // Update location bar properties. Intentionally done after updating the buttons (as some
         // properties, such as left margin, are dependent on the visibility of buttons.
