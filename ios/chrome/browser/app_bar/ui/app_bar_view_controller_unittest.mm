@@ -30,6 +30,11 @@ class AppBarViewControllerTest : public PlatformTest {
   UIButton* openNewTabButton() {
     return [view_controller_ valueForKey:@"openNewTabButton"];
   }
+
+  // Helper to access the private `_tabGridButton` ivar using KVC.
+  UIButton* tabGridButton() {
+    return [view_controller_ valueForKey:@"tabGridButton"];
+  }
 };
 
 // Tests that the new tab button shows the menu as primary action when the
@@ -90,6 +95,46 @@ TEST_F(AppBarViewControllerTest,
   }
   EXPECT_FALSE(spacer1.hidden);
   EXPECT_FALSE(spacer2.hidden);
+}
+
+// Tests that the tab grid button's image color transformer always returns clear
+// color.
+TEST_F(AppBarViewControllerTest, TestTabGridButtonImageIsClear) {
+  UIButton* button = tabGridButton();
+  ASSERT_NE(button, nil);
+
+  // Test normal state.
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  UIButtonConfiguration* config = button.configuration;
+  ASSERT_NE(config, nil);
+  ASSERT_NE(config.imageColorTransformer, nil);
+  EXPECT_EQ(config.imageColorTransformer(UIColor.whiteColor),
+            UIColor.clearColor);
+
+  // Test highlighted state.
+  button.highlighted = YES;
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  config = button.configuration;
+  ASSERT_NE(config, nil);
+  ASSERT_NE(config.imageColorTransformer, nil);
+  EXPECT_EQ(config.imageColorTransformer(UIColor.whiteColor),
+            UIColor.clearColor);
+
+  // Test disabled state.
+  button.highlighted = NO;
+  button.enabled = NO;
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  config = button.configuration;
+  ASSERT_NE(config, nil);
+  ASSERT_NE(config.imageColorTransformer, nil);
+  EXPECT_EQ(config.imageColorTransformer(UIColor.whiteColor),
+            UIColor.clearColor);
 }
 
 }  // namespace

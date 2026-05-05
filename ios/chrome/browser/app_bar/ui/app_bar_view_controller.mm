@@ -629,16 +629,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   return button;
 }
 
-// Updates the configuration for standard buttons.
-- (void)updateStandardButtonConfiguration:(UIButton*)button {
-  UIButtonConfiguration* config = button.configuration;
-  CGFloat highlightAlpha = ButtonHighlightAlpha(button);
-
-  // Image only fades on highlight/disabled.
-  config.imageColorTransformer = ^UIColor*(UIColor* color) {
-    return [ButtonsForegroundColor() colorWithAlphaComponent:highlightAlpha];
-  };
-
+// Updates the title configuration for buttons.
+- (void)updateButtonTitleConfiguration:(UIButtonConfiguration*)config
+                        highlightAlpha:(CGFloat)highlightAlpha {
   // Text fades on highlight/disabled AND scroll.
   CGFloat textAlpha = highlightAlpha * _buttonsTitleAlpha;
 
@@ -652,6 +645,19 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
         [ButtonsForegroundColor() colorWithAlphaComponent:textAlpha];
     return mutableAttributes;
   };
+}
+
+// Updates the configuration for standard buttons.
+- (void)updateStandardButtonConfiguration:(UIButton*)button {
+  UIButtonConfiguration* config = button.configuration;
+  CGFloat highlightAlpha = ButtonHighlightAlpha(button);
+
+  // Image only fades on highlight/disabled.
+  config.imageColorTransformer = ^UIColor*(UIColor* color) {
+    return [ButtonsForegroundColor() colorWithAlphaComponent:highlightAlpha];
+  };
+
+  [self updateButtonTitleConfiguration:config highlightAlpha:highlightAlpha];
 
   button.configuration = config;
 }
@@ -667,6 +673,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   };
 
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
+
+  [self updateButtonTitleConfiguration:config highlightAlpha:highlightAlpha];
 
   UIColor* symbolColor = ButtonsForegroundColor();
   UIColor* baseLabelColor =
@@ -736,11 +744,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   __weak __typeof(self) weakSelf = self;
   __weak UIImageView* weakTabGridSymbolView = tabGridSymbolView;
   __weak UILabel* weakTabCountLabel = _tabCountLabel;
-  void (^previousHandler)(UIButton*) = button.configurationUpdateHandler;
   button.configurationUpdateHandler = ^(UIButton* incomingButton) {
-    if (previousHandler) {
-      previousHandler(incomingButton);
-    }
     [weakSelf updateTabGridButtonConfiguration:incomingButton
                                     symbolView:weakTabGridSymbolView
                                     countLabel:weakTabCountLabel];
