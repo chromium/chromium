@@ -896,6 +896,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mContextualTasksFuseboxManager = null;
         }
 
+        if (mContextualTasksBridge != null) {
+            mContextualTasksBridge = null;
+        }
+
         if (mCoBrowseViewFactory != null) {
             mCoBrowseViewFactory.destroy();
             mCoBrowseViewFactory = null;
@@ -903,10 +907,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mCrossDeviceSettingImporter != null) {
             mCrossDeviceSettingImporter.destroy();
-        }
-
-        if (mContextualTasksBridge != null) {
-            mContextualTasksBridge = null;
         }
 
         if (mActorOverlayCoordinator != null) {
@@ -1226,18 +1226,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)
-                && mChromeAndroidTaskSupplier.get() != null) {
-            Profile profile = mProfileSupplier.asNonNull().get().getOriginalProfile();
-            mContextualTasksBridge = new ContextualTasksBridge(profile, mWindowAndroid);
-            mChromeAndroidTaskSupplier
-                    .get()
-                    .addFeature(
-                            new ChromeAndroidTaskFeatureKey(
-                                    ContextualTasksBridge.class, profile, mWindowAndroid),
-                            () -> mContextualTasksBridge);
-        }
-
         initiateTabBottomSheetManagers();
         initializeSideUi();
 
@@ -1344,6 +1332,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         NewTabPageLocationPolicyManager.getInstance().onFinishNativeInitialization(originalProfile);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
+            if (mChromeAndroidTaskSupplier.get() != null) {
+                mContextualTasksBridge = new ContextualTasksBridge(originalProfile, mWindowAndroid);
+                mChromeAndroidTaskSupplier
+                        .get()
+                        .addFeature(
+                                new ChromeAndroidTaskFeatureKey(
+                                        ContextualTasksBridge.class,
+                                        originalProfile,
+                                        mWindowAndroid),
+                                () -> mContextualTasksBridge);
+            }
+
             mContextualTasksFuseboxManager =
                     new ContextualTasksFuseboxManagerImpl(
                             mActivity,
