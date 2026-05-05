@@ -135,8 +135,10 @@ class WrappedGLTextureCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<GLTextureImageRepresentation> wrapped)
+      std::unique_ptr<GLTextureImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : GLTextureImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -173,6 +175,7 @@ class WrappedGLTextureCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<GLTextureImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
@@ -184,8 +187,10 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped)
+      std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -222,6 +227,7 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
@@ -234,8 +240,10 @@ class WrappedSkiaGaneshCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SkiaGaneshImageRepresentation> wrapped)
+      std::unique_ptr<SkiaGaneshImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -294,6 +302,7 @@ class WrappedSkiaGaneshCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
 };
 
@@ -304,8 +313,10 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped)
+      std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : SkiaGraphiteImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     CHECK(wrapped_);
   }
@@ -353,6 +364,7 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped_;
 };
 
@@ -362,8 +374,10 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<DawnImageRepresentation> wrapped)
+      std::unique_ptr<DawnImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : DawnImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -391,6 +405,7 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<DawnImageRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
@@ -402,8 +417,10 @@ class WrappedDawnBufferCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<DawnBufferRepresentation> wrapped)
+      std::unique_ptr<DawnBufferRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : DawnBufferRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -428,6 +445,7 @@ class WrappedDawnBufferCompoundImageRepresentation
     compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<DawnBufferRepresentation> wrapped_;
   AccessMode access_mode_ = AccessMode::kNone;
 };
@@ -439,8 +457,10 @@ class WrappedOverlayCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<OverlayImageRepresentation> wrapped)
+      std::unique_ptr<OverlayImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : OverlayImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -483,6 +503,7 @@ class WrappedOverlayCompoundImageRepresentation
 #endif
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
 };
 
@@ -493,8 +514,10 @@ class WrappedWebNNTensorCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<WebNNTensorRepresentation> wrapped)
+      std::unique_ptr<WebNNTensorRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : WebNNTensorRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -535,6 +558,7 @@ class WrappedWebNNTensorCompoundImageRepresentation
                                         AccessMode::kWrite);
   }
 
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<WebNNTensorRepresentation> wrapped_;
 };
 
@@ -545,8 +569,10 @@ class WrappedMemoryCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<MemoryImageRepresentation> wrapped)
+      std::unique_ptr<MemoryImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : MemoryImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     CHECK(wrapped_);
   }
@@ -563,6 +589,7 @@ class WrappedMemoryCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<MemoryImageRepresentation> wrapped_;
 };
 
@@ -573,8 +600,10 @@ class WrappedVideoCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<VideoImageRepresentation> wrapped)
+      std::unique_ptr<VideoImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : VideoImageRepresentation(manager, backing, tracker),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     CHECK(wrapped_);
   }
@@ -616,6 +645,7 @@ class WrappedVideoCompoundImageRepresentation
 #endif
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<VideoImageRepresentation> wrapped_;
 };
 
@@ -629,13 +659,15 @@ class WrappedVulkanCompoundImageRepresentation
       MemoryTypeTracker* tracker,
       gpu::VulkanDeviceQueue* vulkan_device_queue,
       gpu::VulkanImplementation& vulkan_impl,
-      std::unique_ptr<VulkanImageRepresentation> wrapped)
+      std::unique_ptr<VulkanImageRepresentation> wrapped,
+      std::unique_ptr<SharedImageBacking> owned_backing)
       : VulkanImageRepresentation(manager,
                                   backing,
                                   tracker,
                                   nullptr,
                                   vulkan_device_queue,
                                   vulkan_impl),
+        owned_backing_(std::move(owned_backing)),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -667,9 +699,9 @@ class WrappedVulkanCompoundImageRepresentation
   }
 
  private:
+  std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<VulkanImageRepresentation> wrapped_;
 };
-
 #endif
 
 // static
@@ -1360,18 +1392,22 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
   AccessParams access_params;
   access_params.wgpu_device = device;
   access_params.context_state = context_state;
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kDawn, access_params);
-  if (!backing)
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawn,
+                                       access_params, transient_backing);
+  if (!backing) {
     return nullptr;
+  }
 
   auto real_rep = backing->ProduceDawn(manager, tracker, device, backend_type,
                                        std::move(view_formats), context_state);
-  if (!real_rep)
+  if (!real_rep) {
     return nullptr;
+  }
 
   return std::make_unique<WrappedDawnCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<DawnBufferRepresentation>
@@ -1384,8 +1420,9 @@ CompoundImageBacking::ProduceDawnBuffer(
   AccessParams access_params;
   access_params.wgpu_device = device;
   access_params.context_state = context_state;
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer, access_params);
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer,
+                                       access_params, transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1397,7 +1434,8 @@ CompoundImageBacking::ProduceDawnBuffer(
   }
 
   return std::make_unique<WrappedDawnBufferCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -1408,17 +1446,21 @@ CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
   // in the future to include GL context information for stricter correctness
   // checks (e.g., ensuring a backing created on one GL context isn't used on
   // another, unless it's an EglImageBacking), it is not currently needed.
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
-  if (!backing)
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
+                                       AccessParams(), transient_backing);
+  if (!backing) {
     return nullptr;
+  }
 
   auto real_rep = backing->ProduceGLTexture(manager, tracker);
-  if (!real_rep)
+  if (!real_rep) {
     return nullptr;
+  }
 
   return std::make_unique<WrappedGLTextureCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -1428,18 +1470,22 @@ CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
   // SharedImageAccessStream::kGL is specific enough for backing selection.
   // While AccessParams could be extended in the future to include GL context
   // information for stricter correctness checks, it is not currently needed.
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
-  if (!backing)
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
+                                       AccessParams(), transient_backing);
+  if (!backing) {
     return nullptr;
+  }
 
   auto real_rep = backing->ProduceGLTexturePassthrough(manager, tracker);
-  if (!real_rep)
+  if (!real_rep) {
     return nullptr;
+  }
 
   return std::make_unique<
       WrappedGLTexturePassthroughCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -1449,8 +1495,9 @@ CompoundImageBacking::ProduceSkiaGanesh(
     scoped_refptr<SharedContextState> context_state) {
   AccessParams access_params;
   access_params.context_state = context_state;
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kSkia, access_params);
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia,
+                                       access_params, transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1462,7 +1509,8 @@ CompoundImageBacking::ProduceSkiaGanesh(
 
   auto* gr_context = context_state ? context_state->gr_context() : nullptr;
   return std::make_unique<WrappedSkiaGaneshCompoundImageRepresentation>(
-      gr_context, manager, this, tracker, std::move(real_rep));
+      gr_context, manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>
@@ -1472,8 +1520,9 @@ CompoundImageBacking::ProduceSkiaGraphite(
     scoped_refptr<SharedContextState> context_state) {
   AccessParams access_params;
   access_params.context_state = context_state;
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kSkia, access_params);
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia,
+                                       access_params, transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1484,7 +1533,8 @@ CompoundImageBacking::ProduceSkiaGraphite(
   }
 
   return std::make_unique<WrappedSkiaGraphiteCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<OverlayImageRepresentation>
@@ -1492,17 +1542,21 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
   // For OverlayImageRepresentation, no specific context information is
   // currently required for backing selection, so AccessParams is empty.
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kOverlay, AccessParams());
-  if (!backing)
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kOverlay,
+                                       AccessParams(), transient_backing);
+  if (!backing) {
     return nullptr;
+  }
 
   auto real_rep = backing->ProduceOverlay(manager, tracker);
-  if (!real_rep)
+  if (!real_rep) {
     return nullptr;
+  }
 
   return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<WebNNTensorRepresentation>
@@ -1510,8 +1564,9 @@ CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   // For WebNNTensorRepresentation, no specific context information is
   // currently required for backing selection, so AccessParams is empty.
+  std::unique_ptr<SharedImageBacking> transient_backing;
   auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kWebNNTensor,
-                                       AccessParams());
+                                       AccessParams(), transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1522,7 +1577,8 @@ CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
   }
 
   return std::make_unique<WrappedWebNNTensorCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
@@ -1530,8 +1586,9 @@ std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
     MemoryTypeTracker* tracker) {
   // For MemoryImageRepresentation, no specific context information is
   // currently required for backing selection, so AccessParams is empty.
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kMemory, AccessParams());
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kMemory,
+                                       AccessParams(), transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1542,15 +1599,17 @@ std::unique_ptr<MemoryImageRepresentation> CompoundImageBacking::ProduceMemory(
   }
 
   return std::make_unique<WrappedMemoryCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     VideoDevice device) {
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kGL, AccessParams());
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
+                                       AccessParams(), transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1561,7 +1620,8 @@ std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
   }
 
   return std::make_unique<WrappedVideoCompoundImageRepresentation>(
-      manager, this, tracker, std::move(real_rep));
+      manager, this, tracker, std::move(real_rep),
+      std::move(transient_backing));
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -1572,8 +1632,9 @@ std::unique_ptr<VulkanImageRepresentation> CompoundImageBacking::ProduceVulkan(
     gpu::VulkanImplementation& vulkan_impl,
     bool needs_detiling) {
   // For VulkanImageRepresentation, AccessParams is not needed as of now.
-  auto* backing =
-      GetOrAllocateBacking(SharedImageAccessStream::kVulkan, AccessParams());
+  std::unique_ptr<SharedImageBacking> transient_backing;
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVulkan,
+                                       AccessParams(), transient_backing);
   if (!backing) {
     return nullptr;
   }
@@ -1586,7 +1647,7 @@ std::unique_ptr<VulkanImageRepresentation> CompoundImageBacking::ProduceVulkan(
 
   return std::make_unique<WrappedVulkanCompoundImageRepresentation>(
       manager, this, tracker, vulkan_device_queue, vulkan_impl,
-      std::move(real_rep));
+      std::move(real_rep), std::move(transient_backing));
 }
 #endif
 
@@ -1702,7 +1763,8 @@ CompoundImageBacking::GetElementWithLatestContent() {
 
 SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     SharedImageAccessStream stream,
-    const AccessParams& params) {
+    const AccessParams& params,
+    std::unique_ptr<SharedImageBacking>& out_transient_backing) {
   AutoLock auto_lock(this);
   ElementHolder* best_match = nullptr;
   ElementHolder* any_match = nullptr;

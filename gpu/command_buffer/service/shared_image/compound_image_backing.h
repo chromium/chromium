@@ -428,8 +428,13 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // first one it finds).
   // If no backing is found, then it will allocate an appropriate backing which
   // can support the `stream`.
-  SharedImageBacking* GetOrAllocateBacking(SharedImageAccessStream stream,
-                                           const AccessParams& params);
+  // If CSI is thread-safe and the dynamically allocated backing is not thread
+  // safe, then the dynamically created backing will be moved to
+  // `out_transient_backing` and not added to `elements_`.
+  SharedImageBacking* GetOrAllocateBacking(
+      SharedImageAccessStream stream,
+      const AccessParams& params,
+      std::unique_ptr<SharedImageBacking>& out_transient_backing);
 
   // Returns the gpu backing from the list of |element_| which has a shm and a
   // gpu backing.
