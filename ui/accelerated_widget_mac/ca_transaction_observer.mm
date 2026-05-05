@@ -12,10 +12,12 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/task/current_thread.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_features.h"
 
 typedef NS_ENUM(unsigned int, CATransactionPhase) {
@@ -128,12 +130,29 @@ void CATransactionCoordinator::PostCommitHandler() {
   active_ = false;
 }
 
-CATransactionCoordinator::CATransactionCoordinator() = default;
-CATransactionCoordinator::~CATransactionCoordinator() = default;
+CATransactionCoordinator::CATransactionCoordinator() {
+  if (base::FeatureList::IsEnabled(features::kCATransactionV2)) {
+    base::CurrentThread::Get()->AddTaskObserver(this);
+  }
+}
+
+CATransactionCoordinator::~CATransactionCoordinator() {
+  if (base::FeatureList::IsEnabled(features::kCATransactionV2)) {
+    base::CurrentThread::Get()->RemoveTaskObserver(this);
+  }
+}
 
 void CATransactionCoordinator::Synchronize() {
   if (disabled_for_testing_)
     return;
+
+  if (base::FeatureList::IsEnabled(features::kCATransactionV2)) {
+    if (!ca_action_disabler_) {
+      ca_action_disabler_ = std::make_unique<ScopedCAActionDisabler>();
+    }
+    return;
+  }
+
   SynchronizeImpl();
 }
 
@@ -157,6 +176,27 @@ void CATransactionCoordinator::RemovePostCommitObserver(
     scoped_refptr<PostCommitObserver> observer) {
   DCHECK(post_commit_observers_.count(observer));
   post_commit_observers_.erase(std::move(observer));
+}
+
+void CATransactionCoordinator::WillProcessTask(
+    const base::PendingTask& pending_task,
+    bool was_blocked_or_low_priority) {}
+
+void CATransactionCoordinator::DidProcessTask(
+    const base::PendingTask& pending_task) {
+  if (!ca_action_disabler_) {
+    return;
+  }
+
+  // The PreCommitHandler is what waits for compositor frames to arrive.
+  // TODO(https://crbug.com/507113013): Rename this after the non-V2 path is
+  // removed.
+  PreCommitHandler();
+
+  // Release the ScopedCAActionDisabler only after the new frame has been
+  // displayed. Releasing after PreCommitHandler also ensures that recursive
+  // calls to PreCommitHandler do not happen.
+  ca_action_disabler_.reset();
 }
 
 }  // namespace ui

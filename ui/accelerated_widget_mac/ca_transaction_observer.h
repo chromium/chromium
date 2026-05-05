@@ -10,8 +10,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/task/task_observer.h"
 #include "base/time/time.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
+
+class ScopedCAActionDisabler;
 
 namespace ui {
 
@@ -39,7 +42,8 @@ namespace ui {
 // which changes which IOSurfaces are assigned to layers' contents is *faster*
 // if done during the browser's post-commit phase vs. its pre-commit phase.
 
-class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
+class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator
+    : public base::TaskObserver {
  public:
   class PreCommitObserver {
    public:
@@ -79,14 +83,24 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   void AddPostCommitObserver(scoped_refptr<PostCommitObserver>);
   void RemovePostCommitObserver(scoped_refptr<PostCommitObserver>);
 
+  // base::TaskObserver:
+  void WillProcessTask(const base::PendingTask& pending_task,
+                       bool was_blocked_or_low_priority) override;
+  void DidProcessTask(const base::PendingTask& pending_task) override;
+
  private:
   friend class base::NoDestructor<CATransactionCoordinator>;
   CATransactionCoordinator();
-  ~CATransactionCoordinator();
+  ~CATransactionCoordinator() override;
 
   void SynchronizeImpl();
   void PreCommitHandler();
   void PostCommitHandler();
+
+  // This action disabler is allocated in Synchronize, and is freed in
+  // DidProcessTask (when the task that called Synchronize finishes), after
+  // waiting for the compositor to produce frames.
+  std::unique_ptr<ScopedCAActionDisabler> ca_action_disabler_;
 
   bool active_ = false;
   bool disabled_for_testing_ = false;
