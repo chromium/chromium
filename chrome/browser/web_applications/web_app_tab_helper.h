@@ -108,20 +108,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
-  using OnManifestProcessedCallbackList =
-      base::RepeatingCallbackList<void(const webapps::ManifestId&)>;
-  base::CallbackListSubscription AddOnManifestProcessedCallbackForTesting(
-      OnManifestProcessedCallbackList::CallbackType callback);
-
-  bool manifest_processed_for_current_page() const {
-    return last_processed_manifest_id_for_current_page_.has_value();
-  }
-
-  const std::optional<webapps::ManifestId>&
-  last_processed_manifest_id_for_current_page() const {
-    return last_processed_manifest_id_for_current_page_;
-  }
-
   // Returns the installed web app that 'controls' the last committed url of
   // this tab. This is populated for this tab no matter where it is, whether in
   // a browser window, or in a standalone app window.
@@ -160,7 +146,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   webapps::LaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:
-
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
@@ -280,11 +265,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::CallbackListSubscription get_all_specified_manifests_subscription_;
-
-  OnManifestProcessedCallbackList manifest_processed_callbacks_;
-
-  std::optional<webapps::ManifestId>
-      last_processed_manifest_id_for_current_page_;
 
   base::WeakPtrFactory<WebAppTabHelper> weak_factory_{this};
 
