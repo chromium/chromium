@@ -104,9 +104,7 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
 
 class InfoBarViewUnitTest : public views::ViewsTestBase {
  public:
-  InfoBarViewUnitTest() {
-    feature_list_.InitAndEnableFeature(features::kInfobarRefresh);
-  }
+  InfoBarViewUnitTest() = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -114,7 +112,6 @@ class InfoBarViewUnitTest : public views::ViewsTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChromeLayoutProvider> layout_provider_;
 };
 

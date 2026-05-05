@@ -27,10 +27,8 @@ using InteractionWithControls = ::GetDisplayMediaUserInteractionWithControls;
 using MessageInfo = ::TabSharingStatusMessageView::MessageInfo;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
-constexpr auto kButtonInsets = gfx::Insets::VH(2, 8);
 constexpr auto kRefreshButtonInsets = gfx::Insets::VH(4, 8);
 constexpr auto kRefreshSeparatorInsets = gfx::Insets::TLBR(12, 12, 12, 0);
-constexpr auto kSeparatorInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 std::vector<std::u16string> EndpointInfosToStrings(
     const std::vector<EndpointInfo>& endpoint_infos) {
   std::vector<std::u16string> res;
@@ -244,10 +242,7 @@ TabSharingStatusMessageView::TabSharingStatusMessageView(
     base::WeakPtr<ScreensharingControlsHistogramLogger> uma_logger)
     : uma_logger_(uma_logger) {
   SetupMessage(info);
-  const auto& separator_insets =
-      base::FeatureList::IsEnabled(features::kInfobarRefresh)
-          ? kRefreshSeparatorInsets
-          : kSeparatorInsets;
+  const auto& separator_insets = kRefreshSeparatorInsets;
   AddChildView(views::Builder<views::Separator>()
                    .SetProperty(views::kMarginsKey, separator_insets)
                    .SetProperty(views::kFlexBehaviorKey,
@@ -363,15 +358,10 @@ void TabSharingStatusMessageView::AddButton(
 
   button->SetStyle(ui::ButtonStyle::kTonal);
 
-  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-    button->SetCustomPadding(kRefreshButtonInsets);
-    button->SetProperty(views::kCrossAxisAlignmentKey,
-                        views::LayoutAlignment::kCenter);
-    button->SetBgColorIdOverride(ui::kColorSysBaseContainerElevated);
-  } else {
-    button->SetCustomPadding(kButtonInsets);
-    button->SetBgColorIdOverride(ui::kColorSysNeutralContainer);
-  }
+  button->SetCustomPadding(kRefreshButtonInsets);
+  button->SetProperty(views::kCrossAxisAlignmentKey,
+                      views::LayoutAlignment::kCenter);
+  button->SetBgColorIdOverride(ui::kColorSysBaseContainerElevated);
   button->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
                        ui::kColorLinkForeground);
   button->SetTextColor(views::Button::ButtonState::STATE_HOVERED,

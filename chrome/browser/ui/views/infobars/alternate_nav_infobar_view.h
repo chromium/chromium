@@ -24,15 +24,6 @@ class AlternateNavInfoBarView : public InfoBarView {
   ~AlternateNavInfoBarView() override;
 
  private:
-  // Treating |labels| as pieces of one continuous string, elides to fit
-  // |available_width| so as to guarantee that a trailing ellipsis is always
-  // displayed when the string is elided and there is at least room to display
-  // a lone ellipsis.
-  //
-  // NOTE: This may modify the text of any/all of the labels, so reset their
-  // texts when the available width changes before calling this again.
-  static void ElideLabels(Labels* labels, int available_width);
-
   // InfoBarView:
   void Layout(PassKey) override;
   int GetContentMinimumWidth() const override;

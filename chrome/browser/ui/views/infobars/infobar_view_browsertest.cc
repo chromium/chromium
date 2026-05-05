@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarViewBrowserTest,
   const ui::ColorProvider* color_provider = infobar->GetColorProvider();
   ASSERT_TRUE(color_provider);
 
-  const SkColor expected_bg = color_provider->GetColor(kColorInfoBarBackground);
+  const SkColor expected_bg = color_provider->GetColor(ui::kColorSysSurface2);
   const SkColor expected_fg = color_provider->GetColor(kColorInfoBarForeground);
 
   infobar->OnThemeChanged();
@@ -117,9 +117,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarViewBrowserTest,
 
 class InfoBarRefreshViewBrowserTest : public InProcessBrowserTest {
  public:
-  InfoBarRefreshViewBrowserTest() {
-    feature_list.InitAndEnableFeature(features::kInfobarRefresh);
-  }
+  InfoBarRefreshViewBrowserTest() = default;
 
  protected:
   infobars::ContentInfoBarManager* infobar_manager() {
@@ -131,9 +129,6 @@ class InfoBarRefreshViewBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->infobar_container();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list;
 };
 
 IN_PROC_BROWSER_TEST_F(InfoBarRefreshViewBrowserTest,
