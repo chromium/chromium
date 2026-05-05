@@ -51,6 +51,12 @@ main() {
       { err "${cmd} not found. Please install it."; exit 1; }
   done
 
+  # Specific check for GNU parallel
+  if ! parallel --version 2>/dev/null | grep -iq "gnu parallel"; then
+    err "GNU parallel is required, but a different version was found."
+    exit 1
+  fi
+
   # Validate input directories before resolving paths
   if [[ ! -d "$1" ]]; then
     err "SRC_OUT_DIR not found: $1"
@@ -144,16 +150,14 @@ main() {
   if [[ ${SCRAPING_EC} -ne 0 ]]; then
     err "The ads.txt scraping pipeline finished with a non-zero exit code: \
          ${SCRAPING_EC}."
-    err "Continuing, but ads_hosts.csv might be incomplete or empty."
+    exit 1
   else
     info "ads.txt scraping pipeline completed without error."
   fi
 
-  if [[ ! -f "ads_hosts.csv" ]]; then
-    err "ads_hosts.csv was not created! Creating an empty one to proceed."
-    touch ads_hosts.csv
-  elif [[ ! -s "ads_hosts.csv" ]]; then
-    info "ads_hosts.csv is empty."
+  if [[ ! -s "ads_hosts.csv" ]]; then
+    err "ads_hosts.csv is missing or empty."
+    exit 1
   else
     info "ads_hosts.csv generated with $(wc -l < ads_hosts.csv) lines."
   fi
@@ -221,18 +225,138 @@ main() {
   local filter_tool="${src_out_dir}/subresource_filter_tool"
   local filter_many_script="${chromium_src_dir}/components/subresource_filter/tools/filter_many.sh"
 
+  # AWK script to aggregate multi-line ruleset_converter errors into a summary
+  # that contains unique errors sorted by occurrence count.
+  #
+  # The converter outputs errors in a strict 3-line format:
+  # 1. Error message header (e.g., "... ] (error:1) Unknown option...").
+  # 2. The literal rule string that failed.
+  # 3. A pointer line with a '^' indicating the exact position of the failure.
+  #
+  # Exits with a failure code to alert the developer if the Chromium log format
+  # changes.
+  local aggregate_converter_errors_awk='
+    BEGIN { state = 0 }
+
+    /^\[.*:ERROR:.*\]/ {
+        if (state != 0) {
+            print "[FATAL] ruleset_converter log format changed (unexpected ERROR header)." > "/dev/stderr"
+            exit 1
+        }
+        # Strip the timestamp/file prefix and the optional "(error:XX)" code.
+        sub(/^\[[^\]]+\][ \t]*(\(error:[0-9]+\)[ \t]*)?/, "")
+        sub(/:[ \t]*$/, "") # Clean trailing colons
+        error_msg = $0
+        state = 1
+        next
+    }
+
+    state == 1 {
+        rule_line = $0
+        state = 2
+        next
+    }
+
+    state == 2 {
+        pos = index($0, "^")
+        if (pos == 0) {
+            print "[FATAL] ruleset_converter log format changed (missing \"^\" pointer)." > "/dev/stderr"
+            exit 1
+        }
+
+        # Extract the specific option flagged by the pointer.
+        opt_name = substr(rule_line, pos)
+        sub(/[,=].*/, "", opt_name) # Truncate at the first comma or equals sign
+        if (opt_name == "") opt_name = "unknown"
+
+        key = error_msg ": `" opt_name "`"
+        if (++counts[key] == 1) examples[key] = rule_line
+
+        state = 0
+        next
+    }
+
+    # Swallow empty lines left behind by the stripped errors
+    /^[ \t]*$/ { next }
+
+    {
+        if (state != 0) {
+            print "[FATAL] ruleset_converter log format changed (unexpected line during error parsing)." > "/dev/stderr"
+            exit 1
+        }
+        print $0
+    }
+
+    END {
+        if (state != 0) {
+            print "[FATAL] ruleset_converter log format changed (truncated error log)." > "/dev/stderr"
+            exit 1
+        }
+
+        # Collect unique keys
+        for (k in counts) keys[++n] = k
+
+        # Sort keys by occurrence count (descending)
+        for (i = 1; i <= n; i++) {
+            for (j = i + 1; j <= n; j++) {
+                if (counts[keys[j]] > counts[keys[i]]) {
+                    tmp = keys[i]; keys[i] = keys[j]; keys[j] = tmp
+                }
+            }
+        }
+
+        # Print formatted summary report
+        for (i = 1; i <= n; i++) {
+            k = keys[i]
+            c = counts[k]
+            printf "\n[ERROR] %s (%d occurrence%s)\n", k, c, (c == 1 ? "" : "s")
+            printf "Example: %s\n", examples[k]
+        }
+        if (n > 0) print ""
+    }
+  '
+
   info "Converting candidate rules to unindexed format..."
   "${converter}" --input_format=filter-list --output_format=unindexed-ruleset \
-    --input_files=candidate_rules_third.txt --output_file=easylist_unindexed
+    --input_files=candidate_rules_third.txt --output_file=easylist_unindexed 2>&1 | awk \
+      "${aggregate_converter_errors_awk}"
 
   info "Indexing candidate rules..."
   "${indexer}" easylist_unindexed easylist_indexed
 
   info "Generating smaller filter list using filter_many.sh (this will take several minutes)..."
+
+  # Count the number of gzip files in the page set directory to establish the
+  # denominator for our progress status.
+  local total_files=$(ls -1 "${page_set_dir}"/*.gz 2>/dev/null | wc -l)
+
   # filter_many.sh uses the page set from page_set_dir to simulate navigations.
   # The '0' means use as many processes as possible.
-  sh "${filter_many_script}" 0 "${page_set_dir}" "${filter_tool}" \
-      easylist_indexed > ordered_list.txt
+  # The awk script filters known noise (gunzip logs) into a dynamic progress
+  # status, while preserving actual errors.
+  sh "${filter_many_script}" 0 "${page_set_dir}" "${filter_tool}" easylist_indexed 2>&1 > ordered_list.txt | \
+    awk -v total="${total_files}" '
+      /gunzip -c/ {
+          if (total > 0) {
+              count++
+              percent = (count / total) * 100
+              # Use \r to return to the start of the line and \033[K to clear the current line,
+              # creating a dynamic progress status that updates in place.
+              printf "\r\033[K[INFO] Unpacking page sets: [%d/%d] (%.1f%%)", count, total, percent
+              fflush() # Force awk to flush the buffer immediately so the progress status is smooth
+          }
+          next # Consume the noise log so it does not print normally
+      }
+      {
+          # Pass any non-gunzip output back to stderr.
+          # This ensures we do not swallow actual crashes or error logs from filter_many.sh.
+          print $0 > "/dev/stderr"
+      }
+      END {
+          # Drop to a new line once complete so subsequent logs do not overwrite the final 100% state.
+          if (total > 0 && count > 0) print ""
+      }
+    '
 
   info "Extracting top 1000 most frequently hit rules..."
   head -n 1000 ordered_list.txt | cut -d' ' -f2 > smaller_list.txt
@@ -249,7 +373,8 @@ main() {
 
   info "Converting final list to unindexed format..."
   "${converter}" --input_format=filter-list --output_format=unindexed-ruleset \
-    --input_files=final_list.txt --output_file=final_list_unindexed
+    --input_files=final_list.txt --output_file=final_list_unindexed 2>&1 | awk \
+      "${aggregate_converter_errors_awk}"
 
   info "Indexing final list for Chromium..."
   "${indexer}" final_list_unindexed final_list_indexed
