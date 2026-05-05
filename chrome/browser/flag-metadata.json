@@ -9742,7 +9742,7 @@
   {
     "name": "web-app-migration-api",
     "owners": [ "mek@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "web-authentication-ambient-signin",
