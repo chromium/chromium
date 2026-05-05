@@ -146,19 +146,6 @@ enum class InputModesUsed {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
 
-// LINT.IfChange(AttachChangeReason)
-enum class AttachChangeReason {
-  // Attach state changed because of a drag gesture.
-  kDrag = 0,
-  // Attach state changed because of a menu click.
-  kMenu = 1,
-  // Attachment state initialized.
-  kInit = 2,
-
-  kMaxValue = kInit,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAttachChangeReason)
-
 // Events related to requests to the Glic API from the web client.
 // LINT.IfChange(GlicRequestEvent)
 enum class GlicRequestEvent {
@@ -222,9 +209,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnContextUploadCompleted();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
-
-  void OnAttachedToBrowser(AttachChangeReason reason);
-  void OnDetachedFromBrowser(AttachChangeReason reason);
 
   // ----Public API called by other glic classes-----
   // Called when the user completes the onboarding flow (consents).
@@ -365,7 +349,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // The last web client input mode used by the user.
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   std::set<mojom::WebClientMode> inputs_modes_used_;
-  int attach_change_count_ = 0;
 
   // Tracks the source ID from the latest tab context requested by the web
   // client. It is reset when user input is submitted.

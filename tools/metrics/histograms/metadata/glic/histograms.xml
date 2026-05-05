@@ -375,16 +375,6 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
-<histogram name="Glic.AttachedToBrowser" enum="GlicAttachChangeReason"
-    expires_after="2026-01-15">
-  <owner>dullweber@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Record the reason for attaching the panel to a browser when the panel is
-    attached.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Auth.CheckAuthBeforeLoadOutcome"
     enum="GlicCheckAuthBeforeLoadOutcome" expires_after="2027-04-27">
   <owner>harringtond@chromium.org</owner>
@@ -482,16 +472,6 @@ chromium-metrics-reviews@google.com.
     Records the outcome of the country filtering check for Glic enablement.
     Recorded once per call to GetCountryEnablement, which happens once at
     browser process startup.
-  </summary>
-</histogram>
-
-<histogram name="Glic.DetachedFromBrowser" enum="GlicAttachChangeReason"
-    expires_after="2026-01-15">
-  <owner>dullweber@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Record the reason for detaching the panel from a browser when the panel is
-    detached.
   </summary>
 </histogram>
 
@@ -2342,16 +2322,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PostFre" summary="User has accepted the FRE"/>
     <variant name="PreFre" summary="User has not accepted the FRE"/>
   </token>
-</histogram>
-
-<histogram name="Glic.Session.AttachStateChanges" units="count"
-    expires_after="2026-07-26">
-  <owner>dullweber@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The number of times the panel was attached or detached between openning and
-    closing. Recorded when the panel is closed.
-  </summary>
 </histogram>
 
 <histogram name="Glic.Session.Duration" units="ms" expires_after="2026-07-26">
