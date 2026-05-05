@@ -15,7 +15,6 @@ per-file .gitignore=*
 per-file .gitmodules=*
 per-file .git-blame-ignore-revs=thakis@chromium.org
 per-file .gn=ddorwin@chromium.org  # For fuchsia_target_api_level changes.
-per-file .gn=estaab@chromium.org
 per-file .gn=sergeyu@chromium.org  # For fuchsia_target_api_level changes.
 per-file .gn=file://build/OWNERS
 per-file .mailmap=*
