@@ -38,7 +38,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
               this.voiceSearchCoherenceComposeboxesEnabled_ ?
           html`<div id="bottomActions"
               ?hidden="${this.shouldShowErrorScrim_()}">
-            <cr-icon-button id="stopButton"
+            <cr-icon-button id="stopButton" part="voice-stop-button"
                 iron-icon="composebox:stop"
                 title="Stop"
                 @click="${this.onStopClick_}"

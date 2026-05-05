@@ -13,6 +13,8 @@
   from these; else negative default. */
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
+  --cr-composebox-submit-default-container-size: 40px;
+  --cr-composebox-submit-default-icon-size: 16px;
 }
 
 #container {
@@ -94,26 +96,28 @@
 }
 
 #stopButton {
-  /* Colors are hardcoded here as fallback because Contextual Tasks does not have access to these color-sys variables */
-  --cr-icon-button-fill-color: var(--color-sys-on-surface,#1F1F1F);
+  /* Colors are hardcoded here because Contextual Tasks and New Tab Page should not change color based on the theme. Omnibox overrides this based on theme.*/
+  --cr-icon-button-fill-color: #1F1F1F;
   --cr-icon-button-icon-size: 12px;
   --cr-icon-button-size: 36px;
-  background-color: var(--color-sys-neutral-container, #E1E3E1);
-  border-radius: 50%;
+  background-color: #E1E3E1;
+  border-radius: var(--cr-composebox-submit-border-radius, 50%);
+  height: var(--cr-composebox-submit-height, var(--cr-composebox-submit-default-container-size));
   margin: 0;
   transition: var(--submit-enabled-transition, 255ms);
+  width: var(--cr-composebox-submit-width, var(--cr-composebox-submit-default-container-size));
 }
 
 @media (prefers-color-scheme: dark) {
-/* Colors are hardcoded as fallback because Contextual Tasks does not have access to these color-sys variables. */
+/* Colors are hardcoded here because Contextual Tasks and New Tab Page should not change color based on the theme. Omnibox overrides this based on theme.*/
   #stopButton {
-    --cr-icon-button-fill-color: var(--color-sys-on-surface, #E3E3E3);
-    background-color: var(--color-sys-neutral-container, #444746);
+    --cr-icon-button-fill-color: #E3E3E3;
+    background-color: #444746;
   }
 }
 
 #submitButton::part(submit) {
-  --cr-composebox-submit-icon-size: 16px;
+  --cr-composebox-submit-icon-size: var(--cr-composebox-submit-default-icon-size);
   bottom: auto;
   inset-inline-end: auto;
   position: relative;
