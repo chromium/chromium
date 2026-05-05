@@ -34,6 +34,8 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler override.
   void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   // This method is called from JavaScript.

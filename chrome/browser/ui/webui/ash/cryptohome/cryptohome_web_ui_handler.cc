@@ -69,6 +69,10 @@ void CryptohomeWebUIHandler::RegisterMessages() {
 }
 
 void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue& args) {
+  AllowJavascript();
+}
+
+void CryptohomeWebUIHandler::OnJavascriptAllowed() {
   UserDataAuthClient* userdataauth_client = UserDataAuthClient::Get();
   CryptohomePkcs11Client* cryptohome_pkcs11_client =
       CryptohomePkcs11Client::Get();
@@ -101,6 +105,10 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue& args) {
       FROM_HERE, base::BindOnce(&crypto::IsTPMTokenEnabled,
                                 base::BindOnce(&ForwardToUIThread,
                                                std::move(ui_callback))));
+}
+
+void CryptohomeWebUIHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void CryptohomeWebUIHandler::GotIsTPMTokenEnabledOnUIThread(
@@ -170,8 +178,7 @@ void CryptohomeWebUIHandler::SetCryptohomeProperty(
     const std::string& destination_id,
     const base::Value& value) {
   base::Value destination_id_value(destination_id);
-  web_ui()->CallJavascriptFunctionUnsafe("SetCryptohomeProperty",
-                                         destination_id_value, value);
+  FireWebUIListener("SetCryptohomeProperty", destination_id_value, value);
 }
 
 }  // namespace ash
