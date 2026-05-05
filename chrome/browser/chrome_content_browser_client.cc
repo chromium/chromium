@@ -669,6 +669,9 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -8555,6 +8558,47 @@ bool ChromeContentBrowserClient::ShouldUseFirstPartyStorageKey(
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+}
+
+content::RenderFrameHost*
+ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+  auto* manager =
+      extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
+          render_frame_host);
+  if (!manager) {
+    return nullptr;
+  }
+  // Walk up to the *outermost* MIME handler extension frame. Same-origin
+  // chrome-extension subframes and about:blank subframes inside the MHV
+  // are not themselves registered as extension hosts (only the
+  // wrapper-attached extension RFH is), so they are passed through. For
+  // theoretical nesting (one MHV embedding another via its own wrapper),
+  // the outermost extension is the right effective top.
+  content::RenderFrameHost* extension_rfh = nullptr;
+  for (auto* rfh = render_frame_host; rfh; rfh = rfh->GetParent()) {
+    if (manager->IsExtensionHost(rfh)) {
+      extension_rfh = rfh;
+    }
+  }
+  if (!extension_rfh) {
+    return nullptr;
+  }
+  // Only treat the extension as the effective top for full-page MIME handler.
+  // For an HTML page that explicitly iframes a PDF, the embedding HTML page
+  // IS a real web ancestor; do not hide it. The wrapper must be the topmost
+  // main frame of its frame tree (which includes the inner main frame of a
+  // `<webview>`); this is what `GetOutermostMainFrame()` returns per its
+  // doc comment.
+  content::RenderFrameHost* wrapper = extension_rfh->GetParent();
+  if (!wrapper || wrapper != wrapper->GetOutermostMainFrame()) {
+    return nullptr;
+  }
+  return extension_rfh;
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<content::ResponsivenessCalculatorDelegate>

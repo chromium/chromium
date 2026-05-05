@@ -3037,6 +3037,27 @@ class CONTENT_EXPORT ContentBrowserClient {
   // extension origins.
   virtual bool ShouldUseFirstPartyStorageKey(const url::Origin& origin);
 
+  // Returns the RenderFrameHost that should act as the effective top-level
+  // frame for `render_frame_host`, or nullptr to fall back to the document
+  // tree. Used in:
+  //   - partitioning (StorageKey, IsolationInfo, NetworkIsolationKey,
+  //     SiteForCookies)
+  //   - ancestor-policy walks (CSP frame-ancestors, X-Frame-Options
+  //     SAMEORIGIN, Embedding-requires-opt-in, Location.ancestorOrigins)
+  //
+  // The primary use case is MIME handler extensions (e.g., a full-page PDF
+  // where Chrome wants the extension RFH, not the wrapper that embeds it,
+  // to act as the effective top). Other embedders may decide to use this
+  // hook for analogous cases.
+  //
+  // Implementations must return a non-null frame only when that frame is
+  // genuinely the outermost user-meaningful frame. When an HTML page
+  // explicitly iframes a sub-resource (e.g., `<iframe src="foo.pdf">`),
+  // the embedder is a real web ancestor and must not be hidden;
+  // implementations should return nullptr in that case.
+  virtual RenderFrameHost* GetEffectiveTopFrameForPartitioning(
+      RenderFrameHost* render_frame_host);
+
   // Checks if the BeforeUnload Dialog event should be skipped.
   virtual bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh);
 

@@ -1783,6 +1783,11 @@ bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
   return false;
 }
 
+RenderFrameHost* ContentBrowserClient::GetEffectiveTopFrameForPartitioning(
+    RenderFrameHost* render_frame_host) {
+  return nullptr;
+}
+
 bool ContentBrowserClient::ShouldSkipBeforeUnloadDialog(
     content::RenderFrameHost* rfh) {
   return false;
