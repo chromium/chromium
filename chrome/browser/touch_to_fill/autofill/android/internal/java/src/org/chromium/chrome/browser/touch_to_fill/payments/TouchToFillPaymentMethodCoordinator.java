@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
@@ -34,7 +32,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -43,7 +40,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
@@ -55,7 +51,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Implements the TouchToFillPaymentMethodComponent. It uses a bottom sheet to let the user select a
@@ -65,9 +60,6 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     private final TouchToFillPaymentMethodMediator mMediator =
             new TouchToFillPaymentMethodMediator();
     private PropertyModel mTouchToFillPaymentMethodModel;
-    private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
-            mCardImageFunction;
-    private Function<LoyaltyCard, Drawable> mValuableImageFunction;
 
     @Override
     public void initialize(
@@ -78,25 +70,13 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
         mTouchToFillPaymentMethodModel = createModel(mMediator);
-        mCardImageFunction =
-                (metaData) ->
-                        getCardIcon(
-                                context,
-                                imageFetcher,
-                                metaData.artUrl,
-                                metaData.iconId,
-                                ImageSize.LARGE,
-                                /* showCustomIcon= */ true);
-        mValuableImageFunction =
-                (loyaltyCard) ->
-                        getValuableIcon(
-                                context,
-                                imageFetcher,
-                                loyaltyCard.getProgramLogo(),
-                                ImageSize.LARGE,
-                                loyaltyCard.getMerchantName());
         mMediator.initialize(
-                context, profile, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+                context,
+                profile,
+                imageFetcher,
+                delegate,
+                mTouchToFillPaymentMethodModel,
+                bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));
@@ -106,8 +86,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     public void showPaymentMethods(
             List<AutofillSuggestion> suggestions,
             TouchToFillDisplayOptions touchToFillDisplayOptions) {
-        assert mCardImageFunction != null : "Attempting to call showCreditCards before initialize.";
-        mMediator.showPaymentMethods(suggestions, touchToFillDisplayOptions, mCardImageFunction);
+        mMediator.showPaymentMethods(suggestions, touchToFillDisplayOptions);
     }
 
     @Override
@@ -121,12 +100,12 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage) {
         mMediator.showAffiliatedLoyaltyCards(
-                affiliatedLoyaltyCards, allLoyaltyCards, mValuableImageFunction, firstTimeUsage);
+                affiliatedLoyaltyCards, allLoyaltyCards, firstTimeUsage);
     }
 
     @Override
     public void showAllLoyaltyCards(List<LoyaltyCard> allLoyaltyCards) {
-        mMediator.showAllLoyaltyCards(allLoyaltyCards, mValuableImageFunction);
+        mMediator.showAllLoyaltyCards(allLoyaltyCards);
     }
 
     @Override
