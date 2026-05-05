@@ -188,7 +188,7 @@
   {
     "name": "android-adaptive-frame-rate",
     "owners": [ "boliu@chromium.org", "//components/viz/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "android-adpf-efficiency-mode",
