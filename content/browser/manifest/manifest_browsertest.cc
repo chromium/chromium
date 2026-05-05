@@ -1079,8 +1079,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_StartUrlCrossOrigin) {
   host->ValidateAndMaybeOverrideManifestForTesting(
       blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
   EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
-              ::testing::StartsWith(
-                  "Manifest start_url must be same-origin with the document."));
+              ::testing::StartsWith("Manifest start_url (https://evil.com/) "
+                                    "must be same-origin with the document"));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, BadMessage_IdCrossOrigin) {

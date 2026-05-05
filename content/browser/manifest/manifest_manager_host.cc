@@ -66,7 +66,9 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
     }
 
     if (!document_origin.IsSameOriginWith(manifest.start_url)) {
-      return "Manifest start_url must be same-origin with the document.";
+      return base::StrCat({"Manifest start_url (" + manifest.start_url.spec() +
+                           ") must be same-origin with the document (" +
+                           document_origin.Serialize() + ")."});
     }
 
     if (!document_origin.IsSameOriginWith(manifest.id)) {
