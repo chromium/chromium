@@ -1226,6 +1226,13 @@
     'extension': {
       'filepath': 'extension',
     },
+    'feature_engagement': {
+      'filepath': 'components/feature_engagement/|' \
+                  'chrome/browser/feature_engagement|' \
+                  'chrome/browser/android/feature_engagement/|' \
+                  'tools/metrics/histograms/metadata/feature_engagement/|' \
+                  'tools/feature_engagement/',
+    },
     'feed': {
       'filepath': 'chrome/android/feed|' \
                   'chrome/browser/feed/|' \
@@ -3003,6 +3010,7 @@
                       'freedjm+watch@chromium.org'],
     'extension': ['chromium-apps-reviews@chromium.org',
                   'extensions-reviews@chromium.org'],
+    'feature_engagement': ['mschillaci@google.com'],
     'feed': ['harringtond+watch@chromium.org',
              'petewil+watch@chromium.org',
              'iwells+watch@chromium.org'],
