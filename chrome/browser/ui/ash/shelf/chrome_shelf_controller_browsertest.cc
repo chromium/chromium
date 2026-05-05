@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -46,6 +47,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -68,6 +71,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
@@ -122,6 +126,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -837,6 +843,31 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
 
   EXPECT_FALSE(app_window->IsActive());
   EXPECT_TRUE(browser2->window()->IsActive());
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
+                       DestroyedBrowserInstanceDoesNotDereferenceWindow) {
+  AppServiceAppWindowShelfController* app_window_controller =
+      controller_->app_service_app_window_controller();
+  ASSERT_TRUE(app_window_controller);
+
+  auto* const destroyed_window =
+      reinterpret_cast<aura::Window*>(~static_cast<uintptr_t>(0));
+  const base::UnguessableToken instance_id = base::UnguessableToken::Create();
+  apps::Instance old_instance(app_constants::kChromeAppId, instance_id,
+                              destroyed_window);
+  old_instance.UpdateState(apps::InstanceState::kStarted, base::Time());
+  apps::Instance destroyed_instance(app_constants::kChromeAppId, instance_id,
+                                    destroyed_window);
+  destroyed_instance.UpdateState(apps::InstanceState::kDestroyed, base::Time());
+
+  // Browser shutdown can report a destroyed instance after the window pointer
+  // in the update has become unsafe to dereference. Destruction handling must
+  // clean up using the pointer value only and must not call
+  // IsOpenedInBrowser().
+  const apps::InstanceUpdate update(&old_instance, &destroyed_instance);
+  ASSERT_TRUE(update.IsDestruction());
+  app_window_controller->OnInstanceUpdate(update);
 }
 
 // Confirm the minimizing click behavior for apps.
