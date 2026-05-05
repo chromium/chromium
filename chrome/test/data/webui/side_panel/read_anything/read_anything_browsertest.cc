@@ -342,7 +342,14 @@ IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, SettingsMenu) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest, ToolbarSettingsMenu) {
+// TODO(crbug.com/509759561): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ToolbarSettingsMenu DISABLED_ToolbarSettingsMenu
+#else
+#define MAYBE_ToolbarSettingsMenu ToolbarSettingsMenu
+#endif
+IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingMochaTest,
+                       MAYBE_ToolbarSettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/toolbar_settings_menu_test.js",
                    "mocha.run()");
 }
