@@ -9,8 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
@@ -67,7 +69,33 @@ public class TabBottomSheetWebUi {
         }
         mWebContents = webContents;
         if (mWebContents != null) {
-            ContentView contentView = ContentView.createContentView(mContext, mWebContents);
+            ContentView contentView = createContentView(mContext, mWebContents);
+            contentView.addOnAttachStateChangeListener(
+                    new View.OnAttachStateChangeListener() {
+                        private final ViewTreeObserver.OnWindowFocusChangeListener mListener =
+                                new ViewTreeObserver.OnWindowFocusChangeListener() {
+                                    @Override
+                                    public void onWindowFocusChanged(boolean hasFocus) {
+                                        if (!hasFocus) {
+                                            contentView.clearFocus();
+                                        }
+                                    }
+                                };
+
+                        @Override
+                        public void onViewAttachedToWindow(View v) {
+                            contentView
+                                    .getViewTreeObserver()
+                                    .addOnWindowFocusChangeListener(mListener);
+                        }
+
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {
+                            contentView
+                                    .getViewTreeObserver()
+                                    .removeOnWindowFocusChangeListener(mListener);
+                        }
+                    });
 
             // Most systems assume ViewAndroidDelegate is created alongside WebContents and never
             // changes. SelectionPopupControllerImpl is an example of a system that does this so if
@@ -140,6 +168,11 @@ public class TabBottomSheetWebUi {
                 }
             }
         };
+    }
+
+    @VisibleForTesting
+    ContentView createContentView(Context context, WebContents webContents) {
+        return ContentView.createContentView(context, webContents);
     }
 
     private void resetThinWebView() {
