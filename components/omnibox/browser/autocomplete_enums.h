@@ -35,4 +35,11 @@ enum class AutocompleteStopReason {
   kInactivity,
 };
 
+// State of the keyword.
+enum class KeywordState {
+  kNone,     // Not in keyword mode.
+  kHint,     // Show chip to enter keyword mode.
+  kKeyword,  // In keyword mode.
+};
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_ENUMS_H_

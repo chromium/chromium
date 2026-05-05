@@ -394,7 +394,7 @@ void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
         /*user_input_in_progress=*/true,
         /*user_text=*/text, existing_state->model_state.keyword,
         existing_state->model_state.keyword_placeholder,
-        existing_state->model_state.is_keyword_hint,
+        existing_state->model_state.keyword_state,
         existing_state->model_state.keyword_mode_entry_method,
         existing_state->model_state.focus_state,
         existing_state->model_state.autocomplete_input);

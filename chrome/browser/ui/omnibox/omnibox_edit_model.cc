@@ -62,6 +62,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -225,7 +226,7 @@ OmniboxEditModel::State::State(
     const std::u16string& user_text,
     const std::u16string& keyword,
     const std::u16string& keyword_placeholder,
-    bool is_keyword_hint,
+    KeywordState keyword_state,
     OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method,
     OmniboxFocusState focus_state,
     const AutocompleteInput& autocomplete_input)
@@ -233,7 +234,7 @@ OmniboxEditModel::State::State(
       user_text(user_text),
       keyword(keyword),
       keyword_placeholder(keyword_placeholder),
-      is_keyword_hint(is_keyword_hint),
+      keyword_state(keyword_state),
       keyword_mode_entry_method(keyword_mode_entry_method),
       focus_state(focus_state),
       autocomplete_input(autocomplete_input) {}
@@ -304,8 +305,8 @@ OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
     user_text = user_text_;
   }
   return State(user_input_in_progress_, user_text, keyword_,
-               keyword_placeholder_, is_keyword_hint_,
-               keyword_mode_entry_method_, focus_state_, input_);
+               keyword_placeholder_, keyword_state_, keyword_mode_entry_method_,
+               focus_state_, input_);
 }
 
 void OmniboxEditModel::RestoreState(const State* state) {
@@ -346,7 +347,7 @@ void OmniboxEditModel::RestoreState(const State* state) {
     }
     SetKeyword(state->keyword);
     SetKeywordPlaceholder(state->keyword_placeholder);
-    SetIsKeywordHint(state->is_keyword_hint);
+    SetKeywordState(state->keyword_state);
     keyword_mode_entry_method_ = state->keyword_mode_entry_method;
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
@@ -407,7 +408,7 @@ void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
   SetKeyword(std::u16string());
   keyword_placeholder_.clear();
-  SetIsKeywordHint(false);
+  SetKeywordState(KeywordState::kNone);
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -612,7 +613,7 @@ void OmniboxEditModel::Revert() {
   InternalSetUserText(std::u16string());
   SetKeyword(std::u16string());
   keyword_placeholder_.clear();
-  SetIsKeywordHint(false);
+  SetKeywordState(KeywordState::kNone);
   keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -734,7 +735,7 @@ void OmniboxEditModel::EnterKeywordMode(
 
   SetKeyword(template_url->keyword());
   SetKeywordPlaceholder(placeholder_text);
-  SetIsKeywordHint(false);
+  SetKeywordState(KeywordState::kKeyword);
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
@@ -1124,7 +1125,7 @@ void OmniboxEditModel::AcceptKeyword(
 
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  SetIsKeywordHint(false);
+  SetKeywordState(KeywordState::kKeyword);
   keyword_mode_entry_method_ = entry_method;
   if (original_user_text_with_keyword_.empty()) {
     original_user_text_with_keyword_ = user_text_;
@@ -1223,7 +1224,8 @@ void OmniboxEditModel::ClearKeyword() {
   // first line, then the state update will rerun autocompletion and reset the
   // whole dropdown, and end up with the first line selected instead, instead of
   // just "undoing" the keyword mode entry on the non-first line.  So in this
-  // case we simply reset |is_keyword_hint_| to true and update the window text.
+  // case we simply reset `keyword_state_` to `kHint` and update the window
+  // text.
   //
   // You might wonder why we don't simply do this in all cases.  In states 1-2,
   // getting out of keyword mode likely shouldn't put us in keyword hint mode;
@@ -1242,7 +1244,7 @@ void OmniboxEditModel::ClearKeyword() {
   // search, which feels bizarre.
   if (was_toggled_into_keyword_mode && entry_by_tab) {
     // State 4 above.
-    SetIsKeywordHint(true);
+    SetKeywordState(KeywordState::kHint);
     keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
     const std::u16string window_text = keyword_ + view_->GetText();
     view_->SetWindowTextAndCaretPos(window_text, keyword_.length(), false,
@@ -1281,7 +1283,7 @@ void OmniboxEditModel::ClearKeyword() {
 
     SetKeyword(std::u16string());
     keyword_placeholder_.clear();
-    SetIsKeywordHint(false);
+    SetKeywordState(KeywordState::kNone);
     keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
@@ -1545,8 +1547,7 @@ bool OmniboxEditModel::OnSpacePressed() {
   if (!AllowKeywordSpaceTriggering()) {
     return false;
   }
-  if (!is_keyword_hint_ && keyword_.empty() &&
-      input_.cursor_position() == input_.text().length()) {
+  if (keyword_.empty() && input_.cursor_position() == input_.text().length()) {
     // Keywords can now be accessed anywhere in the match list. If one is
     // found on an instant keyword match, select and accept it.
     const AutocompleteResult& result = autocomplete_controller()->result();
@@ -1594,29 +1595,61 @@ void OmniboxEditModel::OnPopupDataChanged(
     const std::u16string& inline_autocompletion,
     const std::u16string& keyword,
     const std::u16string& keyword_placeholder,
-    bool is_keyword_hint,
+    KeywordState keyword_state,
     const std::u16string& additional_text,
     const AutocompleteMatch& new_match) {
   current_match_ = new_match;
+  // When keyword mode is entered, the `user_text_` is stripped of its keyword.
+  // It must be restored when leaving keyword mode by reverting to the default
+  // selection. E.g. when the user entered keyword mode (either on the default
+  // or on a non-default match), selects a non-default match, then selects the
+  // default match.
   if (!original_user_text_with_keyword_.empty() && !is_temporary_text &&
-      (keyword.empty() || is_keyword_hint)) {
+      !is_keyword_selected(keyword_state)) {
     user_text_ = original_user_text_with_keyword_;
     original_user_text_with_keyword_.clear();
   }
 
   // Update keyword/hint-related local state.
+  // `keyword_state_changed` is misleading. There are cases where it is false
+  // even though keyword state changes.
+  // TODO(b/509630597) It's unclear if this mismatch between
+  // `keyword_state_changed` and whether keyword state actually changed is
+  // intentional or bugs/oversights.
+  // old state   -> new state         | keyword_state_changed:
+  // --------------------------------------------------------------------------
+  // hint        -> hint              | false
+  // hint        -> keyword           | true
+  // hint        -> no keyword        | false even though keyword state changed
+  // hint        -> different hint    | true
+  // hint        -> different keyword | true
+  // keyword     -> hint              | true
+  // keyword     -> keyword           | false
+  // keyword     -> no keyword        | false even though keyword state changed
+  // keyword     -> different hint    | true
+  // keyword     -> different keyword | true
+  // no keyword  -> hint              | true
+  // no keyword  -> keyword           | false even though keyword state changed
+  // no keyword  -> no keyword        | false
   bool keyword_state_changed =
       (keyword_ != keyword) ||
-      ((is_keyword_hint_ != is_keyword_hint) && !keyword.empty());
+      (is_keyword_hint() != is_keyword_hint(keyword_state) && !keyword.empty());
   if (keyword_state_changed) {
     bool keyword_was_selected = is_keyword_selected();
     SetKeyword(keyword);
     SetKeywordPlaceholder(keyword_placeholder);
-    SetIsKeywordHint(is_keyword_hint);
+    SetKeywordState(keyword_state);
     if (!keyword_was_selected && is_keyword_selected()) {
       // Since we entered keyword mode, record the reason. Note that we
       // don't do this simply because the keyword changes, since the user
       // never left keyword mode.
+      // This is called when arrowing to a in-keyword mode suggestion. Since
+      // keyword entry was already logged when initially creating the in-keyword
+      // suggestion, don't re-log `EmitEnteredKeywordModeHistogram()`. This is
+      // inconsistent with other keyword re-entry methods that do re-log
+      // `EmitEnteredKeywordModeHistogram()`. This also means keyword histograms
+      // logged before and after this point for this keyword will have different
+      // `keyword_mode_entry_method_` slices.
       keyword_mode_entry_method_ = OmniboxEventProto::SELECT_SUGGESTION;
     } else if (!is_keyword_selected()) {
       // We've left keyword mode, so align the entry method field with that.
@@ -1625,10 +1658,8 @@ void OmniboxEditModel::OnPopupDataChanged(
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
     }
-
-    // |is_keyword_hint_| should always be false if |keyword_| is empty.
-    DCHECK(!keyword_.empty() || !is_keyword_hint_);
   }
+
   // This updates the web UI state and affects presence/absence of the '+'
   // context menu button. This should reflect whether keyword mode is actually
   // entered, not simply match selection state (a match with keyword may be
@@ -1804,7 +1835,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // selected text that was adjoined to this keyword), there will be one now
   // because of the call to `UpdatePopup()` above; so it's safe for
   // `ShouldAcceptKeywordAfterInsertingSpaceAtEnd()` to look at `keyword_` and
-  // `is_keyword_hint_` to determine what keyword, if any, is applicable.
+  // `keyword_state_` to determine what keyword, if any, is applicable.
   //
   // If `ShouldAcceptKeywordAfterInsertingSpaceAtEnd()` accepts the keyword and
   // returns true, that will have updated our state already, so in that case we
@@ -1825,20 +1856,20 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   const AutocompleteMatch& match =
       *autocomplete_controller()->result().default_match();
 
-  // We store |keyword| and |is_keyword_hint| in temporary variables since
+  // We store `keyword` and `keyword_state` in temporary variables since
   // OnPopupDataChanged use their previous state to detect changes.
+  KeywordState keyword_state;
   std::u16string keyword;
   std::u16string keyword_placeholder;
-  bool is_keyword_hint;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service,
+  match.GetKeywordUiState(service,
                           controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword, &keyword_placeholder, &is_keyword_hint);
+                          &keyword_state, &keyword, &keyword_placeholder);
 
-  if (!is_keyword_selected() && !is_keyword_hint && !keyword.empty()) {
+  if (!is_keyword_selected() && is_keyword_selected(keyword_state)) {
     // We just entered keyword mode, so remove the keyword from the input.
     // We don't call MaybeStripKeyword, as we haven't yet updated our internal
-    // state (keyword_ and is_keyword_hint_), and MaybeStripKeyword checks this.
+    // state (keyword_ and keyword_state_), and MaybeStripKeyword checks this.
     user_text_ =
         AutocompleteInput::SplitReplacementStringFromInput(user_text_, false);
     original_user_text_with_keyword_.clear();
@@ -1855,7 +1886,7 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // its value across the entire call.
   OnPopupDataChanged(std::u16string(),
                      /*is_temporary_text=*/false, match.inline_autocompletion,
-                     keyword, keyword_placeholder, is_keyword_hint,
+                     keyword, keyword_placeholder, keyword_state,
                      match.additional_text, match);
 
   // Notify observers after the match has been safely copied to |current_match_|
@@ -2191,13 +2222,13 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     }
   }
 
+  KeywordState keyword_state;
   std::u16string keyword;
   std::u16string keyword_placeholder;
-  bool is_keyword_hint;
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  match.GetKeywordUIState(service,
+  match.GetKeywordUiState(service,
                           controller_->client()->IsHistoryEmbeddingsEnabled(),
-                          &keyword, &keyword_placeholder, &is_keyword_hint);
+                          &keyword_state, &keyword, &keyword_placeholder);
 
   // Don't update the edit model if entering or leaving keyword mode; doing so
   // breaks keyword mode. Updating when there is no line change is necessary
@@ -2211,11 +2242,11 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
       OnPopupDataChanged(
           std::u16string(),
           /*is_temporary_text=*/false, match.inline_autocompletion, keyword,
-          keyword_placeholder, is_keyword_hint, match.additional_text, match);
+          keyword_placeholder, keyword_state, match.additional_text, match);
     } else {
       OnPopupDataChanged(match.fill_into_edit,
                          /*is_temporary_text=*/true, std::u16string(), keyword,
-                         keyword_placeholder, is_keyword_hint, std::u16string(),
+                         keyword_placeholder, keyword_state, std::u16string(),
                          match);
     }
   }
@@ -3173,7 +3204,7 @@ bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceAtEnd(
   // would have been shown. Even if this weren't the case, and the input matched
   // a keyword without showing a hint, entering keyword mode in this case would
   // be surprising.
-  if (!is_keyword_hint_) {
+  if (!is_keyword_hint()) {
     return false;
   }
 
@@ -3348,8 +3379,8 @@ void OmniboxEditModel::SetKeywordPlaceholder(
   keyword_placeholder_ = keyword_placeholder;
 }
 
-void OmniboxEditModel::SetIsKeywordHint(bool is_keyword_hint) {
-  is_keyword_hint_ = is_keyword_hint;
+void OmniboxEditModel::SetKeywordState(KeywordState keyword_state) {
+  keyword_state_ = keyword_state;
 }
 
 void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,

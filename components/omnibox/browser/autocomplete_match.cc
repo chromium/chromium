@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -1292,19 +1293,23 @@ bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
              template_url_starter_pack_data::StarterPackId::kGemini;
 }
 
-void AutocompleteMatch::GetKeywordUIState(
+void AutocompleteMatch::GetKeywordUiState(
     TemplateURLService* template_url_service,
     bool is_history_embeddings_enabled,
+    KeywordState* keyword_state,
     std::u16string* keyword_out,
-    std::u16string* keyword_placeholder_out,
-    bool* is_keyword_hint) const {
-  *is_keyword_hint = !associated_keyword.empty();
-  keyword_out->assign(
-      *is_keyword_hint
-          ? associated_keyword
-          : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+    std::u16string* keyword_placeholder_out) const {
   *keyword_placeholder_out = GetKeywordPlaceholder(
       GetTemplateURL(template_url_service), is_history_embeddings_enabled);
+  if (associated_keyword.empty()) {
+    keyword_out->assign(
+        GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+    *keyword_state =
+        keyword_out->empty() ? KeywordState::kNone : KeywordState::kKeyword;
+  } else {
+    keyword_out->assign(associated_keyword);
+    *keyword_state = KeywordState::kHint;
+  }
 }
 
 std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(

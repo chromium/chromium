@@ -22,12 +22,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
@@ -54,7 +56,7 @@ class OmniboxEditModel {
           const std::u16string& user_text,
           const std::u16string& keyword,
           const std::u16string& keyword_placeholder,
-          bool is_keyword_hint,
+          KeywordState keyword_state,
           metrics::OmniboxEventProto::KeywordModeEntryMethod
               keyword_mode_entry_method,
           OmniboxFocusState focus_state,
@@ -67,7 +69,7 @@ class OmniboxEditModel {
     const std::u16string user_text;
     const std::u16string keyword;
     const std::u16string keyword_placeholder;
-    const bool is_keyword_hint;
+    const KeywordState keyword_state;
     metrics::OmniboxEventProto::KeywordModeEntryMethod
         keyword_mode_entry_method;
     OmniboxFocusState focus_state;
@@ -307,14 +309,25 @@ class OmniboxEditModel {
   }
 
   // Accessors for keyword-related state (see comments on `keyword_`,
-  // `keyword_placeholder_` and `is_keyword_hint_`).
+  // `keyword_placeholder_` and `keyword_state_`).
   const std::u16string& keyword() const { return keyword_; }
   const std::u16string& keyword_placeholder() const {
     return keyword_placeholder_;
   }
-  bool is_keyword_hint() const { return is_keyword_hint_; }
+
+  bool is_keyword_hint() const {
+    CHECK((keyword_state_ == KeywordState::kNone) == keyword_.empty());
+    return is_keyword_hint(keyword_state_);
+  }
   bool is_keyword_selected() const {
-    return !is_keyword_hint_ && !keyword_.empty();
+    CHECK((keyword_state_ == KeywordState::kNone) == keyword_.empty());
+    return is_keyword_selected(keyword_state_);
+  }
+  static bool is_keyword_hint(KeywordState keyword_state) {
+    return keyword_state == KeywordState::kHint;
+  }
+  static bool is_keyword_selected(KeywordState keyword_state) {
+    return keyword_state == KeywordState::kKeyword;
   }
 
   // Accepts the current keyword hint as a keyword. `entry_method` indicates how
@@ -417,9 +430,10 @@ class OmniboxEditModel {
   //   `destination_for_temporary_text_change` is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
-  //   `keyword` is the keyword to show a hint for if `is_keyword_hint` is true,
-  //     or the currently selected keyword if `is_keyword_hint` is false (see
-  //     comments on keyword_ and is_keyword_hint_).
+  //   `keyword` is the keyword to show a hint for if `keyword_state` is
+  //     `KeywordState::kHint`, or the currently selected keyword if
+  //     `keyword_state` is `KeywordState::kKeyword` (see comments on `keyword_`
+  //     and `keyword_state_`).
   //   `additional_text` is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
   //   `new_match` is the selected match when the user is changing selection,
@@ -431,7 +445,7 @@ class OmniboxEditModel {
                                   const std::u16string& inline_autocompletion,
                                   const std::u16string& keyword,
                                   const std::u16string& keyword_placeholder,
-                                  bool is_keyword_hint,
+                                  KeywordState keyword_state,
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
 
@@ -736,7 +750,7 @@ class OmniboxEditModel {
   // Always use these to set keyword members instead of mutating them directly.
   void SetKeyword(const std::u16string& keyword);
   void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
-  void SetIsKeywordHint(bool is_keyword_hint);
+  void SetKeywordState(KeywordState keyword_state);
 
   // Record various UMA metrics associated with the AIM page action.
   // `query_text` represents the text entered by the user at activation time.
@@ -864,7 +878,7 @@ class OmniboxEditModel {
   // The keyword associated with the current match.  The user may have an actual
   // selected keyword, or just some input text that looks like a keyword (so we
   // can show a hint to press <tab>).  This is the keyword in either case;
-  // is_keyword_hint_ (below) distinguishes the two cases.
+  // `keyword_state_` (below) distinguishes the two cases.
   std::u16string keyword_;
 
   // The placeholder text displayed for the keyword the user has selected.
@@ -874,7 +888,7 @@ class OmniboxEditModel {
   // True if the keyword associated with this match is merely a hint, i.e. the
   // user hasn't actually selected a keyword yet.  When this is true, we can use
   // keyword_ to show a "Press <tab> to search" sort of hint.
-  bool is_keyword_hint_ = false;
+  KeywordState keyword_state_ = KeywordState::kNone;
 
   // Indicates how the user entered keyword mode if the user is actually in
   // keyword mode.  Otherwise, the value of this variable is INVALID.  This

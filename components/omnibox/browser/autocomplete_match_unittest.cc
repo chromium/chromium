@@ -1237,3 +1237,47 @@ TEST_F(AutocompleteMatchTest, ShouldHideBasedOnStarterPack) {
   match.keyword = u"@unknown";
   EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
 }
+
+TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
+  auto* template_url_service =
+      search_engines_test_environment_.template_url_service();
+  TemplateURLData turl_data;
+  turl_data.SetShortName(u"short_name");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("http://youtube.com/?q={searchTerms}");
+  template_url_service->Add(std::make_unique<TemplateURL>(turl_data));
+
+  std::u16string keyword;
+  std::u16string keyword_placeholder;
+  KeywordState keyword_state;
+
+  {
+    SCOPED_TRACE("No keyword");
+    AutocompleteMatch match;
+    match.GetKeywordUiState(template_url_service, false, &keyword_state,
+                            &keyword, &keyword_placeholder);
+    EXPECT_TRUE(keyword.empty());
+    EXPECT_EQ(keyword_state, KeywordState::kNone);
+  }
+
+  {
+    SCOPED_TRACE("Keyword hint");
+    AutocompleteMatch match;
+    match.associated_keyword = u"keyword";
+    match.GetKeywordUiState(template_url_service, false, &keyword_state,
+                            &keyword, &keyword_placeholder);
+    EXPECT_EQ(keyword, u"keyword");
+    EXPECT_EQ(keyword_state, KeywordState::kHint);
+  }
+
+  {
+    SCOPED_TRACE("Keyword mode");
+    AutocompleteMatch match;
+    match.keyword = u"keyword";
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.GetKeywordUiState(template_url_service, false, &keyword_state,
+                            &keyword, &keyword_placeholder);
+    EXPECT_EQ(keyword, u"keyword");
+    EXPECT_EQ(keyword_state, KeywordState::kKeyword);
+  }
+}

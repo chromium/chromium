@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
@@ -596,23 +597,22 @@ struct AutocompleteMatch {
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match. If this match represents a selected keyword, i.e.
   // the UI should be "in keyword mode", `keyword_out` will be set to the
-  // keyword and `is_keyword_hint` will be set to false. If this match has a
-  // non-null `associated_keyword`, i.e. we should show a "Press [tab] to search
-  // ___" hint and allow the user to toggle into keyword mode, `keyword_out`
-  // will be set to the associated keyword and `is_keyword_hint` will be set to
-  // true. Note that only one of these states can be in effect at once. In all
-  // other cases, `keyword_out` will be cleared, even when our member variable
-  // `keyword` is non-empty -- such as with non-substituting keywords or matches
-  // that represent searches using the default search engine. See also
-  // `GetSubstitutingExplicitlyInvokedKeyword()`. `keyword_placeholder_out` will
-  // be set to any placeholder text the keyword wants to display. Set for both
-  // hint and non-hint keyword modes. `is_history_embeddings_enabled` will
-  // affect the placeholder text for the @history keyword.
-  void GetKeywordUIState(TemplateURLService* template_url_service,
+  // keyword and `keyword_state` will be set to `KeywordState::kKeyword`. If
+  // this match has a non-null `associated_keyword`, i.e. we should show a
+  // keyword chip and allow the user to toggle into keyword mode, `keyword_out`
+  // will be set to the associated keyword and `keyword_state` will be set to
+  // `KeywordState::kHint`. Note that only one of these states can be in effect
+  // at once. In all other cases, `keyword_out` will be cleared, and
+  // `keyword_state` will be set to `KeywordState::kNone`.
+  // `keyword_placeholder_out` will be set to any placeholder text the keyword
+  // wants to display. Set for both hint and non-hint keyword modes.
+  // `is_history_embeddings_enabled` will affect the placeholder text for the
+  // @history keyword.
+  void GetKeywordUiState(TemplateURLService* template_url_service,
                          bool is_history_embeddings_enabled,
+                         KeywordState* keyword_state,
                          std::u16string* keyword_out,
-                         std::u16string* keyword_placeholder_out,
-                         bool* is_keyword_hint) const;
+                         std::u16string* keyword_placeholder_out) const;
 
   // Returns |keyword|, but only if it represents a substituting keyword that
   // the user has explicitly invoked.  If for example this match represents a
@@ -1012,7 +1012,7 @@ struct AutocompleteMatch {
   // for both explicit "keyword mode" matches as well as matches for the default
   // search provider (so, any match for which we're doing substitution); it
   // doesn't imply (alone) that the UI is going to show a keyword hint or
-  // keyword mode.  For that, see GetKeywordUIState() or
+  // keyword mode.  For that, see `GetKeywordUiState()` or
   // GetSubstitutingExplicitlyInvokedKeyword().
   //
   // CAUTION: The TemplateURL associated with this keyword may be deleted or

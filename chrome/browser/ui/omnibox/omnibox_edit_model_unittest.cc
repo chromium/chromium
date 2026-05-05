@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -236,8 +237,8 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   model()->SetUserText(u"he");
   model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false, u"llo",
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"llo", view()->inline_autocompletion());
 
@@ -249,8 +250,8 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false, u"lo",
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"lo", view()->inline_autocompletion());
 
@@ -261,8 +262,8 @@ TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   model()->SetUserText(u"he");
   model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false, u"llo",
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
   EXPECT_EQ(u"hello", view()->GetText());
   EXPECT_EQ(u"llo", view()->inline_autocompletion());
 
@@ -290,7 +291,8 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
                               std::u16string(), std::u16string(),
-                              std::u16string(), false, std::u16string(), {});
+                              std::u16string(), KeywordState::kNone,
+                              std::u16string(), {});
   EXPECT_EQ(u"https://www.example.com/", view()->GetText());
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_TRUE(view()->IsSelectAll());
@@ -308,8 +310,8 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(u"fake_temporary_text",
                               /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
 
   // Test that reverting brings back the original input text.
   EXPECT_TRUE(model()->OnEscapeKeyPressed());
@@ -534,8 +536,8 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
   // OnPopupDataChanged() is called when the user focuses a suggestion.
   model()->OnPopupDataChanged(u"match text",
                               /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
 
   // Entering keyword search mode should preserve temporary text as the user
   // text, and select all.
@@ -565,8 +567,8 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
   model()->StartAutocomplete(false);
   model()->OnPopupDataChanged(u"foobar",
                               /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
 
   model()->OnControlKeyChanged(true);
   model()->OpenCurrentSelection();
@@ -1112,8 +1114,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   // Simulate OmniboxController updating the popup, then check initial state.
   model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false, u"1",
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
@@ -1280,8 +1282,8 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
   // Simulate OmniboxController updating the popup, then check initial state.
   model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false, u"a1",
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
   EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
   EXPECT_EQ(u"a1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
@@ -1546,8 +1548,8 @@ TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
       OmniboxPopupState::kClassic);
   model()->OnPopupDataChanged(/*temporary_text=*/u"fake_temporary_text",
                               /*is_temporary_text=*/true, std::u16string(),
-                              std::u16string(), std::u16string(), false,
-                              std::u16string(), {});
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
 
   EXPECT_TRUE(model()->HasTemporaryText());
   EXPECT_TRUE(controller()->IsPopupOpen());
@@ -1814,25 +1816,25 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
   TestObserver observer;
   model()->AddObserver(&observer);
 
-  auto changed = [this](std::u16string keyword, bool is_keyword_hint) {
+  auto changed = [this](std::u16string keyword, KeywordState keyword_state) {
     model()->OnPopupDataChanged(std::u16string(), false, std::u16string(),
-                                keyword, std::u16string(), is_keyword_hint,
+                                keyword, std::u16string(), keyword_state,
                                 std::u16string(), {});
   };
 
   // Keyword hint is not fully in keyword mode, so state is false.
   EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  changed(u"keyword", true);
+  changed(u"keyword", KeywordState::kHint);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Entering keyword mode (not hint) sets state to true.
   EXPECT_CALL(observer, OnKeywordStateChanged(true));
-  changed(u"keyword", false);
+  changed(u"keyword", KeywordState::kKeyword);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // State is false when out of keyword mode.
   EXPECT_CALL(observer, OnKeywordStateChanged(false));
-  changed(u"", false);
+  changed(u"", KeywordState::kNone);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   model()->RemoveObserver(&observer);
