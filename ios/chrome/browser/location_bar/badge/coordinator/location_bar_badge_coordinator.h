@@ -35,6 +35,9 @@
 - (void)addIncognitoBadgeViewController:
     (IncognitoBadgeViewController*)incognitoViewController;
 
+// Sets whether this location bar is active (= visible).
+- (void)setActive:(BOOL)active;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_COORDINATOR_LOCATION_BAR_BADGE_COORDINATOR_H_

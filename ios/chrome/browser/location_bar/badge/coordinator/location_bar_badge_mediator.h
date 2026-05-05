@@ -48,6 +48,9 @@ class Tracker;
 // The command handler for contextual sheet commands.
 @property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
+// Whether this location bar is currently active or not.
+@property(nonatomic, assign) BOOL active;
+
 // Cleans up mediator properties and variables.
 - (void)disconnect;
 

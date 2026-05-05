@@ -116,6 +116,10 @@
   self.viewController.incognitoBadgeViewController = incognitoViewController;
 }
 
+- (void)setActive:(BOOL)active {
+  _mediator.active = active;
+}
+
 // TODO(crbug.com/454351425): Remove Contextual Panel pragma when
 // `kLocationBarBadgeMigration` is enabled by default.
 #pragma mark - ContextualPanelEntrypointMediatorDelegate

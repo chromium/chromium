@@ -684,6 +684,9 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 // Checks if the page is eligible for Gemini, a user has consented, and checks
 // if two hours has passed since the last chip display.
 - (BOOL)shouldShowGeminiContextualBadge {
+  if (IsChromeNextIaEnabled() && !self.active) {
+    return NO;
+  }
   GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(_activeWebState);
   BOOL isPageEligible = tabHelper &&
                         tabHelper->IsGeminiAvailableForWebState() &&
