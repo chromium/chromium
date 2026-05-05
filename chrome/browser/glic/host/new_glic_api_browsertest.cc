@@ -517,25 +517,12 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput, testFaviconIsUpdated) {
   ASSERT_OK(OpenGlicForActiveTab());
 
   ExecuteJsTest();
-
-  ASSERT_TRUE(
-      content::ExecJs(GetTabListInterface()->GetTab(0)->GetContents(), R"js(
-    var link = document.querySelector("link[rel~='icon']");
-    link.href = "./red.ico";
-  )js"));
-
-  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput, testFaviconIsRemoved) {
   ASSERT_OK(OpenGlicForActiveTab());
 
   ExecuteJsTest();
-
-  ASSERT_TRUE(content::NavigateToURL(
-      GetTabListInterface()->GetActiveTab()->GetContents(),
-      GetTestUrl("page_no_favicon.html")));
-  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
@@ -742,20 +729,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPageMetadataUpdates) {
       embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
-
-  // The JS test is now paused. We can now modify the page.
-  content::WebContents* web_contents =
-      GetTabListInterface()->GetActiveTab()->GetContents();
-  ASSERT_TRUE(web_contents);
-
-  // Change the content of the 'author' meta tag from "George" to "Ruth".
-  const char* script =
-      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
-      "'Ruth')";
-  ASSERT_TRUE(content::ExecJs(web_contents, script));
-
-  // Continue the JS test to verify the metadata update.
-  ContinueJsTest();
 }
 
 // TODO(harringtond): Times out on Android.
@@ -779,9 +752,6 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPageMetadataTabDestroyed) {
        GetTabListInterface()->GetTab(1)->GetHandle()});
 
   ExecuteJsTest();
-  GetTabListInterface()->CloseTab(
-      GetTabListInterface()->GetTab(1)->GetHandle());
-  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
@@ -855,11 +825,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testCancelActions) {
   ASSERT_OK(OpenGlicForActiveTab());
-  // Task with id 12345 does not exist.
-  ExecuteJsTest({.params = base::Value(12345)});
-  EXPECT_EQ(std::to_underlying(glic::mojom::CancelActionsResult::kTaskNotFound),
-            step_data()->GetInt());
-  ContinueJsTest();
+  ExecuteJsTest();
 }
 
 class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {

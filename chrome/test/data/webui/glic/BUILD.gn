@@ -94,7 +94,10 @@ copy("test_client_api_deps") {
 }
 
 copy("test_glic_deps") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/glic/tsc/observable.js" ]
+  sources = [
+    "$root_gen_dir/chrome/browser/resources/glic/tsc/observable.js",
+    "$root_gen_dir/chrome/browser/resources/glic/tsc/task_queue.js",
+  ]
   outputs = [ "$out_dir/{{source_file_part}}" ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 }

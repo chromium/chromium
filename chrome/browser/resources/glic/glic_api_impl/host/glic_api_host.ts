@@ -13,6 +13,7 @@ import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} 
 import {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
+import {TaskQueue} from '../../task_queue.js';
 import {OneShotTimer} from '../../timer.js';
 
 import type {PostMessageRequestHandler, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
@@ -23,7 +24,6 @@ import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';
 import {HostMessageHandler, TabDataHandlerSet, TabFaviconHandlerSet} from './host_from_client.js';
 import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
-import {TaskQueue} from './task_queue.js';
 import type {HostBackgroundResponse, HostBackgroundResponseDoes, HostBackgroundResponseReturns} from './types.js';
 import {BACKGROUND_RESPONSES} from './types.js';
 

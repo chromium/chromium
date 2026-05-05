@@ -14,6 +14,7 @@ source_set("test_support") {
     "glic_test_environment.h",
     "glic_test_util.cc",
     "glic_test_util.h",
+    "new_glic_api_test.cc",
     "new_glic_api_test.h",
     "test_result.h",
   ]

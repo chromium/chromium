@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
+#include "base/types/expected_macros.h"
+#include "base/values.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -16,12 +20,36 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_impl.h"
 #endif
 
 namespace glic {
+namespace internal {
+
+struct CloseTabCommand {
+  tabs::TabHandle tab_handle;
+};
+
+struct ExecJsCommand {
+  tabs::TabHandle tab_handle;
+  std::string script;
+};
+
+struct NavigateTabCommand {
+  tabs::TabHandle tab_handle;
+  std::string url;
+};
+
+using Command =
+    std::variant<CloseTabCommand, ExecJsCommand, NavigateTabCommand>;
+
+base::expected<Command, std::string> DeserializeCommand(
+    const base::DictValue& dict);
+
+}  // namespace internal
 
 struct ExecuteTestOptions {
   // Test parameters passed to the JS test. See `ApiTestFixtureBase.testParams`.
@@ -165,6 +193,11 @@ class GlicApiBrowserTestMixin : public T {
         FindGlicGuestMainFrame(options.instance);
     ASSERT_TRUE(glic_guest_frame);
     std::string param_json = base::WriteJson(options.params).value_or("");
+    std::string test_init_data =
+        base::WriteJson(base::DictValue().Set(
+                            "embeddedTestServerUrl",
+                            Base::embedded_test_server()->GetURL("/").spec()))
+            .value_or("");
     ProcessTestResult(
         glic_guest_frame->GetGlobalId(), options,
         content::EvalJs(
@@ -173,7 +206,7 @@ class GlicApiBrowserTestMixin : public T {
                 {"runApiTest(",
                  base::NumberToString((TestTimeouts::action_max_timeout() * 0.9)
                                           .InMilliseconds()),
-                 ",", param_json, ")"})));
+                 ",", param_json, ",", test_init_data, ")"})));
   }
 
   // Continues test execution if `advanceToNextStep()` was used to return
@@ -285,32 +318,95 @@ class GlicApiBrowserTestMixin : public T {
   }
   void ProcessTestResult(content::GlobalRenderFrameHostId frame_id,
                          const ExecuteTestOptions& options,
-                         const content::EvalJsResult& result) {
-    if (options.expect_guest_frame_destroyed) {
-      ASSERT_THAT(result, content::EvalJsResult::ErrorIs(
-                              testing::HasSubstr("RenderFrame deleted.")));
-      return;
-    }
-
-    ASSERT_TRUE(result.is_ok());
-    if (result.is_dict()) {
-      const base::DictValue& dict = result.ExtractDict();
-      auto* id = dict.Find("id");
-      if (id && id->is_string() && id->GetString() == "next-step") {
-        step_data_ = dict.Find("payload")->Clone();
+                         const content::EvalJsResult& result_in) {
+    auto result = result_in;
+    for (;;) {
+      if (options.expect_guest_frame_destroyed) {
+        ASSERT_THAT(result, content::EvalJsResult::ErrorIs(
+                                testing::HasSubstr("RenderFrame deleted.")));
+        return;
       }
-      next_step_required_.insert(frame_id);
+
+      ASSERT_TRUE(result.is_ok());
+      if (result.is_dict()) {
+        content::EvalJsResult result_copy = result;
+        const base::DictValue& dict = result_copy.ExtractDict();
+        auto* id = dict.Find("id");
+        if (id && id->is_string() && id->GetString() == "next-step") {
+          step_data_ = dict.Find("payload")->Clone();
+          next_step_required_.insert(frame_id);
+          return;
+        }
+        auto* command = dict.Find("command");
+        if (command) {
+          auto deserialized = internal::DeserializeCommand(dict);
+          if (!deserialized.has_value()) {
+            FAIL() << "DeserializeCommand failed: " << deserialized.error();
+          }
+          base::expected<base::Value, std::string> command_result =
+              ProcessCommand(*deserialized);
+          if (!command_result.has_value()) {
+            FAIL() << "ProcessCommand failed: " << command_result.error();
+          }
+
+          content::RenderFrameHost* glic_guest_frame =
+              options.instance ? options.instance->host().GetGuestMainFrame()
+                               : FindGlicGuestMainFrame(options.instance);
+          ASSERT_TRUE(glic_guest_frame);
+          std::string result_json =
+              base::WriteJson(*command_result).value_or("null");
+          result = content::EvalJs(
+              glic_guest_frame,
+              base::StrCat({"continueApiTest(", result_json, ")"}));
+          continue;
+        }
+      }
+      if (!options.should_fail) {
+        ASSERT_EQ(result, "pass");
+      } else if (options.should_fail_with_error.empty()) {
+        ASSERT_NE(result, "pass")
+            << "JS step should have failed, but it succeeded";
+      } else {
+        ASSERT_EQ(result, options.should_fail_with_error)
+            << "JS step should have failed, but it succeeded";
+      }
       return;
     }
-    if (!options.should_fail) {
-      ASSERT_EQ(result, "pass");
-    } else if (options.should_fail_with_error.empty()) {
-      ASSERT_NE(result, "pass")
-          << "JS step should have failed, but it succeeded";
-    } else {
-      ASSERT_EQ(result, options.should_fail_with_error)
-          << "JS step should have failed, but it succeeded";
-    }
+  }
+
+  base::expected<base::Value, std::string> ProcessCommand(
+      const internal::Command& command) {
+    return std::visit(
+        absl::Overload{[this](const internal::CloseTabCommand& cmd) {
+                         return CommandCloseTab(cmd);
+                       },
+                       [this](const internal::ExecJsCommand& cmd) {
+                         return CommandExecJs(cmd);
+                       },
+                       [this](const internal::NavigateTabCommand& cmd) {
+                         return CommandNavigateTab(cmd);
+                       }},
+        command);
+  }
+
+  base::expected<base::Value, std::string> CommandCloseTab(
+      const internal::CloseTabCommand& command) {
+    T::GetTabListInterface()->CloseTab(command.tab_handle);
+    return base::ok(base::Value(true));
+  }
+
+  base::expected<base::Value, std::string> CommandExecJs(
+      const internal::ExecJsCommand& command) {
+    bool ok = content::ExecJs(command.tab_handle.Get()->GetContents(),
+                              command.script);
+    return base::ok(base::Value(ok));
+  }
+
+  base::expected<base::Value, std::string> CommandNavigateTab(
+      const internal::NavigateTabCommand& command) {
+    bool ok = content::NavigateToURL(command.tab_handle.Get()->GetContents(),
+                                     GURL(command.url));
+    return base::ok(base::Value(ok));
   }
 
   base::test::ScopedFeatureList features_;

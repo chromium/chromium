@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource} from '/glic/glic_api/glic_api.js';
 import type {ExperimentalTriggeringUpdate, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -122,8 +122,10 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(authorTag);
     assertEquals('George', authorTag.content);
 
-    // Wait for C++ to modify the page.
-    await this.advanceToNextStep();
+    // Change the content of the 'author' meta tag from "George" to "Ruth".
+    assertTrue(await this.browser.execJsInTab(tabId, `
+      document.querySelector("meta[name='author']").content = 'Ruth';
+    `));
 
     const metadata2: PageMetadata = await metadataSequence.next();
     assertEquals(1, metadata2.frameMetadata.length);
@@ -157,8 +159,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metadata);
     assertEquals(1, metadata.frameMetadata[0]!.metaTags.length);
 
-    // Close the tab.
-    await this.advanceToNextStep();
+    await this.browser.closeTab(otherTabId);
 
     // The observable should not emit any more values, and should complete.
     await waitFor(metadataSequence.completed);
@@ -229,9 +230,10 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testCancelActions() {
     assertDefined(this.host.cancelActions);
-    const taskId: number = this.testParams;
-    const result = await this.host.cancelActions(taskId);
-    await this.advanceToNextStep(result);
+    // Task with id 12345 does not exist.
+    assertEquals(
+        await this.host.cancelActions(12345),
+        CancelActionsResult.TASK_NOT_FOUND);
   }
 
   async testNotifyActOnWebCapabilityChanged() {
@@ -409,7 +411,10 @@ class FaviconTest extends ApiTests {
     await faviconColors.waitFor((colors) => colors === '#00ff');
 
     // Change the page's favicon to red.
-    await this.advanceToNextStep();
+    assertTrue(await this.browser.execJsInTab(tab.tabId, `
+      var link = document.querySelector("link[rel~='icon']");
+      link.href = "./red.ico";
+    `));
 
     await faviconColors.waitFor((colors) => colors === '#f00f');
   }
@@ -424,7 +429,12 @@ class FaviconTest extends ApiTests {
     await faviconColors.waitFor((colors) => colors === '#00ff');
 
     // Navigate to a page without a favicon.
-    await this.advanceToNextStep();
+    assertTrue(await this.browser.navigateTab(
+        tab.tabId,
+        new URL(
+            '/test_data/page_no_favicon.html',
+            this.initData!.embeddedTestServerUrl)
+            .href));
 
     // We should see the generic globe icon. Just assert there is a change.
     await faviconColors.waitFor((colors) => colors !== '#00ff');
