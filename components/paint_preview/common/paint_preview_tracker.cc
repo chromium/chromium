@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
@@ -128,9 +129,13 @@ void PaintPreviewTracker::AddGlyphs(const SkTextBlob* blob) {
       // Always set the 0th glyph.
       typeface_glyph_usage_[typeface->uniqueID()]->Set(0U);
     }
-    const uint16_t* glyphs = run.fGlyphIndices;
-    for (int i = 0; i < run.fGlyphCount; ++i)
-      typeface_glyph_usage_[typeface->uniqueID()]->Set(UNSAFE_TODO(glyphs[i]));
+    // SAFETY: Skia guarantees that `run.fGlyphIndices` points to an array of at
+    // least `run.fGlyphCount` elements.
+    auto glyphs = UNSAFE_BUFFERS(
+        base::span(run.fGlyphIndices, static_cast<size_t>(run.fGlyphCount)));
+    for (uint16_t glyph : glyphs) {
+      typeface_glyph_usage_[typeface->uniqueID()]->Set(glyph);
+    }
   }
 }
 
