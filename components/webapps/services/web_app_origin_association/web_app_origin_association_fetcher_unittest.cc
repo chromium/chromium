@@ -20,8 +20,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -125,6 +127,50 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
   histogram_tester_.ExpectBucketCount(
       kFetchResultHistogram,
       WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+class WebAppOriginAssociationFetcherTimeoutTest : public testing::Test {
+ public:
+  WebAppOriginAssociationFetcherTimeoutTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        shared_url_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_factory_)) {
+    fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>();
+    fetcher_->SetRetryOptionsForTest(0, network::SimpleURLLoader::RETRY_NEVER);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  std::unique_ptr<WebAppOriginAssociationFetcher> fetcher_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(WebAppOriginAssociationFetcherTimeoutTest, FetchTimeout) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  GURL url("https://example.com");
+  fetcher_->FetchWebAppOriginAssociationFile(url::Origin::Create(url),
+                                             shared_url_loader_factory_.get(),
+                                             future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward time slightly.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward time to trigger the timeout.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_TRUE(future.IsReady());
+
+  auto file_content = future.Take();
+  ASSERT_TRUE(!file_content);
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedNoResponseBody,
+      1);
 }
 
 }  // namespace webapps

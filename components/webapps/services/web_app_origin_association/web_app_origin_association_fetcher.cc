@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -50,7 +51,7 @@ constexpr net::NetworkTrafficAnnotationTag
           policy_exception_justification:
             "Not implemented, "
             "considered not necessary as no user data is sent."
-    })");
+     })");
 
 constexpr char association_file_name[] =
     ".well-known/web-app-origin-association";
@@ -65,6 +66,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateRequester(const GURL& url) {
   url_loader->SetRetryOptions(g_max_retry, g_retry_mode);
   url_loader->SetURLLoaderFactoryOptions(
       network::mojom::kURLLoadOptionBlockAllCookies);
+  url_loader->SetTimeoutDuration(base::Seconds(30));
   return url_loader;
 }
 
