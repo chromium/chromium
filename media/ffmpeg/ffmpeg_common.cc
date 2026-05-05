@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -119,23 +120,6 @@ void CopyBufferFromConfig(const T& config, AVCodecContext* codec_context) {
       allocated_extradata.split_at(config.extra_data().size());
   extradata.copy_from_nonoverlapping(config.extra_data());
   std::ranges::fill(padding, '\0');
-}
-
-base::span<const uint32_t> GetSkipSamples(const AVPacket* packet) {
-  size_t skip_samples_size = 0;
-  const uint32_t* skip_samples_ptr =
-      reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
-          packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));
-  // SAFETY:
-  // https://ffmpeg.org/doxygen/6.0/group__lavc__packet.html#ga68712351b8a025b464e5c854d4a9fe1f
-  // ffmpeg documentation: av_packet_get_side_data() returns a pointer to
-  // already allocated data with a valid size if present and sets `size`
-  // to its length, or nullptr if no data is available and sets `size` to zero.
-  //
-  // Since we are not allocating memory, and it is considered a valid use case
-  // to construct a base::span<> from nullptr with size zero, this is safe.
-  return UNSAFE_BUFFERS(
-      base::span<const uint32_t>(skip_samples_ptr, skip_samples_size));
 }
 
 }  // namespace
@@ -1104,34 +1088,24 @@ base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
 std::optional<DecoderBufferSideData::DiscardPadding>
 GetDiscardPaddingFromAVPacket(const AVPacket* packet, int samples_per_second) {
   // Skip samples are only valid for audio packets.
-  constexpr int kSkipSamplesValidSize = 10;
-  constexpr int kSkipEndSamplesOffset = 1;
-  base::span<const uint32_t> skip_samples = GetSkipSamples(packet);
-  if (skip_samples.size() >= kSkipSamplesValidSize) {
-    // Because FFmpeg rolls codec delay and skip samples into one we can only
-    // allow front discard padding on the first packet.  Otherwise the discard
-    // helper can't figure out which data to discard.  See AudioDiscardHelper.
-    //
-    // NOTE: Large values may end up as negative here, but negatives are
-    // discarded below.
-    auto discard_front_samples = static_cast<int>(skip_samples[0]);
-    if (discard_front_samples < 0) {
-      // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
-      DLOG(ERROR) << "Negative skip samples are not allowed.";
-      discard_front_samples = 0;
-    }
+  size_t skip_samples_size = 0;
+  const uint8_t* skip_samples_ptr = av_packet_get_side_data(
+      packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size);
 
-    // NOTE: Large values may end up as negative here, which could lead to
-    // a negative timestamp. It's not clear if this is intentional.
-    const auto discard_end_samples =
-        static_cast<int>(skip_samples[kSkipEndSamplesOffset]);
+  if (skip_samples_ptr && skip_samples_size >= 8) {
+    // SAFETY: av_packet_get_side_data returns a pointer to size bytes.
+    auto byte_span = UNSAFE_BUFFERS(
+        base::span<const uint8_t>(skip_samples_ptr, skip_samples_size));
+    const uint32_t skip_start =
+        base::U32FromLittleEndian(byte_span.subspan<0, 4>());
+    const uint32_t skip_end =
+        base::U32FromLittleEndian(byte_span.subspan<4, 4>());
 
-    if (discard_front_samples || discard_end_samples) {
-      const auto front_discard = AudioTimestampHelper::FramesToTime(
-          discard_front_samples, samples_per_second);
-      return std::make_pair(front_discard,
-                            AudioTimestampHelper::FramesToTime(
-                                discard_end_samples, samples_per_second));
+    if (skip_start || skip_end) {
+      const auto front_discard =
+          AudioTimestampHelper::FramesToTime(skip_start, samples_per_second);
+      return std::make_pair(front_discard, AudioTimestampHelper::FramesToTime(
+                                               skip_end, samples_per_second));
     }
   }
 
