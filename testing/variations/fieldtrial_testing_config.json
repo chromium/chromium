@@ -19254,6 +19254,24 @@
             ]
         }
     ],
+    "PreventPasswordUiOnFederatedLogin": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PreventPasswordManager",
+                    "enable_features": [
+                        "PreventPasswordManagerOnFederatedLogin"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreventSvgFilterPaint": [
         {
             "platforms": [
