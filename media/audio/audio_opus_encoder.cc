@@ -417,9 +417,9 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
       std::move(current_done_cb_)
           .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                              "Failed to read from Repacketizer."));
-      return;
+    } else {
+      EmitEncodedBuffer(encoded_data_size);
     }
-    EmitEncodedBuffer(encoded_data_size);
     opus_repacketizer_init(opus_repacketizer_.get());
     packets_in_repacketizer_ = 0;
   }
