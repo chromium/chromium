@@ -35,6 +35,10 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
   // functionality only wants to run on the outermost, main frame, active BAM.
   bool IsOutermostMainFrameActiveAutofillManager(AutofillManager& manager);
 
+  // Checks if the given `field` is in the main frame.
+  bool FieldIsInMainFrame(AutofillManager& manager,
+                          const AutofillField& field) const;
+
   const raw_ref<AutofillClient> client_;
 
   ScopedAutofillManagersObservation autofill_managers_observation_{this};

@@ -4,16 +4,21 @@
 
 #include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 
+#include <set>
+
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -31,7 +36,7 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     FormGlobalId form_id,
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
-  // Only run checks using the the outermost AutofillManager to avoid having
+  // Only run checks using the outermost AutofillManager to avoid having
   // multiple managers triggering the logic flow at once.
   if (!IsOutermostMainFrameActiveAutofillManager(manager)) {
     LogOmniboxAutofillShowChipDecisionPart1(
@@ -83,6 +88,32 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     return;
   }
 
+  // All fields of the form must be either in the main frame or an allowlisted
+  // iframe.
+  std::set<url::Origin> iframe_origins;
+  for (const std::unique_ptr<AutofillField>& field : form_structure->fields()) {
+    if (FieldIsInMainFrame(manager, *field)) {
+      // Field is in main frame; no need for allowlist check.
+      continue;
+    }
+    iframe_origins.insert(field->origin());
+  }
+  if (!iframe_origins.empty() &&
+      !manager.client().GetAutofillOptimizationGuideDecider()) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kMissingOptimizationGuideDecider);
+    return;
+  }
+  for (const url::Origin& origin : iframe_origins) {
+    if (!manager.client()
+             .GetAutofillOptimizationGuideDecider()
+             ->IsUrlEligibleForOmniboxAutofill(origin.GetURL())) {
+      LogOmniboxAutofillShowChipDecisionPart1(
+          OmniboxAutofillShowChipDecisionPart1::kNonAllowlistedIframe);
+      return;
+    }
+  }
+
   // More checks to follow as implementation continues...
 
   LogOmniboxAutofillShowChipDecisionPart1(
@@ -93,6 +124,13 @@ bool OmniboxAutofillDelegate::IsOutermostMainFrameActiveAutofillManager(
     AutofillManager& manager) {
   return manager.driver().GetParent() == nullptr &&
          !manager.driver().IsEmbedded() && manager.driver().IsActive();
+}
+
+bool OmniboxAutofillDelegate::FieldIsInMainFrame(
+    AutofillManager& manager,
+    const AutofillField& field) const {
+  return field.host_frame() == manager.driver().GetFrameToken() &&
+         !manager.driver().GetParent();
 }
 
 }  // namespace autofill
