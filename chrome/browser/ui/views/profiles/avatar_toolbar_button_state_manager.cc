@@ -932,6 +932,19 @@ class PromoStateProviderCoordinator
                             ButtonState new_state) override {
     switch (new_state) {
       case ButtonState::kPromo:
+        CHECK(promo_type_.has_value());
+        // Ensure that the promo can still be shown if it is not already shown.
+        // It is possible that events not allowing the promo to show anymore
+        // happened before reaching `this` notification. E.g. clearing primary
+        // account triggering an update request through another StateProvider
+        // while `this` is active.
+        if (!IsPromoShowing() &&
+            !promo_manager_.ShouldShowPromo(promo_type_.value())) {
+          // Resets the coordinator.
+          Collapse();
+          return;
+        }
+
         PromoShown();
         return;
       case ButtonState::kUpgradeClientError:
@@ -1145,7 +1158,7 @@ class PromoStateProviderCoordinator
     if (!promo_type_.has_value()) {
       return;
     }
-    if (collapse_timer_.IsRunning()) {
+    if (IsPromoShowing()) {
       collapse_timer_.Stop();
     }
     before_promo_used_elapsed_timer_.reset();
@@ -1154,7 +1167,7 @@ class PromoStateProviderCoordinator
   }
 
   void PromoShown() {
-    if (collapse_timer_.IsRunning()) {
+    if (IsPromoShowing()) {
       // This prevents starting a new timer when the button state changes to
       // `kPromo` in the next browser window(s).
       return;
@@ -1207,6 +1220,8 @@ class PromoStateProviderCoordinator
   bool IsSignedIn() const {
     return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
+
+  bool IsPromoShowing() const { return collapse_timer_.IsRunning(); }
 
   const raw_ref<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
