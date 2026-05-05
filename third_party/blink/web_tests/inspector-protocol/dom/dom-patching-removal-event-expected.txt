@@ -1,0 +1,15 @@
+Test that processing instructions removal is reported to DevTools during patching.
+Initial markers identified.
+Applying patch with new markers...
+Start marker removal reported: true
+Content removal reported: true
+End marker removal reported: true
+Inserted nodes names during patch:
+  - start
+  - #text
+  - end
+Main children count after patch: 3
+  - start "name="counter""
+  - #text "1"
+  - end
+

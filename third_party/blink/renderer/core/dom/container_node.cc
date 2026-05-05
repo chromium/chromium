@@ -1083,6 +1083,8 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
   ChildListMutationScope(*this).WillRemoveChild(old_child);
   old_child.NotifyMutationObserversNodeWillDetach();
 
+  probe::WillRemoveDOMNode(&old_child);
+
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   TreeOrderedMap::RemoveScope tree_remove_scope;
   StyleEngine& engine = GetDocument().GetStyleEngine();
