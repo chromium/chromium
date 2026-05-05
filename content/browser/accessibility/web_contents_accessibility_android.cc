@@ -539,6 +539,38 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
+// Selection is not valid if it is cross documents. Also if selection is over
+// multiple nodes, and one or both sides of it are on atomic text fields, it is
+// valid only if the atomic text fields are either completely selected or not
+// selected at all.
+// These restrictions are primarily validated in `blink::AXSelection::IsValid()`
+// and are based on the behavior in `blink::SelectionAdjuster` class.
+bool IsSelectionValid(
+    const ui::BrowserAccessibility::AXPosition& start_position,
+    const ui::BrowserAccessibility::AXPosition& end_position) {
+  CHECK(!start_position->IsNullPosition());
+  CHECK(!end_position->IsNullPosition());
+
+  if (start_position->tree_id() != end_position->tree_id()) {
+    return false;
+  }
+
+  if (start_position->GetAnchor() == end_position->GetAnchor()) {
+    return true;
+  }
+
+  if (start_position->GetAnchor()->data().IsAtomicTextField() &&
+      !start_position->AtStartOfAnchor() && !start_position->AtEndOfAnchor()) {
+    return false;
+  }
+
+  if (end_position->GetAnchor()->data().IsAtomicTextField() &&
+      !end_position->AtStartOfAnchor() && !end_position->AtEndOfAnchor()) {
+    return false;
+  }
+
+  return true;
+}
 }  // anonymous namespace
 
 class WebContentsAccessibilityAndroid::Connector
@@ -2141,6 +2173,10 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
       root_manager->ConvertAndroidSelectionPositionToChrome(end_node,
                                                             end_node_offset);
   if (end_position->IsNullPosition()) {
+    return false;
+  }
+
+  if (!IsSelectionValid(start_position, end_position)) {
     return false;
   }
 

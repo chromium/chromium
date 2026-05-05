@@ -40,6 +40,31 @@ DispatchEventResult DispatchSelectStart(Node* node) {
       *Event::CreateCancelableBubble(event_type_names::kSelectstart));
 }
 
+// If the position is a text one on an atomic text field and it is on either
+// the beginning or the end of the node, converts it to a tree position.
+void MaybeConvertFromTextPositionAtBoundaryToTreePosition(AXPosition& pos) {
+  if (!pos.IsTextPosition() || !pos.ContainerObject()->IsAtomicTextField()) {
+    return;
+  }
+
+  if (pos.TextOffset() == 0) {
+    AXPosition parent_pos =
+        AXPosition::CreatePositionBeforeObject(*pos.ContainerObject());
+    if (parent_pos.IsValid()) {
+      pos = parent_pos;
+    }
+    return;
+  }
+
+  if (pos.TextOffset() == pos.MaxTextOffset()) {
+    AXPosition parent_pos =
+        AXPosition::CreatePositionAfterObject(*pos.ContainerObject());
+    if (parent_pos.IsValid()) {
+      pos = parent_pos;
+    }
+  }
+}
+
 }  // namespace
 
 //
@@ -88,6 +113,16 @@ AXSelection::Builder& AXSelection::Builder::SetSelection(
 const AXSelection AXSelection::Builder::Build() {
   if (!selection_.Anchor().IsValid() || !selection_.Focus().IsValid()) {
     return {};
+  }
+
+  // If the selection is over multiple nodes, it can only be set at document
+  // level. In such situations, if either side of the selection is on an atomic
+  // text field, downstream validations expect the selection position to be a
+  // tree position.
+  if (selection_.anchor_.ContainerObject() !=
+      selection_.focus_.ContainerObject()) {
+    MaybeConvertFromTextPositionAtBoundaryToTreePosition(selection_.anchor_);
+    MaybeConvertFromTextPositionAtBoundaryToTreePosition(selection_.focus_);
   }
 
   const Document* document =

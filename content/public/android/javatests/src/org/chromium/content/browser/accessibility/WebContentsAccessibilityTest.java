@@ -2995,13 +2995,81 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testPerformAction_setExtendedSelection_simpleEditable() throws Throwable {
-        setupTestWithHTML("<input id='input' type='text' value='EditableText'>");
+        setupTestWithHTML(
+                """
+                <p id="paragraph1">Paragraph1</p>
+                <input id='input1' type='text' value='EditableText'>
+                <input id='input2' type='text' value='EditableText'>
+                <p id="paragraph2">Paragraph2</p>
+                """);
 
         // Find nodes.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        int inputVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input");
+        int paragraph1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph1");
+        int input1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input1");
+        int input2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input2");
+        int paragraph2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph2");
 
-        setAndAssertExtendedSelection(rootVvid, inputVvid, 1, inputVvid, 5);
+        // Selection inside one editable with text offset.
+        setAndAssertExtendedSelection(rootVvid, input1Vvid, 1, input1Vvid, 5);
+
+        // Selection including some editables.
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 5);
+
+        // Selection from the beginning of one editable to the end of another.
+        // Since the editables are fully selected, this should be supported. Note that since
+        // selection cannot distinguish between after the second editable and before the
+        // second paragraph, the output selection is different from the input.
+        setAndAssertExtendedSelection(
+                rootVvid, input1Vvid, 0, input2Vvid, 12, input1Vvid, 0, paragraph2Vvid, 0);
+
+        // Selection from non-editable to the beginning of the editable.
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, input1Vvid, 0);
+
+        // Selection from non-editable to the end of the editable.
+        setAndAssertExtendedSelection(rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 0);
+
+        // Selection from the beginning of the editable to to a non-editable.
+        setAndAssertExtendedSelection(rootVvid, input1Vvid, 0, paragraph2Vvid, 10);
+
+        // Selection from inside one editable to inside another.
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, input1Vvid, 1, input2Vvid, 1));
+
+        // Selection from inside one editable to a non-editable
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, input1Vvid, 1, paragraph2Vvid, 1));
+
+        // Selection from a non-editable to inside one editable.
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(
+                        rootVvid, paragraph1Vvid, 1, input2Vvid, 1));
+    }
+
+    /** Test extended selection cross frames. */
+    @Test
+    @SmallTest
+    public void testPerformAction_setExtendedSelection_crossFrame() throws Throwable {
+        setupTestWithHTML(
+                """
+                  <p id='p1'>Paragraph 1</p>
+                  <iframe id='f1' srcdoc="<p id='p2'>Paragraph 2</p>"></iframe>
+                """);
+
+        // Find nodes.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        // Selection across frame boundaries.
+        Assert.assertEquals(
+                false,
+                selectTextOnUiThreadAndWaitForSelectionEvent(rootVvid, p1Vvid, 1, p2Vvid, 5));
     }
 
     /** Test extended selection on content editable. */
