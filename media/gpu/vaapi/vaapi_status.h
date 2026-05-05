@@ -10,7 +10,6 @@
 namespace media {
 
 enum class VaapiStatusCode : StatusCodeType {
-  kOk = 0,
   kBadContext = 1,
   kNoBuffer = 2,
   kNoBufferHandle = 3,

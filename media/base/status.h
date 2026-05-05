@@ -239,6 +239,17 @@ class MEDIA_EXPORT TypedStatus {
     AddCause(std::move(cause));
   }
 
+  template <typename D>
+  TypedStatus(Codes code,
+              std::string message,
+              std::string data_name,
+              const D& data,
+              const base::Location& location = FROM_HERE)
+      : TypedStatus(code, std::move(message), location) {
+    DCHECK(data_);
+    data_->data.GetDict().Set(std::move(data_name), MediaSerialize(data));
+  }
+
   // Constructor to create a new TypedStatus from a numeric code & message.
   // These are immutable; if you'd like to change them, then you likely should
   // create a new TypedStatus.
@@ -396,6 +407,18 @@ class MEDIA_EXPORT TypedStatus {
       if constexpr (internal::StatusTraitsHelper<Traits>::HasOkEnumValue()) {
         // `error_` must not be ok.
         DCHECK(!error_->is_ok());
+      }
+    }
+
+    // Create an Or type explicitly from a code and a cause
+    template <TypedStatusImplTraits C>
+    Or(typename T::Codes code,
+       TypedStatus<C>&& cause,
+       const ::base::Location& location = FROM_HERE)
+        : error_(TypedStatus<T>(code, std::move(cause), location)) {
+      if constexpr (internal::StatusTraitsHelper<Traits>::HasOkEnumValue()) {
+        // `error_` must not be ok.
+        CHECK(!error_->is_ok());
       }
     }
 

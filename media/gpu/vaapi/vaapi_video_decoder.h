@@ -159,14 +159,11 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void ResetDone(base::OnceClosure reset_cb);
 
   // Create codec-specific AcceleratedVideoDecoder and reset related variables.
-  VaapiStatus CreateAcceleratedVideoDecoder();
+  VaapiStatus::Or<std::monostate> CreateAcceleratedVideoDecoder();
 
-  // Change the current |state_| to the specified |state|.
-  void SetState(State state);
-
-  // Tell SetState() to change the |state_| to kError and send |message| to
-  // MediaLog and to LOG(ERROR).
-  void SetErrorState(std::string message);
+  // Change the current `state_` to the specified `state`. Iff the new state is
+  // an error, report the error to all pending decode and init tasks.
+  void SetState(DecoderStatus::Or<State> state);
 
   // Callback for the CDM to notify |this|.
   void OnCdmContextEvent(CdmContext::Event event);
@@ -207,6 +204,9 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return !!vaapi_wrapper_ && !!decoder_;
   }
+
+  // We can cancel the pending init during error handling if need be.
+  InitCB pending_init_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The video decoder's state.
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kUninitialized;
