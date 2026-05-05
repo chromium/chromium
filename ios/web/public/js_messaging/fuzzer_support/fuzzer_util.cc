@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "ios/web/public/js_messaging/fuzzer_support/js_message.pb.h"
 #include "ios/web/public/js_messaging/script_message.h"
+#include "url/origin.h"
 
 namespace web {
 namespace fuzzer {
@@ -21,10 +22,11 @@ std::unique_ptr<web::ScriptMessage> ProtoToScriptMessage(
   if (proto.has_url()) {
     url = GURL(proto.url());
   }
+  url::Origin origin = url ? url::Origin::Create(*url) : url::Origin();
   auto script_message = std::make_unique<web::ScriptMessage>(
       (body ? base::Value::ToUniquePtrValue(std::move(*body))
             : std::make_unique<base::Value>()),
-      proto.user_interacting(), proto.main_frame(), url);
+      proto.user_interacting(), proto.main_frame(), url, std::move(origin));
 
   if (getenv("LPM_DUMP_NATIVE_INPUT")) {
     LOG(WARNING) << "Body: " << *script_message->body();
