@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -24,6 +25,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 
@@ -75,6 +77,60 @@ base::WeakPtr<RenderFrameHostImpl> GetWeakFocusedRenderFrameHostImpl(
   return nullptr;
 }
 
+uint32_t TransformCharacterIndexResult(TextInputClientMac::ResultValue result) {
+  // Return index 0 on failure, or a sentinel on timeout.
+  return std::visit(
+      absl::Overload{
+          [](TextInputClientMac::NoResultYetTag) { return UINT32_MAX; },
+          [](TextInputClientMac::FailedRequestTag) { return 0u; },
+          [](uint32_t index) { return index; },
+          [](const gfx::Rect&) -> uint32_t { NOTREACHED(); },
+      },
+      result);
+}
+
+gfx::Rect TransformFirstRectResult(base::WeakPtr<RenderFrameHostImpl> rfhi,
+                                   TextInputClientMac::ResultValue result) {
+  return std::visit(
+      absl::Overload{
+          [](TextInputClientMac::NoResultYetTag) { return gfx::Rect(); },
+          [](TextInputClientMac::FailedRequestTag) { return gfx::Rect(); },
+          [](uint32_t index) -> gfx::Rect { NOTREACHED(); },
+          [&rfhi](const gfx::Rect& rect) {
+            // `rect` is in (child) frame coordinate and needs to be transformed
+            // to the root frame coordinate. If `rfhi` has been deleted, it's
+            // too late to do the transform but the result is moot anyway.
+            return rfhi ? gfx::Rect(
+                              rfhi->GetView()->TransformPointToRootCoordSpace(
+                                  rect.origin()),
+                              rect.size())
+                        : gfx::Rect();
+          },
+      },
+      result);
+}
+
+void RecordLockWaitTime(base::LiveTicks start_time) {
+  base::UmaHistogramLongTimes("TextInputClient.LockWait2",
+                              base::LiveTicks::Now() - start_time);
+}
+
+TextInputClientMac::ResultValue RecordResult(
+    std::string_view metrics_suffix,
+    base::LiveTicks start_time,
+    base::LiveTicks end_time,
+    TextInputClientMac::ResultValue result) {
+  // Only SyncRequest() and AsyncRequest() should be setting FailedRequestTag.
+  CHECK(!std::holds_alternative<TextInputClientMac::FailedRequestTag>(result));
+  base::UmaHistogramBoolean(
+      base::StrCat({"TextInputClient.", metrics_suffix, ".TimedOut"}),
+      std::holds_alternative<TextInputClientMac::NoResultYetTag>(result));
+  base::UmaHistogramLongTimes(
+      base::StrCat({"TextInputClient.", metrics_suffix, "2"}),
+      end_time - start_time);
+  return result;
+}
+
 }  // namespace
 
 TextInputClientMac::TextInputClientMac()
@@ -116,44 +172,43 @@ void TextInputClientMac::GetStringFromRange(RenderWidgetHost* rwh,
                                                      std::move(callback));
 }
 
-uint32_t TextInputClientMac::GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
-                                                      const gfx::Point& point) {
+uint32_t TextInputClientMac::SyncGetCharacterIndexAtPoint(
+    RenderWidgetHost* rwh,
+    const gfx::Point& point) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto result = SyncRequest(GetWeakFocusedRenderFrameHostImpl(rwh), point,
-                            "CharacterIndex");
-  // Return index 0 on failure, or a sentinel on timeout.
-  return std::visit(absl::Overload{
-                        [](NoResultYetTag) { return UINT32_MAX; },
-                        [](FailedRequestTag) { return 0u; },
-                        [](uint32_t index) { return index; },
-                        [](const gfx::Rect&) -> uint32_t { NOTREACHED(); },
-                    },
-                    result);
+  return TransformCharacterIndexResult(SyncRequest(
+      GetWeakFocusedRenderFrameHostImpl(rwh), point, "CharacterIndex"));
 }
 
-gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
-                                                   const gfx::Range& range) {
+void TextInputClientMac::AsyncGetCharacterIndexAtPoint(
+    RenderWidgetHost* rwh,
+    const gfx::Point& point,
+    base::OnceCallback<void(uint32_t)> result_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  AsyncRequest(GetWeakFocusedRenderFrameHostImpl(rwh), point, "CharacterIndex",
+               base::BindOnce(&TransformCharacterIndexResult)
+                   .Then(std::move(result_callback)));
+}
+
+gfx::Rect TextInputClientMac::SyncGetFirstRectForRange(
+    RenderWidgetHost* rwh,
+    const gfx::Range& range) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::WeakPtr<RenderFrameHostImpl> rfhi =
       GetWeakFocusedRenderFrameHostImpl(rwh);
-  auto result = SyncRequest(rfhi, range, "FirstRect");
-  return std::visit(
-      absl::Overload{
-          [](NoResultYetTag) { return gfx::Rect(); },
-          [](FailedRequestTag) { return gfx::Rect(); },
-          [](uint32_t index) -> gfx::Rect { NOTREACHED(); },
-          [&rfhi](const gfx::Rect& rect) {
-            // `rect` is in (child) frame coordinate and needs to be transformed
-            // to the root frame coordinate. If `rfhi` has been deleted, it's
-            // too late to do the transform but the result is moot anyway.
-            return rfhi ? gfx::Rect(
-                              rfhi->GetView()->TransformPointToRootCoordSpace(
-                                  rect.origin()),
-                              rect.size())
-                        : gfx::Rect();
-          },
-      },
-      result);
+  return TransformFirstRectResult(rfhi, SyncRequest(rfhi, range, "FirstRect"));
+}
+
+void TextInputClientMac::AsyncGetFirstRectForRange(
+    RenderWidgetHost* rwh,
+    const gfx::Range& range,
+    base::OnceCallback<void(gfx::Rect)> result_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::WeakPtr<RenderFrameHostImpl> rfhi =
+      GetWeakFocusedRenderFrameHostImpl(rwh);
+  AsyncRequest(rfhi, range, "FirstRect",
+               base::BindOnce(&TransformFirstRectResult, rfhi)
+                   .Then(std::move(result_callback)));
 }
 
 TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
@@ -165,12 +220,7 @@ TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
     return FailedRequestTag{};
   }
 
-  base::UmaHistogramBoolean(
-      base::StrCat({"TextInputClient.InSyncRequest.", metrics_suffix}),
-      in_sync_request_);
-  if (in_sync_request_) {
-    return FailedRequestTag{};
-  }
+  CHECK(!in_sync_request_);
   base::AutoReset in_sync_request(&in_sync_request_, true);
 
   const base::TimeDelta wait_timeout =
@@ -180,39 +230,84 @@ TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
   const base::LiveTicks start = base::LiveTicks::Now();
   {
     base::AutoLock lock(lock_);
-    base::UmaHistogramLongTimes("TextInputClient.LockWait2",
-                                base::LiveTicks::Now() - start);
+    RecordLockWaitTime(start);
 
-    CHECK(!current_request_.has_value());
-    CHECK(std::holds_alternative<NoResultYetTag>(current_result_));
-    base::AutoReset current_request(&current_request_, RequestToken{});
+    CHECK(!current_sync_request_.has_value());
+    CHECK(std::holds_alternative<NoResultYetTag>(current_sync_result_));
+    base::AutoReset current_request(&current_sync_request_, RequestToken{});
 
-    async_request_delegate_->SendRequest(rfhi.get(), current_request_.value(),
-                                         params);
+    async_request_delegate_->SendRequest(rfhi.get(),
+                                         current_sync_request_.value(), params);
 
     base::TimeDelta remaining_timeout = wait_timeout;
-    while (std::holds_alternative<NoResultYetTag>(current_result_) &&
+    while (std::holds_alternative<NoResultYetTag>(current_sync_result_) &&
            remaining_timeout.is_positive()) {
       base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
       condition_.TimedWait(remaining_timeout);
       remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
     }
 
-    // Only this function should be setting FailedRequestTag.
-    CHECK(!std::holds_alternative<FailedRequestTag>(current_result_));
-    base::UmaHistogramBoolean(
-        base::StrCat({"TextInputClient.", metrics_suffix, ".TimedOut"}),
-        std::holds_alternative<NoResultYetTag>(current_result_));
-
     // Take the result before releasing the lock.
-    std::swap(result, current_result_);
+    std::swap(result, current_sync_result_);
   }
 
-  base::UmaHistogramLongTimes(
-      base::StrCat({"TextInputClient.", metrics_suffix, "2"}),
-      base::LiveTicks::Now() - start);
+  return RecordResult(metrics_suffix, start, base::LiveTicks::Now(), result);
+}
 
-  return result;
+void TextInputClientMac::AsyncRequest(
+    base::WeakPtr<RenderFrameHostImpl> rfhi,
+    const RequestParams& params,
+    std::string_view metrics_suffix,
+    base::OnceCallback<void(ResultValue)> result_callback) {
+  if (!rfhi) {
+    // No focused frame.
+    std::move(result_callback).Run(FailedRequestTag{});
+    return;
+  }
+
+  CHECK(!in_sync_request_);
+
+  const base::TimeDelta wait_timeout =
+      features::kTextInputClientIPCTimeout.Get();
+
+  const base::LiveTicks start = base::LiveTicks::Now();
+  base::AutoLock lock(lock_);
+  RecordLockWaitTime(start);
+
+  // Call `result_callback` either when a result is received or on timeout.
+  auto [success_callback, timeout_callback] = base::SplitOnceCallback(
+      base::BindOnce(&RecordResult, metrics_suffix, start)
+          .Then(std::move(result_callback)));
+
+  const RequestToken request_token;
+  auto [it, inserted] = async_requests_.emplace(
+      request_token, AsyncRequestData(std::move(success_callback)));
+  CHECK(inserted);
+
+  async_request_delegate_->SendRequest(rfhi.get(), request_token, params);
+
+  it->second.timer->Start(
+      FROM_HERE, wait_timeout,
+      base::BindOnce(&TextInputClientMac::OnAsyncRequestTimedOut,
+                     weak_factory_.GetWeakPtr(), request_token,
+                     std::move(timeout_callback)));
+}
+
+void TextInputClientMac::OnAsyncRequestTimedOut(
+    const RequestToken& request_token,
+    ResultAndTimeCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  {
+    base::AutoLock lock(lock_);
+    size_t erased = async_requests_.erase(request_token);
+    if (!erased) {
+      // `request_token` was already removed from the map on the IO thread
+      // when a result arrived. The result is being posted to the UI thread so
+      // ignore the timeout.
+      return;
+    }
+  }
+  std::move(callback).Run(base::LiveTicks::Now(), NoResultYetTag{});
 }
 
 void TextInputClientMac::SetCharacterIndexAndSignal(
@@ -229,17 +324,25 @@ void TextInputClientMac::SetFirstRectAndSignal(
 
 void TextInputClientMac::SetResultAndSignal(const RequestToken& request_token,
                                             ResultValue result) {
-  {
-    base::AutoLock lock(lock_);
-    if (!current_request_.has_value() ||
-        current_request_.value() != request_token) {
-      // Stale request.
-      return;
-    }
-    CHECK(std::holds_alternative<NoResultYetTag>(current_result_));
-    current_result_ = result;
+  base::AutoLock lock(lock_);
+  if (current_sync_request_ && *current_sync_request_ == request_token) {
+    CHECK(std::holds_alternative<NoResultYetTag>(current_sync_result_));
+    current_sync_result_ = result;
+    condition_.Signal();
+    return;
   }
-  condition_.Signal();
+
+  const auto it = async_requests_.find(request_token);
+  if (it == async_requests_.end()) {
+    // Stale request.
+    return;
+  }
+
+  // Post the result back to the main thread.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(it->second.callback),
+                                base::LiveTicks::Now(), result));
+  async_requests_.erase(it);
 }
 
 void TextInputClientMac::SetAsyncRequestDelegateForTesting(
@@ -254,7 +357,7 @@ void TextInputClientMac::SetCharacterIndexWhileLockedForTesting(
     const RequestToken& request_token,
     uint32_t index) {
   // Drop the lock to signal the condition variable. Tests use this to simulate
-  // a GetCharacterIndexAtPoint() response that arrives before the
+  // a SyncGetCharacterIndexAtPoint() response that arrives before the
   // `condition_.Wait()` call, so it must run on the same thread (not just
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -266,7 +369,7 @@ void TextInputClientMac::SetFirstRectWhileLockedForTesting(
     const RequestToken& request_token,
     const gfx::Rect& first_rect) {
   // Drop the lock to signal the condition variable. Tests use this to simulate
-  // a GetFirstRectForRange() response that arrives before the
+  // a SyncGetFirstRectForRange() response that arrives before the
   // `condition_.Wait()` call, so it must run on the same thread (not just
   // sequence) that calls Wait() to preserve ordering.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -288,5 +391,22 @@ void TextInputClientMac::AsyncRequestDelegate::SendRequest(
              },
              params);
 }
+
+TextInputClientMac::AsyncRequestData::AsyncRequestData(
+    ResultAndTimeCallback callback)
+    : callback(std::move(callback)),
+      timer(new base::OneShotTimer(),
+            // `AsyncRequestData` can be deleted on the IO thread, but `timer`
+            // must be destroyed on the same thread that created it.
+            base::OnTaskRunnerDeleter(
+                base::SequencedTaskRunner::GetCurrentDefault())) {}
+
+TextInputClientMac::AsyncRequestData::~AsyncRequestData() = default;
+
+TextInputClientMac::AsyncRequestData::AsyncRequestData(AsyncRequestData&&) =
+    default;
+
+TextInputClientMac::AsyncRequestData&
+TextInputClientMac::AsyncRequestData::operator=(AsyncRequestData&&) = default;
 
 }  // namespace content

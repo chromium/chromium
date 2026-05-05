@@ -2285,36 +2285,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.InSyncRequest.CharacterIndex" enum="Boolean"
-    expires_after="2026-11-01">
-  <owner>joenotcharles@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Recorded per call from a browser process thread to query
-    GetCharacterIndexAtPoint on a renderer process, with True if the thread is
-    already inside a call to GetCharacterIndexAtPoint or GetFirstRectForRange,
-    False otherwise. The call is intended to be synchronous, but nested event
-    loops can cause it to re-enter. This counts how often that happens.
-
-    Only recorded on macOS.
-  </summary>
-</histogram>
-
-<histogram name="TextInputClient.InSyncRequest.FirstRect" enum="Boolean"
-    expires_after="2026-10-25">
-  <owner>joenotcharles@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Recorded per call from a browser process thread to query
-    GetFirstRectForRange on a renderer process, with True if the thread is
-    already inside a call to GetCharacterIndexAtPoint or GetFirstRectForRange,
-    False otherwise. The call is intended to be synchronous, but nested event
-    loops can cause it to re-enter. This counts how often that happens.
-
-    Only recorded on macOS.
-  </summary>
-</histogram>
-
 <histogram name="TextInputClient.LockWait2" units="ms"
     expires_after="2026-10-25">
   <owner>joenotcharles@google.com</owner>

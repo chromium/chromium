@@ -15,9 +15,13 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/token_type.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,7 +57,7 @@ class CONTENT_EXPORT TextInputClientMac {
   using RequestToken = base::TokenType<struct RequestTokenTag>;
 
   // Generic wrappers for params and result types of either
-  // GetCharacterIndexAtPoint or GetFirstRectForRange.
+  // *GetCharacterIndexAtPoint or *GetFirstRectForRange.
 
   using RequestParams = std::variant<
       // CharacterIndexAtPoint param.
@@ -78,8 +82,8 @@ class CONTENT_EXPORT TextInputClientMac {
       // FirstRectForRange result.
       gfx::Rect>;
 
-  // Used by the blocking Get*() methods below to start async requests. Can be
-  // overridden for testing.
+  // Used by both AsyncGet*() methods and the blocking SyncGet*() wrappers to
+  // start async requests. Can be overridden for testing.
   class AsyncRequestDelegate {
    public:
     virtual ~AsyncRequestDelegate() = default;
@@ -102,31 +106,47 @@ class CONTENT_EXPORT TextInputClientMac {
   TextInputClientMac(const TextInputClientMac&) = delete;
   TextInputClientMac& operator=(const TextInputClientMac&) = delete;
 
-  // ---- Sync IME implementation methods ----
+  // ---- Sync/Async IME implementation methods ----
 
-  // These two methods have an associated pair of methods to get data from the
-  // renderer. The Get*() methods block the calling thread (always the UI
-  // thread) with a short timeout after the async message has been sent to the
-  // renderer to lookup the information needed to respond to the system. The
-  // Set*AndSignal() methods store the looked up information in this service and
-  // signal the condition to allow the Get*() methods to unlock and return that
-  // stored value.
+  // These two sets of methods have an associated pair of methods to get data
+  // from the renderer.
+  //
+  // The SyncGet*() methods block the calling thread (always the UI thread) with
+  // a short timeout after the async message has been sent to the renderer to
+  // lookup the information needed to respond to the system. The Set*AndSignal()
+  // methods store the looked up information in this service and signal the
+  // condition to allow the SyncGet*() methods to unlock and return that stored
+  // value.
+  //
+  // The AsyncGet*() methods use the same mechanism but don't block the calling
+  // thread. Instead they store a `result_callback`, and Set*AndSignal() passes
+  // the looked up information to the callback.
 
   // Gets the index of the character at the specified point (in Blink
   // coordinates, in physical pixels). Returns UINT32_MAX if the request times
   // out or is not completed.
-  uint32_t GetCharacterIndexAtPoint(RenderWidgetHost* rwh,
-                                    const gfx::Point& point);
+  uint32_t SyncGetCharacterIndexAtPoint(RenderWidgetHost* rwh,
+                                        const gfx::Point& point);
+  void AsyncGetCharacterIndexAtPoint(
+      RenderWidgetHost* rwh,
+      const gfx::Point& point,
+      base::OnceCallback<void(uint32_t)> result_callback);
+
   // Gets the first rect of characters in the specified range. Returns
   // NSZeroRect if the request times out or is not completed. The result is in
   // Blink coordinates, in physical pixels.
-  gfx::Rect GetFirstRectForRange(RenderWidgetHost* rwh,
-                                 const gfx::Range& range);
+  gfx::Rect SyncGetFirstRectForRange(RenderWidgetHost* rwh,
+                                     const gfx::Range& range);
+  void AsyncGetFirstRectForRange(
+      RenderWidgetHost* rwh,
+      const gfx::Range& range,
+      base::OnceCallback<void(gfx::Rect)> result_callback);
 
   // When the renderer sends a reply, it will be received by TextInputHostImpl
   // (which implements the mojo interface), which will call the corresponding
-  // method on the IO thread to unlock the condition and allow the Get*()
-  // methods to continue/return.
+  // method on the IO thread. These methods either unlock the condition and
+  // allow the SyncGet*() methods to continue/return, or post the result to the
+  // AsyncGet*() method's callback on the UI thread.
   void SetCharacterIndexAndSignal(const RequestToken& request_token,
                                   uint32_t index);
   void SetFirstRectAndSignal(const RequestToken& request_token,
@@ -176,16 +196,46 @@ class CONTENT_EXPORT TextInputClientMac {
  private:
   friend base::NoDestructor<TextInputClientMac>;
 
+  // A callback taking the result value and the time it was received.
+  using ResultAndTimeCallback =
+      base::OnceCallback<void(base::LiveTicks, ResultValue)>;
+
+  struct AsyncRequestData {
+    explicit AsyncRequestData(ResultAndTimeCallback callback);
+    ~AsyncRequestData();
+
+    // Move-only
+    AsyncRequestData(AsyncRequestData&&);
+    AsyncRequestData& operator=(AsyncRequestData&&);
+    AsyncRequestData(const AsyncRequestData&) = delete;
+    AsyncRequestData& operator=(const AsyncRequestData&) = delete;
+
+    ResultAndTimeCallback callback;
+
+    // OneShotTimer is not copyable or movable, but unique_ptr<OneShotTimer> is.
+    std::unique_ptr<base::OneShotTimer, base::OnTaskRunnerDeleter> timer;
+  };
+
   TextInputClientMac();
   ~TextInputClientMac();
 
-  // Shared implementation of the public sync methods. `rfhi` is the currently
-  // focused frame, which is a WeakPtr in case the RenderFrameHost is deleted
-  // while waiting for the response.
+  // Shared implementations of the public SyncGet* and AsyncGet* methods. `rfhi`
+  // is the currently focused frame, which is a WeakPtr in case the
+  // RenderFrameHost is deleted while waiting for the response.
   ResultValue SyncRequest(base::WeakPtr<RenderFrameHostImpl> rfhi,
                           const RequestParams& params,
                           std::string_view metrics_suffix)
       VALID_CONTEXT_REQUIRED(thread_checker_) LOCKS_EXCLUDED(lock_);
+  void AsyncRequest(base::WeakPtr<RenderFrameHostImpl> rfhi,
+                    const RequestParams& params,
+                    std::string_view metrics_suffix,
+                    base::OnceCallback<void(ResultValue)> result_callback)
+      VALID_CONTEXT_REQUIRED(thread_checker_) LOCKS_EXCLUDED(lock_);
+
+  // Invoked when a request sent by AsyncRequest() times out.
+  void OnAsyncRequestTimedOut(const RequestToken& request_token,
+                              ResultAndTimeCallback callback)
+      LOCKS_EXCLUDED(lock_);
 
   // Shared implementation of the Set*AndSignal() methods.
   void SetResultAndSignal(const RequestToken& request_token, ResultValue result)
@@ -193,8 +243,11 @@ class CONTENT_EXPORT TextInputClientMac {
 
   THREAD_CHECKER(thread_checker_);
 
-  std::optional<RequestToken> current_request_ GUARDED_BY(lock_);
-  ResultValue current_result_ GUARDED_BY(lock_);
+  std::optional<RequestToken> current_sync_request_ GUARDED_BY(lock_);
+  ResultValue current_sync_result_ GUARDED_BY(lock_);
+
+  absl::flat_hash_map<RequestToken, AsyncRequestData> async_requests_
+      GUARDED_BY(lock_);
 
   base::Lock lock_;
   base::ConditionVariable condition_;
@@ -202,10 +255,12 @@ class CONTENT_EXPORT TextInputClientMac {
   std::unique_ptr<AsyncRequestDelegate> async_request_delegate_
       GUARDED_BY_CONTEXT(thread_checker_);
 
-  // True iff `current_request_` has a value. This is a separate variable that's
-  // accessed only on the main thread so that it can be tested without taking
-  // the lock, which would deadlock if the main thread already holds it.
+  // True iff `current_sync_request_` has a value. This is a separate variable
+  // that's accessed only on the main thread so that it can be tested without
+  // taking the lock, which would deadlock if the main thread already holds it.
   bool in_sync_request_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+
+  base::WeakPtrFactory<TextInputClientMac> weak_factory_{this};
 };
 
 }  // namespace content

@@ -2171,7 +2171,7 @@ bool RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
   if (!widget_host)
     return true;
 
-  *index = TextInputClientMac::GetInstance()->GetCharacterIndexAtPoint(
+  *index = TextInputClientMac::GetInstance()->SyncGetCharacterIndexAtPoint(
       widget_host, gfx::ToFlooredPoint(transformed_point));
   return true;
 }
@@ -2209,7 +2209,7 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     base::ScopedAllowBlocking allow_wait;
     // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
     gfx::Rect blink_rect =
-        TextInputClientMac::GetInstance()->GetFirstRectForRange(
+        TextInputClientMac::GetInstance()->SyncGetFirstRectForRange(
             GetFocusedWidget(), requested_range);
 
     // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
