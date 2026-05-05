@@ -505,51 +505,5 @@ class CheckSystemColorUsageTest(unittest.TestCase):
 
         self.assertEqual(len(errors), 0)
 
-
-class CheckLargeImagesetsTest(unittest.TestCase):
-    """Test the _CheckLargeImagesets presubmit check."""
-
-    def testValidImagesets(self):
-        mock_input = PRESUBMIT_test_mocks.MockInputApi()
-        mock_input.files = [
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/icon.imageset/test.svg',
-                ['<svg viewBox="0 0 50 50"></svg>']
-            ),
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/icon.imageset/test.pdf',
-                ['%PDF-1.4', '/MediaBox [0 0 100 100]']
-            ),
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/icon.imageset/test.png',
-                ['not-a-vector-file']
-            ),
-        ]
-
-        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
-        errors = PRESUBMIT._CheckLargeImagesets(mock_input, mock_output)
-        self.assertEqual(len(errors), 0)
-
-    def testInvalidImagesets(self):
-        mock_input = PRESUBMIT_test_mocks.MockInputApi()
-        mock_input.files = [
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/icon.imageset/test1.svg',
-                ['<svg viewBox="0 0 150 50"></svg>']
-            ),
-            PRESUBMIT_test_mocks.MockFile(
-                'ios/path/icon.imageset/test2.pdf',
-                ['%PDF-1.4', '/MediaBox [0 0 101 101]']
-            ),
-        ]
-
-        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
-        errors = PRESUBMIT._CheckLargeImagesets(mock_input, mock_output)
-        self.assertEqual(len(errors), 1)
-        self.assertEqual('error', errors[0].type)
-        self.assertTrue('test1.svg' in str(errors[0].items))
-        self.assertTrue('test2.pdf' in str(errors[0].items))
-
-
 if __name__ == '__main__':
     unittest.main()
