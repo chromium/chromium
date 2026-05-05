@@ -112,6 +112,7 @@ public final class StatusMediatorUnitTest {
     @Mock private OnClickListener mOnClickListener;
     @Mock private PageInfoAction mPageInfoAction;
     @Mock private Runnable mTogglePopupCallback;
+    @Mock private Runnable mOnStatusViewHiddenForPageInfoRemoval;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -722,6 +723,19 @@ public final class StatusMediatorUnitTest {
         assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
         mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
         verify(mTogglePopupCallback).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    public void testCallbackTriggeredWhenStatusViewHidden() {
+        mMediator.setOnStatusViewHiddenForPageInfoRemoval(mOnStatusViewHiddenForPageInfoRemoval);
+
+        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        verify(mOnStatusViewHiddenForPageInfoRemoval, times(3)).run();
     }
 
     private String getIconIdentifierForTesting() {

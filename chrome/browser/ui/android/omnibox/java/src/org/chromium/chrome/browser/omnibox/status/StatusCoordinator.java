@@ -321,10 +321,15 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     }
 
     /**
-     * Set the supplier for SiteSearchData.
+     * Sets the callback to be executed when the status view is hidden due to the Page Info removal
+     * feature.
      *
-     * @param supplier the supplier.
+     * @param runnable The callback to run.
      */
+    public void setOnStatusViewHiddenForPageInfoRemoval(Runnable runnable) {
+        mMediator.setOnStatusViewHiddenForPageInfoRemoval(runnable);
+    }
+
     @SuppressWarnings("NullAway")
     public StatusMediator getMediatorForTesting() {
         return mMediator;

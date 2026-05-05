@@ -2936,6 +2936,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             getEphemeralTabCoordinatorSupplier(),
                             getTabCreator(currentTab.isIncognito()));
             pageInfo.show(currentTab, ChromePageInfoHighlight.noHighlight());
+            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
+                    .notifyEvent(EventConstants.SITE_CONTROLS_MENU_ITEM_CLICKED);
             return true;
         }
 

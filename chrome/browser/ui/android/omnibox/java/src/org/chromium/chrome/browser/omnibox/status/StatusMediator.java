@@ -89,6 +89,7 @@ public class StatusMediator
     private final OnClickListener mFuseboxOnPlusButtonClicked;
     private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final OmniboxImageSupplier mImageSupplier;
+    private @Nullable Runnable mOnStatusViewHiddenForPageInfoRemoval;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
             this::onSiteSearchDataChanged;
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChanged =
@@ -225,6 +226,15 @@ public class StatusMediator
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
         mExactMatchUrlSupplier.removeObserver(mOnExactMatchUrlChanged);
         mImageSupplier.destroy();
+    }
+
+    /**
+     * Sets the callback to be executed when the status view is hidden due to the Page Info removal.
+     *
+     * @param runnable The callback to run.
+     */
+    void setOnStatusViewHiddenForPageInfoRemoval(Runnable runnable) {
+        mOnStatusViewHiddenForPageInfoRemoval = runnable;
     }
 
     /** Toggle animations of icon changes. */
@@ -529,6 +539,9 @@ public class StatusMediator
             if (mPageSecurityLevel == ConnectionSecurityLevel.SECURE
                     && (isPageInfoMovedToAppMenu() || !mShowStatusIconForSecureOrigins)) {
                 mIsSecurityViewShown = false;
+                if (mOnStatusViewHiddenForPageInfoRemoval != null) {
+                    mOnStatusViewHiddenForPageInfoRemoval.run();
+                }
             } else {
                 mIsSecurityViewShown = true;
                 iconRes = mSecurityIconRes;

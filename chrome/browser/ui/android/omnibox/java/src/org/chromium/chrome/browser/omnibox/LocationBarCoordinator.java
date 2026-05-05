@@ -532,6 +532,13 @@ public class LocationBarCoordinator
         return mUrlBar.getHeight();
     }
 
+    /**
+     * Sets the callback to be executed when the status view is hidden due to the Page Info removal.
+     */
+    public void setOnStatusViewHiddenForPageInfoRemoval(Runnable runnable) {
+        mStatusCoordinator.setOnStatusViewHiddenForPageInfoRemoval(runnable);
+    }
+
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
