@@ -2193,7 +2193,7 @@
   {
     "name": "default-angle-vulkan",
     "owners": ["syoussefi@chromium.org"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "default-browser-changed-os-notification",
@@ -9680,7 +9680,7 @@
   {
     "name": "vulkan-from-angle",
     "owners": [ "syoussefi@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
