@@ -145,11 +145,14 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
       const BrowserLayoutParams& params,
       CustomCornersBackground* background);
 
+  // Applies visual adjustments that must be calculated before layout, that are
+  // not handled by the traditional layout process.
+  virtual void DoPreLayoutVisualAdjustments(const BrowserLayoutParams& params);
+
   // Applies additional visual adjustments to UI elements that are not handled
   // by the traditional layout process. This could include clipping, text
   // rendering, overlay configuration, etc.
-  virtual void DoPostLayoutVisualAdjustments(
-      const BrowserLayoutParams& params) {}
+  virtual void DoPostLayoutVisualAdjustments(const BrowserLayoutParams& params);
 
  private:
   // Retrieve dimensions of modal dialogs.

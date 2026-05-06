@@ -209,6 +209,9 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
     return;
   }
 
+  // Do any adjustments required before layout takes place.
+  DoPreLayoutVisualAdjustments(params);
+
   // Lay out the browser view itself.
   CalculateProposedLayout(params).ApplyLayout(
       host, [this](views::View* view, bool visible) {
@@ -293,6 +296,12 @@ void BrowserViewLayoutImpl::ConfigureTopContainerBackground(
     background->SetVisible(false);
   }
 }
+
+void BrowserViewLayoutImpl::DoPreLayoutVisualAdjustments(
+    const BrowserLayoutParams& params) {}
+
+void BrowserViewLayoutImpl::DoPostLayoutVisualAdjustments(
+    const BrowserLayoutParams& params) {}
 
 // Dialog positioning.
 

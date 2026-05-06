@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/callback_list.h"
+#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -253,13 +254,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   resize_area_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_VERTICAL_RESIZE_AREA));
   resize_area_->GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
-
-  on_animation_update_subscription_ =
-      BrowserAnimationController::From(browser_view_->browser())
-          ->Subscribe(TabStripAnimations::kVerticalTabStrip,
-                      base::BindRepeating(
-                          &VerticalTabStripRegionView::OnAnimationProgressed,
-                          base::Unretained(this)));
 
   state_controller_->SetDelegate(this);
   target_collapse_state_ = state_controller_->GetState();
@@ -528,24 +522,15 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
       BrowserAnimationController::From(browser_view_->browser());
   const auto motion =
       controller->GetCurrentMotion(TabStripAnimations::kVerticalTabStrip);
-  if (motion == TabStripAnimations::kExpand ||
-      motion == TabStripAnimations::kCollapse) {
-    const double value =
-        *BrowserAnimationController::From(browser_view_->browser())
-             ->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
-                               TabStripAnimations::kTabStripWidth);
-    size.set_width(
-        kCollapsedWidth +
-        (motion == TabStripAnimations::kExpand
-             ? std::floor<double>
-             : std::ceil<double>)((target_collapse_state_.uncollapsed_width -
-                                   kCollapsedWidth) *
-                                  value));
-  } else {
-    size.set_width(target_collapse_state_.collapsed
-                       ? kCollapsedWidth
-                       : target_collapse_state_.uncollapsed_width);
-  }
+  const int expand_amount =
+      std::max(0, target_collapse_state_.uncollapsed_width - kCollapsedWidth);
+  const double expand_percent =
+      *controller->GetCurrentValue(TabStripAnimations::kVerticalTabStrip,
+                                   TabStripAnimations::kTabStripWidth);
+  size.set_width(kCollapsedWidth +
+                 (motion == TabStripAnimations::kExpand
+                      ? std::floor<double>
+                      : std::ceil<double>)(expand_amount * expand_percent));
   return size;
 }
 
@@ -993,6 +978,7 @@ bool VerticalTabStripRegionView::IsCollapsing() {
 
 void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
   target_collapse_state_.collapsed = collapse;
+  CHECK(tab_strip_view_);
   const auto motion =
       collapse ? TabStripAnimations::kCollapse : TabStripAnimations::kExpand;
   BrowserAnimationController::From(browser_view_->browser())
@@ -1058,11 +1044,17 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
           base::BindRepeating(&VerticalTabStripRegionView::OnActiveTabChanged,
                               base::Unretained(this)));
 
-  on_animation_update_subscription_ =
-      BrowserAnimationController::From(browser_view_->browser())
-          ->Subscribe(TabStripAnimations::kVerticalTabStrip,
-                      base::BindRepeating(
-                          &VerticalTabStripRegionView::OnAnimationProgressed,
+  // Pre-set the animation values to the appropriate state.
+  auto* const animation_controller =
+      BrowserAnimationController::From(browser_view_->browser());
+  animation_controller->Reset(TabStripAnimations::kVerticalTabStrip,
+                              target_collapse_state_.collapsed
+                                  ? TabStripAnimations::kCollapse
+                                  : TabStripAnimations::kExpand);
+
+  on_animation_update_subscription_ = animation_controller->Subscribe(
+      TabStripAnimations::kVerticalTabStrip,
+      base::BindRepeating(&VerticalTabStripRegionView::OnAnimationProgressed,
                           base::Unretained(this)));
 
   expand_on_hover_enabled_changed_subscription_ =

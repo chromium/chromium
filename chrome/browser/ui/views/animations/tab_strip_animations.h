@@ -15,6 +15,9 @@ class TabStripAnimations : public CachingBrowserAnimationProvider {
  public:
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
+  TabStripAnimations();
+  ~TabStripAnimations() override;
+
   // Animations for the Vertical Tabstrip.
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kVerticalTabStrip);
 

@@ -41,6 +41,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   void ConfigureTopContainerBackground(
       const BrowserLayoutParams& params,
       CustomCornersBackground* background) override;
+  void DoPreLayoutVisualAdjustments(const BrowserLayoutParams& params) override;
   void DoPostLayoutVisualAdjustments(
       const BrowserLayoutParams& params) override;
 
@@ -151,13 +152,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // project which aims to permanently avoid this issue.
   bool AvoidCrackingForFractionalDisplay() const;
 
-  // These cached values serve as a starting point when an expand-on-hover state
-  // for the vertical tab strip is animated directly to the expanded state. They
-  // are cached every time the animation state is calculated except during the
-  // expand animation, so that they can be used as starting points for the
-  // expand animation.
-  mutable double last_expand_on_hover_ = 0.0;
-  mutable double last_bottom_corner_value_ = 1.0;
+  // Ensure that the tab strip width changes monotonically when expanding.
   mutable int last_vertical_tab_strip_width_ = 0;
 };
 

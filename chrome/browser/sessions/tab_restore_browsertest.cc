@@ -3203,6 +3203,12 @@ class TabRestoreVerticalTabsTest : public TabRestoreTest {
   TabRestoreVerticalTabsTest& operator=(const TabRestoreVerticalTabsTest&) =
       delete;
 
+  void SetUpOnMainThread() override {
+    TabRestoreTest::SetUpOnMainThread();
+    tabs::VerticalTabStripStateController::From(browser())
+        ->SetVerticalTabsEnabled(true);
+  }
+
  protected:
   const bool kIsCollapsed = true;
   const int kUncollapsedWidth = 200;
