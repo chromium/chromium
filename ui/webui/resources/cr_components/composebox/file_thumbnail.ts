@@ -60,6 +60,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     isDeletable: true,
     iconName: null,
     supportsUnimodal: true,
+    thumbnailUrl: null,
   };
 
   getIsUploadingForTesting(): boolean {

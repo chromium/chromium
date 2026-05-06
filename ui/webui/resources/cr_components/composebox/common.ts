@@ -95,6 +95,7 @@ export class ComposeboxFile {
   isDeletable: boolean;
   iconName: string|null;
   supportsUnimodal: boolean;
+  thumbnailUrl?: string|null;
 
   constructor(
       uuid: UnguessableToken, name: string, type: string, inputType: InputType,
@@ -111,6 +112,7 @@ export class ComposeboxFile {
     this.isDeletable = options?.isDeletable ?? true;
     this.iconName = options?.iconName ?? null;
     this.supportsUnimodal = options?.supportsUnimodal ?? false;
+    this.thumbnailUrl = options?.thumbnailUrl ?? null;
   }
 
   static createFromFile(
