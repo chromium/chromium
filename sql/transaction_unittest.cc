@@ -350,17 +350,17 @@ TEST_F(SQLTransactionTest, TransactionOnClosedDB) {
   EXPECT_FALSE(transaction.Commit());
 }
 
-TEST(SQLTransactionDatabaseDestroyedTest, BeginIsNoOp) {
+TEST_F(SQLTransactionTest, BeginOnDestroyedDb) {
   auto db = std::make_unique<Database>(test::kTestTag);
-  ASSERT_TRUE(db->OpenInMemory());
+  ASSERT_TRUE(db->Open(db_path_));
   Transaction transaction(db.get());
   db.reset();
   ASSERT_FALSE(transaction.Begin());
 }
 
-TEST(SQLTransactionDatabaseDestroyedTest, RollbackIsNoOp) {
+TEST_F(SQLTransactionTest, RollbackOnDestroyedDb) {
   auto db = std::make_unique<Database>(test::kTestTag);
-  ASSERT_TRUE(db->OpenInMemory());
+  ASSERT_TRUE(db->Open(db_path_));
   Transaction transaction(db.get());
   ASSERT_TRUE(transaction.Begin());
   EXPECT_TRUE(db->HasActiveTransactions());
@@ -370,9 +370,9 @@ TEST(SQLTransactionDatabaseDestroyedTest, RollbackIsNoOp) {
   transaction.Rollback();
 }
 
-TEST(SQLTransactionDatabaseDestroyedTest, CommitIsNoOp) {
+TEST_F(SQLTransactionTest, CommitOnDestroyedDb) {
   auto db = std::make_unique<Database>(test::kTestTag);
-  ASSERT_TRUE(db->OpenInMemory());
+  ASSERT_TRUE(db->Open(db_path_));
   Transaction transaction(db.get());
   ASSERT_TRUE(transaction.Begin());
   EXPECT_TRUE(db->HasActiveTransactions());
