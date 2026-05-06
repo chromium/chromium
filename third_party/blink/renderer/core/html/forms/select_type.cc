@@ -97,6 +97,15 @@ HTMLOptionElement* EventTargetOption(const Event& event) {
   return nullptr;
 }
 
+bool SelectIsInResizeMode(const HTMLSelectElement& select) {
+  auto* box = select.GetLayoutBox();
+  if (!box || !box->Layer()) {
+    return false;
+  }
+  auto* scrollable_area = box->Layer()->GetScrollableArea();
+  return scrollable_area && scrollable_area->InResizeMode();
+}
+
 bool CanAssignToSelectSlot(const Node& node) {
   // Even if options/optgroups are not rendered as children of menulist SELECT,
   // we still need to add them to the flat tree through slotting since we need
@@ -1360,6 +1369,12 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
             static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
         !mouse_event->ButtonDown())
       return false;
+
+    // Dragging a resize handle also produces left-button mousemove events.
+    // While resize is active, do not run listbox drag-selection/autoscroll.
+    if (SelectIsInResizeMode(*select_)) {
+      return false;
+    }
 
     if (auto* layout_object = select_->GetLayoutObject()) {
       layout_object->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
