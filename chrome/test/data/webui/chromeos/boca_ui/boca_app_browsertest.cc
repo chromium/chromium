@@ -39,6 +39,10 @@ IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest, TestMainPageLoaded) {
                            "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest, TestReceiver) {
+  RunTestWithoutTestLoader("chromeos/boca_ui/receiver_test.js", "mocha.run()");
+}
+
 class BocaAppBrowserConsumerTest : public WebUIMochaBrowserTest {
  public:
   BocaAppBrowserConsumerTest() {

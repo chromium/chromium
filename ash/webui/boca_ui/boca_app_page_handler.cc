@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/boca_util.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
@@ -89,6 +90,28 @@ std::string GetReceiverName(std::string receiver_id,
   return receiver_name ? *receiver_name : "";
 }
 
+std::optional<mojom::UrlType> ConvertUrlTypeProtoToMojom(
+    ::boca::UrlType url_type_proto) {
+  switch (url_type_proto) {
+    case ::boca::URL_TYPE_GEMINI_REGULAR:
+      return mojom::UrlType::kGeminiRegular;
+    case ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING:
+      return mojom::UrlType::kGeminiGuidedLearning;
+    default:
+      return std::nullopt;
+  }
+}
+
+::boca::UrlType ConvertUrlTypeMojomToProto(mojom::UrlType url_type) {
+  switch (url_type) {
+    case mojom::UrlType::kGeminiRegular:
+      return ::boca::URL_TYPE_GEMINI_REGULAR;
+    case mojom::UrlType::kGeminiGuidedLearning:
+      return ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING;
+  }
+  return ::boca::URL_TYPE_UNSPECIFIED;
+}
+
 std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
     const mojom::OnTaskConfigPtr& config) {
   auto on_task_config = std::make_unique<::boca::OnTaskConfig>();
@@ -103,6 +126,10 @@ std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
     content_config->set_favicon_url(item->tab->favicon.spec());
     content_config->mutable_locked_navigation_options()->set_navigation_type(
         ::boca::LockedNavigationOptions::NavigationType(item->navigation_type));
+    if (item->tab->url_type.has_value()) {
+      content_config->set_url_type(
+          ConvertUrlTypeMojomToProto(item->tab->url_type.value()));
+    }
   }
   return on_task_config;
 }
@@ -159,7 +186,8 @@ mojom::ConfigPtr SessionConfigProtoToMojom(
     for (auto tab : session_on_task_config.active_bundle().content_configs()) {
       tabs.push_back(mojom::ControlledTab::New(
           mojom::TabInfo::New(std::nullopt, tab.title(), GURL(tab.url()),
-                              GURL(tab.favicon_url())),
+                              GURL(tab.favicon_url()),
+                              ConvertUrlTypeProtoToMojom(tab.url_type())),
           mojom::NavigationType(
               tab.locked_navigation_options().navigation_type())));
     }

@@ -11,6 +11,14 @@ import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-we
  */
 
 /**
+ * Declare url type enum type
+ */
+export enum UrlType {
+  GEMINI_REGULAR = 0,
+  GEMINI_GUIDED_LEARNING = 1,
+}
+
+/**
  * Declare tab information
  */
 export declare interface TabInfo {
@@ -18,6 +26,7 @@ export declare interface TabInfo {
   title: string;
   url: string;
   favicon: string;
+  urlType?: UrlType;
 }
 /**
  * Declare a browser window information

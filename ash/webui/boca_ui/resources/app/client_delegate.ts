@@ -112,6 +112,7 @@ export function getSessionConfigMojomToUI(session: Config|
             url: item.tab.url,
             title: item.tab.title,
             favicon: item.tab.favicon,
+            urlType: item.tab.urlType?.valueOf(),
           },
           navigationType: item.navigationType.valueOf(),
         };
@@ -150,6 +151,7 @@ export class ClientDelegateFactory {
                 title: tab.title,
                 url: tab.url,
                 favicon: tab.favicon,
+                urlType: tab.urlType?.valueOf(),
               };
             }),
           };
@@ -219,6 +221,7 @@ export class ClientDelegateFactory {
                       url: item.tab.url,
                       title: item.tab.title,
                       favicon: item.tab.favicon,
+                      urlType: item.tab.urlType?.valueOf() ?? null,
                     },
                     navigationType: item.navigationType.valueOf(),
                   };
@@ -286,6 +289,7 @@ export class ClientDelegateFactory {
                     url: item.tab.url,
                     title: item.tab.title,
                     favicon: item.tab.favicon,
+                    urlType: item.tab.urlType?.valueOf() ?? null,
                   },
                   navigationType: item.navigationType.valueOf(),
                 };
