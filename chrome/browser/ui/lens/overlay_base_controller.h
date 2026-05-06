@@ -210,6 +210,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Return the ID of the view we attach this overlay to.
   virtual ui::ElementIdentifier GetViewContainerId() = 0;
 
+  // Return whether we should look up the view ID in the ContentsContainerView.
+  virtual bool UsesContentsContainerView() = 0;
+
   // The side panel type.
   virtual SidePanelType GetSidePanelType() = 0;
 

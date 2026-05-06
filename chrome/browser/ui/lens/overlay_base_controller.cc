@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -216,10 +217,22 @@ void OverlayBaseController::RenderProcessExited(
 }
 
 raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
-  // Grab the host view for the overlay which is owned by the browser view.
-  auto* const host_view =
-      BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-          ->GetView(GetViewContainerId());
+  views::View* host_view = nullptr;
+
+  // For split views, we may use ContentsContainerViews to look up the ID.
+  if (UsesContentsContainerView()) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+        tab_->GetBrowserWindowInterface());
+    if (browser_view) {
+      auto* contents_container =
+          browser_view->GetContentsContainerViewFor(tab_->GetContents());
+      host_view = contents_container->GetViewByElementId(GetViewContainerId());
+    }
+  } else {
+    // Grab the host view for the overlay which is owned by the browser view.
+    host_view = BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+                    ->GetView(GetViewContainerId());
+  }
   CHECK(host_view);
 
   // Setup a preselection anchor view. Usually bubbles are anchored to top
