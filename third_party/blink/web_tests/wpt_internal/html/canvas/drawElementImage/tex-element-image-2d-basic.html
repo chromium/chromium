@@ -40,11 +40,13 @@
         background-color:gray;
       }
       #container {
-        position:absolute;
-        left:0px;
-        top:0px;
         width:32px;
         height:32px;
+      }
+      #occluder {
+        width:32px;
+        height:32px;
+        background-color: hotpink;
       }
     </style>
   </head>
@@ -56,6 +58,7 @@
         <div class="top-right"></div>
         <div class="bottom-right"></div>
       </div>
+      <div id="occluder"></div>
     </canvas>
     <script>
       function runTest() {
@@ -75,6 +78,11 @@
           const format = gl.RGBA;
           const type = gl.UNSIGNED_BYTE;
           gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat, format, type, container);
+
+          // Zero-area call should not crash and should not paint
+          gl.texElementImage2D(gl.TEXTURE_2D, level, internalformat,
+                               /*width*/ 100, /*height*/ 0,
+                               format, type, occluder);
 
           const fbo = gl.createFramebuffer();
           gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -132,6 +140,7 @@
           offset += 14 * 4;
           assert_equals(pixels[offset], 128, "top right of bottom right red");
           assert_equals(pixels[offset+1], 128, "top right of bottom right red");
+
           assert_equals(pixels[offset+2], 128, "top right of bottom right red");
           assert_equals(pixels[offset+3], 255, "top right of bottom right red");
 

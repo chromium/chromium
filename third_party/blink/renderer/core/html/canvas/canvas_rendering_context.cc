@@ -206,6 +206,9 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
         static_cast<float>(dest_size.width()) / intrinsic_dest_size.width(),
         static_cast<float>(dest_size.height()) / intrinsic_dest_size.height());
   }
+  if (dest_size.IsEmpty()) {
+    return nullptr;
+  }
 
   auto draw_to_canvas = [&](cc::PaintCanvas& canvas) {
     canvas.scale(canvas_scale.x(), canvas_scale.y());
