@@ -253,6 +253,27 @@ def CheckMarkdownFiles(input_api, output_api):
       else:
         results.append(output_api.PresubmitPromptWarning(msg))
 
+  # Scenario 5: Content mandates
+  if skill_md_path in affected_files_map:
+    skill_content = input_api.ReadFile(affected_files_map[skill_md_path])
+    if 'TONE MANDATE (SIGNAL-TO-NOISE):' not in skill_content:
+      results.append(
+          output_api.PresubmitError(
+              'File SKILL.md must contain the "TONE MANDATE (SIGNAL-TO-NOISE):"'
+              ' section.'
+          )
+      )
+    elif (
+        'Zero Preamble/Postamble' not in skill_content
+        or 'Artifacts Only' not in skill_content
+    ):
+      results.append(
+          output_api.PresubmitError(
+              'File SKILL.md TONE MANDATE must explicitly enforce '
+              '"Zero Preamble/Postamble" and "Artifacts Only".'
+          )
+      )
+
   return results
 
 

@@ -131,6 +131,54 @@ class MagiPresubmitTest(unittest.TestCase):
         warnings = [r for r in results if 'exceeds 80 characters' in r]
         self.assertEqual(len(warnings), 0)
 
+    def testMarkdownContentMandates(self):
+        # Missing Tone Mandate
+        content_missing = 'Some text\n'
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/SKILL.md')]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/SKILL.md': content_missing}
+
+        magi_dir = os.path.normpath(os.path.join(
+            os.path.abspath('fake_repo'), 'remoting/tools/magi-mode'))
+        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
+                patch('os.path.getsize', return_value=100):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output)
+
+        self.assertTrue(any('must contain the "TONE MANDATE '
+                            '(SIGNAL-TO-NOISE):" section' in r
+                            for r in results))
+
+        # Missing Artifacts Only
+        content_partial = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
+                           'Zero Preamble/Postamble\n')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/SKILL.md': content_partial}
+        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
+                patch('os.path.getsize', return_value=100):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output)
+
+        self.assertTrue(any('must explicitly enforce "Zero Preamble/'
+                            'Postamble" and "Artifacts Only"' in r
+                            for r in results))
+
+        # Valid
+        content_valid = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
+                         'Zero Preamble/Postamble\nArtifacts Only\n')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/SKILL.md': content_valid}
+        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
+                patch('os.path.getsize', return_value=100):
+            results = PRESUBMIT.CheckMarkdownFiles(
+                self.mock_input, self.mock_output)
+
+        self.assertFalse(any('must contain the "TONE MANDATE '
+                             '(SIGNAL-TO-NOISE):" section' in r
+                             for r in results))
+        self.assertFalse(any('must explicitly enforce' in r for r in results))
+
     def testJsonStateBlockValidation(self):
         # Valid state block
         valid_json = (
