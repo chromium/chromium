@@ -9,7 +9,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/not_fatal_until.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
@@ -59,8 +61,13 @@
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
 
+  autofill::EntityDataManager* entityDataManager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(
+          self.browser->GetProfile());
+
   _mediator = [[AutofillAndPasswordsMediator alloc]
-      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()];
+      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()
+            entityDataManager:entityDataManager];
   _mediator.consumer = _viewController;
 
   [self.baseNavigationController pushViewController:_viewController

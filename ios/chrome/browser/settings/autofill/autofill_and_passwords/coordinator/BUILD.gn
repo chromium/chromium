@@ -19,11 +19,13 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:autofill_and_passwords",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
     "//ios/chrome/browser/settings/ui_bundled/password",

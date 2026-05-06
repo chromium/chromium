@@ -24,7 +24,8 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     pref_service_ = profile_->GetPrefs();
     mediator_ = [[AutofillAndPasswordsMediator alloc]
-        initWithUserPrefService:pref_service_];
+        initWithUserPrefService:pref_service_
+              entityDataManager:nullptr];
     consumer_ = OCMProtocolMock(@protocol(AutofillAndPasswordsConsumer));
   }
 
@@ -50,6 +51,9 @@ TEST_F(AutofillAndPasswordsMediatorTest, SetsInitialConsumerValues) {
   OCMExpect([consumer_ setPasswordsEnabled:YES]);
   OCMExpect([consumer_ setAutofillCreditCardEnabled:NO]);
   OCMExpect([consumer_ setAutofillProfileEnabled:YES]);
+  OCMExpect([consumer_ setIdentityDocsEnabled:YES]);
+  OCMExpect([consumer_ setTravelInfoEnabled:YES]);
+  OCMExpect([consumer_ setShouldShowAutofillAIFeatures:NO]);
 
   mediator_.consumer = consumer_;
 

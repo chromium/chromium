@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -17,14 +18,18 @@
 
 @implementation AutofillAndPasswordsMediator {
   raw_ptr<PrefService> _userPrefService;
+  raw_ptr<autofill::EntityDataManager> _entityDataManager;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   PrefChangeRegistrar _prefChangeRegistrar;
 }
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService {
+- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
+                      entityDataManager:
+                          (autofill::EntityDataManager*)entityDataManager {
   self = [super init];
   if (self) {
     _userPrefService = userPrefService;
+    _entityDataManager = entityDataManager;
     _prefChangeRegistrar.Init(_userPrefService);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
@@ -62,6 +67,8 @@
     // on pref value.
     [_consumer setIdentityDocsEnabled:YES];
     [_consumer setTravelInfoEnabled:YES];
+
+    [_consumer setShouldShowAutofillAIFeatures:_entityDataManager != nullptr];
   }
 }
 

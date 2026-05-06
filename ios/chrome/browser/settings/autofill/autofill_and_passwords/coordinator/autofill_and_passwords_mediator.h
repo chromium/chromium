@@ -8,12 +8,18 @@
 #import <Foundation/Foundation.h>
 class PrefService;
 
+namespace autofill {
+class EntityDataManager;
+}
+
 @protocol AutofillAndPasswordsConsumer;
 
 // Mediator for the Autofill and Passwords settings page.
 @interface AutofillAndPasswordsMediator : NSObject
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
+                      entityDataManager:
+                          (autofill::EntityDataManager*)entityDataManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -21,6 +21,7 @@
   BOOL _autofillProfileEnabled;
   BOOL _identityDocsEnabled;
   BOOL _travelInfoEnabled;
+  BOOL _shouldShowAutofillAIFeatures;
 
   // Updatable Items.
   TableViewDetailIconItem* _passwordsDetailItem;
@@ -72,13 +73,15 @@
   [model addItem:_autofillProfileDetailItem
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
 
-  _identityDocsDetailItem = IdentityDocsItem(_identityDocsEnabled);
-  [model addItem:_identityDocsDetailItem
-      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  if (_shouldShowAutofillAIFeatures) {
+    _identityDocsDetailItem = IdentityDocsItem(_identityDocsEnabled);
+    [model addItem:_identityDocsDetailItem
+        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
 
-  _travelInfoDetailItem = TravelInfoItem(_travelInfoEnabled);
-  [model addItem:_travelInfoDetailItem
-      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+    _travelInfoDetailItem = TravelInfoItem(_travelInfoEnabled);
+    [model addItem:_travelInfoDetailItem
+        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -163,8 +166,7 @@
   _identityDocsEnabled = enabled;
 
   if (_identityDocsDetailItem) {
-    _identityDocsDetailItem.detailText =
-        IdentityDocsItemDetailText(enabled);
+    _identityDocsDetailItem.detailText = IdentityDocsItemDetailText(enabled);
     [self reconfigureCellsForItems:@[ _identityDocsDetailItem ]];
   }
 }
@@ -179,6 +181,10 @@
     _travelInfoDetailItem.detailText = TravelInfoItemDetailText(enabled);
     [self reconfigureCellsForItems:@[ _travelInfoDetailItem ]];
   }
+}
+
+- (void)setShouldShowAutofillAIFeatures:(BOOL)shouldShow {
+  _shouldShowAutofillAIFeatures = shouldShow;
 }
 
 #pragma mark - SettingsControllerProtocol
