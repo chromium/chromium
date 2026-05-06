@@ -602,6 +602,10 @@ if (!is_android) {
       ]
     }
 
+    if (is_win) {
+      deps += [ "//chrome/browser/ui/search_promotion" ]
+    }
+
     if (is_chromeos) {
       deps += [ "//chrome/browser/apps/app_service" ]
     }

@@ -1036,7 +1036,7 @@ BASE_FEATURE(kIPHSearchPromotionFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constinit const base::FeatureParam<std::string> kSearchPromotionArm{
-    &kIPHSearchPromotionFeature, "arm", "disabled"};
+    &kIPHSearchPromotionFeature, "arm", kSearchPromotionArmDefault};
 constinit const base::FeatureParam<std::string> kSearchPromotionStoreUrl{
     &kIPHSearchPromotionFeature, "store_url",
     "https://microsoftedge.microsoft.com/addons/detail/google-search-for-edge/"

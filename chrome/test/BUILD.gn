@@ -7799,6 +7799,7 @@ test("unit_tests") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
+      "//chrome/browser/ui/search_promotion:unit_tests",
       "//chrome/browser/win:chrome_process_finder",
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/browser/win:registry_watcher",

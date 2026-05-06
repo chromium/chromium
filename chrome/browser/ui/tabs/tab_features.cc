@@ -108,6 +108,11 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#endif
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/public/features.h"
@@ -499,6 +504,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     contextual_tasks_tab_visit_tracker_ =
         std::make_unique<contextual_tasks::ContextualTasksTabVisitTracker>(
             tab.GetContents());
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSearchPromotionFeature)) {
+    search_promotion_navigation_observer_ =
+        GetUserDataFactory().CreateInstance<SearchPromotionNavigationObserver>(
+            tab, tab);
   }
 #endif
 

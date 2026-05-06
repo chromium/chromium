@@ -41,6 +41,7 @@ class QwacWebContentsObserver;
 class ManagePasswordsPageActionController;
 class BookmarkBarPreloadPipelineManager;
 class NewTabPagePreloadPipelineManager;
+class SearchPromotionNavigationObserver;
 
 namespace skills {
 class SkillsUiTabControllerInterface;
@@ -578,6 +579,11 @@ class TabFeatures {
   std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
       saas_usage_navigation_observer_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<SearchPromotionNavigationObserver>
+      search_promotion_navigation_observer_;
+#endif
 
   std::unique_ptr<accessibility_annotator::ContentAnnotatorTabHelper>
       content_annotator_tab_helper_;

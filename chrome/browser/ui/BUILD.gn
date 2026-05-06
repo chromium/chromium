@@ -3552,6 +3552,7 @@ static_library("ui") {
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
 
     public_deps += [
+      "//chrome/browser/ui/search_promotion",
       "//chrome/browser/win",
       "//chrome/browser/win:jumplist",
     ]

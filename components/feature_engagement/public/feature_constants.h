@@ -455,6 +455,9 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionStoreUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionInstructionsUrl);
 
+inline constexpr char kSearchPromotionArmDefault[] = "disabled";
+inline constexpr char kSearchPromotionArmA[] = "arm_a";
+inline constexpr char kSearchPromotionArmB[] = "arm_b";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement
