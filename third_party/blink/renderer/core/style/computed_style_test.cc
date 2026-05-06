@@ -118,10 +118,10 @@ TEST_F(ComputedStyleTest, ShapeOutsideBoxEqual) {
 TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
   BasicShapeCircle* circle1 = MakeGarbageCollected<BasicShapeCircle>();
   BasicShapeCircle* circle2 = MakeGarbageCollected<BasicShapeCircle>();
-  auto* shape1 = MakeGarbageCollected<ShapeValue>(std::move(circle1),
-                                                  CSSBoxType::kContent);
-  auto* shape2 = MakeGarbageCollected<ShapeValue>(std::move(circle2),
-                                                  CSSBoxType::kContent);
+  auto* shape1 =
+      MakeGarbageCollected<ShapeValue>(*circle1, CSSBoxType::kContent);
+  auto* shape2 =
+      MakeGarbageCollected<ShapeValue>(*circle2, CSSBoxType::kContent);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetShapeOutside(shape1);
@@ -132,9 +132,9 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
 TEST_F(ComputedStyleTest, ClipPathEqual) {
   BasicShapeCircle* shape = MakeGarbageCollected<BasicShapeCircle>();
   ShapeClipPathOperation* path1 = MakeGarbageCollected<ShapeClipPathOperation>(
-      shape, GeometryBox::kBorderBox);
+      *shape, GeometryBox::kBorderBox);
   ShapeClipPathOperation* path2 = MakeGarbageCollected<ShapeClipPathOperation>(
-      shape, GeometryBox::kBorderBox);
+      *shape, GeometryBox::kBorderBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetClipPath(path1);

@@ -544,7 +544,7 @@ const ShapeOrPathInfo GetShapeOrPath(const CSSProperty& property,
       if (!operation) {
         return ShapeOrPathInfo();
       }
-      shape = operation->GetBasicShape();
+      shape = &operation->GetBasicShape();
       geometry_box = operation->GetGeometryBox();
       break;
     }
@@ -563,7 +563,7 @@ const ShapeOrPathInfo GetShapeOrPath(const CSSProperty& property,
           shape_value->CssBox() != CSSBoxType::kMissing) {
         return ShapeOrPathInfo();
       }
-      shape = shape_value->Shape();
+      shape = &shape_value->Shape();
       break;
     }
     default:
@@ -729,7 +729,7 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
         }
       }
       state.StyleBuilder().SetClipPath(
-          shape ? MakeGarbageCollected<ShapeClipPathOperation>(shape,
+          shape ? MakeGarbageCollected<ShapeClipPathOperation>(*shape,
                                                                geometry_box)
                 : nullptr);
       break;
@@ -742,14 +742,14 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
         }
       }
       state.StyleBuilder().SetOffsetPath(
-          shape
-              ? MakeGarbageCollected<ShapeOffsetPathOperation>(shape, coord_box)
-              : nullptr);
+          shape ? MakeGarbageCollected<ShapeOffsetPathOperation>(*shape,
+                                                                 coord_box)
+                : nullptr);
       break;
     }
     case CSSPropertyID::kShapeOutside:
       state.StyleBuilder().SetShapeOutside(
-          shape ? MakeGarbageCollected<ShapeValue>(shape, CSSBoxType::kMissing)
+          shape ? MakeGarbageCollected<ShapeValue>(*shape, CSSBoxType::kMissing)
                 : nullptr);
       break;
     default:

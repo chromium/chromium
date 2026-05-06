@@ -2334,8 +2334,7 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     }
     if (auto* shape = DynamicTo<ShapeClipPathOperation>(operation)) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      auto* basic_shape = ValueForBasicShape(style, *shape->GetBasicShape());
-      list->Append(*basic_shape);
+      list->Append(*ValueForBasicShape(style, shape->GetBasicShape()));
       GeometryBox geometry_box = shape->GetGeometryBox();
       if (geometry_box != GeometryBox::kBorderBox) {
         list->Append(*CSSIdentifierValue::Create(geometry_box));

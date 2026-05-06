@@ -55,11 +55,11 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
   explicit ShapeValue(StyleImage* image)
       : type_(kImage), image_(image), css_box_(CSSBoxType::kContent) {}
   explicit ShapeValue(CSSBoxType css_box) : type_(kBox), css_box_(css_box) {}
-  ShapeValue(const BasicShape* shape, CSSBoxType css_box)
+  ShapeValue(const BasicShape& shape, CSSBoxType css_box)
       : type_(kShape), shape_(shape), css_box_(css_box) {}
 
   ShapeValueType GetType() const { return type_; }
-  const BasicShape* Shape() const { return shape_.Get(); }
+  const BasicShape& Shape() const { return *shape_; }
 
   StyleImage* GetImage() const { return image_.Get(); }
   void SetImage(StyleImage* image) {
@@ -91,8 +91,7 @@ inline bool ShapeValue::operator==(const ShapeValue& other) const {
 
   switch (GetType()) {
     case kShape:
-      return base::ValuesEquivalent(Shape(), other.Shape()) &&
-             CssBox() == other.CssBox();
+      return CssBox() == other.CssBox() && Shape() == other.Shape();
     case kBox:
       return CssBox() == other.CssBox();
     case kImage:

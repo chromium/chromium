@@ -230,7 +230,7 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
   const auto& ray_non_interpolable_value =
       To<CSSRayNonInterpolableValue>(*non_interpolable_value);
   const auto& list = To<InterpolableList>(interpolable_value);
-  StyleRay* style_ray = MakeGarbageCollected<StyleRay>(
+  auto* style_ray = MakeGarbageCollected<StyleRay>(
       To<InterpolableNumber>(list.Get(kRayAngleIndex))
           ->Value(state.CssToLengthConversionData()),
       ray_non_interpolable_value.Mode().Size(),
@@ -243,7 +243,7 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
           ->Value(state.CssToLengthConversionData()));
   state.StyleBuilder().SetOffsetPath(
       MakeGarbageCollected<ShapeOffsetPathOperation>(
-          style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
+          *style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
 }
 
 void CSSRayInterpolationType::Composite(

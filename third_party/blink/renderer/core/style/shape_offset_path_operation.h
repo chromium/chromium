@@ -12,10 +12,8 @@ namespace blink {
 
 class ShapeOffsetPathOperation final : public OffsetPathOperation {
  public:
-  ShapeOffsetPathOperation(const BasicShape* shape, CoordBox coord_box)
-      : OffsetPathOperation(coord_box), shape_(std::move(shape)) {
-    DCHECK(shape_);
-  }
+  ShapeOffsetPathOperation(const BasicShape& shape, CoordBox coord_box)
+      : OffsetPathOperation(coord_box), shape_(shape) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(shape_);

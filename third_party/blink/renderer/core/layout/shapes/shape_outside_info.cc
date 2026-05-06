@@ -221,9 +221,8 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
 
   switch (shape_value.GetType()) {
     case ShapeValue::kShape:
-      DCHECK(shape_value.Shape());
       shape_ =
-          Shape::CreateShape(*shape_value.Shape(), reference_box_logical_size_,
+          Shape::CreateShape(shape_value.Shape(), reference_box_logical_size_,
                              writing_mode, margin, style.EffectiveZoom());
       break;
     case ShapeValue::kImage:
@@ -274,8 +273,6 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
     return false;
 
   switch (shape_value->GetType()) {
-    case ShapeValue::kShape:
-      return shape_value->Shape();
     case ShapeValue::kImage: {
       const StyleImage* image = shape_value->GetImage();
       CHECK(image);
@@ -283,11 +280,11 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
       CHECK(!image_is_usable || image->IsCorsSameOrigin());
       return image_is_usable;
     }
+    case ShapeValue::kShape:
     case ShapeValue::kBox:
       return true;
   }
-
-  return false;
+  NOTREACHED();
 }
 
 PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {

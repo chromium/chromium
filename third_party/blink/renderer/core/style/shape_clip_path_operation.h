@@ -39,17 +39,15 @@ namespace blink {
 
 class ShapeClipPathOperation final : public ClipPathOperation {
  public:
-  ShapeClipPathOperation(const BasicShape* shape, GeometryBox geometry_box)
-      : shape_(std::move(shape)), geometry_box_(geometry_box) {
-    DCHECK(shape_);
-  }
+  ShapeClipPathOperation(const BasicShape& shape, GeometryBox geometry_box)
+      : shape_(shape), geometry_box_(geometry_box) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(shape_);
     ClipPathOperation::Trace(visitor);
   }
 
-  const BasicShape* GetBasicShape() const { return shape_.Get(); }
+  const BasicShape& GetBasicShape() const { return *shape_; }
   Path GetPath(const gfx::RectF& bounding_rect,
                float zoom,
                float path_scale) const {

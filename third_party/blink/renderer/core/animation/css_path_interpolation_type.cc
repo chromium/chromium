@@ -59,6 +59,7 @@ const StylePath* GetPath(const CSSProperty& property,
 void SetPath(const CSSProperty& property,
              ComputedStyleBuilder& builder,
              blink::StylePath* path) {
+  CHECK(path);
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
       builder.SetD(path);
@@ -66,17 +67,16 @@ void SetPath(const CSSProperty& property,
     case CSSPropertyID::kOffsetPath:
       // TODO(sakhapov): handle coord box.
       builder.SetOffsetPath(MakeGarbageCollected<ShapeOffsetPathOperation>(
-          path, CoordBox::kBorderBox));
+          *path, CoordBox::kBorderBox));
       return;
     case CSSPropertyID::kClipPath:
       // TODO(pdr): Handle geometry box.
       builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
-          path, GeometryBox::kBorderBox));
+          *path, GeometryBox::kBorderBox));
       return;
     case CSSPropertyID::kShapeOutside:
-      CHECK(path);
       builder.SetShapeOutside(
-          MakeGarbageCollected<ShapeValue>(path, CSSBoxType::kMissing));
+          MakeGarbageCollected<ShapeValue>(*path, CSSBoxType::kMissing));
       return;
     default:
       NOTREACHED();
