@@ -2386,12 +2386,10 @@ public class AwContents implements SmartClipProvider {
         loadUrl(url, null);
     }
 
-    @Nullable
     public AwNavigation navigate(String url) {
         return navigate(new AwNavigationParams(url));
     }
 
-    @Nullable
     public AwNavigation navigate(AwNavigationParams params) {
         if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_NAVIGATE)) {
             throw new IllegalStateException("Navigate is disabled");

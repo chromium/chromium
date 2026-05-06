@@ -143,6 +143,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.NAVIGATION_GET_WEB_RESOURCE_ERROR,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V4,
                 Features.IGNORE_DUPLICATE_NAV + Features.DEV_SUFFIX,
+                Features.WEBVIEW_NAVIGATE_V1 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -338,6 +339,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_MAX_PRERENDERS,
         ApiCall.CLEAR_MAX_PREFETCHES,
         ApiCall.CLEAR_PREFETCH_TTL,
+        ApiCall.NAVIGATE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -436,7 +438,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_PROFILE_WEB_STORAGE = 90;
         int GET_PROFILE_GEO_LOCATION_PERMISSIONS = 91;
         int GET_PROFILE_SERVICE_WORKER_CONTROLLER = 92;
-
         int SET_WEBVIEW_PROFILE = 93;
         int GET_WEBVIEW_PROFILE = 94;
         int SET_ATTRIBUTION_BEHAVIOR = 95;
@@ -540,8 +541,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int CLEAR_MAX_PREFETCHES = 191;
         int CLEAR_PREFETCH_TTL = 192;
         int CLEAR_MAX_PRERENDERS = 193;
+        int NAVIGATE = 194;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 194;
+        int COUNT = 195;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

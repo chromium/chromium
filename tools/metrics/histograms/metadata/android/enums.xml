@@ -752,6 +752,7 @@ chromium-metrics-reviews@google.com.
   <int value="191" label="WebSettingsCompat.clearMaxPrefetches"/>
   <int value="192" label="WebSettingsCompat.clearPrefetchTtl"/>
   <int value="193" label="WebSettingsCompat.clearMaxPrerenders"/>
+  <int value="194" label="WebViewCompat.navigate"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

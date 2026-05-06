@@ -84,6 +84,9 @@ public interface WebViewProviderBoundaryInterface {
             ValueCallback<Void> activationCallback,
             ValueCallback<Throwable> errorCallback);
 
+    /* Navigation */ InvocationHandler navigate(
+            String url, /* NavigationParams */ InvocationHandler params);
+
     void saveState(Bundle outState, int maxSize, boolean includeForwardState);
 
     void addWebViewNavigationListener(

@@ -487,4 +487,7 @@ public class Features {
     // WebViewSettings.setIgnoreDuplicateNavThreshold
     // WebViewSettings.getIgnoreDuplicateNavThreshold
     public static final String IGNORE_DUPLICATE_NAV = "IGNORE_DUPLICATE_NAV";
+
+    // WebViewCompat.navigate
+    public static final String WEBVIEW_NAVIGATE_V1 = "WEBVIEW_NAVIGATE_V1";
 }
