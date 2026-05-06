@@ -169,12 +169,24 @@ void SVGPath::CalculateAnimatedValue(
   const auto& to = To<SVGPath>(*to_value);
   const SVGPathByteStream& to_stream = to.ByteStream();
 
-  // If no 'to' value is given, nothing to animate.
-  if (!to_stream.size())
-    return;
-
   const auto& from = To<SVGPath>(*from_value);
   const SVGPathByteStream& from_stream = from.ByteStream();
+
+  // Additive with empty to (includes both-empty): can't add empty result to
+  // base. No animation.
+  if (to_stream.IsEmpty() && parameters.is_additive) {
+    return;
+  }
+
+  // Non-additive with incompatible empty endpoint: use discrete animation.
+  // Empty from with additive (by-animation) falls through to
+  // BlendPathByteStreams which treats it as a zero-valued path matching to's
+  // structure.
+  if (!parameters.is_additive &&
+      (from_stream.IsEmpty() || to_stream.IsEmpty())) {
+    path_value_ = percentage < 0.5 ? from.PathValue() : to.PathValue();
+    return;
+  }
 
   std::optional<SVGPathByteStream> new_stream =
       BlendPathByteStreams(from_stream, to_stream, percentage);

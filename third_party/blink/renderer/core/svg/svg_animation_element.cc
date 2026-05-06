@@ -312,11 +312,11 @@ AnimationMode SVGAnimationElement::CalculateAnimationMode() {
   if (hasAttribute(svg_names::kValuesAttr)) {
     return kValuesAnimation;
   }
-  if (!ToValue().empty()) {
-    return FromValue().empty() ? kToAnimation : kFromToAnimation;
+  if (!ToValue().IsNull()) {
+    return FromValue().IsNull() ? kToAnimation : kFromToAnimation;
   }
-  if (!ByValue().empty()) {
-    return FromValue().empty() ? kByAnimation : kFromByAnimation;
+  if (!ByValue().IsNull()) {
+    return FromValue().IsNull() ? kByAnimation : kFromByAnimation;
   }
   return kNoAnimation;
 }
