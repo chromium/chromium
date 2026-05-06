@@ -5170,7 +5170,6 @@ void PDFiumEngine::DrawText(int page_index,
   }
 
   CHECK(FPDFPage_GenerateContent(page));
-  // TODO(crbug.com/504689665): Avoid crashing if the page has other edits.
   GetPage(page_index)->ReloadTextPage();
   client_->Invalidate(GetPageScreenRect(page_index));
 }

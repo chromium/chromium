@@ -56,6 +56,7 @@ struct AccessibilityTextRunInfo;
 // Wrapper around a page from the document.
 class PDFiumPage {
  public:
+  // Prevents FPDF_PAGE unloading.
   class ScopedPageUnloadPreventer {
    public:
     explicit ScopedPageUnloadPreventer(PDFiumPage* page);
@@ -65,6 +66,20 @@ class PDFiumPage {
 
    private:
     raw_ptr<PDFiumPage> page_;
+  };
+
+  // Prevents FPDF_TEXTPAGE unloading.
+  class ScopedTextPageUnloadPreventer {
+   public:
+    explicit ScopedTextPageUnloadPreventer(PDFiumPage* page);
+    ScopedTextPageUnloadPreventer(const ScopedTextPageUnloadPreventer&) =
+        delete;
+    ScopedTextPageUnloadPreventer& operator=(
+        const ScopedTextPageUnloadPreventer&) = delete;
+    ~ScopedTextPageUnloadPreventer();
+
+   private:
+    const raw_ptr<PDFiumPage> page_;
   };
 
   PDFiumPage(PDFiumEngine* engine, uint32_t i);
@@ -521,6 +536,7 @@ class PDFiumPage {
   ScopedFPDFTextPage text_page_;
   uint32_t index_;
   int preventing_page_unload_count_ = 0;
+  int preventing_text_page_unload_count_ = 0;
   gfx::Rect rect_;
   bool calculated_text_runs_ = false;
   MarkedContentIdToTextRunInfoMap marked_content_id_to_text_runs_map_;
