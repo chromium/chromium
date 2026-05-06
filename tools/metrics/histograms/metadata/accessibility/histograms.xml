@@ -3372,6 +3372,8 @@ even if they fit the naming pattern. -->
     <variant name="NextButton" summary="next granularity"/>
     <variant name="Pause" summary="pause speech"/>
     <variant name="Play" summary="play speech"/>
+    <variant name="PlayFromLineFocus"
+        summary="play speech from current line focus position"/>
     <variant name="PlayFromSelection"
         summary="play speech from user selection"/>
     <variant name="PreviousButton" summary="previous granularity"/>

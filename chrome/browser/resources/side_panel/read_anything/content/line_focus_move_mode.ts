@@ -250,7 +250,10 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
   onScrollEnd(newScrollTop: number): void {
     const initiatedScroll = this.model_.getInitiatedScroll();
     this.resetScrollState(newScrollTop);
-    if (initiatedScroll && this.styleMode_.updateAfterScroll()) {
+    // For a user-initiated scroll, notify that the focus is in a different
+    // position in the content even though the coordinates are the same. For a
+    // line-focus-initiated scroll, only notify if the focus changed.
+    if (!initiatedScroll || this.styleMode_.updateAfterScroll()) {
       this.delegate_.notifyMove();
     }
   }

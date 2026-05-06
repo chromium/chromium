@@ -6,6 +6,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {NodeStore} from '../content/node_store.js';
 import type {ContentPosition} from '../content/read_anything_types.js';
+import {ContentPositionSource} from '../content/read_anything_types.js';
 import {getWordCount, playFromSelectionTimeout} from '../shared/common.js';
 import {ReadAnythingLogger, SpeechControls} from '../shared/read_anything_logger.js';
 
@@ -175,6 +176,29 @@ export class SpeechController {
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
     this.readAloudModel_.init(contextNode);
+  }
+
+  onLineFocusChange(position: CaretPosition|null) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    let contentPosition: ContentPosition|null = null;
+    if (position) {
+      let node: Node = position.offsetNode;
+      let offset: number = position.offset;
+      if (node && this.nodeStore_.getAncestor(node)) {
+        const ancestor = this.nodeStore_.getAncestor(node)!;
+        node = ancestor.node;
+        offset += ancestor.offset;
+      }
+      contentPosition = {
+        node,
+        offset,
+        source: ContentPositionSource.LINE_FOCUS,
+      };
+    }
+    this.model_.setCurrentContentPosition(contentPosition);
   }
 
   onSelectionChange(position: ContentPosition|null) {
@@ -404,6 +428,9 @@ export class SpeechController {
     this.highlighter_.reset();
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
+    const speechControl = position.source === ContentPositionSource.SELECTION ?
+        SpeechControls.PLAY_FROM_SELECTION :
+        SpeechControls.PLAY_FROM_LINE_FOCUS;
     setTimeout(() => {
       const readAloudNode = ReadAloudNode.create(position.node);
       if (!readAloudNode) {
@@ -412,7 +439,7 @@ export class SpeechController {
       this.movePlaybackToNode_(readAloudNode, position.offset);
       // Play the next granularity, which includes the selection.
       if (this.highlightAndPlayMessage_()) {
-        this.logger_.logSpeechControlClick(SpeechControls.PLAY_FROM_SELECTION);
+        this.logger_.logSpeechControlClick(speechControl);
       } else {
         this.onSpeechFinished_();
       }

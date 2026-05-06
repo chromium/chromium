@@ -1,7 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
@@ -18,6 +19,7 @@ suite('SpeechController', () => {
   let isAudioCurrentlyPlayingChanged: boolean;
   let onPreviewVoicePlaying: boolean;
   let onEngineStateChange: boolean;
+  let onPlayingFromPosition: boolean;
   let metrics: TestMetricsBrowserProxy;
   let wordBoundaries: WordBoundaries;
   let nodeStore: NodeStore;
@@ -50,6 +52,7 @@ suite('SpeechController', () => {
     isAudioCurrentlyPlayingChanged = false;
     onPreviewVoicePlaying = false;
     onEngineStateChange = false;
+    onPlayingFromPosition = false;
     const speechListener = {
       onIsSpeechActiveChange() {
         isSpeechActiveChanged = true;
@@ -68,7 +71,7 @@ suite('SpeechController', () => {
       },
 
       onPlayingFromSelection() {
-
+        onPlayingFromPosition = true;
       },
 
       onWordBoundary() {},
@@ -839,4 +842,93 @@ suite('SpeechController', () => {
         'Accessibility.ReadAnything.ReadAloudPlayFromSelectionSessionCount',
         metrics.getArgs('incrementMetricCount')[0]);
   });
+
+  test('playFromContentPosition logs line focus metric', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const text = 'Lost for kind words to say.';
+    const element = document.createElement('p');
+    const id = 2;
+    const node = document.createTextNode(text);
+    nodeStore.setDomNode(node, id);
+    const segments: Segment[] =
+        [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+    readAloudModel.setCurrentTextSegments(segments);
+    readAloudModel.setCurrentTextContent(text);
+    element.appendChild(node);
+    document.body.appendChild(element);
+    const range = document.createRange();
+    range.selectNode(node);
+    const rect = range.getClientRects().item(0);
+    assertTrue(!!rect);
+    const position = document.caretPositionFromPoint(rect.left, rect.top);
+    speechController.onLineFocusChange(position);
+
+    // Trigger play
+    speechController.onPlayPauseToggle(element);
+
+    // Wait for the setTimeout in playFromContentPosition_
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    assertEquals(1, metrics.getCallCount('incrementMetricCount'));
+    assertEquals(
+        'Accessibility.ReadAnything.ReadAloudPlayFromLineFocusSessionCount',
+        metrics.getArgs('incrementMetricCount')[0]);
+  });
+
+  test('playFromContentPosition with line focus reads from there', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const text = 'Lost for kind words to say.';
+    const element = document.createElement('p');
+    const id = 2;
+    const node = document.createTextNode(text);
+    nodeStore.setDomNode(node, id);
+    const segments: Segment[] =
+        [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+    readAloudModel.setCurrentTextSegments(segments);
+    readAloudModel.setCurrentTextContent(text);
+    element.appendChild(node);
+    document.body.appendChild(element);
+    const range = document.createRange();
+    range.selectNode(node);
+    const rect = range.getClientRects().item(0);
+    assertTrue(!!rect);
+    const position = document.caretPositionFromPoint(rect.left, rect.top);
+    speechController.onLineFocusChange(position);
+
+    speechController.onPlayPauseToggle(element);
+    await speech.whenCalled('speak');
+
+    assertTrue(onPlayingFromPosition);
+  });
+
+  test(
+      'playFromContentPosition starts from beginning when line focus off',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        const text = 'Nobody understands.';
+        const element = document.createElement('p');
+        const id = 2;
+        const node = document.createTextNode(text);
+        nodeStore.setDomNode(node, id);
+        const segments: Segment[] = [
+          {node: ReadAloudNode.create(node)!, start: 0, length: text.length},
+        ];
+        readAloudModel.setCurrentTextSegments(segments);
+        readAloudModel.setCurrentTextContent(text);
+        element.appendChild(node);
+        document.body.appendChild(element);
+        const range = document.createRange();
+        range.selectNode(node);
+        const rect = range.getClientRects().item(0);
+        assertTrue(!!rect);
+        const position = document.caretPositionFromPoint(rect.left, rect.top);
+
+        speechController.onLineFocusChange(position);
+        speechController.onLineFocusChange(null);
+
+        speechController.onPlayPauseToggle(element);
+        await speech.whenCalled('speak');
+
+        assertFalse(onPlayingFromPosition);
+      });
 });

@@ -480,12 +480,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   ///////////////////////// LineFocusListener methods //////////////////////////
-  onLineFocusMove(newTop: number, newHeight: number): void {
+  onLineFocusMove(newTop: number, newHeight: number, newFocalPoint: number):
+      void {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
 
     this.styleUpdater_.setLineFocusPos(newTop, newHeight);
+    const position: CaretPosition|null = document.caretPositionFromPoint(
+        0, newFocalPoint, {shadowRoots: [this.shadowRoot]});
+    this.speechController_.onLineFocusChange(position);
   }
 
   onNeedScrollForLineFocus(scrollDiff: number, instant: boolean = false): void {
@@ -511,6 +515,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
+    // Clear the content position if line focus is turned off.
+    if (!this.lineFocusController_.isEnabled()) {
+      this.speechController_.onLineFocusChange(null);
+    }
+
     this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
     this.lineFocusMovement_ =
         this.lineFocusController_.getCurrentLineFocusMovement();
@@ -715,6 +724,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusStyle_ =
           this.lineFocusController_.getCurrentLineFocusStyle();
       this.setLineFocusStyle_();
+
+      // Clear the content position if line focus is turned off.
+      if (!this.lineFocusController_.isEnabled()) {
+        this.speechController_.onLineFocusChange(null);
+      }
     }
   }
 

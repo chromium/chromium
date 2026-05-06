@@ -13,7 +13,8 @@ import {LineFocusLineStyleMode, LineFocusNoneStyleMode, LineFocusWindowStyleMode
 import {getLineFocusValues, LineFocusMovement, LineFocusStyle, LineFocusType} from './read_anything_types.js';
 
 export interface LineFocusListener {
-  onLineFocusMove(newTop: number, newHeight: number|null): void;
+  onLineFocusMove(newTop: number, newHeight: number, newFocalPoint: number):
+      void;
   onNeedScrollForLineFocus(scrollDiff: number, instant?: boolean): void;
   onNeedScrollToTop(): void;
   onLineFocusToggled(): void;
@@ -204,7 +205,8 @@ export class LineFocusController implements MoveModeDelegate {
   notifyMove(): void {
     this.listeners_.forEach(
         l => l.onLineFocusMove(
-            this.model_.getTop(), this.model_.getWindowHeight()));
+            this.model_.getTop(), this.model_.getWindowHeight(),
+            this.model_.getFocalPoint()));
   }
 
   notifyScroll(scrollDiff: number, instant?: boolean): void {

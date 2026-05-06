@@ -18,6 +18,7 @@ export enum SpeechControls {
   NEXT = 'NextButton',
   PREVIOUS = 'PreviousButton',
   PLAY_FROM_SELECTION = 'PlayFromSelection',
+  PLAY_FROM_LINE_FOCUS = 'PlayFromLineFocus',
 }
 
 export enum LinkStatus {

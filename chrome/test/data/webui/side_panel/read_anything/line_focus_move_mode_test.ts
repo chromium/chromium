@@ -255,24 +255,32 @@ suite('LineFocusMoveMode', () => {
       assertEquals(top2 - top3, scrollDistance);
     });
 
-    test('onScrollEnd notifies of move only for line focus scroll', () => {
-      const rect1 = new DOMRect(0, 10, 100, 20);
-      const rect2 = new DOMRect(0, 30, 100, 20);
-      const rect3 = new DOMRect(0, 50, 100, 20);
-      model.setTextBounds([rect1, rect2, rect3]);
-      model.setCurrentLineIndex(1);
-      model.setTop(10);
-      model.setWindowHeight(10);
-      const singleWindow =
-          new LineFocusWindowStyleMode(LineFocusStyle.SMALL_WINDOW, model);
-      mode = new LineFocusStaticMoveMode(model, singleWindow, delegate);
+    test(
+        'onScrollEnd notifies of move for line focus scroll for small window only',
+        () => {
+          const rect1 = new DOMRect(0, 10, 100, 20);
+          const rect2 = new DOMRect(0, 30, 100, 20);
+          const rect3 = new DOMRect(0, 50, 100, 20);
+          model.setTextBounds([rect1, rect2, rect3]);
+          model.setCurrentLineIndex(1);
+          model.setTop(10);
+          model.setWindowHeight(10);
+          const singleWindow =
+              new LineFocusWindowStyleMode(LineFocusStyle.SMALL_WINDOW, model);
+          model.setInitiatedScroll(true);
 
+          mode.onScrollEnd(100);
+          assertFalse(notifiedMove);
+
+          mode = new LineFocusStaticMoveMode(model, singleWindow, delegate);
+          mode.onScrollEnd(100);
+          assertTrue(notifiedMove);
+        });
+
+    test('onScrollEnd notifies of move for user scroll', () => {
       model.setInitiatedScroll(false);
       mode.onScrollEnd(100);
-      assertFalse(notifiedMove);
 
-      model.setInitiatedScroll(true);
-      mode.onScrollEnd(100);
       assertTrue(notifiedMove);
     });
 
