@@ -516,7 +516,6 @@
     },
     {
       name: "AISummarizationPerformancePreference",
-      status: "experimental",
     },
     {
       name: "AIWriterAPI",
