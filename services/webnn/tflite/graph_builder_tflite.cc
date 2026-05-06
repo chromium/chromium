@@ -914,9 +914,12 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       // TFLite's native PReLU path is used for lower-rank tensors, and
+       // SerializePrelu emulates rank-5 cases with element-wise ops to preserve
+       // WebNN broadcasting semantics for the 5D conformance coverage.
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/prelu.h
        /*prelu_input=*/
-       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(4)},
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(5)},
        // TODO(crbug.com/376722724): Support float16 input.
        // QuantizeLinear may be emulated by div and add ops that only support
        // max rank up to 5.
@@ -8214,12 +8217,64 @@ auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.prelu_input.Supports(
       GetOperand(prelu.input_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.prelu_input.Supports(
+      GetOperand(prelu.slope_operand_id).descriptor));
+  CHECK(context_properties_.data_type_limits.prelu_input.Supports(
+      GetOperand(prelu.output_operand_id).descriptor));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(prelu.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& slope_tensor_info,
                    SerializeInputTensorInfo(prelu.slope_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
                    SerializeOutputTensorInfo(prelu.output_operand_id));
+
+  // TFLite's PReLU kernel only supports broadcasting up to rank 4, so emulate
+  // higher-rank cases with element-wise ops. Use `> 4` rather than `== 5` to
+  // reflect the kernel's rank limit directly and remain correct if the op
+  // support limit is ever raised beyond rank 5.
+  //
+  // Emulate PReLU as `max(x, 0) + slope * min(x, 0)`, which is equivalent to:
+  //   - For x >= 0: max(x, 0) = x, min(x, 0) = 0, result = x
+  //   - For x <  0: max(x, 0) = 0, min(x, 0) = x, result = slope * x
+  if (input_tensor_info.dimensions.size() > 4 ||
+      slope_tensor_info.dimensions.size() > 4) {
+    // SerializeInputTensorInfo() has already dequantized input tensors to
+    // float32 for PReLU, so the shared scalar zero tensor is created as
+    // float32 as well.
+    ASSIGN_OR_RETURN(const TensorIndex zero_value_tensor_index,
+                     SerializeTensorWithBuffer<float>(
+                         /*buffer=*/std::array<float, 1>{0.0f},
+                         /*dimensions=*/{}));
+    ASSIGN_OR_RETURN(const TensorIndex positive_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         input_tensor_info.dimensions,
+                         input_tensor_info.data_type));
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MAXIMUM, input_tensor_info.index,
+        zero_value_tensor_index, positive_tensor_index));
+
+    ASSIGN_OR_RETURN(const TensorIndex negative_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         input_tensor_info.dimensions,
+                         input_tensor_info.data_type));
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MINIMUM, input_tensor_info.index,
+        zero_value_tensor_index, negative_tensor_index));
+
+    ASSIGN_OR_RETURN(const TensorIndex scaled_negative_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         output_tensor_info.dimensions,
+                         output_tensor_info.data_type));
+    operators_.emplace_back(SerializeBinaryOperation(
+        ::tflite::BuiltinOperator_MUL, negative_tensor_index,
+        slope_tensor_info.index, scaled_negative_tensor_index));
+
+    return SerializeBinaryOperation(::tflite::BuiltinOperator_ADD,
+                                    positive_tensor_index,
+                                    scaled_negative_tensor_index,
+                                    output_tensor_info.index);
+  }
+
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_PRELU);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,

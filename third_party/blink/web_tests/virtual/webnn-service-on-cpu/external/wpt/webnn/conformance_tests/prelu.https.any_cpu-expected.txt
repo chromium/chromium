@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [required] prelu float32 broadcast 5D x 5D slope with expanded output shape
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': The shape of slope is not broadcastable to the shape of input."
+Harness: the test ran to completion.
+
