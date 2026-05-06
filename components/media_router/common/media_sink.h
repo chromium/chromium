@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_SINK_H_
 
 #include <string>
+#include <string_view>
 
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
@@ -39,6 +40,7 @@ enum class SinkIconType {
 class MediaSink {
  public:
   using Id = std::string;
+  using IdView = std::string_view;
 
   MediaSink(const MediaSink::Id& sink_id,
             const std::string& name,

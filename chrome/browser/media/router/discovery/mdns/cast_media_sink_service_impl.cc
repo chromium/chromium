@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -56,7 +57,7 @@ MediaSinkInternal CreateCastSinkFromDialSink(
   return MediaSinkInternal(sink, extra_data);
 }
 
-std::string EnumToString(MediaRouterChannelError error) {
+std::string_view EnumToString(MediaRouterChannelError error) {
   switch (error) {
     case MediaRouterChannelError::UNKNOWN:
       return "UNKNOWN";
@@ -160,7 +161,7 @@ constexpr int kMaxLivenessTimeoutInSeconds = 60;
 // Max failure count allowed for a Cast channel.
 constexpr int kMaxFailureCount = 100;
 
-bool IsNetworkIdUnknownOrDisconnected(const std::string& network_id) {
+bool IsNetworkIdUnknownOrDisconnected(std::string_view network_id) {
   return network_id == DiscoveryNetworkMonitor::kNetworkIdUnknown ||
          network_id == DiscoveryNetworkMonitor::kNetworkIdDisconnected;
 }
@@ -185,18 +186,18 @@ constexpr int CastMediaSinkServiceImpl::kMaxDialSinkFailureCount;
 
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetCastSinkIdFromDial(
-    const MediaSink::Id& dial_sink_id) {
+    MediaSink::IdView dial_sink_id) {
   DCHECK_EQ("dial:", dial_sink_id.substr(0, 5));
   // Replace the "dial:" prefix with "cast:".
-  return "cast:" + dial_sink_id.substr(5);
+  return base::StrCat({"cast:", dial_sink_id.substr(5)});
 }
 
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetDialSinkIdFromCast(
-    const MediaSink::Id& cast_sink_id) {
+    const MediaSink::IdView cast_sink_id) {
   DCHECK_EQ("cast:", cast_sink_id.substr(0, 5));
   // Replace the "cast:" prefix with "dial:".
-  return "dial:" + cast_sink_id.substr(5);
+  return base::StrCat({"dial:", cast_sink_id.substr(5)});
 }
 
 CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
@@ -403,7 +404,7 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
   if (network_id == current_network_id_) {
     return;
   }
-  std::string last_network_id = current_network_id_;
+  std::string last_network_id = std::move(current_network_id_);
   current_network_id_ = network_id;
   dial_sink_failure_count_.clear();
   if (!IsNetworkIdUnknownOrDisconnected(last_network_id)) {

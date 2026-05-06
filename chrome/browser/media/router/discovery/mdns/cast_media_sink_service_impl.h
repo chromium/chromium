@@ -21,6 +21,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace cast_channel {
@@ -47,8 +48,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   static constexpr int kMaxDialSinkFailureCount = 10;
 
   // Returns a Cast MediaSink ID from a DIAL MediaSink ID, and vice versa.
-  static MediaSink::Id GetCastSinkIdFromDial(const MediaSink::Id& dial_sink_id);
-  static MediaSink::Id GetDialSinkIdFromCast(const MediaSink::Id& cast_sink_id);
+  static MediaSink::Id GetCastSinkIdFromDial(MediaSink::IdView dial_sink_id);
+  static MediaSink::Id GetDialSinkIdFromCast(MediaSink::IdView cast_sink_id);
 
   // |callback|: Callback passed to MediaSinkServiceBase.
   // |observer|: Observer to invoke on sink updates. Can be nullptr.
@@ -349,7 +350,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   std::string current_network_id_ = DiscoveryNetworkMonitor::kNetworkIdUnknown;
 
   // Cache of known sinks by network ID.
-  std::map<std::string, std::vector<MediaSinkInternal>> sink_cache_;
+  absl::flat_hash_map<std::string, std::vector<MediaSinkInternal>> sink_cache_;
 
   CastDeviceCountMetrics metrics_;
 
