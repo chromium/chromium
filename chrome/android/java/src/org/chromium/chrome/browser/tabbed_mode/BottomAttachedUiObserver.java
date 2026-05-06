@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,6 +28,7 @@ import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualSta
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.ui.BottomSheetUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -297,8 +296,8 @@ public class BottomAttachedUiObserver
                         && !BrowserControlsUtils.areBrowserControlsOffScreen(
                                 mBrowserControlsStateProvider);
         boolean isOverlayPanelUnexpanded =
-                mOverlayPanelState != OverlayPanel.PanelState.EXPANDED
-                        && mOverlayPanelState != OverlayPanel.PanelState.MAXIMIZED;
+                mOverlayPanelState != PanelState.EXPANDED
+                        && mOverlayPanelState != PanelState.MAXIMIZED;
         if (isBottomToolbarVisible && mUseBottomControlsColor && isOverlayPanelUnexpanded) {
             return mBottomControlsColor;
         }
@@ -485,12 +484,12 @@ public class BottomAttachedUiObserver
     // Overlay Panel
 
     @Override
-    public void onOverlayPanelStateChanged(@OverlayPanel.PanelState int state, int color) {
+    public void onOverlayPanelStateChanged(@PanelState int state, int color) {
         mOverlayPanelColor = color;
         mOverlayPanelVisible =
-                (state == OverlayPanel.PanelState.PEEKED)
-                        || (state == OverlayPanel.PanelState.EXPANDED)
-                        || (state == OverlayPanel.PanelState.MAXIMIZED);
+                (state == PanelState.PEEKED)
+                        || (state == PanelState.EXPANDED)
+                        || (state == PanelState.MAXIMIZED);
         mOverlayPanelState = state;
         updateBottomAttachedColor();
     }

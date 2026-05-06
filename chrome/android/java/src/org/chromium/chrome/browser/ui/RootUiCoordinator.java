@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
@@ -139,6 +138,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDeleg
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.open_in_app.OpenInAppEntryPoint;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -318,7 +318,7 @@ public class RootUiCoordinator
     private @Nullable FindToolbarObserver mFindToolbarObserver;
 
     private @Nullable OverlayPanelManager mOverlayPanelManager;
-    private @Nullable OverlayPanelManagerObserver mOverlayPanelManagerObserver;
+    private @Nullable Callback<Integer> mPanelStateCallback;
 
     protected OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
     protected @Nullable LayoutStateProvider mLayoutStateProvider;
@@ -884,8 +884,8 @@ public class RootUiCoordinator
             mMessageContainerCoordinator = null;
         }
 
-        if (mOverlayPanelManager != null) {
-            mOverlayPanelManager.removeObserver(mOverlayPanelManagerObserver);
+        if (mOverlayPanelManager != null && mPanelStateCallback != null) {
+            mOverlayPanelManager.getPanelStateSupplier().removeObserver(mPanelStateCallback);
         }
 
         if (mLayoutStateProvider != null) {
@@ -1809,16 +1809,15 @@ public class RootUiCoordinator
     protected void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
         mLayoutManager = layoutManager;
         if (mOverlayPanelManager != null) {
-            assumeNonNull(mOverlayPanelManagerObserver);
-            mOverlayPanelManager.removeObserver(mOverlayPanelManagerObserver);
+            assumeNonNull(mPanelStateCallback);
+            mOverlayPanelManager.getPanelStateSupplier().removeObserver(mPanelStateCallback);
         }
         mOverlayPanelManager = layoutManager.getOverlayPanelManager();
 
-        if (mOverlayPanelManagerObserver == null) {
-            mOverlayPanelManagerObserver =
-                    new OverlayPanelManagerObserver() {
-                        @Override
-                        public void onOverlayPanelShown() {
+        if (mPanelStateCallback == null) {
+            mPanelStateCallback =
+                    state -> {
+                        if (state != PanelState.CLOSED) {
                             if (mFindToolbarManager != null) {
                                 mFindToolbarManager.hideToolbar(false);
                             }
@@ -1828,13 +1827,12 @@ public class RootUiCoordinator
                                 mPageZoomBarCoordinator.hide();
                             }
                         }
-
-                        @Override
-                        public void onOverlayPanelHidden() {}
                     };
         }
 
-        mOverlayPanelManager.addObserver(mOverlayPanelManagerObserver);
+        mOverlayPanelManager
+                .getPanelStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mPanelStateCallback);
     }
 
     protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(

@@ -23,9 +23,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -403,25 +402,19 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         if (mBottomControlsStacker == null) {
             return 0.0f;
         }
-        // The panel should:
-        // * Always stack on top of the readaloud player (since it can't overlay it)
-        // * Stack on top of the bottom toolbar when the panel is peeking; beyond peek height,
-        // it overlays the toolbar and thus does not need an upwards adjustment.
+        // The panel should stack on top of the bottom controls when the panel is peeking;
+        // beyond peek height, it overlays bottom controls and thus does not need an upwards
+        // adjustment.
+        // TODO(https://crbug.com/397722355): All bottom controls overlap the panel. The panel is
+        // extended up further than it should be to emulate a peeking state. However, the way this
+        // is achieved is that the Android Views render in front of the overlay panel, but their
+        // composited versions remain behind the overlay panel. This works, but is not a clean
+        // solution and is potentially brittle.
         float bottomControlsHeightPx;
-        boolean readAloudVisible =
-                mBottomControlsStacker.isLayerVisible(LayerType.READ_ALOUD_PLAYER);
         boolean effectivelyPeeked = findLargestPanelStateFromHeight(mHeight) == PanelState.PEEKED;
-        if (readAloudVisible) {
-            // A visible readaloud player implies browser controls are fully visible, so no need to
-            // multiply.
-            // TODO(https://crbug.com/397722355): this is only a partial solution; the ReadAloud
-            // player still overlaps the contextual search panel when it's expanded.
+        if (effectivelyPeeked) {
             bottomControlsHeightPx =
-                    mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.READ_ALOUD_PLAYER);
-        } else if (effectivelyPeeked
-                && mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
-            bottomControlsHeightPx =
-                    (mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR)
+                    (mBottomControlsStacker.getTotalHeight()
                                     // Avoid counting the chin's height; it's already accounted for
                                     // elsewhere.
                                     - mBottomControlsStacker.getHeightFromLayerToBottom(

@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -101,8 +102,8 @@ public class BottomControlsMediatorTest {
     private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
             ObservableSuppliers.createNullable();
-    private final SettableNonNullObservableSupplier<Boolean> mOverlayPanelVisibilitySupplier =
-            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<@PanelState Integer>
+            mOverlayPanelStateSupplier = ObservableSuppliers.createNonNull(PanelState.CLOSED);
     private final OneshotSupplierImpl<BottomControlsContentDelegate> mContentDelegateSupplier =
             new OneshotSupplierImpl<>();
 
@@ -137,7 +138,7 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
-                        mOverlayPanelVisibilitySupplier,
+                        mOverlayPanelStateSupplier,
                         mEdgeToEdgeControllerSupplier,
                         mReadAloudRestoringSupplier);
     }
@@ -156,7 +157,7 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
-                        mOverlayPanelVisibilitySupplier,
+                        mOverlayPanelStateSupplier,
                         ObservableSuppliers.alwaysNull(),
                         mReadAloudRestoringSupplier);
         assertNull(plainMediator.getEdgeToEdgeChangeObserverForTesting());
@@ -202,7 +203,7 @@ public class BottomControlsMediatorTest {
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
-                        mOverlayPanelVisibilitySupplier,
+                        mOverlayPanelStateSupplier,
                         ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                         mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
@@ -235,7 +236,7 @@ public class BottomControlsMediatorTest {
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
                 DEFAULT_SHADOW_HEIGHT,
-                mOverlayPanelVisibilitySupplier,
+                mOverlayPanelStateSupplier,
                 ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
@@ -272,15 +273,29 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    public void testSetVisibility_OverviewPannel() {
+    public void testSetVisibility_OverviewPanelExpanded() {
         // The initial visibility is false, defined in #setup.
         assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
 
-        mOverlayPanelVisibilitySupplier.set(true);
+        mOverlayPanelStateSupplier.set(PanelState.EXPANDED);
         mMediator.setBottomControlsVisible(true);
         assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
         assertFalse(
                 "Android view is not visible during overlay panel.",
+                mModel.get(ANDROID_VIEW_VISIBLE));
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
+    }
+
+    @Test
+    public void testSetVisibility_OverviewPanelPeeked() {
+        // The initial visibility is false, defined in #setup.
+        assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+
+        mOverlayPanelStateSupplier.set(PanelState.PEEKED);
+        mMediator.setBottomControlsVisible(true);
+        assertTrue("Compositor view is not visible.", mModel.get(COMPOSITED_VIEW_VISIBLE));
+        assertTrue(
+                "Android view should be visible during overlay panel peek.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
         assertThat(mBrowserControlsVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
     }

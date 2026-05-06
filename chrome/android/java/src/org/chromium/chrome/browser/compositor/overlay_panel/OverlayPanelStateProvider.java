@@ -7,19 +7,19 @@ package org.chromium.chrome.browser.compositor.overlay_panel;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 
 @NullMarked
 public interface OverlayPanelStateProvider {
     /** An observer to be notified of changes to the overlay panel. */
     interface Observer {
         /**
-         * Called when the {@link OverlayPanel.PanelState} state of the Overlay Panel changes.
+         * Called when the {@link PanelState} state of the Overlay Panel changes.
          *
-         * @param state The {@link OverlayPanel.PanelState} of the overlay panel.
+         * @param state The {@link PanelState} of the overlay panel.
          * @param color The background color of the overlay panel.
          */
-        default void onOverlayPanelStateChanged(
-                @OverlayPanel.PanelState int state, @ColorInt int color) {}
+        default void onOverlayPanelStateChanged(@PanelState int state, @ColorInt int color) {}
     }
 
     /**

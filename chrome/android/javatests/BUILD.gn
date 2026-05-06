@@ -699,7 +699,10 @@ android_library(
     "src/org/chromium/chrome/browser/contextualsearch/MockContextualSearchPolicy.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/overlay_panel:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
@@ -1884,7 +1887,10 @@ android_library(
     "src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelTest.java",
   ]
 
-  deps = [ ":common_unit_test_deps_java" ]
+  deps = [
+    ":common_unit_test_deps_java",
+    "//chrome/browser/ui/android/overlay_panel:java",
+  ]
 }
 
 android_library(

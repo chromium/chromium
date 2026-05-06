@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsViewBinder.ViewHolder;
@@ -112,7 +113,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             @DimenRes int heightResId,
             OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
-            NonNullObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            NonNullObservableSupplier<@PanelState Integer> overlayPanelStateSupplier,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         mRootFrameLayout = root;
@@ -146,7 +147,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         tabObscuringHandler,
                         bottomControlsHeight,
                         root.getTopShadowHeight(),
-                        overlayPanelVisibilitySupplier,
+                        overlayPanelStateSupplier,
                         edgeToEdgeControllerSupplier,
                         readAloudRestoringSupplier);
         resourceManager

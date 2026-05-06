@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -421,9 +420,7 @@ public class ToolbarManager
     private final ScrimManager mScrimManager;
 
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
-    private final OverlayPanelManagerObserver mOverlayPanelManagerObserver;
-    private final SettableNonNullObservableSupplier<Boolean> mOverlayPanelVisibilitySupplier =
-            ObservableSuppliers.createNonNull(false);
+
     private final TabStripTopControlLayer mTabStripTopControlLayer;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final OneshotSupplierImpl<TabStripTransitionDelegate>
@@ -1796,19 +1793,6 @@ public class ToolbarManager
                     }
                 };
 
-        mOverlayPanelManagerObserver =
-                new OverlayPanelManagerObserver() {
-                    @Override
-                    public void onOverlayPanelShown() {
-                        mOverlayPanelVisibilitySupplier.set(true);
-                    }
-
-                    @Override
-                    public void onOverlayPanelHidden() {
-                        mOverlayPanelVisibilitySupplier.set(false);
-                    }
-                };
-
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
 
@@ -2420,7 +2404,7 @@ public class ToolbarManager
                         SupplierUtils.upcast(
                                 mTabGroupUiOneshotSupplier, BottomControlsContentDelegate.class),
                         mTabObscuringHandler,
-                        mOverlayPanelVisibilitySupplier,
+                        mLayoutManager.getOverlayPanelManager().getPanelStateSupplier(),
                         mConstraintsSupplier,
                         /* readAloudRestoringSupplier= */ () -> {
                             final var readAloud = mReadAloudControllerSupplier.get();
@@ -2475,7 +2459,7 @@ public class ToolbarManager
                         R.dimen.bottom_bar_height,
                         bottomBarContainerOneshotSupplier,
                         mTabObscuringHandler,
-                        mOverlayPanelVisibilitySupplier,
+                        mLayoutManager.getOverlayPanelManager().getPanelStateSupplier(),
                         mConstraintsSupplier,
                         /* readAloudRestoringSupplier= */ () -> {
                             final var readAloud = mReadAloudControllerSupplier.get();
@@ -2658,7 +2642,6 @@ public class ToolbarManager
         mToolbar.addOnAttachStateChangeListener(mAttachStateChangeListener);
 
         mLayoutManager = layoutManager;
-        mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
 
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
@@ -2831,7 +2814,6 @@ public class ToolbarManager
         }
 
         if (mLayoutManager != null) {
-            mLayoutManager.getOverlayPanelManager().removeObserver(mOverlayPanelManagerObserver);
             mLayoutManager = null;
         }
 

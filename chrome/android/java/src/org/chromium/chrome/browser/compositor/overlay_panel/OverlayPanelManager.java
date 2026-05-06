@@ -9,10 +9,13 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.lang.annotation.Retention;
@@ -26,15 +29,6 @@ import java.util.Set;
 /** Used to decide which panel should be showing on screen at any moment. */
 @NullMarked
 public class OverlayPanelManager {
-    /** An observer of panel visibility. */
-    public interface OverlayPanelManagerObserver {
-        /** A notification that an {@link OverlayPanel} has been shown. */
-        void onOverlayPanelShown();
-
-        /** A notification that an {@link OverlayPanel} has been hidden. */
-        void onOverlayPanelHidden();
-    }
-
     /**
      * Priority of an OverlayPanel; used for deciding which panel will be shown when there are
      * multiple candidates. Values should be numbered from 0 and can't have gaps.
@@ -53,8 +47,8 @@ public class OverlayPanelManager {
     /** A map of panels that this class is managing. */
     private final Set<OverlayPanel> mPanelSet;
 
-    /** A list of observers for this manager. */
-    private final ObserverList<OverlayPanelManagerObserver> mObservers;
+    /** A supplier for the current state of the active panel. */
+    private final SettableNonNullObservableSupplier<@PanelState Integer> mPanelStateSupplier;
 
     /** The panel that is currently being displayed. */
     private @Nullable OverlayPanel mActivePanel;
@@ -91,7 +85,12 @@ public class OverlayPanelManager {
                             }
                         });
         mPanelSet = new HashSet<>();
-        mObservers = new ObserverList<>();
+        mPanelStateSupplier = ObservableSuppliers.createNonNull(PanelState.CLOSED);
+    }
+
+    private void setActivePanel(@Nullable OverlayPanel panel) {
+        mActivePanel = panel;
+        mPanelStateSupplier.set(panel != null ? panel.getPanelState() : PanelState.CLOSED);
     }
 
     /**
@@ -106,8 +105,8 @@ public class OverlayPanelManager {
 
         if (mActivePanel == null) {
             // If no panel is currently showing, simply show the requesting panel.
-            mActivePanel = panel;
-            peekPanel(mActivePanel, reason);
+            setActivePanel(panel);
+            peekPanel(panel, reason);
 
         } else if (panel.getPriority() > mActivePanel.getPriority()) {
             // If a panel with higher priority than the active one requests to be shown, suppress
@@ -142,7 +141,7 @@ public class OverlayPanelManager {
                 if (mActivePanel.canBeSuppressed()) {
                     mSuppressedPanels.add(mActivePanel);
                 }
-                mActivePanel = mPendingPanel;
+                setActivePanel(mPendingPanel);
                 if (mActivePanel != null) {
                     peekPanel(mActivePanel, mPendingReason);
                 }
@@ -152,9 +151,9 @@ public class OverlayPanelManager {
         } else {
             // Normal close panel flow.
             if (panel == mActivePanel) {
-                mActivePanel = null;
+                setActivePanel(null);
                 if (!mSuppressedPanels.isEmpty()) {
-                    mActivePanel = mSuppressedPanels.poll();
+                    setActivePanel(mSuppressedPanels.poll());
                     if (mActivePanel != null) {
                         peekPanel(mActivePanel, StateChangeReason.PANEL_UNSUPPRESS);
                     }
@@ -163,7 +162,6 @@ public class OverlayPanelManager {
                 mSuppressedPanels.remove(panel);
             }
         }
-        for (OverlayPanelManagerObserver o : mObservers) o.onOverlayPanelHidden();
     }
 
     /**
@@ -176,7 +174,6 @@ public class OverlayPanelManager {
         // TODO(mdjones): peekPanel should not be exposed publicly since the manager
         // controls if a panel should show or not.
         overlayPanel.peekPanel(reason);
-        for (OverlayPanelManagerObserver o : mObservers) o.onOverlayPanelShown();
     }
 
     /**
@@ -203,7 +200,7 @@ public class OverlayPanelManager {
             p.destroy();
         }
         mPanelSet.clear();
-        mActivePanel = null;
+        setActivePanel(null);
         mSuppressedPanels.clear();
 
         // Clear references to held resources.
@@ -247,20 +244,21 @@ public class OverlayPanelManager {
             panel.setContainerView(mContainerViewGroup);
         }
 
+        panel.addObserver(
+                new OverlayPanelStateProvider.Observer() {
+                    @Override
+                    public void onOverlayPanelStateChanged(@PanelState int state, int color) {
+                        if (panel == mActivePanel) {
+                            mPanelStateSupplier.set(state);
+                        }
+                    }
+                });
+
         mPanelSet.add(panel);
     }
 
-    /**
-     * @param observer The observer to add to this manager.
-     */
-    public void addObserver(OverlayPanelManagerObserver observer) {
-        mObservers.addObserver(observer);
-    }
-
-    /**
-     * @param observer The observer to remove from this manager.
-     */
-    public void removeObserver(OverlayPanelManagerObserver observer) {
-        mObservers.removeObserver(observer);
+    /** Returns the supplier for the current state of the active panel. */
+    public NonNullObservableSupplier<@PanelState Integer> getPanelStateSupplier() {
+        return mPanelStateSupplier;
     }
 }

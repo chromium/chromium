@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -83,8 +84,8 @@ class BottomControlsMediator
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
 
-    /** Whether any overlay panel is showing. */
-    private boolean mIsOverlayPanelShowing;
+    /** The state of the overlay panel. */
+    private @PanelState int mOverlayPanelState = PanelState.CLOSED;
 
     /** Whether the swipe layout is currently active. */
     private boolean mIsInSwipeLayout;
@@ -126,7 +127,7 @@ class BottomControlsMediator
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
             int bottomControlsShadowHeight,
-            NonNullObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            NonNullObservableSupplier<@PanelState Integer> overlayPanelStateSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         // Watch for keyboard events so we can hide the bottom toolbar when the keyboard is showing.
@@ -155,10 +156,10 @@ class BottomControlsMediator
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
         mBottomControlsStacker.addLayer(this);
 
-        overlayPanelVisibilitySupplier.addSyncObserverAndCallIfNonNull(
+        overlayPanelStateSupplier.addSyncObserverAndCallIfNonNull(
                 mCallbackController.makeCancelable(
-                        (showing) -> {
-                            mIsOverlayPanelShowing = showing;
+                        (state) -> {
+                            mOverlayPanelState = state;
                             updateAndroidViewVisibility();
                         }));
     }
@@ -287,7 +288,8 @@ class BottomControlsMediator
     private void updateAndroidViewVisibility() {
         final boolean visible =
                 isCompositedViewVisible()
-                        && !mIsOverlayPanelShowing
+                        && (mOverlayPanelState == PanelState.CLOSED
+                                || mOverlayPanelState == PanelState.PEEKED)
                         && !mIsInSwipeLayout
                         && getBrowserControls().getBottomControlOffset() == 0;
         if (visible) {

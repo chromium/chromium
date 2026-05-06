@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -491,8 +491,7 @@ public class OverlayPanelBaseTest {
         mExpandPanel.setIsFullWidthSizePanelForTesting(true);
         when(mBrowserControlsStateProvider.getControlsPosition())
                 .thenReturn(ControlsPosition.BOTTOM);
-        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
-                .thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
+        when(mBottomControlsStacker.getTotalHeight()).thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
         when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN))
                 .thenReturn(CHIN_HEIGHT);
 
@@ -532,8 +531,7 @@ public class OverlayPanelBaseTest {
 
         when(mBrowserControlsStateProvider.getControlsPosition())
                 .thenReturn(ControlsPosition.BOTTOM);
-        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
-                .thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
+        when(mBottomControlsStacker.getTotalHeight()).thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
         when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN))
                 .thenReturn(CHIN_HEIGHT);
 
@@ -542,35 +540,6 @@ public class OverlayPanelBaseTest {
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         Assert.assertEquals(
                 tabHeight - peekHeight - (MOCK_TOOLBAR_HEIGHT * mExpandPanel.mPxToDp),
-                mExpandPanel.getOffsetY(),
-                MathUtils.EPSILON);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"OverlayPanelBase"})
-    @UiThreadTest
-    public void testCalculateOverlayPanelY_readaloud() {
-        final float tabHeight = 1000;
-        mExpandPanel.onLayoutChanged(400, tabHeight, 100);
-
-        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
-        when(mBrowserControlsStateProvider.getControlsPosition())
-                .thenReturn(ControlsPosition.BOTTOM);
-        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.READ_ALOUD_PLAYER))
-                .thenReturn(READALOUD_HEIGHT + MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
-        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_TOOLBAR))
-                .thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
-        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN))
-                .thenReturn(CHIN_HEIGHT);
-        when(mBottomControlsStacker.isLayerVisible(LayerType.READ_ALOUD_PLAYER)).thenReturn(true);
-
-        float bottomControlsHeight = MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT + READALOUD_HEIGHT;
-        float peekHeight = mExpandPanel.getPeekedHeight();
-        mExpandPanel.setPanelHeight(peekHeight);
-
-        Assert.assertEquals(
-                tabHeight - peekHeight - (bottomControlsHeight * mExpandPanel.mPxToDp),
                 mExpandPanel.getOffsetY(),
                 MathUtils.EPSILON);
     }

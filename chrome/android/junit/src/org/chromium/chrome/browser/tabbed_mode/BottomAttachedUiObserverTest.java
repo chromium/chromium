@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateP
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -316,27 +316,27 @@ public class BottomAttachedUiObserverTest {
     @Test
     public void testAdaptsColorToOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
+                PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
+                PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
     }
 
@@ -344,15 +344,15 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth_drawingEdgeToEdge() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
     }
 
@@ -667,7 +667,7 @@ public class BottomAttachedUiObserverTest {
 
         // Show overlay panel.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
 
         // Show bottom sheet.
@@ -700,7 +700,7 @@ public class BottomAttachedUiObserverTest {
 
         // Hide overlay panel.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         // Hide bottom controls.
@@ -721,15 +721,15 @@ public class BottomAttachedUiObserverTest {
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
+                PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
 
         doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
@@ -750,7 +750,7 @@ public class BottomAttachedUiObserverTest {
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
     }
 
@@ -758,29 +758,29 @@ public class BottomAttachedUiObserverTest {
     @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     public void testNavBarColorAnimationsOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
 
         // Nav bar color animations disabled on appearance.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, true);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
+                PanelState.EXPANDED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, true);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
+                PanelState.MAXIMIZED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, true);
 
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+                PanelState.PEEKED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, true);
 
         // Nav bar color animations enabled on disappearance.
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+                PanelState.CLOSED, OVERLAY_PANEL_COLOR);
         mColorChangeObserver.assertState(null, false, false);
     }
 

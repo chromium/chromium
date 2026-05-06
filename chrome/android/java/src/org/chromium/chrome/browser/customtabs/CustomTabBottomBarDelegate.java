@@ -38,11 +38,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -380,12 +380,12 @@ public class CustomTabBottomBarDelegate
     public void addOverlayPanelManagerObserver(LayoutManagerImpl layoutDriver) {
         layoutDriver
                 .getOverlayPanelManager()
-                .addObserver(
-                        new OverlayPanelManagerObserver() {
-                            @Override
-                            public void onOverlayPanelShown() {
-                                CustomTabBottomBarView bottomBarView = mBottomBarView;
-                                if (bottomBarView == null) return;
+                .getPanelStateSupplier()
+                .addSyncObserverAndCallIfNonNull(
+                        state -> {
+                            CustomTabBottomBarView bottomBarView = mBottomBarView;
+                            if (bottomBarView == null) return;
+                            if (state != PanelState.CLOSED) {
                                 bottomBarView
                                         .animate()
                                         .alpha(0)
@@ -394,13 +394,9 @@ public class CustomTabBottomBarDelegate
                                         .setDuration(SLIDE_ANIMATION_DURATION_MS)
                                         .withEndAction(() -> bottomBarView.setVisibility(View.GONE))
                                         .start();
-                            }
-
-                            @Override
-                            public void onOverlayPanelHidden() {
-                                if (mBottomBarView == null) return;
-                                mBottomBarView.setVisibility(View.VISIBLE);
-                                mBottomBarView
+                            } else {
+                                bottomBarView.setVisibility(View.VISIBLE);
+                                bottomBarView
                                         .animate()
                                         .alpha(1)
                                         .setInterpolator(

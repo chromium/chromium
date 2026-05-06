@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -63,27 +64,6 @@ public class OverlayPanel extends OverlayPanelAnimation
                 SceneOverlay {
     /** The delay after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 1000 / 60 * 4;
-
-    /** State of the Overlay Panel. */
-    @IntDef({
-        PanelState.UNDEFINED,
-        PanelState.CLOSED,
-        PanelState.PEEKED,
-        PanelState.EXPANDED,
-        PanelState.MAXIMIZED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PanelState {
-        // Values can't have gaps and should be numerated from 0.
-        // Values CLOSED - MAXIMIZED are sorted and show next states.
-        // TODO(pedrosimonetti): consider removing the UNDEFINED state
-        int UNDEFINED = 0;
-        int CLOSED = 1;
-        int PEEKED = 2;
-        int EXPANDED = 3;
-        int MAXIMIZED = 4;
-        int NUM_ENTRIES = 5;
-    }
 
     /** The reason for a change in the Overlay Panel's state. */
     @IntDef({

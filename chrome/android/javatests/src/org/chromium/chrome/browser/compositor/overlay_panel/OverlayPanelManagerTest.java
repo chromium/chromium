@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -33,8 +34,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelManager.PanelPriority;
+import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -150,6 +151,7 @@ public class OverlayPanelManagerTest {
         @Override
         protected void animatePanelTo(float height, long duration) {
             // Do not create animations for tests.
+            onHeightAnimationFinished();
         }
 
         @Override
@@ -587,18 +589,35 @@ public class OverlayPanelManagerTest {
         final CallbackHelper hiddenHelper = new CallbackHelper();
 
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        panelManager.addObserver(
-                new OverlayPanelManagerObserver() {
-                    @Override
-                    public void onOverlayPanelShown() {
-                        shownHelper.notifyCalled();
-                    }
+        panelManager
+                .getPanelStateSupplier()
+                .addSyncObserverAndCallIfNonNull(
+                        new Callback<@PanelState Integer>() {
+                            private boolean mFirstCall = true;
+                            private @PanelState int mPrevState = PanelState.CLOSED;
 
-                    @Override
-                    public void onOverlayPanelHidden() {
-                        hiddenHelper.notifyCalled();
-                    }
-                });
+                            @Override
+                            public void onResult(Integer state) {
+                                if (mFirstCall && state == PanelState.CLOSED) {
+                                    mFirstCall = false;
+                                    mPrevState = state;
+                                    return;
+                                }
+                                mFirstCall = false;
+                                if (state == PanelState.PEEKED
+                                        || state == PanelState.EXPANDED
+                                        || state == PanelState.MAXIMIZED) {
+                                    shownHelper.notifyCalled();
+                                } else {
+                                    if (mPrevState == PanelState.PEEKED
+                                            || mPrevState == PanelState.EXPANDED
+                                            || mPrevState == PanelState.MAXIMIZED) {
+                                        hiddenHelper.notifyCalled();
+                                    }
+                                }
+                                mPrevState = state;
+                            }
+                        });
 
         OverlayPanel lowPriorityPanel =
                 new MockOverlayPanel(

@@ -570,6 +570,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/native_page:java",
       "//chrome/browser/ui/android/night_mode:java",
       "//chrome/browser/ui/android/omnibox:java",
+      "//chrome/browser/ui/android/overlay_panel:java",
       "//chrome/browser/ui/android/page_info:java",
       "//chrome/browser/ui/android/pdf:java",
       "//chrome/browser/ui/android/pdf:pdf_info_java",
