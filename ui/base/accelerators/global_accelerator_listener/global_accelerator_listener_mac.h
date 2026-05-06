@@ -35,6 +35,9 @@ class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
 
   ~GlobalAcceleratorListenerMac() override;
 
+  // Re-registers all hotkeys to account for layout changes.
+  void ReregisterAllHotKeys();
+
  private:
   using KeyId = int;
   using AcceleratorIdMap = std::map<ui::Accelerator, KeyId>;
@@ -92,6 +95,8 @@ class GlobalAcceleratorListenerMac : public GlobalAcceleratorListener,
 
   // Media keys listener.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
+
+  id layout_change_listener_;
 };
 
 }  // namespace ui

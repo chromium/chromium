@@ -42,6 +42,21 @@ GlobalAcceleratorListenerMac::GlobalAcceleratorListenerMac() {
         this, ui::MediaKeysListener::Scope::kGlobal);
     DCHECK(media_keys_listener_);
   }
+  if (base::FeatureList::IsEnabled(kLayoutAwareGlobalHotkeys)) {
+    layout_change_listener_ = [NSNotificationCenter.defaultCenter
+        addObserverForName:
+            NSTextInputContextKeyboardSelectionDidChangeNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification*) {
+                  ui::GlobalAcceleratorListenerMac* listener =
+                      static_cast<ui::GlobalAcceleratorListenerMac*>(
+                          ui::GlobalAcceleratorListener::GetInstance());
+                  if (listener) {
+                    listener->ReregisterAllHotKeys();
+                  }
+                }];
+  }
 }
 
 GlobalAcceleratorListenerMac::~GlobalAcceleratorListenerMac() {
@@ -54,6 +69,27 @@ GlobalAcceleratorListenerMac::~GlobalAcceleratorListenerMac() {
 
   if (IsAnyHotKeyRegistered()) {
     StopWatchingHotKeys();
+  }
+
+  [NSNotificationCenter.defaultCenter removeObserver:layout_change_listener_];
+}
+
+void GlobalAcceleratorListenerMac::ReregisterAllHotKeys() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  for (const auto& pair : accelerator_ids_) {
+    const ui::Accelerator& accelerator = pair.first;
+    KeyId key_id = pair.second;
+
+    // Unregister old hotkey.
+    auto ref_iter = id_hot_key_refs_.find(key_id);
+    if (ref_iter != id_hot_key_refs_.end()) {
+      UnregisterEventHotKey(ref_iter->second);
+      id_hot_key_refs_.erase(ref_iter);
+    }
+
+    // Re-register with new layout.
+    RegisterHotKey(accelerator, key_id);
   }
 }
 
