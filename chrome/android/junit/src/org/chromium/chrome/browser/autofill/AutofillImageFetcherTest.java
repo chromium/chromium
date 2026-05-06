@@ -75,6 +75,7 @@ public class AutofillImageFetcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ImageFetcher mMockImageFetcher;
+    @Mock private AutofillImageFetcher.Observer mMockObserver;
 
     private AutofillImageFetcher mAutofillImageFetcher;
     private ShadowLooper mShadowLooper;
@@ -706,6 +707,21 @@ public class AutofillImageFetcherTest {
         assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
 
         expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testObserverNotifiedOnImageFetched() {
+        mAutofillImageFetcher.addObserver(mMockObserver);
+
+        mAutofillImageFetcher.prefetchCardArtImages(
+                new GURL[] {TEST_IMAGE_URL}, new int[] {ImageSize.SMALL});
+
+        verify(mMockObserver).onImageFetched(TEST_IMAGE_URL);
+        verify(mMockImageFetcher)
+                .fetchImageWithRequestMetadata(any(Params.class), MockitoHelper.anyCallback());
+
+        mAutofillImageFetcher.removeObserver(mMockObserver);
     }
 
     private @Nullable Bitmap drawableToBitmap(Drawable drawable) {

@@ -158,10 +158,12 @@ class TouchToFillPaymentMethodProperties {
 
     /** Properties for a credit card suggestion entry in the TouchToFill sheet for payments. */
     static class CreditCardSuggestionProperties {
-        static final PropertyModel.ReadableTransformingObjectPropertyKey<
-                        CardImageMetaData, Drawable>
-                CARD_IMAGE =
-                        new PropertyModel.ReadableTransformingObjectPropertyKey<>("card_image");
+        static final PropertyModel.WritableObjectPropertyKey<Drawable> CARD_IMAGE =
+                new PropertyModel.WritableObjectPropertyKey<>("card_image");
+        static final PropertyModel.ReadableObjectPropertyKey<GURL> CARD_ART_URL =
+                new PropertyModel.ReadableObjectPropertyKey<>("card_art_url");
+        static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
+                new PropertyModel.ReadableIntPropertyKey("card_icon_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> MAIN_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("main_text");
         static final PropertyModel.ReadableObjectPropertyKey<String> MAIN_TEXT_CONTENT_DESCRIPTION =
@@ -181,6 +183,9 @@ class TouchToFillPaymentMethodProperties {
                         new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
         static final PropertyKey[] NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS = {
+            CARD_IMAGE,
+            CARD_ART_URL,
+            CARD_ICON_ID,
             MAIN_TEXT,
             MAIN_TEXT_CONTENT_DESCRIPTION,
             MINOR_TEXT,
@@ -214,17 +219,15 @@ class TouchToFillPaymentMethodProperties {
     static class LoyaltyCardProperties {
         static final PropertyModel.ReadableObjectPropertyKey<LoyaltyCard> LOYALTY_CARD =
                 new PropertyModel.ReadableObjectPropertyKey<>("loyalty_card");
-        static final PropertyModel.ReadableTransformingObjectPropertyKey<LoyaltyCard, Drawable>
-                LOYALTY_CARD_ICON =
-                        new PropertyModel.ReadableTransformingObjectPropertyKey<>(
-                                "loyalty_card_icon");
+        static final PropertyModel.WritableObjectPropertyKey<Drawable> LOYALTY_CARD_ICON =
+                new PropertyModel.WritableObjectPropertyKey<>("loyalty_card_icon");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable>
                 ON_LOYALTY_CARD_CLICK_ACTION =
                         new PropertyModel.ReadableObjectPropertyKey<>(
                                 "on_loyalty_card_click_action");
 
         static final PropertyKey[] NON_TRANSFORMING_LOYALTY_CARD_KEYS = {
-            LOYALTY_CARD, ON_LOYALTY_CARD_CLICK_ACTION
+            LOYALTY_CARD, LOYALTY_CARD_ICON, ON_LOYALTY_CARD_CLICK_ACTION
         };
 
         private LoyaltyCardProperties() {}

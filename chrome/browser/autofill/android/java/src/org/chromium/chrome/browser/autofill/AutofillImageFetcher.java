@@ -18,6 +18,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,6 +40,16 @@ import java.util.function.Function;
 /** Fetches, and caches credit card art images. */
 @NullMarked
 public class AutofillImageFetcher {
+    /** Observer interface for image fetching events. */
+    public interface Observer {
+        /**
+         * Called when an image has been successfully fetched and added to the in-memory cache.
+         *
+         * @param url The original URL of the image.
+         */
+        void onImageFetched(GURL url);
+    }
+
     private static final long REFETCH_DELAY_MS = 120000; // 2 mins.
     private static final int MAX_FETCH_ATTEMPTS = 2;
     // Valuable images should be cached in small and large size on Android.
@@ -47,6 +58,7 @@ public class AutofillImageFetcher {
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
     private final ImageFetcher mImageFetcher;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @CalledByNative
     private static AutofillImageFetcher create(SimpleFactoryKeyHandle key) {
@@ -56,6 +68,24 @@ public class AutofillImageFetcher {
 
     AutofillImageFetcher(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
+    }
+
+    /**
+     * Adds an observer to be notified of image fetching events.
+     *
+     * @param observer The observer to add.
+     */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -90,6 +120,7 @@ public class AutofillImageFetcher {
                         bitmapFetchResult ->
                                 treatAndCacheImage(
                                         bitmapFetchResult.imageBitmap,
+                                        url,
                                         resolvedUrl,
                                         treatImageFunction,
                                         /* imageTypeString= */ "CreditCardArt");
@@ -119,6 +150,7 @@ public class AutofillImageFetcher {
                     bitmapFetchResult ->
                             treatAndCacheImage(
                                     bitmapFetchResult.imageBitmap,
+                                    url,
                                     resolvedUrl,
                                     treatImageFunction,
                                     /* imageTypeString= */ "PixAccountImage");
@@ -146,6 +178,7 @@ public class AutofillImageFetcher {
                         bitmapFetchResult ->
                                 treatAndCacheImage(
                                         bitmapFetchResult.imageBitmap,
+                                        url,
                                         resolvedUrl,
                                         imageBitmap -> imageBitmap,
                                         /* imageTypeString= */ "ValuableImage");
@@ -212,6 +245,7 @@ public class AutofillImageFetcher {
      * {@code REFETCH_DELAY_MS} between each attempt.
      *
      * @param bitmap The Bitmap fetched from server.
+     * @param originalUrl The original URL of the image.
      * @param resolvedUrl The key against which the treated Bitmap is cached.
      * @param treatImageFunction Imagetreatment function.
      * @param imageTypeString String representing the type of image, used for logging histograms. It
@@ -219,6 +253,7 @@ public class AutofillImageFetcher {
      */
     private void treatAndCacheImage(
             @Nullable Bitmap bitmap,
+            GURL originalUrl,
             String resolvedUrl,
             Function<Bitmap, Bitmap> treatImageFunction,
             String imageTypeString) {
@@ -231,6 +266,9 @@ public class AutofillImageFetcher {
             RecordHistogram.recordBooleanHistogram(overallSuccessHistogram, /* sample= */ true);
 
             mImagesCache.put(resolvedUrl, treatImageFunction.apply(bitmap));
+            for (Observer observer : mObservers) {
+                observer.onImageFetched(originalUrl);
+            }
             return;
         }
 
@@ -247,6 +285,7 @@ public class AutofillImageFetcher {
                     bitmapFetchResult ->
                             treatAndCacheImage(
                                     bitmapFetchResult.imageBitmap,
+                                    originalUrl,
                                     resolvedUrl,
                                     treatImageFunction,
                                     imageTypeString);

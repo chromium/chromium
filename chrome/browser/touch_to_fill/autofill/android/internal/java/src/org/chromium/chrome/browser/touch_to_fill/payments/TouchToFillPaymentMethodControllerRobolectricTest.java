@@ -85,6 +85,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT_CONTENT_DESCRIPTION;
@@ -116,12 +117,14 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.PROGRESS_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TEXT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TOS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.WALLET_SETTINGS_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
@@ -140,8 +143,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -324,6 +329,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* labelContentDescription= */ "",
                     /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
                     /* customIconUrl= */ new GURL(""),
+                    VISA.getIssuerIconDrawableId(),
+                    /* applyDeactivatedStyle= */ false,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    VISA.getGUID());
+    private static final GURL VISA_ART_URL = new GURL("https://example.com/art.png");
+    private static final AutofillSuggestion VISA_SUGGESTION_WITH_ART =
+            createCreditCardSuggestion(
+                    VISA.getCardNameForAutofillDisplay(),
+                    VISA.getObfuscatedLastFourDigits(),
+                    VISA.getFormattedExpirationDate(ContextUtils.getApplicationContext()),
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.CREDIT_CARD_ENTRY,
+                    /* customIconUrl= */ VISA_ART_URL,
                     VISA.getIssuerIconDrawableId(),
                     /* applyDeactivatedStyle= */ false,
                     /* shouldDisplayTermsAvailable= */ false,
@@ -1985,6 +2004,74 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(bnplSuggestionModel.get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
         assertThat(bnplSuggestionModel.get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
         assertTrue(bnplSuggestionModel.get(IS_ENABLED));
+    }
+
+    @Test
+    public void testOnImageFetchedRefreshesHomeScreen() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION_WITH_ART), new TouchToFillDisplayOptions());
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(sheetItems, CREDIT_CARD).size(), is(1));
+        PropertyModel cardModel =
+                getCardSuggestionModel(sheetItems, VISA_SUGGESTION_WITH_ART).get();
+        Drawable oldIcon = cardModel.get(CARD_IMAGE);
+
+        // Simulate an image being fetched and available in cache.
+        when(mImageFetcher.getImageIfAvailable(any(), any()))
+                .thenReturn(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
+        mCoordinator.getMediatorForTesting().onImageFetched(VISA_ART_URL);
+
+        // Verify that the icon has been updated (new drawable set).
+        Drawable newIcon = cardModel.get(CARD_IMAGE);
+        assertTrue(oldIcon != newIcon);
+
+        // The model itself should be the same (surgical update).
+        assertThat(
+                getCardSuggestionModel(sheetItems, VISA_SUGGESTION_WITH_ART).get(), is(cardModel));
+    }
+
+    @Test
+    public void testOnImageFetchedRefreshesLoyaltyCards() {
+        mCoordinator.showAffiliatedLoyaltyCards(
+                List.of(LOYALTY_CARD_2), List.of(LOYALTY_CARD_2), false);
+        assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        PropertyModel loyaltyCardModel = getModelsOfType(sheetItems, ItemType.LOYALTY_CARD).get(0);
+        Drawable oldIcon = loyaltyCardModel.get(LOYALTY_CARD_ICON);
+
+        // Simulate an image being fetched.
+        mCoordinator.getMediatorForTesting().onImageFetched(LOYALTY_CARD_2.getProgramLogo());
+
+        // Verify that the icon has been updated.
+        Drawable newIcon = loyaltyCardModel.get(LOYALTY_CARD_ICON);
+        assertTrue(oldIcon != newIcon);
+    }
+
+    @Test
+    public void testOnImageFetchedDoesNotRefreshWhenNotOnHomeScreen() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION_WITH_ART), new TouchToFillDisplayOptions());
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(HOME_SCREEN));
+
+        // Switch to BNPL progress screen.
+        mCoordinator.getMediatorForTesting().showProgressScreen();
+        assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(PROGRESS_SCREEN));
+
+        ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        PropertyModel progressIconModel = getModelsOfType(sheetItems, PROGRESS_ICON).get(0);
+
+        // Simulate an image being fetched.
+        mCoordinator.getMediatorForTesting().onImageFetched(VISA_ART_URL);
+
+        // Verify that the sheet items have NOT been updated (still progress screen).
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).get(1).model,
+                is(progressIconModel));
     }
 
     @Test

@@ -31,6 +31,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.APPLY_DEACTIVATED_STYLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_ART_URL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
@@ -171,7 +173,7 @@ import java.util.List;
  * Contains the logic for the TouchToFillPaymentMethod component. It sets the state of the model and
  * reacts to events like clicks.
  */
-class TouchToFillPaymentMethodMediator {
+class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer {
     /**
      * The final outcome that closes the credit card Touch To Fill sheet.
      *
@@ -485,6 +487,7 @@ class TouchToFillPaymentMethodMediator {
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
         mPersonalDataManager = PersonalDataManagerFactory.getForProfile(profile);
+        mImageFetcher.addObserver(this);
         mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
         mPrefChangeRegistrar.addObserver(
                 Pref.AUTOFILL_BNPL_ENABLED, this::updateBnplSuggestionOnPrefChange);
@@ -1054,6 +1057,51 @@ class TouchToFillPaymentMethodMediator {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
+        if (mImageFetcher != null) {
+            mImageFetcher.removeObserver(this);
+            mImageFetcher = null;
+        }
+    }
+
+    @Override
+    public void onImageFetched(GURL url) {
+        if (!mModel.get(VISIBLE)) return;
+
+        int currentScreen = mModel.get(CURRENT_SCREEN);
+        if (currentScreen != HOME_SCREEN && currentScreen != ALL_LOYALTY_CARDS_SCREEN) {
+            return;
+        }
+
+        ModelList items = mModel.get(SHEET_ITEMS);
+        for (ListItem item : items) {
+            if (item.type == CREDIT_CARD) {
+                GURL artUrl = item.model.get(CARD_ART_URL);
+                if (url.equals(artUrl)) {
+                    int iconId = item.model.get(CARD_ICON_ID);
+                    item.model.set(
+                            CARD_IMAGE,
+                            getCardIcon(
+                                    mContext,
+                                    mImageFetcher,
+                                    artUrl,
+                                    iconId,
+                                    ImageSize.LARGE,
+                                    /* showCustomIcon= */ true));
+                }
+            } else if (item.type == ItemType.LOYALTY_CARD) {
+                LoyaltyCard loyaltyCard = item.model.get(LoyaltyCardProperties.LOYALTY_CARD);
+                if (url.equals(loyaltyCard.getProgramLogo())) {
+                    item.model.set(
+                            LOYALTY_CARD_ICON,
+                            getValuableIcon(
+                                    mContext,
+                                    mImageFetcher,
+                                    loyaltyCard.getProgramLogo(),
+                                    ImageSize.LARGE,
+                                    loyaltyCard.getMerchantName()));
+                }
+            }
+        }
     }
 
     /**
@@ -1271,21 +1319,19 @@ class TouchToFillPaymentMethodMediator {
         if (payload != null) {
             labelDescription = payload.getLabelContentDescription();
         }
-        TouchToFillPaymentMethodProperties.CardImageMetaData cardImageMetaData =
-                new TouchToFillPaymentMethodProperties.CardImageMetaData(drawableId, artUrl);
         PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
-                        .withTransformingKey(
+                        .with(
                                 CARD_IMAGE,
-                                (metaData) ->
-                                        getCardIcon(
-                                                mContext,
-                                                mImageFetcher,
-                                                metaData.artUrl,
-                                                metaData.iconId,
-                                                ImageSize.LARGE,
-                                                /* showCustomIcon= */ true),
-                                cardImageMetaData)
+                                getCardIcon(
+                                        mContext,
+                                        mImageFetcher,
+                                        artUrl,
+                                        drawableId,
+                                        ImageSize.LARGE,
+                                        /* showCustomIcon= */ true))
+                        .with(CARD_ART_URL, artUrl)
+                        .with(CARD_ICON_ID, drawableId)
                         .with(MAIN_TEXT, suggestion.getLabel())
                         .with(MAIN_TEXT_CONTENT_DESCRIPTION, labelDescription)
                         .with(MINOR_TEXT, suggestion.getSecondaryLabel())
@@ -1358,16 +1404,14 @@ class TouchToFillPaymentMethodMediator {
         PropertyModel.Builder loyaltyCardModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
                         .with(LoyaltyCardProperties.LOYALTY_CARD, loyaltyCard)
-                        .withTransformingKey(
+                        .with(
                                 LOYALTY_CARD_ICON,
-                                (card) ->
-                                        getValuableIcon(
-                                                mContext,
-                                                mImageFetcher,
-                                                card.getProgramLogo(),
-                                                ImageSize.LARGE,
-                                                card.getMerchantName()),
-                                loyaltyCard)
+                                getValuableIcon(
+                                        mContext,
+                                        mImageFetcher,
+                                        loyaltyCard.getProgramLogo(),
+                                        ImageSize.LARGE,
+                                        loyaltyCard.getMerchantName()))
                         .with(
                                 ON_LOYALTY_CARD_CLICK_ACTION,
                                 () -> this.onSelectedLoyaltyCard(loyaltyCard));
