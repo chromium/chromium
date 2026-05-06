@@ -161,18 +161,18 @@ public class UserEducationHelper {
             assert !contentString.isEmpty();
             assert !accessibilityString.isEmpty();
 
-            // TODO(crbug.com/505624919): Replace with Builder pattern.
             mTextBubble =
-                    new TextBubble(
-                            mActivity,
-                            anchorView,
-                            contentString,
-                            accessibilityString,
-                            !iphCommand.removeArrow,
-                            viewRectProvider != null
-                                    ? viewRectProvider
-                                    : assumeNonNull(rectProvider),
-                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                    new TextBubble.Builder(
+                                    mActivity,
+                                    anchorView,
+                                    viewRectProvider != null
+                                            ? viewRectProvider
+                                            : assumeNonNull(rectProvider),
+                                    contentString,
+                                    accessibilityString,
+                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                            .setShowArrow(!iphCommand.removeArrow)
+                            .build();
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
             mTextBubble.setPreferredHorizontalOrientation(
                     iphCommand.preferredHorizontalOrientation);
