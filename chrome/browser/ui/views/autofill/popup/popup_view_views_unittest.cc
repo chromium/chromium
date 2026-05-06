@@ -2795,7 +2795,7 @@ TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
   CreateAndShowView(/*ids=*/{}, CreateParamsForTestWidget(),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Recall from memory",
-                        .no_results_message = u"No results found"});
+                        .no_results_message = u""});
 
   // The popup should not be hidden due to no suggestions.
   EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kNoSuggestions))
@@ -2819,7 +2819,7 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
                     CreateParamsForTestWidget(),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Recall from memory",
-                        .no_results_message = u"No results found"});
+                        .no_results_message = u""});
 
   // The width should be kAtMemoryPopupWidth.
   EXPECT_EQ(view().GetPreferredSize().width(),

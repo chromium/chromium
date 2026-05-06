@@ -542,8 +542,7 @@ AutofillPopupControllerImpl::GetSearchBarConfig(
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
-          .no_results_message = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_AT_MEMORY_POPUP_NO_RESULTS)};
+          .no_results_message = u""};
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
@@ -1015,11 +1014,12 @@ bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage() const {
     return false;
   }
 
-  // AtMemory always replaces the suggestion list with the search results.
-  // Since these results are already pre-filtered by the search service,
-  // we just need to check if the list is empty.
-  if (suggestions_filling_product_ == FillingProduct::kAtMemory) {
-    return GetSuggestions().empty();
+  // If the search bar is configured to not show a "no results" message,
+  // we should not show it.
+  std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+      GetSearchBarConfig(trigger_source_);
+  if (search_bar_config && search_bar_config->no_results_message.empty()) {
+    return false;
   }
 
   // For other products, the popup is considered effectively empty if all

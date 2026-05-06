@@ -927,14 +927,14 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_ClearingFilterClearsResults) {
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
 }
 
-// Tests that the "no suggestions" message is shown when @memory is triggered
+// Tests that the "no suggestions" message is not shown when @memory is triggered
 // and the query returns no results.
 TEST_F(AutofillPopupControllerImplTest,
-       AtMemory_FilterWithNoResults_NoSuggestionsMessageShown) {
+       AtMemory_FilterWithNoResults_NoSuggestionsMessageNotShown) {
   ShowAtMemoryPopup();
   SimulateAtMemoryQuery(/*query=*/u"abc", /*results=*/{});
-  EXPECT_TRUE(client().suggestion_controller(manager())
-                  .ShouldShowNoSuggestionsMessage());
+  EXPECT_FALSE(client().suggestion_controller(manager())
+                   .ShouldShowNoSuggestionsMessage());
 }
 
 TEST_F(
