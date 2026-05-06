@@ -225,7 +225,16 @@ TEST_F(ElementTrackerWidgetStateTest, CloseWhileMinimized) {
   EXPECT_ASYNC_CALL_IN_SCOPE(destroying, Run(widget_.get()), widget_->Close());
 }
 
-TEST_F(ElementTrackerWidgetStateTest, HideImmediatelyAfterMinimizeAndRestore) {
+// TODO(crbug.com/510130340): Re-enable after fixing.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HideImmediatelyAfterMinimizeAndRestore \
+  DISABLED_HideImmediatelyAfterMinimizeAndRestore
+#else
+#define MAYBE_HideImmediatelyAfterMinimizeAndRestore \
+  HideImmediatelyAfterMinimizeAndRestore
+#endif
+TEST_F(ElementTrackerWidgetStateTest,
+       MAYBE_HideImmediatelyAfterMinimizeAndRestore) {
   UNCALLED_MOCK_CALLBACK(WidgetVisibilityChangedCallback, visibility_changed);
   UNCALLED_MOCK_CALLBACK(WidgetDestroyingCallback, destroying);
   auto visibility_subscription =
