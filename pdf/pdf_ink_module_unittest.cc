@@ -224,18 +224,6 @@ MATCHER_P2(WebKeyboardEventEq, key, modifiers, "") {
   return true;
 }
 
-MATCHER_P5(InkTextInfoEq,
-           font_id,
-           glyphs,
-           glyph_positions,
-           location,
-           is_horizontal,
-           "matches InkTextInfo") {
-  return arg.font_id == font_id && arg.glyphs == glyphs &&
-         arg.glyph_positions == glyph_positions && arg.location == location &&
-         arg.is_horizontal == is_horizontal;
-}
-
 base::DictValue CreateGetAnnotationBrushMessage(const std::string& brush_type) {
   auto message = base::DictValue()
                      .Set("type", "getAnnotationBrush")

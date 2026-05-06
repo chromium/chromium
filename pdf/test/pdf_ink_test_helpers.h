@@ -100,6 +100,18 @@ MATCHER_P8(InkTextBoxAttributesEq,
          arg.is_bold == is_bold && arg.is_italic == is_italic;
 }
 
+MATCHER_P5(InkTextInfoEq,
+           font_id,
+           glyphs,
+           glyph_positions,
+           location,
+           is_horizontal,
+           "matches InkTextInfo") {
+  return arg.font_id == font_id && arg.glyphs == glyphs &&
+         arg.glyph_positions == glyph_positions && arg.location == location &&
+         arg.is_horizontal == is_horizontal;
+}
+
 // Generate the path for test files specific to Ink.
 base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
 

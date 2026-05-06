@@ -53,9 +53,11 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontTypes.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/core/SkTypes.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -3044,14 +3046,29 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
     return font_id;
   }
 
-  static std::vector<uint32_t> GetGlyphsForText(std::string_view text) {
+  struct GlyphsAndPositions {
+    std::vector<uint32_t> glyphs;
+    std::vector<float> glyph_positions;
+  };
+
+  static GlyphsAndPositions GetGlyphsForText(std::string_view text,
+                                             float font_size) {
     CHECK(base::IsStringASCII(text));
+    sk_sp<SkTypeface> default_typeface = skia::DefaultTypeface();
     std::vector<SkGlyphID> sk_glyphs(text.size());
-    size_t glyph_count = skia::DefaultTypeface()->textToGlyphs(
+    size_t glyph_count = default_typeface->textToGlyphs(
         text.data(), text.size(), SkTextEncoding::kUTF8,
         SkSpan<SkGlyphID>(sk_glyphs));
     CHECK_EQ(glyph_count, sk_glyphs.size());  // Since `text` is ASCII.
-    return std::vector<uint32_t>(sk_glyphs.begin(), sk_glyphs.end());
+
+    SkFont default_font(default_typeface, font_size);
+    std::vector<SkScalar> sk_xpos(sk_glyphs.size());
+    default_font.getXPos(sk_glyphs, SkSpan<SkScalar>(sk_xpos));
+
+    return GlyphsAndPositions{
+        .glyphs = std::vector<uint32_t>(sk_glyphs.begin(), sk_glyphs.end()),
+        .glyph_positions = std::vector<float>(sk_xpos.begin(), sk_xpos.end()),
+    };
   }
 
   static InkTextBoxAttributes SampleInkTextBoxAttributes() {
@@ -3081,14 +3098,15 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
 
   FontId font_id = AddDefaultFont(engine.get());
   constexpr std::string_view kTextToDraw = "Hello!";
-  std::vector<uint32_t> glyphs = GetGlyphsForText(kTextToDraw);
-  ASSERT_FALSE(glyphs.empty());
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
 
   // Draw some text.
   engine->DrawText(
       kPageIndex, InkTextId(0),
-      {InkTextInfo(font_id, glyphs,
-                   /*glyph_positions=*/std::vector<float>(glyphs.size()),
+      {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
                    /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
                    /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
@@ -3114,16 +3132,17 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
 
   FontId font_id = AddDefaultFont(engine.get());
   constexpr std::string_view kTextToDraw = "orange";
-  std::vector<uint32_t> glyphs = GetGlyphsForText(kTextToDraw);
-  ASSERT_FALSE(glyphs.empty());
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
 
   // Draw some orange text.
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
   attribute.color = SkColorSetRGB(0xFF, 0x63, 0x0C);
   engine->DrawText(
       kPageIndex, InkTextId(0),
-      {InkTextInfo(font_id, glyphs,
-                   /*glyph_positions=*/std::vector<float>(glyphs.size()),
+      {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
                    /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
                    /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0, attribute);
@@ -3148,19 +3167,22 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   CheckPdfRenderingIsBlank200x200(page.GetPage());
 
   FontId font_id = AddDefaultFont(engine.get());
-  std::vector<uint32_t> glyphs1 = GetGlyphsForText("Hello");
-  std::vector<uint32_t> glyphs2 = GetGlyphsForText("!");
-  ASSERT_FALSE(glyphs1.empty());
-  ASSERT_FALSE(glyphs2.empty());
+  GlyphsAndPositions text_data1 =
+      GetGlyphsForText("Hello", /*font_size=*/10.0f);
+  GlyphsAndPositions text_data2 = GetGlyphsForText("!", /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data1.glyphs.empty());
+  ASSERT_FALSE(text_data1.glyph_positions.empty());
+  ASSERT_FALSE(text_data2.glyphs.empty());
+  ASSERT_FALSE(text_data2.glyph_positions.empty());
 
   // Draw some text with two runs to force multiple text objects.
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
   attribute.is_bold = true;
   engine->DrawText(
       kPageIndex, InkTextId(1),
-      {InkTextInfo(font_id, glyphs1, std::vector<float>(glyphs1.size()),
+      {InkTextInfo(font_id, text_data1.glyphs, text_data1.glyph_positions,
                    gfx::RectF(0.0f, 0.0f, 80.0f, 20.0f), true),
-       InkTextInfo(font_id, glyphs2, std::vector<float>(glyphs2.size()),
+       InkTextInfo(font_id, text_data2.glyphs, text_data2.glyph_positions,
                    gfx::RectF(80.0f, 0.0f, 20.0f, 20.0f), true)},
       /*pdf_zoom=*/1.0, attribute);
 

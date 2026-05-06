@@ -5151,6 +5151,20 @@ void PDFiumEngine::DrawText(int page_index,
                                    /*A=*/255));
     CHECK(FPDFText_SetCharcodes(text_object.get(), item.glyphs.data(),
                                 item.glyphs.size()));
+
+    if (item.glyph_positions.size() > 1) {
+      std::vector<float> positions;
+      base::span<const float> unscaled_positions =
+          base::span(item.glyph_positions).subspan<1u>();
+      positions.reserve(unscaled_positions.size());
+      std::ranges::transform(unscaled_positions, std::back_inserter(positions),
+                             [pdf_zoom](float pos) {
+                               return CSSFontSizeToPdfFontSize(pos / pdf_zoom);
+                             });
+      CHECK(FPDFText_SetPositions(text_object.get(), positions.data(),
+                                  positions.size()));
+    }
+
     FS_MATRIX matrix{1, 0, 0, 1, run_rect.x(), run_rect.y()};
     CHECK(FPDFPageObj_TransformF(text_object.get(), &matrix));
 
