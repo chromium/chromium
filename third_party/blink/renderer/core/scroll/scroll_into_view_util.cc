@@ -597,11 +597,18 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     behavior = mojom::blink::ScrollBehavior::kInstant;
   }
 
-  auto align_x = ResolveToPhysicalAlignment(options.inlinePosition().AsEnum(),
-                                            options.block().AsEnum(),
+  V8ScrollLogicalPosition::Enum block_align =
+      options.block().AsEnum() == V8ScrollLogicalPosition::Enum::kAuto
+          ? V8ScrollLogicalPosition::Enum::kStart
+          : options.block().AsEnum();
+  V8ScrollLogicalPosition::Enum inline_align =
+      options.inlinePosition().AsEnum() == V8ScrollLogicalPosition::Enum::kAuto
+          ? V8ScrollLogicalPosition::Enum::kNearest
+          : options.inlinePosition().AsEnum();
+
+  auto align_x = ResolveToPhysicalAlignment(inline_align, block_align,
                                             kHorizontalScroll, computed_style);
-  auto align_y = ResolveToPhysicalAlignment(options.inlinePosition().AsEnum(),
-                                            options.block().AsEnum(),
+  auto align_y = ResolveToPhysicalAlignment(inline_align, block_align,
                                             kVerticalScroll, computed_style);
 
   mojom::blink::ScrollIntoViewParamsPtr params =

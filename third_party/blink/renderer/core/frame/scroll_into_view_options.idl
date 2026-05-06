@@ -1,8 +1,8 @@
-enum ScrollLogicalPosition { "start", "center", "end", "nearest" };
+enum ScrollLogicalPosition { "start", "center", "end", "nearest", "auto" };
 enum ScrollContainer { "all", "nearest" };
 
 dictionary ScrollIntoViewOptions : ScrollOptions {
-    ScrollLogicalPosition block = "start";
-    [ImplementedAs=inlinePosition] ScrollLogicalPosition inline = "nearest";
+    ScrollLogicalPosition block = "auto";
+    [ImplementedAs=inlinePosition] ScrollLogicalPosition inline = "auto";
     [RuntimeEnabled=ScrollIntoViewNearest] ScrollContainer container = "all";
 };
