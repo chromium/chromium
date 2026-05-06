@@ -3349,7 +3349,7 @@
     ],
     // This flag is used by web developers to test WebAssembly's
     // shared-everything-threads features.
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-experimental-webassembly-stack-switching",
