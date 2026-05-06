@@ -97,7 +97,8 @@ MultiContentsView::MultiContentsView(
       AddChildView(std::make_unique<MultiContentsDropTargetView>());
   drop_target_controller_ =
       std::make_unique<MultiContentsViewDropTargetController>(
-          *drop_target_view_, *delegate_, g_browser_process->local_state());
+          *drop_target_view_, *delegate_, g_browser_process->local_state(),
+          browser_view_->browser()->tab_strip_model());
 
   contents_separators_.top_separator =
       AddChildView(ContentsSeparator::CreateLayerBasedContentsSeparator());

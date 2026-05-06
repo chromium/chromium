@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/to_address.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
@@ -66,7 +67,8 @@ int GetValueScaledToWidth(int current_width, int min_value, int max_value) {
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
     MultiContentsDropTargetView& drop_target_view,
     DropDelegate& drop_delegate,
-    PrefService* prefs)
+    PrefService* prefs,
+    TabStripModel* tab_strip_model)
     : drop_target_view_(drop_target_view),
       drop_target_parent_view_(CHECK_DEREF(drop_target_view.parent())),
       drop_delegate_(drop_delegate),
@@ -86,6 +88,10 @@ MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
                               OnDragAndDropNudgeUsedCountChange,
                           base::Unretained(this)));
   OnDragAndDropNudgeUsedCountChange();
+
+  if (tab_strip_model) {
+    tab_strip_model_observer_.Observe(tab_strip_model);
+  }
 }
 
 MultiContentsViewDropTargetController::
@@ -209,6 +215,16 @@ void MultiContentsViewDropTargetController::OnDragDone() {
 int MultiContentsViewDropTargetController::OnDragUpdated(
     const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_LINK;
+}
+
+void MultiContentsViewDropTargetController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed()) {
+    ResetDropTargetTimers();
+    HideDropTarget();
+  }
 }
 
 views::View::DropCallback

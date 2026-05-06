@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
@@ -113,7 +114,7 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
     prefs_->registry()->RegisterIntegerPref(
         prefs::kSplitViewDragAndDropNudgeUsedCount, 0);
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        *drop_target_view_, drop_delegate_, prefs());
+        *drop_target_view_, drop_delegate_, prefs(), nullptr);
     multi_contents_view_->SetSize(kMultiContentsViewSize);
 
     session_data_.tab_drag_data_ = {
@@ -243,6 +244,29 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
+// Tests that the drop target is hidden when the active tab changes.
+TEST_F(MultiContentsViewDropTargetControllerTest,
+       HidesTargetWhenActiveTabChanges) {
+  // Show the drop target first.
+  DragURLTo(kDragPointForStartDropTargetShow);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
+  EXPECT_TRUE(drop_target_view().GetVisible());
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, nullptr);
+
+  TabStripSelectionChange selection;
+  selection.old_contents = reinterpret_cast<content::WebContents*>(1);
+  selection.new_contents = reinterpret_cast<content::WebContents*>(2);
+
+  controller().OnTabStripModelChanged(&tab_strip_model, TabStripModelChange(),
+                                      selection);
+  FastForward(kHideDropTargetAnimation);
+
+  // The drop target should be hidden.
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
 
 // Tests that the drop target is hidden when dragging more than one tab.
 TEST_F(MultiContentsViewDropTargetControllerTest,

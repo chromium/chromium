@@ -10,6 +10,8 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -21,6 +23,7 @@ struct DropData;
 }  // namespace content
 
 class PrefService;
+class TabStripModel;
 
 // `MultiContentsViewDropTargetController` is responsible for handling
 // the drag-entrypoint of a single `MultiContentsView`. This includes dragging
@@ -29,7 +32,8 @@ class PrefService;
 // `MultiContentesView`.
 class MultiContentsViewDropTargetController final
     : public TabDragTarget,
-      public MultiContentsDropTargetView::DragDelegate {
+      public MultiContentsDropTargetView::DragDelegate,
+      public TabStripModelObserver {
  public:
   static constexpr base::TimeDelta kShowDropTargetForLinkDelay =
       base::Milliseconds(500);
@@ -56,7 +60,8 @@ class MultiContentsViewDropTargetController final
   MultiContentsViewDropTargetController(
       MultiContentsDropTargetView& drop_target_view,
       DropDelegate& drop_delegate,
-      PrefService* prefs);
+      PrefService* prefs,
+      TabStripModel* tab_strip_model);
   ~MultiContentsViewDropTargetController() override;
   MultiContentsViewDropTargetController(
       const MultiContentsViewDropTargetController&) = delete;
@@ -92,6 +97,12 @@ class MultiContentsViewDropTargetController final
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   bool IsDropTimerRunningForTesting();
 
@@ -184,6 +195,9 @@ class MultiContentsViewDropTargetController final
 
   // The last point where the drag was updated while in the drop area.
   gfx::Point drag_point_at_timer_start_;
+
+  base::ScopedObservation<TabStripModel, MultiContentsViewDropTargetController>
+      tab_strip_model_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_

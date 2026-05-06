@@ -53,8 +53,8 @@ class MultiContentsViewDropTargetControllerBrowserTest
     SplitViewBrowserTestMixin::SetUpOnMainThread();
     delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
-        *drop_target_view(), *delegate_.get(),
-        g_browser_process->local_state());
+        *drop_target_view(), *delegate_.get(), g_browser_process->local_state(),
+        browser()->tab_strip_model());
   }
 
   void TearDownOnMainThread() override {
