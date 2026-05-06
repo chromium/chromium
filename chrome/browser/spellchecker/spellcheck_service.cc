@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -542,13 +543,10 @@ void SpellcheckService::OnCustomDictionaryChanged(
     const SpellcheckCustomDictionary::Change& change) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const std::vector<std::string> additions(change.to_add().begin(),
-                                           change.to_add().end());
-  const std::vector<std::string> deletions(change.to_remove().begin(),
-                                           change.to_remove().end());
-  for (content::RenderProcessHost::iterator it(
-           content::RenderProcessHost::AllHostsIterator());
-       !it.IsAtEnd(); it.Advance()) {
+  const auto additions = base::ToVector(change.to_add());
+  const auto deletions = base::ToVector(change.to_remove());
+  for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
+       it.Advance()) {
     content::RenderProcessHost* process = it.GetCurrentValue();
     if (!process->IsInitializedAndNotDead())
       continue;
@@ -818,10 +816,9 @@ SpellcheckService::GetSpellCheckerForProcess(content::RenderProcessHost* host) {
 
 void SpellcheckService::InitForAllRenderers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (content::RenderProcessHost::iterator i(
-           content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance()) {
-    content::RenderProcessHost* process = i.GetCurrentValue();
+  for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
+       it.Advance()) {
+    content::RenderProcessHost* process = it.GetCurrentValue();
     if (process && process->GetProcess().Handle())
       InitForRenderer(process);
   }
