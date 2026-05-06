@@ -1165,7 +1165,10 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
                         style.OutlineRectsShouldIncludeBlockInkOverflow(),
                         collector, &info);
     PhysicalRect rect = collector.Rect();
-    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
+    if (!style.HasBorderShape() || style.OutlineStyleIsAuto()) {
+      rect.Inflate(
+          LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
+    }
     ink_overflow.Unite(rect);
   }
 

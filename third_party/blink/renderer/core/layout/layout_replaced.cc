@@ -266,35 +266,7 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
     bool outline_affected = rect.size != size;
     SetOutlineMayBeAffectedByDescendants(outline_affected);
 
-    // For border-shape, compute the outline bounds from the offset path.
-    if (style.HasBorderShape()) {
-      const PhysicalRect outer_reference_rect =
-          border_shape_rects ? border_shape_rects->outer : border_rect;
-      // When border-shape uses a single shape, the border is stroked centered
-      // on the path, so the outer edge is at border_width/2 from the path.
-      float border_stroke_offset = 0;
-      const StyleBorderShape* border_shape = style.BorderShape();
-      if (border_shape && !border_shape->HasSeparateInnerShape()) {
-        DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
-        border_stroke_offset = derived_stroke.thickness / 2.0f;
-      }
-      const float outline_offset = border_stroke_offset +
-                                   static_cast<float>(info.offset) +
-                                   static_cast<float>(info.width);
-      Path outline_path = BorderShapePainter::OuterPathWithOffset(
-          style, outer_reference_rect, outline_offset);
-      gfx::RectF outline_bounds = outline_path.BoundingRect();
-      const float top_outset =
-          std::max(0.0f, border_rect.Y() - outline_bounds.y());
-      const float left_outset =
-          std::max(0.0f, border_rect.X() - outline_bounds.x());
-      const float right_outset =
-          std::max(0.0f, outline_bounds.right() - border_rect.Right());
-      const float bottom_outset =
-          std::max(0.0f, outline_bounds.bottom() - border_rect.Bottom());
-      outsets.Unite(PhysicalBoxStrut::Enclosing(gfx::OutsetsF::TLBR(
-          top_outset, left_outset, bottom_outset, right_outset)));
-    } else {
+    if (!style.HasBorderShape() || style.OutlineStyleIsAuto()) {
       rect.Inflate(
           LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
       outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - size.width,

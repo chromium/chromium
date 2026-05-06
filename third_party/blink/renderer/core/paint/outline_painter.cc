@@ -971,6 +971,22 @@ void OutlinePainter::PaintOutlineRects(
 
   gfx::Rect visual_rect = *united_outline_rect;
   visual_rect.Outset(OutlineOutsetExtent(style, info));
+
+  if (style.HasBorderShape() && layout_object && !style.OutlineStyleIsAuto()) {
+    PhysicalRect border_rect = outline_rects[0];
+    std::optional<BorderShapeReferenceRects> shape_ref_rects =
+        ComputeBorderShapeReferenceRects(border_rect, style, *layout_object);
+    PhysicalRect outer_reference_rect =
+        shape_ref_rects ? shape_ref_rects->outer : border_rect;
+    PhysicalRect inner_reference_rect =
+        shape_ref_rects ? shape_ref_rects->inner : border_rect;
+
+    PhysicalRect border_shape_visual_rect = border_rect;
+    border_shape_visual_rect.Expand(BorderShapePainter::VisualOutsets(
+        style, border_rect, outer_reference_rect, inner_reference_rect));
+    visual_rect.Union(ToPixelSnappedRect(border_shape_visual_rect));
+  }
+
   DrawingRecorder recorder(paint_info.context, client, paint_info.phase,
                            visual_rect);
 

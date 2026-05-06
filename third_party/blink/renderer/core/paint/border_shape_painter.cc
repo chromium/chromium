@@ -366,6 +366,22 @@ PhysicalBoxStrut BorderShapePainter::VisualOutsets(
     }
   }
 
+  // Outline visual bounds.
+  if (style.HasOutline() && !style.OutlineStyleIsAuto() &&
+      style.OutlineWidth() > 0) {
+    const float outline_extent = static_cast<float>(style.OutlineOffset()) +
+                                 static_cast<float>(style.OutlineWidth());
+    const Path outline_path =
+        OuterPathWithOffset(style, outer_reference_rect, outline_extent);
+    const gfx::RectF outline_visual_rect = outline_path.BoundingRect();
+
+    outsets.Unite(PhysicalBoxStrut::Enclosing(gfx::OutsetsF::TLBR(
+        std::max(0.0f, border_gfx.y() - outline_visual_rect.y()),
+        std::max(0.0f, border_gfx.x() - outline_visual_rect.x()),
+        std::max(0.0f, outline_visual_rect.bottom() - border_gfx.bottom()),
+        std::max(0.0f, outline_visual_rect.right() - border_gfx.right()))));
+  }
+
   return outsets;
 }
 
