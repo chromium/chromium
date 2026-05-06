@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -36,7 +37,7 @@ class ScrollPromiseResolver : public GarbageCollected<ScrollPromiseResolver> {
     }
 
     void MarkInterrupted() {
-      scroll_promise_resolver_->SetScrollIsInterrupted();
+      scroll_promise_resolver_->scroll_is_interrupted_ = true;
     }
 
    private:
@@ -91,14 +92,33 @@ class ScrollPromiseResolver : public GarbageCollected<ScrollPromiseResolver> {
   void ResolvePromiseIfIdle() {
     CHECK(script_promise_is_created_);
     CHECK(resolver_);
-    if (num_active_scrolls_ == 0) {
-      auto* result = ScrollResult::Create();
-      result->setInterrupted(scroll_is_interrupted_);
-      resolver_->Resolve(result);
-    }
-  }
 
-  void SetScrollIsInterrupted() { scroll_is_interrupted_ = true; }
+    if (num_active_scrolls_ > 0) {
+      // Not idle yet, so defer resolving the promise.
+      return;
+    }
+
+    auto* execution_context = resolver_->GetExecutionContext();
+    if (!execution_context) {
+      // When the execution context is gone, not resolving the promise is fine
+      // because JS can't be waiting on it. In fact we can't even resolve it,
+      // see https://crbug.com/504073879.
+      return;
+    }
+
+    execution_context->GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(
+            FROM_HERE,
+            blink::BindOnce(
+                [](ScriptPromiseResolver<ScrollResult>* resolver,
+                   bool scroll_is_interrupted) {
+                  auto* result = ScrollResult::Create();
+                  result->setInterrupted(scroll_is_interrupted);
+                  resolver->Resolve(result);
+                },
+                Persistent<ScriptPromiseResolver<ScrollResult>>(resolver_),
+                scroll_is_interrupted_));
+  }
 
   Member<ScriptPromiseResolver<ScrollResult>> resolver_;
   wtf_size_t num_active_scrolls_ = 0;

@@ -3,23 +3,43 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <style>
+  iframe {
+    height: 120px;
+  }
+
   .filler { height: 6000px }
 
   #scroller {
     overflow: scroll;
-    width: 100px;
     height: 100px;
   }
 </style>
+<iframe></iframe>
 <div id="scroller">
   <div class="filler"></div>
 </div>
 <script>
   "use strict";
 
-  promise_test(async () => {
-    const scroller = document.getElementById("scroller");
+  const scroller = document.getElementById("scroller");
 
+  async function confirmPromiseSettles(scroll_promise) {
+    return new Promise(resolve => {
+      async function waitForFrames(num) {
+        if (num <= 0) {
+          assert_unreached("Pending scroll promise");
+          resolve();
+          return;
+        }
+        requestAnimationFrame(() => waitForFrames(num-1));
+      }
+      waitForFrames(10);
+      scroll_promise.then(resolve);
+    });
+  }
+
+  promise_test(async () => {
+    scroller.scrollTop = 0;
     const offset = 5000;
 
     let promise = scroller.scrollBy({ top: offset, behavior: "smooth" });
@@ -34,4 +54,30 @@
     assert_equals(scroller.scrollTop, offset,
           "Smooth scroll ends through await");
   }, "Scroll promise handling after garbage collection");
+
+  promise_test(async () => {
+    scroller.scrollTop = 0;
+
+    let scroll_promise = scroller.scrollBy({ top: 1000, behavior: "smooth" });
+    scroller.remove();
+    window.gc();
+
+    await confirmPromiseSettles(scroll_promise);
+  }, "Scroll promise handling after scroller removal and garbage collection");
+
+  promise_test(async () => {
+    const iframe = document.getElementsByTagName("iframe")[0];
+
+    iframe.contentDocument.body.appendChild(scroller);
+    scroller.scrollTop = 0;
+    scroller.style.setProperty("overflow", "scroll");
+    scroller.style.setProperty("height", "100px");
+    scroller.firstElementChild.style.setProperty("height", "6000px");
+
+    let scroll_promise = scroller.scrollBy({ top: 1000, behavior: "smooth" });
+    iframe.remove();
+    window.gc();
+
+    await confirmPromiseSettles(scroll_promise);
+  }, "Scroll promise handling after iframe removal and garbage collection");
 </script>

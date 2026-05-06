@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -24,12 +25,16 @@ class ScrollableArea;
 // ScrollAnimatorMac.
 
 class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
+  USING_PRE_FINALIZER(ProgrammaticScrollAnimator, Dispose);
+
  public:
   explicit ProgrammaticScrollAnimator(ScrollableArea*);
   ProgrammaticScrollAnimator(const ProgrammaticScrollAnimator&) = delete;
   ProgrammaticScrollAnimator& operator=(const ProgrammaticScrollAnimator&) =
       delete;
   ~ProgrammaticScrollAnimator() override;
+
+  void Dispose();
 
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
                                       cc::ScrollSourceType);
