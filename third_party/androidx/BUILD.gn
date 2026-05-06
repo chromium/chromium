@@ -1205,6 +1205,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_autofill_autofill_java",
       ":androidx_core_core_java",
       ":androidx_customview_customview_java",
       ":androidx_exifinterface_exifinterface_java",
