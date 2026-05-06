@@ -206,6 +206,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//ui/android",
