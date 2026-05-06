@@ -50,6 +50,8 @@ AiOverlayDialogController::AiOverlayDialogController(
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
       host_content_settings_map_(
           HostContentSettingsMapFactory::GetForProfile(browser->GetProfile())) {
+  // TODO(crbug.com/502801064): If this is to ever be productionized this isn't
+  // the right way to get microphone permission.
   auto url = GURL(chrome::kChromeUIAiOverlayDialogUntrustedURL);
   host_content_settings_map_->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW);
