@@ -78,34 +78,6 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
-    <h2>Guest URL Presets</h2>
-    ${this.data_?.config ? html`
-      <div class="presets-container">
-        <label for="autopushInput">Autopush</label>
-        <input
-            id="autopushInput" .value="${this.data_.config.autopushGuestUrl}"
-            @change="${this.onAutopushInputChange}">
-        </input>
-        <label for="stagingInput">Staging</label>
-        <input
-            id="stagingInput" .value="${this.data_.config.stagingGuestUrl}"
-            @change="${this.onStagingInputChange}">
-        </input>
-        <label for="preprodInput">Preprod</label>
-        <input
-            id="preprodInput" .value="${this.data_.config.preprodGuestUrl}"
-            @change="${this.onPreprodInputChange}">
-        </input>
-        <label for="prodInput">Prod</label>
-        <input id="prodInput" .value="${this.data_.config.prodGuestUrl}"
-            @change="${this.onProdInputChange}">
-        </input>
-        <div id="inputErrorMsg" class="hiddenElement">
-            Invalid URL submitted: presets not updated
-        </div>
-        <cr-button @click="${this.onSavePresetsClick_}">Save</cr-button>
-      </div>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
       </div>
 
       <!-- ================= DEBUG CONTROLS TAB ================= -->
@@ -223,10 +195,36 @@ export function getHtml(this: GlicInternalsAppElement) {
             </div>
           ` : html``}
         </div>
-      </div>
-
-      <h2>Web Continuity URL Preset</h2>
-      ${this.data_?.config ? html`
+        <h2>Guest URL Presets</h2>
+        ${this.data_?.config ? html`
+          <div class="presets-container">
+            <label for="autopushInput">Autopush</label>
+            <input id="autopushInput"
+                .value="${this.data_.config.autopushGuestUrl}"
+                @change="${this.onAutopushInputChange}">
+            </input>
+            <label for="stagingInput">Staging</label>
+            <input
+                id="stagingInput" .value="${this.data_.config.stagingGuestUrl}"
+                @change="${this.onStagingInputChange}">
+            </input>
+            <label for="preprodInput">Preprod</label>
+            <input
+                id="preprodInput" .value="${this.data_.config.preprodGuestUrl}"
+                @change="${this.onPreprodInputChange}">
+            </input>
+            <label for="prodInput">Prod</label>
+            <input id="prodInput" .value="${this.data_.config.prodGuestUrl}"
+                @change="${this.onProdInputChange}">
+            </input>
+            <div id="inputErrorMsg" class="hiddenElement">
+                Invalid URL submitted: presets not updated
+            </div>
+            <cr-button @click="${this.onSavePresetsClick_}">Save</cr-button>
+          </div>` :
+          html`<h3 id="loadingMsg">Loading...</h3>`}
+        <h2>Web Continuity URL Preset</h2>
+        ${this.data_?.config ? html`
           <div class="web-continuity-container">
             <label for="webContinuityInput">Web Continuity</label>
             <input id="webContinuityInput"
