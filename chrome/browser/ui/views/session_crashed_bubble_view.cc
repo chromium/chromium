@@ -123,8 +123,9 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
     if (dialog_model()
             ->GetCheckboxByUniqueId(kUmaConsentCheckboxId)
             ->is_checked()) {
-      ChangeMetricsReportingState(
-          true, ChangeMetricsReportingStateCalledFrom::kSessionCrashedDialog);
+      metrics::ChangeMetricsReportingState(
+          true, metrics::ChangeMetricsReportingStateCalledFrom::
+                    kSessionCrashedDialog);
     }
   }
 
@@ -203,7 +204,7 @@ void SessionCrashedBubbleView::Show(
   bool offer_uma_optin = false;
 
   if (DoesSupportConsentCheck() && !uma_opted_in_already) {
-    offer_uma_optin = !IsMetricsReportingPolicyManaged();
+    offer_uma_optin = !metrics::IsMetricsReportingPolicyManaged();
   }
 
   BrowserWindowInterface* browser = browser_observer->browser();

@@ -32,6 +32,7 @@
 #include "components/policy/core/common/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace metrics {
 namespace {
 
 enum MetricsReportingChangeHistogramValue {
@@ -135,13 +136,13 @@ void ChangeMetricsReportingStateWithReply(
 }
 
 void ChangeMetricsReportingLevel(
-    metrics::MetricsReportingLevel level,
+    MetricsReportingLevel level,
     ChangeMetricsReportingLevelCalledFrom called_from) {
   // TODO(b/483043192): Implement this.
 }
 
 void ChangeMetricsReportingLevelWithReply(
-    metrics::MetricsReportingLevel level,
+    MetricsReportingLevel level,
     OnMetricsReportingLevelCallbackType callback_fn,
     ChangeMetricsReportingLevelCalledFrom called_from) {
   // TODO(b/483043192): Implement this.
@@ -203,9 +204,9 @@ void UpdateMetricsPrefsOnPermissionChange(
   // prevent experiments that have been randomized based on the low-entropy
   // source from having their state re-rolled on a subsequent session.
   if (called_from != ChangeMetricsReportingStateCalledFrom::kUiFirstRun) {
-    metrics::EntropyState::ClearPrefs(local_state);
+    EntropyState::ClearPrefs(local_state);
   }
-  metrics::ClonedInstallDetector::ClearClonedInstallInfo(local_state);
+  ClonedInstallDetector::ClearClonedInstallInfo(local_state);
   local_state->ClearPref(metrics::prefs::kMetricsReportingEnabledTimestamp);
   crash_keys::ClearMetricsClientId();
 }
@@ -238,3 +239,5 @@ void ClearPreviouslyCollectedMetricsData() {
   // Note: There is no need to clear User Actions as they do not get recorded
   // when metrics reporting is disabled.
 }
+
+}  // namespace metrics

@@ -117,9 +117,9 @@ FirstRunDialog::~FirstRunDialog() = default;
 bool FirstRunDialog::Accept() {
   closed_through_accept_button_ = true;
 
-  ChangeMetricsReportingState(
+  metrics::ChangeMetricsReportingState(
       report_crashes_->GetChecked(),
-      ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
+      metrics::ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
 
   if (make_default_->GetChecked()) {
     shell_integration::SetAsDefaultBrowser();

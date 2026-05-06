@@ -34,11 +34,11 @@ void OnMetricsReportingStateChanged(bool* new_state_ptr,
 bool ChangeMetricsReporting(bool enabled) {
   bool value_after_change;
   base::RunLoop run_loop;
-  ChangeMetricsReportingStateWithReply(
+  metrics::ChangeMetricsReportingStateWithReply(
       enabled,
       base::BindOnce(OnMetricsReportingStateChanged, &value_after_change,
                      run_loop.QuitClosure()),
-      ChangeMetricsReportingStateCalledFrom::kUiSettings);
+      metrics::ChangeMetricsReportingStateCalledFrom::kUiSettings);
   run_loop.Run();
   return value_after_change;
 }
@@ -71,8 +71,8 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
     // Because metrics reporting is disabled in non-Chrome-branded builds,
     // IsMetricsReportingEnabled() always returns false. Enable it here for
     // test consistency between Chromium and Chrome builds, otherwise
-    // ChangeMetricsReportingStateWithReply() will not have the intended effects
-    // for non-Chrome-branded builds.
+    // metrics::ChangeMetricsReportingStateWithReply() will not have the
+    // intended effects for non-Chrome-branded builds.
     ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
         true);
 

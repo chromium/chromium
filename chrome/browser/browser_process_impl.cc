@@ -483,8 +483,9 @@ void BrowserProcessImpl::Init() {
   // whenever the preference or its controlling policy changes.
   // TODO(b/483043192): We'll need to make similar changes for the
   // kMetricsReportingLevel pref.
-  pref_change_registrar_.Add(metrics::prefs::kMetricsReportingEnabled,
-                             base::BindRepeating(&ApplyMetricsReportingPolicy));
+  pref_change_registrar_.Add(
+      metrics::prefs::kMetricsReportingEnabled,
+      base::BindRepeating(&metrics::ApplyMetricsReportingPolicy));
 
 #if BUILDFLAG(IS_WIN)
   // Pref state is taken from the trusted process isolation state during browser
@@ -1619,7 +1620,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
     ApplyDefaultBrowserPolicy();
   }
 
-  ApplyMetricsReportingPolicy();
+  metrics::ApplyMetricsReportingPolicy();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   content::PluginService::GetInstance()->SetFilter(

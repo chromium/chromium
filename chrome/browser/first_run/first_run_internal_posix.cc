@@ -58,8 +58,9 @@ bool ShouldShowFirstRunDialog() {
   // in enterprise scenarios. If that is the case, skip the dialog entirely, as
   // it's not worth bothering the user for only the default browser question
   // (which is likely to be forced in enterprise deployments anyway).
-  if (IsMetricsReportingPolicyManaged())
+  if (metrics::IsMetricsReportingPolicyManaged()) {
     return false;
+  }
 
   // For real first runs, Mac and Desktop Linux initialize the default metrics
   // reporting state when the first run dialog is shown. These days, metrics are

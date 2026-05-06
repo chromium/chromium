@@ -15,8 +15,8 @@ namespace first_run {
 
 // Shows the first run dialog. Only called for organic first runs on Mac and
 // desktop Linux official builds when metrics reporting is not already enabled.
-// Invokes ChangeMetricsReportingState() if consent is given to enable crash
-// reporting, and may initiate the flow to set the default browser.
+// Invokes metrics::ChangeMetricsReportingState() if consent is given to enable
+// crash reporting, and may initiate the flow to set the default browser.
 void ShowFirstRunDialog();
 
 // Returns a Closure invoked before calling ShowFirstRunDialog(). For testing.

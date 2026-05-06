@@ -116,10 +116,11 @@ void ArcOptInPreferenceHandler::SendMetricsMode(
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
   if (IsAllowedToUpdateUserConsent(ownership_status)) {
     observer_->OnMetricsModeChanged(GetUserMetrics(),
-                                    IsMetricsReportingPolicyManaged());
+                                    metrics::IsMetricsReportingPolicyManaged());
   } else {
     bool enabled = ash::StatsReportingController::Get()->IsEnabled();
-    observer_->OnMetricsModeChanged(enabled, IsMetricsReportingPolicyManaged());
+    observer_->OnMetricsModeChanged(enabled,
+                                    metrics::IsMetricsReportingPolicyManaged());
   }
 }
 
@@ -201,7 +202,7 @@ bool ArcOptInPreferenceHandler::IsAllowedToUpdateUserConsent(
   // Managed devices should not use per-user consent.
   // Devices that fail this check are unmanaged, referred to as
   // having consumer ownership.
-  if (IsMetricsReportingPolicyManaged()) {
+  if (metrics::IsMetricsReportingPolicyManaged()) {
     return false;
   }
 

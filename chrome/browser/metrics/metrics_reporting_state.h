@@ -8,9 +8,11 @@
 #include "base/functional/callback_forward.h"
 #include "components/metrics/metrics_reporting_level.h"
 
+namespace metrics {
+
 using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 using OnMetricsReportingLevelCallbackType =
-    base::OnceCallback<void(metrics::MetricsReportingLevel)>;
+    base::OnceCallback<void(MetricsReportingLevel)>;
 
 // Specifies from where a change to the metrics reporting level was made.
 // TODO(b/483043192): Implement this.
@@ -80,7 +82,7 @@ void ChangeMetricsReportingStateWithReply(
 // TODO(b/492510818): This will be replacing the ChangeMetricsReportingState()
 // method.
 void ChangeMetricsReportingLevel(
-    metrics::MetricsReportingLevel level,
+    MetricsReportingLevel level,
     ChangeMetricsReportingLevelCalledFrom called_from);
 
 // Changes metrics reporting level to the new value of |level|. Starts or
@@ -95,7 +97,7 @@ void ChangeMetricsReportingLevel(
 // TODO(b/492510818): This will be replacing the
 // ChangeMetricsReportingStateWithReply() method.
 void ChangeMetricsReportingLevelWithReply(
-    metrics::MetricsReportingLevel level,
+    MetricsReportingLevel level,
     OnMetricsReportingLevelCallbackType callback_fn,
     ChangeMetricsReportingLevelCalledFrom called_from);
 
@@ -128,5 +130,7 @@ bool IsMetricsReportingPolicyManaged();
 // included in the next log. Note that histogram data is not discarded. Rather,
 // they are just marked as being already reported.
 void ClearPreviouslyCollectedMetricsData();
+
+}  // namespace metrics
 
 #endif  // CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_

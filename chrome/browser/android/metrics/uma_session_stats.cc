@@ -306,8 +306,9 @@ static void JNI_UmaSessionStats_ChangeMetricsReportingConsent(
     JNIEnv*,
     bool consent,
     int32_t called_from) {
-  UpdateMetricsPrefsOnPermissionChange(
-      consent, static_cast<ChangeMetricsReportingStateCalledFrom>(called_from));
+  metrics::UpdateMetricsPrefsOnPermissionChange(
+      consent,
+      static_cast<metrics::ChangeMetricsReportingStateCalledFrom>(called_from));
 
   // This function ensures a consent file in the data directory is either
   // created, or deleted, depending on consent. Starting up metrics services
