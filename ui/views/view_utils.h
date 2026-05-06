@@ -39,6 +39,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   bool GetVisible() override;
   bool GetNeedsLayout() override;
   bool GetEnabled() override;
+  bool IsPaintLocked() override;
   std::vector<debug::ViewDebugWrapper*> GetChildren() override;
   void ForAllProperties(PropCallback callback) override;
 

@@ -2433,6 +2433,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void SetWidth(int width);
   void SetHeight(int height);
   bool GetIsDrawn() const;
+  bool GetIsPaintLocked() const;
 
   // Special property accessor used by metadata to get the ToolTip text.
   std::u16string GetTooltip() const;

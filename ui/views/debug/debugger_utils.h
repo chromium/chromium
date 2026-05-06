@@ -37,6 +37,7 @@ class ViewDebugWrapper {
   virtual bool GetVisible() = 0;
   virtual bool GetNeedsLayout() = 0;
   virtual bool GetEnabled() = 0;
+  virtual bool IsPaintLocked() = 0;
   virtual std::vector<ViewDebugWrapper*> GetChildren() = 0;
   virtual void ForAllProperties(PropCallback callback) {}
   virtual std::optional<intptr_t> GetAddress();

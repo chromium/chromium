@@ -685,6 +685,10 @@ bool View::GetIsDrawn() const {
   return IsDrawn();
 }
 
+bool View::GetIsPaintLocked() const {
+  return IsPaintLocked();
+}
+
 bool View::GetEnabled() const {
   return enabled_;
 }
@@ -4161,6 +4165,7 @@ ADD_PROPERTY_METADATA(int, OwnedGroup)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(int, ID)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDrawn);
+ADD_READONLY_PROPERTY_METADATA(bool, IsPaintLocked)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)

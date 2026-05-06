@@ -183,6 +183,21 @@ class VirtualViewDebugWrapper : public views::debug::ViewDebugWrapper {
   bool GetEnabled() override {
     return view_block_.GetFieldValue<bool>("enabled_");
   }
+  bool IsPaintLocked() override {
+    if (view_block_.GetFieldValue<int>("paint_lock_count_") > 0) {
+      return true;
+    }
+
+    intptr_t parent_ptr = view_block_.GetFieldValue<intptr_t>("parent_");
+    if (!parent_ptr) {
+      return false;
+    }
+
+    VirtualMemoryBlock parent_block(debug_client_.Get(), "views!views::View",
+                                    parent_ptr);
+    VirtualViewDebugWrapper parent_wrapper(parent_block, debug_client_.Get());
+    return parent_wrapper.IsPaintLocked();
+  }
   std::vector<ViewDebugWrapper*> GetChildren() override {
     if (children_.empty()) {
       auto children_block = view_block_.GetFieldMemoryBlock("children_");

@@ -75,6 +75,9 @@ AttributeStrings GetAttributeStrings(ViewDebugWrapper* view, bool verbose) {
     AddAttributeString(attributes, "enabled", view->GetEnabled());
     AddAttributeString(attributes, "id", view->GetID());
     AddAttributeString(attributes, "needs-layout", view->GetNeedsLayout());
+    if (view->IsPaintLocked()) {
+      AddAttributeString(attributes, "paint-locked", true);
+    }
     AddAttributeString(attributes, "visible", view->GetVisible());
   }
   return attributes;

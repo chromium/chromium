@@ -63,6 +63,10 @@ bool ViewDebugWrapperImpl::GetEnabled() {
   return view_->GetEnabled();
 }
 
+bool ViewDebugWrapperImpl::IsPaintLocked() {
+  return view_->IsPaintLocked();
+}
+
 std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
   children_.clear();
   for (views::View* child : view_->children()) {
