@@ -929,8 +929,14 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   histograms.ExpectUniqueSample("Accessibility.ScreenAI.OCR.ModeSwitch", 0, 1);
 }
 
+// TODO(crbug.com/509294498): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCRLightModeEnglish DISABLED_PerformOCRLightModeEnglish
+#else
+#define MAYBE_PerformOCRLightModeEnglish PerformOCRLightModeEnglish
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRLightModeEnglish) {
+                       MAYBE_PerformOCRLightModeEnglish) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   SkBitmap bitmap =
       LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr"))
@@ -986,8 +992,14 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   }
 }
 
+// TODO(crbug.com/509294498): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCRLightModeChinese DISABLED_PerformOCRLightModeChinese
+#else
+#define MAYBE_PerformOCRLightModeChinese PerformOCRLightModeChinese
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRLightModeChinese) {
+                       MAYBE_PerformOCRLightModeChinese) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   SkBitmap bitmap = LoadImageFromTestFile(
       base::FilePath(FILE_PATH_LITERAL("ocr")).AppendASCII("chinese.png"));
