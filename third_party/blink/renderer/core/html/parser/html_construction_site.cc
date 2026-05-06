@@ -613,6 +613,21 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagInBody(
 void HTMLConstructionSite::InsertHTMLBodyStartTagInBody(
     AtomicHTMLToken* token) {
   MergeAttributesFromTokenIntoElement(token, open_elements_.BodyElement());
+  // The customelementregistry attribute detection in CreateElement does not
+  // apply here because this path does not call CreateElement. This method is
+  // called when a <body> start tag is encountered while a body element already
+  // exists on the open elements stack (e.g., an implicit body was created by
+  // DefaultForAfterHead). In that case, the parser only merges attributes onto
+  // the existing body element rather than creating a new one, so we must
+  // handle the customelementregistry attribute explicitly.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+    Element* body = open_elements_.BodyElement();
+    body->SetCustomElementRegistry(nullptr);
+    if (document_) {
+      document_->SetScopedCustomElementRegistryUsed();
+    }
+  }
 }
 
 void HTMLConstructionSite::SetDefaultCompatibilityMode() {

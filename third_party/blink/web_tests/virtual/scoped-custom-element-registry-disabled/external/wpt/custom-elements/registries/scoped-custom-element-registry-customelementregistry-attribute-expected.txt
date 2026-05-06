@@ -21,4 +21,28 @@ This is a testharness.js-based test.
   assert_equals: expected (object) null but got (undefined) undefined
 [FAIL] Setting customelementregistry content attribute during constructor should not make it use null registry
   assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Body with customelementregistry attribute during initial parse should have null registry and propagate to children
+  assert_equals: body should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Custom element candidate child of body with customelementregistry should have null registry during initial parse
+  assert_equals: custom element candidate child of body with customelementregistry should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Descendants of body with customelementregistry should all have null registry during initial parse
+  assert_equals: div child should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Body with customelementregistry in a complete document structure should have null registry
+  assert_equals: body should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: built-in element with customelementregistry has null registry
+  assert_equals: Built-in element with customelementregistry attribute should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: custom element candidate with customelementregistry has null registry
+  assert_equals: Custom element candidate with customelementregistry attribute should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: built-in element without customelementregistry uses global registry
+  assert_equals: Built-in element without customelementregistry should use the global registry expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Initial parse: custom element candidate without customelementregistry uses global registry
+  assert_equals: Custom element candidate without customelementregistry should use the global registry expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] Initial parse: child of element with customelementregistry inherits null registry
+  assert_equals: Child of element with customelementregistry should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: custom element candidate child inherits null registry from parent
+  assert_equals: Custom element candidate child of element with customelementregistry should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: deeply nested descendant inherits null registry
+  assert_equals: Deeply nested custom element candidate should have null registry expected (object) null but got (undefined) undefined
+[FAIL] Initial parse: global registry define only upgrades elements without customelementregistry
+  assert_equals: Custom element candidate with null registry should still not be upgraded after defining in global registry expected function "function HTMLElement() { [native code] }" but got function "class extends HTMLElement {}"
 Harness: the test ran to completion.
