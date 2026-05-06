@@ -21,6 +21,11 @@ import UIKit
 public class LayoutGuideCenter: NSObject {
   /// MARK: Public
 
+  /// Potential parent layout guide center. Referenced views lookups fallback
+  /// to looking up in the parent if the view is not reference by this layout
+  /// guide center.
+  @objc public weak var parent: LayoutGuideCenter?
+
   /// References a view under a specific `name`.
   /// If forcesSynchronousLayoutUpdates is true, when the window coordinates change, the layout guides will be
   /// updated synchronously. Otherwise, the layout guides will be updated in the next runloop.
@@ -58,7 +63,10 @@ public class LayoutGuideCenter: NSObject {
   /// Returns the referenced view under `name`.
   @objc(referencedViewUnderName:)
   public func referencedView(under name: String) -> UIView? {
-    return referenceViews.object(forKey: name as NSString)
+    if let view = referenceViews.object(forKey: name as NSString) {
+      return view
+    }
+    return parent?.referencedView(under: name)
   }
 
   /// Creates a new layout guide tracking the view referenced under a specific `name`.

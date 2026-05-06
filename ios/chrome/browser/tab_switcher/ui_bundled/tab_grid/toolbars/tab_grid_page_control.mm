@@ -205,15 +205,16 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
   // Highlighted view and associated icon.
   UIView* _highlightView;
   UIView* _highlightedIcon;
+
+  // The layout guide center for this element.
+  LayoutGuideCenter* _layoutGuideCenter;
 }
 
-+ (instancetype)pageControl {
-  return [[TabGridPageControl alloc] init];
-}
-
-- (instancetype)init {
+- (instancetype)initWithLayoutGuideCenter:
+    (LayoutGuideCenter*)layoutGuideCenter {
   CGRect frame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
   if ((self = [super initWithFrame:frame])) {
+    _layoutGuideCenter = layoutGuideCenter;
     // Default to the regular tab page as the selected page.
     _selectedPage = TabGridPageRegularTabs;
 
@@ -753,13 +754,12 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
 
   self.incognitoHoverView = [self configureHoverView];
 
-  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
-  [center referenceView:self.incognitoHoverView
-              underName:kTabGridPageControlIncognitoGuide];
+  [_layoutGuideCenter referenceView:self.incognitoHoverView
+                          underName:kTabGridPageControlIncognitoGuide];
   self.regularHoverView = [self configureHoverView];
   self.tabGroupsHoverView = [self configureHoverView];
-  [center referenceView:self.tabGroupsHoverView
-              underName:kTabGridPageControlTabGroupsGuide];
+  [_layoutGuideCenter referenceView:self.tabGroupsHoverView
+                          underName:kTabGridPageControlTabGroupsGuide];
 
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];

@@ -14,7 +14,7 @@
 class TabGridToolbarsViewControllersTest : public PlatformTest {
  protected:
   TabGridToolbarsViewControllersTest() {
-    top_toolbar_ = [[TabGridTopToolbar alloc] initWithFrame:CGRectZero];
+    top_toolbar_ = [[TabGridTopToolbar alloc] initWithLayoutGuideCenter:nil];
     bottom_toolbar_ = [[TabGridBottomToolbar alloc] initWithFrame:CGRectZero];
   }
   ~TabGridToolbarsViewControllersTest() override {}

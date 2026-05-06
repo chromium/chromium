@@ -575,7 +575,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       viewController.view.alpha = 1.0;
       [_viewController addChildViewController:viewController];
       if (IsChromeNextIaEnabled()) {
-        UIView* appContentGuide = [LayoutGuideCenterForBrowser(nil)
+        UIView* appContentGuide = [LayoutGuideCenterForScene(sceneState)
             referencedViewUnderName:kAppContentGuide];
         if (IsFullscreenRefactoringEnabled()) {
           [_viewController.view addSubview:viewController.view];
@@ -733,10 +733,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     animationEnabled = NO;
   }
 
-  UIView* appContentView = IsChromeNextIaEnabled()
-                               ? [LayoutGuideCenterForBrowser(nil)
-                                     referencedViewUnderName:kAppContentGuide]
-                               : nil;
+  UIView* appContentView =
+      IsChromeNextIaEnabled()
+          ? [LayoutGuideCenterForScene(browser->GetSceneState())
+                referencedViewUnderName:kAppContentGuide]
+          : nil;
   auto params = std::make_unique<TabGridTransitionHandlerInitParams>(
       direction, self.browserLayoutViewController, _viewController,
       appContentView);
@@ -1016,9 +1017,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  SceneState* sceneState = _regularBrowser->GetSceneState();
   TRACE_EVENT("ui", "-[TabGridCoordinator start]");
-  _modeHolder = [[TabGridModeHolder alloc]
-      initWithTabGridState:_regularBrowser->GetSceneState().tabGridState];
+  _modeHolder =
+      [[TabGridModeHolder alloc] initWithTabGridState:sceneState.tabGridState];
 
   [_regularBrowser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -1035,7 +1037,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                    GetForProfile(profile)
                     modeHolder:_modeHolder];
 
-  _mediator.tabGridState = _regularBrowser->GetSceneState().tabGridState;
+  _mediator.tabGridState = sceneState.tabGridState;
 
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.dispatcher, SceneCommands);
@@ -1047,7 +1049,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _viewController.handler = sceneHandler;
   _viewController.geminiHandler = geminiHandler;
   _viewController.tabPresentationDelegate = self;
-  _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
+  _viewController.layoutGuideCenter = LayoutGuideCenterForScene(sceneState);
   _viewController.delegate = self;
   _viewController.tabGridHandler = self;
   _viewController.mutator = _mediator;
@@ -1162,7 +1164,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.firstPresentation = YES;
 
-  SceneState* sceneState = self.regularBrowser->GetSceneState();
   if (!IsUseSceneViewControllerEnabled()) {
     sceneState.window.rootViewController = _viewController;
   }
@@ -1901,7 +1902,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (UIView*)viewAboveTabGroup {
   if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
-    return [LayoutGuideCenterForBrowser(nil)
+    SceneState* sceneState = _regularBrowser->GetSceneState();
+    return [LayoutGuideCenterForScene(sceneState)
         referencedViewUnderName:kAppContentGuide];
   }
   return self.browserLayoutViewController.view;

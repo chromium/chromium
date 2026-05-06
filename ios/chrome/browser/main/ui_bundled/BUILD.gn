@@ -149,6 +149,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
     "//ios/chrome/browser/shared/coordinator/scene/state",

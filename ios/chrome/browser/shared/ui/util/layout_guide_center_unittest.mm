@@ -41,6 +41,17 @@ TEST_F(LayoutGuideCenterTest, TestDereferenced) {
   EXPECT_EQ([center_ referencedViewUnderName:@"view"], nil);
 }
 
+// Checks that a child center can retrieve a referenced view from its parent.
+TEST_F(LayoutGuideCenterTest, TestFallback) {
+  LayoutGuideCenter* parent_center = [[LayoutGuideCenter alloc] init];
+  center_.parent = parent_center;
+
+  UIView* reference_view = [[UIView alloc] init];
+  [parent_center referenceView:reference_view underName:@"view"];
+
+  EXPECT_EQ([center_ referencedViewUnderName:@"view"], reference_view);
+}
+
 // Checks that a tracking layout guide is correctly updated to match the
 // reference view's frame.
 TEST_F(LayoutGuideCenterTest, LayoutGuideMatchesReferenceView) {

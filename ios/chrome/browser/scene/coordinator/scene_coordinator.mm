@@ -262,7 +262,8 @@ void OnListFamilyMembersResponse(
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
     _viewController.layoutState = _layoutState;
-    _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
+    _viewController.layoutGuideCenter =
+        LayoutGuideCenterForScene(self.sceneState);
     _viewController.delegate = self;
     UIViewController* tabGridViewController =
         _tabGridCoordinator.viewController;

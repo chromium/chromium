@@ -99,6 +99,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/utils",

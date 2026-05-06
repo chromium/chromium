@@ -41,6 +41,8 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -159,11 +161,16 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   void CreateCoordinator(bool off_the_record) {
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+
     if (off_the_record) {
       ProfileIOS* otr_state = GetProfile()->GetOffTheRecordProfile();
-      browser_ = std::make_unique<TestBrowser>(otr_state);
+      browser_ = std::make_unique<TestBrowser>(otr_state, scene_state_);
     } else {
-      browser_ = std::make_unique<TestBrowser>(GetProfile());
+      browser_ = std::make_unique<TestBrowser>(GetProfile(), scene_state_);
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
       BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(
           browser_.get());
@@ -345,6 +352,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id toolbar_delegate_;
   id delegate_;
   std::unique_ptr<Browser> browser_;
+  SceneState* scene_state_;
   UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;

@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/authentication/age_mismatch_signout/ui",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_testing",
     "//ios/chrome/browser/shared/coordinator/scene/test",

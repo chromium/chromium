@@ -488,7 +488,8 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
     // The legacy FullscreenController is unaware of the App Bar's height.
     // If the App Bar is at the bottom, explicitly account for it to ensure
     // the floaty positions correctly above it.
-    LayoutGuideCenter* layout_guide_center = LayoutGuideCenterForBrowser(nil);
+    LayoutGuideCenter* layout_guide_center =
+        LayoutGuideCenterForScene(scene_state);
     UIView* app_bar_view =
         [layout_guide_center referencedViewUnderName:kAppBarGuide];
     if (app_bar_view &&

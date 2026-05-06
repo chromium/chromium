@@ -23,6 +23,7 @@ source_set("toolbars") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",

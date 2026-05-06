@@ -33,6 +33,7 @@ source_set("unit_tests") {
   sources = [ "layout_guide_scene_agent_unittest.mm" ]
   deps = [
     ":layout_guide_scene_agent",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//testing/gtest",
   ]
 }

@@ -472,6 +472,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

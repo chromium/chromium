@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
+@class LayoutGuideCenter;
 @class TabGridPageControl;
 @protocol TabGridToolbarsGridDelegate;
 
@@ -43,6 +44,13 @@
 @property(nonatomic, assign) int selectedTabsCount;
 // Delegate to call when a button is tapped.
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
+
+- (instancetype)initWithLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Sets the delegate for the searchbar.
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;

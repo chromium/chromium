@@ -874,8 +874,9 @@ const char kChromeAppStoreUrl[] =
   if (self.sceneState.controller.isTabGridVisible) {
     // The tab grid is being shown so use the tab grid bottom bar.
     // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
-    UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
-        referencedViewUnderName:kTabGridBottomToolbarGuide];
+    UIView* tabGridBottomToolbarView =
+        [LayoutGuideCenterForBrowser(self.browser)
+            referencedViewUnderName:kTabGridBottomToolbarGuide];
     if (IsChromeNextIaEnabled()) {
       CGPoint originOfBottomToolbar =
           [tabGridBottomToolbarView convertPoint:CGPointZero toView:nil];

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -144,27 +145,42 @@
 }
 
 - (void)useNonTestBrowser {
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
   _browser = std::make_unique<BrowserImpl>(
-      chrome_test_util::GetOriginalProfile(),
-      chrome_test_util::GetForegroundActiveScene(), _dispatcher,
+      chrome_test_util::GetOriginalProfile(), sceneState, _dispatcher,
       /*active_browser=*/nullptr,
       BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kForceRealization,
       BrowserImpl::Type::kRegular);
   UrlLoadingBrowserAgent::RemoveFromBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
+
+  if (![LayoutGuideSceneAgent agentFromScene:sceneState]) {
+    LayoutGuideSceneAgent* layoutGuideSceneAgent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [sceneState addAgent:layoutGuideSceneAgent];
+  }
+
   [self insertInitialWebstate];
   chrome_test_util::SetMainBrowserOverride(self.browser);
 }
 
 - (void)useTestBrowser {
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
+
   std::unique_ptr<TestBrowser> testBrowser = std::make_unique<TestBrowser>(
-      chrome_test_util::GetOriginalProfile(),
-      chrome_test_util::GetForegroundActiveScene());
+      chrome_test_util::GetOriginalProfile(), sceneState);
   testBrowser->SetCommandDispatcher(_dispatcher);
   _browser = std::move(testBrowser);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
+
+  if (![LayoutGuideSceneAgent agentFromScene:sceneState]) {
+    LayoutGuideSceneAgent* layoutGuideSceneAgent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [sceneState addAgent:layoutGuideSceneAgent];
+  }
+
   [self insertInitialWebstate];
   chrome_test_util::SetMainBrowserOverride(self.browser);
 }

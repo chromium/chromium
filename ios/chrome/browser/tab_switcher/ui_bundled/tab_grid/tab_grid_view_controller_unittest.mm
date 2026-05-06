@@ -62,7 +62,7 @@ class TabGridViewControllerTest : public PlatformTest,
     view_controller_ =
         [[TabGridViewController alloc] initWithPageConfiguration:configuration];
     view_controller_.topToolbar =
-        [[TabGridTopToolbar alloc] initWithFrame:CGRectZero];
+        [[TabGridTopToolbar alloc] initWithLayoutGuideCenter:nil];
     view_controller_.bottomToolbar =
         [[TabGridBottomToolbar alloc] initWithFrame:CGRectZero];
 

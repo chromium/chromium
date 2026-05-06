@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/fake_browser_view_controller.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -18,12 +20,17 @@ class BrowserLayoutCoordinatorTest : public PlatformTest {
  protected:
   BrowserLayoutCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  SceneState* scene_state_;
 };
 
 // Tests that the coordinator can be started and stopped without crashing.
@@ -56,7 +63,7 @@ TEST_F(BrowserLayoutCoordinatorTest, IncognitoState) {
   // Incognito browser.
   ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
   std::unique_ptr<TestBrowser> incognito_test_browser =
-      std::make_unique<TestBrowser>(incognito_profile);
+      std::make_unique<TestBrowser>(incognito_profile, scene_state_);
 
   BrowserLayoutCoordinator* incognito_coordinator =
       [[BrowserLayoutCoordinator alloc]

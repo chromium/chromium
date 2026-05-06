@@ -77,6 +77,8 @@
   id<BWGCommands> geminiHandler =
       HandlerForProtocol(regularDispatcher, BWGCommands);
 
+  SceneState* sceneState = _regularBrowser->GetSceneState();
+
   [regularDispatcher startDispatchingToTarget:self
                                   forProtocol:@protocol(AppBarCommands)];
   [incognitoDispatcher startDispatchingToTarget:self
@@ -85,9 +87,8 @@
   _viewController = [[AppBarViewController alloc] init];
   _viewController.sceneHandler = sceneHandler;
   _viewController.tabGridHandler = tabGridHandler;
-  _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
+  _viewController.layoutGuideCenter = LayoutGuideCenterForScene(sceneState);
 
-  SceneState* sceneState = _regularBrowser->GetSceneState();
   ProfileIOS* profile = _regularBrowser->GetProfile();
 
   FullscreenController* regularFullscreenController = nullptr;

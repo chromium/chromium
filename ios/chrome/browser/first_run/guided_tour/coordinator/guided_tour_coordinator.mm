@@ -80,25 +80,25 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
 // Returns the view to which the bubble view will be anchored.
 - (UIView*)anchorView {
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   if (_step == GuidedTourStep::kNTP) {
     if (IsChromeNextIaEnabled()) {
-      UIButton* tabSwitcherButton =
-          static_cast<UIButton*>([LayoutGuideCenterForBrowser(nil)
-              referencedViewUnderName:kTabSwitcherGuide]);
+      UIButton* tabSwitcherButton = static_cast<UIButton*>(
+          [layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide]);
       return tabSwitcherButton;
     }
     LegacyToolbarButton* tabSwitcherButton = static_cast<LegacyToolbarButton*>(
-        [LayoutGuideCenterForBrowser(self.browser)
-            referencedViewUnderName:kTabSwitcherGuide]);
+        [layoutGuideCenter referencedViewUnderName:kTabSwitcherGuide]);
     return tabSwitcherButton.spotlightView;
   } else if (_step == GuidedTourStep::kTabGridIncognito) {
-    return [LayoutGuideCenterForBrowser(nil)
+    return [layoutGuideCenter
         referencedViewUnderName:kTabGridPageControlIncognitoGuide];
   } else if (_step == GuidedTourStep::kTabGridLongPress) {
-    return [LayoutGuideCenterForBrowser(self.browser)
-        referencedViewUnderName:kSelectedRegularCellGuide];
+    return
+        [layoutGuideCenter referencedViewUnderName:kSelectedRegularCellGuide];
   } else if (_step == GuidedTourStep::kTabGridTabGroup) {
-    return [LayoutGuideCenterForBrowser(nil)
+    return [layoutGuideCenter
         referencedViewUnderName:kTabGridPageControlTabGroupsGuide];
   }
   NOTREACHED() << "A layout guide view needs to be fetched for each step";

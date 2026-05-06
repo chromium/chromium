@@ -1391,8 +1391,7 @@ bool IsFullscreenNextIAEnabled() {
   if (self.secondaryToolbarAppBarBottomConstraint) {
     return;
   }
-  LayoutGuideCenter* globalCenter = LayoutGuideCenterForBrowser(nil);
-  UIView* appBar = [globalCenter referencedViewUnderName:kAppBarGuide];
+  UIView* appBar = [_layoutGuideCenter referencedViewUnderName:kAppBarGuide];
   CHECK(appBar);
   UIView* toolbarView =
       self.toolbarCoordinator.secondaryToolbarViewController.view;

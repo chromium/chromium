@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -73,7 +75,11 @@ class KeyCommandsProviderTest : public PlatformTest {
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     web_state_list_ = browser_->GetWebStateList();
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
 
@@ -175,6 +181,7 @@ class KeyCommandsProviderTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
+  SceneState* scene_state_;
   base::UserActionTester user_action_tester_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   KeyCommandsProvider* provider_;

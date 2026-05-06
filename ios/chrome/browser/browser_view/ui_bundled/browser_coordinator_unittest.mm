@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 
+#import "base/logging.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -181,6 +183,10 @@ class BrowserCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
+
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
 
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];

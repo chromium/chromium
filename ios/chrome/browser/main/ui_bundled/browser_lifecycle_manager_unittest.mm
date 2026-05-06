@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/test_session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -50,6 +51,9 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
                                                          appState:nil];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
 
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(

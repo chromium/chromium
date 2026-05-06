@@ -34,6 +34,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_view/ui_bundled:test_support",
     "//ios/chrome/browser/main/ui",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",

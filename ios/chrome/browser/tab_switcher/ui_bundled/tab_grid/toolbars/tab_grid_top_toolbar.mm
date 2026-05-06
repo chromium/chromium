@@ -105,11 +105,17 @@ CGFloat HorizontalMargin() {
 
   // The button to access the page action menu.
   PageActionMenuEntrypointView* _pageActionMenuEntrypointView;
+
+  // The layout guide center for this view.
+  LayoutGuideCenter* _layoutGuideCenter;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithLayoutGuideCenter:
+    (LayoutGuideCenter*)layoutGuideCenter {
+  // Use a non-zero frame to avoid breaking constraints.
+  self = [super initWithFrame:CGRectMake(0, 0, 100, 100)];
   if (self) {
+    _layoutGuideCenter = layoutGuideCenter;
     [self setupViews];
     [self setButtonsForTraitCollection:self.traitCollection];
   }
@@ -526,11 +532,12 @@ CGFloat HorizontalMargin() {
   [self useUndo:NO];
 
   // The segmented control has an intrinsic size.
-  _pageControl = [[TabGridPageControl alloc] init];
+  _pageControl =
+      [[TabGridPageControl alloc] initWithLayoutGuideCenter:_layoutGuideCenter];
   _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
 
-  LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
-  [center referenceView:_pageControl underName:kTabGridPageControlGuide];
+  [_layoutGuideCenter referenceView:_pageControl
+                          underName:kTabGridPageControlGuide];
   [_pageControl setScrollViewScrolledToEdge:_scrolledToEdge];
 
   _doneButton = [self

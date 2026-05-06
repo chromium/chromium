@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -150,6 +151,10 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     AddAgentsToBrowser(incognito_browser_.get());
 
     id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state_ addAgent:reauth_agent];

@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -134,7 +136,11 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     profile_ = std::move(test_profile_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state_ addAgent:layout_guide_scene_agent];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
@@ -224,6 +230,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   TestOmniboxFocusDelegate* delegate_;
+  SceneState* scene_state_;
 };
 
 TEST_F(LocationBarCoordinatorTest, Stops) {

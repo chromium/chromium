@@ -11,8 +11,12 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _layoutGuideCenter = [[LayoutGuideCenter alloc] init];
+    _sceneLayoutGuideCenter = [[LayoutGuideCenter alloc] init];
+    _regularLayoutGuideCenter = [[LayoutGuideCenter alloc] init];
     _incognitoLayoutGuideCenter = [[LayoutGuideCenter alloc] init];
+
+    _regularLayoutGuideCenter.parent = _sceneLayoutGuideCenter;
+    _incognitoLayoutGuideCenter.parent = _sceneLayoutGuideCenter;
   }
   return self;
 }

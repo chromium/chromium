@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
@@ -72,6 +73,9 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
 
     app_state_ = OCMClassMock([AppState class]);
     SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state_];
+    LayoutGuideSceneAgent* layout_guide_scene_agent =
+        [[LayoutGuideSceneAgent alloc] init];
+    [scene_state addAgent:layout_guide_scene_agent];
     scene_state_ = OCMPartialMock(scene_state);
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);

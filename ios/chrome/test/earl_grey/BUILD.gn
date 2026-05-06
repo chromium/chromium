@@ -251,6 +251,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/settings/ui_bundled/tabs:tabs_constants",
     "//ios/chrome/browser/share_kit/model:test_constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

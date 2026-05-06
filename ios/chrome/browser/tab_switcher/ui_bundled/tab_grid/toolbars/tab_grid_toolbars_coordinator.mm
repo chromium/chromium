@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -172,8 +173,8 @@
 - (void)setupTopToolbar {
   // In iOS 13+, constraints break if the UIToolbar is initialized with a null
   // or zero rect frame. An arbitrary non-zero frame fixes this issue.
-  TabGridTopToolbar* topToolbar =
-      [[TabGridTopToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc]
+      initWithLayoutGuideCenter:LayoutGuideCenterForScene(self.sceneState)];
   self.topToolbar = topToolbar;
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
   [topToolbar setSearchBarDelegate:self.searchDelegate];
