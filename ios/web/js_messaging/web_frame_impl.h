@@ -72,6 +72,10 @@ class WebFrameImpl final : public WebFrame,
       const std::u16string& script,
       const base::DictValue& parameters,
       ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunction(
+      const std::string& name,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) override;
   base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   // WebFrameContentWorldAPI:
@@ -91,6 +95,11 @@ class WebFrameImpl final : public WebFrame,
       ExecuteJavaScriptCallbackWithError callback) override;
   bool ExecuteAsyncJavaScriptInContentWorld(
       const std::u16string& script,
+      const base::DictValue& parameters,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunctionInContentWorld(
+      const std::string& name,
       const base::DictValue& parameters,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) override;

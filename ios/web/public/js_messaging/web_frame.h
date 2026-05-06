@@ -101,6 +101,16 @@ class WebFrame : public base::SupportsUserData {
       const base::DictValue& parameters,
       ExecuteJavaScriptCallbackWithError callback) = 0;
 
+  // Calls the JavaScript function `name` in the frame context. The call is
+  // synchronous, but the target function may perform asynchronous operations
+  // (e.g., returning a Promise). `parameters` is a dictionary of values that
+  // will be passed to the function. `callback` will be called with the result
+  // or error.
+  virtual bool CallAsyncJavaScriptFunction(
+      const std::string& name,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) = 0;
+
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
 

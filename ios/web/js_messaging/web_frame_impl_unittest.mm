@@ -150,6 +150,87 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
   EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
 }
 
+// Tests that the WebFrame properly creates JavaScript for the main frame for
+// async calls.
+TEST_F(WebFrameImplTest, CallAsyncJavaScriptFunctionMainFrame) {
+  __block NSString* received_script = nil;
+  __block NSDictionary* received_arguments = nil;
+  __block WKContentWorld* received_world = nil;
+
+  OCMStub([mock_web_view_
+      callAsyncJavaScript:AssignValueToVariable(received_script)
+                arguments:AssignValueToVariable(received_arguments)
+                  inFrame:OCMOCK_ANY
+           inContentWorld:AssignValueToVariable(received_world)
+        completionHandler:OCMOCK_ANY]);
+
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/true, security_origin_,
+                         &fake_web_state_, ContentWorld::kPageContentWorld);
+
+  base::DictValue function_params;
+  EXPECT_TRUE(web_frame.CallAsyncJavaScriptFunction(
+      "api.functionName", function_params,
+      base::BindOnce(^(const base::Value* value, NSError* error){
+      })));
+
+  EXPECT_NSEQ(@"return __gCrWeb.callFunctionInGcrWeb('api', 'functionName', "
+              @"[crw_args]);",
+              received_script);
+  EXPECT_NSEQ(WKContentWorld.pageWorld, received_world);
+  ASSERT_TRUE(received_arguments);
+  EXPECT_TRUE(
+      [received_arguments[@"crw_args"] isKindOfClass:[NSDictionary class]]);
+  EXPECT_EQ(0UL, [received_arguments[@"crw_args"] count]);
+
+  function_params.Set("key", "param1");
+  EXPECT_TRUE(web_frame.CallAsyncJavaScriptFunction(
+      "api.functionName", function_params,
+      base::BindOnce(^(const base::Value* value, NSError* error){
+      })));
+
+  EXPECT_NSEQ(@"return __gCrWeb.callFunctionInGcrWeb('api', 'functionName', "
+              @"[crw_args]);",
+              received_script);
+  ASSERT_TRUE(received_arguments);
+  EXPECT_TRUE(
+      [received_arguments[@"crw_args"] isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"param1", received_arguments[@"crw_args"][@"key"]);
+}
+
+// Tests that the WebFrame creates JavaScript for an iframe for async calls.
+TEST_F(WebFrameImplTest, CallAsyncJavaScriptFunctionIFrame) {
+  __block NSString* received_script = nil;
+  __block NSDictionary* received_arguments = nil;
+  __block WKContentWorld* received_world = nil;
+
+  OCMStub([mock_web_view_
+      callAsyncJavaScript:AssignValueToVariable(received_script)
+                arguments:AssignValueToVariable(received_arguments)
+                  inFrame:OCMOCK_ANY
+           inContentWorld:AssignValueToVariable(received_world)
+        completionHandler:OCMOCK_ANY]);
+
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
+                         /*is_main_frame=*/false, security_origin_,
+                         &fake_web_state_, ContentWorld::kIsolatedWorld);
+
+  base::DictValue function_params;
+  EXPECT_TRUE(web_frame.CallAsyncJavaScriptFunction(
+      "api.functionName", function_params,
+      base::BindOnce(^(const base::Value* value, NSError* error){
+      })));
+
+  EXPECT_NSEQ(@"return __gCrWeb.callFunctionInGcrWeb('api', 'functionName', "
+              @"[crw_args]);",
+              received_script);
+  EXPECT_NSEQ(WKContentWorld.defaultClientWorld, received_world);
+  ASSERT_TRUE(received_arguments);
+  EXPECT_TRUE(
+      [received_arguments[@"crw_args"] isKindOfClass:[NSDictionary class]]);
+  EXPECT_EQ(0UL, [received_arguments[@"crw_args"] count]);
+}
+
 // Tests that the WebFrame can execute arbitrary JavaScript.
 TEST_F(WebFrameImplTest, ExecuteJavaScript) {
   NSString* script = @"__gCrWeb = {};"

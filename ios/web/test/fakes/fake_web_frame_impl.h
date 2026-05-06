@@ -50,6 +50,10 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       const std::u16string& script,
       const base::DictValue& parameters,
       ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunction(
+      const std::string& name,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) override;
   base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   // FakeWebFrame:
@@ -94,6 +98,11 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
 
   bool ExecuteAsyncJavaScriptInContentWorld(
       const std::u16string& script,
+      const base::DictValue& parameters,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunctionInContentWorld(
+      const std::string& name,
       const base::DictValue& parameters,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) override;

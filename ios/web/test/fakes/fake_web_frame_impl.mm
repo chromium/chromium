@@ -293,6 +293,45 @@ bool FakeWebFrameImpl::ExecuteAsyncJavaScriptInContentWorld(
   return !error;
 }
 
+bool FakeWebFrameImpl::CallAsyncJavaScriptFunction(
+    const std::string& name,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  return CallAsyncJavaScriptFunctionInContentWorld(name, parameters, nullptr,
+                                                   std::move(callback));
+}
+
+bool FakeWebFrameImpl::CallAsyncJavaScriptFunctionInContentWorld(
+    const std::string& name,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string_view api_name_sv;
+  std::string_view function_name_sv;
+
+  if (name_parts) {
+    api_name_sv = name_parts->first;
+    function_name_sv = name_parts->second;
+  } else {
+    api_name_sv = "";
+    function_name_sv = name;
+  }
+
+  std::u16string api_name = base::UTF8ToUTF16(api_name_sv);
+  std::u16string function_name = base::UTF8ToUTF16(function_name_sv);
+
+  std::string paramString = base::WriteJson(parameters).value_or("");
+  std::u16string javascript_call = std::u16string(
+      u"__gCrWeb.callFunctionInGcrWeb('" + api_name + u"', '" + function_name +
+      u"', [" + base::UTF8ToUTF16(paramString) + u"]);");
+
+  java_script_calls_.push_back(javascript_call);
+  return true;
+}
+
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
     base::Value* js_result,
     const std::string& function_name) {

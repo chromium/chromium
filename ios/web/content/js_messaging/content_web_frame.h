@@ -66,6 +66,10 @@ class ContentWebFrame : public WebFrame,
       const std::u16string& script,
       const base::DictValue& parameters,
       ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunction(
+      const std::string& name,
+      const base::DictValue& parameters,
+      ExecuteJavaScriptCallbackWithError callback) override;
 
   // WebFrameInternal:
   bool CallJavaScriptFunctionInContentWorld(
@@ -84,6 +88,11 @@ class ContentWebFrame : public WebFrame,
       ExecuteJavaScriptCallbackWithError callback) override;
   bool ExecuteAsyncJavaScriptInContentWorld(
       const std::u16string& script,
+      const base::DictValue& parameters,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) override;
+  bool CallAsyncJavaScriptFunctionInContentWorld(
+      const std::string& name,
       const base::DictValue& parameters,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) override;

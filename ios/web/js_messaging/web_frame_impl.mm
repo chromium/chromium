@@ -420,6 +420,46 @@ bool WebFrameImpl::ExecuteAsyncJavaScriptInContentWorld(
   return true;
 }
 
+bool WebFrameImpl::CallAsyncJavaScriptFunction(
+    const std::string& name,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  JavaScriptContentWorld* content_world =
+      JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          content_world_, GetBrowserState());
+  return CallAsyncJavaScriptFunctionInContentWorld(
+      name, parameters, content_world, std::move(callback));
+}
+
+bool WebFrameImpl::CallAsyncJavaScriptFunctionInContentWorld(
+    const std::string& name,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  base::DictValue arguments;
+  arguments.Set("crw_args", parameters.Clone());
+
+  std::optional<std::pair<std::string_view, std::string_view>> name_parts =
+      base::SplitStringOnce(name, ".");
+
+  std::string api_name;
+  std::string function_name;
+
+  if (name_parts) {
+    api_name = name_parts->first;
+    function_name = name_parts->second;
+  } else {
+    api_name = "";
+    function_name = name;
+  }
+
+  std::string script = "return __gCrWeb.callFunctionInGcrWeb('" + api_name +
+                       "', '" + function_name + "', [crw_args]);";
+
+  return ExecuteAsyncJavaScriptInContentWorld(
+      base::UTF8ToUTF16(script), arguments, content_world, std::move(callback));
+}
+
 ExecuteJavaScriptCallbackWithError
 WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
     base::OnceCallback<void(const base::Value*)> callback) {

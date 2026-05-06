@@ -52,10 +52,23 @@ class WebFrameInternal {
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) = 0;
 
-  // Executes the given async `script` in `content_world` with `parameters`
-  // and returns whether the script was run.
+  // Use of this function is DISCOURAGED. Prefer the
+  // `CallAsyncJavaScriptFunctionInContentWorld` function instead to
+  // keep the API clear and well defined. Executes the given async `script` in
+  // `content_world` with `parameters` and returns whether the script was run.
   virtual bool ExecuteAsyncJavaScriptInContentWorld(
       const std::u16string& script,
+      const base::DictValue& parameters,
+      JavaScriptContentWorld* content_world,
+      ExecuteJavaScriptCallbackWithError callback) = 0;
+
+  // Calls the JavaScript function `name` in `content_world`. The call is
+  // synchronous, but the target function may perform asynchronous operations
+  // (e.g., returning a Promise). `parameters` is a dictionary of values that
+  // will be passed to the function. `callback` will be called with the result
+  // or error.
+  virtual bool CallAsyncJavaScriptFunctionInContentWorld(
+      const std::string& name,
       const base::DictValue& parameters,
       JavaScriptContentWorld* content_world,
       ExecuteJavaScriptCallbackWithError callback) = 0;

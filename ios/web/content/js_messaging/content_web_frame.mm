@@ -182,4 +182,21 @@ bool ContentWebFrame::ExecuteAsyncJavaScriptInContentWorld(
   return false;
 }
 
+bool ContentWebFrame::CallAsyncJavaScriptFunction(
+    const std::string& name,
+    const base::DictValue& parameters,
+    ExecuteJavaScriptCallbackWithError callback) {
+  // TODO(crbug.com/507056709): Implement async JavaScript execution.
+  return false;
+}
+
+bool ContentWebFrame::CallAsyncJavaScriptFunctionInContentWorld(
+    const std::string& name,
+    const base::DictValue& parameters,
+    JavaScriptContentWorld* content_world,
+    ExecuteJavaScriptCallbackWithError callback) {
+  // TODO(crbug.com/507056709): Implement async JavaScript execution.
+  return false;
+}
+
 }  // namespace web
