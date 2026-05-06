@@ -4505,6 +4505,9 @@
       <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the password chip button displayed in the password manual fallback screen and that's allowing the user to autofill their password on a specific form field.">
         Autofill the password
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT" desc="The subtext for a password credential in the manual fallback menu, indicating it is a password.">
+        Password
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX" desc="Accessibility label for the payment method suggestions in the manual fallback view to indicate the position of the payment method suggestion in the list of payment method suggestions.">
         {count, plural,
              =1 {{position} of {count} payment method}

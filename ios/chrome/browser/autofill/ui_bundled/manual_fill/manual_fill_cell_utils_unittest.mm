@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -162,6 +163,33 @@ TEST_F(ManualFillTestUtilsTest,
 
   EXPECT_EQ(constraints.count, 0u);
   EXPECT_EQ(vertical_lead_views.count, 0u);
+}
+
+// Tests that `CreateCredentialSubtitle` returns the expected subtitle.
+TEST_F(ManualFillTestUtilsTest, TestCreateCredentialSubtitle) {
+  NSString* type = @"Password";
+
+  // Case 1: Host is different from site name.
+  NSString* host1 = @"subdomain.example.com";
+  NSString* site1 = @"example.com";
+  NSString* expected1 =
+      [NSString stringWithFormat:manual_fill::kSubtitleFormat, host1, type];
+  EXPECT_NSEQ(CreateCredentialSubtitle(host1, site1, type), expected1);
+
+  // Case 2: Host is the same as site name.
+  NSString* host2 = @"example.com";
+  NSString* site2 = @"example.com";
+  EXPECT_NSEQ(CreateCredentialSubtitle(host2, site2, type), type);
+
+  // Case 3: Host is nil.
+  EXPECT_NSEQ(CreateCredentialSubtitle(nil, site2, type), type);
+
+  // Case 4: Host is empty.
+  EXPECT_NSEQ(CreateCredentialSubtitle(@"", site2, type), type);
+
+  // Case 5: Type is nil.
+  EXPECT_NSEQ(CreateCredentialSubtitle(host1, site1, nil), host1);
+  EXPECT_NSEQ(CreateCredentialSubtitle(host2, site2, nil), nil);
 }
 
 }  // namespace

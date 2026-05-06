@@ -41,6 +41,9 @@ extern NSString* const kSuggestPasswordAccessibilityIdentifier;
 
 extern NSString* const kMaskedPasswordButtonText;
 
+// Format string for the subtitle when both host and type are present.
+extern NSString* const kSubtitleFormat;
+
 // Payments
 
 // Accessibility identifier for the GPay logo shown in the payment manual fill

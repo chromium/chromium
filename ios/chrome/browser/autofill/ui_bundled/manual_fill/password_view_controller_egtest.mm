@@ -305,7 +305,9 @@ void CheckKeyboardIsUpAndNotCovered() {
       password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
 
   if ([self isRunningTest:@selector
-            (testNoCredentialsMessageIsVisibleWhenPasskeysEnabled)]) {
+            (testNoCredentialsMessageIsVisibleWhenPasskeysEnabled)] ||
+      [self isRunningTest:@selector
+            (testPasswordFillingOptionShowsSubtextWhenFeatureEnabled)]) {
     config.features_enabled.push_back(kIOSPasskeyShim);
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
@@ -907,6 +909,35 @@ void CheckKeyboardIsUpAndNotCovered() {
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_OR_PASSKEYS_FOR_SITE));
   [[EarlGrey selectElementWithMatcher:noCredentialsMessage]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the password filling option shows the "Password" subtext when the
+// feature is enabled.
+- (void)testPasswordFillingOptionShowsSubtextWhenFeatureEnabled {
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  // Save password for site.
+  NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
+  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+
+  [self loadLoginPage];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
+
+  // Verify that the password filling option is visible with subtext.
+  NSString* subtext =
+      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+  id<GREYMatcher> subtextMatcher = grey_text([NSString
+      stringWithFormat:@"%@\n%@", base::SysUTF8ToNSString(self.URL.host()),
+                       subtext]);
+  [[EarlGrey selectElementWithMatcher:subtextMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

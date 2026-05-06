@@ -507,6 +507,21 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
       should_show_host ? site_info.host : nil);
 }
 
+NSString* CreateCredentialSubtitle(NSString* host,
+                                   NSString* site_name,
+                                   NSString* type) {
+  BOOL should_show_host =
+      host && host.length && ![host isEqualToString:site_name];
+  if (should_show_host) {
+    if (type) {
+      return
+          [NSString stringWithFormat:manual_fill::kSubtitleFormat, host, type];
+    }
+    return host;
+  }
+  return type;
+}
+
 void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
                                              UIButton* overflow_menu_button,
                                              UIButton* autofill_form_button,

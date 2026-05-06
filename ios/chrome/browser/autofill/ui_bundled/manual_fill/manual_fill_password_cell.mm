@@ -241,16 +241,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   std::vector<ManualFillCellView> verticalLeadViews;
 
   // Header.
-  BOOL shouldShowHost = credential.host && credential.host.length &&
-                        ![credential.host isEqualToString:credential.siteName];
-
   NSAttributedString* attributedText =
-      credential.isBackupCredential
-          ? CreateHeaderAttributedString(
-                l10n_util::GetNSString(
-                    IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE),
-                credential.host)
-          : CreateSiteNameLabelAttributedText(credential, shouldShowHost);
+      CreateHeaderAttributedString([self cellTitle], [self cellSubtitle]);
   self.siteNameLabel.attributedText = attributedText;
   self.siteNameLabel.numberOfLines = 0;
   NSString* accessibilityLabel =
@@ -477,6 +469,29 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   self.faviconContainerView.faviconView.accessibilityIdentifier =
       manual_fill::kExpandedManualFillPasswordFaviconID;
   [self.faviconContainerView.faviconView configureWithAttributes:attributes];
+}
+
+// Returns the title for the cell.
+- (NSString*)cellTitle {
+  if (self.credential.isBackupCredential) {
+    return l10n_util::GetNSString(
+        IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE);
+  }
+  return self.credential.siteName ?: @"";
+}
+
+// Returns the subtitle for the cell.
+- (NSString*)cellSubtitle {
+  if (self.credential.isBackupCredential) {
+    return self.credential.host;
+  }
+  NSString* credentialType = nil;
+  if (IsConditionalPasskeyLoginEnabled()) {
+    credentialType =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+  }
+  return CreateCredentialSubtitle(self.credential.host,
+                                  self.credential.siteName, credentialType);
 }
 
 @end

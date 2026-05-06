@@ -183,6 +183,12 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
     ManualFillSiteInfo* site_info,
     BOOL should_show_host);
 
+// Creates the subtitle string, combining host and type if `host` differs from
+// `site_name`.
+NSString* CreateCredentialSubtitle(NSString* host,
+                                   NSString* site_name,
+                                   NSString* type);
+
 // Sets the cell's container and its overflow menu button's accessibility label
 // with the given `accessibility_context`. `accessibility_context` contains
 // information on the position of the cell and its title (if any). Adding this

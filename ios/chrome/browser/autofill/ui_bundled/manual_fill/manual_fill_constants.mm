@@ -37,6 +37,9 @@ NSString* const kSuggestPasswordAccessibilityIdentifier =
 
 NSString* const kMaskedPasswordButtonText = @"••••••••";
 
+// Format string for the subtitle when both host and type are present.
+NSString* const kSubtitleFormat = @"%@ • %@";
+
 // Payments
 
 NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
