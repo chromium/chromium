@@ -8690,6 +8690,24 @@
             ]
         }
     ],
+    "DesktopOmniboxHideAimUrl": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideAimEntrypointForUrlSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxRichAutocompletionMinChar": [
         {
             "platforms": [
