@@ -4,8 +4,9 @@
 
 import {BrowserProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxAimAppElement, PageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -53,8 +54,18 @@ suite('AimAppTest', function() {
     testProxy = new TestAimBrowserProxy();
     BrowserProxy.setInstance(testProxy as unknown as BrowserProxy);
     metrics = fakeMetricsPrivate();
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+    });
   });
 
+  teardown(() => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+    });
+  });
   // TODO(crbug.com/479888362): Disabled by gardener due to failure without
   // clear culprit.
   test.skip('ClearsInputOnCloseByDefault', async function() {
@@ -234,4 +245,88 @@ suite('AimAppTest', function() {
     assertTrue(!app.getHasAllowedInputsForTesting());
     assertEquals('Compact', app.getSearchboxLayoutModeForTesting());
   });
+
+  test(
+      'Voice search animation is not enabled if voice coherence is disabled',
+      async function() {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+        });
+        const app = document.createElement('omnibox-aim-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        // TODO(crbug.com/497887993) - replace with `ComposeboxElement` once
+        // `ComposeboxElement` usage is unrestricted after the composebox
+        // migration.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const composebox = app.$.composebox as any;
+        assertTrue(!!composebox, 'Composebox should exist');
+        assertTrue(
+            !!composebox.$.animatedSearchElement,
+            'animation element should exist');
+        assertFalse(
+            composebox.$.animatedSearchElement.requiresVoice,
+            'voice search animation should not exist');
+      });
+
+  test(
+      'Voice search animation is disabled ' +
+          'if only cobrowsing voice coherence is enabled',
+      async function() {
+        // Only enabled in cobrowsing means not enabled in
+        // omnibox.
+        loadTimeData.overrideValues({
+          // If composebox cobrowsing is enabled, backend logic
+          // should calculate `voiceSearchCoherenceComposeboxesEnabled`
+          // as false. Mock it as false here, so check that
+          // the frontend only depends on
+          // `voiceSearchCoherenceComposeboxesEnabled` and not
+          // `voiceSearchCoherenceCobrowsingComposeboxEnabled`.
+          voiceSearchCoherenceComposeboxesEnabled: false,
+          voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
+        });
+        const app = document.createElement('omnibox-aim-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        // TODO(crbug.com/497887993) - replace with `ComposeboxElement` once
+        // `ComposeboxElement` usage is unrestricted after the composebox
+        // migration.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const composebox = app.$.composebox as any;
+        assertTrue(!!composebox, 'Composebox should exist');
+        assertTrue(
+            !!composebox.$.animatedSearchElement,
+            'animation element should exist');
+        assertFalse(
+            composebox.$.animatedSearchElement.requiresVoice,
+            'voice search animation should not exist');
+      });
+
+  test(
+      'Voice search animation is enabled if voice coherence is enabled',
+      async function() {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+          voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
+        });
+
+        const app = document.createElement('omnibox-aim-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        // TODO(crbug.com/497887993) - replace with `ComposeboxElement` once
+        // `ComposeboxElement` usage is unrestricted after the composebox
+        // migration.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const composebox = app.$.composebox as any;
+        assertTrue(!!composebox, 'Composebox should exist');
+        assertTrue(
+            !!composebox.$.animatedSearchElement,
+            'animation element should exist');
+        assertTrue(
+            composebox.$.animatedSearchElement.requiresVoice,
+            'voice search animation should exist');
+      });
 });

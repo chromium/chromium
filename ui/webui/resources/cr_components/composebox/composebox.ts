@@ -18,6 +18,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/animated_glow.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
@@ -70,6 +71,7 @@ export interface ComposeboxElement {
     fileInputs: ComposeboxFileInputsElement,
     matches: ComposeboxDropdownElement,
     errorScrim: ErrorScrimElement,
+    animatedSearchElement: SearchAnimatedGlowElement,
   };
 }
 
