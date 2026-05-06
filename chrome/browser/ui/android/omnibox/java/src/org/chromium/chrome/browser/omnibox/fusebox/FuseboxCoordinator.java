@@ -163,9 +163,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         // Init with a default, and it will be corrected by the mediator before it
                         // matters.
                         .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
-                        .with(
-                                FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
-                                OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .with(FuseboxProperties.POPUP_STATE, FuseboxProperties.PopupState.HIDDEN)
                         .build();
 

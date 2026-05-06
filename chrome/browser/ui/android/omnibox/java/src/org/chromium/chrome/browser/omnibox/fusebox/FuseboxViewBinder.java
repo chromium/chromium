@@ -201,8 +201,6 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
-            updateRequestTypeButton(model, view);
         }
     }
 
@@ -505,13 +503,10 @@ class FuseboxViewBinder {
     private static void updateRequestTypeButton(PropertyModel model, FuseboxViewHolder view) {
         boolean fuseboxDisabled =
                 model.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.DISABLED;
-        boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         @AutocompleteRequestType
         int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
 
-        if (fuseboxDisabled
-                || !(ToolModeUtils.shouldShowRequestTypeButton(requestType)
-                        || showDedicatedModeButton)) {
+        if (fuseboxDisabled || !ToolModeUtils.shouldShowRequestTypeButton(requestType)) {
             view.requestType.setVisibility(View.GONE);
             return;
         }
@@ -530,43 +525,26 @@ class FuseboxViewBinder {
         @ColorInt
         int colorPrimary = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
 
-        if (ToolModeUtils.isAimRequest(requestType)) {
-            text = res.getString(getTextResForTool(requestType));
-            description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
-            startDrawable = context.getDrawable(getIconResForTool(requestType));
-            endDrawable = assumeNonNull(context.getDrawable(R.drawable.btn_close)).mutate();
-            borderColor =
-                    OmniboxResourceProvider.getRequestTypeButtonBorderColor(
-                            context, brandedColorScheme);
-            if (requestType == AutocompleteRequestType.IMAGE_GENERATION) {
-                buttonColor =
-                        OmniboxResourceProvider.getImageGenButtonColor(context, brandedColorScheme);
+        text = res.getString(getTextResForTool(requestType));
+        description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
+        startDrawable = context.getDrawable(getIconResForTool(requestType));
+        endDrawable = assumeNonNull(context.getDrawable(R.drawable.btn_close)).mutate();
+        borderColor =
+                OmniboxResourceProvider.getRequestTypeButtonBorderColor(
+                        context, brandedColorScheme);
+        if (requestType == AutocompleteRequestType.IMAGE_GENERATION) {
+            buttonColor =
+                    OmniboxResourceProvider.getImageGenButtonColor(context, brandedColorScheme);
 
-                textAppearanceRes =
-                        OmniboxResourceProvider.getImageGenButtonTextRes(brandedColorScheme);
-                endDrawable.setTint(
-                        OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
-            } else {
-                buttonColor =
-                        OmniboxResourceProvider.getAiModeButtonColor(context, brandedColorScheme);
-                textAppearanceRes =
-                        OmniboxResourceProvider.getAiModeButtonTextRes(brandedColorScheme);
-                assumeNonNull(startDrawable).mutate().setTint(colorPrimary);
-                endDrawable.setTint(colorPrimary);
-            }
-        } else /* dedicated button with aimode off, no hint text changes. */ {
-            text = res.getString(R.string.ai_mode_entrypoint_label);
-            description = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
-            buttonColor = Color.TRANSPARENT;
-            borderColor =
-                    OmniboxResourceProvider.getAiModeHintBorderColor(context, brandedColorScheme);
-            textAppearanceRes = OmniboxResourceProvider.getAiModeHintTextRes(brandedColorScheme);
-            startDrawable =
-                    assumeNonNull(context.getDrawable(R.drawable.search_spark_black_24dp)).mutate();
-            startDrawable.setTint(
-                    OmniboxResourceProvider.getAiModeHintIconTintColor(
-                            context, brandedColorScheme));
-            endDrawable = null;
+            textAppearanceRes =
+                    OmniboxResourceProvider.getImageGenButtonTextRes(brandedColorScheme);
+            endDrawable.setTint(
+                    OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+        } else {
+            buttonColor = OmniboxResourceProvider.getAiModeButtonColor(context, brandedColorScheme);
+            textAppearanceRes = OmniboxResourceProvider.getAiModeButtonTextRes(brandedColorScheme);
+            assumeNonNull(startDrawable).mutate().setTint(colorPrimary);
+            endDrawable.setTint(colorPrimary);
         }
 
         @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_button_icon_size);

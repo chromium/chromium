@@ -5154,9 +5154,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_OMNIBOX_CONTEXT_POPUP_TITLE" desc="Accessibility description for the 'Add context' popup.">
         Context popup window
       </message>
-      <message name="IDS_ACCESSIBILITY_OMNIBOX_ENABLE_AI_MODE" desc="Accessibility announcement when the 'AI Mode' option in the Omnibox 'Add context' popup is highlighted.">
-        Enable AI Mode
-      </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_RESET_MODE" desc="Accessibility announcement when the 'Reset mode' button in the omnibox is highlighted.">
         Reset current mode <ph name="MODE_NAME">%1$s<ex>AI Mode</ex></ph> to Search
       </message>

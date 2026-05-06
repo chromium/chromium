@@ -65,7 +65,6 @@ import java.util.List;
 public class FuseboxViewBinderUnitTest {
     @IntDef({
         Variant.DEFAULT,
-        Variant.DEDICATED_BUTTON,
         Variant.COMPACT,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -114,7 +113,6 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
         mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
-        mModel.set(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON, false);
         mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
 
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
@@ -138,17 +136,11 @@ public class FuseboxViewBinderUnitTest {
     }
 
     private void configureFusebox(@Variant int testCase, @AutocompleteRequestType int requestType) {
-        OmniboxFeatures.sShowDedicatedModeButton.setForTesting(
-                testCase == Variant.DEDICATED_BUTTON);
-
         // Reflect the active state of the fusebox toolbar.
         mModel.set(
                 FuseboxProperties.FUSEBOX_STATE,
                 testCase == Variant.COMPACT ? FuseboxState.COMPACT : FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, requestType);
-        mModel.set(
-                FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON,
-                OmniboxFeatures.sShowDedicatedModeButton.getValue());
     }
 
     @Test
@@ -237,25 +229,9 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void updateButtonsVisibility_AndStyling_dedicatedButton() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
-        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
-        assertEquals("AI Mode", mViewHolder.requestType.getText());
-
-        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.DEEP_SEARCH);
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
-        assertEquals("Deep Search", mViewHolder.requestType.getText());
-
-        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.CANVAS);
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
-        assertEquals("Canvas", mViewHolder.requestType.getText());
-    }
-
-    @Test
     public void updateButtonsVisibility_AndStyling_notDesktopPlatform() {
         OmniboxFeatures.setIsDesktopPlatformForTesting(false);
-        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.AI_MODE);
+        configureFusebox(Variant.DEFAULT, AutocompleteRequestType.AI_MODE);
 
         // It should be VISIBLE on non-desktop when other conditions met.
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());

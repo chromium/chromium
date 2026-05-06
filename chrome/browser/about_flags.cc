@@ -1898,8 +1898,6 @@ constexpr FeatureEntry::FeatureParam kOmniboxDiagInputConnection[]{
 constexpr FeatureEntry::FeatureVariation kOmniboxDiagnosticsAndroidVaiants[] = {
     {"- InputConnection", kOmniboxDiagInputConnection, nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButton[] = {
-    {"show_dedicated_mode_button", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimCompactFusebox[] = {
     {"compact_fusebox", "true"}};
 const FeatureEntry::FeatureParam kOmniboxAimOriginalComposeplate[] = {
@@ -1917,7 +1915,6 @@ const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet[] = {
     {"use_ask_hint_for_ntp", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
-    {"Dedicated Button", kOmniboxAimDedicatedModeButton, nullptr},
     {"Compact", kOmniboxAimCompactFusebox, nullptr},
     {"Original Composeplate", kOmniboxAimOriginalComposeplate, nullptr},
     {"Model Picker & Tools", kOmniboxAimModelPickerAndCanvas, nullptr},

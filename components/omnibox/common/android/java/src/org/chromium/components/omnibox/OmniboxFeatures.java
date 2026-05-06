@@ -142,9 +142,6 @@ public class OmniboxFeatures {
     private static final CachedFlag sOmniboxMultimodalInput =
             newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_TEST);
 
-    public static final BooleanCachedFeatureParam sShowDedicatedModeButton =
-            newBooleanParam(sOmniboxMultimodalInput, "show_dedicated_mode_button", false);
-
     public static final BooleanCachedFeatureParam sCompactFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
 
