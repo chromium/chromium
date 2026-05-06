@@ -1,0 +1,14 @@
+Name: cobs
+URL: https://crates.io/crates/cobs
+Version: 0.3.0
+Revision: b86d5c1ace3d8c311d1db143f05f8083743700d1
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/cobs-v0_3/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description:     This is an implementation of the Consistent Overhead Byte Stuffing (COBS) algorithm.
+    COBS is an algorithm for transforming a message into an encoding where a specific value
+    (the "sentinel" value) is not used. This value can then be used to mark frame boundaries
+    in a serial communication channel. 

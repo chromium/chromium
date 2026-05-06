@@ -221,6 +221,10 @@ extra_kv = { allow_unsafe = false }
 [crate.clap_lex.extra_kv]
 allow_unsafe = true
 
+[crate.cobs]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = false }
+
 [crate.codespan-reporting.extra_kv]
 allow_unsafe = false
 
@@ -616,6 +620,11 @@ allow_unsafe = false
 # https://crbug.com/396419181.
 configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
+
+[crate.postcard]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
 
 [crate.potential_utf.extra_kv]
 allow_unsafe = true
