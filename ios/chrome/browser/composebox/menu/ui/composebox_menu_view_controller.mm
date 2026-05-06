@@ -451,6 +451,12 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     return;
   }
 
+  // Ignore taps on already selected models.
+  if (_inputState.activeModel != ComposeboxModelOption::kNone &&
+      item.type == MenuItemTypeForModel(_inputState.activeModel)) {
+    return;
+  }
+
   [self.mutator handleItemPickedWithType:item.type];
 }
 
