@@ -139,7 +139,7 @@ public class CafExpandedControllerActivity extends FragmentActivity
         // requestWindowFeature must be called before adding content.
         setContentView(R.layout.expanded_cast_controller);
 
-        ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup rootView = findViewById(android.R.id.content);
         rootView.setBackgroundColor(Color.BLACK);
 
         // Create and initialize the media control UI.

@@ -93,7 +93,7 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
             public void onCreate(@Nullable Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
 
-                ListView listView = (ListView) findViewById(R.id.mr_chooser_list);
+                ListView listView = findViewById(R.id.mr_chooser_list);
                 if (listView != null) {
                     listView.setOnItemClickListener(Fragment.this::onItemClick);
                     recordSinkCountWithDelay();
@@ -109,7 +109,7 @@ public class MediaRouteChooserDialogManager extends BaseMediaRouteDialogManager 
                         new Runnable() {
                             @Override
                             public void run() {
-                                ListView listView = (ListView) findViewById(R.id.mr_chooser_list);
+                                ListView listView = findViewById(R.id.mr_chooser_list);
                                 if (listView != null) {
                                     MediaRouteUmaRecorder.recordDeviceCountWithDelay(
                                             listView.getCount());
