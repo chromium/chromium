@@ -1399,7 +1399,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
         if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) return false;
         if (mDisableSyncMinHeightWithTotalHeight) return false;
-
         return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);
     }
 

@@ -39,11 +39,11 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.B
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -592,8 +592,9 @@ public class BookmarkBarCoordinator
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
         // When fullscreen mode is entered, we need to hide the scene layer and Android widgets.
         // However, if LockTopControls is enabled, we never remove the bookmark bar.
-        if (!ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
-                && !ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
+
+        boolean isLockTopControlsEnabled = BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mContext);
+        if (!isLockTopControlsEnabled) {
             mIsInFullscreenMode = true;
             updateSceneLayerVisibility();
             updateAndroidWidgetVisibility();
@@ -607,9 +608,12 @@ public class BookmarkBarCoordinator
         // don't force this to true, but use the current state instead. Same for Android widgets.
 
         // We should never get into the fullscreen mode state while LockTopControls is enabled.
-        if (ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
-                || ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
-            assert !mIsInFullscreenMode : "Should not be in fullscreen mode with LockTopControls";
+        boolean isLockTopControlsEnabled =
+                BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mContext);
+        if (isLockTopControlsEnabled) {
+            assert !mIsInFullscreenMode
+                    : "Should not be in fullscreen mode on large tablets where top controls lock is"
+                            + " enabled.";
         }
 
         mIsInFullscreenMode = false;
