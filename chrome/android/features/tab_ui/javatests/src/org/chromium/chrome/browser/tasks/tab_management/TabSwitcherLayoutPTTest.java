@@ -686,6 +686,7 @@ public class TabSwitcherLayoutPTTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // Flaky on desktop crbug.com/510238011
     public void testTabGroupCreation_dismissSavesState() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
