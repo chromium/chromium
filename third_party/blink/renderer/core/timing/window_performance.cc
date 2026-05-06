@@ -577,6 +577,8 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
           task_context, has_multiple_contexts, DomWindow()->GetFrame());
   DOMWindow* culprit_dom_window = attribution.second;
   if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
+      !CanAccessOrigin(DomWindow()->GetFrame(),
+                       culprit_dom_window->GetFrame()) ||
       !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
     AddLongTaskTiming(start_time, end_time, attribution.first,
                       performance_entry_names::kWindow, g_empty_atom,
