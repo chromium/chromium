@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/safe_browsing/model/input_event_observer.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -19,7 +20,7 @@ const char kTextEnteredHandlerName[] = "PasswordProtectionTextEntered";
 // Values for the "eventType" field in messages received by this feature's
 // script message handler.
 const char kPasteEventType[] = "TextPasted";
-const char kKeyPressedEventType[] = "KeyPressed";
+const char kKeyDownEventType[] = "KeyDown";
 }  // namespace
 
 PasswordProtectionJavaScriptFeature::PasswordProtectionJavaScriptFeature()
@@ -71,11 +72,12 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (*event_type == kKeyPressedEventType) {
-    // A keypress event should consist of a single character. A longer string
+  if (*event_type == kKeyDownEventType) {
+    // A key event should consist of a single character. A longer string
     // means the message isn't well-formed, so might be coming from a
     // compromised WebProcess.
-    if ((*text).size() > 1) {
+    std::u16string text16 = base::UTF8ToUTF16(*text);
+    if (text16.length() != 1) {
       return;
     }
     observer->OnKeyPressed(*text);

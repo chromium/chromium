@@ -35,7 +35,21 @@ id<GREYMatcher> PasswordProtectionMatcher() {
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_content("Input: <input type='text' id='input'>");
+  if (request.relative_url.find("preventDefault=true") != std::string::npos) {
+    http_response->set_content(
+        "Input: <input type='text' id='input'>"
+        "<script>"
+        "  document.getElementById('input').addEventListener('keydown', "
+        "function(e) {"
+        "    e.preventDefault();"
+        "    if (e.key.length === 1) {"
+        "      document.getElementById('input').value += e.key;"
+        "    }"
+        "  });"
+        "</script>");
+  } else {
+    http_response->set_content("Input: <input type='text' id='input'>");
+  }
   http_response->set_content_type("text/html");
   return http_response;
 }
@@ -61,7 +75,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       std::string("--mark_as_allowlisted_for_phish_guard=") +
       _allowlistedURL.spec());
 
-  if ([self isRunningTest:@selector(testPasswordReuseDetectionWarning)]) {
+  if ([self isRunningTest:@selector(testPasswordReuseDetectionWarning)] ||
+      [self isRunningTest:@selector
+            (testPasswordReuseDetectionKeydownPreventDefault)]) {
     // Use commandline args to save a fake phishing cached verdict.
     config.additional_args.push_back(
         std::string("--mark_as_phish_guard_phishing=") + _phishingURL.spec());
@@ -107,6 +123,19 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // PhishGuard is only available on iOS 14.0 or above.
 
   [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
+
+  [self typePasswordIntoWebInput];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:PasswordProtectionMatcher()
+                                  timeout:base::test::ios::
+                                              kWaitForUIElementTimeout];
+}
+
+// Tests that password protection UI is shown even when the webpage cancels
+// keydown events.
+- (void)testPasswordReuseDetectionKeydownPreventDefault {
+  [ChromeEarlGrey loadURL:GURL(_phishingURL.spec() + "?preventDefault=true")];
   [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
 
   [self typePasswordIntoWebInput];

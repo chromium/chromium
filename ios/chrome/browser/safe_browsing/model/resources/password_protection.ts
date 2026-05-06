@@ -5,22 +5,23 @@
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /*
-* @fileoverview Adds listeners that forward keypress and paste events to the
-* browser. The browser uses this information to detect and warn the user about
-* situations where the user enters one of their saved passwords on a
-* possibly-unsafe site
-*/
+ * @fileoverview Adds listeners that forward keydown and paste events to the
+ * browser. The browser uses this information to detect and warn the user about
+ * situations where the user enters one of their saved passwords on a
+ * possibly-unsafe site
+ */
 
 /**
- * Listens for keypress events and forwards the entered key to the browser.
+ * Listens for keydown events and forwards the entered key to the browser.
  */
-function onKeypressEvent(event : KeyboardEvent) : void {
-  // Only forward events where the entered key has length 1, to avoid forwarding
-  // special keys like "Enter".
-  if (event.isTrusted && event.key.length === 1) {
+function onKeydownEvent(event: KeyboardEvent): void {
+  // Only forward events where the entered key has length 1, to avoid
+  // forwarding special keys like "Enter".
+  if (event.isTrusted && event.key.length === 1 && !event.ctrlKey &&
+      !event.metaKey) {
     sendWebKitMessage(
         'PasswordProtectionTextEntered',
-        {eventType: 'KeyPressed', text: event.key});
+        {eventType: 'KeyDown', text: event.key});
   }
 }
 
@@ -49,5 +50,5 @@ function onPasteEvent(event : Event) : void {
 
 // Events are first dispatched to the window object, in the capture phase of
 // JavaScript event dispatch, so listen for them there.
-window.addEventListener('keypress', onKeypressEvent, true);
+window.addEventListener('keydown', onKeydownEvent, true);
 window.addEventListener('paste', onPasteEvent, true);
