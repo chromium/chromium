@@ -9430,7 +9430,7 @@
   {
     "name": "use-scene-view-controller",
     "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "use-search-click-for-right-click",
