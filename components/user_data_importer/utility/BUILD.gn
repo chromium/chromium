@@ -202,6 +202,7 @@ source_set("unit_tests") {
     deps += [
       ":test_archive_bundle_data",
       "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
+      "//ios/web/public/test",
     ]
   } else {
     data_deps = [

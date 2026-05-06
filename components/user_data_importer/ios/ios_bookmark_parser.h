@@ -5,16 +5,19 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_IOS_IOS_BOOKMARK_PARSER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_IOS_IOS_BOOKMARK_PARSER_H_
 
-#import "components/user_data_importer/utility/bookmark_parser.h"
+#include <string>
 
-@class LocalNavigationForwarder;
-@class WKWebView;
+#include "base/threading/sequence_bound.h"
+#include "base/values.h"
+#import "components/user_data_importer/utility/bookmark_parser.h"
 
 namespace base {
 class FilePath;
 }
 
 namespace user_data_importer {
+
+class WebViewRunner;
 
 // iOS implementation of the BookmarkParser interface. Uses WKWebView as a
 // JavaScript environment where parsing can occur in a memory-safe language.
@@ -27,18 +30,15 @@ class IOSBookmarkParser : public BookmarkParser {
              BookmarkParser::BookmarkParsingCallback callback) override;
 
  private:
-  // Injects JS into the WebView to cause parsing of the currently loaded
-  // content.
-  void TriggerParseInJS(BookmarkParser::BookmarkParsingCallback callback);
+  // Invoked on this object's default sequence when the WebViewRunner has
+  // completed parsing in JavaScript.
+  void OnJSResult(BookmarkParser::BookmarkParsingCallback callback,
+                  std::string result,
+                  NSError* error);
 
-  // Delegate used to observe loading in `web_view_` and trigger parsing at the
-  // appropriate time. Declared as a member here because it is not retained
-  // by the WebView once set.
-  LocalNavigationForwarder* forwarder_;
-
-  // Environment where the bookmarks HTML file is loaded and JS is executed
-  // to parse the contents.
-  WKWebView* web_view_;
+  // Encapsulates the parts of this flow that must be run on the main (UI)
+  // thread.
+  base::SequenceBound<WebViewRunner> runner_;
 
   base::WeakPtrFactory<IOSBookmarkParser> weak_factory_{this};
 };

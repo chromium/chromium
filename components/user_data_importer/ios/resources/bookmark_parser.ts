@@ -204,4 +204,4 @@ function parse(): ParsedBookmarks {
 // complains about `return` appearing outside a function, so we have to add it
 // at runtime after TS->JS transpilation.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const parsed = parse();
+const parsed = JSON.stringify(parse());

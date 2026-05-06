@@ -16,6 +16,7 @@ source_set("ios") {
     "//base",
     "//components/user_data_importer/utility:bookmarks",
     "//ios/web/public/js_messaging:web_view_js_utils",
+    "//ios/web/public/thread",
     "//url",
   ]
 }

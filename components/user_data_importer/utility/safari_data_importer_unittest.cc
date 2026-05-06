@@ -51,12 +51,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
+#include "ios/web/public/test/web_task_environment.h"
+#else
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "content/public/test/browser_task_environment.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 using bookmarks::test::IsFolder;
 using bookmarks::test::IsUrlBookmark;
@@ -132,7 +134,7 @@ class SafariDataImporterTest : public testing::Test {
 
  protected:
 #if BUILDFLAG(IS_IOS)
-  base::test::TaskEnvironment task_environment_{
+  web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 #else
   content::BrowserTaskEnvironment task_environment_{
