@@ -31,7 +31,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     // Ordered alphabetically on feature name.
     // keep-sorted start allow_yaml_lists=yes by_regex=['\w+,']
-    &features::kAndroidMetricsAsyncMetricLogging,
     &::features::kEnablePerfettoSystemTracing,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &features::kPostChromiumStartupInWebViewConstructor,

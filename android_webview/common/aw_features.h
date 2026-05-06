@@ -60,7 +60,6 @@ extern const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum;
 extern const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum;
 extern const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier;
 BASE_DECLARE_FEATURE(kWebViewConnectToComponentProviderInBackground);
-BASE_DECLARE_FEATURE(kAndroidMetricsAsyncMetricLogging);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);

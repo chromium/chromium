@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/metrics/android_metrics_log_uploader.h"
 
-#include "android_webview/common/aw_features.h"
 #include "base/android/jni_array.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/log_decoder.h"
@@ -25,13 +24,11 @@ AndroidMetricsLogUploader::AndroidMetricsLogUploader(
 
 AndroidMetricsLogUploader::~AndroidMetricsLogUploader() = default;
 
-int32_t UploadLogWithUploader(const std::string& log_data,
-                              const bool async_metric_logging_feature) {
+int32_t UploadLogWithUploader(const std::string& log_data) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jbyteArray> java_data = ToJavaByteArray(env, log_data);
 
-  return Java_AndroidMetricsLogUploader_uploadLog(env, java_data,
-                                                  async_metric_logging_feature);
+  return Java_AndroidMetricsLogUploader_uploadLog(env, java_data);
 }
 
 void AndroidMetricsLogUploader::UploadLog(
@@ -50,19 +47,11 @@ void AndroidMetricsLogUploader::UploadLog(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          android_webview::features::kAndroidMetricsAsyncMetricLogging)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&UploadLogWithUploader, log_data, true),
-        base::BindOnce(&AndroidMetricsLogUploader::OnUploadComplete,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    UploadLogWithUploader(log_data, false);
-
-    // Just pass 200 (HTTP OK) and pretend everything is peachy.
-    OnUploadComplete(200);
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&UploadLogWithUploader, log_data),
+      base::BindOnce(&AndroidMetricsLogUploader::OnUploadComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AndroidMetricsLogUploader::OnUploadComplete(const int32_t status) {

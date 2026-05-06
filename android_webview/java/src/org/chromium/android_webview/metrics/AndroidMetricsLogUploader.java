@@ -27,19 +27,9 @@ public class AndroidMetricsLogUploader {
     }
 
     @CalledByNative
-    public static int uploadLog(byte[] data, boolean asyncMetricLoggingFeature) {
+    public static int uploadLog(byte[] data) {
         final AndroidMetricsLogConsumer consumer = sConsumer;
-        if (asyncMetricLoggingFeature) {
-            assert consumer != null : "The consumer for android metrics logging was not set";
-            return consumer.log(data);
-        } else {
-            if (consumer != null) {
-                return consumer.log(data);
-            }
-            // If we end up not having an uploader yet it means metric reporting has been
-            // attempted too early so return Http Not Found (404) to indicate the resource does
-            // not exist yet.
-            return 404;
-        }
+        assert consumer != null : "The consumer for android metrics logging was not set";
+        return consumer.log(data);
     }
 }

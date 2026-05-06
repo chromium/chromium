@@ -68,7 +68,7 @@ public class AwMetricsLogUploaderTest {
 
     @Test
     public void testSendingData_withPreBinding() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
         uploader.initialize();
         int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
         Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
@@ -79,7 +79,7 @@ public class AwMetricsLogUploaderTest {
 
     @Test
     public void testSendingData_withoutPreBinding() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
         int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
         Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
         ChromeUserMetricsExtension receivedLog = mPlatformServiceBridge.waitForNextMetricsLog();
@@ -97,7 +97,7 @@ public class AwMetricsLogUploaderTest {
         // choosing will be thrown.
         when(mMockedResultsQueue.poll(anyLong(), any())).thenReturn(null);
 
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
         int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mMockedResultsQueue);
 
         Assert.assertEquals(HttpURLConnection.HTTP_CLIENT_TIMEOUT, status);
@@ -113,27 +113,15 @@ public class AwMetricsLogUploaderTest {
                             throw exceptionThrown;
                         });
 
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
         int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray(), mMockedResultsQueue);
 
         Assert.assertEquals(expectedStatus, status);
     }
 
     @Test
-    public void testSendingData_platformStatusCodeIgnored_ifNotWaitingForResults()
-            throws Throwable {
-        // Returning a non 0 status code to simulate a failure.
-        // We should still get a success code since this code is not waiting for this.
-        mPlatformServiceBridge.setLogMetricsBlockingStatus(1);
-
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ false);
-        int status = uploader.log(SAMPLE_TEST_METRICS_LOG.toByteArray());
-        Assert.assertEquals(HttpURLConnection.HTTP_OK, status);
-    }
-
-    @Test
     public void testSendingMultipleLogs() throws Throwable {
-        AwMetricsLogUploader uploader = new AwMetricsLogUploader(/* isAsync= */ true);
+        AwMetricsLogUploader uploader = new AwMetricsLogUploader();
         uploader.initialize();
 
         final int numberOfLogs = 5;

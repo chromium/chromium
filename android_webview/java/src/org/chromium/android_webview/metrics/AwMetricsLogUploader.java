@@ -21,8 +21,6 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -44,17 +42,6 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
     private final AtomicReference<@Nullable MetricsLogUploaderServiceConnection>
             mInitialConnection = new AtomicReference<>();
-    private final boolean mIsAsync;
-
-    /**
-     * @param isAsync Whether logging is happening on a background thread or if it is being called
-     *     from the main thread.
-     */
-    public AwMetricsLogUploader(boolean isAsync) {
-        // A service connection that is used to establish an initial connection to the
-        // MetricsUploadService to keep it alive until the first metrics log is ready.
-        mIsAsync = isAsync;
-    }
 
     // A service connection that sends the given serialized metrics log data to
     // MetricsUploadService. It closes the connection after sending the metrics log.
@@ -112,19 +99,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
          * Note: Once this method has run, it will automatically unbind the connection so this
          * connection should not be used after calling this method "once".
          */
-        public int sendData(boolean isAsync, byte[] data) {
-            // If we are on the main thread, we cannot block waiting to connect to the service so we
-            // need to fire and forget. In this case all we can do is report back OK.
-            if (!isAsync) {
-                PostTask.postTask(
-                        TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                        () -> {
-                            uploadToService(data);
-                        });
-
-                return HttpURLConnection.HTTP_OK;
-            }
-
+        public int sendData(byte[] data) {
             return uploadToService(data);
         }
 
@@ -177,7 +152,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
             }
         }
 
-        return connection.sendData(mIsAsync, data);
+        return connection.sendData(data);
     }
 
     /**

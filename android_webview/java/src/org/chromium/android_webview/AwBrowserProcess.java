@@ -783,9 +783,7 @@ public final class AwBrowserProcess {
                                     AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
 
             if (metricServiceEnabledOnlySdkRuntime) {
-                boolean isAsync =
-                        AwFeatureMap.isEnabled(AwFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING);
-                AwMetricsLogUploader uploader = new AwMetricsLogUploader(isAsync);
+                AwMetricsLogUploader uploader = new AwMetricsLogUploader();
                 // Open a connection during startup while connecting to other services such as
                 // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
                 // nonembedded ":webview_service" twice.

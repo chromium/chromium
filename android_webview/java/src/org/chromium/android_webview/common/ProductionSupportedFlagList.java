@@ -406,9 +406,6 @@ public final class ProductionSupportedFlagList {
                 "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                         + " directly when running within the SDK Runtime."),
         Flag.baseFeature(
-                AwFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
-                "Initiate metric uploading on a background thread."),
-        Flag.baseFeature(
                 BlinkFeatures.SET_INTERVAL_WITHOUT_CLAMP,
                 "Enables faster setInterval(,0) by removing the 1 ms clamping."),
         Flag.baseFeature(
