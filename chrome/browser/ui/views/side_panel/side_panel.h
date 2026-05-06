@@ -23,7 +23,6 @@
 #include "ui/views/view_utils.h"
 
 class BrowserView;
-class SidePanelAnimationPerfReporter;
 
 class SidePanel : public views::AccessiblePaneView,
                   public views::ResizeAreaDelegate {
@@ -185,9 +184,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Subscription for animation updates.
   base::CallbackListSubscription animation_subscription_;
-
-  // Animation perf reporter.
-  std::unique_ptr<SidePanelAnimationPerfReporter> animation_perf_reporter_;
 
   // Cache of recent animation values.
   std::map<BrowserAnimationSequence, double> last_animation_values_;

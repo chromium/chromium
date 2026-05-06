@@ -14,6 +14,12 @@
 
 class SidePanelMetrics {
  public:
+  // LINT.IfChange(SidePanelType)
+  static constexpr char kSidePanelHistogramName[] = "SidePanel";
+  static constexpr char kSidePanelToolbarHeightHistogramName[] =
+      "SidePanelToolbarHeight";
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:SidePanelType)
+
   static void RecordNewTabButtonClicked(SidePanelEntry::Id id);
   static void RecordSidePanelOpen(std::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelShowOrChangeEntryTrigger(
@@ -30,11 +36,6 @@ class SidePanelMetrics {
       SidePanelEntry::Id id,
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
-  static void RecordSidePanelAnimationMetrics(
-      SidePanelType type,
-      SidePanelAnimationType animation_type,
-      base::TimeDelta largest_step_time,
-      int frames_per_second);
   static void RecordPanelClosedForOtherPanelTypeMetrics(
       SidePanelEntryId closing_panel_id,
       SidePanelEntryId opening_panel_id);

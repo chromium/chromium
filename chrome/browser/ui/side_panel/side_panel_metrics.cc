@@ -11,47 +11,17 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-
-namespace {
-
-std::string_view GetSidePanelName() {
-  return "SidePanel";
-}
-
-std::string_view GetSidePanelNameFor(SidePanelType panel_type) {
-  switch (panel_type) {
-    case SidePanelType::kContent:
-      return "SidePanel";
-    case SidePanelType::kToolbar:
-      return "SidePanelToolbarHeight";
-  }
-
-  NOTREACHED() << "Invalid SidePanelType " << static_cast<int>(panel_type);
-}
-
-std::string_view GetAnimationNameFor(SidePanelAnimationType animation_type) {
-  switch (animation_type) {
-    case SidePanelAnimationType::kOpen:
-      return "Open";
-    case SidePanelAnimationType::kOpenWithContentTransition:
-      return "OpenWithContentTransition";
-    case SidePanelAnimationType::kClose:
-      return "Close";
-  }
-
-  NOTREACHED() << "Invalid AnimationType " << static_cast<int>(animation_type);
-}
-
-}  // namespace
+#include "chrome/browser/ui/side_panel/side_panel_enums_utils.h"
 
 void SidePanelMetrics::RecordSidePanelOpen(
     std::optional<SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction(
-      base::StrCat({GetSidePanelName(), ".Show"}).c_str()));
+      base::StrCat({kSidePanelHistogramName, ".Show"}).c_str()));
 
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({GetSidePanelName(), ".OpenTrigger"}), trigger.value());
+        base::StrCat({kSidePanelHistogramName, ".OpenTrigger"}),
+        trigger.value());
   }
 }
 
@@ -59,17 +29,17 @@ void SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(
     std::optional<SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({GetSidePanelName(), ".OpenOrChangeEntryTrigger"}),
+        base::StrCat({kSidePanelHistogramName, ".OpenOrChangeEntryTrigger"}),
         trigger.value());
   }
 }
 
 void SidePanelMetrics::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
   base::RecordAction(base::UserMetricsAction(
-      base::StrCat({GetSidePanelName(), ".Hide"}).c_str()));
+      base::StrCat({kSidePanelHistogramName, ".Hide"}).c_str()));
 
   base::UmaHistogramLongTimes(
-      base::StrCat({GetSidePanelName(), ".OpenDuration"}),
+      base::StrCat({kSidePanelHistogramName, ".OpenDuration"}),
       base::TimeTicks::Now() - opened_timestamp);
 }
 
@@ -81,21 +51,21 @@ void SidePanelMetrics::RecordSidePanelResizeMetrics(
 
   // Metrics per-id and overall for side panel width after resize.
   base::UmaHistogramCounts10000(
-      base::StrCat({GetSidePanelName(), ".", entry_name, ".ResizedWidth"}),
+      base::StrCat({kSidePanelHistogramName, ".", entry_name, ".ResizedWidth"}),
       side_panel_contents_width);
   base::UmaHistogramCounts10000(
-      base::StrCat({GetSidePanelName(), ".ResizedWidth"}),
+      base::StrCat({kSidePanelHistogramName, ".ResizedWidth"}),
       side_panel_contents_width);
 
   // Metrics per-id and overall for side panel width after resize as a
   // percentage of browser width.
   int width_percentage = side_panel_contents_width * 100 / browser_window_width;
   base::UmaHistogramPercentage(
-      base::StrCat(
-          {GetSidePanelName(), ".", entry_name, ".ResizedWidthPercentage"}),
+      base::StrCat({kSidePanelHistogramName, ".", entry_name,
+                    ".ResizedWidthPercentage"}),
       width_percentage);
   base::UmaHistogramPercentage(
-      base::StrCat({GetSidePanelName(), ".ResizedWidthPercentage"}),
+      base::StrCat({kSidePanelHistogramName, ".ResizedWidthPercentage"}),
       width_percentage);
 }
 
@@ -109,11 +79,11 @@ void SidePanelMetrics::RecordEntryShownMetrics(
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
   base::RecordComputedAction(
-      base::StrCat({GetSidePanelName(), ".",
+      base::StrCat({kSidePanelHistogramName, ".",
                     SidePanelEntryIdToHistogramName(id), ".Shown"}));
   if (load_started_timestamp != base::TimeTicks()) {
     base::UmaHistogramLongTimes(
-        base::StrCat({GetSidePanelName(), ".",
+        base::StrCat({kSidePanelHistogramName, ".",
                       SidePanelEntryIdToHistogramName(id),
                       ".TimeFromEntryTriggerToShown"}),
         base::TimeTicks::Now() - load_started_timestamp);
@@ -124,7 +94,7 @@ void SidePanelMetrics::RecordEntryHiddenMetrics(
     SidePanelEntry::Id id,
     base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
-      base::StrCat({GetSidePanelName(), ".",
+      base::StrCat({kSidePanelHistogramName, ".",
                     SidePanelEntryIdToHistogramName(id), ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
   // To measure extended usage times, Read Anything also needs a higher maximum
@@ -145,7 +115,7 @@ void SidePanelMetrics::RecordEntryShowTriggeredMetrics(
     std::optional<SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({GetSidePanelName(), ".",
+        base::StrCat({kSidePanelHistogramName, ".",
                       SidePanelEntryIdToHistogramName(id), ".ShowTriggered"}),
         trigger.value());
   }
@@ -158,32 +128,13 @@ void SidePanelMetrics::RecordPinnedButtonClicked(SidePanelEntry::Id id,
        is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
 }
 
-void SidePanelMetrics::RecordSidePanelAnimationMetrics(
-    SidePanelType type,
-    SidePanelAnimationType animation_type,
-    base::TimeDelta largest_step_time,
-    int frames_per_second) {
-  if (!largest_step_time.is_zero()) {
-    base::UmaHistogramTimes(base::StrCat({GetSidePanelNameFor(type),
-                                          ".TimeOfLongestAnimationStep"}),
-                            largest_step_time);
-  }
-
-  if (frames_per_second > 0) {
-    base::UmaHistogramCounts100(
-        base::StrCat({GetSidePanelNameFor(type), ".",
-                      GetAnimationNameFor(animation_type), ".AnimationFPS"}),
-        frames_per_second);
-  }
-}
-
 void SidePanelMetrics::RecordPanelClosedForOtherPanelTypeMetrics(
     SidePanelEntryId closing_panel_id,
     SidePanelEntryId opening_panel_id) {
   if (closing_panel_id == SidePanelEntryId::kContextualTasks &&
       opening_panel_id == SidePanelEntryId::kGlic) {
     base::RecordComputedAction(
-        base::StrCat({GetSidePanelName(), ".",
+        base::StrCat({kSidePanelHistogramName, ".",
                       SidePanelEntryIdToHistogramName(closing_panel_id),
                       ".EntryClosedToOpen.",
                       SidePanelEntryIdToHistogramName(opening_panel_id)}));

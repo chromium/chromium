@@ -96,18 +96,6 @@ inline std::string ToString(SidePanelEntryHideReason reason) {
   NOTREACHED();
 }
 
-inline std::string ToString(SidePanelAnimationType type) {
-  switch (type) {
-    case SidePanelAnimationType::kOpen:
-      return "Open";
-    case SidePanelAnimationType::kOpenWithContentTransition:
-      return "OpenWithContentTransition";
-    case SidePanelAnimationType::kClose:
-      return "Close";
-  }
-  NOTREACHED();
-}
-
 inline std::string ToString(SidePanelType type) {
   switch (type) {
     case SidePanelType::kContent:

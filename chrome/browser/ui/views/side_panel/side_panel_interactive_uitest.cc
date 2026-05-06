@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -80,14 +83,18 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 
   // Helper to register and show a lightweight side panel
   // that includes a ready indicator for synchronization.
-  auto RegisterAndShowBasicSidePanel(ui::ElementIdentifier ready_indicator_id) {
+  auto RegisterAndShowBasicSidePanel(
+      ui::ElementIdentifier ready_indicator_id,
+      SidePanelType panel_type = SidePanelType::kContent) {
     return Steps(
-        ActivateSurface(kBrowserViewElementId), Do([&, ready_indicator_id]() {
+        ActivateSurface(kBrowserViewElementId),
+        Do([&, ready_indicator_id, panel_type]() {
           auto* registry =
               SidePanelRegistry::From(browser()->GetActiveTabInterface());
           registry->Deregister(
               SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
           registry->Register(std::make_unique<SidePanelEntry>(
+              panel_type,
               SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome),
               base::BindRepeating(
                   [](ui::ElementIdentifier indicator_id, SidePanelEntryScope&) {
@@ -648,4 +655,150 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest, CloseSidePanel) {
       WaitForPromo(feature_engagement::kIPHSidePanelGenericPinnableFeature),
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId));
+}
+
+class SidePanelAnimationPerfUiTest : public SidePanelInteractiveTest {
+ public:
+  SidePanelAnimationPerfUiTest() = default;
+  ~SidePanelAnimationPerfUiTest() override = default;
+
+  auto StartCollectingSamples() {
+    return Do([this]() {
+      histogram_tester_ = std::make_unique<base::HistogramTester>();
+    });
+  }
+
+  auto OpenBookmarksSidePanel() {
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+        WaitForEvent(kSidePanelElementId,
+                     SidePanel::kOpenAnimationCompletedEvent)
+            .SetMustBeVisibleAtStart(false));
+  }
+
+  auto OpenToolbarHeightSidePanel() {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestSidePanelId);
+    return InParallel(
+        RunSubsequence(RegisterAndShowBasicSidePanel(kTestSidePanelId,
+                                                     SidePanelType::kToolbar)),
+        RunSubsequence(WaitForEvent(kSidePanelElementId,
+                                    SidePanel::kOpenAnimationCompletedEvent)
+                           .SetMustBeVisibleAtStart(false)));
+  }
+
+  auto CloseSidePanel() {
+    return Steps(PressButton(kSidePanelCloseButtonElementId),
+                 WaitForEvent(kSidePanelElementId,
+                              SidePanel::kCloseAnimationCompletedEvent),
+                 WaitForHide(kSidePanelElementId));
+  }
+
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(SidePanelAnimationPerfUiTest, OpenSidePanel) {
+  bool has_fps = false;
+  RunTestSequence(StartCollectingSamples(), OpenBookmarksSidePanel(),
+                  Do([this, &has_fps]() {
+                    histogram_tester_->ExpectTotalCount(
+                        "SidePanel.Open.TimeOfLongestAnimationStep", 1);
+                    has_fps = histogram_tester_->GetTotalCountForPrefix(
+                                  "SidePanel.Open.AnimationFPS") > 0;
+                  }),
+                  CheckResult(
+                      [this]() {
+                        return histogram_tester_->GetTotalSum(
+                            "SidePanel.Open.TimeOfLongestAnimationStep");
+                      },
+                      testing::Gt(0), "Check longest step is nonzero."),
+                  If([&] { return has_fps; },
+                     Then(CheckResult(
+                         [this]() {
+                           return histogram_tester_->GetTotalSum(
+                               "SidePanel.Open.AnimationFPS");
+                         },
+                         testing::Gt(0), "Check fps is nonzero.")),
+                     Else(Log("Compositor failed to render during test."))));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelAnimationPerfUiTest, CloseSidePanel) {
+  bool has_fps = false;
+  RunTestSequence(OpenBookmarksSidePanel(), StartCollectingSamples(),
+                  CloseSidePanel(), Do([this, &has_fps]() {
+                    histogram_tester_->ExpectTotalCount(
+                        "SidePanel.Close.TimeOfLongestAnimationStep", 1);
+                    has_fps = histogram_tester_->GetTotalCountForPrefix(
+                                  "SidePanel.Close.AnimationFPS") > 0;
+                  }),
+                  CheckResult(
+                      [this]() {
+                        return histogram_tester_->GetTotalSum(
+                            "SidePanel.Close.TimeOfLongestAnimationStep");
+                      },
+                      testing::Gt(0), "Check longest step is nonzero."),
+                  If([&] { return has_fps; },
+                     Then(CheckResult(
+                         [this]() {
+                           return histogram_tester_->GetTotalSum(
+                               "SidePanel.Close.AnimationFPS");
+                         },
+                         testing::Gt(0), "Check fps is nonzero.")),
+                     Else(Log("Compositor failed to render during test."))));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelAnimationPerfUiTest,
+                       OpenToolbarHeightSidePanel) {
+  bool has_fps = false;
+  RunTestSequence(
+      StartCollectingSamples(), OpenToolbarHeightSidePanel(),
+      Do([this, &has_fps]() {
+        histogram_tester_->ExpectTotalCount(
+            "SidePanelToolbarHeight.Open.TimeOfLongestAnimationStep", 1);
+        has_fps = histogram_tester_->GetTotalCountForPrefix(
+                      "SidePanelToolbarHeight.Open.AnimationFPS") > 0;
+      }),
+      CheckResult(
+          [this]() {
+            return histogram_tester_->GetTotalSum(
+                "SidePanelToolbarHeight.Open.TimeOfLongestAnimationStep");
+          },
+          testing::Gt(0), "Check longest step is nonzero."),
+      If([&] { return has_fps; },
+         Then(CheckResult(
+             [this]() {
+               return histogram_tester_->GetTotalSum(
+                   "SidePanelToolbarHeight.Open.AnimationFPS");
+             },
+             testing::Gt(0), "Check fps is nonzero.")),
+         Else(Log("Compositor failed to render during test."))));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelAnimationPerfUiTest,
+                       CloseToolbarHeightSidePanel) {
+  bool has_fps = false;
+  RunTestSequence(
+      OpenToolbarHeightSidePanel(), StartCollectingSamples(), CloseSidePanel(),
+      Do([this, &has_fps]() {
+        histogram_tester_->ExpectTotalCount(
+            "SidePanelToolbarHeight.Close.TimeOfLongestAnimationStep", 1);
+        has_fps = histogram_tester_->GetTotalCountForPrefix(
+                      "SidePanelToolbarHeight.Close.AnimationFPS") > 0;
+      }),
+      CheckResult(
+          [this]() {
+            return histogram_tester_->GetTotalSum(
+                "SidePanelToolbarHeight.Close.TimeOfLongestAnimationStep");
+          },
+          testing::Gt(0), "Check longest step is nonzero."),
+      If([&] { return has_fps; },
+         Then(CheckResult(
+             [this]() {
+               return histogram_tester_->GetTotalSum(
+                   "SidePanelToolbarHeight.Close.AnimationFPS");
+             },
+             testing::Gt(0), "Check fps is nonzero.")),
+         Else(Log("Compositor failed to render during test."))));
 }

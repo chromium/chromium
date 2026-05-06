@@ -40,8 +40,6 @@ source_set("side_panel") {
     "reading_list/reading_list_side_panel_coordinator.h",
     "side_panel.cc",
     "side_panel.h",
-    "side_panel_animation_perf_reporter.cc",
-    "side_panel_animation_perf_reporter.h",
     "side_panel_coordinator.cc",
     "side_panel_coordinator.h",
     "side_panel_header.cc",

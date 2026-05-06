@@ -75,13 +75,6 @@ enum class SidePanelEntryHideReason {
 #endif
 };
 
-// LINT.IfChange(SidePanelAnimationType)
-enum class SidePanelAnimationType {
-  kOpen = 0,
-  kOpenWithContentTransition = 1,
-  kClose = 2,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.side_panel
 // GENERATED_JAVA_PREFIX_TO_STRIP: k

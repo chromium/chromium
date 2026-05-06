@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_animation_perf_reporter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,20 +63,6 @@
 namespace {
 constexpr BrowserAnimationGroup kAnimationGroup =
     SidePanelAnimations::kSidePanel;
-
-// Converts from animation motion to animation type.
-SidePanelAnimationType AnimationMotionToType(BrowserAnimationMotion motion) {
-  if (motion == SidePanelAnimations::kOpen) {
-    return SidePanelAnimationType::kOpen;
-  }
-  if (motion == SidePanelAnimations::kOpenWithContentTransition) {
-    return SidePanelAnimationType::kOpenWithContentTransition;
-  }
-  if (motion == SidePanelAnimations::kClose) {
-    return SidePanelAnimationType::kClose;
-  }
-  NOTREACHED();
-}
 
 // This thickness includes the solid-color background and the inner round-rect
 // border-color stroke. It does not include the outer-color separator.
@@ -498,15 +483,8 @@ void SidePanel::OnAnimationProgressed(
     BrowserAnimationUpdate status) {
   switch (status) {
     case BrowserAnimationUpdate::kStarted:
-      animation_perf_reporter_ =
-          std::make_unique<SidePanelAnimationPerfReporter>(
-              GetCurrentEntryType(),
-              AnimationMotionToType(
-                  controller->GetCurrentMotion(kAnimationGroup)),
-              controller->GetMotionDuration(kAnimationGroup), GetWidget());
       break;
     case BrowserAnimationUpdate::kProgressed:
-      animation_perf_reporter_->OnAnimationProgressed();
       if (const auto width = controller->GetCurrentValue(
               kAnimationGroup, SidePanelAnimations::kPanelWidth)) {
         if (last_animation_values_[SidePanelAnimations::kPanelWidth] !=
@@ -526,7 +504,6 @@ void SidePanel::OnAnimationProgressed(
       }
       break;
     case BrowserAnimationUpdate::kEnded: {
-      animation_perf_reporter_.reset();
       const auto motion = controller->GetCurrentMotion(kAnimationGroup);
       if (motion == SidePanelAnimations::kClose) {
         state_ = State::kClosed;
@@ -550,7 +527,6 @@ void SidePanel::OnAnimationProgressed(
       break;
     }
     case BrowserAnimationUpdate::kCanceled:
-      animation_perf_reporter_.reset();
       last_animation_values_.clear();
       break;
   }
@@ -709,7 +685,12 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
       motion = SidePanelAnimations::kClose;
     }
     if (motion) {
-      animation_controller->Start(kAnimationGroup, motion);
+      animation_controller->Start(
+          kAnimationGroup, motion,
+          /*group_histogram_override=*/
+          current_entry_type_ == SidePanelType::kToolbar
+              ? SidePanelMetrics::kSidePanelToolbarHeightHistogramName
+              : SidePanelMetrics::kSidePanelHistogramName);
     }
   } else {
     animation_controller->Clear(kAnimationGroup);

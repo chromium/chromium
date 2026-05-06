@@ -13,10 +13,16 @@
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(SidePanelAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations, kSidePanel);
+
+// Any new motion that is added should also be set to record performance
+// histograms below.
+// LINT.IfChange(SidePanelMotions)
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kOpen);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations,
                                       kOpenWithContentTransition);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kClose);
+// LINT.ThenChange(:SidePanelAnimationType)
+
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kPanelWidth);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kMainAreaShadow);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentTop);
@@ -26,6 +32,18 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentWidth);
 
 SidePanelAnimations::SidePanelAnimations() {
   SetSequenceParams(kSidePanel, Persist(kPanelWidth), Persist(kMainAreaShadow));
+
+  // Because we want to keep separate prefixes for content- vs. toolbar-height
+  // panels (despite them using the same motions), instead of saving a single
+  // histogram name here for `kSidePanel`, a histogram prefix will be specified
+  // when starting the animation based on whether it's a true toolbar-height
+  // side panel or not.
+
+  // LINT.IfChange(SidePanelAnimationType)
+  SetHistogramName(kClose, "Close");
+  SetHistogramName(kOpen, "Open");
+  SetHistogramName(kOpenWithContentTransition, "OpenWithContentTransition");
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:SidePanelAnimationType)
 }
 
 SidePanelAnimations::~SidePanelAnimations() = default;

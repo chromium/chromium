@@ -46,11 +46,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
 
+<!-- LINT.IfChange(SidePanelAnimationType) -->
+
 <variants name="SidePanelAnimationType">
   <variant name="Close" summary="close animation"/>
   <variant name="Open" summary="open animation"/>
   <variant name="OpenWithContentTransition" summary="tab to panel animation"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_metrics.cc:SidePanelAnimationType) -->
 
 <!-- LINT.IfChange(SidePanelEntry) -->
 
@@ -82,10 +86,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_entry_id.h:SIDE_PANEL_ENTRY_IDS) -->
 
+<!-- LINT.IfChange(SidePanelType) -->
+
 <variants name="SidePanelType">
   <variant name="SidePanel" summary="content height side panel"/>
   <variant name="SidePanelToolbarHeight" summary="toolbar height side panel"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_metrics.h:SidePanelType) -->
 
 <!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
 
@@ -2305,18 +2313,35 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records elapsed time between animation steps for the longest step in a side
     panel open or close animation.
+
+    OBSOLETE.
+
+    See: SidePanelType.SidePanelAnimationType.TimeOfLongestAnimationStep below.
   </summary>
   <token key="SidePanelType" variants="SidePanelType"/>
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelAnimationType}.AnimationFPS"
-    units="fps" expires_after="2026-09-06">
+    units="fps" expires_after="2026-10-11">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records the frames per second for the side panel animation. This is recorded
     after each side panel animation is completed when the side panel opens or
     closes.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelAnimationType" variants="SidePanelAnimationType"/>
+</histogram>
+
+<histogram
+    name="{SidePanelType}.{SidePanelAnimationType}.TimeOfLongestAnimationStep"
+    units="ms" expires_after="2026-10-11">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records elapsed time between animation steps for the longest step in a side
+    panel open or close animation.
   </summary>
   <token key="SidePanelType" variants="SidePanelType"/>
   <token key="SidePanelAnimationType" variants="SidePanelAnimationType"/>
