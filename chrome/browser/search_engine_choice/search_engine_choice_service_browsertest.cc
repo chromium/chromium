@@ -169,10 +169,10 @@ const RestoreTestParam kTestParams[] = {
         .test_name = "FeatureDisabled",
         .feature_state = FeatureState::kDisabled,
         .run_1_expectations =
-            {.has_dialog_service = false,
+            {.has_dialog_service = true,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kAlreadyCompleted,
-             .choice_status = ChoiceStatus::kValid},
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kNotMade},
         .run_2_expectations =
             {.has_dialog_service = false,
              .expected_delayed_static_conditions =
@@ -188,10 +188,10 @@ const RestoreTestParam kTestParams[] = {
         // are done checking the choice screen eligibility status and declined
         // initializing the dialog service.
         .run_1_expectations =
-            {.has_dialog_service = false,
+            {.has_dialog_service = true,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
-             .choice_status = ChoiceStatus::kFromRestoredDevice},
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kNotMade},
         // Run 2:  Since the choice was not flagged as imported in the session
         // where the clone was detected, for the "JustInTime" mode, we don't
         // wipe the choice timestamp later either. this makes this mode very
@@ -207,17 +207,17 @@ const RestoreTestParam kTestParams[] = {
         .feature_state = FeatureState::kEnabledRetroactive,
         // Run 1: Same as the "JustInTime" version.
         .run_1_expectations =
-            {.has_dialog_service = false,
+            {.has_dialog_service = true,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
-             .choice_status = ChoiceStatus::kFromRestoredDevice},
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kNotMade},
         // Run 2: We are able to wipe the choice timestamp and make remake the
         // profile eligible to get the choice dialog.
         .run_2_expectations =
-            {.has_dialog_service = true,
+            {.has_dialog_service = false,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
-             .choice_status = ChoiceStatus::kFromRestoredDevice},
+                 SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+             .choice_status = ChoiceStatus::kValid},
     },
 };
 
@@ -290,25 +290,27 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
 
   EXPECT_EQ(GetRunExpectations().has_dialog_service,
             !!SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
-  EXPECT_TRUE(choice_completion_metadata.has_value());
-  EXPECT_TRUE(HasChoiceTimestamp(profile));
-  EXPECT_TRUE(
-      search_engine_choice_service->GetClientForTesting()
-          .DoesChoicePredateDeviceRestore(choice_completion_metadata.value()));
+  EXPECT_FALSE(choice_completion_metadata.has_value());
+  EXPECT_FALSE(HasChoiceTimestamp(profile));
 
   EXPECT_EQ(GetStaticConditions(profile),
             GetRunExpectations().expected_delayed_static_conditions);
   EXPECT_EQ(GetChoiceStatus(profile), GetRunExpectations().choice_status);
 
-  // To prevent flakiness since the `DoesChoicePredateDeviceRestore()` function
-  // only has per-second granularity, adjust the timestamp back by a second.
-  choice_completion_metadata->timestamp -= base::Seconds(1);
-  SetChoiceCompletionMetadata(*profile->GetPrefs(),
-                              *choice_completion_metadata);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  TemplateURL user_selected_search_provider(
+      template_url_service->GetDefaultSearchProvider()->data());
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      &user_selected_search_provider,
+      search_engines::ChoiceMadeLocation::kChoiceScreen);
+  SearchEngineChoiceServiceFactory::GetForProfile(profile)->RecordChoiceMade(
+      search_engines::ChoiceMadeLocation::kChoiceScreen, template_url_service);
 }
 
 // Run 2, where the metrics ID gets reset following the clone detection.
 // TODO(https://crbug.com/419039727): Fix the flakiness.
+// TODO(https://crbug.com/510279237): Decouple antitampering from cloning tests.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_StaticConditions DISABLED_StaticConditions
 #else
@@ -339,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
             !!SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
   EXPECT_TRUE(HasChoiceTimestamp(profile));
   EXPECT_TRUE(choice_completion_metadata.has_value());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       search_engine_choice_service->GetClientForTesting()
           .DoesChoicePredateDeviceRestore(choice_completion_metadata.value()));
 
