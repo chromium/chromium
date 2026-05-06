@@ -892,12 +892,24 @@ void ConvertScriptTool(
   }
 }
 
+int GetAccessibilityFocusedNodeId(
+    const blink::mojom::AIPageContentFrameData& frame_data) {
+  if (!frame_data.frame_interaction_info) {
+    return kInvalidDOMNodeId;
+  }
+
+  return frame_data.frame_interaction_info->accessibility_focused_dom_node_id
+      .value_or(kInvalidDOMNodeId);
+}
+
 void ConvertFrameData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
     optimization_guide::proto::FrameData* proto_frame_data,
     blink::mojom::PageMetadata& metadata,
-    FrameTokenSet& frame_token_set) {
+    FrameTokenSet& frame_token_set,
+    optimization_guide::proto::PageInteractionInfo*
+        proto_page_interaction_info) {
   ConvertFrameMetadata(GetURLForFrameMetadata(render_frame_info.url,
                                               render_frame_info.source_origin),
                        mojom_frame_data, metadata);
@@ -940,6 +952,19 @@ void ConvertFrameData(
   for (const auto& tool : mojom_frame_data.script_tools) {
     ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
   }
+
+  // Accessibility focus is tracked globally in the browser, so it should be set
+  // in only one frame. In edge cases, e.g. race condition between updating
+  // accessibility focus and page content extraction in the renderer, we
+  // prioritize the main frame or the first traversed iframe.
+  optimization_guide::proto::DocumentIdentifier*
+      proto_accessibility_focused_frame =
+          proto_page_interaction_info->mutable_accessibility_focused_frame();
+  if (proto_accessibility_focused_frame->serialized_token().empty() &&
+      GetAccessibilityFocusedNodeId(mojom_frame_data) != kInvalidDOMNodeId) {
+    *proto_accessibility_focused_frame =
+        proto_frame_data->document_identifier();
+  }
 }
 
 void ConvertRedactionReason(
@@ -967,16 +992,6 @@ void ConvertRedactedIframeData(
     optimization_guide::proto::IframeData* proto_iframe_data) {
   ConvertRedactionReason(mojom_redacted_frame_metadata.reason,
                          proto_iframe_data->mutable_redacted_frame_metadata());
-}
-
-int GetAccessibilityFocusedNodeId(
-    const blink::mojom::AIPageContentFrameData& frame_data) {
-  if (!frame_data.frame_interaction_info) {
-    return kInvalidDOMNodeId;
-  }
-
-  return frame_data.frame_interaction_info->accessibility_focused_dom_node_id
-      .value_or(kInvalidDOMNodeId);
 }
 
 // Contains the information that remains the same throughout the tree
@@ -1047,6 +1062,10 @@ class Converter {
             "compromised renderer: iframe is not a child of the current frame");
       }
 
+      optimization_guide::proto::PageInteractionInfo*
+          proto_page_interaction_info =
+              page_content_proto().mutable_page_interaction_info();
+
       auto* proto_iframe_data =
           proto_node->mutable_content_attributes()->mutable_iframe_data();
       if (frame_token.Is<blink::RemoteFrameToken>()) {
@@ -1086,16 +1105,18 @@ class Converter {
                         *page_content->frame_data->popup, *render_frame_info));
                   }
 
+                  ConvertIframeData(*render_frame_info, iframe_data,
+                                    /*mojom_local_frame_data=*/
+                                    *page_content->frame_data.get(),
+                                    proto_iframe_data,
+                                    proto_page_interaction_info);
+
                   RETURN_IF_ERROR(ConvertNode(
                       render_frame_info->global_frame_token,
                       *page_content->root_node,
                       GetAccessibilityFocusedNodeId(*page_content->frame_data),
                       proto_child_frame_node));
 
-                  ConvertIframeData(*render_frame_info, iframe_data,
-                                    /*mojom_local_frame_data=*/
-                                    *page_content->frame_data.get(),
-                                    proto_iframe_data);
                   return base::ok();
                 },
                 [&](const blink::mojom::RedactedFrameMetadataPtr& r) mutable
@@ -1125,7 +1146,7 @@ class Converter {
             ConvertIframeData(*render_frame_info, iframe_data,
                               /*mojom_local_frame_data=*/
                               *iframe_data.content->get_local_frame_data(),
-                              proto_iframe_data);
+                              proto_iframe_data, proto_page_interaction_info);
             accessibility_focused_node_id_for_children =
                 GetAccessibilityFocusedNodeId(
                     *iframe_data.content->get_local_frame_data());
@@ -1258,10 +1279,12 @@ class Converter {
       const RenderFrameInfo& render_frame_info,
       const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
       const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
-      optimization_guide::proto::IframeData* proto_iframe_data) {
+      optimization_guide::proto::IframeData* proto_iframe_data,
+      optimization_guide::proto::PageInteractionInfo*
+          proto_page_interaction_info) {
     ConvertFrameData(render_frame_info, mojom_local_frame_data,
                      proto_iframe_data->mutable_frame_data(), page_metadata(),
-                     *frame_token_set_);
+                     *frame_token_set_, proto_page_interaction_info);
   }
 
   // Password boxes are handled by AddRendererPasswordRedactionBoxes(). This
@@ -1396,9 +1419,21 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
     return base::unexpected("could not find RenderFrameInfo for main frame");
   }
 
+  optimization_guide::proto::PageInteractionInfo* proto_page_interaction_info =
+      page_content_result.proto.mutable_page_interaction_info();
+
+  // Explicitly set accessibility_focused_frame to an empty string as a
+  // negative signal. The presence of this field (even if empty) tells the
+  // server that we have already checked all frames for accessibility focus. If
+  // it were omitted, the consumers might fall back to an inefficient lookup to
+  // maintain backward compatibility.
+  proto_page_interaction_info->mutable_accessibility_focused_frame()
+      ->set_serialized_token("");
+
   ConvertFrameData(*render_frame_info, *main_frame_page_content->frame_data,
                    page_content_result.proto.mutable_main_frame_data(),
-                   *page_content_result.metadata, frame_token_set);
+                   *page_content_result.metadata, frame_token_set,
+                   proto_page_interaction_info);
 
   Converter converter(std::move(main_frame_options), page_content_map,
                       get_render_frame_info, frame_token_set,
@@ -1411,9 +1446,8 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
       page_content_result.proto.mutable_root_node()));
 
   if (main_frame_page_content->page_interaction_info) {
-    ConvertPageInteractionInfo(
-        *main_frame_page_content->page_interaction_info,
-        page_content_result.proto.mutable_page_interaction_info());
+    ConvertPageInteractionInfo(*main_frame_page_content->page_interaction_info,
+                               proto_page_interaction_info);
   }
 
   auto mode = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT;

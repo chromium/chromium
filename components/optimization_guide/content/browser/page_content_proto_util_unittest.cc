@@ -1031,6 +1031,123 @@ TEST_F(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
   EXPECT_EQ(page_interaction_info.mouse_position().y(), 20);
 }
 
+TEST_F(PageContentProtoUtilTest, AccessibilityFocusedFrame_MainFrame) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  root_content->frame_data->frame_interaction_info
+      ->accessibility_focused_dom_node_id = 123;
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        render_frame_info.global_frame_token = main_frame_token;
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  const auto& page_interaction_info =
+      page_content.proto.page_interaction_info();
+  ASSERT_TRUE(page_interaction_info.has_accessibility_focused_frame());
+  EXPECT_EQ(
+      page_interaction_info.accessibility_focused_frame().serialized_token(),
+      main_frame_token.frame_token.ToString());
+}
+
+TEST_F(PageContentProtoUtilTest, AccessibilityFocusedFrame_Iframe) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe));
+
+  auto iframe_token = CreateFrameToken();
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = iframe_token.frame_token;
+  auto iframe_page_content = CreatePageContent();
+  iframe_page_content->frame_data->frame_interaction_info
+      ->accessibility_focused_dom_node_id = 123;
+  iframe_data->content =
+      blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
+          std::move(iframe_page_content->frame_data));
+
+  root_content->root_node->children_nodes.back()
+      ->content_attributes->iframe_data = std::move(iframe_data);
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
+        } else {
+          render_frame_info.global_frame_token = iframe_token;
+        }
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  const auto& page_interaction_info =
+      page_content.proto.page_interaction_info();
+  ASSERT_TRUE(page_interaction_info.has_accessibility_focused_frame());
+  EXPECT_EQ(
+      page_interaction_info.accessibility_focused_frame().serialized_token(),
+      iframe_token.frame_token.ToString());
+}
+
+TEST_F(PageContentProtoUtilTest, AccessibilityFocusedFrame_None) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        render_frame_info.global_frame_token = main_frame_token;
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  const auto& page_interaction_info =
+      page_content.proto.page_interaction_info();
+  ASSERT_TRUE(page_interaction_info.has_accessibility_focused_frame());
+  EXPECT_TRUE(page_interaction_info.accessibility_focused_frame()
+                  .serialized_token()
+                  .empty());
+}
+
 TEST_F(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
   auto root_content = CreatePageContent();
 
