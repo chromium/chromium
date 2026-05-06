@@ -11,7 +11,7 @@
   align-items: center;
   animation: var(--cr-composebox-tool-chip-animation, none);
   background-color:
-    var(--color-composebox-context-entrypoint-hover-background);
+    var(--color-composebox-tool-chip-background);
   border: none;
   color: var(--color-searchbox-results-foreground);
   display: flex;

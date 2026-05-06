@@ -442,6 +442,20 @@
   --cr-composebox-entrypoint-background-color: transparent;
 }
 
+:host([energy-effect-enabled_]) #composebox::part(entrypoint-button)::before {
+  background-color: var(--color-composebox-context-entrypoint-hover-background);
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+:host([energy-effect-enabled_]) #composebox::part(entrypoint-button):hover::before {
+  opacity: 0.06;
+}
+
 /* Controls cancel and submit buttons. */
 #composebox::part(action-icon) {
   --cr-icon-button-hover-background-color: var(--color-composebox-hover);

@@ -277,6 +277,7 @@
 
   /* Color of Active tool chip */
   --color-composebox-context-entrypoint-hover-background: rgba(42, 43, 54, 1);
+  --color-composebox-tool-chip-background: rgba(42, 43, 54, 1);
   --color-searchbox-results-foreground: rgba(255, 255, 255, 1);
 }
 
@@ -284,6 +285,7 @@
 :host([energy-effect-enabled_]) {
   --color-composebox-context-entrypoint-background:
       var(--color-sds-comp-input-aim-action-neutral);
+  --color-composebox-context-entrypoint-hover-background: #00164F;
   --color-composebox-input-plate-outline:
       var(--color-sds-comp-input-aim-outline);
   --color-composebox-submit-button-background: rgba(51, 110, 243, 1);
@@ -299,6 +301,7 @@
       var(--color-sds-comp-input-aim-outline-dark);
   --color-composebox-context-entrypoint-background:
       var(--color-sds-comp-input-aim-action-neutral-dark);
+  --color-composebox-context-entrypoint-hover-background: #f0f2f5;
   --cr-composebox-background-color:
       var(--color-sds-comp-input-aim-container-dark);
 }
@@ -360,6 +363,8 @@
 
   /* Active tool chip colors */
   --color-composebox-context-entrypoint-hover-background:
+    var(--surface-container-highest-color);
+  --color-composebox-tool-chip-background:
     var(--surface-container-highest-color);
   --color-searchbox-results-foreground:
     var(--on-surface-default-text-color);
