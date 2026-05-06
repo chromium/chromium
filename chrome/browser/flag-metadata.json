@@ -2292,7 +2292,7 @@
   {
     "name": "desktop-ua-on-connected-display",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "device-posture",
@@ -9135,7 +9135,7 @@
   {
     "name" : "toolbar-phone-animation-refactor",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone" : 150
+    "expiry_milestone" : 160
   },
   {
     "name": "toolbar-snapshot-refactor",
