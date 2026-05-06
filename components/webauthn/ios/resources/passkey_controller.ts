@@ -782,9 +782,11 @@ function createPassthroughRegistrationRequest(
       // https://w3c.github.io/webauthn/#sctn-authenticator-data.
       const aaguid = new Uint8Array(
           response.getAuthenticatorData().slice(37).slice(0, 16));
+      const rpId = options!.publicKey!.rp.id ?? document.location.host;
       sendWebKitMessage(HANDLER_NAME, {
         'event': 'logCreateResolved',
         'isGpm': isGpmAaguid(aaguid),
+        'rpId': rpId,
       });
     }
     return credential;

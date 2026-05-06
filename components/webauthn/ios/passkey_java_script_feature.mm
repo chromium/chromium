@@ -18,6 +18,7 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#import "url/origin.h"
 
 namespace webauthn {
 
@@ -261,8 +262,9 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   const base::DictValue& dict = body->GetDict();
 
   std::optional<PasskeyScriptEvent> event = ParsePasskeyScriptEvent(
-      dict, [passkey_tab_helper](const std::string& rp_id,
-                                 const std::string& credential_id) {
+      dict, message.security_origin(),
+      [passkey_tab_helper](const std::string& rp_id,
+                           const std::string& credential_id) {
         return passkey_tab_helper->HasCredential(rp_id, credential_id);
       });
 
