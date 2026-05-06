@@ -19,6 +19,7 @@ source_set("state") {
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
   ]
 }

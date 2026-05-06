@@ -9,6 +9,7 @@
 
 @class InactiveGridViewController;
 @class InactiveTabsViewController;
+@class LayoutState;
 
 // Protocol used to relay relevant user interactions from the
 // InactiveTabsViewController.
@@ -27,6 +28,9 @@
 
 // Displays the list of inactive tabs.
 @interface InactiveTabsViewController : UIViewController
+
+// The layout state of the scene.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // The embedded grid view controller.
 @property(nonatomic, readonly) InactiveGridViewController* gridViewController;

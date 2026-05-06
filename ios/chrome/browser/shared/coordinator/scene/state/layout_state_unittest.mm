@@ -84,4 +84,17 @@ TEST_F(LayoutStateTest, WindowedMode) {
   [mock_observer verify];
 }
 
+// Tests that appBarPosition updates observers.
+TEST_F(LayoutStateTest, AppBarPosition) {
+  id mock_observer = OCMProtocolMock(@protocol(LayoutStateObserver));
+  [layout_state_ addObserver:mock_observer];
+
+  OCMExpect([mock_observer layoutState:layout_state_
+               didChangeAppBarPosition:AppBarPosition::kBottom]);
+
+  layout_state_.appBarPosition = AppBarPosition::kBottom;
+
+  [mock_observer verify];
+}
+
 }  // namespace

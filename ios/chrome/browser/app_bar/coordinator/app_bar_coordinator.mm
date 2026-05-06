@@ -88,7 +88,7 @@
   _viewController.sceneHandler = sceneHandler;
   _viewController.tabGridHandler = tabGridHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForScene(sceneState);
-
+  _viewController.layoutState = sceneState.layoutState;
   ProfileIOS* profile = _regularBrowser->GetProfile();
 
   FullscreenController* regularFullscreenController = nullptr;
@@ -158,6 +158,8 @@
 
   _containerViewController = [[AppBarContainerViewController alloc] init];
   [_containerViewController setAppBar:_viewController];
+  _containerViewController.layoutState =
+      _regularBrowser->GetSceneState().layoutState;
 
   _containerMediator = [[AppBarContainerMediator alloc]
       initWithRegularFullscreenController:regularFullscreenController
@@ -182,6 +184,9 @@
   if (_incognitoBrowser) {
     [_incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
+  _containerViewController.layoutState = nil;
+  _containerViewController = nil;
+  _viewController.layoutState = nil;
   _viewController = nil;
   _regularBrowser = nullptr;
   _incognitoBrowser = nullptr;

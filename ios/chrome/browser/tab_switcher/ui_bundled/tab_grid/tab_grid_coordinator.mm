@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -1046,6 +1047,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _viewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
+  _viewController.layoutState =
+      self.regularBrowser->GetSceneState().layoutState;
   _viewController.handler = sceneHandler;
   _viewController.geminiHandler = geminiHandler;
   _viewController.tabPresentationDelegate = self;

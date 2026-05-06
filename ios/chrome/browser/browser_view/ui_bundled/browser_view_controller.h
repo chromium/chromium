@@ -36,6 +36,7 @@ class FullscreenController;
 @protocol IncognitoReauthCommands;
 @class KeyCommandsProvider;
 @class LayoutGuideCenter;
+@class LayoutState;
 @class NewTabPageCoordinator;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
@@ -122,6 +123,9 @@ typedef struct {
 
 // Command handler for Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;
+
+// The layout state.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // Callback that will be invoked when the browser view visibility changed.
 @property(nonatomic, assign) const BrowserViewVisibilityStateChangedCallback&

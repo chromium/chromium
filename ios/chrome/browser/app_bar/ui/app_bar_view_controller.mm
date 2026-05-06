@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -107,7 +107,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 }  // namespace
 
-@interface AppBarViewController () <UIContextMenuInteractionDelegate>
+@interface AppBarViewController () <LayoutStateObserver,
+                                    UIContextMenuInteractionDelegate>
 @end
 
 @implementation AppBarViewController {
@@ -161,6 +162,28 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   // Spacers to for button layout in landscape.
   UIView* _leadingSpacer;
   UIView* _trailingSpacer;
+}
+
+- (void)dealloc {
+  [_layoutState removeObserver:self];
+}
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  [_layoutState removeObserver:self];
+  _layoutState = layoutState;
+  [_layoutState addObserver:self];
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  if (appBarPosition != AppBarPosition::kBottom) {
+    [self updateForFullscreenProgress:1.0];
+  }
 }
 
 #pragma mark - Accessors & Mutators
@@ -320,22 +343,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [self updateOpenNewTabButtonTitleIfNeeded];
 }
 
-#pragma mark - UIContentContainer
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-  __weak __typeof__(self) weakSelf = self;
-  [coordinator
-      animateAlongsideTransition:^(
-          id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateUIForTransitionToSize:size];
-      }
-                      completion:nil];
-}
-
 #pragma mark - AppBarConsumer
 
 - (void)updateTabCount:(NSUInteger)count {
@@ -426,14 +433,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   // The App Bar and the button titles should be fully visible in landscape
   // orientation.
   CGFloat targetAlpha =
-      AppBarPositionForView(self.view) == AppBarPosition::kBottom ? progress
-                                                                  : 1.0;
+      self.layoutState.appBarPosition == AppBarPosition::kBottom ? progress
+                                                                 : 1.0;
   [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
   CGFloat targetAlpha =
-      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+      self.layoutState.appBarPosition == AppBarPosition::kBottom
           ? animator.finalProgress
           : 1.0;
   [self setButtonsTitleAlpha:targetAlpha animationDuration:animator.duration];
@@ -443,7 +450,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
   CGFloat targetAlpha =
-      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+      self.layoutState.appBarPosition == AppBarPosition::kBottom
           ? agent->bottom_progress()
           : 1.0;
   [self setButtonsTitleAlpha:targetAlpha
@@ -457,13 +464,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   CGFloat offset = portrait ? 0 : -kStackViewLandscapeVerticalOffset;
   _stackViewTopConstraint.constant = offset;
   _stackViewBottomConstraint.constant = offset;
-}
-
-// Handles updating the UI for a size transition.
-- (void)updateUIForTransitionToSize:(CGSize)size {
-  if (size.width > size.height) {
-    [self updateForFullscreenProgress:1.0];
-  }
 }
 
 // Returns `fullTitle` if it fits within the available width for the

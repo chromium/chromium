@@ -42,6 +42,7 @@ enum class IPHDismissalReasonType;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
 @class TabGroupsPanelViewController;
+@class LayoutState;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -149,6 +150,9 @@ enum class TabGridPageConfiguration {
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// The layout state of the scene.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // Top and bottom toolbars. Those must be set before -viewDidLoad is called.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbar;

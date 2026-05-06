@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @class AppBarViewController;
+@class LayoutState;
 
 // View controller for the App Bar container. This is the view controller in
 // charge of making sure the app stays at the physical bottom of the screen.
@@ -18,6 +19,9 @@
 // itself. It needs to be centered in the window to work.
 @interface AppBarContainerViewController
     : UIViewController <FullscreenUIElement, FullscreenBrowserAgentObserving>
+
+// The layout state.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // Sets the App Bar view controller to be contained.
 - (void)setAppBar:(AppBarViewController*)appBar;

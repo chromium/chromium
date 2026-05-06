@@ -19,7 +19,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -49,6 +48,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -493,7 +493,7 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
     UIView* app_bar_view =
         [layout_guide_center referencedViewUnderName:kAppBarGuide];
     if (app_bar_view &&
-        AppBarPositionForView(app_bar_view) == AppBarPosition::kBottom) {
+        scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
       max_bottom_inset += kAppBarHeight;
     }
   }

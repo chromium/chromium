@@ -215,6 +215,7 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/recent_tabs/ui",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

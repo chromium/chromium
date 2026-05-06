@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_grid_view_controller.h"
@@ -15,7 +15,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface InactiveTabsViewController () <UINavigationBarDelegate>
+@interface InactiveTabsViewController () <UINavigationBarDelegate,
+                                          LayoutStateObserver>
 
 // The embedded navigation bar.
 @property(nonatomic, readonly) UINavigationBar* navigationBar;
@@ -34,6 +35,27 @@
 
   // The gradient background view.
   TabGridToolbarBackgroundView* _gradientBackgroundView;
+}
+
+- (void)dealloc {
+  [_layoutState removeObserver:self];
+}
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  [_layoutState removeObserver:self];
+  _layoutState = layoutState;
+  [_layoutState addObserver:self];
+  [self updateBottomBarConstraints];
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self updateBottomBarConstraints];
 }
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
@@ -198,7 +220,7 @@
 // Updates the bottom bar constraints based on the App Bar position.
 - (void)updateBottomBarConstraints {
   _bottomBarBottomConstraint.constant =
-      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+      self.layoutState.appBarPosition == AppBarPosition::kBottom
           ? -kAppBarHeight
           : 0;
 }

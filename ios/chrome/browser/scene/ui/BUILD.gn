@@ -29,6 +29,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/bubble/ui_bundled:bubble_view",

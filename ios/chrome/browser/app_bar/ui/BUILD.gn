@@ -10,17 +10,6 @@ source_set("constants") {
   deps = [ "//base" ]
 }
 
-source_set("utils") {
-  sources = [
-    "app_bar_utils.h",
-    "app_bar_utils.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/util",
-  ]
-}
-
 source_set("ui") {
   sources = [
     "app_bar_background_view.h",
@@ -37,11 +26,8 @@ source_set("ui") {
     "app_bar_view_controller.h",
     "app_bar_view_controller.mm",
   ]
-  public_deps = [
-    ":constants",
-    ":utils",
-  ]
   deps = [
+    ":constants",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -49,6 +35,7 @@ source_set("ui") {
     "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui:buildflags",

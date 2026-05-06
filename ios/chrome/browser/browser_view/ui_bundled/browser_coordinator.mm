@@ -235,6 +235,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -1581,6 +1582,7 @@ const char kChromeAppStoreUrl[] =
 
   [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
+  viewController.layoutState = self.browser->GetSceneState().layoutState;
   _browserLayoutCoordinator.browserViewController = viewController;
 }
 

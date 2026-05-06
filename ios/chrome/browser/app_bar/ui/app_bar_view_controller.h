@@ -15,12 +15,16 @@
 @class LayoutGuideCenter;
 @protocol SceneCommands;
 @protocol TabGridCommands;
+@class LayoutState;
 
 // View controller for the App Bar.
 @interface AppBarViewController
     : UIViewController <AppBarConsumer,
                         FullscreenUIElement,
                         FullscreenBrowserAgentObserving>
+
+// The layout state.
+@property(nonatomic, weak) LayoutState* layoutState;
 
 // The mutator.
 @property(nonatomic, weak) id<AppBarMutator> mutator;

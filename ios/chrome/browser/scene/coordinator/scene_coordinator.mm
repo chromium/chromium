@@ -31,7 +31,6 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
@@ -287,8 +286,9 @@ void OnListFamilyMembersResponse(
     _sceneMediator.tracker =
         feature_engagement::TrackerFactory::GetForProfile(self.profile);
     if (IsChromeNextIaEnabled()) {
-      _sceneMediator.appBarPositionAtLaunch =
-          AppBarPositionForView(_viewController.view);
+      [_layoutState updateAppBarPositionWithView:_viewController.view
+                                     coordinator:nil];
+      _sceneMediator.appBarPositionAtLaunch = _layoutState.appBarPosition;
     }
     _viewController.mutator = _sceneMediator;
     _sceneMediator.consumer = _viewController;

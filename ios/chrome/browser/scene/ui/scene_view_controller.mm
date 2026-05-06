@@ -9,7 +9,6 @@
 #import "base/check.h"
 #import "base/trace_event/trace_event.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
-#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
@@ -153,7 +152,10 @@
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateLayoutForViews];
+        if (IsChromeNextIaEnabled()) {
+          [weakSelf.layoutState updateAppBarPositionWithView:weakSelf.view
+                                                 coordinator:coordinator];
+        }
       }
                       completion:nil];
 }
@@ -351,6 +353,11 @@
   [self.view layoutIfNeeded];
 }
 
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self updateLayoutForViews];
+}
+
 #pragma mark - Private
 
 // This method updates the top constraints for the assistant and app content.
@@ -384,7 +391,7 @@
   // jumps caused by anchor switches (e.g. switching from view.top to
   // safeAreaLayoutGuide.top).
   if (active) {
-    CHECK(AppBarPositionForView(self.view) == AppBarPosition::kNone);
+    CHECK(self.layoutState.appBarPosition == AppBarPosition::kNone);
     [self updateAssistantTopConstraints:active];
     _sideAppContentTrailingConstraint.constant = -kAssistantContainerMargin;
     _sideAppContentBottomConstraint.constant = -kAssistantContainerMargin;
@@ -481,7 +488,7 @@
 // Updates the layout of the scene views depending on the active layout strategy
 // (Constraints vs. Frames).
 - (void)updateLayoutForViews {
-  AppBarPosition position = AppBarPositionForView(self.view);
+  AppBarPosition position = self.layoutState.appBarPosition;
   _appBar.view.hidden = (position == AppBarPosition::kNone);
   if (IsFullscreenRefactoringEnabled()) {
     [self applyConstraintsForLayoutWithPosition:position];
@@ -555,7 +562,7 @@
   if (!_appBar) {
     return UIEdgeInsetsZero;
   }
-  AppBarPosition position = AppBarPositionForView(self.view);
+  AppBarPosition position = self.layoutState.appBarPosition;
   if (position == AppBarPosition::kNone) {
     return UIEdgeInsetsZero;
   }
@@ -746,7 +753,7 @@
 - (void)showNewIAPromo {
   [self.appBarHandler showIPHBackground];
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
-  AppBarPosition position = AppBarPositionForView(self.view);
+  AppBarPosition position = self.layoutState.appBarPosition;
   if (position == AppBarPosition::kLeft) {
     arrowDirection = BubbleArrowDirectionLeading;
   } else if (position == AppBarPosition::kRight) {

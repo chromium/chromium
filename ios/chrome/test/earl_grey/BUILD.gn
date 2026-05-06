@@ -128,6 +128,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/authentication/test:eg_app_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/autocomplete/model",

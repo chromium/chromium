@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -212,6 +214,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   // Create the view controller.
   self.viewController = [[InactiveTabsViewController alloc] init];
+  self.viewController.layoutState = self.browser->GetSceneState().layoutState;
   self.viewController.delegate = self;
   self.viewController.gridViewController.delegate = self;
 
@@ -298,6 +301,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   [self.mediator disconnect];
   self.mediator = nil;
+  self.viewController.layoutState = nil;
   self.viewController = nil;
 }
 

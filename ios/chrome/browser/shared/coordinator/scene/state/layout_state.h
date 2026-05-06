@@ -9,6 +9,14 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_transition_coordinating.h"
 
+// The position of the app bar.
+enum class AppBarPosition {
+  kNone,
+  kBottom,
+  kLeft,
+  kRight,
+};
+
 @class LayoutState;
 
 // Protocol for observers of the layout state.
@@ -32,6 +40,10 @@
 - (void)layoutState:(LayoutState*)layoutState
     didChangeWindowedMode:(BOOL)windowedMode;
 
+// Called when the App Bar position changes.
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition;
+
 @end
 
 // Object containing the state of the layout.
@@ -50,10 +62,19 @@
 // Indicates whether the app is in windowed mode (multitasking).
 @property(nonatomic, assign) BOOL windowedMode;
 
+// The position of the app bar.
+@property(nonatomic, assign) AppBarPosition appBarPosition;
+
 // Sets `containedLayoutActive` with a transition coordinator to
 // synchronize animations. `coordinator` must not be nil.
 - (void)setContainedLayoutActive:(BOOL)active
        withTransitionCoordinator:(id<LayoutTransitionCoordinating>)coordinator;
+
+// Updates the AppBar position, based on the interfaceOrientation of the window
+// scene, and any rotation transforms applied by the transition coordinator.
+- (void)updateAppBarPositionWithView:(UIView*)view
+                         coordinator:(id<UIViewControllerTransitionCoordinator>)
+                                         coordinator;
 
 // Adds an observer to be notified of layout state changes.
 - (void)addObserver:(id<LayoutStateObserver>)observer;
