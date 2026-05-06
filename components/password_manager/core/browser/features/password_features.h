@@ -72,11 +72,6 @@ BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 BASE_DECLARE_FEATURE(kAwaitPageStabilityForPasswordChange);
 extern const base::FeatureParam<base::TimeDelta> kAwaitPageStabilityTimeout;
 
-// Undoes the effect of WebAuthnUsePasskeyFromAnotherDeviceInContextMenu by
-// adding the hybrid item back into the dropdown. It also adds the entry point
-// to autofill dropdowns.
-// Needs autofill::features::AutofillAndPasswordsInSameSurface to be enabled.
-BASE_DECLARE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Retries capturing annotated page context during automated password change if

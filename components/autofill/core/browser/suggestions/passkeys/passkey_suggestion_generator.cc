@@ -4,9 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 
-#include "base/feature_list.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -20,10 +18,7 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
   const std::optional<autofill::AutocompleteParsingResult>& autocomplete =
       field.parsed_autocomplete();
   return autocomplete.has_value() &&  // Assume no autcomplete if not parsed.
-         autocomplete->webauthn &&    // Field must have "webauthn" annotation.
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kAutofillReintroduceHybridPasskeyDropdownItem);
+         autocomplete->webauthn;      // Field must have "webauthn" annotation.
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 

@@ -1719,11 +1719,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordSuggestionGeneratorTest,
        GetWebauthnSignInWithAnotherDeviceSuggestion) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-#endif  // !BUILDFLAG(IS_IOS)
   const std::vector<PasskeyCredential> passkeys;
   ON_CALL(credentials_delegate(), GetPasskeys)
       .WillByDefault(Return(base::ok(&passkeys)));
@@ -1747,11 +1742,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        GetWebauthnSignInWithAnotherDeviceSuggestionWithListedPasskeys) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-#endif  // !BUILDFLAG(IS_IOS)
   const std::vector<PasskeyCredential> passkeys = {
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username")};
   ON_CALL(credentials_delegate(), GetPasskeys)
@@ -1774,13 +1764,11 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
-       GetWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlagIsReenabled) {
+       GetWebauthnSignInWithAnotherDeviceSuggestionWhenContextMenuIsEnabled) {
 #if !BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
-       features::kAutofillReintroduceHybridPasskeyDropdownItem},
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 #endif  // !BUILDFLAG(IS_IOS)
   const std::vector<PasskeyCredential> passkeys;
   ON_CALL(credentials_delegate(), GetPasskeys)
@@ -1804,55 +1792,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
-       GetWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlagIsDisabled) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {features::kAutofillReintroduceHybridPasskeyDropdownItem,
-           features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
-#endif  // !BUILDFLAG(IS_IOS)
-  const std::vector<PasskeyCredential> passkeys;
-  ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(Return(base::ok(&passkeys)));
-  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
-      .WillByDefault(Return(true));
-
-  std::optional<Suggestion> suggestion =
-      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
-  ASSERT_TRUE(suggestion.has_value());
-  EXPECT_THAT(*suggestion,
-              EqualsSuggestion(
-                  SuggestionType::kWebauthnSignInWithAnotherDevice,
-                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
-                  Suggestion::Icon::kDevice));
-}
-
-#if !BUILDFLAG(IS_IOS)
-TEST_F(PasswordSuggestionGeneratorTest,
-       NoWebauthnSignInWithAnotherDeviceSuggestionWhenHybridIsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
-      {features::kAutofillReintroduceHybridPasskeyDropdownItem});
-  const std::vector<PasskeyCredential> passkeys;
-  ON_CALL(credentials_delegate(), GetPasskeys)
-      .WillByDefault(Return(base::ok(&passkeys)));
-  ON_CALL(credentials_delegate(), IsSecurityKeyOrHybridFlowAvailable)
-      .WillByDefault(Return(true));
-
-  std::optional<Suggestion> suggestion =
-      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
-  EXPECT_FALSE(suggestion.has_value());
-}
-#endif  // !BUILDFLAG(IS_IOS)
-
-TEST_F(PasswordSuggestionGeneratorTest,
        NoWebauthnSignInWithAnotherDeviceSuggestionWhenNoPasskeys) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-#endif  // !BUILDFLAG(IS_IOS)
   ON_CALL(credentials_delegate(), GetPasskeys)
       .WillByDefault(Return(
           base::unexpected(WebAuthnCredentialsDelegate::
@@ -1867,11 +1807,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        NoWebauthnSignInWithAnotherDeviceSuggestionWhenHybridFlowUnavailable) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-#endif  // !BUILDFLAG(IS_IOS)
   const std::vector<PasskeyCredential> passkeys;
   ON_CALL(credentials_delegate(), GetPasskeys)
       .WillByDefault(Return(base::ok(&passkeys)));
@@ -1887,14 +1822,6 @@ TEST_F(PasswordSuggestionGeneratorTest,
 // correctly in the dropdown, i.e. below a separator and above the manage
 // passwords entry.
 TEST_F(PasswordSuggestionGeneratorTest, WebAuthnSuggestionPosition) {
-#if !BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
-       features::kAutofillReintroduceHybridPasskeyDropdownItem},
-      {});
-#endif  // !BUILDFLAG(IS_IOS)
-
   const std::vector<PasskeyCredential> kEmptyPasskeyVector;
   ON_CALL(credentials_delegate(), GetPasskeys)
       .WillByDefault(Return(base::ok(&kEmptyPasskeyVector)));

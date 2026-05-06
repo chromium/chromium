@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -71,16 +70,11 @@ std::u16string ReplaceEmptyUsername(const std::u16string& username,
 Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
   int title_id;
 #if !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem)) {
-    title_id = IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE;
-  } else
+  title_id = IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE;
+#else
+  title_id = listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
+                             : IDS_PASSWORD_MANAGER_USE_PASSKEY;
 #endif  // !BUILDFLAG(IS_IOS)
-  {
-    title_id = listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
-                               : IDS_PASSWORD_MANAGER_USE_PASSKEY;
-  }
   return Suggestion(l10n_util::GetStringUTF16(title_id),
                     /*label=*/u"", Suggestion::Icon::kDevice,
                     SuggestionType::kWebauthnSignInWithAnotherDevice);
@@ -368,23 +362,6 @@ void RecordPendingStatePromoHistogram(FillingReauthPromoShown sample) {
 
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-bool ShowPasskeysFromAnotherDeviceInAutofill() {
-#if BUILDFLAG(IS_IOS)
-  return true;
-#else
-  // Show the hybrid passkey item if the context menu experiment (which moves
-  // this option) is not enabled, or if the feature to reintroduce it to the
-  // dropdown is explicitly enabled.
-  return !base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu) ||
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kAutofillReintroduceHybridPasskeyDropdownItem);
-#endif  // BUILDFLAG(IS_IOS)
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
@@ -673,8 +650,7 @@ PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion()
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
   if (!delegate || !delegate->GetPasskeys().has_value() ||
-      !delegate->IsSecurityKeyOrHybridFlowAvailable() ||
-      !ShowPasskeysFromAnotherDeviceInAutofill()) {
+      !delegate->IsSecurityKeyOrHybridFlowAvailable()) {
     return std::nullopt;
   }
   return CreatePasskeyFromAnotherDeviceEntry(

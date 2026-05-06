@@ -174,7 +174,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -687,10 +686,7 @@ bool ShouldShowWebauthnHybridEntryPoint(const FormFieldData& field) {
   const std::optional<AutocompleteParsingResult>& autocomplete =
       field.parsed_autocomplete();
   return autocomplete.has_value() &&  // Assume no autocomplete if not parsed.
-         autocomplete->webauthn &&    // Field must have "webauthn" annotation.
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kAutofillReintroduceHybridPasskeyDropdownItem);
+         autocomplete->webauthn;      // Field must have "webauthn" annotation.
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 

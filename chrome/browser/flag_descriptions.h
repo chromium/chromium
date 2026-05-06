@@ -4675,13 +4675,6 @@ inline constexpr char
         "conditional "
         "WebAuthn requests. Moves the entry point to the context menu.";
 
-inline constexpr char kAutofillReintroduceHybridPasskeyDropdownItemName[] =
-    "Reintroduce hybrid passkey entry point";
-inline constexpr char
-    kAutofillReintroduceHybridPasskeyDropdownItemDescription[] =
-        "Reintroduces the hybrid passkey entry point to the Autofill dropdown "
-        "menu.";
-
 inline constexpr char kWebAuthnAmbientSigninName[] =
     "Enable Ambient sign-in for WebAuthn get requests";
 inline constexpr char kWebAuthnAmbientSigninDescription[] =

@@ -104,13 +104,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
       return false;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       // The hybrid item is reintroduced as a footer.
-#if !BUILDFLAG(IS_ANDROID)
-      return base::FeatureList::IsEnabled(
-          password_manager::features::
-              kAutofillReintroduceHybridPasskeyDropdownItem);
-#else
-      return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
+      return !BUILDFLAG(IS_ANDROID);
   }
 }
 

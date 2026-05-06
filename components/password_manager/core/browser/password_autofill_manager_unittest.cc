@@ -337,8 +337,6 @@ class PasswordAutofillManagerTest : public testing::Test {
     // Add a preferred login.
     fill_data_.preferred_login.username_value = test_username_;
     fill_data_.preferred_login.password_value = test_password_;
-    SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(
-        /*move_to_context_menu=*/true);
   }
 
   void InitializePasswordAutofillManager(TestPasswordManagerClient* client,
@@ -407,23 +405,6 @@ class PasswordAutofillManagerTest : public testing::Test {
   }
 
  protected:
-  void SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(
-      bool move_to_context_menu) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    features_.Reset();
-    if (move_to_context_menu) {
-      features_.InitWithFeatures(
-          {features::kAutofillReintroduceHybridPasskeyDropdownItem,
-           features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
-          {});
-    } else {
-      features_.InitWithFeatures(
-          {features::kAutofillReintroduceHybridPasskeyDropdownItem},
-          {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
-    }
-#endif
-  }
-
   autofill::PasswordFormFillData& fill_data() { return fill_data_; }
 
   base::test::SingleThreadTaskEnvironment& task_environment() {
@@ -442,7 +423,6 @@ class PasswordAutofillManagerTest : public testing::Test {
  private:
   autofill::PasswordFormFillData fill_data_;
 
-  base::test::ScopedFeatureList features_;
 
   // The TestAutofillDriver uses a SequencedWorkerPool which expects the
   // existence of a MessageLoop.
@@ -1486,7 +1466,6 @@ TEST_F(PasswordAutofillManagerTest,
   webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
       webauthn::CredManSupport::DISABLED);
 #endif  // BUILDFLAG(IS_ANDROID)
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1732,7 +1711,6 @@ TEST_F(PasswordAutofillManagerTest, ShowsIdentitySuggestions) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1798,7 +1776,6 @@ TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
 // Regression test for crbug.com/1370037.
 TEST_F(PasswordAutofillManagerTest,
        WebAuthnFaviconWithoutPasswordsWhenUseAnotherDeviceInAutofill) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   // Initialize a PasswordAutofillManager with an empty password form.
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
@@ -1891,8 +1868,6 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
 
 // Regression test for crbug.com/1362742.
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
-  base::test::ScopedFeatureList features;
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -1930,7 +1905,6 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
 }
 
 TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
-  SetUseAPasskeyOnAnotherDeviceFeatureOnDesktop(/*move_to_context_menu=*/false);
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);

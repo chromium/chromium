@@ -6,13 +6,11 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,24 +28,10 @@ using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 class PasskeySuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    features_.InitAndEnableFeature(
-        ::password_manager::features::
-            kAutofillReintroduceHybridPasskeyDropdownItem);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     generator_ = std::make_unique<PasskeySuggestionGenerator>();
     form_ = test::CreateTestHybridSignUpFormData();
     test_autofill_client_.set_password_manager_delegate(
         std::make_unique<testing::NiceMock<MockPasswordManagerDelegate>>());
-  }
-
-  void DisableHybridEntryPoint() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    features_.Reset();
-    features_.InitAndDisableFeature(
-        password_manager::features::
-            kAutofillReintroduceHybridPasskeyDropdownItem);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
 
   MockPasswordManagerDelegate& password_delegate() {
@@ -64,7 +48,6 @@ class PasskeySuggestionGeneratorTest : public testing::Test {
   const FormFieldData& field() { return form_.fields()[0]; }
 
  private:
-  base::test::ScopedFeatureList features_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment test_environment_;
   TestAutofillClient test_autofill_client_;
@@ -88,21 +71,6 @@ TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
                                   generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-TEST_F(PasskeySuggestionGeneratorTest, NoHybridPasskeyAvailability) {
-  DisableHybridEntryPoint();
-
-  // Neither fetch nor generate should call into the delegate now.
-  EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
-      .Times(0);
-
-  base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
-  EXPECT_CALL(generate_cb,
-              Run(Pair(SuggestionDataSource::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
-                                  /*trigger_autofill_field=*/nullptr, client(),
-                                  generate_cb.Get());
-}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Ensure the hybrid suggestion provided by the password delegate is fetched

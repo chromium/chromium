@@ -8208,14 +8208,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "reintroduce-hybrid-passkey-entry-point",
-    "owners": [
-      "friedrichh@chromium.org",
-      "anki-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "related-searches-all-language",
     "owners": [ "gangwu@chromium.org", "related-searches-vteam@google.com" ],
     "expiry_milestone": 140
