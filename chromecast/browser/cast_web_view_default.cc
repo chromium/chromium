@@ -175,8 +175,9 @@ content::WebContents* CastWebViewDefault::OpenURLFromTab(
   DCHECK_EQ(source, web_contents_.get());
   // We don't want to create another web_contents. Load url only when source is
   // specified.
-  auto navigation_handle = source->GetController().LoadURL(
-      params.url, params.referrer, params.transition, params.extra_headers);
+  content::NavigationController::LoadURLParams load_params(params);
+  auto navigation_handle =
+      source->GetController().LoadURLWithParams(load_params);
 
   if (navigation_handle_callback && navigation_handle) {
     std::move(navigation_handle_callback).Run(*navigation_handle);
