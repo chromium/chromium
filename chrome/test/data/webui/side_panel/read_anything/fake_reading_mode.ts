@@ -583,4 +583,8 @@ export class FakeReadingMode {
   // playing.
   onSpeechEngineStalled() {}
   onSpeechEngineFirstStall() {}
+
+  // Called after the ReadAnythingAppController maps the readability text blocks
+  // to the AXTree.
+  onRenderedTextMappingReady() {}
 }

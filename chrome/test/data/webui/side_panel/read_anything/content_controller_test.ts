@@ -1492,4 +1492,18 @@ suite('ContentController', () => {
           assertTrue(contentController.isEmpty());
         });
   });
+
+  test('onRenderedTextMappingReady triggers contentController', () => {
+    let triggered = false;
+    contentController.onRenderedTextMappingReady = () => {
+      triggered = true;
+    };
+
+    chrome.readingMode.onRenderedTextMappingReady = () => {
+      contentController.onRenderedTextMappingReady();
+    };
+
+    chrome.readingMode.onRenderedTextMappingReady();
+    assertTrue(triggered);
+  });
 });

@@ -3070,8 +3070,7 @@ void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
   }
 
   if (model_.MapRenderedTextToTree(model_.readability_text_blocks())) {
-    // TODO(crbug.com/507447796): Notify frontend that readability text has been
-    // mapped to create readability nodestore.
+    ExecuteJavaScript("chrome.readingMode.onRenderedTextMappingReady();");
   }
 }
 

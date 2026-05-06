@@ -393,6 +393,10 @@ export class ContentController {
     return node;
   }
 
+  onRenderedTextMappingReady() {
+    // TODO(crbug.com/507450504): Create nodestore for readability
+  }
+
   updateReadAloudState(rootNode: Node): void {
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.

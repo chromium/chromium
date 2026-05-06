@@ -463,6 +463,10 @@ declare namespace chrome {
     // Resets the granularity index.
     function resetGranularityIndex(): void;
 
+    // Called after the ReadAnythingAppController maps the readability text
+    // blocks to the AXTree.
+    function onRenderedTextMappingReady(): void;
+
     // Increments the processed_granularity_index_ in ReadAnythingAppModel,
     // effectively updating ReadAloud's state of the current granularity to
     // refer to the next granularity.

@@ -330,6 +330,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
       this.$.toolbar.isReadAnythingPinned = pinState;
     };
+
+    chrome.readingMode.onRenderedTextMappingReady = () => {
+      this.contentController_.onRenderedTextMappingReady();
+    };
   }
 
   override disconnectedCallback() {
