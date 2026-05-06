@@ -181,6 +181,7 @@ absl_cc_library(
     absl::compressed_tuple
     absl::config
     absl::core_headers
+    absl::hardening
     absl::memory
     absl::span
     absl::type_traits
@@ -197,6 +198,7 @@ absl_cc_library(
   DEPS
     absl::algorithm
     absl::core_headers
+    absl::hardening
     absl::inlined_vector_internal
     absl::throw_delegate
     absl::memory

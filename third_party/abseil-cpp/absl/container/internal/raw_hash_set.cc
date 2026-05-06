@@ -135,8 +135,8 @@ inline void* PrevSlot(void* slot, size_t slot_size) {
 
 // Must be defined out-of-line to avoid MSVC error C2482 on some platforms,
 // which is caused by non-constexpr initialization.
-uint16_t HashtableInlineData::NextSeed() {
-  static_assert(PerTableSeed::kBitCount == 16);
+uint16_t NextHashTableSeed() {
+  static_assert(PerTableSeed::kBitCount <= 16);
   thread_local uint16_t seed =
       static_cast<uint16_t>(reinterpret_cast<uintptr_t>(&seed));
   seed += uint16_t{0xad53};

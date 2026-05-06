@@ -280,6 +280,10 @@ std::ostream& GenericPrintImpl(std::ostream& os, const T& v) {
     // Specialization for nullptr.
     return os << "nullptr";
 
+  } else if constexpr (std::is_same_v<T, std::monostate>) {
+    // Specialization for `std::monostate`.
+    return os << "monostate";
+
   } else if constexpr (std::is_floating_point_v<T>) {
     // For floating point print with enough precision for a roundtrip.
     return PrintPreciseFP(os, v);

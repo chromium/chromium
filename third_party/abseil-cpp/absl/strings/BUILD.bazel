@@ -42,6 +42,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:hardening",
         "//absl/base:nullability",
     ],
 )
@@ -106,6 +107,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
+        "//absl/base:hardening",
         "//absl/base:iterator_traits_internal",
         "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
@@ -152,6 +154,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:dynamic_annotations",
+        "//absl/base:hardening",
         "//absl/base:throw_delegate",
     ],
 )
@@ -180,6 +183,7 @@ cc_library(
         ":resize_and_overwrite",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:hardening",
         "//absl/base:throw_delegate",
     ],
 )
@@ -674,6 +678,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
+        "//absl/base:hardening",
         "//absl/base:nullability",
         "//absl/base:raw_logging_internal",
         "//absl/cleanup",
@@ -973,6 +978,7 @@ cc_test(
         ":cord_rep_test_util",
         ":string_view",
         "//absl/base:config",
+        "//absl/base:hardening",
         "//absl/types:span",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

@@ -75,6 +75,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
@@ -1553,8 +1554,8 @@ inline void Cord::ChunkIterator::AdvanceBytesBtree(size_t n) {
 }
 
 inline Cord::ChunkIterator& Cord::ChunkIterator::operator++() {
-  ABSL_HARDENING_ASSERT(bytes_remaining_ > 0 &&
-                        "Attempted to iterate past `end()`");
+  // Failure of this assertion indicates an attempt to iterate past `end()`.
+  absl::base_internal::HardeningAssertGT(bytes_remaining_, size_t{0});
   assert(bytes_remaining_ >= current_chunk_.size());
   bytes_remaining_ -= current_chunk_.size();
   if (bytes_remaining_ > 0) {
@@ -1583,12 +1584,12 @@ inline bool Cord::ChunkIterator::operator!=(const ChunkIterator& other) const {
 }
 
 inline Cord::ChunkIterator::reference Cord::ChunkIterator::operator*() const {
-  ABSL_HARDENING_ASSERT(bytes_remaining_ != 0);
+  absl::base_internal::HardeningAssertGT(bytes_remaining_, size_t{0});
   return current_chunk_;
 }
 
 inline Cord::ChunkIterator::pointer Cord::ChunkIterator::operator->() const {
-  ABSL_HARDENING_ASSERT(bytes_remaining_ != 0);
+  absl::base_internal::HardeningAssertGT(bytes_remaining_, size_t{0});
   return &current_chunk_;
 }
 

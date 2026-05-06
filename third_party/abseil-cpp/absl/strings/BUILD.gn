@@ -10,6 +10,7 @@ absl_source_set("string_view") {
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:nullability",
   ]
 }
@@ -72,6 +73,7 @@ absl_source_set("strings") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:iterator_traits_internal",
     "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
@@ -112,6 +114,7 @@ absl_source_set("resize_and_overwrite") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:dynamic_annotations",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:throw_delegate",
   ]
 }
@@ -131,6 +134,7 @@ absl_source_set("append_and_overwrite") {
     ":resize_and_overwrite",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:throw_delegate",
   ]
 }
@@ -410,6 +414,7 @@ absl_source_set("cord") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/cleanup",
@@ -666,6 +671,7 @@ absl_test("cord_buffer_test") {
     ":cord_rep_test_util",
     ":string_view",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/types:span",
   ]
 }

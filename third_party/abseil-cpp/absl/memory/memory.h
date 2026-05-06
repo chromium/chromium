@@ -213,7 +213,8 @@ std::weak_ptr<T> WeakenPtr(const std::shared_ptr<T>& ptr) {
 // `std::pointer_traits` for platforms that had not yet provided it. Those
 // platforms are no longer supported. New code should simply use
 // `std::pointer_traits`.
-using std::pointer_traits;
+template <typename Ptr>
+using pointer_traits ABSL_DEPRECATE_AND_INLINE() = std::pointer_traits<Ptr>;
 
 // -----------------------------------------------------------------------------
 // Class Template: allocator_traits
@@ -223,7 +224,9 @@ using std::pointer_traits;
 // `std::allocator_traits` for platforms that had not yet provided it. Those
 // platforms are no longer supported. New code should simply use
 // `std::allocator_traits`.
-using std::allocator_traits;
+template <typename Alloc>
+using allocator_traits ABSL_DEPRECATE_AND_INLINE() =
+    std::allocator_traits<Alloc>;
 
 namespace memory_internal {
 

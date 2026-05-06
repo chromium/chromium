@@ -147,3 +147,29 @@ index 9013aead88898..66a8be988dd93 100644
  
  #if defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711L
  template <typename T>
+diff --git a/third_party/abseil-cpp/absl/utility/utility.h b/third_party/abseil-cpp/absl/utility/utility.h
+index 06e53785dbe23..60e9ffa3c20a9 100644
+--- a/third_party/abseil-cpp/absl/utility/utility.h
++++ b/third_party/abseil-cpp/absl/utility/utility.h
+@@ -49,10 +49,10 @@ using in_place_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_t;
+ using std::in_place_type;
+ 
+ template <class T>
+-using in_place_type_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_type_t<T>;
++using in_place_type_t ABSL_REFACTOR_INLINE = std::in_place_type_t<T>;
+ 
+ template <size_t... I>
+-using index_sequence ABSL_DEPRECATE_AND_INLINE() = std::index_sequence<I...>;
++using index_sequence ABSL_REFACTOR_INLINE = std::index_sequence<I...>;
+ 
+ template <class T, T... I>
+ using integer_sequence ABSL_DEPRECATE_AND_INLINE() =
+@@ -65,7 +65,7 @@ using index_sequence_for ABSL_DEPRECATE_AND_INLINE() =
+ using std::make_from_tuple;
+ 
+ template <size_t N>
+-using make_index_sequence ABSL_DEPRECATE_AND_INLINE() =
++using make_index_sequence ABSL_REFACTOR_INLINE =
+     std::make_index_sequence<N>;
+ 
+ template <class T, T N>

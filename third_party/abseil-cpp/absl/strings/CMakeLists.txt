@@ -81,6 +81,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::endian
+    absl::hardening
     absl::int128
     absl::iterator_traits_internal
     absl::memory
@@ -179,6 +180,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::dynamic_annotations
+    absl::hardening
     absl::throw_delegate
 )
 
@@ -206,6 +208,7 @@ absl_cc_library(
   DEPS
     absl::config
     absl::core_headers
+    absl::hardening
     absl::strings_resize_and_overwrite
     absl::throw_delegate
 )
@@ -1075,6 +1078,7 @@ absl_cc_library(
     absl::crc_cord_state
     absl::endian
     absl::function_ref
+    absl::hardening
     absl::inlined_vector
     absl::nullability
     absl::optional

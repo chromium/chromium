@@ -27,6 +27,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/memory/memory.h"
@@ -476,7 +477,7 @@ class Storage {
   }
 
   void SubtractSize(SizeType<A> count) {
-    ABSL_HARDENING_ASSERT(count <= GetSize());
+    absl::base_internal::HardeningAssertLE(count, GetSize());
 
     GetSizeAndIsAllocated() -= count << static_cast<SizeType<A>>(1);
   }
@@ -500,18 +501,17 @@ class Storage {
     //
     {
       using V = ValueType<A>;
-      ABSL_HARDENING_ASSERT(
-          other_storage.GetIsAllocated() ||
-          (std::is_same<A, std::allocator<V>>::value &&
-           (
-               // First case above
-               absl::is_trivially_relocatable<V>::value ||
-               // Second case above
-               (std::is_trivially_move_assignable<V>::value &&
-                std::is_trivially_destructible<V>::value) ||
-               // Third case above
-               (std::is_trivially_copy_constructible<V>::value ||
-                std::is_trivially_copy_assignable<V>::value))));
+      ABSL_ASSERT(other_storage.GetIsAllocated() ||
+                  (std::is_same<A, std::allocator<V>>::value &&
+                   (
+                       // First case above
+                       absl::is_trivially_relocatable<V>::value ||
+                       // Second case above
+                       (std::is_trivially_move_assignable<V>::value &&
+                        std::is_trivially_destructible<V>::value) ||
+                       // Third case above
+                       (std::is_trivially_copy_constructible<V>::value ||
+                        std::is_trivially_copy_assignable<V>::value))));
     }
 
     GetSizeAndIsAllocated() = other_storage.GetSizeAndIsAllocated();
@@ -575,7 +575,7 @@ void Storage<T, N, A>::DestroyContents() {
 template <typename T, size_t N, typename A>
 void Storage<T, N, A>::InitFrom(const Storage& other) {
   const SizeType<A> n = other.GetSize();
-  ABSL_HARDENING_ASSERT(n > 0);  // Empty sources handled handled in caller.
+  ABSL_ASSERT(n > 0);  // Empty sources handled in caller.
   ConstPointer<A> src;
   Pointer<A> dst;
   if (!other.GetIsAllocated()) {
@@ -613,8 +613,8 @@ template <typename ValueAdapter>
 auto Storage<T, N, A>::Initialize(ValueAdapter values,
                                   SizeType<A> new_size) -> void {
   // Only callable from constructors!
-  ABSL_HARDENING_ASSERT(!GetIsAllocated());
-  ABSL_HARDENING_ASSERT(GetSize() == 0);
+  ABSL_ASSERT(!GetIsAllocated());
+  ABSL_ASSERT(GetSize() == 0);
 
   Pointer<A> construct_data;
   if (new_size > GetInlinedCapacity()) {
@@ -930,7 +930,7 @@ auto Storage<T, N, A>::Reserve(SizeType<A> requested_capacity) -> void {
 template <typename T, size_t N, typename A>
 auto Storage<T, N, A>::ShrinkToFit() -> void {
   // May only be called on allocated instances!
-  ABSL_HARDENING_ASSERT(GetIsAllocated());
+  ABSL_ASSERT(GetIsAllocated());
 
   StorageView<A> storage_view{GetAllocatedData(), GetSize(),
                               GetAllocatedCapacity()};
@@ -979,7 +979,7 @@ auto Storage<T, N, A>::ShrinkToFit() -> void {
 template <typename T, size_t N, typename A>
 auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
   using std::swap;
-  ABSL_HARDENING_ASSERT(this != other_storage_ptr);
+  ABSL_ASSERT(this != other_storage_ptr);
 
   if (GetIsAllocated() && other_storage_ptr->GetIsAllocated()) {
     swap(data_.allocated, other_storage_ptr->data_.allocated);

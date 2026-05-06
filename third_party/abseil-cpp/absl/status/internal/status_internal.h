@@ -48,6 +48,7 @@ class [[nodiscard]] ABSL_ATTRIBUTE_TRIVIAL_ABI
 class ABSL_MUST_USE_RESULT ABSL_ATTRIBUTE_TRIVIAL_ABI
     Status;
 #endif
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 #endif  // !SWIG

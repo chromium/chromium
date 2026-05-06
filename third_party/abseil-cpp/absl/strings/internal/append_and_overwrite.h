@@ -16,6 +16,7 @@
 #define ABSL_STRINGS_INTERNAL_APPEND_AND_OVERWRITE_H_
 
 #include "absl/base/config.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/optimization.h"
 #include "absl/base/throw_delegate.h"
@@ -69,9 +70,11 @@ void StringAppendAndOverwrite(T& str, typename T::size_type append_n,
       str, resize,
       [old_size, append_n, do_append = std::move(append_op)](
           typename T::value_type* data_ptr, typename T::size_type) mutable {
-        auto num_appended =
-            std::move(do_append)(data_ptr + old_size, append_n);
-        ABSL_HARDENING_ASSERT(num_appended >= 0 && num_appended <= append_n);
+        typename T::size_type num_appended = static_cast<typename T::size_type>(
+            std::move(do_append)(data_ptr + old_size, append_n));
+        absl::base_internal::HardeningAssertGE(num_appended,
+                                               typename T::size_type{0});
+        absl::base_internal::HardeningAssertLE(num_appended, append_n);
         return old_size + num_appended;
       });
 

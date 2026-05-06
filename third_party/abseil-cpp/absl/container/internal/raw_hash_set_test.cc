@@ -352,6 +352,186 @@ TEST(Util, probe_seq) {
   EXPECT_THAT(offsets, ElementsAre(0, 16, 48, 96, 32, 112, 80, 64));
 }
 
+template <typename T>
+class HashtableDataTest : public ::testing::Test {};
+
+using StorageModes = ::testing::Types<
+    std::integral_constant<HashtableCapacityStorageMode,
+                           HashtableCapacityStorageMode::kCapacityByValue>,
+    std::integral_constant<HashtableCapacityStorageMode,
+                           HashtableCapacityStorageMode::kCapacityByLog>>;
+
+TYPED_TEST_SUITE(HashtableDataTest, StorageModes);
+
+TYPED_TEST(HashtableDataTest, HashtableCapacity) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  Capacity cap0(0);
+  EXPECT_TRUE(cap0.IsValid());
+  EXPECT_EQ(cap0.capacity(), 0);
+  EXPECT_FALSE(cap0.IsDestroyed());
+  EXPECT_FALSE(cap0.IsReentrance());
+  EXPECT_FALSE(cap0.IsMovedFrom());
+  EXPECT_FALSE(cap0.IsSelfMovedFrom());
+
+  for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
+    Capacity capacity(cap);
+    ASSERT_TRUE(capacity.IsValid());
+    ASSERT_EQ(capacity.capacity(), cap);
+  }
+
+  auto destroyed = Capacity::CreateDestroyed();
+  EXPECT_FALSE(destroyed.IsValid());
+  EXPECT_TRUE(destroyed.IsDestroyed());
+
+  auto reentrance = Capacity::CreateReentrance();
+  EXPECT_FALSE(reentrance.IsValid());
+  EXPECT_TRUE(reentrance.IsReentrance());
+
+  auto moved_from = Capacity::CreateMovedFrom();
+  EXPECT_FALSE(moved_from.IsValid());
+  EXPECT_TRUE(moved_from.IsMovedFrom());
+  EXPECT_FALSE(moved_from.IsSelfMovedFrom());
+
+  auto self_moved_from = Capacity::CreateSelfMovedFrom();
+  EXPECT_FALSE(self_moved_from.IsValid());
+  EXPECT_TRUE(self_moved_from.IsSelfMovedFrom());
+  EXPECT_TRUE(self_moved_from.IsMovedFrom());
+}
+
+TYPED_TEST(HashtableDataTest, RawData) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
+    Capacity orig_capacity(cap);
+    Capacity capacity = Capacity::FromRawData(orig_capacity.ToRawData());
+    ASSERT_TRUE(capacity.IsValid());
+    ASSERT_EQ(capacity.capacity(), cap);
+  }
+  auto orig_reentrance = Capacity::CreateReentrance();
+  Capacity reentrance = Capacity::FromRawData(orig_reentrance.ToRawData());
+  EXPECT_TRUE(reentrance.IsReentrance());
+}
+
+TYPED_TEST(HashtableDataTest, HashtableInlineDataCapacity) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using InlineData = HashtableInlineDataImpl<kMode>;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  InlineData data(Capacity(0), no_seed_empty_tag_t{});
+  EXPECT_EQ(data.capacity(), 0);
+  EXPECT_EQ(data.size(), 0);
+  EXPECT_TRUE(data.empty());
+
+  for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
+    data.set_capacity(cap);
+    ASSERT_EQ(data.capacity(), cap);
+  }
+
+  // Test overload from `Capacity` object.
+  for (size_t i = 0, cap = 0; i < 20; ++i, cap = NextCapacity(cap)) {
+    data.set_capacity(Capacity(cap));
+    ASSERT_EQ(data.capacity(), cap);
+  }
+
+  auto reentrance = Capacity::CreateReentrance();
+  data.set_capacity(reentrance);
+  EXPECT_TRUE(data.maybe_invalid_capacity().IsReentrance());
+}
+
+TYPED_TEST(HashtableDataTest, HashtableInlineDataSize) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using InlineData = HashtableInlineDataImpl<kMode>;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  InlineData data(Capacity(0), no_seed_empty_tag_t{});
+  EXPECT_EQ(data.size(), 0);
+  data.increment_size();
+  EXPECT_EQ(data.size(), 1);
+  EXPECT_FALSE(data.empty());
+
+  data.increment_size(5);
+  EXPECT_EQ(data.size(), 6);
+
+  data.decrement_size();
+  EXPECT_EQ(data.size(), 5);
+
+  constexpr size_t kHugeIncrement =
+      (size_t(1) << (sizeof(size_t) == 4 ? 31 : 42));
+  data.increment_size(kHugeIncrement);
+  EXPECT_EQ(data.size(), kHugeIncrement + 5);
+
+  EXPECT_FALSE(data.has_infoz());
+  data.set_has_infoz();
+  data.set_size(10);
+  EXPECT_EQ(data.size(), 10);
+  EXPECT_TRUE(data.has_infoz());
+}
+
+TYPED_TEST(HashtableDataTest, HashtableInlineDataMetadata) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using InlineData = HashtableInlineDataImpl<kMode>;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  InlineData data(Capacity(0), no_seed_empty_tag_t{});
+
+  // SOO sampling (test this first before seed messes with bit 0)
+  EXPECT_FALSE(data.soo_has_tried_sampling());
+  data.set_soo_has_tried_sampling();
+  EXPECT_TRUE(data.soo_has_tried_sampling());
+
+  data.set_no_seed_for_testing();
+  EXPECT_EQ(data.seed().seed(), 0);
+
+  data.set_sampled_seed();
+  EXPECT_TRUE(data.is_sampled_seed());
+
+  // Infoz
+  EXPECT_FALSE(data.has_infoz());
+  data.set_has_infoz();
+  EXPECT_TRUE(data.has_infoz());
+}
+
+TYPED_TEST(HashtableDataTest, HashtableInlineDataFullSooConstructor) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using InlineData = HashtableInlineDataImpl<kMode>;
+  using Capacity = HashtableCapacityImpl<kMode>;
+
+  {
+    InlineData data_soo(Capacity(1), full_soo_tag_t{},
+                        /*has_tried_sampling=*/true);
+    EXPECT_EQ(data_soo.capacity(), 1);
+    EXPECT_EQ(data_soo.size(), 1);
+    EXPECT_TRUE(data_soo.soo_has_tried_sampling());
+  }
+
+  {
+    InlineData data_soo(Capacity(1), full_soo_tag_t{},
+                        /*has_tried_sampling=*/false);
+    EXPECT_EQ(data_soo.capacity(), 1);
+    EXPECT_EQ(data_soo.size(), 1);
+    EXPECT_FALSE(data_soo.soo_has_tried_sampling());
+  }
+}
+
+TYPED_TEST(HashtableDataTest, GenerateNewSeedDoesntChangeSize) {
+  constexpr HashtableCapacityStorageMode kMode = TypeParam::value;
+  using InlineData = HashtableInlineDataImpl<kMode>;
+  using Capacity = HashtableCapacityImpl<kMode>;
+  size_t size = 1;
+  do {
+    InlineData inline_data(Capacity(15), no_seed_empty_tag_t{});
+    inline_data.increment_size(size);
+    EXPECT_EQ(inline_data.size(), size);
+    inline_data.generate_new_seed();
+    EXPECT_EQ(inline_data.size(), size);
+    size = size * 2 + 1;
+  } while (size < std::min(MaxStorableSize(),
+                           MaxSizeAtMaxValidCapacity(/*slot_size=*/1)));
+}
+
 TEST(Batch, DropDeletes) {
   constexpr size_t kCapacity = 63;
   constexpr size_t kGroupWidth = container_internal::Group::kWidth;
@@ -2602,7 +2782,7 @@ std::vector<int> OrderOfIteration(const T& t) {
 // in seed.
 void GenerateIrrelevantSeeds(int cnt) {
   for (int i = cnt % 17; i > 0; --i) {
-    HashtableInlineData::NextSeed();
+    NextHashTableSeed();
   }
 }
 
@@ -2640,8 +2820,8 @@ TYPED_TEST(SooTest, IterationOrderChangesOnRehash) {
   for (bool do_reserve : {false, true}) {
     for (size_t size : {2u, 3u, 6u, 7u, 12u, 15u, 20u, 50u}) {
       for (size_t rehash_size : {
-               size_t{0},        // Force rehash is guaranteed.
-               size * 10  // Rehash to the larger capacity is guaranteed.
+               size_t{0},  // Force rehash is guaranteed.
+               size * 10   // Rehash to the larger capacity is guaranteed.
            }) {
         SCOPED_TRACE(absl::StrCat("size: ", size, " rehash_size: ", rehash_size,
                                   " do_reserve: ", do_reserve));
@@ -2803,8 +2983,7 @@ class RawHashSamplerTest : public testing::Test {};
 using RawHashSamplerTestTypes = ::testing::Types<
     // 32 bits to make sure that table is Soo for 32 bits platform as well.
     // 64 bits table is not SOO due to alignment.
-    SooInt32Table,
-    NonSooIntTable>;
+    SooInt32Table, NonSooIntTable>;
 TYPED_TEST_SUITE(RawHashSamplerTest, RawHashSamplerTestTypes);
 
 TYPED_TEST(RawHashSamplerTest, Sample) {
@@ -3080,9 +3259,7 @@ TEST(RawHashSamplerTest, SooTableSampleOnCopy) {
   t_orig.insert(1);
 
   std::vector<const HashtablezInfo*> infos =
-      SampleSooMutation([&t_orig](SooInt32Table& t) {
-        t = t_orig;
-      });
+      SampleSooMutation([&t_orig](SooInt32Table& t) { t = t_orig; });
 
   for (const HashtablezInfo* info : infos) {
     ASSERT_EQ(info->inline_element_size,
@@ -4123,19 +4300,6 @@ TEST(Table, MovedFromCallsFail) {
     t3 = std::move(t1);
     EXPECT_DEATH_IF_SUPPORTED(t3.contains(1), "moved-from");
   }
-}
-
-TEST(HashtableSize, GenerateNewSeedDoesntChangeSize) {
-  size_t size = 1;
-  do {
-    HashtableInlineData hs(HashtableCapacity(15), no_seed_empty_tag_t{});
-    hs.increment_size(size);
-    EXPECT_EQ(hs.size(), size);
-    hs.generate_new_seed();
-    EXPECT_EQ(hs.size(), size);
-    size = size * 2 + 1;
-  } while (size < std::min(MaxStorableSize(),
-                           MaxSizeAtMaxValidCapacity(/*slot_size=*/1)));
 }
 
 TEST(Table, MaxValidSize) {

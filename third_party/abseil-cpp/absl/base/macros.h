@@ -56,6 +56,24 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+// ABSL_INTERNAL_UNEVALUATED()
+//
+// Expands into a no-op expression that contains the given expression. Used to
+// avoid unused-variable warnings in configurations that don't need to evaluate
+// the given expression (e.g., NDEBUG).
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+// We use `decltype` here to avoid generating unnecessary code that the
+// optimizer then has to optimize away.
+// This not only improves compilation performance by reducing codegen bloat
+// and optimization work, but also guarantees fast run-time performance without
+// having to rely on the optimizer.
+#define ABSL_INTERNAL_UNEVALUATED(expr) (decltype((void)(expr))())
+#else
+// Pre-C++20, lambdas can't be inside unevaluated operands, so we're forced to
+// rely on the optimizer.
+#define ABSL_INTERNAL_UNEVALUATED(expr) (false ? (void)(expr) : void())
+#endif
+
 // ABSL_BAD_CALL_IF()
 //
 // Used on a function overload to trap bad calls: any call that matches the
@@ -93,18 +111,7 @@ ABSL_NAMESPACE_END
 // This macro is inspired by
 // https://akrzemi1.wordpress.com/2017/05/18/asserts-in-constexpr-functions/
 #if defined(NDEBUG)
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
-// We use `decltype` here to avoid generating unnecessary code that the
-// optimizer then has to optimize away.
-// This not only improves compilation performance by reducing codegen bloat
-// and optimization work, but also guarantees fast run-time performance without
-// having to rely on the optimizer.
-#define ABSL_ASSERT(expr) (decltype((expr) ? void() : void())())
-#else
-// Pre-C++20, lambdas can't be inside unevaluated operands, so we're forced to
-// rely on the optimizer.
-#define ABSL_ASSERT(expr) (false ? ((expr) ? void() : void()) : void())
-#endif
+#define ABSL_ASSERT(expr) ABSL_INTERNAL_UNEVALUATED((expr) ? void() : void())
 #else
 #define ABSL_ASSERT(expr)                           \
   (ABSL_PREDICT_TRUE((expr)) ? static_cast<void>(0) \

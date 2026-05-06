@@ -941,12 +941,11 @@ EXPORTS
     ?Name@FlagImpl@flags_internal@absl@@EEBA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?New@CordRepCrc@cord_internal@absl@@SAPEAU123@PEAUCordRep@23@VCrcCordState@crc_internal@3@@Z
     ?NewArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@I@Z
-    ?NewCRC32AcceleratedX86ARMCombinedAll@crc_internal@absl@@YA?AV?$vector@V?$unique_ptr@VCRCImpl@crc_internal@absl@@U?$default_delete@VCRCImpl@crc_internal@absl@@@__Cr@std@@@__Cr@std@@V?$allocator@V?$unique_ptr@VCRCImpl@crc_internal@absl@@U?$default_delete@VCRCImpl@crc_internal@absl@@@__Cr@std@@@__Cr@std@@@23@@__Cr@std@@XZ
     ?NewInternal@CRCImpl@crc_internal@absl@@SAPEAV123@XZ
     ?NewString@CheckOpMessageBuilder@log_internal@absl@@QEAAPEBDXZ
     ?Next@CordRepBtreeReader@cord_internal@absl@@QEAA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?Next@CordzInfo@cord_internal@absl@@QEBAPEAV123@AEBVCordzSnapshot@23@@Z
-    ?NextSeed@HashtableInlineData@container_internal@absl@@SAGXZ
+    ?NextHashTableSeed@container_internal@absl@@YAGXZ
     ?NextTransition@TimeZone@absl@@QEBA_NVTime@2@PEAUCivilTransition@12@@Z
     ?NextTransition@TimeZoneInfo@cctz@time_internal@absl@@UEBA_NAEBV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@__Cr@std@@PEAUcivil_transition@time_zone@234@@Z
     ?NextTransition@TimeZoneLibC@cctz@time_internal@absl@@UEBA_NAEBV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@__Cr@std@@PEAUcivil_transition@time_zone@234@@Z
@@ -1082,6 +1081,8 @@ EXPORTS
     ?RestoreState@FlagImpl@flags_internal@absl@@AEAA_NAEBVFlagState@23@@Z
     ?Retire@flags_internal@absl@@YAXPEBDVFastTypeIdType@2@PEAE@Z
     ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
+    ?RoundTripDoubleToBuffer@numbers_internal@absl@@YAPEADNPEAD@Z
+    ?RoundTripFloatToBuffer@numbers_internal@absl@@YAPEADMPEAD@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
     ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@AEAUSamplingState@12@_K11G@Z
     ?SaveState@FlagImpl@flags_internal@absl@@EEAA?AV?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
