@@ -118,6 +118,7 @@ import java.util.List;
     ChromeFeatureList.DRAW_CHROME_PAGES_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class ArchivedTabsDialogCoordinatorTest {
     private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
     private static final String SYNC_GROUP_ID2 = "test_sync_group_id2";

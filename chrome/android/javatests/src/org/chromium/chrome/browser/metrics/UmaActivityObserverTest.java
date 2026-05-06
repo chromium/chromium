@@ -26,6 +26,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -52,6 +53,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 // multi-display mode with Chrome not running in an adjacent window.
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @EnableFeatures({ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES})
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class UmaActivityObserverTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =

@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -66,6 +67,7 @@ import java.io.IOException;
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class TabGroupDialogPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

@@ -84,6 +84,7 @@ public class OptionalNewTabButtonControllerTabletTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testButton_hiddenOnTablet_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);

@@ -31,6 +31,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -109,6 +110,7 @@ public class KeyboardFocusRowManagerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
         ChromeTabUtils.newTabFromMenu(
@@ -150,6 +152,7 @@ public class KeyboardFocusRowManagerTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testSwitchKeyboardFocusRow_withBookmarksBar() {
         setBookmarkBarFeatureParam(true);
         setUserPrefsShowBookmarksBar(true);
@@ -208,6 +211,7 @@ public class KeyboardFocusRowManagerTest {
     @SmallTest
     @Feature("KeyboardShortcuts")
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testSkipStripIfHidden() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

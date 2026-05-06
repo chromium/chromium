@@ -151,6 +151,7 @@ public class MultiWindowAppMenuTest {
     @LargeTest
     @EnableFeatures(OPEN_WINDOW_ON_TOP)
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testInteractWithBothWindows_robustWindowManagementExperimentalEnabled() {
         doTestInteractWithBothWindows();
     }
@@ -161,6 +162,7 @@ public class MultiWindowAppMenuTest {
         ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
         ChromeFeatureList.SETTINGS_MULTI_COLUMN
     })
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testInteractWithBothWindows() {
         doTestInteractWithBothWindows();
     }
