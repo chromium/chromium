@@ -5040,6 +5040,12 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
 
+    // Even though this is parsed iteratively, a flat sequence of operations
+    // (e.g., a * b * c * d) creates a deep expression tree. We track the
+    // depth of the resulting tree to avoid stack overflows during subsequent
+    // recursive tree processing.
+    int result_depth = state.depth + 1;
+
     while (!stream.AtEnd()) {
       CSSMathOperator math_operator = ParseCSSArithmeticOperator(stream.Peek());
       if (math_operator != CSSMathOperator::kMultiply &&
@@ -5059,6 +5065,19 @@ class CSSMathExpressionNodeParser {
 
       if (!result) {
         return nullptr;
+      }
+
+      if (result->IsOperation()) {
+        // Each new operation adds a level to the expression tree.
+        result_depth++;
+        if (result_depth > kMaxExpressionDepth) {
+          return nullptr;
+        }
+      } else {
+        // If the expression was simplified into a non-operation node (e.g. a
+        // numeric literal), the accumulated depth drops back down to the
+        // current term level.
+        result_depth = state.depth + 1;
       }
     }
 
@@ -5086,6 +5105,12 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
 
+    // Even though this is parsed iteratively, a flat sequence of operations
+    // (e.g., a + b + c + d) creates a deep expression tree. We track the
+    // depth of the resulting tree to avoid stack overflows during subsequent
+    // recursive tree processing.
+    int result_depth = state.depth + 1;
+
     while (!stream.AtEnd()) {
       CSSMathOperator math_operator = ParseCSSArithmeticOperator(stream.Peek());
       if (math_operator != CSSMathOperator::kAdd &&
@@ -5112,6 +5137,19 @@ class CSSMathExpressionNodeParser {
 
       if (!result) {
         return nullptr;
+      }
+
+      if (result->IsOperation()) {
+        // Each new operation adds a level to the expression tree.
+        result_depth++;
+        if (result_depth > kMaxExpressionDepth) {
+          return nullptr;
+        }
+      } else {
+        // If the expression was simplified into a non-operation node (e.g. a
+        // numeric literal), the accumulated depth drops back down to the
+        // current term level.
+        result_depth = state.depth + 1;
       }
     }
 
