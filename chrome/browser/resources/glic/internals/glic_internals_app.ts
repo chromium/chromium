@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, AllowedInflightNavigation, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
+import {ActuationEligibility, ActuationTarget, AllowedInflightNavigation, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
 import {InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
 import type {InternalsDataPayload} from '../glic_internals.mojom-webui.js';
 
@@ -42,6 +42,8 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeZssOverride_: {type: Boolean},
       invokeZssAdditionalContent_: {type: String},
       invokeOpenInForeground_: {type: Boolean},
+      invokeActuationTarget_: {type: Number},
+      actuationTargetEnumValues_: {type: Array},
 
       selectedTabIndex_: {type: Number},
       tabNames_: {type: Array},
@@ -62,12 +64,19 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeZssOverride_: boolean = false;
   protected accessor invokeZssAdditionalContent_: string = '';
   protected accessor invokeOpenInForeground_: boolean = true;
+  protected accessor invokeActuationTarget_: ActuationTarget =
+      ActuationTarget.kAgentDecides;
 
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
   protected accessor featureModeEnumValues_:
       Array<{name: string, value: number}> =
           Object.entries(FeatureMode)
+              .filter(([key]) => isNaN(Number(key)))
+              .map(([name, value]) => ({name, value: value as number}));
+  protected accessor actuationTargetEnumValues_:
+      Array<{name: string, value: number}> =
+          Object.entries(ActuationTarget)
               .filter(([key]) => isNaN(Number(key)))
               .map(([name, value]) => ({name, value: value as number}));
 
@@ -279,6 +288,10 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeOpenInForeground_ = (e.target as HTMLInputElement).checked;
   }
 
+  protected onInvokeActuationTargetChange_(e: Event) {
+    this.invokeActuationTarget_ = Number((e.target as HTMLSelectElement).value);
+  }
+
   protected onTriggerInvokeClick_() {
     this.invokeLogs_ =
         [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
@@ -306,6 +319,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       freOverride: this.invokeFreOverride_,
       waitForPanelOpen: this.invokeWaitForPanelOpen_,
       surface: surface,
+      actuationTarget: this.invokeActuationTarget_,
     };
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(

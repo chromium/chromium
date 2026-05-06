@@ -136,6 +136,16 @@ export function getHtml(this: GlicInternalsAppElement) {
               <option value="${item.value}">${item.name}</option>
             `)}
           </select>
+          ${this.invokeFeatureMode_ === 2 ? html`
+            <label for="invokeActuationTargetSelect">Actuation Target</label>
+            <select id="invokeActuationTargetSelect"
+                .value="${this.invokeActuationTarget_.toString()}"
+                @change="${this.onInvokeActuationTargetChange_}">
+              ${this.actuationTargetEnumValues_.map(item => html`
+                <option value="${item.value}">${item.name}</option>
+              `)}
+            </select>
+          ` : html``}
 
           <div style="display: flex; gap: 16px; align-items: center;">
             <label>

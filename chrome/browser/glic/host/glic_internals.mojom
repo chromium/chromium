@@ -33,6 +33,7 @@ struct TriggerInvokeFromInternalsOptions {
   FreOverride fre_override = kUnspecified;
   bool wait_for_panel_open;
   InvokeTargetSurface surface;
+  ActuationTarget actuation_target;
 };
 
 // Page handler for the glic internals WebUI.
