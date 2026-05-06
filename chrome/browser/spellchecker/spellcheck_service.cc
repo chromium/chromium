@@ -548,8 +548,12 @@ void SpellcheckService::OnCustomDictionaryChanged(
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
     content::RenderProcessHost* process = it.GetCurrentValue();
-    if (!process->IsInitializedAndNotDead())
+    if (!process->IsInitializedAndNotDead() ||
+        SpellcheckServiceFactory::GetForContext(process->GetBrowserContext()) !=
+            this) {
       continue;
+    }
+
     GetSpellCheckerForProcess(process)->CustomDictionaryChanged(additions,
                                                                 deletions);
   }
