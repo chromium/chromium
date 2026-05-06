@@ -174,6 +174,16 @@ public final class ViewUtils {
     }
 
     /**
+     * Converts pixels on the screen (px) to density-independent pixels (dp).
+     *
+     * @param px The physical pixels on the screen.
+     * @return The density-independent pixels that correspond to this many physical pixels.
+     */
+    public static int pxToDp(Context context, int px) {
+        return Math.round(px / context.getResources().getDisplayMetrics().density);
+    }
+
+    /**
      * As {@link #setAncestorsShouldClipChildren(ViewGroup, boolean, int)}, defaulting to stopping
      * at the view with id android.R.id.content.
      */

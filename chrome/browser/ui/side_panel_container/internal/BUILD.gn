@@ -23,7 +23,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:callback_java",
-    "//base:log_java",
     "//base:supplier_java",
     "//base:tasks_java",
     "//base/version_info/android:version_constants_java",
@@ -101,8 +100,8 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_window_window_java",
     "//third_party/junit",
-    "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.side_panel_container"

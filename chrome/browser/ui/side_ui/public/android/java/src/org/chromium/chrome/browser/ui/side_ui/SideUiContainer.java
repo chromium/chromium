@@ -34,18 +34,21 @@ public interface SideUiContainer {
     View getView();
 
     /**
-     * Called by {@link SideUiCoordinator} to determine the container's desired width given the
-     * available width and window width.
+     * Called by {@link SideUiCoordinator} for this container to determine its final width given the
+     * constraints of {@code availableWidth} and {@code windowWidth}.
      *
      * <p>Notably, no UI changes should actually occur in this method. The {@link SideUiCoordinator}
      * that is hosting this container is responsible for calling {@link #setWidth}, etc. to actually
-     * reflect the newly calculated width.
+     * apply the final width.
      *
+     * @param requestedWidth The width requested by this container via {@link
+     *     SideUiCoordinator#requestUpdateContainer}, in px.
      * @param availableWidth The available width that this container can consume in px.
      * @param windowWidth The new window width in px.
      */
     @Px
-    int determineContainerWidth(@Px int availableWidth, @Px int windowWidth);
+    int determineContainerWidth(
+            @Px int requestedWidth, @Px int availableWidth, @Px int windowWidth);
 
     /** Returns the container's current width. */
     @Px

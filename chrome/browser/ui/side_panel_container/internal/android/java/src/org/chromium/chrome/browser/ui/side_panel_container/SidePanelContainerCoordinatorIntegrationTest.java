@@ -18,8 +18,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Px;
 import androidx.test.filters.MediumTest;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -160,12 +160,17 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
-        @Px
-        int expectedWidth =
-                ViewUtils.dpToPx(
-                        mFreshCtaTransitTestRule.getActivity(),
-                        SidePanelContainerCoordinatorImpl.SIDE_PANEL_MIN_WIDTH_DP);
-        assertEquals(expectedWidth, containerView.getWidth());
+        var activity = mFreshCtaTransitTestRule.getActivity();
+        int windowWidthPx =
+                WindowMetricsCalculator.getOrCreate()
+                        .computeCurrentWindowMetrics(activity)
+                        .getBounds()
+                        .width();
+        int windowWidthDp = ViewUtils.pxToDp(activity, windowWidthPx);
+        int expectedWidthDp =
+                SidePanelContainerCoordinatorImpl.determineContainerWidthDp(windowWidthDp);
+        int expectedWidthPx = ViewUtils.dpToPx(activity, expectedWidthDp);
+        assertEquals(expectedWidthPx, containerView.getWidth());
     }
 
     @Test

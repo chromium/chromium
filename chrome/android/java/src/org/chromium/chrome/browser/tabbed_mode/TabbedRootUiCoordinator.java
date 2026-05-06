@@ -2111,6 +2111,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mSideUiCoordinator =
                 SideUiCoordinatorFactory.create(
+                        mActivity,
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,

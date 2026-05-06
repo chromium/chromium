@@ -26,6 +26,7 @@ android_library("java") {
     "//chrome/browser/ui/side_ui/public:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_window_window_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

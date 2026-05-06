@@ -9,6 +9,7 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.EMPTY_SIDE_UI_SPECS;
 
+import android.app.Activity;
 import android.transition.Transition;
 import android.transition.TransitionListenerAdapter;
 import android.transition.TransitionManager;
@@ -21,6 +22,7 @@ import android.view.ViewParent;
 import android.view.ViewStub;
 
 import androidx.annotation.Px;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -35,6 +37,8 @@ import org.chromium.ui.interpolators.Interpolators;
 @NullMarked
 final class SideUiCoordinatorImpl implements SideUiCoordinator {
     private static final long TRANSITION_DURATION_MS = 350L;
+
+    private final Activity mParentActivity;
 
     private final ViewGroup mAnchorContainerParent;
     private final ViewGroup mStartAnchorContainer;
@@ -55,6 +59,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     /**
      * Constructor for a {@link SideUiCoordinatorImpl}.
      *
+     * @param parentActivity The {@link Activity} containing all Side UIs.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
      *     containers.
      * @param startAnchorContainerStub The {@link ViewStub} for the start-anchored container.
@@ -62,11 +67,14 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      * @param topMarginSupplier The supplier for the Side UI's top margin.
      */
     /* package */ SideUiCoordinatorImpl(
+            Activity parentActivity,
             ViewGroup anchorContainerParent,
             ViewStub startAnchorContainerStub,
             ViewStub endAnchorContainerStub,
             NonNullObservableSupplier<Integer> topMarginSupplier) {
+        mParentActivity = parentActivity;
         mAnchorContainerParent = anchorContainerParent;
+
         // TODO(crbug.com/485309827): Account for the height of Side UI. Specifically, show beneath
         //  the tab strip when it is visible.
         mStartAnchorContainer = (ViewGroup) startAnchorContainerStub.inflate();
@@ -107,11 +115,14 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
                         || ChromeFeatureList.sEnableAndroidSidePanelDisableAnimations.getValue();
 
         // 2. Determine containers' widths and the upcoming SideUiSpecs.
-        // TODO(crbug.com/478306743): Loop through the registered SideUiContainers and call
-        //  SideUiContainer#determineContainerWidth to determine all of the containers' accepted
-        //  widths, rather than just implicitly accepting the requested width. Determine the
-        //  upcoming SideUiSpecs based on the accepted widths.
-        @Px int acceptedWidth = properties.mWidth;
+        // Currently we only have one side UI container, so "availableWidth" is the same as
+        // "windowWidth".
+        // TODO(crbug.com/478338737): Update to account for multiple side containers.
+        @Px int windowWidth = getWindowWidth();
+        @Px
+        int acceptedWidth =
+                mSideUiContainer.determineContainerWidth(
+                        properties.mWidth, /* availableWidth= */ windowWidth, windowWidth);
         SideUiSpecs newSideUiSpecs =
                 new SideUiSpecs(
                         properties.mAnchorSide == AnchorSide.START ? acceptedWidth : 0,
@@ -401,6 +412,13 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
                 ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
         endLayoutParams.topMargin = tabStripBottomPx;
         mEndAnchorContainer.setLayoutParams(endLayoutParams);
+    }
+
+    private @Px int getWindowWidth() {
+        return WindowMetricsCalculator.getOrCreate()
+                .computeCurrentWindowMetrics(mParentActivity)
+                .getBounds()
+                .width();
     }
 
     // Test Support
