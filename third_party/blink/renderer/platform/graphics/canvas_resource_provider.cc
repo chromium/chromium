@@ -266,21 +266,10 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              color_space,
                              delegate),
       is_accelerated_(false),
-      is_software_(true),
-      shared_image_interface_provider_(
-          shared_image_interface_provider
-              ? shared_image_interface_provider->GetWeakPtr()
-              : nullptr) {
-  if (shared_image_interface_provider_) {
-    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
-  }
-}
+      is_software_(true) {}
 
 CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
   if (is_software_) {
-    if (shared_image_interface_provider_) {
-      shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
-    }
     return;
   }
 
@@ -303,10 +292,6 @@ void CanvasResourceProviderSharedImage::OnContextLost() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
   notified_context_lost_ = true;
-}
-
-void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
-  OnContextLost();
 }
 
 scoped_refptr<CanvasResourceSharedImage>
@@ -2188,10 +2173,15 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         alpha_type,
                                         color_space,
                                         shared_image_interface_provider,
-                                        delegate) {
+                                        delegate),
+      shared_image_interface_provider_(
+          shared_image_interface_provider
+              ? shared_image_interface_provider->GetWeakPtr()
+              : nullptr) {
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
       gpu::ImageInfo image_info(
           size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
@@ -2210,6 +2200,9 @@ Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
   }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
+  }
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.
@@ -2353,8 +2346,13 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)) {
+                                                       /*client=*/nullptr)),
+      shared_image_interface_provider_(
+          shared_image_interface_provider
+              ? shared_image_interface_provider->GetWeakPtr()
+              : nullptr) {
   if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
       gpu::ImageInfo image_info(
           size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
@@ -2374,6 +2372,9 @@ CanvasNon2DResourceProviderSharedImage::
   }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
+  }
+  if (shared_image_interface_provider_) {
+    shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.
