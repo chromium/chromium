@@ -55,8 +55,14 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
   textfield_->SetText(u"Hello World");
 }
 
+// TODO(crbug.com/483355367): Disabled due to flakiness on Linux and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_TextSelectionChanged DISABLED_TextSelectionChanged
+#else
+#define MAYBE_TextSelectionChanged TextSelectionChanged
+#endif
 IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest,
-                       TextSelectionChanged) {
+                       MAYBE_TextSelectionChanged) {
   textfield_->SetText(u"Hello World");
   textfield_->SetSelectedRange(gfx::Range(0));
   WaitForPendingSerialization();

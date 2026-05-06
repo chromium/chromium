@@ -67,8 +67,14 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
   button_->RequestFocus();
 }
 
+// TODO(crbug.com/483355367): Disabled due to flakiness on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EnabledStateChanged DISABLED_EnabledStateChanged
+#else
+#define MAYBE_EnabledStateChanged EnabledStateChanged
+#endif
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest,
-                       EnabledStateChanged) {
+                       MAYBE_EnabledStateChanged) {
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
 @UIA-WIN-ALLOW:IsEnabled*
