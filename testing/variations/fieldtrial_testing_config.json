@@ -19080,6 +19080,23 @@
             ]
         }
     ],
+    "PreemptiveSodaDownload": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreemptiveSodaDownload"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrefetchBlockUntilHeadTimeoutForWebViewPrefetch": [
         {
             "platforms": [
