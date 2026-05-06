@@ -63,15 +63,6 @@ external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-svg.html
 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-with-transform-and-preserve-3D.html
 external/wpt/css/compositing/root-element-opacity-change.html
 external/wpt/css/compositing/svg/mix-blend-mode-svg-rectangle.html
-external/wpt/css/CSS2/backgrounds/background-applies-to-006.xht
-external/wpt/css/CSS2/backgrounds/background-applies-to-012.xht
-external/wpt/css/CSS2/backgrounds/background-color-applies-to-006.xht
-external/wpt/css/CSS2/backgrounds/background-color-applies-to-012.xht
-external/wpt/css/CSS2/backgrounds/background-image-applies-to-006.xht
-external/wpt/css/CSS2/backgrounds/background-image-applies-to-012.xht
-external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht
-external/wpt/css/CSS2/backgrounds/background-repeat-applies-to-006.xht
-external/wpt/css/CSS2/backgrounds/background-repeat-applies-to-012.xht
 external/wpt/css/CSS2/borders/border-applies-to-006.xht
 external/wpt/css/CSS2/borders/border-applies-to-012.xht
 external/wpt/css/CSS2/borders/border-color-applies-to-006.xht
