@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -55,14 +54,7 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   SVGParsingError status =
       VisitCharacters(value, [&](auto chars) { return Parse(chars); });
   if (status != SVGParseStatus::kNoError) {
-    if (RuntimeEnabledFeatures::SvgNumberListClearOnParsingFailureEnabled()) {
-      Clear();
-    } else {
-      // Don't call |clear()| if an error is encountered. SVG policy is to use
-      // valid items before error.
-      // Spec:
-      // http://www.w3.org/TR/SVG/single-page.html#implnote-ErrorProcessing
-    }
+    Clear();
   }
   return status;
 }

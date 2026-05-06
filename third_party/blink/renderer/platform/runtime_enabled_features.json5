@@ -5643,15 +5643,7 @@
       status: "test",
     },
     {
-      name: "SvgLengthListClearOnParsingFailure",
-      status: "stable",
-    },
-    {
       name: "SvgLengthResolveUnparsedValue",
-      status: "stable",
-    },
-    {
-      name: "SvgNumberListClearOnParsingFailure",
       status: "stable",
     },
     {

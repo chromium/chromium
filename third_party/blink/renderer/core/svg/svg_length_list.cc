@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -67,8 +66,7 @@ SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
 
   SVGParsingError status =
       VisitCharacters(value, [&](auto chars) { return ParseInternal(chars); });
-  if (status != SVGParseStatus::kNoError &&
-      RuntimeEnabledFeatures::SvgLengthListClearOnParsingFailureEnabled()) {
+  if (status != SVGParseStatus::kNoError) {
     Clear();
   }
   return status;
