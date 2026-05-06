@@ -769,5 +769,91 @@ TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
   EXPECT_TRUE(callback_called);
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringState_AllDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kGlicExperimentalTriggering,
+                             features::kGlicExperimentalTriggeringOptInBypass});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringState_BypassEnabled_MainDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicExperimentalTriggeringOptInBypass},
+      /*disabled_features=*/{features::kGlicExperimentalTriggering});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringState_MainEnabled_BypassDisabled_NeedsOptIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicExperimentalTriggering},
+      /*disabled_features=*/{features::kGlicExperimentalTriggeringOptInBypass});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  // Ensure we are not opted in.
+  enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
+  enabling.SetUserEnabledActuationOnWeb(false);
+  enabling.SetExperimentalTriggeringEnabled(false);
+
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringState_MainEnabled_BypassDisabled_Ready) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicExperimentalTriggering},
+      /*disabled_features=*/{features::kGlicExperimentalTriggeringOptInBypass});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  // Opt-in manually.
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  enabling.SetUserEnabledActuationOnWeb(true);
+  enabling.SetExperimentalTriggeringEnabled(true);
+
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetExperimentalTriggeringState_MainEnabled_BypassEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicExperimentalTriggering,
+                            features::kGlicExperimentalTriggeringOptInBypass},
+      /*disabled_features=*/{});
+
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  // Ensure prefs are NOT opted in.
+  enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
+  enabling.SetUserEnabledActuationOnWeb(false);
+  enabling.SetExperimentalTriggeringEnabled(false);
+
+  // Bypass should make it ready.
+  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+
+  // Verify helper functions return true.
+  EXPECT_TRUE(enabling.HasConsented());
+  EXPECT_TRUE(enabling.GetUserEnabledActuationOnWeb());
+  EXPECT_TRUE(enabling.GetExperimentalTriggeringEnabled());
+}
+
 }  // namespace
 }  // namespace glic

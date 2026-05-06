@@ -777,6 +777,10 @@ bool GlicEnabling::HasConsented() const {
 }
 
 prefs::FreStatus GlicEnabling::GetCompletedFre() const {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOptInBypass)) {
+    return prefs::FreStatus::kCompleted;
+  }
   return static_cast<prefs::FreStatus>(
       profile_->GetPrefs()->GetInteger(prefs::kGlicCompletedFre));
 }
@@ -787,6 +791,10 @@ void GlicEnabling::SetCompletedFre(prefs::FreStatus status) {
 }
 
 bool GlicEnabling::GetUserEnabledActuationOnWeb() const {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOptInBypass)) {
+    return true;
+  }
   return profile_->GetPrefs()->GetBoolean(
       prefs::kGlicUserEnabledActuationOnWeb);
 }
@@ -803,6 +811,10 @@ void GlicEnabling::SetUserEnabledActuationOnWeb(bool enabled) {
 }
 
 bool GlicEnabling::GetExperimentalTriggeringEnabled() const {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOptInBypass)) {
+    return true;
+  }
   return profile_->GetPrefs()->GetBoolean(
       prefs::kGlicExperimentalTriggeringEnabled);
 }
