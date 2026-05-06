@@ -88,6 +88,13 @@ TEST_F(StorageAccessAPIServiceImplTest, ClearsOriginTrialPref) {
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
