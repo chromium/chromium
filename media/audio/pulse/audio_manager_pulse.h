@@ -33,8 +33,8 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
   // Implementation of AudioManager.
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
-  void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
-  void GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
   AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;
   const std::string_view GetName() override;
@@ -69,7 +69,7 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
       const AudioParameters& input_params) override;
 
  private:
-  void GetAudioDeviceNames(bool input, media::AudioDeviceNames* device_names);
+  bool GetAudioDeviceNames(bool input, media::AudioDeviceNames* device_names);
 
   // Callback to get the devices' info like names, used by GetInputDevices().
   static void InputDevicesInfoCallback(pa_context* context,

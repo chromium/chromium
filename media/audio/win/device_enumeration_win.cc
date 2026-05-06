@@ -129,6 +129,8 @@ static bool GetDeviceNamesWinImpl(
     return true;
   }
 
+  bool had_error = false;
+
   // Iterate over all active devices to extract their unique ID and friendly
   // name. Devices that fail to provide a valid unique ID or friendly name
   // are skipped and not added to the |device_names| list.
@@ -141,6 +143,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat({" => (ERROR: IMMDeviceCollection::Item=[",
                              ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -150,6 +153,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat(
           {" => (ERROR: IMMDevice::GetId=[", ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
     device.unique_id =
@@ -162,6 +166,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat({" => (ERROR: IMMDevice::OpenPropertyStore=[",
                              ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -171,6 +176,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat(
           {" => (ERROR: IPropertyStore::GetValue=[", ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -179,6 +185,7 @@ static bool GetDeviceNamesWinImpl(
       device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
     } else {
       send_log(" => (WARNING: friendly name is not a valid string)");
+      had_error = true;
       continue;
     }
 
@@ -207,7 +214,7 @@ static bool GetDeviceNamesWinImpl(
                            base::NumberToString(device_names->size()), "])"}));
   }
 
-  return true;
+  return !had_error;
 }
 bool GetInputDeviceNamesWin(
     AudioDeviceNames* device_names,

@@ -150,11 +150,11 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
 
   // Appends a list of available input devices to |device_names|,
   // which must initially be empty.
-  virtual void GetAudioInputDeviceNames(AudioDeviceNames* device_names);
+  virtual bool GetAudioInputDeviceNames(AudioDeviceNames* device_names);
 
   // Appends a list of available output devices to |device_names|,
   // which must initially be empty.
-  virtual void GetAudioOutputDeviceNames(AudioDeviceNames* device_names);
+  virtual bool GetAudioOutputDeviceNames(AudioDeviceNames* device_names);
 
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
@@ -192,9 +192,9 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   // AudioManager:
   void InitializeDebugRecording() final;
 
-  void GetAudioDeviceDescriptions(
+  bool GetAudioDeviceDescriptions(
       AudioDeviceDescriptions* descriptions,
-      void (AudioManagerBase::*get_device_names)(AudioDeviceNames*),
+      bool (AudioManagerBase::*get_device_names)(AudioDeviceNames*),
       std::string (AudioManagerBase::*get_default_device_id)(),
       std::string (AudioManagerBase::*get_communications_device_id)(),
       std::string (AudioManagerBase::*get_group_id)(const std::string&));

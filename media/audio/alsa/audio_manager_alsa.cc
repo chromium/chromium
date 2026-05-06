@@ -68,18 +68,20 @@ bool AudioManagerAlsa::HasAudioInputDevices() {
          HasAnyAlsaAudioDevice(kStreamCapture);
 }
 
-void AudioManagerAlsa::GetAudioInputDeviceNames(
+bool AudioManagerAlsa::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  GetAlsaAudioDevices(kStreamCapture, device_names);
+  bool success = GetAlsaAudioDevices(kStreamCapture, device_names);
   AddAlsaDeviceFromSwitch(switches::kAlsaInputDevice, device_names);
+  return success;
 }
 
-void AudioManagerAlsa::GetAudioOutputDeviceNames(
+bool AudioManagerAlsa::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  GetAlsaAudioDevices(kStreamPlayback, device_names);
+  bool success = GetAlsaAudioDevices(kStreamPlayback, device_names);
   AddAlsaDeviceFromSwitch(switches::kAlsaOutputDevice, device_names);
+  return success;
 }
 
 AudioParameters AudioManagerAlsa::GetInputStreamParameters(
@@ -95,26 +97,37 @@ const std::string_view AudioManagerAlsa::GetName() {
   return "ALSA";
 }
 
-void AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
+bool AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
                                            AudioDeviceNames* device_names) {
   // Constants specified by the ALSA API for device hints.
   static const char kPcmInterfaceName[] = "pcm";
   int card = -1;
 
   // Loop through the physical sound cards to get ALSA device hints.
-  while (!wrapper_->CardNext(&card) && card >= 0) {
+  bool had_error = false;
+  int card_next_result = 0;
+  while ((card_next_result = wrapper_->CardNext(&card)) == 0 && card >= 0) {
     void** hints = nullptr;
-    int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
-    if (!error) {
+    int hint_result = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
+    if (!hint_result) {
       GetAlsaDevicesInfo(type, hints, device_names);
 
       // Destroy the hints now that we're done with it.
       wrapper_->DeviceNameFreeHint(hints);
     } else {
+      had_error = true;
       DLOG(WARNING) << "GetAlsaAudioDevices: unable to get device hints: "
-                    << wrapper_->StrError(error);
+                    << wrapper_->StrError(hint_result);
     }
   }
+
+  if (card_next_result != 0) {
+    had_error = true;
+    DLOG(WARNING) << "GetAlsaAudioDevices: unable to get next card: "
+                  << wrapper_->StrError(card_next_result);
+  }
+
+  return !had_error;
 }
 
 void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,

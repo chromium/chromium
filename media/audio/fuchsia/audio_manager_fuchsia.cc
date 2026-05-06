@@ -55,24 +55,26 @@ bool AudioManagerFuchsia::HasAudioInputDevices() {
   return HasAudioDevice(true);
 }
 
-void AudioManagerFuchsia::GetAudioInputDeviceNames(
+bool AudioManagerFuchsia::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAudioInput)) {
-    return;
+    return true;
   }
 
   GetAudioDevices(device_names, true);
+  return true;
 }
 
-void AudioManagerFuchsia::GetAudioOutputDeviceNames(
+bool AudioManagerFuchsia::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAudioOutput)) {
-    return;
+    return true;
   }
 
   GetAudioDevices(device_names, false);
+  return true;
 }
 
 AudioParameters AudioManagerFuchsia::GetInputStreamParameters(

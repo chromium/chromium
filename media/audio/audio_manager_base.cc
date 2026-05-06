@@ -96,6 +96,28 @@ void SendLogMessage(const AudioManagerBase::LogCallback& callback,
   }
 }
 
+// Used to log outcomes of audio device enumeration. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class AudioDeviceEnumerationOutcome {
+  kSuccessEmptyResult = 0,
+  kSuccessNonEmptyResult = 1,
+  kFailureEmptyResult = 2,
+  kFailureNonEmptyResult = 3,
+  kMaxValue = kFailureNonEmptyResult
+};
+
+AudioDeviceEnumerationOutcome GetAudioEnumerationOutcome(bool success,
+                                                         bool has_devices) {
+  if (success) {
+    return has_devices ? AudioDeviceEnumerationOutcome::kSuccessNonEmptyResult
+                       : AudioDeviceEnumerationOutcome::kSuccessEmptyResult;
+  } else {
+    return has_devices ? AudioDeviceEnumerationOutcome::kFailureNonEmptyResult
+                       : AudioDeviceEnumerationOutcome::kFailureEmptyResult;
+  }
+}
+
 }  // namespace
 
 class AudioManagerBase::DeviceLogHelper {
@@ -291,34 +313,40 @@ void AudioManagerBase::LogAudioManagerStartup() {
 void AudioManagerBase::GetAudioInputDeviceDescriptions(
     AudioDeviceDescriptions* device_descriptions) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
-  GetAudioDeviceDescriptions(device_descriptions,
-                             &AudioManagerBase::GetAudioInputDeviceNames,
-                             &AudioManagerBase::GetDefaultInputDeviceID,
-                             &AudioManagerBase::GetCommunicationsInputDeviceID,
-                             &AudioManagerBase::GetGroupIDInput);
+  bool success = GetAudioDeviceDescriptions(
+      device_descriptions, &AudioManagerBase::GetAudioInputDeviceNames,
+      &AudioManagerBase::GetDefaultInputDeviceID,
+      &AudioManagerBase::GetCommunicationsInputDeviceID,
+      &AudioManagerBase::GetGroupIDInput);
+  base::UmaHistogramEnumeration(
+      "Media.Audio.InputDeviceEnumerationOutcome",
+      GetAudioEnumerationOutcome(success, device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(true, __func__, *device_descriptions);
 }
 
 void AudioManagerBase::GetAudioOutputDeviceDescriptions(
     AudioDeviceDescriptions* device_descriptions) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
-  GetAudioDeviceDescriptions(device_descriptions,
-                             &AudioManagerBase::GetAudioOutputDeviceNames,
-                             &AudioManagerBase::GetDefaultOutputDeviceID,
-                             &AudioManagerBase::GetCommunicationsOutputDeviceID,
-                             &AudioManagerBase::GetGroupIDOutput);
+  bool success = GetAudioDeviceDescriptions(
+      device_descriptions, &AudioManagerBase::GetAudioOutputDeviceNames,
+      &AudioManagerBase::GetDefaultOutputDeviceID,
+      &AudioManagerBase::GetCommunicationsOutputDeviceID,
+      &AudioManagerBase::GetGroupIDOutput);
+  base::UmaHistogramEnumeration(
+      "Media.Audio.OutputDeviceEnumerationOutcome",
+      GetAudioEnumerationOutcome(success, device_descriptions->empty()));
   GetDeviceLogHelper()->LogDeviceList(false, __func__, *device_descriptions);
 }
 
-void AudioManagerBase::GetAudioDeviceDescriptions(
+bool AudioManagerBase::GetAudioDeviceDescriptions(
     AudioDeviceDescriptions* device_descriptions,
-    void (AudioManagerBase::*get_device_names)(AudioDeviceNames*),
+    bool (AudioManagerBase::*get_device_names)(AudioDeviceNames*),
     std::string (AudioManagerBase::*get_default_device_id)(),
     std::string (AudioManagerBase::*get_communications_device_id)(),
     std::string (AudioManagerBase::*get_group_id)(const std::string&)) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
   AudioDeviceNames device_names;
-  (this->*get_device_names)(&device_names);
+  bool success = (this->*get_device_names)(&device_names);
   std::string real_default_device_id = (this->*get_default_device_id)();
   std::string real_communications_device_id =
       (this->*get_communications_device_id)();
@@ -360,6 +388,8 @@ void AudioManagerBase::GetAudioDeviceDescriptions(
         is_virtual_system_default || is_real_system_default,
         is_virtual_communications_device || is_real_communications_device);
   }
+
+  return success;
 }
 
 AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
@@ -689,12 +719,14 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   return output_dispatchers_.back()->dispatcher->CreateStreamProxy();
 }
 
-void AudioManagerBase::GetAudioInputDeviceNames(
+bool AudioManagerBase::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
+  return true;
 }
 
-void AudioManagerBase::GetAudioOutputDeviceNames(
+bool AudioManagerBase::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
+  return true;
 }
 
 void AudioManagerBase::ReleaseOutputStream(AudioOutputStream* stream) {

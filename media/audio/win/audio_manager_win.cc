@@ -171,14 +171,14 @@ void AudioManagerWin::InitializeOnAudioThread() {
           weak_this_on_audio_thread_)));
 }
 
-void AudioManagerWin::GetAudioDeviceNamesImpl(bool input,
+bool AudioManagerWin::GetAudioDeviceNamesImpl(bool input,
                                               AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   // Enumerate all active audio-endpoint capture devices.
-  if (input)
-    GetInputDeviceNamesWin(device_names, GetEnumerationLogCallback());
-  else
-    GetOutputDeviceNamesWin(device_names, GetEnumerationLogCallback());
+  bool success =
+      input
+          ? GetInputDeviceNamesWin(device_names, GetEnumerationLogCallback())
+          : GetOutputDeviceNamesWin(device_names, GetEnumerationLogCallback());
 
   if (!device_names->empty()) {
     device_names->push_front(AudioDeviceName::CreateCommunications());
@@ -186,15 +186,17 @@ void AudioManagerWin::GetAudioDeviceNamesImpl(bool input,
     // Always add default device parameters as first element.
     device_names->push_front(AudioDeviceName::CreateDefault());
   }
+
+  return success;
 }
 
-void AudioManagerWin::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
-  GetAudioDeviceNamesImpl(true, device_names);
+bool AudioManagerWin::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
+  return GetAudioDeviceNamesImpl(true, device_names);
 }
 
-void AudioManagerWin::GetAudioOutputDeviceNames(
+bool AudioManagerWin::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
-  GetAudioDeviceNamesImpl(false, device_names);
+  return GetAudioDeviceNamesImpl(false, device_names);
 }
 
 AudioParameters AudioManagerWin::GetInputStreamParameters(
