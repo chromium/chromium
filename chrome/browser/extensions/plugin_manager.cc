@@ -42,7 +42,7 @@ PluginManager::GetFactoryInstance() {
 
 void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
                                       const Extension* extension) {
-  const MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   if (handler && handler->HasPlugin()) {
     content::WebPluginInfo info;
     info.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN;
@@ -71,7 +71,7 @@ void PluginManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  const MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   if (handler && handler->HasPlugin()) {
     base::FilePath path = handler->GetPluginPath();
     PluginService::GetInstance()->UnregisterInternalPlugin(path);

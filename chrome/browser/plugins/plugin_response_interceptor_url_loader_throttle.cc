@@ -167,7 +167,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
           extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext())
               ->enabled_extensions()
               .GetByID(extension_id)) {
-    if (const auto* handler = MimeTypesHandler::GetHandler(extension)) {
+    if (const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension)) {
       is_for_generic_mime_handler = !handler->IsPluginExtension();
     }
   }

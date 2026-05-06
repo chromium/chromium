@@ -53,7 +53,7 @@ TEST_F(MimeTypesHandlerNotAllowedTest, UnableToLoadLegacy) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerNotAllowedTest, DictFormatWarnsOnDisallowedMimeType) {
@@ -79,8 +79,7 @@ TEST_F(MimeTypesHandlerNotAllowedTest, DictFormatWarnsOnDisallowedMimeType) {
       "mime_types_handler: ignoring unsupported MIME type 'text/plain'.");
   ASSERT_TRUE(extension);
 
-  const MimeTypesHandler* handler =
-      MimeTypesHandler::GetHandler(extension.get());
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   ASSERT_TRUE(handler);
   EXPECT_FALSE(handler->GetHandlerUrl(kTextPlainMimeType).is_valid());
   EXPECT_TRUE(handler->GetHandlerUrl(kPdfMimeType).is_valid());
@@ -102,8 +101,7 @@ TEST_F(MimeTypesHandlerTest, LoadLegacy) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
-  const MimeTypesHandler* handler =
-      MimeTypesHandler::GetHandler(extension.get());
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   ASSERT_TRUE(handler);
   EXPECT_THAT(handler->GetSupportedMimeTypes(),
               ElementsAre("application/octet-stream", "text/plain"));
@@ -146,8 +144,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatParsing) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension);
 
-  const MimeTypesHandler* handler =
-      MimeTypesHandler::GetHandler(extension.get());
+  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
   ASSERT_TRUE(handler);
 
   EXPECT_EQ(extension->GetResourceURL("pdf_viewer.html"),
@@ -180,7 +177,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatDisabledFlag) {
   ASSERT_TRUE(extension);
 
   // Handler should be null because dict format requires the flag.
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnEmptyMimeType) {
@@ -202,7 +199,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnEmptyMimeType) {
       "mime_types_handler: ignoring entry with empty MIME type key.");
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnAbsoluteHandlerUrl) {
@@ -225,7 +222,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnAbsoluteHandlerUrl) {
                            "'application/pdf': invalid handler_url.");
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnJavascriptHandlerUrl) {
@@ -248,7 +245,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnJavascriptHandlerUrl) {
       "handler_url.");
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatRejectsNonDictConfig) {
@@ -305,7 +302,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnEmptyHandlerUrl) {
       "handler_url.");
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnDataHandlerUrl) {
@@ -328,7 +325,7 @@ TEST_F(MimeTypesHandlerTest, DictFormatWarnsOnDataHandlerUrl) {
       "handler_url.");
   ASSERT_TRUE(extension);
 
-  EXPECT_FALSE(MimeTypesHandler::GetHandler(extension.get()));
+  EXPECT_FALSE(MimeTypesHandler::Get(*extension));
 }
 
 }  // namespace extensions
