@@ -3385,6 +3385,9 @@ config("minimal_symbols") {
       cflags += [ "-fdebug-info-for-profiling" ]
     }
 
+    # Compressing debug info speeds up "isolate tests" step (https://crbug.com/503797275)
+    configs += [ "//build/config:compress_debug_sections" ]
+
     asmflags = cflags
   }
   rustflags += [ "-Cdebuginfo=1" ]

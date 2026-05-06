@@ -424,5 +424,5 @@ config("precompiled_headers") {
 # especially useful on 32-bit architectures in order to keep file sizes under
 # 4gb.
 config("compress_debug_sections") {
-  ldflags = [ "-gz" ]
+  ldflags = [ "-gz=zstd" ]
 }
