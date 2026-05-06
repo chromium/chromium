@@ -96,6 +96,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc:GetRotationHistogramTriggerSuffix) -->
 
+<!-- LINT.IfChange(PartitionSuffix) -->
+
+<variants name="PartitionSuffix">
+  <variant name="" summary="Overall result across all partitions."/>
+  <variant name=".ContextualTasks"
+      summary="For the ContextualTasks partition."/>
+  <variant name=".Default" summary="For the default partition."/>
+  <variant name=".Glic" summary="For the Glic partition."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/signin/public/identity_manager/accounts_cookie_mutator.h:PartitionSuffix) -->
+
 <!-- LINT.IfChange(ReauthFlowEvent) -->
 
 <variants name="ReauthFlowEvent">
@@ -1510,17 +1522,11 @@ prefs when the profile is loaded.  -->
     for Chrome instances that support DBSC standard and OAuthMultilogin cookies
     binding. {PartitionSuffix}
   </summary>
-  <token key="PartitionSuffix">
-    <variant name="" summary="Overall result across all partitions."/>
-    <variant name=".ContextualTasks"
-        summary="For the ContextualTasks partition."/>
-    <variant name=".Default" summary="For the default partition."/>
-    <variant name=".Glic" summary="For the Glic partition."/>
-  </token>
+  <token key="PartitionSuffix" variants="PartitionSuffix"/>
 </histogram>
 
 <histogram
-    name="Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError"
+    name="Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError{PartitionSuffix}"
     enum="DeviceBoundSessionError" expires_after="2026-10-04">
   <owner>ernn@google.com</owner>
   <owner>alexilin@chromium.org</owner>
@@ -1532,8 +1538,9 @@ prefs when the profile is loaded.  -->
     result is recorded in
     `Signin.DeviceBoundSessions.OAuthMultilogin.CreateSessionsResult`. Only
     recorded for Chrome instances that support DBSC standard and OAuthMultilogin
-    cookies binding.
+    cookies binding. {PartitionSuffix}
   </summary>
+  <token key="PartitionSuffix" variants="PartitionSuffix"/>
 </histogram>
 
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
@@ -2760,13 +2767,7 @@ should be kept to monitor/debug signin Multilogin issues-->
   <summary>
     Response status received from gaia Multilogin. {PartitionSuffix}
   </summary>
-  <token key="PartitionSuffix">
-    <variant name="" summary="Overall result across all partitions."/>
-    <variant name=".ContextualTasks"
-        summary="For the ContextualTasks partition."/>
-    <variant name=".Default" summary="For the default partition."/>
-    <variant name=".Glic" summary="For the Glic partition."/>
-  </token>
+  <token key="PartitionSuffix" variants="PartitionSuffix"/>
 </histogram>
 
 <histogram name="Signin.OpenTabsCount.{ConsentLevel}" units="count"
