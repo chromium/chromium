@@ -794,6 +794,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/PictureInPicture.java",
   "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
   "java/src/org/chromium/chrome/browser/media/PictureInPictureBoundsCacheBridge.java",
+  "java/src/org/chromium/chrome/browser/media/VideoOverlayActivity.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderCoordinator.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderDelegate.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java",

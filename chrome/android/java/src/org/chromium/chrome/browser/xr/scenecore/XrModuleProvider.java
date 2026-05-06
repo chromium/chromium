@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.xr.scenecore;
 
 import android.app.Activity;
 
+import org.chromium.base.UnguessableToken;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.module_installer.builder.ModuleInterface;
@@ -21,4 +22,6 @@ public interface XrModuleProvider {
 
     XrSceneCoreSessionInitializer getXrSceneCoreSessionInitializer(
             ActivityLifecycleDispatcher dispatcher, XrSceneCoreSessionManager manager);
+
+    void createImmersiveVideoPlaybackActivity(UnguessableToken nativeToken, Object initiatorTab);
 }

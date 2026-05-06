@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    featureSplit="xr">
+    featureSplit="xr"
+    package="org.chromium.chrome">
 
     <dist:module
       dist:title="@string/xr_module_title">
@@ -17,6 +18,18 @@
       <dist:fusing dist:include="false"/>
     </dist:module>
 
-    <application />
+    <application>
+        <activity android:name="org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackActivity"
+                  android:exported="false"
+                  android:noHistory="true"
+                  android:theme="@style/Theme.Chromium.Activity"
+                  android:excludeFromRecents="true"
+                  android:configChanges=
+                       "screenSize|smallestScreenSize|screenLayout|orientation">
+          <property
+            android:name="android.window.PROPERTY_XR_ACTIVITY_START_MODE"
+            android:value="XR_ACTIVITY_START_MODE_FULL_SPACE_MANAGED" />
+        </activity>
+    </application>
 
 </manifest>

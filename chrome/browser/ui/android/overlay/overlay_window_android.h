@@ -31,15 +31,10 @@ class CompositorView;
 class OverlayWindowAndroid : public content::VideoOverlayWindow,
                              public ui::WindowAndroidObserver {
  public:
+  static OverlayWindowAndroid* FromToken(const base::UnguessableToken& token);
   explicit OverlayWindowAndroid(
       content::VideoPictureInPictureWindowController* controller);
   ~OverlayWindowAndroid() override;
-
-  static OverlayWindowAndroid* OnActivityStart(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& token,
-
-      const base::android::JavaRef<jobject>& jwindow_android);
   void DestroyStartedByJava(JNIEnv* env);
   void TogglePlayPause(JNIEnv* env, bool toggleOn);
   void NextTrack(JNIEnv* env);
@@ -53,9 +48,10 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void CompositorViewCreated(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& compositor_view);
-  void OnViewSizeChanged(JNIEnv* env, int32_t width, int32_t height);
+  virtual void OnViewSizeChanged(JNIEnv* env, int32_t width, int32_t height);
   void OnBackToTab(JNIEnv* env);
   void OnDismissal(JNIEnv* env);
+  void SeekTo(JNIEnv* env, int64_t position_ms);
 
   // ui::WindowAndroidObserver implementation.
   void OnRootWindowVisibilityChanged(bool visible) override {}
@@ -87,7 +83,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetHangUpButtonVisibility(bool is_visible) override;
   void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetPreviousSlideButtonVisibility(bool is_visible) override;
-  void SetMediaPosition(const media_session::MediaPosition&) override {}
+  void SetMediaPosition(const media_session::MediaPosition&) override;
   void SetSourceTitle(const std::u16string& source_title) override {}
   void SetFaviconImages(
       const std::vector<media_session::MediaImage>& images) override {}
@@ -96,14 +92,23 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetImmersiveVideoOptions(
       blink::mojom::ImmersiveOptionsPtr options) override {}
 
-  void Initialize(JNIEnv* env,
-                  const base::android::JavaRef<jobject>& self,
-                  const base::android::JavaRef<jobject>& jwindow_android);
+  virtual void Initialize(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& self,
+      const base::android::JavaRef<jobject>& jwindow_android);
 
- private:
-  // Notify PictureInPictureActivity that visible actions have changed.
-  void MaybeNotifyVisibleActionsChanged();
+  void OnWindowDestroyedJava();
+  void UpdateVideoSizeJava(int width, int height);
+  void SetPlaybackStateJava(PlaybackState playback_state);
+  void CloseJava();
+  void UpdateVisibleActionsJava(const std::vector<int>& actions);
+  void SetMicrophoneMutedJava(bool muted);
+  void SetCameraStateJava(bool turned_on);
+  void SetMediaPositionJava(const media_session::MediaPosition& position);
+  void SetImmersiveVideoOptionsJava(
+      const blink::mojom::ImmersiveOptionsPtr& immersive_options);
 
+ protected:
   // Maybe update visible actions. Returns true if update happened.
   void MaybeUpdateVisibleAction(
       const media_session::mojom::MediaSessionAction& action,
@@ -123,6 +128,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
 
   PlaybackState playback_state_ = PlaybackState::kEndOfVideo;
   absl::flat_hash_set<int> visible_actions_;
+  std::optional<media_session::MediaPosition> media_position_;
 
   bool microphone_muted_ = false;
   bool camera_on_ = false;
@@ -130,6 +136,10 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   std::unique_ptr<base::OneShotTimer> update_action_timer_;
 
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
+
+ private:
+  void MaybeNotifyVisibleActionsChanged();
+  virtual void CreateJavaActivity() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_OVERLAY_OVERLAY_WINDOW_ANDROID_H_

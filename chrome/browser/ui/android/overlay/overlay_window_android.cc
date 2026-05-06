@@ -7,10 +7,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/unguessable_token_android.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "cc/slim/surface_layer.h"
-#include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
+#include "chrome/android/chrome_jni_headers/VideoOverlayActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "components/thin_webview/compositor_view.h"
@@ -31,10 +32,10 @@ WindowMap& GetWindowMap() {
 }  // namespace
 
 // static
-std::unique_ptr<content::VideoOverlayWindow>
-content::VideoOverlayWindow::Create(
-    VideoPictureInPictureWindowController* controller) {
-  return std::make_unique<OverlayWindowAndroid>(controller);
+OverlayWindowAndroid* OverlayWindowAndroid::FromToken(
+    const base::UnguessableToken& token) {
+  auto iter = GetWindowMap().find(token);
+  return (iter == GetWindowMap().end()) ? nullptr : iter->second;
 }
 
 OverlayWindowAndroid::OverlayWindowAndroid(
@@ -49,96 +50,11 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetBackgroundColor(SkColors::kBlack);
-
-  auto* web_contents = controller_->GetWebContents();
-
-  // Compute the screen position of the video, and see if it fits inside the
-  // WebContents or if it's clipped / off-screen.  If it's onscreen, then T and
-  // later, Android can do a nicer animated transition to PiP with a screen
-  // capture of the video.  However, if the video is clipped / offscreen, then
-  // it'll look nicer to use the default light grey transition.
-
-  // We provide a small buffer for what "clipped" means, rather than enforcing
-  // it strictly.  It'll still look fine while allowing small positioning errors
-  // that sites sometimes make.  See https://crbug.com/40254849 for an example.
-
-  // The java side will ignore any source bounds that are not on the screen for
-  // the source rect hint. It will use the aspect ratio only in that case.  We
-  // set the x position to be <0 to ensure this, to skip the transition.
-
-  // Get the size of the video, and inset it to provide some slack.
-  gfx::Rect source_bounds = controller_->GetSourceBounds();
-  gfx::Rect smaller_source_bounds = source_bounds;
-  constexpr int inset_size = 4;  // pixels on each side
-  smaller_source_bounds.Inset(inset_size);
-
-  // Get the size of the WebContents, and convert to pixels.
-  gfx::Rect unscaled_content_bounds = web_contents->GetContainerBounds();
-  auto* native_view = web_contents->GetNativeView();
-  const float dip_scale = native_view->GetDipScale();
-  gfx::Rect content_bounds(unscaled_content_bounds.x() * dip_scale,
-                           unscaled_content_bounds.y() * dip_scale,
-                           unscaled_content_bounds.width() * dip_scale,
-                           unscaled_content_bounds.height() * dip_scale);
-  const bool out_of_bounds = !content_bounds.Contains(smaller_source_bounds);
-  // Use the new source location based transition when the source is not out of
-  // bound and the AllowEnhancedPipTransition feature is enabled.
-  // TODO(crbug.com/440384447): remove AllowEnhancedPipTransition check once the
-  // new transition works properly on desktop Android.
-  const bool use_source_hint_transition =
-      !out_of_bounds &&
-      base::FeatureList::IsEnabled(media::kAllowEnhancedPipTransition);
-
-  if (use_source_hint_transition) {
-    // Use the newer transition, if available.
-    // Convert to screen space.  Since the comparison was with the inset source
-    // bounds, clamp the real source bounds to the container.
-    source_bounds.Intersect(content_bounds);
-    gfx::PointF offset = native_view->GetLocationOnScreen(0, 0);
-    source_bounds.Offset(
-        static_cast<int>(offset.x()),
-        static_cast<int>(offset.y()) +
-            native_view->content_offset() * native_view->GetDipScale());
-  } else {
-    // Use the old transition.
-    // Slide this offscreen, while keeping the aspect ratio the same.
-    source_bounds.set_x(-1);
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_token = base::android::UnguessableTokenAndroid::Create(env, token_);
-  Java_PictureInPictureActivity_createActivity(
-      env, j_token, TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
-      source_bounds.x(), source_bounds.y(), source_bounds.width(),
-      source_bounds.height());
 }
 
 OverlayWindowAndroid::~OverlayWindowAndroid() {
   // Any future use of our token will fail.
   GetWindowMap().erase(token_);
-  if (java_ref_.is_uninitialized()) {
-    return;
-  }
-  // Notify the java side that the native side is gone.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_onWindowDestroyed(env, java_ref_.get(env));
-}
-
-static int64_t JNI_PictureInPictureActivity_OnActivityStart(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_token,
-    const jni_zero::JavaRef<jobject>& self,
-    const jni_zero::JavaRef<jobject>& window) {
-  auto token = base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
-      env, j_token);
-  auto iter = GetWindowMap().find(token);
-  if (iter == GetWindowMap().end()) {
-    return 0;
-  }
-  OverlayWindowAndroid* thiz = iter->second;
-  thiz->Initialize(env, self, window);
-
-  return reinterpret_cast<int64_t>(thiz);
 }
 
 void OverlayWindowAndroid::Initialize(
@@ -149,23 +65,21 @@ void OverlayWindowAndroid::Initialize(
   window_android_ = ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   window_android_->AddObserver(this);
 
-  Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
-                                                 playback_state_);
-  Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
-                                                   microphone_muted_);
-  Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
-                                               camera_on_);
+  SetPlaybackStateJava(playback_state_);
+  SetMicrophoneMutedJava(microphone_muted_);
+  SetCameraStateJava(camera_on_);
 
   if (!update_action_timer_->IsRunning()) {
     MaybeNotifyVisibleActionsChanged();
   }
 
-  if (video_size_.IsEmpty()) {
-    return;
+  if (!video_size_.IsEmpty()) {
+    UpdateVideoSizeJava(video_size_.width(), video_size_.height());
   }
 
-  Java_PictureInPictureActivity_updateVideoSize(
-      env, java_ref_.get(env), video_size_.width(), video_size_.height());
+  if (media_position_.has_value()) {
+    SetMediaPositionJava(media_position_.value());
+  }
 }
 
 void OverlayWindowAndroid::OnAttachCompositor() {
@@ -254,6 +168,10 @@ void OverlayWindowAndroid::HangUp(JNIEnv* env) {
   controller_->HangUp();
 }
 
+void OverlayWindowAndroid::SeekTo(JNIEnv* env, int64_t position_ms) {
+  controller_->SeekTo(base::Milliseconds(position_ms));
+}
+
 void OverlayWindowAndroid::Hide(JNIEnv* env) {
   if (auto* web_contents = controller_->GetWebContents()) {
     if (auto* helper =
@@ -325,6 +243,114 @@ void OverlayWindowAndroid::OnDismissal(JNIEnv* env) {
   }
 }
 
+static int64_t JNI_VideoOverlayActivity_OnActivityStart(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& j_token,
+    const jni_zero::JavaRef<jobject>& self,
+    const jni_zero::JavaRef<jobject>& window) {
+  auto token = base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+      env, j_token);
+  OverlayWindowAndroid* thiz = OverlayWindowAndroid::FromToken(token);
+  if (!thiz) {
+    return 0;
+  }
+  thiz->Initialize(env, self, window);
+  return reinterpret_cast<int64_t>(thiz);
+}
+
+void OverlayWindowAndroid::OnWindowDestroyedJava() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_onWindowDestroyed(env, obj);
+}
+
+void OverlayWindowAndroid::UpdateVideoSizeJava(int width, int height) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_updateVideoSize(env, obj, width, height);
+}
+
+void OverlayWindowAndroid::SetPlaybackStateJava(PlaybackState playback_state) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_setPlaybackState(env, obj,
+                                             static_cast<int>(playback_state));
+}
+
+void OverlayWindowAndroid::CloseJava() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_close(env, obj);
+}
+
+void OverlayWindowAndroid::UpdateVisibleActionsJava(
+    const std::vector<int>& actions) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_updateVisibleActions(
+      env, obj, base::android::ToJavaIntArray(env, actions));
+}
+
+void OverlayWindowAndroid::SetMicrophoneMutedJava(bool muted) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_setMicrophoneMuted(env, obj, muted);
+}
+
+void OverlayWindowAndroid::SetCameraStateJava(bool turned_on) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_setCameraState(env, obj, turned_on);
+}
+
+void OverlayWindowAndroid::SetMediaPositionJava(
+    const media_session::MediaPosition& position) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_setMediaPosition(
+      env, obj, position.duration().InMilliseconds(),
+      position.GetPosition().InMilliseconds(), position.playback_rate());
+}
+
+void OverlayWindowAndroid::SetImmersiveVideoOptionsJava(
+    const blink::mojom::ImmersiveOptionsPtr& immersive_options) {
+  if (!immersive_options) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_VideoOverlayActivity_setImmersiveVideoOptions(
+      env, obj, static_cast<int>(immersive_options->stereo_mode),
+      static_cast<int>(immersive_options->projection_type));
+}
+
 void OverlayWindowAndroid::Close() {
   CloseInternal();
   // Only pause the video when play/pause button is visible.
@@ -349,8 +375,7 @@ void OverlayWindowAndroid::CloseInternal() {
   DCHECK(window_android_);
   window_android_->RemoveObserver(this);
   window_android_ = nullptr;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_close(env, java_ref_.get(env));
+  CloseJava();
   // The java side forgets about us on close, so don't call back.
   java_ref_.reset();
 
@@ -389,10 +414,7 @@ void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
     bounds_.set_size(natural_size);
     return;
   }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_updateVideoSize(
-      env, java_ref_.get(env), natural_size.width(), natural_size.height());
+  UpdateVideoSizeJava(natural_size.width(), natural_size.height());
 }
 
 void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
@@ -401,13 +423,13 @@ void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
   }
 
   playback_state_ = playback_state;
-  if (java_ref_.is_uninitialized()) {
-    return;
-  }
+  SetPlaybackStateJava(playback_state);
+}
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
-                                                 playback_state);
+void OverlayWindowAndroid::SetMediaPosition(
+    const media_session::MediaPosition& position) {
+  media_position_ = position;
+  SetMediaPositionJava(position);
 }
 
 void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
@@ -416,13 +438,7 @@ void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
   }
 
   microphone_muted_ = muted;
-  if (java_ref_.is_uninitialized()) {
-    return;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
-                                                   microphone_muted_);
+  SetMicrophoneMutedJava(microphone_muted_);
 }
 
 void OverlayWindowAndroid::SetCameraState(bool turned_on) {
@@ -431,13 +447,7 @@ void OverlayWindowAndroid::SetCameraState(bool turned_on) {
   }
 
   camera_on_ = turned_on;
-  if (java_ref_.is_uninitialized()) {
-    return;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
-                                               camera_on_);
+  SetCameraStateJava(camera_on_);
 }
 
 void OverlayWindowAndroid::SetPlayPauseButtonVisibility(bool is_visible) {
@@ -514,13 +524,8 @@ void OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged() {
   if (java_ref_.is_uninitialized()) {
     return;
   }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_updateVisibleActions(
-      env, java_ref_.get(env),
-      base::android::ToJavaIntArray(
-          env,
-          std::vector<int>(visible_actions_.begin(), visible_actions_.end())));
+  UpdateVisibleActionsJava(
+      std::vector<int>(visible_actions_.begin(), visible_actions_.end()));
 }
 
 void OverlayWindowAndroid::MaybeUpdateVisibleAction(
@@ -546,4 +551,4 @@ void OverlayWindowAndroid::MaybeUpdateVisibleAction(
   }
 }
 
-DEFINE_JNI(PictureInPictureActivity)
+DEFINE_JNI(VideoOverlayActivity)

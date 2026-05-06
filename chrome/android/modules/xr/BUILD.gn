@@ -5,11 +5,16 @@
 import("//build/config/android/rules.gni")
 import("//chrome/common/features.gni")
 import("//third_party/grpc-java/grpc_java_library.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 # Main Android library for the module
 android_library("java") {
   sources = [
+    "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoControlDelegate.java",
+    "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoControlPanel.java",
+    "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackActivity.java",
+    "internal/java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackCoordinator.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactory.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProviderImpl.java",
@@ -24,12 +29,19 @@ android_library("java") {
     "//base:build_info_java",
     "//base:bundle_utils_java",
     "//base:log_java",
+    "//base:resetters_java",
     "//base:supplier_java",
     "//base:task_executor_java",
     "//base:tasks_java",
+    "//base:token_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_java",
     "//chrome/android:xr_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/tab:java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:guava_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_xr_arcore_arcore_java",
@@ -37,6 +49,7 @@ android_library("java") {
     "//third_party/androidx:androidx_xr_runtime_runtime_java",
     "//third_party/androidx:androidx_xr_runtime_runtime_openxr_java",
     "//third_party/androidx:androidx_xr_scenecore_scenecore_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 }
@@ -70,5 +83,28 @@ robolectric_binary("xr_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+java_group("javatests_manifest_java") {
+  testonly = true
+  mergeable_android_manifests = [ "internal/java/AndroidManifest.xml" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "internal/javatests/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackActivityTest.java",
+    "internal/javatests/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoPlaybackCoordinatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":javatests_manifest_java",
+    "//base:flagged_apis_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
+    "//components/thin_webview:java",
   ]
 }

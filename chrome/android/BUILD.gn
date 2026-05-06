@@ -1281,6 +1281,7 @@ if (_is_default_toolchain) {
 
   android_library("xr_java") {
     sources = [
+      "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleBridge.java",
       "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProvider.java",
     ]
 
@@ -1292,6 +1293,7 @@ if (_is_default_toolchain) {
       "//components/module_installer/android:module_interface_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
 
@@ -2394,6 +2396,7 @@ if (_is_default_toolchain) {
       ":chrome_test_java",
       "//chrome/android/features/keyboard_accessory:test_java",
       "//chrome/android/modules/on_demand:javatests",
+      "//chrome/android/modules/xr:javatests",
       "//chrome/browser/autofill/android:test_java",
       "//chrome/browser/autofill/test:test_java",
       "//chrome/browser/banners/android:javatests",
@@ -3046,6 +3049,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
       "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
       "java/src/org/chromium/chrome/browser/media/PictureInPictureBoundsCacheBridge.java",
+      "java/src/org/chromium/chrome/browser/media/VideoOverlayActivity.java",
       "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
       "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
       "java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
@@ -3130,6 +3134,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcher.java",
       "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
       "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
+      "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleBridge.java",
     ]
 
     if (enable_screen_capture) {

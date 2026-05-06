@@ -22,6 +22,15 @@
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="36"/>
   <uses-split android:name="chrome"/>
   <application>
+    <activity  # DIFF-ANCHOR: 1f566b69
+        android:name="org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoPlaybackActivity"
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.Chromium.Activity">
+      <property android:name="android.window.PROPERTY_XR_ACTIVITY_START_MODE" android:value="XR_ACTIVITY_START_MODE_FULL_SPACE_MANAGED"/>
+    </activity>  # DIFF-ANCHOR: 1f566b69
     <uses-library android:name="com.android.extensions.xr" android:required="false"/>
   </application>
 </manifest>

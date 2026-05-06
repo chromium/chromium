@@ -85,7 +85,7 @@ public class PictureInPictureActivityTest {
     // Token that the native side will convert to `NATIVE_OVERLAY`
     private final UnguessableToken mNativeWindowToken = UnguessableToken.createForTesting();
 
-    @Mock private PictureInPictureActivity.Natives mNativeMock;
+    @Mock private VideoOverlayActivity.Natives mNativeMock;
 
     private Tab mTab;
 
@@ -116,7 +116,7 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity.interceptMoveTaskToBackForTesting();
         mActivityTestRule.startOnBlankPage();
         mTab = mActivityTestRule.getActivityTab();
-        PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);
+        VideoOverlayActivityJni.setInstanceForTesting(mNativeMock);
         mOriginalHelper = PictureInPictureActivity.setLaunchIntoPipHelper(mLaunchIntoPipHelper);
         when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any()))
                 .thenReturn(NATIVE_OVERLAY);
