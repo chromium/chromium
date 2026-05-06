@@ -31,8 +31,6 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
-#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
@@ -50,7 +48,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_plus_address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
@@ -123,7 +120,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
     FormInputAccessoryMediatorHandler,
     FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
-    ManualFillAllPlusAddressCoordinatorDelegate,
     PasswordCoordinatorDelegate,
     ExpandedManualFillCoordinatorDelegate,
     SecurityAlertCommands>
@@ -163,9 +159,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   // Modal alert.
   AlertCoordinator* _alertCoordinator;
-
-  // Coordinator in charge of presenting the view to show all plus addresses.
-  ManualFillAllPlusAddressCoordinator* _allPlusAddressCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -517,18 +510,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self dispatchCommandToEditPassword:credential];
 }
 
-#pragma mark - ManualFillAllPlusAddressCoordinatorDelegate
-
-- (void)manualFillAllPlusAddressCoordinatorWantsToBeDismissed:
-    (ManualFillAllPlusAddressCoordinator*)coordinator {
-  [self stopManualFillAllPlusAddressCoordinator];
-}
-
-- (void)dismissManualFillAllPlusAddressAndOpenManagePlusAddress {
-  [self stopManualFillAllPlusAddressCoordinator];
-  [self openManagePlusAddress];
-}
-
 #pragma mark - CardCoordinatorDelegate
 
 - (void)cardCoordinatorDidTriggerOpenCardSettings:
@@ -623,51 +604,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self.navigator openAddressSettings];
 }
 
-#pragma mark - PlusAddressCoordinatorDelegate
-
-// Opens the create plus address bottom sheet.
-- (void)openCreatePlusAddressSheet {
-  [self reset];
-
-  web::WebState* activeWebState = [self activeWebState];
-
-  __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindOnce(^(const std::string& plusAddress) {
-    [weakSelf.injectionHandler
-        userDidPickContent:base::SysUTF8ToNSString(plusAddress)
-             passwordField:NO
-             requiresHTTPS:NO];
-  });
-
-  AutofillBottomSheetTabHelper* tabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
-  tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
-}
-
-- (void)openAllPlusAddressesPicker:(BOOL)isAddressManualFallback {
-  [self reset];
-
-  [self stopManualFillAllPlusAddressCoordinator];
-
-  _allPlusAddressCoordinator = [[ManualFillAllPlusAddressCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler];
-  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
-  _allPlusAddressCoordinator.isAddressManualFallback = isAddressManualFallback;
-  [_allPlusAddressCoordinator start];
-}
-
-- (void)openManagePlusAddress {
-  OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:
-          GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-
-  id<SceneCommands> sceneHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-  [sceneHandler openURLInNewTab:command];
-}
-
 #pragma mark - ExpandedManualFillCoordinatorDelegate
 
 - (void)stopExpandedManualFillCoordinator:
@@ -739,12 +675,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [_allPasswordCoordinator stop];
   _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
   _allPasswordCoordinator = nil;
-}
-
-- (void)stopManualFillAllPlusAddressCoordinator {
-  [_allPlusAddressCoordinator stop];
-  _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = nil;
-  _allPlusAddressCoordinator = nil;
 }
 
 - (void)dismissAlertCoordinator {

@@ -182,26 +182,3 @@ TEST_F(FallbackViewControllerTest, CheckNoDataItemsMessageWhenNoActions) {
 
   EXPECT_EQ(GetHeaderItemType(/*section=*/0), ItemTypeSampleOne);
 }
-
-// Tests that the actions are separated by sections if they belong to different
-// types.
-TEST_F(FallbackViewControllerTest,
-       CheckDifferentSectionsForActionsOfDifferentTypes) {
-  TableViewItem* item_one =
-      [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
-  TableViewItem* item_two =
-      [[TableViewItem alloc] initWithType:ItemTypeSampleTwo];
-
-  FallbackViewController* fallbackViewController = GetFallbackViewController();
-
-  [fallbackViewController presentActionItems:@[ item_one ]];
-  [fallbackViewController presentPlusAddressActionItems:@[ item_two ]];
-
-  EXPECT_EQ(NumberOfSections(), 2);
-
-  EXPECT_EQ(NumberOfItemsInSection(0), 1);
-  EXPECT_EQ(NumberOfItemsInSection(1), 1);
-
-  EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0), ItemTypeSampleOne);
-  EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0), ItemTypeSampleTwo);
-}

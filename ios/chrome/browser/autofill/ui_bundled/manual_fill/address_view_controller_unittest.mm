@@ -5,11 +5,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/with_feature_override.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ui/base/device_form_factor.h"
@@ -18,19 +15,12 @@ namespace {
 
 enum ItemType : NSInteger {
   kItemTypeSampleOne = kItemTypeEnumZero,
-  kItemTypeSampleTwo,
-  kItemTypeSampleThree
+  kItemTypeSampleTwo
 };
 
 }  // namespace
 
-class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
-                                  public base::test::WithFeatureOverride {
- public:
-  AddressViewControllerTest()
-      : base::test::WithFeatureOverride(
-            plus_addresses::features::kPlusAddressesEnabled) {}
-
+class AddressViewControllerTest : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
@@ -61,11 +51,9 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
 // Tests the following:
 // 1. "No address items present" message is shown alongside the action items if
 // there are no data items.
-// 2. "No address items present" message is shown irrespective of the plus
-// address items.
-// 3. "No address items present" message is removed once there are address items
+// 2. "No address items present" message is removed once there are address items
 // to be shown in the view.
-TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
+TEST_F(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   AddressViewController* address_view_controller =
       base::apple::ObjCCastStrict<AddressViewController>(controller());
 
@@ -78,12 +66,6 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   [address_view_controller presentAddresses:@[]];
   [address_view_controller presentActions:@[ action_item ]];
 
-  BOOL plusAddressEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressesEnabled);
-  if (plusAddressEnabled) {
-    [address_view_controller presentPlusAddresses:@[]];
-  }
-
   // Make sure that the table view content is as expected.
   EXPECT_EQ(NumberOfSections(), 2);
   EXPECT_TRUE(GetHeaderItem(/*section=*/0));
@@ -91,30 +73,6 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   EXPECT_EQ(NumberOfItemsInSection(1), 1);
   EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0),
             kItemTypeSampleOne);
-
-  // Add a plus address item to the view.
-  if (plusAddressEnabled) {
-    ManualFillPlusAddressItem* item =
-        [[ManualFillPlusAddressItem alloc] initWithPlusAddress:nil
-                                               contentInjector:nil
-                                                   menuActions:@[]
-                                   cellIndexAccessibilityLabel:nil
-                                     isAddressManualFallbackUI:YES];
-    [address_view_controller presentPlusAddresses:@[ item ]];
-    // Override the type for the test.
-    item.type = kItemTypeSampleTwo;
-
-    // Ensure that the "no addres items to show" message is presented.
-    EXPECT_EQ(NumberOfSections(), 3);
-    EXPECT_TRUE(GetHeaderItem(/*section=*/1));
-    EXPECT_EQ(NumberOfItemsInSection(0), 1);
-    EXPECT_EQ(NumberOfItemsInSection(1), 0);
-    EXPECT_EQ(NumberOfItemsInSection(2), 1);
-    EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0),
-              kItemTypeSampleTwo);
-    EXPECT_EQ(GetTableViewItemType(/*section=*/2, /*item=*/0),
-              kItemTypeSampleOne);
-  }
 
   // Add an address data item.
   ManualFillAddressItem* addressItem =
@@ -126,25 +84,16 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
                               showAutofillFormButton:NO];
   [address_view_controller presentAddresses:@[ addressItem ]];
   // Override the type for the test.
-  addressItem.type = kItemTypeSampleThree;
+  addressItem.type = kItemTypeSampleTwo;
 
   // Check that the "no address present" message is removed.
-  EXPECT_EQ(NumberOfSections(), plusAddressEnabled ? 3 : 2);
+  EXPECT_EQ(NumberOfSections(), 2);
   EXPECT_FALSE(GetHeaderItem(/*section=*/0));
   EXPECT_FALSE(GetHeaderItem(/*section=*/1));
   EXPECT_EQ(NumberOfItemsInSection(0), 1);
   EXPECT_EQ(NumberOfItemsInSection(1), 1);
-  if (plusAddressEnabled) {
-    EXPECT_EQ(NumberOfItemsInSection(2), 1);
-    EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0),
-              kItemTypeSampleTwo);
-  }
-  EXPECT_EQ(
-      GetTableViewItemType(/*section=*/plusAddressEnabled ? 2 : 1, /*item=*/0),
-      kItemTypeSampleOne);
-  EXPECT_EQ(
-      GetTableViewItemType(/*section=*/plusAddressEnabled ? 1 : 0, /*item=*/0),
-      kItemTypeSampleThree);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0),
+            kItemTypeSampleOne);
+  EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0),
+            kItemTypeSampleTwo);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AddressViewControllerTest);

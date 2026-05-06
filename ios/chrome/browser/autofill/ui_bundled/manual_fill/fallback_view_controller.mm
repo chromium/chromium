@@ -29,7 +29,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
   NoDataItemsSectionIdentifier,
   ActionsSectionIdentifier,
-  PlusAddressActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
   // create section identifiers for each data item.
   DataItemsSectionIdentifier
@@ -62,11 +61,7 @@ constexpr CGFloat kSectionFooterHeight = 6;
 constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
 // Represents the different types of items that can be presented.
-enum class ItemType {
-  kItemTypeData = kItemTypeEnumZero,
-  kItemTypeAction,
-  kItemTypePlusAddressAction
-};
+enum class ItemType { kItemTypeData = kItemTypeEnumZero, kItemTypeAction };
 
 // Returns whether the view should be resized to match the desired popover UI on
 // tablets.
@@ -87,10 +82,6 @@ bool ShouldResizeViewForPopover(
 
 // Action Items to be shown when the loading indicator disappears.
 @property(nonatomic, strong) NSArray<TableViewItem*>* queuedActionItems;
-
-// Plus Address Action Items to be shown when the loading indicator disappears.
-@property(nonatomic, strong)
-    NSArray<TableViewItem*>* queuedPlusAddressActionItems;
 
 @end
 
@@ -176,10 +167,6 @@ bool ShouldResizeViewForPopover(
 
 - (void)presentActionItems:(NSArray<TableViewItem*>*)actions {
   [self presentItems:actions ofItemType:ItemType::kItemTypeAction];
-}
-
-- (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions {
-  [self presentItems:actions ofItemType:ItemType::kItemTypePlusAddressAction];
 }
 
 - (void)loadFaviconForCellIdentifier:(NSString*)cellIdentifier
@@ -270,10 +257,6 @@ bool ShouldResizeViewForPopover(
       hasQueuedItems = (self.queuedActionItems != nil);
       self.queuedActionItems = items;
       break;
-    case ItemType::kItemTypePlusAddressAction:
-      hasQueuedItems = (self.queuedPlusAddressActionItems != nil);
-      self.queuedPlusAddressActionItems = items;
-      break;
   }
 
   if (![self shouldPresentItems]) {
@@ -300,9 +283,6 @@ bool ShouldResizeViewForPopover(
       break;
     case ItemType::kItemTypeAction:
       [self presentQueuedActionItems];
-      break;
-    case ItemType::kItemTypePlusAddressAction:
-      [self presentQueuedPlusAddressActionItems];
       break;
   }
 }
@@ -367,13 +347,6 @@ bool ShouldResizeViewForPopover(
   [self presentActionItems:self.queuedActionItems
                  inSection:ActionsSectionIdentifier];
   self.queuedActionItems = nil;
-}
-
-// Presents plus address action items currently in the queue.
-- (void)presentQueuedPlusAddressActionItems {
-  [self presentActionItems:self.queuedPlusAddressActionItems
-                 inSection:PlusAddressActionsSectionIdentifier];
-  self.queuedPlusAddressActionItems = nil;
 }
 
 // Presents action items `items` in the `section`.
@@ -474,8 +447,7 @@ bool ShouldResizeViewForPopover(
 
 // Adds or removes the `noRegularDataItemsToShowHeaderItem` if needed. This
 // header item is displayed to let the user know that there are no data items
-// amongst passwords, cards and addresses to show. However, plus address can
-// still be shown.
+// amongst passwords, cards and addresses to show.
 - (void)updateEmptyStateMessage {
   BOOL needsEmptyStateHeader = self.noRegularDataItemsToShowHeaderItem;
   BOOL hasEmptyStateSection = [self.tableViewModel

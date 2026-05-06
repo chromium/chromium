@@ -8,10 +8,8 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -22,45 +20,18 @@
 namespace manual_fill {
 
 enum ManualFallbackItemType : NSInteger {
-  kNoAddressesMessage = kItemTypeEnumZero,
-  kPlusAddress
+  kNoAddressesMessage = kItemTypeEnumZero
 };
 
 }  // namespace manual_fill
 
-@implementation AddressViewController {
-  // Addresses to be shown in the view.
-  NSArray<TableViewItem*>* _addresses;
-
-  // Plus Addresses to be shown in the view.
-  NSArray<TableViewItem*>* _plusAddresses;
-}
+@implementation AddressViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   self.tableView.accessibilityIdentifier =
       manual_fill::kAddressTableViewAccessibilityIdentifier;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_EQ(tableView, self.tableView);
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  switch (itemType) {
-    case manual_fill::ManualFallbackItemType::kPlusAddress:
-      // Retrieve favicons for credential cells.
-      [self loadFaviconForPlusAddressCell:cell indexPath:indexPath];
-      break;
-    default:
-      break;
-  }
-  return cell;
 }
 
 #pragma mark - ManualFillAddressConsumer
@@ -82,72 +53,11 @@ enum ManualFallbackItemType : NSInteger {
     self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
-    _addresses = (NSArray<TableViewItem*>*)addresses;
-    [self presentItems];
-  } else {
-    [self presentDataItems:(NSArray<TableViewItem*>*)addresses];
-  }
+  [self presentDataItems:(NSArray<TableViewItem*>*)addresses];
 }
 
 - (void)presentActions:(NSArray<ManualFillActionItem*>*)actions {
   [self presentActionItems:actions];
-}
-
-#pragma mark - ManualFillPlusAddressConsumer
-
-- (void)presentPlusAddresses:
-    (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
-  _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
-  for (ManualFillPlusAddressItem* item : _plusAddresses) {
-    item.type = manual_fill::ManualFallbackItemType::kPlusAddress;
-  }
-  [self presentItems];
-}
-
-- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
-  [self presentPlusAddressActionItems:actions];
-}
-
-#pragma mark - Private
-
-// Show items depending on the availibility of `_addresses` and
-// `_plusAddresses`.
-- (void)presentItems {
-  NSArray<TableViewItem*>* items = nil;
-  if (_addresses && _plusAddresses) {
-    items = [_plusAddresses arrayByAddingObjectsFromArray:_addresses];
-  } else if (_addresses) {
-    items = _addresses;
-  } else if (_plusAddresses) {
-    items = _plusAddresses;
-  }
-
-  CHECK(items);
-  [self presentDataItems:items];
-}
-
-// Retrieves favicon from FaviconLoader and sets image in `cell` for plus
-// addresses.
-- (void)loadFaviconForPlusAddressCell:(UITableViewCell*)cell
-                            indexPath:(NSIndexPath*)indexPath {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  ManualFillPlusAddressItem* plusAddressItem =
-      base::apple::ObjCCastStrict<ManualFillPlusAddressItem>(item);
-  CHECK(item);
-
-  ManualFillPlusAddressCell* plusAddressCell =
-      base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
-
-  [self
-      loadFaviconForCellIdentifier:plusAddressCell.uniqueIdentifier
-                    itemIdentifier:plusAddressItem.uniqueIdentifier
-                        faviconURL:plusAddressItem.faviconURL
-                        completion:^(FaviconAttributes* faviconAttributes) {
-                          [plusAddressCell
-                              configureWithFaviconAttributes:faviconAttributes];
-                        }];
 }
 
 @end

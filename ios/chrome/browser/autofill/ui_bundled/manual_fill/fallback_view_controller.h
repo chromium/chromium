@@ -25,8 +25,8 @@ using ConfigureFaviconCompletionBlock = void (^)(FaviconAttributes*);
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Header item displayed when there are no data items to show amongst passwords,
-// cards and addresses and independent of plus address. Needs to be explicitly
-// set to `nil` if should not be shown.
+// cards and addresses. Needs to be explicitly set to `nil` if should not be
+// shown.
 @property(nonatomic, strong)
     TableViewTextHeaderFooterItem* noRegularDataItemsToShowHeaderItem;
 
@@ -43,12 +43,8 @@ using ConfigureFaviconCompletionBlock = void (^)(FaviconAttributes*);
 // Presents given action items in 'actions' section.
 - (void)presentActionItems:(NSArray<TableViewItem*>*)actions;
 
-// Presents given plus address action items in the `plus address actions`
-// section.
-- (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions;
-
 // Retrieves the favicon from the FaviconLoader and sets it as the data item's
-// image. Used for password and plus address data items.
+// image. Used for password.
 - (void)loadFaviconForCellIdentifier:(NSString*)cellIdentifier
                       itemIdentifier:(NSString*)itemIdentifier
                           faviconURL:(const GURL&)faviconURL

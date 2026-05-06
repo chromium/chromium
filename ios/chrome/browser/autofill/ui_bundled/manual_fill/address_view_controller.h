@@ -9,12 +9,10 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_consumer.h"
 
 // This class presents a list of usernames and addresess in a table view.
 @interface AddressViewController
-    : FallbackViewController <ManualFillAddressConsumer,
-                              ManualFillPlusAddressConsumer>
+    : FallbackViewController <ManualFillAddressConsumer>
 
 @end
 

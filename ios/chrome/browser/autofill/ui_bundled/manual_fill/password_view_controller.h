@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 
 @class PasswordViewController;
@@ -28,8 +27,7 @@
 
 // This class presents a list of usernames and passwords in a table view.
 @interface PasswordViewController
-    : FallbackViewController <ManualFillPasswordConsumer,
-                              ManualFillPlusAddressConsumer>
+    : FallbackViewController <ManualFillPasswordConsumer>
 
 // Delegate for the view controller.
 @property(nonatomic, weak) id<PasswordViewControllerDelegate> delegate;

@@ -12,13 +12,11 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -40,7 +38,6 @@ namespace manual_fill {
 enum ManualFallbackItemType : NSInteger {
   kHeader = kItemTypeEnumZero,
   kCredential,
-  kPlusAddress,
   kNoCredentialsMessage,
 };
 
@@ -53,13 +50,7 @@ enum ManualFallbackItemType : NSInteger {
 
 @end
 
-@implementation PasswordViewController {
-  // Credentials to be shown in the view.
-  NSArray<ManualFillCredentialItem*>* _credentials;
-
-  // Plus Addresses to be shown in the view.
-  NSArray<ManualFillPlusAddressItem*>* _plusAddresses;
-}
+@implementation PasswordViewController
 
 - (instancetype)initWithSearchController:(UISearchController*)searchController {
   self = [super init];
@@ -109,10 +100,6 @@ enum ManualFallbackItemType : NSInteger {
     case manual_fill::ManualFallbackItemType::kCredential:
       // Set the icon of credential cells.
       [self setIconForCredentialCell:cell indexPath:indexPath];
-      break;
-    case manual_fill::ManualFallbackItemType::kPlusAddress:
-      // Retrieve the favicon for plus address cells.
-      [self loadFaviconForPlusAddressCell:cell indexPath:indexPath];
       break;
     default:
       break;
@@ -166,14 +153,7 @@ enum ManualFallbackItemType : NSInteger {
     self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
-  if (!self.searchController &&
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
-    _credentials = credentials;
-    [self presentItems];
-  } else {
-    [self presentDataItems:credentials];
-  }
+  [self presentDataItems:credentials];
 }
 
 - (void)presentActions:(NSArray<ManualFillActionItem*>*)actions {
@@ -184,76 +164,6 @@ enum ManualFallbackItemType : NSInteger {
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   [self.delegate didTapLinkURL:URL];
-}
-
-#pragma mark - ManualFillPlusAddressConsumer
-
-- (void)presentPlusAddresses:
-    (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
-  _plusAddresses = plusAddresses;
-  for (ManualFillPlusAddressItem* plusAddressItem in _plusAddresses) {
-    plusAddressItem.type = manual_fill::ManualFallbackItemType::kPlusAddress;
-  }
-  [self presentItems];
-}
-
-- (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
-  [self presentPlusAddressActionItems:actions];
-}
-
-#pragma mark - Private
-
-// Show items depending on the availibility of `_credentials` and
-// `_plusAddresses`.
-- (void)presentItems {
-  if (_credentials && _plusAddresses) {
-    NSMutableArray<TableViewItem*>* items = [[NSMutableArray alloc] init];
-
-    // Stores a set of usernames extracted from the `_credentials`.
-    NSMutableSet<NSString*>* credentialUsernamesSet =
-        [[NSMutableSet alloc] init];
-    for (ManualFillCredentialItem* item in _credentials) {
-      [credentialUsernamesSet addObject:item.username];
-    }
-
-    // We don't show a separate entry for the plus addresses that belong to a
-    // credential as a username.
-    for (ManualFillPlusAddressItem* item in _plusAddresses) {
-      if (![credentialUsernamesSet containsObject:item.plusAddress]) {
-        [items addObject:item];
-      }
-    }
-    [items addObjectsFromArray:_credentials];
-
-    CHECK(items);
-    [self presentDataItems:items];
-  } else if (_credentials) {
-    [self presentDataItems:_credentials];
-  } else if (_plusAddresses) {
-    [self presentDataItems:_plusAddresses];
-  }
-}
-
-// Retrieves favicon from FaviconLoader and sets image in `cell` for plus
-// addresses.
-- (void)loadFaviconForPlusAddressCell:(UITableViewCell*)cell
-                            indexPath:(NSIndexPath*)indexPath {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  ManualFillPlusAddressItem* plusAddressItem =
-      base::apple::ObjCCastStrict<ManualFillPlusAddressItem>(item);
-  CHECK(item);
-
-  ManualFillPlusAddressCell* plusAddressCell =
-      base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
-
-  [self
-      loadFaviconForCellIdentifier:plusAddressCell.uniqueIdentifier
-                    itemIdentifier:plusAddressItem.uniqueIdentifier
-                        faviconURL:plusAddressItem.faviconURL
-                        completion:^(FaviconAttributes* faviconAttributes) {
-                          [plusAddressCell
-                              configureWithFaviconAttributes:faviconAttributes];
-                        }];
 }
 
 // Sets the icon for the given credential `cell` at `indexPath`.

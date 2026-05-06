@@ -64,31 +64,6 @@ extern NSString* const kAddressTableViewAccessibilityIdentifier;
 // Accessibility identifier for the manage address action.
 extern NSString* const kManageAddressAccessibilityIdentifier;
 
-// Plus Addresses
-
-// Accessibility identifier for the manage plus address action.
-extern NSString* const kManagePlusAddressAccessibilityIdentifier;
-
-// Accessibility identifier for the create plus address action.
-extern NSString* const kCreatePlusAddressAccessibilityIdentifier;
-
-// Accessibility identifier for the select plus address action.
-extern NSString* const kSelectPlusAddressAccessibilityIdentifier;
-
-// Accessibility identifier for the favicon shown in a plus address cell of the
-// expanded manual fill view.
-extern NSString* const kExpandedManualFillPlusAddressFaviconID;
-
-// Accessibility identifier for the overflow menu in plus address cell.
-extern NSString* const kExpandedManualFillPlusAddressOverflowMenuID;
-
-// Accessibility Identifier for the done button in the select plus address
-// sheet.
-extern NSString* const kPlusAddressDoneButtonAccessibilityIdentifier;
-
-// Accessibility Identifier for the search bar in the select plus address sheet.
-extern NSString* const kPlusAddressSearchBarAccessibilityIdentifier;
-
 // Miscellaneous
 
 // Accessibility identifier for the expanded manual fill view.
