@@ -116,7 +116,7 @@ void ContentCaptureConsumerHelper::DidUpdateLanguageDetails(
 void ContentCaptureConsumerHelper::ClearContentCaptureMetadata() {}
 
 bool ContentCaptureConsumerHelper::ShouldCapture(const GURL& url) {
-  return false;
+  return true;
 }
 
 void ContentCaptureConsumerHelper::Reset() {

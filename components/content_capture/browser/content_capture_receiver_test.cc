@@ -12,6 +12,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -55,18 +56,24 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
 
   void NavigateMainFrame(const GURL& url) {
     consumer()->Reset();
-    NavigateAndCommit(url);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                               url);
     main_frame_ = web_contents()->GetPrimaryMainFrame();
+    main_frame_sender_->Bind(main_frame_);
   }
 
   void NavigateMainFrameSameDocument() {
     consumer()->Reset();
     NavigateAndCommit(GURL(kMainFrameSameDocument));
+    // No RFH change for same-document.
   }
 
   void SetupChildFrame() {
-    child_frame_ = content::RenderFrameHostTester::For(main_frame_.get())
-                       ->AppendChild("child");
+    content::RenderFrameHost* child =
+        content::RenderFrameHostTester::For(main_frame_.get())
+            ->AppendChild("child");
+    child_frame_ = content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL(kChildFrameUrl), child);
     EXPECT_TRUE(child_frame_);
 
     child_frame_sender_ = std::make_unique<FakeContentCaptureSender>();
@@ -114,7 +121,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
 
   const ContentCaptureTestHelper* helper() const { return &helper_; }
 
- private:
+ protected:
   ContentCaptureTestHelper helper_;
 
   // The sender for main frame.
@@ -214,27 +221,30 @@ TEST_P(ContentCaptureReceiverTest, DidUpdateContent) {
 }
 
 TEST_P(ContentCaptureReceiverTest, DidRemoveSession) {
+  // Ensure capture is enabled.
+  provider()
+      ->ContentCaptureReceiverForFrameForTesting(main_frame_.get())
+      ->StartCapture();
+
   main_frame_sender()->DidCaptureContent(helper()->test_data(),
                                          true /* first_data */);
   // Verifies to get test_data() with correct frame content id.
-  EXPECT_TRUE(consumer()->parent_session().empty());
   EXPECT_TRUE(consumer()->removed_sessions().empty());
-  EXPECT_EQ(GetExpectedTestData(helper()->test_data(),
-                                GetFrameId(true /* main_frame */)),
-            consumer()->captured_data());
-  // Simulates to navigate other document.
-  main_frame_sender()->DidCaptureContent(helper()->test_data2(),
+
+  // Simulates same document navigation.
+  NavigateAndCommit(GURL(kMainFrameSameDocument));
+
+  // Capture again, since URL is changed, the previous session should be
+  // removed.
+  main_frame_sender()->DidCaptureContent(helper()->test_data(),
                                          true /* first_data */);
-  EXPECT_TRUE(consumer()->parent_session().empty());
-  // Verifies that the previous session was removed.
   EXPECT_EQ(1u, consumer()->removed_sessions().size());
   std::vector<ContentCaptureFrame> expected{GetExpectedTestData(
       helper()->test_data(), GetFrameId(true /* main_frame */))};
   VerifySession(expected, consumer()->removed_sessions().front());
-  // Verifies that we get the test_data2() from the new document.
-  EXPECT_EQ(GetExpectedTestData(helper()->test_data2(),
-                                GetFrameId(true /* main_frame */)),
-            consumer()->captured_data());
+  // Verifies that we get the test_data() from the new document.
+  expected[0].url = kMainFrameSameDocument;
+  EXPECT_EQ(expected[0], consumer()->captured_data());
 }
 
 TEST_P(ContentCaptureReceiverTest, DidRemoveContent) {

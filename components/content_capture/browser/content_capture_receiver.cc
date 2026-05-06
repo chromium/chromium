@@ -84,6 +84,9 @@ void ContentCaptureReceiver::BindPendingReceiver(
 }
 
 void ContentCaptureReceiver::DidCompleteBatchCaptureContent() {
+  if (!content_capture_enabled_) {
+    return;
+  }
   auto* provider = GetOnscreenContentProvider(rfh_);
   if (!provider) {
     return;
@@ -96,6 +99,9 @@ void ContentCaptureReceiver::DidCompleteBatchCaptureContent() {
 void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
                                                bool first_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!content_capture_enabled_) {
+    return;
+  }
   auto* provider = GetOnscreenContentProvider(rfh_);
   if (!provider)
     return;
@@ -105,14 +111,15 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
     // so the previous session should be terminated.
     // The parent frame might be captured after child, we need to check if url
     // is changed, otherwise the child frame's session will be removed.
+    std::u16string url = base::UTF8ToUTF16(rfh_->GetLastCommittedURL().spec());
     if (frame_content_capture_data_.id != 0 &&
-        frame_content_capture_data_.url != data.value) {
+        frame_content_capture_data_.url != url) {
       RemoveSession();
     }
 
     frame_content_capture_data_.id = id_;
     // Copies everything except id and children.
-    frame_content_capture_data_.url = data.value;
+    frame_content_capture_data_.url = url;
     frame_content_capture_data_.bounds = data.bounds;
     RetrieveFaviconURL();
 
@@ -128,6 +135,9 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
 
 void ContentCaptureReceiver::DidUpdateContent(const ContentCaptureData& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!content_capture_enabled_) {
+    return;
+  }
   auto* provider = GetOnscreenContentProvider(rfh_);
   if (!provider)
     return;
@@ -141,6 +151,9 @@ void ContentCaptureReceiver::DidUpdateContent(const ContentCaptureData& data) {
 void ContentCaptureReceiver::DidRemoveContent(
     const std::vector<int64_t>& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!content_capture_enabled_) {
+    return;
+  }
   auto* provider = GetOnscreenContentProvider(rfh_);
   if (!provider)
     return;

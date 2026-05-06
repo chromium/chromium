@@ -46,6 +46,13 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
 
     helper_.InitTestData(base::UTF8ToUTF16(main_frame_url.spec()),
                          base::UTF8ToUTF16(fenced_frame_url.spec()));
+
+    provider()
+        ->ContentCaptureReceiverForFrameForTesting(main_frame_)
+        ->StartCapture();
+    provider()
+        ->ContentCaptureReceiverForFrameForTesting(fenced_frame_)
+        ->StartCapture();
   }
 
   void TearDownOnMainThread() override {
