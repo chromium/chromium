@@ -805,4 +805,68 @@ TEST(UkmRecorderImplTest, GetDocumentToNavigationUrlsMap_Redirect) {
   }
   EXPECT_TRUE(found_subframe_source);
 }
+
+TEST(UkmRecorderImplTest, StoreDownsamplingParametersInReport) {
+  struct TestUkmRecorder : public UkmRecorderImpl {
+    TestUkmRecorder() {
+      // Stub event names to pass HasUnknownMetrics check.
+      decode_map_ = {
+          {base::HashMetricName("My.Event"), {"My.Event", {}}},
+          {base::HashMetricName("My.OtherEvent"), {"My.OtherEvent", {}}},
+          {base::HashMetricName("My.UnusedEvent"), {"My.UnusedEvent", {}}},
+      };
+    }
+    const builders::DecodeMap& GetDecodeMap() const override {
+      return decode_map_;
+    }
+    builders::DecodeMap decode_map_;
+  };
+
+  TestUkmRecorder impl;
+  impl.EnableRecording();
+  impl.UpdateRecording({MSBB});
+
+  impl.SetSamplingForTesting(1);
+  impl.SetWebDXFeaturesSamplingForTesting(2);
+
+  // Record sample events.
+  SourceId source_id = ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);
+
+  auto entry1 = mojom::UkmEntry::New();
+  entry1->event_hash = base::HashMetricName("My.Event");
+  entry1->source_id = source_id;
+  impl.AddEntry(std::move(entry1));
+
+  auto entry2 = mojom::UkmEntry::New();
+  entry2->event_hash = base::HashMetricName("My.OtherEvent");
+  entry2->source_id = source_id;
+  impl.AddEntry(std::move(entry2));
+
+  // Manually configure some rates to verify the rates in the report will match.
+  impl.event_sampling_rates_[base::HashMetricName("My.Event")] = 30;
+  impl.event_sampling_master_[base::HashMetricName("My.OtherEvent")] =
+      base::HashMetricName("My.Event");
+  impl.event_sampling_rates_[base::HashMetricName("My.UnusedEvent")] = 40;
+
+  Report report;
+  impl.StoreRecordingsInReport(&report);
+
+  // Expects 2 downsampling rates for the default and WebDX, which should always
+  // be present; and 2 more for the two recorded event types.
+  EXPECT_EQ(report.downsampling_rates().size(), 2 + 2);
+  EXPECT_THAT(report.downsampling_rates(),
+              testing::Contains(MatchesDownsamplingRate(
+                  base::HashMetricName("_default_sampling"), 1)));
+  EXPECT_THAT(report.downsampling_rates(),
+              testing::Contains(MatchesDownsamplingRate(
+                  base::HashMetricName(kWebFeatureSamplingKeyword), 2)));
+  // Rate for "My.UnusedEvent" is skipped since the report doesn't have any
+  // such event type.
+  EXPECT_THAT(report.downsampling_rates(),
+              testing::Contains(MatchesDownsamplingRate(
+                  base::HashMetricName("My.Event"), 30)));
+  EXPECT_THAT(report.downsampling_rates(),
+              testing::Contains(MatchesDownsamplingRate(
+                  base::HashMetricName("My.OtherEvent"), 30)));
+}
 }  // namespace ukm

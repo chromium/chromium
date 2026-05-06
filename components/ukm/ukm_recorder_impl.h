@@ -255,6 +255,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
       GetDocumentToNavigationUrlsMap_MissingSubframeSource);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest,
                            GetDocumentToNavigationUrlsMap_Redirect);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest,
+                           StoreDownsamplingParametersInReport);
 
   struct MetricAggregate {
     uint64_t total_count = 0;
@@ -314,10 +316,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   void LoadExperimentSamplingParams(
       const std::map<std::string, std::string>& params);
 
-  // Stores the downsampling rate applied to web features in the report. At
+  // Stores the downsampling rates applied to events in the report. At
   // query time, this can be used as a multiplier to deduce the count of an
   // event type, as if it were not downsampled.
-  void StoreWebDXFeaturesDownsamplingParameter(Report* report);
+  void StoreDownsamplingParameters(Report* report);
 
   // Called to notify interested observers about a newly added UKM entry.
   void NotifyObserversWithNewEntry(const mojom::UkmEntry& entry);

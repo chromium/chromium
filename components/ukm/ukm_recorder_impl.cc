@@ -402,12 +402,45 @@ void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
   NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, state);
 }
 
-void UkmRecorderImpl::StoreWebDXFeaturesDownsamplingParameter(Report* report) {
-  Report::DownsamplingRate* rate = report->add_downsampling_rates();
-  // TODO(crbug.com/381251064): Consider populating all the other applied
-  // downsampling rates too.
-  rate->set_event_hash(base::HashMetricName(kWebFeatureSamplingKeyword));
-  rate->set_standard_rate(webdx_features_sampling_);
+void UkmRecorderImpl::StoreDownsamplingParameters(Report* report) {
+  // Store the default downsampling rate.
+  if (default_sampling_rate_ >= 0) {
+    Report::DownsamplingRate* rate = report->add_downsampling_rates();
+    rate->set_event_hash(base::HashMetricName("_default_sampling"));
+    rate->set_standard_rate(default_sampling_rate_);
+  }
+
+  // Store WebDX features downsampling rate.
+  if (webdx_features_sampling_ >= 0) {
+    Report::DownsamplingRate* rate = report->add_downsampling_rates();
+    rate->set_event_hash(base::HashMetricName(kWebFeatureSamplingKeyword));
+    rate->set_standard_rate(webdx_features_sampling_);
+  }
+
+  // For events present in the report, store their downsampling rates.
+  std::set<uint64_t> present_event_hashes;
+  for (const auto& entry : report->entries()) {
+    present_event_hashes.insert(entry.event_hash());
+  }
+  for (const auto& [event_hash, sampling_rate] : event_sampling_rates_) {
+    if (present_event_hashes.contains(event_hash)) {
+      Report::DownsamplingRate* rate = report->add_downsampling_rates();
+      rate->set_event_hash(event_hash);
+      rate->set_standard_rate(sampling_rate);
+    }
+  }
+  // Downsampling grouped events to be at the same rate is controlled via a
+  // master event. For these event types, get the master event's sampling rate.
+  for (const auto& [event_hash, master_hash] : event_sampling_master_) {
+    if (present_event_hashes.contains(event_hash)) {
+      auto it = event_sampling_rates_.find(master_hash);
+      if (it != event_sampling_rates_.end()) {
+        Report::DownsamplingRate* rate = report->add_downsampling_rates();
+        rate->set_event_hash(event_hash);
+        rate->set_standard_rate(it->second);
+      }
+    }
+  }
 }
 
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
@@ -625,7 +658,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
       << "StoreRecordingsInReport done [num_serialized_entries="
       << num_serialized_entries << "]";
 
-  StoreWebDXFeaturesDownsamplingParameter(report);
+  StoreDownsamplingParameters(report);
   DVLOG(DebuggingLogLevel::Rare) << "# of downsampling parameters stored: "
                                  << report->downsampling_rates().size();
 }
