@@ -68,8 +68,9 @@ class SyncService;
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-// Fetches the can_sign_in_to_chrome capability before sign-in.
-- (void)fetchCanSigninToChromeCapability:(id<SystemIdentity>)identity;
+// Starts fetching capability to determine if the user can sign in to Chrome.
+- (void)fetchCanSignInToChromeCapability:(id<SystemIdentity>)identity
+                                 profile:(ProfileIOS*)profile;
 
 // Shows the Age Mismatch dialog.
 - (void)showAgeMismatchDialogForIdentity:(id<SystemIdentity>)identity

@@ -19,6 +19,7 @@
 class Browser;
 @protocol SystemIdentity;
 @class UIViewController;
+@class AuthenticationFlowPerformer;
 
 // Handles completion of AuthenticationFlowPerformerBase steps.
 @protocol AuthenticationFlowPerformerDelegate <
@@ -26,6 +27,10 @@ class Browser;
 
 // Indicates that the reauthentication flow completed.
 - (void)didCompleteReauthWithSuccess:(BOOL)success;
+
+// Indicates that the CanSignInToChrome capability was fetched.
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchCanSignInToChromeCapability:(signin::Tribool)capability;
 
 // Called after `-[AuthenticationFlowPerformerBase
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
@@ -44,10 +49,6 @@ class Browser;
 
 // Indicates that the requested identity managed status fetch failed.
 - (void)didFailFetchManagedStatus:(NSError*)error;
-
-// Indicates that the capability can_sign_in_to_chrome was fetched.
-- (void)didFetchCanSigninToChromeCapability:
-    (SystemIdentityCapabilityResult)result;
 
 // Indicates that the Age Mismatch dialog was dismissed.
 - (void)didDismissAgeMismatchDialogWithCancelationReason:

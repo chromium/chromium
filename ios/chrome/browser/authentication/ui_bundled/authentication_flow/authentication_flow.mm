@@ -72,7 +72,7 @@ enum class AuthenticationState {
   kBegin,
   // Fetch "CanSignInToChrome" capability before sign-in to check for age
   // restrictions.
-  kFetchCanSigninToChromeCapability,
+  kFetchCanSignInToChromeCapability,
   // If the user needs reauth, maybe reauth.
   kReauthIfNeeded,
   // Check if there are unsynced data with the primary account, in the current
@@ -81,7 +81,7 @@ enum class AuthenticationState {
   // Show Age Mismatch dialog if needed.
   kShowAgeMismatchDialogIfNeeded,
   // Display confirmation dialog when the user is already signed in, based on
-  // the CanSigninToChrome capability.
+  // the CanSignInToChrome capability.
   kShowLeavingPrimaryAccountConfirmationIfNeeded,
   kFetchManagedStatus,
   kFetchProfileSeparationPoliciesIfNeeded,
@@ -389,7 +389,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kReauthIfNeeded:
     case AuthenticationState::kCheckUnsyncedData:
     case AuthenticationState::kShowLeavingPrimaryAccountConfirmationIfNeeded:
-    case AuthenticationState::kFetchCanSigninToChromeCapability:
+    case AuthenticationState::kFetchCanSignInToChromeCapability:
     case AuthenticationState::kShowAgeMismatchDialogIfNeeded:
     case AuthenticationState::kFetchManagedStatus:
     case AuthenticationState::kFetchProfileSeparationPoliciesIfNeeded:
@@ -413,8 +413,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   DCHECK(![self canceled]);
   switch (_state) {
     case AuthenticationState::kBegin:
-      return AuthenticationState::kFetchCanSigninToChromeCapability;
-    case AuthenticationState::kFetchCanSigninToChromeCapability:
+      return AuthenticationState::kFetchCanSignInToChromeCapability;
+    case AuthenticationState::kFetchCanSignInToChromeCapability:
       return AuthenticationState::kReauthIfNeeded;
     case AuthenticationState::kReauthIfNeeded:
       return AuthenticationState::kCheckUnsyncedData;
@@ -459,8 +459,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     case AuthenticationState::kBegin:
       NOTREACHED();
 
-    case AuthenticationState::kFetchCanSigninToChromeCapability:
-      [self fetchCanSigninToChromeCapabilityStep];
+    case AuthenticationState::kFetchCanSignInToChromeCapability:
+      [self fetchCanSignInToChromeCapabilityStep];
       return;
 
     case AuthenticationState::kReauthIfNeeded:
@@ -583,9 +583,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                                        anchorRect:_anchorRect];
 }
 
-- (void)fetchCanSigninToChromeCapabilityStep {
+- (void)fetchCanSignInToChromeCapabilityStep {
   if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    [_performer fetchCanSigninToChromeCapability:_identityToSignIn];
+    [_performer fetchCanSignInToChromeCapability:_identityToSignIn
+                                         profile:[self profile]];
   } else {
     [self continueFlow];
   }
@@ -906,10 +907,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
-- (void)didFetchCanSigninToChromeCapability:
-    (SystemIdentityCapabilityResult)result {
-  CHECK_EQ(AuthenticationState::kFetchCanSigninToChromeCapability, _state);
-  if (result == SystemIdentityManager::CapabilityResult::kFalse) {
+- (void)authenticationFlowPerformer:(AuthenticationFlowPerformer*)performer
+    didFetchCanSignInToChromeCapability:(signin::Tribool)capability {
+  CHECK_EQ(AuthenticationState::kFetchCanSignInToChromeCapability, _state);
+  if (capability == signin::Tribool::kFalse) {
     _canSignInToChrome = NO;
   }
   [self continueFlow];

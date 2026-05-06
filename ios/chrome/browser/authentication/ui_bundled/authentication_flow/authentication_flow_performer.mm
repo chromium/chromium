@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/age_mismatch_capabilities_fetcher.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
@@ -74,10 +75,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Fetch timeout for the `can_sign_in_to_chrome` capability.
-constexpr base::TimeDelta kCanSigninToChromeCapabilityFetchTimeout =
-    base::Seconds(1);
 
 // The results of a view informing the user of the creation of a managed
 // profile.
@@ -148,9 +145,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       _accountLevelSigninRestrictionPolicyFetcher;
   ActionSheetCoordinator* _leavingPrimaryAccountConfirmationDialogCoordinator;
   AgeMismatchSignoutCoordinator* _ageMismatchSignoutCoordinator;
-  // Tracks if the CanSigninToChrome callback has been invoked.
-  BOOL _canSignInToChromeCallbackInvoked;
   SigninReauthCoordinator* _reauthCoordinator;
+  AgeMismatchCapabilitiesFetcher* _canSignInToChromeCapabilitiesFetcher;
 }
 
 - (instancetype)
@@ -172,6 +168,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   _delegate = nil;
   [self stopWatchdogTimer];
   [self stopReauthCoordinator];
+  [_canSignInToChromeCapabilitiesFetcher shutdown];
+  _canSignInToChromeCapabilitiesFetcher = nil;
 }
 
 - (void)reauthIdentity:(id<SystemIdentity>)identity
@@ -252,30 +250,24 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       }));
 }
 
-- (void)fetchCanSigninToChromeCapability:(id<SystemIdentity>)identity {
-  // TODO(crbug.com/486124651): Measure the time spent to fetch the capability.
-  CHECK(!_canSignInToChromeCallbackInvoked);
+- (void)fetchCanSignInToChromeCapability:(id<SystemIdentity>)identity
+                                 profile:(ProfileIOS*)profile {
+  CHECK(!_canSignInToChromeCapabilitiesFetcher);
+  _canSignInToChromeCapabilitiesFetcher =
+      [[AgeMismatchCapabilitiesFetcher alloc]
+          initWithIdentityManager:IdentityManagerFactory::GetForProfile(
+                                      profile)];
+
   __weak __typeof(self) weakSelf = self;
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](__typeof(self) strongSelf) {
-            [strongSelf delegateFetchCanSigninToChromeCompletedWithResult:
-                            SystemIdentityCapabilityResult::kUnknown];
-          },
-          weakSelf),
-      kCanSigninToChromeCapabilityFetchTimeout);
-
-  // Fetch the capability.
-  GetApplicationContext()->GetSystemIdentityManager()->FetchCanSigninToChrome(
-      identity,
-      base::BindOnce(
-          [](__typeof(self) strongSelf, SystemIdentityCapabilityResult result) {
-            [strongSelf
-                delegateFetchCanSigninToChromeCompletedWithResult:result];
-          },
-          weakSelf));
+  CoreAccountId accountId = CoreAccountId::FromGaiaId([identity gaiaId]);
+  [_canSignInToChromeCapabilitiesFetcher
+      startFetchingCanSignInToChromeCapabilityWithCallback:
+          base::BindOnce(
+              [](__typeof(self) strong_self, signin::Tribool result) {
+                [strong_self didFetchCanSignInToChromeCapability:result];
+              },
+              weakSelf)
+                                                forAccount:accountId];
 }
 
 - (void)fetchProfileSeparationPolicies:(ProfileIOS*)profile
@@ -422,19 +414,17 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 #pragma mark - Private
 
+- (void)didFetchCanSignInToChromeCapability:(signin::Tribool)capability {
+  [_delegate authenticationFlowPerformer:self
+      didFetchCanSignInToChromeCapability:capability];
+  [_canSignInToChromeCapabilitiesFetcher shutdown];
+  _canSignInToChromeCapabilitiesFetcher = nil;
+}
+
 - (void)stopReauthCoordinator {
   [_reauthCoordinator stop];
   _reauthCoordinator.delegate = nil;
   _reauthCoordinator = nil;
-}
-
-- (void)delegateFetchCanSigninToChromeCompletedWithResult:
-    (SystemIdentityCapabilityResult)result {
-  if (_canSignInToChromeCallbackInvoked) {
-    return;
-  }
-  _canSignInToChromeCallbackInvoked = YES;
-  [_delegate didFetchCanSigninToChromeCapability:result];
 }
 
 - (void)stopManagedConfirmation {
