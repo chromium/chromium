@@ -40,7 +40,7 @@
   {
     "name": "ack-copy-output-request-early-for-view-transition",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org", "jonross@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 165
   },
   {
     "name": "ai-hub-new-badge",
