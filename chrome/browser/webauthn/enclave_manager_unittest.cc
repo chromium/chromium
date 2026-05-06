@@ -2160,6 +2160,24 @@ TEST_F(EnclaveManagerTest, JoiningSecurityDomainFailed) {
   EXPECT_FALSE(local_state.joined());
 }
 
+TEST_F(EnclaveManagerTest, AddDeviceToAccountMismatchedGaia) {
+  ASSERT_TRUE(Register());
+  security_domain_service_->pretend_there_are_members();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  auto lock = manager_.GetStoreKeysLock();
+  manager_.StoreKeys(GaiaId("Not the primary account"),
+                     {trusted_vault::TrustedVaultKeyAndVersion(std::move(key),
+                                                               kSecretVersion)},
+                     /*user_action_trigger=*/std::nullopt);
+
+  BoolFuture add_future;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
+  EXPECT_TRUE(add_future.Wait());
+  EXPECT_FALSE(add_future.Get());
+}
+
 // Tests that attempting to renew a PIN does not make Chrome crash if joining
 // the physical device to the security domain failed.
 // Regression test for crbug.com/404563934.

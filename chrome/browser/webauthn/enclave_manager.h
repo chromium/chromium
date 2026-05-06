@@ -189,7 +189,8 @@ class EnclaveManager : public EnclaveManagerInterface {
     kDoWrappingSecretsFailedWrappingResultedInError = 41,
     kUploadVaultAndMemberFromResponseFailedResponseWasNotMap = 42,
     kUploadVaultAndMemberFromResponseFailedToParseResponse = 43,
-    kMaxValue = kUploadVaultAndMemberFromResponseFailedToParseResponse,
+    kDoNextActionFailedAccountMismatch = 44,
+    kMaxValue = kDoNextActionFailedAccountMismatch,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:EnclaveManagerActionOutcome)
 

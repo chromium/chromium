@@ -1327,6 +1327,8 @@ class EnclaveManager::StateMachine {
       case ActionOutcome::
           kUploadVaultAndMemberFromResponseFailedToParseResponse:
         return "UploadVaultAndMemberFromResponseFailedToParseResponse";
+      case ActionOutcome::kDoNextActionFailedAccountMismatch:
+        return "DoNextActionFailedAccountMismatch";
     }
   }
 
@@ -1774,7 +1776,13 @@ class EnclaveManager::StateMachine {
     }
 
     if (user_->registered() && action_->store_keys_args) {
-      CHECK_EQ(primary_account_info_->gaia, action_->store_keys_args->gaia_id);
+      if (primary_account_info_->gaia != action_->store_keys_args->gaia_id) {
+        // This happens when we stored keys for a different account, e.g.
+        // because a new account became the primary account between storing keys
+        // and enrollment.
+        Stop(ActionOutcome::kDoNextActionFailedAccountMismatch);
+        return;
+      }
       auto store_keys_args = std::move(action_->store_keys_args);
       action_->store_keys_args.reset();
 

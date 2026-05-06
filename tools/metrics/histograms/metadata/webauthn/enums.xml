@@ -163,6 +163,7 @@ chromium-metrics-reviews@google.com.
   <int value="43"
       label="Can not parse a vault and security domain member keys from a
              CBOR map"/>
+  <int value="44" label="Account mismatch in DoNextAction"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager.h:EnclaveManagerActionOutcome) -->
