@@ -16,6 +16,7 @@ static_library("cryptohome") {
     "//ash/constants",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/cryptohome:resources",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cryptohome",

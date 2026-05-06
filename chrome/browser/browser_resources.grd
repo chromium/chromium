@@ -95,9 +95,6 @@
           <include name="IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG" file="resources\chromeos\googleg.svg" type="BINDATA" />
         </if>
 
-        <include name="IDR_CRYPTOHOME_HTML" file="resources\chromeos\cryptohome\cryptohome.html" type="BINDATA" />
-        <include name="IDR_CRYPTOHOME_JS" file="resources\chromeos\cryptohome\cryptohome.js" type="BINDATA" />
-
         <include name="IDR_GUEST_SESSION_TAB_HTML" file="resources\chromeos\guest_session_tab.html" flattenhtml="true" type="BINDATA" />
 
         <!-- Note: mobile_setup_ui.cc does not support compressed resources. -->

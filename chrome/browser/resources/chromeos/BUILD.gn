@@ -21,6 +21,7 @@ group("resources") {
     "borealis_installer:resources",
     "cloud_upload:resources",
     "crostini_installer:resources",
+    "cryptohome:resources",
     "desk_api:resources",
     "drive_internals:resources",
     "edu_coexistence:resources",

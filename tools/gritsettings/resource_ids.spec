@@ -289,13 +289,17 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3130],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/cryptohome/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [3140],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/desk_api/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
-    "includes": [3140],
+    "includes": [3145],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/drive_internals/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
-    "includes": [3150],
+    "includes": [3155],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/edu_coexistence/resources.grd": {
     "META": {"sizes": {"includes": [20],}},

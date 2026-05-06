@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 /**
- * Sets |value| to the element specified by |destination_id|.
- * @param {string} destination_id Id of the element to be modified.
- * @param {string} value The value to be set.
+ * Sets |value| to the element specified by |destinationId|.
+ * @param destinationId Id of the element to be modified.
+ * @param value The value to be set.
  */
-function onSetCryptohomeProperty(destinationId, value) {
-  $(destinationId).textContent = value;
+function onSetCryptohomeProperty(destinationId: string, value: string) {
+  getRequiredElement(destinationId).textContent = value;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -21,12 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
   addWebUiListener('SetCryptohomeProperty', onSetCryptohomeProperty);
 
   // Auto-refresh when interval is given as pathname.
-  const interval = parseInt(window.location.pathname.split('/')[1]);
+  const pathPart = window.location.pathname.split('/')[1];
+  const interval = pathPart ? parseInt(pathPart, 10) : 0;
   if (interval > 0) {
-    $('refresh-message').textContent =
+    getRequiredElement('refresh-message').textContent =
         '(Auto-refreshing page every ' + interval + 's)';
     setTimeout(function() {
-      window.location.reload(true);
+      window.location.reload();
     }, interval * 1000);
   }
 });
