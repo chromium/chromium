@@ -39,9 +39,14 @@ source_set("impl") {
     "//chrome/browser/autofill",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/page_content_annotations:page_embeddings",
+    "//chrome/browser/passage_embeddings",
     "//chrome/browser/signin",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//components/accessibility_annotator/content/live_tab_context",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/annotation_reducer",
@@ -54,6 +59,9 @@ source_set("impl") {
     "//content/public/browser",
     "//sql",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -76,4 +84,22 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "accessibility_query_service_delegate_impl_browsertest.cc" ]
+    deps = [
+      ":accessibility_annotator",
+      ":impl",
+      "//base",
+      "//chrome/test:test_support",
+      "//components/page_content_annotations/content:test_support",
+      "//components/passage_embeddings/core:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

@@ -2,5 +2,6 @@ include_rules = [
   "+components/accessibility_annotator/core/annotation_reducer",
   "+components/accessibility_annotator/core",
   "+components/accessibility_annotator/first_run",
+  "+components/accessibility_annotator/content/live_tab_context",
   "+components/autofill/core/browser/at_memory",
 ]

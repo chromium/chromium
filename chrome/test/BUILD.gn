@@ -2629,6 +2629,7 @@ if (!is_android) {
       "//chrome/browser/accessibility:browser_tests",
       "//chrome/browser/accessibility/live_caption:test_support",
       "//chrome/browser/accessibility/phrase_segmentation:browser_tests",
+      "//chrome/browser/accessibility_annotator:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui:browser_tests",

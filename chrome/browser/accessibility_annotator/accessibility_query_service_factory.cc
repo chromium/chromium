@@ -90,7 +90,8 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<accessibility_annotator::AccessibilityQueryService>(
       std::make_unique<
-          accessibility_annotator::AccessibilityQueryServiceDelegateImpl>(),
+          accessibility_annotator::AccessibilityQueryServiceDelegateImpl>(
+          profile),
       std::move(data_providers), std::move(one_p_resolver),
       optimization_guide_service);
 }
