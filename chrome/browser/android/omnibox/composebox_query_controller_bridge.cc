@@ -78,7 +78,8 @@ static int64_t JNI_ComposeboxQueryControllerBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_obj,
     Profile* profile,
-    content::WebContents* contextual_tasks_web_contents) {
+    content::WebContents* web_contents,
+    bool is_task_scoped) {
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_service || !aim_service->IsAimEligible()) {
     return 0L;
@@ -92,23 +93,23 @@ static int64_t JNI_ComposeboxQueryControllerBridge_Init(
   }
 
   ComposeboxQueryControllerBridge* instance =
-      new ComposeboxQueryControllerBridge(java_obj, profile,
-                                          contextual_tasks_web_contents);
+      new ComposeboxQueryControllerBridge(java_obj, profile, web_contents,
+                                          is_task_scoped);
   return reinterpret_cast<intptr_t>(instance);
 }
 
 ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     const base::android::JavaRef<jobject>& java_obj,
     Profile* profile,
-    content::WebContents* contextual_tasks_web_contents)
-    : profile_{profile}, java_obj_(java_obj) {
-  is_task_scoped_ =
-      contextual_tasks_web_contents != nullptr &&
-      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
-  if (is_task_scoped_ && contextual_tasks_web_contents &&
-      !contextual_tasks_web_contents->IsBeingDestroyed()) {
+    content::WebContents* web_contents,
+    bool is_task_scoped)
+    : profile_{profile}, is_task_scoped_(is_task_scoped), java_obj_(java_obj) {
+  if (is_task_scoped_) {
+    DCHECK(base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks));
+  }
+  if (is_task_scoped_ && web_contents && !web_contents->IsBeingDestroyed()) {
     contextual_tasks_web_ui_interface_ =
-        contextual_tasks::GetWebUiInterface(contextual_tasks_web_contents);
+        contextual_tasks::GetWebUiInterface(web_contents);
     if (contextual_tasks_web_ui_interface_) {
       contextual_tasks_web_ui_interface_->SetComposeboxHandler(this);
     }

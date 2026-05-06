@@ -62,17 +62,18 @@ public class ComposeboxQueryControllerBridge {
     /**
      * Create a new ComposeboxQueryControllerBridge using the given profile and WebUI WebContents.
      *
-     * @param contextualTasksWebContents The WebContents hosting the WebUI that needs to be
-     *     communicated with.
+     * @param profile The profile for the session.
+     * @param webContents The WebContents hosting the WebUI that needs to be communicated with.
+     * @param isTaskScoped Whether the session is scoped to a specific AI task.
      */
     public static @Nullable ComposeboxQueryControllerBridge create(
-            Profile profile, @Nullable WebContents contextualTasksWebContents) {
+            Profile profile, @Nullable WebContents webContents, boolean isTaskScoped) {
         if (sInstanceForTesting != null) return sInstanceForTesting.orElse(null);
 
         ComposeboxQueryControllerBridge javaInstance = new ComposeboxQueryControllerBridge();
         long nativeInstance =
                 ComposeboxQueryControllerBridgeJni.get()
-                        .init(javaInstance, profile, contextualTasksWebContents);
+                        .init(javaInstance, profile, webContents, isTaskScoped);
         if (nativeInstance == 0L) return null;
         javaInstance.mNativeInstance = nativeInstance;
         return javaInstance;
@@ -256,7 +257,8 @@ public class ComposeboxQueryControllerBridge {
         long init(
                 ComposeboxQueryControllerBridge javaInstance,
                 @JniType("Profile*") Profile profile,
-                @JniType("content::WebContents*") @Nullable WebContents contextualTasksWebContents);
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
+                boolean isTaskScoped);
 
         void destroy(long nativeComposeboxQueryControllerBridge);
 

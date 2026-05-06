@@ -44,7 +44,8 @@ class ComposeboxQueryControllerBridge
   explicit ComposeboxQueryControllerBridge(
       const base::android::JavaRef<jobject>& java_obj,
       Profile* profile,
-      content::WebContents* contextual_tasks_web_contents);
+      content::WebContents* web_contents,
+      bool is_task_scoped);
   ~ComposeboxQueryControllerBridge() override;
   void Destroy(JNIEnv* env);
   void OnWebUIDestroyed(JNIEnv* env);

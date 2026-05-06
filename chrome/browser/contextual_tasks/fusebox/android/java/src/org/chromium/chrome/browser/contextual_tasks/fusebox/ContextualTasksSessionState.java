@@ -23,6 +23,11 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class ContextualTasksSessionState extends FuseboxSessionState {
     @Override
+    public boolean isTaskScoped() {
+        return true;
+    }
+
+    @Override
     public void activate(
             Context context,
             @Nullable WebContents webContents,
