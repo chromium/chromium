@@ -39,6 +39,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/OCMock/OCMockMacros.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/origin.h"
 
 // Test fixture to test AutofillBottomSheetTabHelper class.
 class AutofillBottomSheetTabHelperTest : public PlatformTest {
@@ -64,7 +65,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     return web::ScriptMessage(std::move(body),
                               /*is_user_interacting=*/true,
                               /*is_main_frame=*/true,
-                              /*request_url=*/std::nullopt);
+                              /*request_url=*/std::nullopt, url::Origin());
   }
 
  protected:

@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web {
 
@@ -19,7 +20,8 @@ class ScriptMessage {
   explicit ScriptMessage(std::unique_ptr<base::Value> body,
                          bool is_user_interacting,
                          bool is_main_frame,
-                         std::optional<GURL> request_url);
+                         std::optional<GURL> request_url,
+                         url::Origin security_origin);
   ~ScriptMessage();
 
   ScriptMessage& operator=(const ScriptMessage&) = delete;
@@ -38,11 +40,17 @@ class ScriptMessage {
   // The url, if available, of the frame which sent this message.
   std::optional<GURL> request_url() const { return request_url_; }
 
+  // The security origin of the frame which sent this message.
+  // Use this, not `request_url`, when making security decisions.
+  // See //docs/security/origin-vs-url.md.
+  const url::Origin& security_origin() const { return security_origin_; }
+
  private:
   std::unique_ptr<base::Value> body_;
   bool is_user_interacting_;
   bool is_main_frame_;
   std::optional<GURL> request_url_;
+  url::Origin security_origin_;
 };
 
 }  // namespace web

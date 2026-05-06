@@ -14,17 +14,20 @@ namespace web {
 ScriptMessage::ScriptMessage(std::unique_ptr<base::Value> body,
                              bool is_user_interacting,
                              bool is_main_frame,
-                             std::optional<GURL> request_url)
+                             std::optional<GURL> request_url,
+                             url::Origin security_origin)
     : body_(std::move(body)),
       is_user_interacting_(is_user_interacting),
       is_main_frame_(is_main_frame),
-      request_url_(request_url) {}
+      request_url_(request_url),
+      security_origin_(std::move(security_origin)) {}
 ScriptMessage::~ScriptMessage() = default;
 
 ScriptMessage::ScriptMessage(const ScriptMessage& other)
     : is_user_interacting_(other.is_user_interacting_),
       is_main_frame_(other.is_main_frame_),
-      request_url_(other.request_url_) {
+      request_url_(other.request_url_),
+      security_origin_(other.security_origin_) {
   if (other.body_) {
     body_ = std::make_unique<base::Value>(other.body_->Clone());
   }

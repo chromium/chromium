@@ -86,10 +86,10 @@ std::optional<ScriptMessage> GetMessage(WKScriptMessage* script_message,
   }
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  std::optional<ScriptMessage> message =
-      ScriptMessage(web::ValueResultFromWKResult(script_message.body),
-                    web_controller.isUserInteracting,
-                    script_message.frameInfo.mainFrame, url);
+  std::optional<ScriptMessage> message = ScriptMessage(
+      web::ValueResultFromWKResult(script_message.body),
+      web_controller.isUserInteracting, script_message.frameInfo.mainFrame, url,
+      web::OriginWithWKSecurityOrigin(script_message.frameInfo.securityOrigin));
   if (base::FeatureList::IsEnabled(
           web::features::kIOSScriptMessageConversionDurationLogging) &&
       base::TimeTicks::IsHighResolution()) {

@@ -17,6 +17,7 @@ source_set("fuzzer_support") {
     "//base",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test:fuzzer_support",
+    "//url",
   ]
 }
 

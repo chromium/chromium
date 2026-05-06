@@ -21,6 +21,7 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "url/origin.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -105,7 +106,8 @@ class ClipboardJavaScriptFeatureTest : public WebTestWithWebState {
 
     web::ScriptMessage message(std::make_unique<base::Value>(std::move(body)),
                                /*is_user_interacting=*/true,
-                               /*is_main_frame=*/true, GURL::EmptyGURL());
+                               /*is_main_frame=*/true, GURL::EmptyGURL(),
+                               url::Origin());
     feature_->ScriptMessageReceived(web_state(), message);
   }
 
