@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
@@ -30,14 +31,15 @@ class FormFieldData;
 // Controller for the accessibility annotator search feature. It handles queries
 // to the AccessibilityQueryService and manages session-based metrics.
 //
-// Owned by `AutofillExternalDelegate`, its lifetime is tied to it.
+// Owned by `BrowserAutofillManager`, its lifetime is tied to it.
+// TODO(crbug.com/507770024): Rename to AtMemoryManager.
 class AtMemoryController {
  public:
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
-  explicit AtMemoryController(BrowserAutofillManager& manager);
+  explicit AtMemoryController(BrowserAutofillManager* manager);
   ~AtMemoryController();
 
   AtMemoryController(const AtMemoryController&) = delete;
@@ -45,6 +47,7 @@ class AtMemoryController {
 
   // Called when suggestions are shown. The controller initiates an @memory
   // session if the `trigger_source` is an @memory one.
+  // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source,
                     UpdateSuggestionsCallback update_callback);
 
@@ -97,7 +100,7 @@ class AtMemoryController {
                       const FormFieldData& field,
                       const Suggestion& suggestion);
 
-  const raw_ref<BrowserAutofillManager> manager_;
+  const raw_ptr<BrowserAutofillManager> owner_;
 
   AutofillSuggestionTriggerSource trigger_source_ =
       AutofillSuggestionTriggerSource::kUnspecified;

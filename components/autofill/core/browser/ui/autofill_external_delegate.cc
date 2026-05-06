@@ -31,6 +31,7 @@
 #include "base/types/zip.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -178,7 +179,7 @@ std::optional<AutofillProfile> GetProfileFromPayload(
 
 AutofillExternalDelegate::AutofillExternalDelegate(
     BrowserAutofillManager* manager)
-    : manager_(CHECK_DEREF(manager)), at_memory_controller_(*manager_) {}
+    : manager_(CHECK_DEREF(manager)) {}
 
 AutofillExternalDelegate::~AutofillExternalDelegate() = default;
 
@@ -501,30 +502,27 @@ void AutofillExternalDelegate::OnSuggestionsShown(
     }
   }
 
-  at_memory_controller_.OnPopupShown(trigger_source_,
-                                     CreateUpdateSuggestionsCallback());
-
-  manager_->DidShowSuggestions(suggestions, query_form_.global_id(),
-                               query_field_.global_id(),
-                               CreateUpdateSuggestionsCallback());
+  manager_->DidShowSuggestions(
+      suggestions, query_form_.global_id(), query_field_.global_id(),
+      CreateUpdateSuggestionsCallback(), trigger_source_);
 }
 
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  at_memory_controller_.OnPopupHidden();
+  manager_->GetAtMemoryController().OnPopupHidden();
   manager_->OnSuggestionsHidden(reason);
 }
 
 bool AutofillExternalDelegate::OnFilterChanged(const std::u16string& filter) {
-  return at_memory_controller_.OnFilterChanged(filter);
+  return manager_->GetAtMemoryController().OnFilterChanged(filter);
 }
 
 bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
-  return at_memory_controller_.OnSearchSubmitted(filter);
+  return manager_->GetAtMemoryController().OnSearchSubmitted(filter);
 }
 
 bool AutofillExternalDelegate::IsSearching() const {
-  return at_memory_controller_.IsSearching();
+  return manager_->GetAtMemoryController().IsSearching();
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
@@ -611,7 +609,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      at_memory_controller_.FillOrPreviewSearchResult(
+      manager_->GetAtMemoryController().FillOrPreviewSearchResult(
           mojom::ActionPersistence::kPreview, query_form_, query_field_,
           suggestion);
       break;
@@ -845,7 +843,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), AutofillSuggestionTriggerSource::kAtMemory);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      at_memory_controller_.FillOrPreviewSearchResult(
+      manager_->GetAtMemoryController().FillOrPreviewSearchResult(
           mojom::ActionPersistence::kFill, query_form_, query_field_,
           suggestion);
       break;

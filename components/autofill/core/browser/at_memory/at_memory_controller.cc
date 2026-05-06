@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -302,8 +303,8 @@ Suggestion CreateNoDataSuggestion() {
 
 }  // namespace
 
-AtMemoryController::AtMemoryController(BrowserAutofillManager& manager)
-    : manager_(manager) {}
+AtMemoryController::AtMemoryController(BrowserAutofillManager* manager)
+    : owner_(manager) {}
 
 AtMemoryController::~AtMemoryController() = default;
 
@@ -358,7 +359,7 @@ void AtMemoryController::FillOrPreviewSearchResult(
 
   switch (action_persistence) {
     case mojom::ActionPersistence::kPreview:
-      manager_->FillOrPreviewField(
+      owner_->FillOrPreviewField(
           action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger,
           form, field, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
@@ -381,7 +382,7 @@ void AtMemoryController::FillOrPreviewSearchResult(
           if (at_memory_funnel_metrics_) {
             at_memory_funnel_metrics_->OnSuggestionAccepted();
           }
-          manager_->FillOrPreviewField(
+          owner_->FillOrPreviewField(
               action_persistence,
               mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
               payload.value, FillingProduct::kAtMemory,
@@ -399,7 +400,7 @@ bool AtMemoryController::IsSearching() const {
 void AtMemoryController::ExecuteQuery(const std::u16string& filter,
                                       bool full_search) {
   accessibility_annotator::AccessibilityQueryService* query_service =
-      manager_->client().GetAccessibilityQueryService();
+      owner_->client().GetAccessibilityQueryService();
   if (!query_service || !IsAtMemoryTriggerSource(trigger_source_) ||
       !update_callback_) {
     return;
@@ -418,7 +419,7 @@ void AtMemoryController::ExecuteQuery(const std::u16string& filter,
   // Notify the UI that search has started. We repass the current suggestions
   // to prevent them from disappearing while the search is in progress.
   base::span<const Suggestion> current_suggestions =
-      manager_->client().GetAutofillSuggestions();
+      owner_->client().GetAutofillSuggestions();
   update_callback_.Run(base::ToVector(current_suggestions), trigger_source_);
   query_service->Query(
       filter, full_search,
@@ -501,7 +502,7 @@ void AtMemoryController::FillIban(
   }
 
   IbanAccessManager* iban_access_manager =
-      manager_->client().GetPaymentsAutofillClient()->GetIbanAccessManager();
+      owner_->client().GetPaymentsAutofillClient()->GetIbanAccessManager();
   if (!iban_access_manager) {
     return;
   }
@@ -512,16 +513,17 @@ void AtMemoryController::FillIban(
           [](base::WeakPtr<AtMemoryController> controller, const FormData& form,
              const FormFieldData& field, const Suggestion& suggestion,
              const std::u16string& unmasked_value) {
-            if (controller) {
-              if (controller->at_memory_funnel_metrics_) {
-                controller->at_memory_funnel_metrics_->OnSuggestionAccepted();
-              }
-              controller->manager_->FillOrPreviewField(
-                  mojom::ActionPersistence::kFill,
-                  mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-                  unmasked_value, FillingProduct::kAtMemory,
-                  /*field_type_used=*/std::nullopt);
+            if (!controller) {
+              return;
             }
+            if (controller->at_memory_funnel_metrics_) {
+              controller->at_memory_funnel_metrics_->OnSuggestionAccepted();
+            }
+            controller->owner_->FillOrPreviewField(
+                mojom::ActionPersistence::kFill,
+                mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
+                unmasked_value, FillingProduct::kAtMemory,
+                /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
 }
@@ -535,12 +537,12 @@ void AtMemoryController::FillCreditCard(
   const std::string& guid = std::get<std::string>(identifier);
 
   CreditCardAccessManager* credit_card_access_manager =
-      manager_->GetCreditCardAccessManager();
+      owner_->GetCreditCardAccessManager();
   if (!credit_card_access_manager) {
     return;
   }
 
-  const PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
+  const PersonalDataManager& pdm = owner_->client().GetPersonalDataManager();
   const CreditCard* credit_card =
       pdm.payments_data_manager().GetCreditCardByGUID(guid);
   if (!credit_card) {
@@ -574,7 +576,7 @@ void AtMemoryController::FillCreditCard(
                 NOTREACHED();
             }
 
-            controller->manager_->FillOrPreviewField(
+            controller->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
                 fill_value, FillingProduct::kAtMemory,

@@ -17,7 +17,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -284,8 +283,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // Used to re-authenticate the user before filling.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
-
-  AtMemoryController at_memory_controller_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };
