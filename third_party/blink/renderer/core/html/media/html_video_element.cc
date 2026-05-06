@@ -662,8 +662,8 @@ void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
   }
 
   HTMLMediaElement::DidMoveToNewDocument(old_document);
-  if (image_loader_) {
-    image_loader_->UpdateFromElement();
+  if (image_loader_ || FastHasAttribute(html_names::kPosterAttr)) {
+    UpdatePosterImage();
   }
 }
 
