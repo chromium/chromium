@@ -32,7 +32,7 @@ class ContentSettingPermissionResolver : public PermissionResolver {
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;
 
-  ContentSetting default_value_;
+  ContentSetting default_value_ = CONTENT_SETTING_DEFAULT;
 };
 
 }  // namespace permissions
