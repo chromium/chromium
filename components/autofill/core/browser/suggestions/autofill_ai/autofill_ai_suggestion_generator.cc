@@ -313,13 +313,14 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     }
   }
 
-  auto is_server_entity = [](const EntityInstance& entity) {
-    switch (entity.record_type()) {
+  auto get_record_type_priority = [](EntityInstance::RecordType record_type) {
+    switch (record_type) {
       case EntityInstance::RecordType::kServerWallet:
-        return true;
+        return 2;
       case EntityInstance::RecordType::kLocal:
+        return 1;
       case EntityInstance::RecordType::kAccessibilityAnnotator:
-        return false;
+        return 0;
     }
     NOTREACHED();
   };
@@ -336,19 +337,17 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
                                                   fields_to_values[j].size();
       // Erase `i` iff:
       // - `i` is a proper subset of `j` for some `j`.
-      // - `i` is equal to `j` and `i` is not a server entity while `j` is.
-      // - `i` is equal to `j` for some j < i and `i` is not a server entity.
-      // - `i` is equal to `j` for some j < i and both `i` and `j` are server
-      // entities.
+      // - `i` is equal to `j` and `j` has higher priority than `i`.
+      // - `i` is equal to `j` and they have the same priority, but `j`
+      //   appears earlier in the list (higher frecency).
       const bool i_is_proper_subset_of_j = j_includes_i && !j_equals_i;
-      const bool i_is_server_entity = is_server_entity(*entities[i]);
-      const bool j_is_server_entity = is_server_entity(*entities[j]);
-      const bool i_and_j_are_server_entities =
-          i_is_server_entity && j_is_server_entity;
+      const int i_priority =
+          get_record_type_priority(entities[i]->record_type());
+      const int j_priority =
+          get_record_type_priority(entities[j]->record_type());
       if (i_is_proper_subset_of_j ||
           (j_equals_i &&
-           ((!i_is_server_entity && j_is_server_entity) ||
-            (i > j && (!i_is_server_entity || i_and_j_are_server_entities))))) {
+           (j_priority > i_priority || (j_priority == i_priority && i > j)))) {
         erase_i = true;
         break;
       }

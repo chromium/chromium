@@ -591,6 +591,41 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionsAre(HasMainText(GetPassportName(passport4))));
 }
 
+// Test that if a Local entity and an AccessibilityAnnotator entity have the
+// same data, the Local entity is preferred.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_DedupeSuggestions_FavorLocalOverAccessibilityAnnotator) {
+  EntityInstance passport_local = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"12345",
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance passport_aa = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"12345",
+       .record_type = EntityInstance::RecordType::kAccessibilityAnnotator});
+  SetEntities({passport_local, passport_aa});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  // Sets `passport_aa` to have been used so that it is ranked higher by
+  // frecency.
+  edm().RecordEntityUsed(passport_aa.guid(), base::Time::Now());
+  webdata_helper().WaitUntilIdle();
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+
+  // There should be only one suggestion (excluding separator and footer),
+  // and it should be the Local one.
+  ASSERT_EQ(suggestions.size(), 3u);
+  const Suggestion::AutofillAiPayload* payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+  ASSERT_TRUE(payload);
+  EXPECT_EQ(payload->guid, passport_local.guid());
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasMainText(GetPassportName(passport_local))));
+}
+
 // Test that if a server entity is a subset of a local one, we do not favor it.
 // Instead we delete it.
 TEST_F(
