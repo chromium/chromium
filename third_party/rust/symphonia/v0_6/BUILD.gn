@@ -42,6 +42,10 @@ cargo_crate("lib") {
   features = [
     "flac",
     "mp3",
+    "opt-simd",
+    "opt-simd-avx",
+    "opt-simd-neon",
+    "opt-simd-sse",
     "pcm",
     "vorbis",
   ]

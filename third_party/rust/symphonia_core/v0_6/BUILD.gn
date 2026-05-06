@@ -74,9 +74,16 @@ cargo_crate("lib") {
     "//third_party/rust/lazy_static/v1:lib",
     "//third_party/rust/log/v0_4:lib",
     "//third_party/rust/num_complex/v0_4:lib",
+    "//third_party/rust/rustfft/v6:lib",
     "//third_party/rust/smallvec/v1:lib",
   ]
-  features = [ "default" ]
+  features = [
+    "default",
+    "opt-simd-avx",
+    "opt-simd-neon",
+    "opt-simd-sse",
+    "rustfft",
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
