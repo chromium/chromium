@@ -240,7 +240,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   void SetActive(EnclaveEnabledStatus enclave_enabled_status);
 
   // EnclaveManager::Observer:
-  void OnKeysStored() override;
+  void OnKeysStored(const GaiaId& gaia_id) override;
   void OnOutOfContextRecoveryCompletion(
       EnclaveManager::OutOfContextRecoveryOutcome outcome) override;
 

@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -4739,6 +4740,41 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // Ensure the large blob is redacted from logs.
   EXPECT_THAT(GetDeviceLog(),
               testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
+}
+
+// Regression test for crbug.com/505059790.
+// Simulate MagicArch returning keys for the wrong user. This used to crash, now
+// it should result in a GPM error.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       RecoverSecurityDomainGaiaMismatchedFailure) {
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
+  dialog_model()->OnGPMTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMError);
+  auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+  enclave_manager().StoreKeys(
+      GaiaId("mismatched_gaia_id"),
+      {trusted_vault::TrustedVaultKeyAndVersion(
+          base::ToVector(kSecurityDomainSecret), kSecretVersion)},
+      std::nullopt);
+  model_observer()->WaitForStep();
 }
 
 }  // namespace

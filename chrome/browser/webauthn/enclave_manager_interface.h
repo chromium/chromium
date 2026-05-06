@@ -11,6 +11,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 
 class EnclaveManager;
+class GaiaId;
 
 class EnclaveManagerInterface : public KeyedService {
  public:
@@ -56,9 +57,11 @@ class EnclaveManagerInterface : public KeyedService {
 
   class Observer : public base::CheckedObserver {
    public:
-    // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
-    // by calling `StoreKeys`.
-    virtual void OnKeysStored() {}
+    // `OnKeysStored` is called when MagicArch provides keys to the
+    // EnclaveManager by calling `StoreKeys`. `gaia_id` is the account
+    // identifier for the keys that were stored. Clients should verify this
+    // matches the account they expect.
+    virtual void OnKeysStored(const GaiaId& gaia_id) {}
 
     // `OnStateUpdated` is called from `EnclaveManager::Stopped()` - indicating
     // that the state machine reached its final state (so the state of the

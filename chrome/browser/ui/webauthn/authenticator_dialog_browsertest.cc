@@ -1102,7 +1102,7 @@ class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
   }
 
   // EnclaveManager::Observer
-  void OnKeysStored() override {
+  void OnKeysStored(const GaiaId& gaia_id) override {
     EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser_->profile())
         ->RemoveObserver(this);
     browser_ = nullptr;

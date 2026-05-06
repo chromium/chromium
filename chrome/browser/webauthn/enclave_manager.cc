@@ -4008,7 +4008,7 @@ void EnclaveManager::StorePendingKeys(
   store_keys_count_++;
 
   for (Observer& observer : observer_list_) {
-    observer.OnKeysStored();
+    observer.OnKeysStored(gaia_id);
   }
 }
 

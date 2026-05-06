@@ -313,7 +313,10 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     return ret;
   }
 
-  void OnKeysStored() override { stored_count_++; }
+  void OnKeysStored(const GaiaId& gaia_id) override {
+    stored_count_++;
+    last_stored_gaia_id_ = gaia_id;
+  }
   void OnStateUpdated() override { notified_about_state_update_count_++; }
   void OnOutOfContextRecoveryCompletion(
       EnclaveManager::OutOfContextRecoveryOutcome outcome) override {}
@@ -521,6 +524,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
 
   base::test::TaskEnvironment task_env_;
   unsigned stored_count_ = 0;
+  GaiaId last_stored_gaia_id_;
   unsigned notified_about_state_update_count_ = 0;
   const TempDir temp_dir_;
   const std::pair<base::Process, uint16_t> process_and_port_;
@@ -575,6 +579,7 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_idle());
   ASSERT_TRUE(manager_.has_pending_keys());
   EXPECT_EQ(stored_count_, 1u);
+  EXPECT_EQ(last_stored_gaia_id_, gaia_id_);
 
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
@@ -2170,6 +2175,7 @@ TEST_F(EnclaveManagerTest, AddDeviceToAccountMismatchedGaia) {
                      {trusted_vault::TrustedVaultKeyAndVersion(std::move(key),
                                                                kSecretVersion)},
                      /*user_action_trigger=*/std::nullopt);
+  EXPECT_EQ(last_stored_gaia_id_, GaiaId("Not the primary account"));
 
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
