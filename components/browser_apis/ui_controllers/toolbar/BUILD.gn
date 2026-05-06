@@ -19,9 +19,12 @@ mojom("mojom_data_model") {
   webui_module_path = "/"
 }
 
-# Generate Mojo bindings for toolbar_ui_api.mojom.
+# Generate Mojo bindings from mojom API files.
 mojom("mojom") {
-  sources = [ "toolbar_ui_api.mojom" ]
+  sources = [
+    "extensions_bar.mojom",
+    "toolbar_ui_api.mojom",
+  ]
 
   # Dependencies on other mojom targets.
   public_deps = [

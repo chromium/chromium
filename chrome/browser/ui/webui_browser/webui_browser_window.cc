@@ -25,9 +25,9 @@
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
-#include "chrome/browser/ui/webui_browser/webui_browser_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
@@ -143,8 +143,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
       std::make_unique<WebShellWebContentsUserData>(this));
 
   modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
-  extensions_container_ =
-      std::make_unique<WebUIBrowserExtensionsContainer>(*browser_, *this);
+  extensions_container_ = std::make_unique<WebUIToolbarExtensionsContainer>(
+      *browser_, *this, ui_web_contents->GetWeakPtr());
   scoped_extensions_container_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
           browser_->GetUnownedUserDataHost(), *extensions_container_);
@@ -512,12 +512,6 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
           kContentsContainerViewElementId,
           views::ElementTrackerViews::GetContextForWidget(widget_.get()));
   return content_region ? content_region->GetScreenBounds() : gfx::Rect();
-}
-
-ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
-  return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-      kExtensionsMenuButtonElementId,
-      views::ElementTrackerViews::GetContextForWidget(widget_.get()));
 }
 
 void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {

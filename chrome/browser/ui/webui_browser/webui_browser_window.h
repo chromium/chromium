@@ -19,10 +19,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace ui {
-class TrackedElement;
-}  // namespace ui
-
 namespace views {
 class NativeWidget;
 class WebView;
@@ -31,7 +27,7 @@ class Widget;
 
 class Browser;
 class ExtensionsContainer;
-class WebUIBrowserExtensionsContainer;
+class WebUIToolbarExtensionsContainer;
 class WebUIBrowserModalDialogHost;
 class WebUIBrowserSidePanelUI;
 class WebUIBrowserUI;
@@ -228,7 +224,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   views::Widget* widget() { return widget_.get(); }
 
   gfx::Rect GetContentsBoundsInScreen() const;
-  ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
 
  protected:
   // BrowserWindow:
@@ -291,7 +286,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   ui::AcceleratorManager accelerator_manager_;
 
   std::unique_ptr<WebUIBrowserModalDialogHost> modal_dialog_host_;
-  std::unique_ptr<WebUIBrowserExtensionsContainer> extensions_container_;
+  std::unique_ptr<WebUIToolbarExtensionsContainer> extensions_container_;
   std::unique_ptr<ui::ScopedUnownedUserData<ExtensionsContainer>>
       scoped_extensions_container_user_data_;
 

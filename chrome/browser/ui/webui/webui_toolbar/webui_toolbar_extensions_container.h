@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_EXTENSIONS_CONTAINER_H_
-#define CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_EXTENSIONS_CONTAINER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_
+#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_
 
 #include <map>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
-#include "chrome/browser/ui/webui_browser/extensions_bar.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,16 +18,20 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 class Browser;
-class WebUIBrowserWindow;
+class BrowserWindow;
+class ExtensionsMenuCoordinator;
 
-class WebUIBrowserExtensionsContainer
+class WebUIToolbarExtensionsContainer
     : public ExtensionsContainer,
       public ExtensionsContainerViews,
       public ToolbarActionsModel::Observer,
       public extensions_bar::mojom::PageHandler {
  public:
-  WebUIBrowserExtensionsContainer(Browser& browser, WebUIBrowserWindow& window);
-  ~WebUIBrowserExtensionsContainer() override;
+  WebUIToolbarExtensionsContainer(
+      Browser& browser,
+      BrowserWindow& window,
+      base::WeakPtr<content::WebContents> web_contents);
+  ~WebUIToolbarExtensionsContainer() override;
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
@@ -80,6 +83,9 @@ class WebUIBrowserExtensionsContainer
   class ActionInfo;
   class ContextMenu;
 
+  views::Widget* GetWidget() const;
+  ui::TrackedElement* GetExtensionsMenuButtonAnchor() const;
+
   void NotifyActionPoppedOut(base::OnceClosure closure);
 
   void CreateActions();
@@ -89,7 +95,8 @@ class WebUIBrowserExtensionsContainer
   void OnContextMenuClosedFromToolbar();
 
   const raw_ref<Browser> browser_;
-  const raw_ref<WebUIBrowserWindow> window_;
+  const raw_ref<BrowserWindow> window_;
+  const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<ToolbarActionsModel> model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       observe_actions_{this};
@@ -108,4 +115,4 @@ class WebUIBrowserExtensionsContainer
   const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_EXTENSIONS_CONTAINER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_
