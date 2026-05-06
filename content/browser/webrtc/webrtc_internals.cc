@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
@@ -765,6 +766,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
     }
   }
   UpdateWakeLock();
+  UpdateStatsTimer();
 
   bool found_any = false;
   // Iterates from the end of the list to remove the getUserMedia requests
@@ -823,6 +825,7 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
     ++num_connected_connections_;
     record.GetDict().Set("connected", true);
     UpdateWakeLock();
+    UpdateStatsTimer();
     for (auto& observer : connections_observers_)
       observer.OnConnectionsCountChange(num_connected_connections_);
   }
@@ -837,6 +840,7 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
     --num_connected_connections_;
     DCHECK_GE(num_connected_connections_, 0);
     UpdateWakeLock();
+    UpdateStatsTimer();
     for (auto& observer : connections_observers_)
       observer.OnConnectionsCountChange(num_connected_connections_);
   }
@@ -874,6 +878,25 @@ device::mojom::WakeLock* WebRTCInternals::GetWakeLock() {
         wake_lock_.BindNewPipeAndPassReceiver());
   }
   return wake_lock_.get();
+}
+
+void WebRTCInternals::RequestStandardStats() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
+    host->GetStandardStats();
+  }
+}
+
+void WebRTCInternals::UpdateStatsTimer() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (num_connected_connections_ > 0 && !observers_.empty()) {
+    if (!stats_timer_.IsRunning()) {
+      stats_timer_.Start(FROM_HERE, base::Seconds(1), this,
+                         &WebRTCInternals::RequestStandardStats);
+    }
+  } else {
+    stats_timer_.Stop();
+  }
 }
 
 void WebRTCInternals::ProcessPendingUpdates() {

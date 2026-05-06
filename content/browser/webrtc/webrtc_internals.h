@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -172,6 +173,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
     kDataChannelRecordings,
   };
 
+  void UpdateStatsTimer();
+
   void SendUpdate(const std::string& event_name, base::Value event_data);
   void SendUpdate(const std::string& event_name, base::DictValue event_data);
 
@@ -219,6 +222,10 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // notifications.
   void ProcessPendingUpdates();
 
+  // Sends a request to the browser to get peer connection statistics from the
+  // standard getStats() API (promise-based).
+  void RequestStandardStats();
+
   // Returns an iterator for peer_connection_data_.GetList (an end() iterator
   // if not found).
   base::ListValue::iterator FindRecord(GlobalRenderFrameHostId frame_id,
@@ -227,6 +234,8 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   base::ObserverList<WebRTCInternalsUIObserver>::Unchecked observers_;
 
   base::ObserverList<WebRtcInternalsConnectionsObserver> connections_observers_;
+
+  base::RepeatingTimer stats_timer_;
 
   // |peer_connection_data_| is a list containing all the PeerConnection
   // updates. Stored as a Value rather than as a List::Value so it can be passed

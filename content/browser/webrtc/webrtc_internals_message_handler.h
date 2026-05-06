@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBRTC_WEBRTC_INTERNALS_MESSAGE_HANDLER_H_
 #define CONTENT_BROWSER_WEBRTC_WEBRTC_INTERNALS_MESSAGE_HANDLER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
@@ -45,7 +46,6 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   RenderFrameHost* GetWebRTCInternalsHost();
 
   // Javascript message handler.
-  void OnGetStandardStats(const base::ListValue& list);
   void OnGetCurrentState(const base::ListValue& list);
   void OnSetAudioDebugRecordingsEnabled(bool enable,
                                         const base::ListValue& list);

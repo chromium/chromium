@@ -211,19 +211,6 @@ function initialize() {
         params.eventLogRecordingsToggleable);
   });
 
-  // Requests stats from all peer connections every second unless specified via
-  // ?statsInterval=(milliseconds >= 100ms)
-  let statsInterval = 1000;
-  if (searchParameters.has('statsInterval')) {
-    statsInterval = Math.max(
-        parseInt(searchParameters.get('statsInterval'), 10),
-        100);
-    if (!isFinite(statsInterval)) {
-      statsInterval = 1000;
-    }
-  }
-  window.setInterval(requestStats, statsInterval);
-
   addRtcStatsEvent(
     'create',
     null,
@@ -246,16 +233,6 @@ function initialize() {
   );
 }
 document.addEventListener('DOMContentLoaded', initialize);
-
-/**
- * Sends a request to the browser to get peer connection statistics from the
- * standard getStats() API (promise-based).
- */
-function requestStats() {
-  if (Object.keys(peerConnectionDataStore).length > 0) {
-    chrome.send('getStandardStats');
-  }
-}
 
 /**
  * A helper function for getting a peer connection element id.
@@ -465,7 +442,6 @@ function updateAllPeerConnections(data) {
       addPeerConnectionUpdate(peerConnection, log[j]);
     }
   }
-  requestStats();
 }
 
 /**

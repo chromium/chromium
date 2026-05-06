@@ -35,11 +35,6 @@ WebRTCInternalsMessageHandler::~WebRTCInternalsMessageHandler() {
 
 void WebRTCInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getStandardStats",
-      base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetStandardStats,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "enableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
@@ -96,13 +91,6 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
   }
 
   return host;
-}
-
-void WebRTCInternalsMessageHandler::OnGetStandardStats(
-    const base::ListValue& /* unused_list */) {
-  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
-    host->GetStandardStats();
-  }
 }
 
 void WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled(
