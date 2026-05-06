@@ -37,6 +37,9 @@ class DrmInfoWrapper {
   // encrypted, GetDrmSampleInfo() will return null.
   static DrmInfoWrapper Create(const ::media::DecoderBuffer& buffer);
 
+  // Verifies that the subsamples in `buffer` match its data size.
+  static bool VerifySubsamplesMatchSize(const CastDecoderBuffer& buffer);
+
   // DrmInfoWrapper is movable but not copyable.
   DrmInfoWrapper(DrmInfoWrapper&& other);
   DrmInfoWrapper& operator=(DrmInfoWrapper&& other);

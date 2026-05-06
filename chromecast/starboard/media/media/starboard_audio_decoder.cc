@@ -169,6 +169,10 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(buffer);
 
+  if (!DrmInfoWrapper::VerifySubsamplesMatchSize(*buffer)) {
+    return BufferStatus::kBufferFailed;
+  }
+
   if (buffer->end_of_stream()) {
     return PushEndOfStream();
   }

@@ -185,6 +185,10 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer);
 
+  if (!DrmInfoWrapper::VerifySubsamplesMatchSize(*buffer)) {
+    return BufferStatus::kBufferFailed;
+  }
+
   // At this point the VideoPipelineImpl (the delegate) should be in the
   // kPlaying state, so it is safe to update the resolution.
   MediaPipelineBackend::Decoder::Delegate* const delegate = GetDelegate();

@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 
 namespace chromecast {
 namespace media {
@@ -35,6 +37,34 @@ DrmInfoWrapper::~DrmInfoWrapper() = default;
 
 StarboardDrmSampleInfo* DrmInfoWrapper::GetDrmSampleInfo() {
   return drm_sample_info_.get();
+}
+
+// static
+bool DrmInfoWrapper::VerifySubsamplesMatchSize(
+    const CastDecoderBuffer& buffer) {
+  if (buffer.end_of_stream()) {
+    return true;
+  }
+
+  const CastDecryptConfig* decrypt_config = buffer.decrypt_config();
+  if (!decrypt_config) {
+    return true;
+  }
+
+  base::CheckedNumeric<size_t> total_size = 0;
+  for (const SubsampleEntry& subsample : decrypt_config->subsamples()) {
+    total_size += subsample.clear_bytes;
+    total_size += subsample.cypher_bytes;
+  }
+
+  if (!total_size.IsValid() || total_size.ValueOrDie() != buffer.data_size()) {
+    LOG(ERROR) << "Subsample sizes do not equal input size. Total size: "
+               << total_size.ValueOrDefault(0)
+               << ", expected size: " << buffer.data_size();
+    return false;
+  }
+
+  return true;
 }
 
 DrmInfoWrapper DrmInfoWrapper::Create(const CastDecoderBuffer& buffer) {
@@ -97,8 +127,10 @@ DrmInfoWrapper DrmInfoWrapper::Create(const CastDecoderBuffer& buffer) {
   subsample_mappings->reserve(decrypt_config->subsamples().size());
   for (const SubsampleEntry& subsample : decrypt_config->subsamples()) {
     StarboardDrmSubSampleMapping mapping;
-    mapping.clear_byte_count = subsample.clear_bytes;
-    mapping.encrypted_byte_count = subsample.cypher_bytes;
+    mapping.clear_byte_count =
+        base::checked_cast<int32_t>(subsample.clear_bytes);
+    mapping.encrypted_byte_count =
+        base::checked_cast<int32_t>(subsample.cypher_bytes);
     subsample_mappings->push_back(std::move(mapping));
   }
 
@@ -185,8 +217,10 @@ DrmInfoWrapper DrmInfoWrapper::Create(const ::media::DecoderBuffer& buffer) {
   subsample_mappings->reserve(decrypt_config.subsamples().size());
   for (const ::media::SubsampleEntry& subsample : decrypt_config.subsamples()) {
     StarboardDrmSubSampleMapping mapping;
-    mapping.clear_byte_count = subsample.clear_bytes;
-    mapping.encrypted_byte_count = subsample.cypher_bytes;
+    mapping.clear_byte_count =
+        base::checked_cast<int32_t>(subsample.clear_bytes);
+    mapping.encrypted_byte_count =
+        base::checked_cast<int32_t>(subsample.cypher_bytes);
     subsample_mappings->push_back(std::move(mapping));
   }
 
