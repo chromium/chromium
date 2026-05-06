@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -224,6 +225,13 @@ AUHALStream::~AUHALStream() {
   CHECK(!audio_unit_);
 }
 
+void AUHALStream::SendLogMessage(const std::string& message) {
+  if (!log_callback_.is_null()) {
+    log_callback_.Run(
+        base::StringPrintf("AUHAL[%p]::%s", this, message.c_str()));
+  }
+}
+
 bool AUHALStream::Open() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!output_bus_);
@@ -327,6 +335,8 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
 
   Stop();
   OSSTATUS_DLOG(ERROR, result) << "AudioOutputUnitStart() failed.";
+  SendLogMessage(base::StrCat({"AudioOutputUnitStart() failed. Error: ",
+                               logging::DescriptionFromOSStatus(result)}));
   callback->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
@@ -348,8 +358,11 @@ void AUHALStream::Stop() {
 
   {
     base::AutoLock al(lock_);
-    if (result != noErr)
+    if (result != noErr) {
+      SendLogMessage(base::StrCat({"AudioOutputUnitStop() failed. Error: ",
+                                   logging::DescriptionFromOSStatus(result)}));
       source_->OnError(AudioSourceCallback::ErrorType::kUnknown);
+    }
     source_ = nullptr;
 
     if (last_sample_time_) {  // Report stats if the stream has been active.

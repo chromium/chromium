@@ -139,6 +139,9 @@ class AUHALStream : public AudioOutputStream {
   // glitches.
   void UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp);
 
+  // Sends a log message to the registered log callback.
+  void SendLogMessage(const std::string& message);
+
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerApple> manager_;
 
