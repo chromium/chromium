@@ -1323,6 +1323,9 @@ message Location {
   }
 }
 
+// An origin is a combination of a protocol (scheme), host, and port. See
+// https://web.dev/articles/same-site-same-origin.
+//
 // Next ID: 4
 message Origin {
   Protocol protocol = 1 [features = { field_presence: EXPLICIT }];
@@ -1333,6 +1336,10 @@ message Origin {
   int32 port = 3 [features = { field_presence: EXPLICIT }];
 }
 
+// A site is a protocol (scheme) and an eTLD+1. Note that computing an eTLD+1
+// relies on the Public Suffix List and is not necessarily the same as the host
+// in an origin. See https://web.dev/articles/same-site-same-origin.
+//
 // Next ID: 3
 message Site {
   Protocol protocol = 1 [features = { field_presence: EXPLICIT }];
