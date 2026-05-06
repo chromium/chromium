@@ -99,6 +99,7 @@ inline constexpr char kReceiverConnectionState[] = "receiverConnectionState";
 inline constexpr char kUrl[] = "url";
 inline constexpr char kTitle[] = "title";
 inline constexpr char kFavIcon[] = "faviconUrl";
+inline constexpr char kUrlType[] = "urlType";
 inline constexpr char kContentConfigs[] = "contentConfigs";
 inline constexpr char kActiveBundle[] = "activeBundle";
 inline constexpr char kLocked[] = "locked";

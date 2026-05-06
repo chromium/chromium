@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/json_proto_converters.h"
@@ -483,6 +484,9 @@ void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
       item.Set(kUrl, content.url());
       item.Set(kTitle, content.title());
       item.Set(kFavIcon, content.favicon_url());
+      if (content.url_type() != ::boca::URL_TYPE_UNSPECIFIED) {
+        item.Set(kUrlType, content.url_type());
+      }
       if (content.has_locked_navigation_options()) {
         base::DictValue navigation_type;
         navigation_type.Set(
