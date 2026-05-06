@@ -1297,8 +1297,13 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
 }
 
 void GlicInstanceImpl::BindTabWithoutShowing(tabs::TabInterface* tab,
+                                             GlicPinTrigger pin_trigger,
                                              bool pin_on_bind) {
-  BindTab(tab, GlicPinTrigger::kUnknown, pin_on_bind);
+  BindTab(tab, pin_trigger, pin_on_bind);
+}
+
+void GlicInstanceImpl::SuppressShowOnNextTabAddedToTask(bool suppress) {
+  suppress_show_on_tab_added_to_task_ = suppress;
 }
 
 void GlicInstanceImpl::MaybeInitializeHiddenClient(
@@ -1614,6 +1619,9 @@ void GlicInstanceImpl::OnTabAddedToTask(
       IsDetached()) {
     side_panel_options.pin_trigger = GlicPinTrigger::kActuation;
     ShowInactiveSidePanelEmbedderFor(side_panel_options);
+  } else if (suppress_show_on_tab_added_to_task_) {
+    BindTab(tab, GlicPinTrigger::kActuation, /*pin_on_bind=*/true);
+    suppress_show_on_tab_added_to_task_ = false;
   } else {
     Show(ShowOptions{side_panel_options});
   }

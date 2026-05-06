@@ -187,8 +187,12 @@ void GlicInvokeHandler::Invoke() {
     show_options.fre_override = options_.fre_override;
   }
 
-  tasks.push_back(
-      std::make_unique<ShowInstanceTask>(&*instance_, show_options));
+  if (!auto_submit_passkey_.has_value() || auto_submit_options_.show_panel) {
+    tasks.push_back(
+        std::make_unique<ShowInstanceTask>(&*instance_, show_options));
+  } else {
+    tasks.push_back(std::make_unique<SetupHiddenPanelTask>(&*instance_, tab_));
+  }
   tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
       &*instance_, options_.invocation_source, options_.fre_override));
   tasks.push_back(
@@ -276,6 +280,7 @@ void GlicInvokeHandler::OnSuccess() {
 
 void GlicInvokeHandler::OnError(GlicInvokeError error) {
   timeout_timer_.Stop();
+  instance_->SuppressShowOnNextTabAddedToTask(false);
   if (main_task_) {
     main_task_->NotifySequenceCompleted(/*success=*/false);
   }

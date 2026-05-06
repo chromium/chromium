@@ -1041,7 +1041,8 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
       side_panel_options.prefer_peek = true;
       bound_instance->Show(ShowOptions{side_panel_options});
     } else {
-      bound_instance->BindTabWithoutShowing(tab, /*pin_on_bind=*/false);
+      bound_instance->BindTabWithoutShowing(tab, GlicPinTrigger::kUnknown,
+                                            /*pin_on_bind=*/false);
     }
   }
 

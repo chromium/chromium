@@ -1003,6 +1003,37 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   EXPECT_TRUE(instance->IsActuating());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
+                       OnTabAddedToTaskDoesNotShowPanelIfSuppressed) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  PreventDeletionOnClose(instance);
+  instance->Close(EmbedderKey(tab), CloseOptions());
+  ASSERT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
+
+  EXPECT_FALSE(instance->IsShowing());
+
+  instance->SuppressShowOnNextTabAddedToTask(true);
+
+  actor::TaskId task_id(123);
+  instance->OnTabAddedToTask(task_id, tab->GetHandle());
+
+  EXPECT_FALSE(instance->IsShowing());
+  EXPECT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
+
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  instance->OnTabAddedToTask(task_id, tab2->GetHandle());
+
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_OK(
+      WaitForSidePanelState(tab2, GlicSidePanelCoordinator::State::kShown));
+}
+
 class GlicInstanceCoordinatorHibernationTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:

@@ -133,7 +133,10 @@ class GlicInstanceImpl : public GlicInstance,
   void Hibernate();
   void Shutdown();
   void CloseInstanceAndShutdown();
-  void BindTabWithoutShowing(tabs::TabInterface* tab, bool pin_on_bind);
+  void BindTabWithoutShowing(tabs::TabInterface* tab,
+                             GlicPinTrigger pin_trigger,
+                             bool pin_on_bind);
+  void SuppressShowOnNextTabAddedToTask(bool suppress);
   // Initializes the instance for a hidden client. No-op if the instance already
   // has webui contents.
   void MaybeInitializeHiddenClient(mojom::InvocationSource invocation_source,
@@ -457,6 +460,9 @@ class GlicInstanceImpl : public GlicInstance,
   // True during the synchronous execution of `CreateTab()`, which is called
   // when the user clicks a link inside the Glic panel.
   bool is_creating_tab_from_glic_panel_link_click_ = false;
+
+  // True if we should suppress showing the panel when a tab is added to a task.
+  bool suppress_show_on_tab_added_to_task_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

@@ -238,6 +238,10 @@ struct GlicInvokeWithAutoSubmitOptions {
 
   // Callback for when the conversation ID is known.
   base::OnceCallback<void(std::string)> on_conversation_id_ready;
+
+  // Whether or not to show the panel on invocation. Doesn't prevent the panel
+  // from being shown later and has no impact if the panel is already showing.
+  bool show_panel = true;
 };
 
 }  // namespace glic

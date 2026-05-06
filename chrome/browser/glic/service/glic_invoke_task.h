@@ -102,6 +102,18 @@ class ShowInstanceTask : public GlicInvokeTask {
   ShowOptions options_;
 };
 
+// Task that sets up the instance for a hidden panel.
+class SetupHiddenPanelTask : public GlicInvokeTask {
+ public:
+  SetupHiddenPanelTask(GlicInstanceImpl* instance, tabs::TabInterface* tab);
+  ~SetupHiddenPanelTask() override;
+  void Start(base::OnceClosure done_callback) override;
+
+ private:
+  raw_ptr<GlicInstanceImpl> instance_;
+  raw_ptr<tabs::TabInterface> tab_;
+};
+
 class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
  public:
   MaybeInitializeHiddenClientTask(GlicInstanceImpl* instance,
