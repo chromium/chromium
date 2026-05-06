@@ -230,6 +230,18 @@ void ContextMenuNativeDelegateImpl::SetPictureInPicture(
           blink::mojom::MediaPlayerActionType::kPictureInPicture, enter_pip));
 }
 
+void ContextMenuNativeDelegateImpl::CopyVideoFrame(
+    JNIEnv* env,
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host) {
+    return;
+  }
+  render_frame_host->ExecuteMediaPlayerActionAtLocation(
+      gfx::Point(context_menu_params_->x, context_menu_params_->y),
+      blink::mojom::MediaPlayerAction(
+          blink::mojom::MediaPlayerActionType::kCopyVideoFrame, false));
+}
+
 static int64_t JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     content::WebContents* web_contents,

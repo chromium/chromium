@@ -385,6 +385,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_TASKS = "ContextualTasks";
+    public static final String CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID = "ContextMenuCopyVideoFrame";
     public static final String CONTEXT_MENU_EMPTY_SPACE = "ContextMenuEmptySpace";
     public static final String CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID =
             "ContextMenuPictureInPictureAndroid";
@@ -904,6 +905,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sCompositorViewRemeasureFix =
             newCachedFlag(COMPOSITOR_VIEW_REMEASURE_FIX, true);
+    public static final CachedFlag sContextMenuCopyVideoFrame =
+            newCachedFlag(CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID, true);
     public static final CachedFlag sContextualTasks = newCachedFlag(CONTEXTUAL_TASKS, false);
     public static final CachedFlag sCpaTabGroupingButton =
             newCachedFlag(
@@ -1296,6 +1299,7 @@ public abstract class ChromeFeatureList {
                     sClearIntentWhenRecreated,
                     sCommandLineOnNonRooted,
                     sCompositorViewRemeasureFix,
+                    sContextMenuCopyVideoFrame,
                     sContextualTasks,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,

@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
-import org.chromium.chrome.browser.enterprise.util.DataProtectionBridgeJni;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -236,7 +235,7 @@ public class ContextMenuTest {
 
         setupLensChipDelegate();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
-        DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeMock);
+        DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
         when(mMenuModelBridge.populateModelList()).thenReturn(new MVCListAdapter.ModelList());
     }
 
@@ -1055,6 +1054,7 @@ public class ContextMenuTest {
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "videoDOMElement");
 
         Integer[] expectedItems = {R.id.contextmenu_save_video};
+        expectedItems = maybeAddCopyVideoFrameItem(expectedItems);
         expectedItems = maybeAddPictureInPictureItem(expectedItems);
         expectedItems = maybeAddInspectElementItem(expectedItems);
         assertMenuItemsAreEqual(mMenuCoordinator, expectedItems);
@@ -1546,6 +1546,13 @@ public class ContextMenuTest {
                                         && DeviceInput.supportsPrecisionPointer()),
                 baseItems,
                 new Integer[] {R.id.contextmenu_inspect_element});
+    }
+
+    private Integer[] maybeAddCopyVideoFrameItem(Integer[] baseItems) {
+        return addItemsIf(
+                ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled(),
+                baseItems,
+                new Integer[] {R.id.contextmenu_copy_video_frame});
     }
 
     private void saveMediaFromContextMenu(

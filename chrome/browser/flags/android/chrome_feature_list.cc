@@ -483,6 +483,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &lens::features::kLensSendRawFileMediaTypes,
     &media::kAutoDocPiPPermissionPromptAndroid,
     &media::kAutoPictureInPictureAndroid,
+    &media::kContextMenuCopyVideoFrame,
     &media::kContextMenuPictureInPictureAndroid,
     &media::kFullscreenVideoPictureInPicture,
     &net::features::kVerifyQWACs,

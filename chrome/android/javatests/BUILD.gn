@@ -1758,6 +1758,8 @@ java_group("common_unit_test_deps_java") {
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",
+    "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/enterprise/util:test_support_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",

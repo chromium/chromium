@@ -27,7 +27,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
-import org.chromium.chrome.browser.enterprise.util.DataProtectionBridgeJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,7 +61,7 @@ public class WebSearchDelegateUnitTest {
 
     @Before
     public void setUp() {
-        DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeMock);
+        DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
         TemplateUrlServiceFactoryJni.setInstanceForTesting(mTemplateUrlServiceFactoryMock);
         TrackerFactory.setTrackerForTests(mTracker);
 

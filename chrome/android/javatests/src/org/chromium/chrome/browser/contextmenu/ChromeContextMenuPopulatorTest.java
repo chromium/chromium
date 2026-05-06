@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +57,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -74,6 +76,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -93,6 +96,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDel
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.listmenu.ListItemType;
@@ -147,8 +151,10 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private ContextMenuNativeDelegate mNativeDelegate;
     @Mock private WebContents mWebContents;
+    @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private Profile mProfile;
     @Mock private Profile.Natives mProfileNatives;
     @Mock private MenuModelBridge mMenuModelBridge;
@@ -159,6 +165,7 @@ public class ChromeContextMenuPopulatorTest {
 
     @Before
     public void setUp() {
+        FeatureList.setDisableNativeForTesting(true);
         ChromeContextMenuPopulator.setIsDefaultBrowserForTesting(false);
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
@@ -174,6 +181,7 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
         when(mItemDelegate.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mItemDelegate.canCurrentTabGoBack()).thenReturn(true);
         when(mItemDelegate.canCurrentTabGoForward()).thenReturn(true);
 
@@ -185,10 +193,20 @@ public class ChromeContextMenuPopulatorTest {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
         ForcedSigninStatusProvider.setInstanceForTesting(mMockForcedSigninStatusProvider);
+        DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
+        doAnswer(
+                        (invocation) -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(true);
+                            return null;
+                        })
+                .when(mDataProtectionBridgeMock)
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
     }
 
     @After
     public void tearDown() {
+        DataProtectionBridge.setInstanceForTesting(null);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -998,10 +1016,71 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
+    })
+    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    public void testVideoCopyFrame() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+        ListItem copyFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_copy_video_frame));
+        assertNotNull("Should have 'Copy video frame' menu item.", copyFrameItem);
+
+        assertTrue(
+                "Clicking on copy video frame should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_copy_video_frame));
+        verify(mNativeDelegate).copyVideoFrame();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
+    })
+    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    public void testVideoCopyFrame_notAllowedByPolicy() {
+        doAnswer(
+                        (invocation) -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(false);
+                            return null;
+                        })
+                .when(mDataProtectionBridgeMock)
+                .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
+
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+
+        assertTrue(
+                "Clicking on copy video frame should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_copy_video_frame));
+        verify(mNativeDelegate, never()).copyVideoFrame();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     @DisableFeatures({
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
     })
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     @UseMethodParameter(ContextMenuPopulatorTestParams.class)
     public void testVideoLink(boolean isForcedSigninShowing) {
         setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
@@ -1066,7 +1145,7 @@ public class ChromeContextMenuPopulatorTest {
                         expected2Tab1,
                         R.id.contextmenu_open_in_new_window,
                         3);
-        int[] expected2Tab2 = {R.id.contextmenu_save_video};
+        int[] expected2Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
         checkMenuOptions(expected2Tab1, expected2Tab2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
@@ -1089,7 +1168,11 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
-        int[] expected4Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_open_in_chrome};
+        int[] expected4Tab2 = {
+            R.id.contextmenu_save_video,
+            R.id.contextmenu_copy_video_frame,
+            R.id.contextmenu_open_in_chrome
+        };
         checkMenuOptions(expected4Tab1, expected4Tab2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
@@ -1121,7 +1204,7 @@ public class ChromeContextMenuPopulatorTest {
                         expected6Tab1,
                         R.id.contextmenu_open_in_new_window,
                         3);
-        int[] expected6Tab2 = {R.id.contextmenu_save_video};
+        int[] expected6Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
         int[] expected6Tab3 = {R.id.contextmenu_inspect_element};
         checkMenuOptions(expected6Tab1, expected6Tab2, expected6Tab3);
 
@@ -1132,7 +1215,7 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
-        int[] expected7Tab2 = {R.id.contextmenu_save_video};
+        int[] expected7Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
         checkMenuOptions(expected7Tab1, expected7Tab2);
     }
 
@@ -1143,6 +1226,7 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
     })
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     public void testVideoLinkWithDownloadBlockedByPolicy() {
         setAllMandatoryFlowsComplete();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
@@ -1188,7 +1272,7 @@ public class ChromeContextMenuPopulatorTest {
                         expected2Tab1,
                         R.id.contextmenu_open_in_new_window,
                         3);
-        int[] expected2Tab2 = {R.id.contextmenu_save_video};
+        int[] expected2Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
         checkMenuOptions(
                 Arrays.asList(R.id.contextmenu_save_link_as, R.id.contextmenu_save_video),
                 expected2Tab1,
@@ -1217,7 +1301,11 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
-        int[] expected4Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_open_in_chrome};
+        int[] expected4Tab2 = {
+            R.id.contextmenu_save_video,
+            R.id.contextmenu_copy_video_frame,
+            R.id.contextmenu_open_in_chrome
+        };
         checkMenuOptions(
                 Arrays.asList(R.id.contextmenu_save_link_as, R.id.contextmenu_save_video),
                 expected4Tab1,
@@ -1243,7 +1331,7 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
-        int[] expected7Tab2 = {R.id.contextmenu_save_video};
+        int[] expected7Tab2 = {R.id.contextmenu_save_video, R.id.contextmenu_copy_video_frame};
         checkMenuOptions(
                 Arrays.asList(R.id.contextmenu_save_link_as, R.id.contextmenu_save_video),
                 expected7Tab1,
@@ -1254,6 +1342,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     public void testVideoPictureInPicture_Enter() {
         setAllMandatoryFlowsComplete();
         final String enterPip =
@@ -1286,6 +1375,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     public void testVideoPictureInPicture_Exit() {
         setAllMandatoryFlowsComplete();
         final String enterPip =

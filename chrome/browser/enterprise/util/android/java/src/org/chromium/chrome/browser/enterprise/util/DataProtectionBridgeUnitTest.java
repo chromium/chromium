@@ -37,7 +37,7 @@ public class DataProtectionBridgeUnitTest {
 
     @Before
     public void setUp() {
-        DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeJniMock);
+        DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeJniMock);
     }
 
     @Test

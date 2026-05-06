@@ -489,11 +489,7 @@ BASE_FEATURE(kContextMenu2026, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 // Enables the "Save Video Frame As" context menu item.

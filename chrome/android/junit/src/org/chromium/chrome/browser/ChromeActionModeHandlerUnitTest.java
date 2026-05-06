@@ -41,7 +41,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
-import org.chromium.chrome.browser.enterprise.util.DataProtectionBridgeJni;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -102,7 +101,7 @@ public class ChromeActionModeHandlerUnitTest {
 
     @Before
     public void setUp() {
-        DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeJniMock);
+        DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeJniMock);
         Mockito.when(mDataProtectionBridgeJniMock.isSearchWithAllowed(any())).thenReturn(true);
 
         mActionModeCallback =
@@ -117,7 +116,7 @@ public class ChromeActionModeHandlerUnitTest {
 
     @After
     public void tearDown() {
-        DataProtectionBridgeJni.setInstanceForTesting(null);
+        DataProtectionBridge.setInstanceForTesting(null);
         FirstRunStatus.setFirstRunFlowComplete(false);
     }
 

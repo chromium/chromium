@@ -246,6 +246,7 @@ public class ContextMenuMediatorTest {
         // Video items
         ModelList groupOne = new ModelList();
         groupOne.add(createListItem(ChromeContextMenuItem.Item.SAVE_VIDEO));
+        groupOne.add(createListItem(ChromeContextMenuItem.Item.COPY_VIDEO_FRAME));
         groupOne.add(
                 createListItem(
                         ChromeContextMenuItem.Item.PICTURE_IN_PICTURE, "Picture in Picture"));
@@ -256,6 +257,7 @@ public class ContextMenuMediatorTest {
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.MENU_ITEM));
         assertThat(itemList.get(3).type, equalTo(ListItemType.MENU_ITEM));
+        assertThat(itemList.get(4).type, equalTo(ListItemType.MENU_ITEM));
     }
 
     @Test

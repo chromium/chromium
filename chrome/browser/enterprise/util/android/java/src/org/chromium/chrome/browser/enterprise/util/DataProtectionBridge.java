@@ -22,6 +22,8 @@ import org.chromium.content_public.browser.WebContents;
 /** Provides access to the enterprise data protection utility methods. */
 @NullMarked
 public class DataProtectionBridge {
+    private static DataProtectionBridge.@Nullable Natives sNativesForTesting;
+
     /**
      * Runs the provided callback after verifying that copying the specified text is allowed by the
      * current data protection policies. The callback boolean input will be true if the copy action
@@ -41,8 +43,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
+        getJni().verifyCopyTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
     /**
@@ -63,8 +64,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyShareTextIsAllowedByPolicy(text, renderFrameHost, callback);
+        getJni().verifyShareTextIsAllowedByPolicy(text, renderFrameHost, callback);
     }
 
     /**
@@ -83,8 +83,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
+        getJni().verifyCopyUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
     /**
@@ -105,8 +104,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyShareUrlIsAllowedByPolicy(url, renderFrameHost, callback);
+        getJni().verifyShareUrlIsAllowedByPolicy(url, renderFrameHost, callback);
     }
 
     /**
@@ -125,8 +123,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+        getJni().verifyCopyImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
     /**
@@ -147,8 +144,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyShareImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+        getJni().verifyShareImageIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
     /**
@@ -171,8 +167,7 @@ public class DataProtectionBridge {
             callback.onResult(true);
             return;
         }
-        DataProtectionBridgeJni.get()
-                .verifyGenericCopyImageActionIsAllowedByPolicy(imageUri, renderFrameHost, callback);
+        getJni().verifyGenericCopyImageActionIsAllowedByPolicy(imageUri, renderFrameHost, callback);
     }
 
     /**
@@ -184,7 +179,7 @@ public class DataProtectionBridge {
         if (!ChromeFeatureList.isEnabled(DATA_CONTROLS_SEARCH_WITH)) {
             return true;
         }
-        return DataProtectionBridgeJni.get().isSearchWithAllowed(webContents);
+        return getJni().isSearchWithAllowed(webContents);
     }
 
     /**
@@ -198,7 +193,18 @@ public class DataProtectionBridge {
             callback.run();
             return;
         }
-        DataProtectionBridgeJni.get().shouldAllowSearchWith(textLength, webContents, callback);
+        getJni().shouldAllowSearchWith(textLength, webContents, callback);
+    }
+
+    public static void setInstanceForTesting(DataProtectionBridge.Natives instance) {
+        sNativesForTesting = instance;
+    }
+
+    private static DataProtectionBridge.Natives getJni() {
+        if (sNativesForTesting != null) {
+            return sNativesForTesting;
+        }
+        return DataProtectionBridgeJni.get();
     }
 
     @NativeMethods

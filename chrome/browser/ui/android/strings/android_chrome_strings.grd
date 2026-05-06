@@ -2939,6 +2939,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
         Download video
       </message>
+      <message name="IDS_CONTEXTMENU_COPY_VIDEO_FRAME" desc="The context menu item to copy the current video frame as an image. [CHAR_LIMIT=30]">
+        Copy video frame
+      </message>
       <message name="IDS_CONTEXTMENU_PICTURE_IN_PICTURE" desc="The context menu item to enter picture-in-picture mode for a video. [CHAR_LIMIT=30]">
         Picture in Picture
       </message>

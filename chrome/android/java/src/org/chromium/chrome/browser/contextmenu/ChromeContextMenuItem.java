@@ -78,6 +78,7 @@ class ChromeContextMenuItem {
         Item.PRINT_PAGE,
         Item.VIEW_PAGE_SOURCE,
         Item.INSPECT_ELEMENT,
+        Item.COPY_VIDEO_FRAME
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
@@ -135,8 +136,9 @@ class ChromeContextMenuItem {
         // Developer Group
         int VIEW_PAGE_SOURCE = 41;
         int INSPECT_ELEMENT = 42;
+        int COPY_VIDEO_FRAME = 43;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 43;
+        int NUM_ENTRIES = 44;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -184,6 +186,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_print_page, // Item.PRINT_PAGE
         R.id.contextmenu_view_page_source, // Item.VIEW_PAGE_SOURCE
         R.id.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
+        R.id.contextmenu_copy_video_frame, // Item.COPY_VIDEO_FRAME
     };
 
     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
@@ -231,6 +234,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_print_page, // Item.PRINT_PAGE
         R.string.contextmenu_view_page_source, // Item.VIEW_PAGE_SOURCE
         R.string.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
+        R.string.contextmenu_copy_video_frame, // Item.COPY_VIDEO_FRAME
     };
 
     /**

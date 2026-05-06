@@ -245,6 +245,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.EXIT_PICTURE_IN_PICTURE,
             Action.OPEN_IN_INCOGNITO_WINDOW,
             Action.VIEW_PAGE_SOURCE,
+            Action.COPY_VIDEO_FRAME,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -301,7 +302,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int EXIT_PICTURE_IN_PICTURE = 50;
             int OPEN_IN_INCOGNITO_WINDOW = 51;
             int VIEW_PAGE_SOURCE = 52;
-            int NUM_ENTRIES = 53;
+            int COPY_VIDEO_FRAME = 53;
+            int NUM_ENTRIES = 54;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -693,9 +695,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 /* showInProductHelp= */ false,
                                 !mIsDownloadRestrictedByPolicy));
             }
-            if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
-                    && mParams.canPictureInPicture()) {
+            if (ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled()) {
+                videoGroup.add(
+                        createListItem(
+                                Item.COPY_VIDEO_FRAME,
+                                /* showInProductHelp= */ false,
+                                /* enabled= */ true));
+            }
+
+            if (mParams.canPictureInPicture()
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)) {
                 int titleResId =
                         mParams.isPictureInPicture()
                                 ? R.string.contextmenu_exit_picture_in_picture
@@ -883,6 +893,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         if (itemId == R.id.contextmenu_copy_image) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_IMAGE);
             copyImageToClipboard();
+        } else if (itemId == R.id.contextmenu_copy_video_frame) {
+            recordContextMenuSelection(ContextMenuUma.Action.COPY_VIDEO_FRAME);
+            copyVideoFrameToClipboard();
         } else if (itemId == R.id.contextmenu_copy_link_address) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_LINK_ADDRESS);
             copyLinkUrlIfAllowedByPolicy(
@@ -1227,6 +1240,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 (isAllowed) -> {
                                     if (isAllowed) mItemDelegate.onSaveImageToClipboard(uri);
                                 }));
+    }
+
+    /** Copy the video frame, that triggered the current context menu, to system clipboard. */
+    private void copyVideoFrameToClipboard() {
+        verifyGenericCopyImageActionIsAllowedByPolicy(
+                mParams.getSrcUrl().getSpec(), () -> mNativeDelegate.copyVideoFrame());
     }
 
     private void verifyGenericCopyImageActionIsAllowedByPolicy(
