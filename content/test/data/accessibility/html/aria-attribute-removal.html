@@ -1,0 +1,18 @@
+<!--
+@BLINK-ALLOW:expanded*
+@BLINK-ALLOW:hierarchicalLevel*
+@WAIT-FOR:done
+-->
+<html>
+<body>
+  <div id="btn" aria-expanded="true">Button</div>
+  <h2 id="heading" aria-level="3">Heading</h2>
+
+  <script>
+    window.setTimeout(() => {
+      document.getElementById('heading').setAttribute('aria-level', '1');
+      document.getElementById('btn').setAttribute('aria-label', 'done');
+    }, 0);
+  </script>
+</body>
+</html>

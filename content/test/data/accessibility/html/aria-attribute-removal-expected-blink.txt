@@ -1,0 +1,9 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer name='done'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++heading name='Heading' hierarchicalLevel=1
+++++++++staticText name='Heading'
+++++++++++inlineTextBox name='Heading'

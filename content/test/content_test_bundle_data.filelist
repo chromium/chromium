@@ -3416,6 +3416,8 @@ data/accessibility/html/area-serialization-crash-expected-blink.txt
 data/accessibility/html/area-with-aria-owns-expected-blink.txt
 data/accessibility/html/area-with-aria-owns.html
 data/accessibility/html/area.html
+data/accessibility/html/aria-attribute-removal-expected-blink.txt
+data/accessibility/html/aria-attribute-removal.html
 data/accessibility/html/article-expected-android-assist-data.txt
 data/accessibility/html/article-expected-android-external.txt
 data/accessibility/html/article-expected-android.txt
