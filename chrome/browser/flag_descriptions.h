@@ -3738,6 +3738,12 @@ inline constexpr char kPasswordUploadUiUpdateDescription[] =
     "Adds new entry points for uploading passwords to account storage and "
     "updates existing ones.";
 
+inline constexpr char kPaymentRequestRejectTooSmallWindowsName[] =
+    "Reject Payment Request in small windows";
+inline constexpr char kPaymentRequestRejectTooSmallWindowsDescription[] =
+    "Reject Payment Request and Payment Handler dialogs if the browser window "
+    "is too small to contain them.";
+
 inline constexpr char kDeduplicateNativePaymentAppsName[] =
     "Enables de-duplication of Payment Request native payment apps";
 inline constexpr char kDeduplicateNativePaymentAppsDescription[] =

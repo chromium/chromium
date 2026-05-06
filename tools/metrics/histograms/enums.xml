@@ -9985,6 +9985,7 @@ from previous Chrome versions.
   <int value="-1355349150" label="AppLaunchShortcut:disabled"/>
   <int value="-1355267677"
       label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
+  <int value="-1355057576" label="PaymentRequestRejectTooSmallWindows:enabled"/>
   <int value="-1354983077" label="CameraAppAutoQRDetection:disabled"/>
   <int value="-1354870958"
       label="AutofillEnableCvcStorageAndFillingEnhancement:disabled"/>
@@ -11480,6 +11481,7 @@ from previous Chrome versions.
   <int value="-859751539" label="LensSendUrlsInComposeboxes:enabled"/>
   <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-859193162" label="KeepSecondaryZeroSuggest:disabled"/>
+  <int value="-859000154" label="PaymentRequestRejectTooSmallWindows:disabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
   <int value="-857507314" label="ArcExternalStorageAccess:disabled"/>
   <int value="-856919680" label="RemotePlaybackBackend:disabled"/>
