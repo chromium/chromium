@@ -116,7 +116,7 @@ Hint: To avoid this in subsequent runs:
  * Add --target=foo_tests (to pick by name)
 """
   if orig_paths and not all(os.path.sep in p for p in orig_paths):
-    if utils.IsGeminiCli():
+    if utils.IsLlm():
       # Get agents to use full paths to resolve multiple targets.
       fail_fast = True
       hint = 'Try again with full paths (not just base names).\n'

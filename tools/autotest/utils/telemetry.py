@@ -30,6 +30,8 @@ def RecordMainAttributes(targets: list[str], gtest_filter: str,
 
   Attributes recorded:
       * main.is_gemini_cli: Indicates if autotest is running via the Gemini CLI.
+      * main.is_antigravity: Indicates if autotest is running via an
+        Antigravity/Jetski Agent
       * main.targets: The list of targets selected for build/run.
       * main.filter: The filter string generated from user input.
       * gn.target_cache_used: Whether the target search utilized the cache.
@@ -40,8 +42,10 @@ def RecordMainAttributes(targets: list[str], gtest_filter: str,
     return
 
   is_gemini_cli = utils.IsGeminiCli()
+  is_antigravity = utils.IsAntigravity()
 
   span.set_attribute('main.is_gemini_cli', is_gemini_cli)
+  span.set_attribute('main.is_antigravity', is_antigravity)
   span.set_attribute('main.targets', str(targets))
   span.set_attribute('main.filter', gtest_filter)
   span.set_attribute('gn.target_used_cache', used_cache)

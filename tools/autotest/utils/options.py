@@ -8,6 +8,7 @@ import os
 
 from dataclasses import dataclass, fields
 
+import utils
 
 @dataclass
 class AutotestConfig:
@@ -95,7 +96,7 @@ def autotest_options(f):
 
   @functools.wraps(f)
   def wrapper(*args, **kwargs):
-    if kwargs.get('gemini') and os.environ.get('GEMINI_CLI') == '1':
+    if kwargs.get('gemini') and utils.IsLlm():
       raise click.UsageError(
           'Cannot run autotest with --gemini from within an active '
           'Gemini CLI session to prevent nested agent invocations.')

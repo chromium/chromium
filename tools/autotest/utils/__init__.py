@@ -7,3 +7,11 @@ import os
 
 def IsGeminiCli():
   return os.getenv("GEMINI_CLI") not in (None, '', '0')
+
+
+def IsAntigravity():
+  return os.getenv("ANTIGRAVITY_AGENT") not in (None, '', '0')
+
+
+def IsLlm():
+  return IsGeminiCli() or IsAntigravity()
