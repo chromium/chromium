@@ -8790,7 +8790,7 @@
   {
     "name": "split-view-link-open",
     "owners": [ "helmut@januschka.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "startup-launch",
