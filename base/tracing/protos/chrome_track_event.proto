@@ -2296,6 +2296,7 @@ message WebViewStartup {
     GET_DEFAULT_COOKIE_MANAGER = 107;
     GET_PROFILE_STORE = 108;
     WEBVIEW_INSTANCE_GET_SETTINGS = 109;
+    WEBVIEW_INSTANCE_GET_AW_CONTENTS = 110;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }

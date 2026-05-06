@@ -372,6 +372,7 @@ public class WebViewChromiumAwInit {
         CallSite.GET_DEFAULT_COOKIE_MANAGER,
         CallSite.GET_PROFILE_STORE,
         CallSite.WEBVIEW_INSTANCE_GET_SETTINGS,
+        CallSite.WEBVIEW_INSTANCE_GET_AW_CONTENTS,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -485,8 +486,9 @@ public class WebViewChromiumAwInit {
         int GET_DEFAULT_COOKIE_MANAGER = 107;
         int GET_PROFILE_STORE = 108;
         int WEBVIEW_INSTANCE_GET_SETTINGS = 109;
+        int WEBVIEW_INSTANCE_GET_AW_CONTENTS = 110;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 110;
+        int COUNT = 111;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)

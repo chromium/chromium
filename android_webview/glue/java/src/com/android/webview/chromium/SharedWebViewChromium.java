@@ -286,6 +286,7 @@ public class SharedWebViewChromium {
     }
 
     public AwContents getAwContents() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_AW_CONTENTS);
         return mAwContents;
     }
 
