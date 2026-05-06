@@ -222,6 +222,37 @@ std::optional<float> GetPageObjectMarkFloatParam(FPDF_PAGEOBJECTMARK mark,
   return value;
 }
 
+std::optional<std::u16string> GetPageObjectMarkStringParam(
+    FPDF_PAGEOBJECTMARK mark,
+    const std::string& key) {
+  // FPDFPageObjMark_GetParamStringValue() naturally handles null `mark` inputs,
+  // so no explicit check.
+  std::u16string value;
+  unsigned long buflen_bytes = 0;
+  if (!FPDFPageObjMark_GetParamStringValue(mark, key.c_str(), nullptr, 0,
+                                           &buflen_bytes) ||
+      buflen_bytes == 0) {
+    return std::nullopt;
+  }
+
+  // PDFium should never return an odd number of bytes for 16-bit chars.
+  static_assert(sizeof(FPDF_WCHAR) == sizeof(char16_t));
+  CHECK_EQ(buflen_bytes % 2, 0u);
+
+  const size_t expected_size = base::checked_cast<size_t>(buflen_bytes / 2);
+  PDFiumAPIStringBufferAdapter adapter(&value, expected_size,
+                                       /*check_expected_size=*/true);
+  unsigned long actual_buflen_bytes = 0;
+  bool result = FPDFPageObjMark_GetParamStringValue(
+      mark, key.c_str(), static_cast<FPDF_WCHAR*>(adapter.GetData()),
+      buflen_bytes, &actual_buflen_bytes);
+  CHECK(result);
+
+  CHECK_EQ(actual_buflen_bytes, buflen_bytes);
+  adapter.Close(expected_size);
+  return value;
+}
+
 std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index) {
   double left;
   double right;
