@@ -75,8 +75,7 @@ class VideoRateControlWrapper {
   };
 
   virtual ~VideoRateControlWrapper() = default;
-  [[nodiscard]] virtual bool UpdateRateControl(
-      const RateControlConfig& config) = 0;
+  virtual void UpdateRateControl(const RateControlConfig& config) = 0;
   // ComputeQP() returns qp table index and the range is up to the codec.
   virtual int ComputeQP(const FrameParams& frame_params) = 0;
   // GetLoopfilterLevel() is only available for VP9, others return -1.
@@ -107,10 +106,9 @@ class VideoRateControlWrapperInternal : public VideoRateControlWrapper {
   explicit VideoRateControlWrapperInternal(std::unique_ptr<RateCtrlType> impl)
       : impl_(std::move(impl)) {}
   ~VideoRateControlWrapperInternal() override = default;
-  [[nodiscard]] bool UpdateRateControl(
-      const RateControlConfig& config) override {
+  void UpdateRateControl(const RateControlConfig& config) override {
     DCHECK(impl_);
-    return impl_->UpdateRateControl(ConvertControlConfig(config));
+    impl_->UpdateRateControl(ConvertControlConfig(config));
   }
   int ComputeQP(const FrameParams& frame_params) override {
     DCHECK(impl_);

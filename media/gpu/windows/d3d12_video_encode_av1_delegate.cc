@@ -835,12 +835,9 @@ bool D3D12VideoEncodeAV1Delegate::UpdateRateControl(
   }
 
   if (bitrate_allocation != bitrate_allocation_ || framerate != framerate_) {
-    if (!software_brc_->UpdateRateControl(ConvertToRateControlConfig(
-            is_screen_, bitrate_allocation, input_size_, framerate,
-            GetNumTemporalLayers()))) {
-      LOG(ERROR) << "Failed to update rate control parameters";
-      return false;
-    }
+    software_brc_->UpdateRateControl(
+        ConvertToRateControlConfig(is_screen_, bitrate_allocation, input_size_,
+                                   framerate, GetNumTemporalLayers()));
 
     bitrate_allocation_ = bitrate_allocation;
     framerate_ = framerate;

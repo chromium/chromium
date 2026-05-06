@@ -118,7 +118,7 @@ std::unique_ptr<H264RateCtrlRTC> H264RateCtrlRTC::Create(
   return rate_ctrl;
 }
 
-bool H264RateCtrlRTC::UpdateRateControl(
+void H264RateCtrlRTC::UpdateRateControl(
     const H264RateControlConfigRTC& config) {
   CheckRateControlConfig(config);
 
@@ -128,7 +128,6 @@ bool H264RateCtrlRTC::UpdateRateControl(
   // New settings are applied on ComputeQP() method call.
   new_config_ = config;
   config_changed_ = true;
-  return true;
 }
 
 H264RateCtrlRTC::FrameDropDecision H264RateCtrlRTC::ComputeQP(
