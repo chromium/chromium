@@ -142,6 +142,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
+      const base::UnguessableToken& invocation_id,
       CrossDocumentScriptToolResultCallback result_callback);
 
   bool CancelTool(const base::UnguessableToken& invocation_id);

@@ -358,6 +358,7 @@ void ScriptToolHost::DidFinishNavigation(
   new_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &new_document_render_frame_);
   new_document_render_frame_->GetCrossDocumentScriptToolResult(
+      execution_id_,
       base::BindOnce(&ScriptToolHost::OnResultReceivedFromNewDocument,
                      weak_ptr_factory_.GetWeakPtr()));
 

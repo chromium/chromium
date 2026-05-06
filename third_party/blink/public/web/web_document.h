@@ -233,6 +233,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(WebString)>;
   void GetCrossDocumentScriptToolResult(
+      const base::UnguessableToken& invocation_id,
       CrossDocumentScriptToolResultCallback result_callback);
 
   // Cancels a script tool with the given execution ID.

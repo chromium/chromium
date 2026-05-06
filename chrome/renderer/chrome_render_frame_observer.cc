@@ -669,8 +669,10 @@ void ChromeRenderFrameObserver::StartActorJournal(
 }
 
 void ChromeRenderFrameObserver::GetCrossDocumentScriptToolResult(
+    const base::UnguessableToken& invocation_id,
     GetCrossDocumentScriptToolResultCallback callback) {
   render_frame()->GetWebFrame()->GetDocument().GetCrossDocumentScriptToolResult(
+      invocation_id,
       base::BindOnce(
           [](GetCrossDocumentScriptToolResultCallback cb,
              blink::WebString result) { std::move(cb).Run(result.Utf8()); },

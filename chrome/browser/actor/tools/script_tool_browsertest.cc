@@ -500,8 +500,20 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   const std::string* invocation_id = invoked_params->FindString("invocationId");
   ASSERT_TRUE(invocation_id);
 
-  // Cross document tools do not send a WebMCP.toolResponded event.
-  EXPECT_EQ(client.responded_events().size(), 0u);
+  // Wait for the toolResponded event instead of asserting it doesn't exist.
+  client.WaitForRespondedEvent();
+  ASSERT_EQ(client.responded_events().size(), 1u);
+  const base::DictValue& responded_event =
+      client.responded_events()[0].GetDict();
+  const base::DictValue* responded_params = responded_event.FindDict("params");
+  ASSERT_TRUE(responded_params);
+  const std::string* responded_invocation_id =
+      responded_params->FindString("invocationId");
+  ASSERT_TRUE(responded_invocation_id);
+  EXPECT_EQ(*responded_invocation_id, *invocation_id);
+  const std::string* status = responded_params->FindString("status");
+  ASSERT_TRUE(status);
+  EXPECT_EQ(*status, "Completed");
 
   client.Detach();
 }

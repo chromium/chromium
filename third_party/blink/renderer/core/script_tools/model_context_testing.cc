@@ -123,6 +123,7 @@ ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
   };
 
   model_context_->GetCrossDocumentScriptToolResult(
+      base::UnguessableToken::Create(),
       blink::BindOnce(callback, WrapPersistent(resolver)));
 
   return promise;

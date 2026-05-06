@@ -476,13 +476,24 @@ bool ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
 }
 
 void ModelContext::GetCrossDocumentScriptToolResult(
+    const base::UnguessableToken& invocation_id,
     CrossDocumentScriptToolResultCallback result_callback) {
   if (document_->HasFinishedParsing()) {
-    std::move(result_callback).Run(ComputeScriptToolResult(*document_));
+    String result = ComputeScriptToolResult(*document_);
+    probe::WebMCPToolResponded(document_, result, invocation_id);
+    std::move(result_callback).Run(result);
     return;
   }
 
-  cross_document_result_callbacks_.push_back(std::move(result_callback));
+  cross_document_result_callbacks_.push_back(blink::BindOnce(
+      [](CrossDocumentScriptToolResultCallback original_callback,
+         const base::UnguessableToken& invocation_id, Document* document,
+         String result) {
+        probe::WebMCPToolResponded(document, result, invocation_id);
+        std::move(original_callback).Run(result);
+      },
+      std::move(result_callback), invocation_id,
+      WrapPersistent(document_.Get())));
 }
 
 void ModelContext::DidFinishParsing() {

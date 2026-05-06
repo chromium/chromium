@@ -135,7 +135,8 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
               (override));
   MOCK_METHOD(void,
               GetCrossDocumentScriptToolResult,
-              (GetCrossDocumentScriptToolResultCallback),
+              (const base::UnguessableToken&,
+               GetCrossDocumentScriptToolResultCallback),
               (override));
 
  private:

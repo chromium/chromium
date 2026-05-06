@@ -184,6 +184,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       bool supports_paint_stability) override {}
   void CancelTool(const TaskId& task_id) override {}
   void GetCrossDocumentScriptToolResult(
+      const base::UnguessableToken& invocation_id,
       GetCrossDocumentScriptToolResultCallback callback) override {
     std::move(callback).Run("");
   }

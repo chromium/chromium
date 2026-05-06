@@ -141,6 +141,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
       override;
   void GetCrossDocumentScriptToolResult(
+      const base::UnguessableToken& invocation_id,
       GetCrossDocumentScriptToolResultCallback callback) override;
   // Multiple calls will clobber a PageStabilityMonitor previously created and
   // it's the caller's responsibility to ensure the monitor is unneeded before
