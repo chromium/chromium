@@ -680,9 +680,15 @@ void VerticalTabDragHandlerImpl::StartedDragging(
   if (gfx::NativeWindow source_window = GetWidget()->GetNativeWindow()) {
     const BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(source_window);
-    expand_on_hover_lock_ =
-        browser_view->tab_strip_view()->GetExpandOnHoverLock(
-            ExpandOnHoverLockType::kKeepExpanded);
+
+    const auto* state_controller =
+        tabs::VerticalTabStripStateController::From(browser_view->browser());
+
+    if (state_controller && state_controller->IsExpandOnHoverEnabled()) {
+      expand_on_hover_lock_ =
+          browser_view->tab_strip_view()->GetExpandOnHoverLock(
+              ExpandOnHoverLockType::kKeepExpanded);
+    }
   }
 
   CHECK(drag_controller_);
