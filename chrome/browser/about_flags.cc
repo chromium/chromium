@@ -11711,10 +11711,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-audio-device-listener",
-     flag_descriptions::kAndroidAudioDeviceListenerName,
-     flag_descriptions::kAndroidAudioDeviceListenerDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidAudioDeviceListener)},
     {"android-block-misspelling-suggestion-span-in-composition-mode",
      flag_descriptions::
          kAndroidBlockMisspellingSuggestionSpanInCompositionModeName,

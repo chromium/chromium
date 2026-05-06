@@ -224,11 +224,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-audio-device-listener",
-    "owners": [ "mjel@google.com", "lt-web-apps-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-block-grammar-suggestion-span-in-composition-mode",
     "owners": [
       "hdchuong@google.com",

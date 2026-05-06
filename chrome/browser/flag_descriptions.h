@@ -5122,12 +5122,6 @@ inline constexpr char kAndroidAnimatedProgressBarInBrowserDescription[] =
     "Hides the android progress bar and enables animating load progress "
     "updates for the composited progress bar in slim.";
 
-inline constexpr char kAndroidAudioDeviceListenerName[] =
-    "Android Audio Device Listener";
-inline constexpr char kAndroidAudioDeviceListenerDescription[] =
-    "Enables listening to audio device list change events, allowing web apps "
-    "to react to audio devices being connected and disconnected.";
-
 inline constexpr char kAndroidAutoMintedTWAName[] = "Auto-minted TWA";
 inline constexpr char kAndroidAutoMintedTWADescription[] =
     "Installs Web apps locally as an auto-minted Trusted Web Activity-based "

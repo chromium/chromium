@@ -1171,9 +1171,7 @@ AudioManagerAndroid::JniDelegate& AudioManagerAndroid::GetJniDelegate() {
 
     // These features are checked for on the native side in order to avoid build
     // dependency conflicts when using the Java `ChromeFeatureList`.
-    if (base::FeatureList::IsEnabled(features::kAndroidAudioDeviceListener)) {
-      jni_delegate_->InitDeviceListener();
-    }
+    jni_delegate_->InitDeviceListener();
     if (base::FeatureList::IsEnabled(
             features::kAAudioPerStreamDeviceSelection)) {
       // Listen for SCO state changes to forward them to
