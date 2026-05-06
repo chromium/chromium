@@ -177,8 +177,13 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
                                        element_str.c_str());
 
   if (notification_str ==
-      base::SysNSStringToUTF8(NSAccessibilitySelectedTextChangedNotification))
-    log += " " + SerializeTextSelectionChangedProperties(user_info);
+      base::SysNSStringToUTF8(NSAccessibilitySelectedTextChangedNotification)) {
+    const std::string serialized_info =
+        SerializeTextSelectionChangedProperties(user_info);
+    if (!serialized_info.empty()) {
+      log += " " + serialized_info;
+    }
+  }
 
   OnEvent(log);
 }
