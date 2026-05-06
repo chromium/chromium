@@ -23,6 +23,8 @@
 
 - (id)init {
   if ((self = [super init])) {
+    self.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     // TODO(crbug.com/40272999): `updateMinViewportInsets` is not called when
     // FullscreenSmoothScrollingDefault is disabled, so we populate them here.
     // We cannot load them from FullscreenController because that would make
