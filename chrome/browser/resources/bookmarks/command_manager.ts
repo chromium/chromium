@@ -743,22 +743,36 @@ export class BookmarksCommandManagerElement extends
     switch (this.menuSource_) {
       case MenuSource.ITEM:
       case MenuSource.TREE:
-        const commands = [
+        const defaultItemTreeCommands = [
           Command.EDIT,
           Command.SHOW_IN_FOLDER,
           Command.DELETE,
-          // <hr>
           Command.CUT,
           Command.COPY,
           Command.PASTE,
-          // <hr>
           Command.OPEN_INCOGNITO,
           Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
           Command.OPEN_SPLIT_VIEW,
         ];
-        return commands;
+
+        if (loadTimeData.getBoolean('menuSimplification')) {
+          return [
+            Command.EDIT,
+            Command.SHOW_IN_FOLDER,
+            Command.CUT,
+            Command.COPY,
+            Command.PASTE,
+            Command.DELETE,
+            Command.OPEN_NEW_TAB,
+            Command.OPEN_NEW_WINDOW,
+            Command.OPEN_SPLIT_VIEW,
+            Command.OPEN_NEW_GROUP,
+            Command.OPEN_INCOGNITO,
+          ];
+        }
+        return defaultItemTreeCommands;
       case MenuSource.TOOLBAR:
         return [
           Command.SORT,
@@ -785,6 +799,25 @@ export class BookmarksCommandManagerElement extends
   }
 
   protected showDividerAfter_(command: Command): boolean {
+    if ((this.menuSource_ === MenuSource.ITEM ||
+         this.menuSource_ === MenuSource.TREE) &&
+        loadTimeData.getBoolean('menuSimplification')) {
+      switch (command) {
+        case Command.EDIT:
+          return !this.isCommandVisible_(
+                     Command.SHOW_IN_FOLDER, this.menuIds_) &&
+              this.isCommandVisible_(Command.EDIT, this.menuIds_);
+        case Command.SHOW_IN_FOLDER:
+          return this.isCommandVisible_(Command.SHOW_IN_FOLDER, this.menuIds_);
+        case Command.PASTE:
+          return this.isCommandVisible_(Command.PASTE, this.menuIds_);
+        case Command.DELETE:
+          return this.isCommandVisible_(Command.DELETE, this.menuIds_);
+        default:
+          return false;
+      }
+    }
+
     switch (command) {
       case Command.SORT:
       case Command.ADD_FOLDER:

@@ -26,6 +26,7 @@ suite('<bookmarks-command-manager>', function() {
   setup(function() {
     loadTimeData.overrideValues({
       splitViewEnabled: true,
+      menuSimplification: false,
     });
 
     const bulkChildren = [];
@@ -108,6 +109,112 @@ suite('<bookmarks-command-manager>', function() {
 
     assertTrue(commandHidden[Command.DELETE] !== undefined);
     assertFalse(commandHidden[Command.DELETE]);
+  });
+
+  test('simplified context menu for items', async () => {
+    loadTimeData.overrideValues({
+      menuSimplification: true,
+    });
+
+    store.data.prefs.canEdit = true;
+    store.data.selection.items = new Set(['13']);
+    store.notifyObservers();
+    await microtasksFinished();
+
+    commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
+    await microtasksFinished();
+
+    const dropdownItems =
+        commandManager.shadowRoot.querySelectorAll<HTMLElement>(
+            '.dropdown-item');
+
+    const visibleCommands: Command[] = [];
+    dropdownItems.forEach(element => {
+      if (!element.hidden) {
+        visibleCommands.push(Number(element.dataset['command']) as Command);
+      }
+    });
+
+    const expectedCommands = [
+      Command.EDIT,
+      Command.CUT,
+      Command.COPY,
+      Command.PASTE,
+      Command.DELETE,
+      Command.OPEN_NEW_TAB,
+      Command.OPEN_NEW_WINDOW,
+      Command.OPEN_SPLIT_VIEW,
+      Command.OPEN_NEW_GROUP,
+      Command.OPEN_INCOGNITO,
+    ];
+
+    assertDeepEquals(expectedCommands, visibleCommands);
+
+    dropdownItems.forEach(item => {
+      const command = Number(item.dataset['command']) as Command;
+      const hr = item.nextElementSibling as HTMLElement;
+      assertEquals('HR', hr.tagName);
+
+      const shouldHaveDivider =
+          [Command.EDIT, Command.PASTE, Command.DELETE].includes(command);
+      assertEquals(
+          !shouldHaveDivider, hr.hidden,
+          `Divider after command ${command} should be ${
+              shouldHaveDivider ? 'visible' : 'hidden'}`);
+    });
+  });
+
+  test('simplified context menu for tree', async () => {
+    loadTimeData.overrideValues({
+      menuSimplification: true,
+    });
+
+    store.data.prefs.canEdit = true;
+    store.data.selection.items = new Set(['11']);
+    store.notifyObservers();
+    await microtasksFinished();
+
+    commandManager.openCommandMenuAtPosition(0, 0, MenuSource.TREE);
+    await microtasksFinished();
+
+    const dropdownItems =
+        commandManager.shadowRoot.querySelectorAll<HTMLElement>(
+            '.dropdown-item');
+
+    const visibleCommands: Command[] = [];
+    dropdownItems.forEach(element => {
+      if (!element.hidden) {
+        visibleCommands.push(Number(element.dataset['command']) as Command);
+      }
+    });
+
+    const expectedCommands = [
+      Command.EDIT,
+      Command.CUT,
+      Command.COPY,
+      Command.PASTE,
+      Command.DELETE,
+      Command.OPEN_NEW_TAB,
+      Command.OPEN_NEW_WINDOW,
+      Command.OPEN_SPLIT_VIEW,
+      Command.OPEN_NEW_GROUP,
+      Command.OPEN_INCOGNITO,
+    ];
+
+    assertDeepEquals(expectedCommands, visibleCommands);
+
+    dropdownItems.forEach(item => {
+      const command = Number(item.dataset['command']) as Command;
+      const hr = item.nextElementSibling as HTMLElement;
+      assertEquals('HR', hr.tagName);
+
+      const shouldHaveDivider =
+          [Command.EDIT, Command.PASTE, Command.DELETE].includes(command);
+      assertEquals(
+          !shouldHaveDivider, hr.hidden,
+          `Divider after command ${command} should be ${
+              shouldHaveDivider ? 'visible' : 'hidden'}`);
+    });
   });
 
   test('edit shortcut triggers when valid', async () => {

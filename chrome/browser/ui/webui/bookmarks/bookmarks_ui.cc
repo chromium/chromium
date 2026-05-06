@@ -145,6 +145,9 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
     AddLocalizedString(source, str.name, str.id);
   }
 
+  source->AddBoolean("menuSimplification", base::FeatureList::IsEnabled(
+                                               features::kMenuSimplification));
+
   source->AddResourcePath(
       "images/batch_upload_bookmarks_promo.svg",
       IDR_BOOKMARKS_IMAGES_BATCH_UPLOAD_BOOKMARKS_PROMO_SVG);

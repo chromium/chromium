@@ -6,10 +6,11 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js
 
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import type {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
+import {MenuItemId} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
+import type {MenuItem, PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -182,6 +183,88 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     assertTrue(
         menuItems[6]!.textContent.includes(
             loadTimeData.getString('tooltipDelete')));
+  });
+
+  test('ShowsSimplifiedMenuItemsForSingleSelectFolder', async () => {
+    loadTimeData.overrideValues({
+      menuSimplification: true,
+      bookmarksBarId: '1',
+      otherBookmarksId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      mobileBookmarksId: '2',
+    });
+
+    const selection = [service.findBookmarkWithId('5')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false, false, 1);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems =
+        powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
+    assertEquals(menuItems.length, 7);
+    assertTrue(
+        menuItems[0]!.textContent.includes(
+            loadTimeData.getString('menuOpenNewTab')));
+    assertTrue(
+        menuItems[1]!.textContent.includes(
+            loadTimeData.getString('menuOpenNewWindow')));
+    assertTrue(
+        menuItems[2]!.textContent.includes(
+            loadTimeData.getString('menuOpenNewTabGroup')));
+    assertTrue(
+        menuItems[3]!.textContent.includes(
+            loadTimeData.getString('menuOpenIncognito')));
+    assertTrue(
+        menuItems[4]!.textContent.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')));
+    assertTrue(
+        menuItems[5]!.textContent.includes(
+            loadTimeData.getString('menuRename')));
+    assertTrue(
+        menuItems[6]!.textContent.includes(
+            loadTimeData.getString('tooltipDelete')));
+  });
+
+  test('ShowsSimplifiedMenuItemsForFolderInBookmarksBar', async () => {
+    loadTimeData.overrideValues({
+      menuSimplification: true,
+      bookmarksBarId: '1',
+      otherBookmarksId: 'SIDE_PANEL_OTHER_BOOKMARKS_ID',
+      mobileBookmarksId: '2',
+    });
+
+    const folderInBar: BookmarksTreeNode = {
+      id: '10',
+      parentId: '1',
+      index: 0,
+      title: 'Folder in Bar',
+      url: null,
+      dateAdded: null,
+      dateLastUsed: null,
+      unmodifiable: false,
+      children: [],
+    };
+
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), [folderInBar], false, false, false, 0);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems = powerBookmarksContextMenu['getMenuItemsForBookmarks_']();
+
+    const itemIds = menuItems.map((item: MenuItem) => item.id);
+    const expectedIds = [
+      MenuItemId.OPEN_NEW_TAB,
+      MenuItemId.OPEN_NEW_WINDOW,
+      MenuItemId.OPEN_NEW_TAB_GROUP,
+      MenuItemId.OPEN_INCOGNITO,
+      MenuItemId.DIVIDER,
+      MenuItemId.RENAME,
+      MenuItemId.DIVIDER,
+      MenuItemId.DELETE,
+    ];
+
+    assertDeepEquals(expectedIds, itemIds);
   });
 
   test('ShowsMenuItemsForMultiSelect', async () => {

@@ -216,6 +216,75 @@ export class PowerBookmarksContextMenuElement extends CrLitElement {
       return menuItems;
     }
 
+    if (this.bookmarks_.length === 1 && !this.bookmarks_[0].url &&
+        loadTimeData.getBoolean('menuSimplification')) {
+      const folder = this.bookmarks_[0];
+      const bookmarkCount = folder.children ?
+          folder.children.filter(child => !!child.url).length :
+          0;
+
+      const revisedItems: MenuItem[] = [
+        {
+          id: MenuItemId.OPEN_NEW_TAB,
+          label: bookmarkCount < 2 ?
+              loadTimeData.getString('menuOpenNewTab') :
+              loadTimeData.getStringF('menuOpenNewTabWithCount', bookmarkCount),
+          disabled: bookmarkCount === 0,
+        },
+        {
+          id: MenuItemId.OPEN_NEW_WINDOW,
+          label: bookmarkCount < 2 ?
+              loadTimeData.getString('menuOpenNewWindow') :
+              loadTimeData.getStringF(
+                  'menuOpenNewWindowWithCount', bookmarkCount),
+          disabled: bookmarkCount === 0,
+        },
+        {
+          id: MenuItemId.OPEN_NEW_TAB_GROUP,
+          label: bookmarkCount < 2 ?
+              loadTimeData.getString('menuOpenNewTabGroup') :
+              loadTimeData.getStringF(
+                  'menuOpenNewTabGroupWithCount', bookmarkCount),
+          disabled: bookmarkCount === 0,
+        },
+      ];
+
+      if (!loadTimeData.getBoolean('incognitoMode') &&
+          loadTimeData.getBoolean('isIncognitoModeAvailable')) {
+        revisedItems.push({
+          id: MenuItemId.OPEN_INCOGNITO,
+          label: this.incognitoCount_ < 2 ?
+              loadTimeData.getString('menuOpenIncognito') :
+              loadTimeData.getStringF(
+                  'menuOpenIncognitoWithCount', this.incognitoCount_),
+          disabled: this.incognitoCount_ === 0,
+        });
+      }
+
+      revisedItems.push({id: MenuItemId.DIVIDER});
+
+      if (folder.parentId === loadTimeData.getString('otherBookmarksId') ||
+          folder.parentId === loadTimeData.getString('mobileBookmarksId')) {
+        revisedItems.push({
+          id: MenuItemId.ADD_TO_BOOKMARKS_BAR,
+          label: loadTimeData.getString('menuMoveToBookmarksBar'),
+        });
+        revisedItems.push({id: MenuItemId.DIVIDER});
+      }
+
+      revisedItems.push(
+          {
+            id: MenuItemId.RENAME,
+            label: loadTimeData.getString('menuRename'),
+          },
+          {id: MenuItemId.DIVIDER}, {
+            id: MenuItemId.DELETE,
+            label: loadTimeData.getString('tooltipDelete'),
+          });
+
+      return revisedItems;
+    }
+
     if (this.bookmarks_[0].url ||
         this.bookmarks_[0].parentId ===
             loadTimeData.getString('bookmarksBarId') ||
