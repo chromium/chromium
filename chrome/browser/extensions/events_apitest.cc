@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
 // Tests that events broadcast right after a profile has started to be destroyed
 // do not cause a crash. Regression test for crbug.com/40847328.
 // TODO(crbug.com/505759503): Enable the test.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DispatchEventDuringShutdown DISABLED_DispatchEventDuringShutdown
 #else
 #define MAYBE_DispatchEventDuringShutdown DispatchEventDuringShutdown
