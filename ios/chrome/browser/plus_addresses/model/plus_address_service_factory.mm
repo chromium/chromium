@@ -75,10 +75,6 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
                                base::Unretained(groups_manager))
                          : base::BindRepeating(&base::FeatureList::IsEnabled);
 
-  if (auto test_service = tests_hook::GetOverriddenPlusAddressService()) {
-    return test_service;
-  }
-
   std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressServiceImpl>(
           profile->GetPrefs(), identity_manager,

@@ -121,11 +121,6 @@ GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
 
-std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService() {
-  return nullptr;
-}
-
 std::unique_ptr<password_manager::RecipientsFetcher>
 GetOverriddenRecipientsFetcher() {
   return nullptr;

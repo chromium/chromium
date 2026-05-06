@@ -60,10 +60,6 @@ class BulkLeakCheckServiceInterface;
 class RecipientsFetcher;
 }  // namespace password_manager
 
-namespace plus_addresses {
-class PlusAddressService;
-}  // namespace plus_addresses
-
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -189,11 +185,6 @@ std::unique_ptr<ShareKitService> CreateShareKitService(
 // factory will be used if this hook returns a nullptr.
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService();
-
-// Returns a plus address service that should be used when testing. The real
-// factory will be used if this hook returns a nullptr.
-std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService();
 
 // Returns a recipients fetcher instance that should be used in EG tests. The
 // real instance will be used if this hook returns a nullptr.
