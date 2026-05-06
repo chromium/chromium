@@ -42,11 +42,11 @@ const ICON_TYPE_TO_NAME: {[id: number]: string} = {
 
 function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
   // Safety return statement in rare case chrome metrics is not available.
-  if (!chrome.metricsPrivate) {
+  if (!chrome.histograms) {
     return;
   }
 
-  chrome.metricsPrivate.recordEnumerationValue(
+  chrome.histograms.recordEnumerationValue(
       'ContextualTasks.VoiceSearch.State', voiceSearchState,
       VoiceSearchState.MAX_VALUE + 1);
 }
