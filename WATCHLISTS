@@ -1930,13 +1930,6 @@
     'plugin_metadata': {
       'filepath': 'chrome/browser/resources/plugin_metadata/'
     },
-    'plus_addresses': {
-      'filepath': 'components/plus_addresses/'\
-                  '|chrome/browser/plus_addresses/'\
-                  '|chrome/browser/ui/plus_addresses/'\
-                  '|components/plus_addresses_strings_grdp/'\
-                  '|ios/chrome/browser/plus_addresses/'
-    },
     'popup_blocker': {
       'filepath': 'chrome/browser/ui/blocked_content'
     },
@@ -3248,8 +3241,6 @@
                  'pushi+watch-phonehub@google.com'],
     'picture_in_picture': ['beaufort.francois+pip@gmail.com'],
     'plugin_metadata': ['wfh+watch@chromium.org'],
-    'plus_addresses': ['mreichhoff+watch-plus_addresses@chromium.org',
-             'jkeitel+watch-plus_addresses@google.com'],
     'popup_blocker': ['csharrison+watch-popups@chromium.org'],
     'precache': ['wifiprefetch-reviews@google.com'],
     'prefetch_proxy': ['marcinjb+p4watch@google.com',
