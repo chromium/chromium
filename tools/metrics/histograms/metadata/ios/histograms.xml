@@ -6732,7 +6732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SearchWith.CharSelected" units="characters"
-    expires_after="2025-08-31">
+    expires_after="2027-04-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
