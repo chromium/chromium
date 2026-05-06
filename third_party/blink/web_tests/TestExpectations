@@ -9788,4 +9788,7 @@ crbug.com/466779939 [ Debug Linux ] http/tests/inspector-protocol/tracing/user-m
 
 # Gardener 2026-05-06
 crbug.com/510085315 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced-nested-iframe.https.html [ Failure ]
+crbug.com/510103893 [ Linux ] external/wpt/ai/language-model/language-model-create.tentative.https.window.html [ Failure ]
+crbug.com/510116037 [ Linux ] external/wpt/client-hints/critical-ch/request-count.https.window.html [ Failure ]
+crbug.com/510116037 [ Linux ] external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure ]
 
