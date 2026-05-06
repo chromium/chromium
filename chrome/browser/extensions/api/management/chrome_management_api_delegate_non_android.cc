@@ -247,15 +247,21 @@ void OnWebAppInstallabilityChecked(
       std::move(callback).Run(InstallOrLaunchWebAppResult::kInvalidWebApp);
       return;
     case InstallableCheckResult::kInstallable:
-      content::WebContents* containing_contents = web_contents.get();
+      base::WeakPtr<content::WebContents> weak_contents =
+          web_contents->GetWeakPtr();
       chrome::ScopedTabbedBrowserDisplayer displayer(profile.get());
       const GURL& url = web_contents->GetLastCommittedURL();
+
       chrome::AddWebContents(displayer.browser(), nullptr,
                              std::move(web_contents), url,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              blink::mojom::WindowFeatures());
+      if (!weak_contents) {
+        std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
+        return;
+      }
       web_app::CreateWebAppFromManifest(
-          containing_contents, webapps::WebappInstallSource::MANAGEMENT_API,
+          weak_contents.get(), webapps::WebappInstallSource::MANAGEMENT_API,
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }

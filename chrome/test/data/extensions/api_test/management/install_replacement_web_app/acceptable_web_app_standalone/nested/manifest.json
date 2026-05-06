@@ -1,0 +1,12 @@
+{
+  "name": "Nested Installable web app",
+  "icons": [
+   {
+      "src": "../../acceptable_web_app/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone"
+}

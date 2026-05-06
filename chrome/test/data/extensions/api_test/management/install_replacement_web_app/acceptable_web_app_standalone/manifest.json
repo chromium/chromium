@@ -1,0 +1,15 @@
+{
+  "name": "Standalone Capturing PWA",
+  "icons": [
+   {
+      "src": "../acceptable_web_app/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}

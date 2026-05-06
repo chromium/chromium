@@ -8,11 +8,18 @@ specific_include_rules = {
     "+chrome/browser/apps/app_service/browser_app_launcher.h",
   ],
 
-  # This DEPS violation is a temporary workaround to continue supporting Chrome
-  # Apps tests while the Chrome Apps deprecation is finalised.
-  # TODO(crbug.com/379262505) - Remove this.
+  # This DEPS violation contains workarounds for Chrome Apps deprecation
+  # and additions for testing the management API's PWA integration.
+  # TODO(crbug.com/379262505) - Remove the chrome_app_deprecation entry when finalised.
   "management_apitest\\.cc": [
-    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
+
+    # The management API can install/launch replacement webapps, so its tests
+    # need to access AppService and preferred apps test utilities to verify
+    # navigation capturing behavior.
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/intent_helper/preferred_apps_test_util.h",
   ],
 
   # This DEPS violation is a temporary workaround to continue supporting Chrome
