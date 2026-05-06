@@ -220,7 +220,6 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 # Flaky failure on Mac AMD - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
-[ mac amd asan angle-opengl passthrough graphite-disabled release ] GpuCrash_SoftwareFallbackDisabled [ RetryOnFailure ]
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
