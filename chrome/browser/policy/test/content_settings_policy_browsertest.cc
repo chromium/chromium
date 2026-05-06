@@ -545,8 +545,7 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
  public:
   ContentSetting GetLocalNetworkAccessDefaultContentSetting(
       ContentSettingsType type) {
-    CHECK(type == ContentSettingsType::LOCAL_NETWORK_ACCESS ||
-          type == ContentSettingsType::LOCAL_NETWORK ||
+    CHECK(type == ContentSettingsType::LOCAL_NETWORK ||
           type == ContentSettingsType::LOOPBACK_NETWORK);
     return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->GetDefaultContentSetting(type, /*provider_id=*/nullptr);
@@ -554,8 +553,7 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
 
   ContentSetting GetLNAContentSetting(ContentSettingsType type,
                                       const GURL& url) {
-    CHECK(type == ContentSettingsType::LOCAL_NETWORK_ACCESS ||
-          type == ContentSettingsType::LOCAL_NETWORK ||
+    CHECK(type == ContentSettingsType::LOCAL_NETWORK ||
           type == ContentSettingsType::LOOPBACK_NETWORK);
     return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url, type);
@@ -564,9 +562,6 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
   bool CheckAllLNAContentSettingsAre(ContentSetting content_setting,
                                      const GURL& url) {
     bool result = true;
-    result &=
-        content_setting ==
-        GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS, url);
     result &= content_setting ==
               GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK, url);
     result &= content_setting ==
@@ -577,9 +572,6 @@ class LocalNetworkAccessPolicyTest : public PolicyTest {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, Default) {
   // By default, we should be asking the user
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessDefaultContentSetting(
-                ContentSettingsType::LOCAL_NETWORK_ACCESS));
   EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting(
                                      ContentSettingsType::LOCAL_NETWORK));
   EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting(
@@ -757,18 +749,12 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
             GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
                                  GURL("http://local.bleep.com")));
   EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
-                                 GURL("http://local.bleep.com")));
-  EXPECT_EQ(CONTENT_SETTING_ASK,
             GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
                                  GURL("http://local.bleep.com")));
 
   // http://loopback.bleep.com is blocked for only LOOPBACK_NETWORK
   EXPECT_EQ(CONTENT_SETTING_ASK,
             GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
-                                 GURL("http://loopback.bleep.com")));
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
                                  GURL("http://loopback.bleep.com")));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
@@ -815,9 +801,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, SpecificPoliciesOverride) {
   // http://bleep.com is allowed, but only for LOCAL_NETWORK
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
-                                 GURL("http://localonly.bleep.com")));
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
                                  GURL("http://localonly.bleep.com")));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,

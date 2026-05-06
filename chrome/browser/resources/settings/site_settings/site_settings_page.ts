@@ -247,21 +247,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       enabledLabel: 'siteSettingsFontsAsk',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
-    // If LNA is enabled, we show either the LOCAL_NETWORK_ACCESS setting, or
-    // the combo of LOCAL_NETWORK and LOOPBACK_NETWORK settings.
-    // enableLocalNetworkAccessSetting and
-    // enableLocalNetworkAccessSplitPermissions are never both true; though if
-    // LNA is off they can both be false.
-    {
-      route: routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
-      id: Id.LOCAL_NETWORK_ACCESS,
-      label: 'siteSettingsLocalNetworkAccess',
-      icon: 'settings20:router',
-      enabledLabel: 'siteSettingsLocalNetworkAccessAsk',
-      disabledLabel: 'siteSettingsLocalNetworkAccessBlock',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
-    },
+    // If LNA is enabled, we show the combo of LOCAL_NETWORK and
+    // LOOPBACK_NETWORK settings.
     {
       route: routes.SITE_SETTINGS_LOCAL_NETWORK,
       id: Id.LOCAL_NETWORK,
@@ -269,9 +256,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings20:router',
       enabledLabel: 'siteSettingsLocalNetworkAsk',
       disabledLabel: 'siteSettingsLocalNetworkBlock',
-      // This is shown when we've got LNA enabled with split permissions.
       shouldShow: () =>
-          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
+          loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
     },
     {
       route: routes.SITE_SETTINGS_LOOPBACK_NETWORK,
@@ -280,9 +266,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings20:desktop-windows',
       enabledLabel: 'siteSettingsLoopbackNetworkAsk',
       disabledLabel: 'siteSettingsLoopbackNetworkBlock',
-      // This is shown when we've got LNA enabled with split permissions.
       shouldShow: () =>
-          loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
+          loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
     },
     {
       route: routes.SITE_SETTINGS_MICROPHONE,
@@ -563,7 +548,6 @@ export class SettingsSiteSettingsPageElement extends
               Id.WEB_PRINTING,
               // </if>
               Id.WEB_APP_INSTALLATION,
-              Id.LOCAL_NETWORK_ACCESS,
               Id.LOCAL_NETWORK,
               Id.LOOPBACK_NETWORK,
             ]),

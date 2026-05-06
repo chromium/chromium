@@ -397,9 +397,6 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth devices permission is in the ask state and the site can prompt the user to ask if they allow the site to use advanced printer features.">
       Can ask to use advanced printer features
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network access permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests.">
-      Can ask to connect to any device on your local network
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests to other local network devices.">
       Can ask to access other devices on your local network
     </message>

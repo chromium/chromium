@@ -794,13 +794,9 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownOnChange) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Test that Local Network Access permissions are filtered based on the
-// kLocalNetworkAccessChecksSplitPermissions feature flag.
-TEST_F(PageInfoTest, LocalNetworkAccessPermissionsWithSplitEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kLocalNetworkAccessChecksSplitPermissions);
-
+// Test that Local Network Access permissions are correctly displayed in Page
+// Info.
+TEST_F(PageInfoTest, LocalNetworkAccessPermissions) {
   std::set<ContentSettingsType> expected_visible_permissions;
 #if BUILDFLAG(IS_ANDROID)
   // Geolocation is always allowed to pass through to Android-specific logic to
@@ -808,11 +804,7 @@ TEST_F(PageInfoTest, LocalNetworkAccessPermissionsWithSplitEnabled) {
   // on because this test isn't testing with a default search engine origin.
   expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
 #endif
-  // Set permissions for all three Local Network Access types
-  page_info()->OnSitePermissionChanged(
-      ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW,
-      /*requesting_origin=*/std::nullopt,
-      /*is_one_time=*/false);
+  // Set permissions for both Local Network Access types
   page_info()->OnSitePermissionChanged(ContentSettingsType::LOCAL_NETWORK,
                                        CONTENT_SETTING_ALLOW,
                                        /*requesting_origin=*/std::nullopt,
@@ -822,45 +814,9 @@ TEST_F(PageInfoTest, LocalNetworkAccessPermissionsWithSplitEnabled) {
                                        /*requesting_origin=*/std::nullopt,
                                        /*is_one_time=*/false);
 
-  // When split permissions are enabled, only LOCAL_NETWORK and LOOPBACK_NETWORK
-  // should be visible, not LOCAL_NETWORK_ACCESS
+  // LOCAL_NETWORK and LOOPBACK_NETWORK should be visible.
   expected_visible_permissions.insert(ContentSettingsType::LOCAL_NETWORK);
   expected_visible_permissions.insert(ContentSettingsType::LOOPBACK_NETWORK);
-
-  ExpectPermissionInfoList(expected_visible_permissions,
-                           last_permission_info_list());
-}
-
-TEST_F(PageInfoTest, LocalNetworkAccessPermissionsWithSplitDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kLocalNetworkAccessChecksSplitPermissions);
-
-  std::set<ContentSettingsType> expected_visible_permissions;
-#if BUILDFLAG(IS_ANDROID)
-  // Geolocation is always allowed to pass through to Android-specific logic to
-  // check for DSE settings (so expect 1 item), but isn't actually shown later
-  // on because this test isn't testing with a default search engine origin.
-  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
-#endif
-  // Set permissions for all three Local Network Access types
-  page_info()->OnSitePermissionChanged(
-      ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW,
-      /*requesting_origin=*/std::nullopt,
-      /*is_one_time=*/false);
-  page_info()->OnSitePermissionChanged(ContentSettingsType::LOCAL_NETWORK,
-                                       CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/std::nullopt,
-                                       /*is_one_time=*/false);
-  page_info()->OnSitePermissionChanged(ContentSettingsType::LOOPBACK_NETWORK,
-                                       CONTENT_SETTING_ALLOW,
-                                       /*requesting_origin=*/std::nullopt,
-                                       /*is_one_time=*/false);
-
-  // When split permissions are disabled, only LOCAL_NETWORK_ACCESS should be
-  // visible, not LOCAL_NETWORK or LOOPBACK_NETWORK
-  expected_visible_permissions.insert(
-      ContentSettingsType::LOCAL_NETWORK_ACCESS);
 
   ExpectPermissionInfoList(expected_visible_permissions,
                            last_permission_info_list());

@@ -281,11 +281,6 @@ BASE_FEATURE(kLocalNetworkAccessChecksWebSockets,
 BASE_FEATURE(kLocalNetworkAccessChecksWebTransport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Splits the Local Network Access permission into 2 permissions. See
-// crbug.com/465491626.
-BASE_FEATURE(kLocalNetworkAccessChecksSplitPermissions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

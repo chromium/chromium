@@ -49,8 +49,6 @@ source_set("permissions") {
     "contexts/local_fonts_permission_context.h",
     "contexts/local_network_access_compat_permission_context.cc",
     "contexts/local_network_access_compat_permission_context.h",
-    "contexts/local_network_access_permission_context.cc",
-    "contexts/local_network_access_permission_context.h",
     "contexts/local_network_permission_context.cc",
     "contexts/local_network_permission_context.h",
     "contexts/loopback_network_permission_context.cc",

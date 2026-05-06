@@ -167,14 +167,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
         // LocalNetworkAccess:
         // * Block takes precedence over Allow
-        // * LocalNetworkAccessAllowed/Blocked apply to all 3 LNA permissions
+        // * LocalNetworkAccessAllowed/Blocked apply to both LNA permissions
         // * More specific permission (LocalNetworkAllowed/Blocked and
         //   LoopbackNetworkAllowed/Blocked) take precedence over the more
         //   general LocalNetworkAccessAllowed/Blocked policies
-        {prefs::kManagedLocalNetworkAccessAllowedForUrls,
-         ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW},
-        {prefs::kManagedLocalNetworkAccessBlockedForUrls,
-         ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLocalNetworkAccessAllowedForUrls,
          ContentSettingsType::LOCAL_NETWORK, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,

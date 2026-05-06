@@ -59,8 +59,6 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsKeyboardLockMidSentence';
     case ContentSettingsTypes.LOCAL_FONTS:
       return 'siteSettingsFontAccessMidSentence';
-    case ContentSettingsTypes.LOCAL_NETWORK_ACCESS:
-      return 'siteSettingsLocalNetworkAccessMidSentence';
     case ContentSettingsTypes.LOCAL_NETWORK:
       return 'siteSettingsLocalNetworkMidSentence';
     case ContentSettingsTypes.LOOPBACK_NETWORK:

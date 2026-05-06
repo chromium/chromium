@@ -1262,7 +1262,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(39, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(38, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1890,17 +1890,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testOnlyExpectedPreferencesLocalNetworkAccess() {
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
-                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
-                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testOnlyExpectedPreferencesLocalNetwork() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.LOCAL_NETWORK,
@@ -1911,7 +1900,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testOnlyExpectedPreferencesLoopbackNetwork() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.LOOPBACK_NETWORK,
@@ -2715,33 +2703,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testAllowLocalNetworkAccess() {
-        new TwoStatePermissionTestCaseWithRadioButton(
-                        "LocalNetworkAccess",
-                        SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
-                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
-                        true)
-                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testBlockLocalNetworkAccess() {
-        new TwoStatePermissionTestCaseWithRadioButton(
-                        "LocalNetworkAccess",
-                        SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
-                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
-                        false)
-                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testAllowLocalNetwork() {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "LocalNetwork",
@@ -2755,7 +2716,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testBlockLocalNetwork() {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "LocalNetwork",
@@ -2769,7 +2729,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testAllowLoopbackNetwork() {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "LoopbackNetwork",
@@ -2783,7 +2742,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS)
     public void testBlockLoopbackNetwork() {
         new TwoStatePermissionTestCaseWithRadioButton(
                         "LoopbackNetwork",

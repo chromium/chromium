@@ -197,12 +197,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
 
-      enableLocalNetworkAccessSplitPermissions_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
-      },
-
       /**
        * Whether the "Block if site is unfamiliar" label should be used for the
        * default javascript-optimizer content setting.
@@ -246,7 +240,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       WebsiteUsageBrowserProxyImpl.getInstance();
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
-  declare private enableLocalNetworkAccessSplitPermissions_: boolean;
   declare private useBlockIfUnfamiliarLabelForV8OptimizerDefault_: boolean;
   declare private subAppsPermissionExplanation_: string;
   private parentAppOrigin_: string|null = null;

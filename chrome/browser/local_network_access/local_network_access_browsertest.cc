@@ -59,26 +59,10 @@ std::string FetchScript(const GURL& url) {
 }
 }  // namespace
 
-class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase,
-                                      public testing::WithParamInterface<bool> {
- public:
-  LocalNetworkAccessBrowserTest() : LocalNetworkAccessBrowserTestBase() {
-    if (SplitPermissionsEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          network::features::kLocalNetworkAccessChecksSplitPermissions);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          network::features::kLocalNetworkAccessChecksSplitPermissions);
-    }
-  }
-
-  bool SplitPermissionsEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase {
 };
 
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchDenyPermission) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, FetchDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL("a.com", kTreatAsPublicAddressPath)));
@@ -94,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchDenyPermission) {
                          https_server().GetURL("b.com", kLnaPath))));
 }
 
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL("a.com", kTreatAsPublicAddressPath)));
@@ -114,7 +98,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, FetchAcceptPermission) {
 // Tests that a script tag that is included in the main page HTML (and thus
 // load blocking) correctly triggers the LNA permission prompt.
 // Regression test for crbug.com/439876402.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        HtmlScriptSrcAllowPermission) {
   auto https_server = net::test_server::EmbeddedTestServer(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
@@ -167,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   EXPECT_TRUE(console_observer.Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        CheckPrivateAliasFeatureCounter) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
@@ -185,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   CheckCounter(WebFeature::kLocalNetworkAccessPrivateAliasUse, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        CheckPrivateAliasFeatureCounterLocalNotCounted) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
@@ -209,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
 
 // This test verifies that a 0.0.0.0 subresource is blocked on a nonsecure
 // public URL.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        NullIPBlockedOnNonsecure) {
   if constexpr (BUILDFLAG(IS_WIN)) {
     GTEST_SKIP() << "0.0.0.0 behavior varies across platforms and is "
@@ -235,7 +219,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
 
 // This test verifies that the devtools:// scheme is considered loopback for the
 // purpose of Local Network Access.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, SpecialSchemeDevtools) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, SpecialSchemeDevtools) {
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(), GURL("devtools://devtools/bundled/devtools_app.html")));
   EXPECT_TRUE(
@@ -260,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest, SpecialSchemeDevtools) {
 
 // This test verifies that the chrome-search:// scheme is considered loopback
 // for the purpose of Local Network Access.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        SpecialSchemeChromeSearch) {
   EXPECT_TRUE(content::NavigateToURL(
       web_contents(), GURL("chrome-search://most-visited/title.html")));
@@ -277,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
 
 // This test verifies that the chrome-extension:// scheme is considered local
 // for the purpose of Local Network Access.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        SpecialSchemeChromeExtension) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
@@ -344,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
 // get retried over the network.
 //
 // See also the test `CachedResourceIsLoadedFromCache` below.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        CachedResourceIsLoadedFromNetwork) {
   auto https_server = net::test_server::EmbeddedTestServer(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
@@ -421,7 +405,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
 // *don't* get retried over the network and are loaded from cache.
 //
 // This is a counterpart to the test `CachedResourceIsLoadedFromNetwork` above.
-IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        CachedResourceIsLoadedFromCache) {
   auto https_server = net::test_server::EmbeddedTestServer(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
@@ -454,12 +438,9 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(
           chrome_test_utils::GetProfile(this));
-  auto content_setting_type = SplitPermissionsEnabled()
-                                  ? ContentSettingsType::LOOPBACK_NETWORK
-                                  : ContentSettingsType::LOCAL_NETWORK_ACCESS;
   host_content_settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(https_server.GetURL("a.com", "/")),
-      ContentSettingsPattern::Wildcard(), content_setting_type,
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::LOOPBACK_NETWORK,
       CONTENT_SETTING_ALLOW);
 
   // First, navigate to a local page on a.com and fetch resource from b.com to
@@ -494,7 +475,5 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessBrowserTest,
   EXPECT_EQ(1, request_count);
   EXPECT_EQ(0, bubble_factory()->request_count());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LocalNetworkAccessBrowserTest, testing::Bool());
 
 }  // namespace local_network_access

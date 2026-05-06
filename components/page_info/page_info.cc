@@ -167,7 +167,6 @@ ContentSettingsType kPermissionType[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     ContentSettingsType::WEB_PRINTING,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    ContentSettingsType::LOCAL_NETWORK_ACCESS,
     ContentSettingsType::LOCAL_NETWORK,
     ContentSettingsType::LOOPBACK_NETWORK,
 };
@@ -1436,20 +1435,11 @@ bool PageInfo::ShouldShowPermission(
     }
   }
 
-  // Filter Local Network Access permissions based on split permissions
-  // feature. When enabled, show LOCAL_NETWORK and LOOPBACK_NETWORK.
-  // When disabled, show LOCAL_NETWORK_ACCESS.
-  if (delegate_->IsLocalNetworkAccessSplitPermissionsEnabled()) {
-    // Split permissions enabled: hide the legacy permission
-    if (info.type == ContentSettingsType::LOCAL_NETWORK_ACCESS) {
-      return false;
-    }
-  } else {
-    // Split permissions disabled: hide the new split permissions
-    if (info.type == ContentSettingsType::LOCAL_NETWORK ||
-        info.type == ContentSettingsType::LOOPBACK_NETWORK) {
-      return false;
-    }
+  // Filter Local Network Access permissions.
+  // Show LOCAL_NETWORK and LOOPBACK_NETWORK.
+  // Hide the legacy LOCAL_NETWORK_ACCESS permission.
+  if (info.type == ContentSettingsType::LOCAL_NETWORK_ACCESS) {
+    return false;
   }
 
   if (info.type == ContentSettingsType::SOUND) {

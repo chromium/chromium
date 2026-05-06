@@ -482,12 +482,10 @@ void DefaultProvider::MigrateLocalNetworkAccessDefaultValue() {
     return;
   }
 
-  // Migrate when the feature gets enabled the first time.
+  // Migrate only once, if the pref is not set yet.
   // Only the default for LOCAL_NETWORK is changed, as the old prompt language
   // was biased towards that.
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
-      !prefs_->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref)) {
+  if (!prefs_->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref)) {
     ChangeSetting(ContentSettingsType::LOCAL_NETWORK,
                   std::move(default_settings_.at(
                       ContentSettingsType::LOCAL_NETWORK_ACCESS)));
@@ -496,16 +494,6 @@ void DefaultProvider::MigrateLocalNetworkAccessDefaultValue() {
         ContentSettingsType::LOCAL_NETWORK_ACCESS,
         ContentSettingToValue(ContentSetting::CONTENT_SETTING_DEFAULT));
     prefs_->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, true);
-  }
-
-  // If the feature is turned off, then don't attempt to migrate back, as we'd
-  // be unsure of how to reconcile the differences. But make sure to unset the
-  // migration pref so that when the feature gets turned back on we'll migrate
-  // again.
-  if (!base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
-      prefs_->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref)) {
-    prefs_->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, false);
   }
 }
 

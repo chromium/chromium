@@ -74,8 +74,7 @@ LocalNetworkAccessCompatPermissionContext::GetContentSettingStatusInternal(
   return local_network_setting;
 }
 
-// Nothing should be setting or requesting this permission this when split
-// permissions are enabled.
+// Nothing should be setting or requesting this permission.
 void LocalNetworkAccessCompatPermissionContext::UpdateSetting(
     const permissions::PermissionRequestData& request_data,
     const PermissionSetting& setting,
@@ -91,13 +90,11 @@ void LocalNetworkAccessCompatPermissionContext::RequestPermission(
 
 // If something is looking for the local-network-access permission policy,
 // delegate to the local-network or loopback-network permission policy. This is
-// unlikely to be needed as when
-// network::features::kLocalNetworkAccessChecksSplitPermissions is enabled
-// (which is the only time this class should be used), local-network or
-// loopback-network should be checked in the Chromium implementation, but is
-// done 1) as a defense-in-depth measure, and 2) to ensure web-facing backward
-// compatibility so that the result of permission.query({name:
-// 'local-network-access'}) is mostly correctly feature-policy gated.
+// unlikely to be needed as local-network or loopback-network should be checked
+// in the Chromium implementation, but is done 1) as a defense-in-depth measure,
+// and 2) to ensure web-facing backward compatibility so that the result of
+// permission.query({name: 'local-network-access'}) is mostly correctly
+// feature-policy gated.
 //
 // Note that
 // services/network/public/cpp/permissions_policy/permissions_policy.cc also
@@ -110,10 +107,9 @@ bool LocalNetworkAccessCompatPermissionContext::
              network::mojom::PermissionsPolicyFeature::kLoopbackNetwork);
 }
 
-// Split permissions mode never has ContentSettingsType::LOCAL_NETWORK_ACCESS
-// change, but instead has ContentSettingsType::LOCAL_NETWORK and
-// ContentSettingsType::LOOPBACK_NETWORK change; trigger obsevers when those
-// change instead.
+// ContentSettingsType::LOCAL_NETWORK_ACCESS never changes, but instead
+// ContentSettingsType::LOCAL_NETWORK and ContentSettingsType::LOOPBACK_NETWORK
+// change; trigger obsevers when those change instead.
 void LocalNetworkAccessCompatPermissionContext::NotifyObservers(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

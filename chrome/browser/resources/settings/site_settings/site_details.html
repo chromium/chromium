@@ -335,13 +335,6 @@
       </template>
       <template is="dom-if" if="[[enableLocalNetworkAccessSetting_]]">
         <site-details-permission
-            category="[[contentSettingsTypesEnum_.LOCAL_NETWORK_ACCESS]]"
-            icon="settings20:router"
-            label="$i18n{siteSettingsLocalNetworkAccess}">
-        </site-details-permission>
-      </template>
-      <template is="dom-if" if="[[enableLocalNetworkAccessSplitPermissions_]]">
-        <site-details-permission
             category="[[contentSettingsTypesEnum_.LOCAL_NETWORK]]"
             icon="settings20:router"
             label="$i18n{siteSettingsLocalNetwork}">

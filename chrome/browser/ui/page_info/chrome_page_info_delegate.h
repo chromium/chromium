@@ -101,7 +101,6 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 
   bool IsHttpsFirstModeEnabled() override;
   bool IsIncognitoProfile() override;
-  bool IsLocalNetworkAccessSplitPermissionsEnabled() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldSyncCookiesForUrl(const GURL& url) override;

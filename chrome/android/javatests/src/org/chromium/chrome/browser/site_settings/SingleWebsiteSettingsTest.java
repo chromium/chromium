@@ -112,6 +112,13 @@ public class SingleWebsiteSettingsTest {
             ArrayList<ParameterSet> testCases = new ArrayList<>();
             for (@ContentSettingsType.EnumType
             int contentSettingsType : SiteSettingsUtil.SETTINGS_ORDER) {
+                // Skip LOCAL_NETWORK_ACCESS as there is no UI/permission associated with it; its
+                // kept for now to allow for migrations. See
+                // components/content_settings/core/browser/content_settings_default_provider.cc and
+                // components/content_settings/core/browser/content_settings_pref_provider.cc.
+                if (contentSettingsType == ContentSettingsType.LOCAL_NETWORK_ACCESS) {
+                    continue;
+                }
                 int enabled = SingleWebsiteSettings.getEnabledValue(contentSettingsType);
                 testCases.add(createParameterSet("Enabled_", contentSettingsType, enabled));
                 testCases.add(

@@ -401,17 +401,6 @@
 
   <template is="dom-if" if="[[enableLocalNetworkAccessSetting_]]">
     <template is="dom-if" if="[[renderView_(
-        routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS, currentRoute,
-        inSearchMode)]]" update-when-false>
-      <settings-local-network-access-page slot="view"
-          id="siteSettingsLocalNetworkAccess" data-parent-view-id="privacy"
-          route-path$="[[routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS.path]]">
-      </settings-local-network-access-page>
-    </template>
-  </template>
-
-  <template is="dom-if" if="[[enableLocalNetworkAccessSplitPermissions_]]">
-    <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_LOCAL_NETWORK, currentRoute,
         inSearchMode)]]" update-when-false>
       <settings-local-network-page slot="view"

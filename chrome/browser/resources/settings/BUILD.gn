@@ -226,7 +226,6 @@ build_webui("build") {
     "site_settings/javascript_page.ts",
     "site_settings/keyboard_lock_page.ts",
     "site_settings/local_fonts_page.ts",
-    "site_settings/local_network_access_page.ts",
     "site_settings/local_network_page.ts",
     "site_settings/loopback_network_page.ts",
     "site_settings/media_picker.ts",

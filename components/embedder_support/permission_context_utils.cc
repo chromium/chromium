@@ -14,7 +14,6 @@
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/keyboard_lock_permission_context.h"
 #include "components/permissions/contexts/local_network_access_compat_permission_context.h"
-#include "components/permissions/contexts/local_network_access_permission_context.h"
 #include "components/permissions/contexts/local_network_permission_context.h"
 #include "components/permissions/contexts/loopback_network_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
@@ -122,17 +121,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   permission_contexts[ContentSettingsType::KEYBOARD_LOCK] =
       std::make_unique<permissions::KeyboardLockPermissionContext>(
           browser_context);
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksSplitPermissions)) {
-    permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
-        std::make_unique<
-            permissions::LocalNetworkAccessCompatPermissionContext>(
-            browser_context);
-  } else {
-    permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
-        std::make_unique<permissions::LocalNetworkAccessPermissionContext>(
-            browser_context);
-  }
+  permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
+      std::make_unique<permissions::LocalNetworkAccessCompatPermissionContext>(
+          browser_context);
 
   permission_contexts[ContentSettingsType::LOCAL_NETWORK] =
       std::make_unique<permissions::LocalNetworkPermissionContext>(

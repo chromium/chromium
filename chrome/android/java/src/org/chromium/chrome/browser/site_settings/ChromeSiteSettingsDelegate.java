@@ -170,19 +170,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !DeviceInfo.isDesktop();
-            case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
-                // Use LOCAL_NETWORK_ACCESS if LNA is enabled, but LNA Split permissions is not
-                // enabled.
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS)
-                        && !ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS);
             case SiteSettingsCategory.Type.LOCAL_NETWORK:
             case SiteSettingsCategory.Type.LOOPBACK_NETWORK:
-                // Use LOCAL_NETWORK and LOOPBACK_NETWORK if LNA is enabled and LNA Split
-                // permissions are enabled.
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS)
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS);
+                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
             case SiteSettingsCategory.Type.WINDOW_MANAGEMENT:
                 return ChromeFeatureList.sAndroidWindowManagementWebApi.isEnabled()
                         && DisplayAndroidManager.isDisplayTopologyAvailable();

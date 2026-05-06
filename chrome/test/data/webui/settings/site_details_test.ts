@@ -198,9 +198,6 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.POINTER_LOCK,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.LOCAL_NETWORK_ACCESS,
-              [createRawSiteException('https://foo.com:443')]),
-          createContentSettingTypeToValuePair(
               ContentSettingsTypes.LOCAL_NETWORK,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(

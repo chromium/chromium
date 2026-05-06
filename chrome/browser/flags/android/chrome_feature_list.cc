@@ -487,7 +487,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &media::kFullscreenVideoPictureInPicture,
     &net::features::kVerifyQWACs,
     &network::features::kLocalNetworkAccessChecks,
-    &network::features::kLocalNetworkAccessChecksSplitPermissions,
     &notifications::features::kUseChimeAndroidSdk,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &paint_preview::kPaintPreviewDemo,

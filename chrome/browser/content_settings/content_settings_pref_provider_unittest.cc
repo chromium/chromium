@@ -1332,8 +1332,7 @@ TEST_F(PrefProviderTest, MigrateLocalNetworkAccessOnFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{network::features::kLocalNetworkAccessChecks},
-      /*disabled_features=*/{
-          network::features::kLocalNetworkAccessChecksSplitPermissions});
+      /*disabled_features=*/{});
 
   TestingProfile profile;
   PrefService* prefs = profile.GetPrefs();
@@ -1358,14 +1357,12 @@ TEST_F(PrefProviderTest, MigrateLocalNetworkAccessOnFeatureEnabled) {
     provider.ShutdownOnUIThread();
   }
 
-  // Test migration forward.
-  feature_list.Reset();
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
-                            network::features::
-                                kLocalNetworkAccessChecksSplitPermissions},
-      /*disabled_features=*/{});
+  // Clear the migration pref to force the migration
+  static char kLocalNetworkAccessMigrateExceptionsPref[] =
+      "profile.content_settings.exceptions.has_migrated_local_network_access";
+  prefs->SetBoolean(kLocalNetworkAccessMigrateExceptionsPref, false);
 
+  // Test migration forward.
   {
     PrefProvider new_provider(prefs, /*off_the_record=*/false,
                               /*store_last_modified=*/true,
@@ -1382,40 +1379,6 @@ TEST_F(PrefProviderTest, MigrateLocalNetworkAccessOnFeatureEnabled) {
                                          /*include_incognito=*/false));
     // CONTENT_SETTING_BLOCK is only migrated to LOCAL_NETWORK
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              TestUtils::GetContentSetting(&new_provider, block_url, block_url,
-                                           ContentSettingsType::LOCAL_NETWORK,
-                                           /*include_incognito=*/false));
-    EXPECT_EQ(
-        CONTENT_SETTING_DEFAULT,
-        TestUtils::GetContentSetting(&new_provider, block_url, block_url,
-                                     ContentSettingsType::LOOPBACK_NETWORK,
-                                     /*include_incognito=*/false));
-    new_provider.ShutdownOnUIThread();
-  }
-
-  // Then migrate back.
-  feature_list.Reset();
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks},
-      /*disabled_features=*/{
-          network::features::kLocalNetworkAccessChecksSplitPermissions});
-
-  {
-    PrefProvider new_provider(prefs, /*off_the_record=*/false,
-                              /*store_last_modified=*/true,
-                              /*restore_session=*/false);
-
-    // Both LOCAL_NETWORK and LOOPBACK_NETWORK exceptions should be cleared.
-    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-              TestUtils::GetContentSetting(&new_provider, allow_url, allow_url,
-                                           ContentSettingsType::LOCAL_NETWORK,
-                                           /*include_incognito=*/false));
-    EXPECT_EQ(
-        CONTENT_SETTING_DEFAULT,
-        TestUtils::GetContentSetting(&new_provider, allow_url, allow_url,
-                                     ContentSettingsType::LOOPBACK_NETWORK,
-                                     /*include_incognito=*/false));
-    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
               TestUtils::GetContentSetting(&new_provider, block_url, block_url,
                                            ContentSettingsType::LOCAL_NETWORK,
                                            /*include_incognito=*/false));

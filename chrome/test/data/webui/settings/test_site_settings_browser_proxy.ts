@@ -146,16 +146,11 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
     }
     // </if>
 
-    // If LNA is enabled, we show either the LOCAL_NETWORK_ACCESS setting, or
-    // the combo of LOCAL_NETWORK and LOOPBACK_NETWORK settings.
-    // enableLocalNetworkAccessSetting and
-    // enableLocalNetworkAccessSplitPermissions are never both true; though if
-    // LNA is off they can both be false.
-    if (loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions')) {
+    // If LNA is enabled, we show the combo of LOCAL_NETWORK and
+    // LOOPBACK_NETWORK settings.
+    if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
       this.categoryList_.push(ContentSettingsTypes.LOCAL_NETWORK);
       this.categoryList_.push(ContentSettingsTypes.LOOPBACK_NETWORK);
-    } else if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
-      this.categoryList_.push(ContentSettingsTypes.LOCAL_NETWORK_ACCESS);
     }
 
     this.prefs_ = createSiteSettingsPrefs([], [], []);

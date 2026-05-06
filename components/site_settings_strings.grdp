@@ -213,12 +213,6 @@
     file editing
   </message>
 
-  <message name="IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS" desc="The label used for the local network access site settings controls.">
-    Local network access
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS_MID_SENTENCE" desc="The label used for the local network access site settings controls when used mid-sentence.">
-    local network access
-  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK" desc="The label used for the local network site settings controls.">
     Local network
   </message>

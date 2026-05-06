@@ -356,9 +356,7 @@ TEST_F(ContentSettingsDefaultProviderTest,
        MigrateLocalNetworkAccessDisabledToEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
-                            network::features::
-                                kLocalNetworkAccessChecksSplitPermissions},
+      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks},
       /*disabled_features=*/{});
   auto* prefs = profile_.GetPrefs();
   prefs->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, false);
@@ -379,35 +377,6 @@ TEST_F(ContentSettingsDefaultProviderTest,
                                          ContentSettingsType::LOOPBACK_NETWORK,
                                          false));
   EXPECT_TRUE(prefs->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref));
-}
-
-TEST_F(ContentSettingsDefaultProviderTest,
-       MigrateLocalNetworkAccessEnabledToDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kLocalNetworkAccessChecks,
-                            network::features::
-                                kLocalNetworkAccessChecksSplitPermissions},
-      /*disabled_features=*/{});
-  auto* prefs = profile_.GetPrefs();
-  prefs->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, true);
-  prefs->SetInteger(
-      "profile.default_content_setting_values.local_network_access",
-      CONTENT_SETTING_BLOCK);
-  prefs->SetInteger("profile.default_content_setting_values.local_network",
-                    CONTENT_SETTING_ALLOW);
-  prefs->SetInteger("profile.default_content_setting_values.loopback_network",
-                    CONTENT_SETTING_ALLOW);
-
-  DefaultProvider provider(prefs, false, false);
-
-  // Default shouldn't change.
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            TestUtils::GetContentSetting(
-                &provider, GURL(), GURL(),
-                ContentSettingsType::LOCAL_NETWORK_ACCESS, false));
-  // But migration bit should be false.
-  EXPECT_FALSE(prefs->GetBoolean(kGeolocationMigrateDefaultValue));
 }
 
 }  // namespace content_settings

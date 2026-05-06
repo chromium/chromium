@@ -1818,11 +1818,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
       policy4->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
-TEST_F(PermissionsPolicyTest,
-       TestLocalNetworkAccessFeatureDefaultAllowedSplit) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
-
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDefaultAllowed) {
   // When the old "local-network-access" feature is allowed by default,
   // both new features "local-network" and "loopback-network" should be
   // enabled.
@@ -1836,10 +1832,7 @@ TEST_F(PermissionsPolicyTest,
       network::mojom::PermissionsPolicyFeature::kLoopbackNetwork));
 }
 
-TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDisallowedSplit) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
-
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDisallowed) {
   // When the old "local-network-access" feature is disallowed,
   // none of the LNA features should be enabled.
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
@@ -1858,8 +1851,7 @@ TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDisallowedSplit) {
       network::mojom::PermissionsPolicyFeature::kLoopbackNetwork));
 }
 
-TEST_F(PermissionsPolicyTest,
-       TestLocalNetworkAccessFeatureDelegatedSplitAllowed) {
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDelegatedAllowed) {
   // +--------------------------------------------------+
   // |(1)Origin A                                       |
   // |No Policy                                         |
@@ -1885,9 +1877,6 @@ TEST_F(PermissionsPolicyTest,
   // +--------------------------------------------------+
   // All LNA features should be disabled in frame 2, as the origin does not
   // match. All LNA features should be enabled in the remaining frames.
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
 
   // Frame 1 just has defaults, no header.
   std::unique_ptr<PermissionsPolicy> policy1 =
@@ -1989,9 +1978,6 @@ TEST_F(PermissionsPolicyTest,
   // +--------------------------------------------------+
   // Only "local-network" should be enabled in frame 2.
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
-
   // Main frame just has defaults, no header.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, {},  // default, no header
@@ -2034,9 +2020,6 @@ TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessOldFeatureOverrides) {
   // +---------------------------------------------------------------------+
   // "local-network" will be enabled in frame 2 despite the allowlist
   // exclusion, since the old "local-network-access" feature takes precedence.
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
 
   // Main frame just has defaults, no header.
   std::unique_ptr<PermissionsPolicy> policy1 =
@@ -2085,9 +2068,6 @@ TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessNewFeatureAdditive) {
   // +---------------------------------------------------------------------+
   // "local-network" will be enabled in frame 2 despite "local-network-access"
   // being set to 'none', as the iframe allowlist bitset is additive.
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kLocalNetworkAccessChecksSplitPermissions);
 
   // Main frame just has defaults, no header.
   std::unique_ptr<PermissionsPolicy> policy1 =

@@ -171,7 +171,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
     {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
     {ContentSettingsType::SMART_CARD_DATA, kSmartCardChooserDataGroupType},
-    {ContentSettingsType::LOCAL_NETWORK_ACCESS, "local-network-access"},
     {ContentSettingsType::LOCAL_NETWORK, "local-network"},
     {ContentSettingsType::LOOPBACK_NETWORK, "loopback-network"},
 
@@ -259,6 +258,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr},
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, nullptr},
     {ContentSettingsType::DEPRECATED_SUB_APP_INSTALLATION_PROMPTS, nullptr},
+    {ContentSettingsType::LOCAL_NETWORK_ACCESS, nullptr},
 });
 
 static_assert(
@@ -661,13 +661,8 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 
     if (base::FeatureList::IsEnabled(
             network::features::kLocalNetworkAccessChecks)) {
-      if (base::FeatureList::IsEnabled(
-              network::features::kLocalNetworkAccessChecksSplitPermissions)) {
-        base_types->push_back(ContentSettingsType::LOCAL_NETWORK);
-        base_types->push_back(ContentSettingsType::LOOPBACK_NETWORK);
-      } else {
-        base_types->push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
-      }
+      base_types->push_back(ContentSettingsType::LOCAL_NETWORK);
+      base_types->push_back(ContentSettingsType::LOOPBACK_NETWORK);
     }
 
     initialized = true;

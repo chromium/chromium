@@ -453,10 +453,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = show_blocked_badge ? &vector_icons::kInstallDesktopOffIcon
                                 : &vector_icons::kInstallDesktopIcon;
       break;
-    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
-      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
-                                : &vector_icons::kRouterIcon;
-      break;
     case ContentSettingsType::LOCAL_NETWORK:
       icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
                                 : &vector_icons::kRouterIcon;

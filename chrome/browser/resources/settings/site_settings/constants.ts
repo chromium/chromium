@@ -38,7 +38,6 @@ export enum ContentSettingsTypes {
   KEYBOARD_LOCK = 'keyboard-lock',
   LOCAL_FONTS = 'local-fonts',
   LOCAL_NETWORK = 'local-network',
-  LOCAL_NETWORK_ACCESS = 'local-network-access',
   LOOPBACK_NETWORK = 'loopback-network',
   MIC = 'media-stream-mic',  // AKA Microphone.
   MIDI_DEVICES = 'midi-sysex',

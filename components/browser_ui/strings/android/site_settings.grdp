@@ -124,9 +124,6 @@
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title of the permission to allow embedded content to access cookies and site data [CHAR_LIMIT=32]">
     Embedded content
   </message>
-  <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_TITLE" desc="Title of the permission for Local Network Access [CHAR_LIMIT=32]">
-    Local network access
-  </message>
   <message name="IDS_LOCAL_NETWORK_PERMISSION_TITLE" desc="Title of the permission for Local Network [CHAR_LIMIT=32]">
     Local network
   </message>
@@ -1222,25 +1219,6 @@
   </message>
 
   <!-- Local Network Access -->
-  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_ACCESS_PAGE_DESCRIPTION" desc="Description of the local network access content setting.">
-    Sites can use this feature to look for and connect to any device on your local network
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_ACCESS_ASK" desc="Summary text explaining that sites need to ask for permission before they can connect to any devices on the user's local network.">
-    Sites can ask to connect to any device on your local network
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_ACCESS_BLOCKED" desc="Summary text explaining that sites are blocked from making local network requests.">
-    Don’t allow sites to connect to any device on your local network
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_LOCAL_NETWORK_ACCESS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to connect to devices on the user's local network. It is important to keep this string as two full sentences terminated by a period.">
-    When on, sites can ask to connect to any device on your local network. When off, sites can’t connect to devices on your local network.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_ACCESS_ASK" desc="Primary text corresponding to the ask button in the Local Network Access permission radio button group.">
-    Sites can ask to connect to any device on your local network
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_ACCESS_BLOCK" desc="Primary text corresponding to the block button in the Local Network Access permission radio button group.">
-    Don’t allow sites to connect to any device on your local network
-  </message>
-
   <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_PAGE_DESCRIPTION" desc="Description of the local network content setting.">
     Sites can use this feature to access other devices on your local network
   </message>

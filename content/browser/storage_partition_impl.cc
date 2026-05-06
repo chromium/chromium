@@ -2189,21 +2189,16 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
 
   // Compute the permission that we will check, if we end up checking for one.
   blink::PermissionType permission_type;
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecksSplitPermissions)) {
-    switch (ip_address_space) {
-      case network::mojom::IPAddressSpace::kLocal:
-        permission_type = blink::PermissionType::LOCAL_NETWORK;
-        break;
-      case network::mojom::IPAddressSpace::kLoopback:
-        permission_type = blink::PermissionType::LOOPBACK_NETWORK;
-        break;
-      case network::mojom::IPAddressSpace::kPublic:
-      case network::mojom::IPAddressSpace::kUnknown:
-        NOTREACHED();
-    }
-  } else {
-    permission_type = blink::PermissionType::LOCAL_NETWORK_ACCESS;
+  switch (ip_address_space) {
+    case network::mojom::IPAddressSpace::kLocal:
+      permission_type = blink::PermissionType::LOCAL_NETWORK;
+      break;
+    case network::mojom::IPAddressSpace::kLoopback:
+      permission_type = blink::PermissionType::LOOPBACK_NETWORK;
+      break;
+    case network::mojom::IPAddressSpace::kPublic:
+    case network::mojom::IPAddressSpace::kUnknown:
+      NOTREACHED();
   }
 
   // Three different cases are handled here depending on the request context:

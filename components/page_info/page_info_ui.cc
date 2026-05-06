@@ -141,9 +141,6 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
-      {ContentSettingsType::LOCAL_NETWORK_ACCESS,
-       IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS,
-       IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS_MID_SENTENCE},
       {ContentSettingsType::LOCAL_NETWORK, IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK,
        IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_MID_SENTENCE},
       {ContentSettingsType::LOOPBACK_NETWORK,
@@ -309,9 +306,6 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::IDLE_DETECTION:
       message_id = IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK;
-      break;
-    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
-      message_id = IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK;
       break;
     case ContentSettingsType::LOCAL_NETWORK:
       message_id = IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ASK;

@@ -111,9 +111,6 @@ BASE_DECLARE_FEATURE(kLocalNetworkAccessChecksWebSockets);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kLocalNetworkAccessChecksWebTransport);
 
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kLocalNetworkAccessChecksSplitPermissions);
-
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

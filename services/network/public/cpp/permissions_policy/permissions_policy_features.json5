@@ -426,7 +426,6 @@
     {
       name: "LocalNetwork",
       permissions_policy_name: "local-network",
-      depends_on: [ "LocalNetworkAccessSplitPermissions" ],
       default_value_behind_switch: [
         ["LocalNetworkAccessPermissionsPolicyDefaultEnabled",
         "EnableForAll"]
@@ -444,7 +443,6 @@
     {
       name: "LoopbackNetwork",
       permissions_policy_name: "loopback-network",
-      depends_on: [ "LocalNetworkAccessSplitPermissions" ],
       default_value_behind_switch: [
         ["LocalNetworkAccessPermissionsPolicyDefaultEnabled",
          "EnableForAll"]

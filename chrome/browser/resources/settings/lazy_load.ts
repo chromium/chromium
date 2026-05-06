@@ -65,7 +65,6 @@ import './site_settings/javascript_page.js';
 import './site_settings/keyboard_lock_page.js';
 import './site_settings/local_fonts_page.js';
 import './site_settings/local_network_page.js';
-import './site_settings/local_network_access_page.js';
 import './site_settings/loopback_network_page.js';
 import './site_settings/microphone_page.js';
 import './site_settings/midi_devices_page.js';

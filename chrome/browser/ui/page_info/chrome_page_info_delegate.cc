@@ -510,11 +510,6 @@ bool ChromePageInfoDelegate::IsIncognitoProfile() {
   return GetProfile()->IsIncognitoProfile();
 }
 
-bool ChromePageInfoDelegate::IsLocalNetworkAccessSplitPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(
-      network::features::kLocalNetworkAccessChecksSplitPermissions);
-}
-
 void ChromePageInfoDelegate::SetSecurityStateForTests(
     security_state::SecurityLevel security_level,
     security_state::VisibleSecurityState visible_security_state) {

@@ -40,6 +40,7 @@ enum class RequestType {
   kLocalFonts,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kLocalNetwork,
+  // TODO(crbug.com/465491626): remove kLocalNetworkAccess request type
   kLocalNetworkAccess,
   kLoopbackNetwork,
   kMicStream,
