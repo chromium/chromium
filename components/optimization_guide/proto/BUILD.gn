@@ -56,6 +56,7 @@ proto_library("optimization_guide_proto") {
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
+    "features/updater_chat.proto",
     "features/walletable_pass_extraction.proto",
     "features/wallpaper_search.proto",
     "features/writing_assistance_api.proto",
