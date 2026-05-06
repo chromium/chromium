@@ -136,7 +136,8 @@ class MagiPresubmitTest(unittest.TestCase):
         valid_json = (
             '{"iteration": 1, "stall_count": 0, "active_constraints": [], '
             '"resolved_constraints": [], "personas": ["Security"], '
-            '"review_mode": "SUPERVISOR", "next_phase": "CRITIQUE"}')
+            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"next_phase": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json')
         ]
@@ -148,14 +149,16 @@ class MagiPresubmitTest(unittest.TestCase):
         schema_json = (
             '{"definitions": {"StateBlock": {"required": ["iteration", '
             '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "next_phase"], '
+            '"personas", "review_mode", "state_transport", "next_phase"], '
             '"properties": {"iteration": '
             '{"type": "integer"}, "stall_count": {"type": "integer"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
             '{"type": "array"}, "personas": {"type": "array"}, '
             '"next_phase": {"type": "string"}, '
             '"review_mode": {"type": "string", "enum": '
-            '["SUPERVISOR", "CONSENSUS"]}}}}}')
+            '["SUPERVISOR", "CONSENSUS"]}, '
+            '"state_transport": {"type": "string", "enum": '
+            '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
         schema_path = os.path.normpath(os.path.join(
             os.path.abspath('fake_repo'),
             'remoting/tools/magi-mode/magi_schema.json'))
@@ -181,7 +184,8 @@ class MagiPresubmitTest(unittest.TestCase):
         wrong_type_json = (
             '{"iteration": "1", "stall_count": 0, "active_constraints": [], '
             '"resolved_constraints": [], "personas": [], '
-            '"review_mode": "SUPERVISOR", "next_phase": "CRITIQUE"}')
+            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"next_phase": "CRITIQUE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json': wrong_type_json
         }
@@ -269,7 +273,8 @@ class MagiPresubmitTest(unittest.TestCase):
         # Valid review feedback
         valid_json = (
             '{"verdict": "REJECT", "reasoning": ["Bad"], "comments": '
-            '[{"file": "foo.cc", "line": 10, "comment": "Fix this"}]}')
+            '[{"file": "foo.cc", "line": 10, "comment": "Fix this"}], '
+            '"next_phase": "ANALYSIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/review.security.magi.1.json')
@@ -394,6 +399,57 @@ class MagiPresubmitTest(unittest.TestCase):
                 self.mock_input, self.mock_output)
             self.assertTrue(any(
                 'must signal TPM_UPDATE, not SYNTHESIS' in r for r in results))
+
+    def testCrossFileValidation(self):
+        schema_json = '{"definitions": {}}'
+
+        state_json = (
+            '{"iteration": 1, "stall_count": 0, "active_constraints": [], '
+            '"resolved_constraints": [], "personas": ["Security"], '
+            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"next_phase": "CRITIQUE"}')
+
+        proj_paranoia = '{"paranoia_mode": true}'
+        proj_verbose = '{"auditability_level": "VERBOSE"}'
+
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json')
+        ]
+
+        def mock_exists(path):
+            return 'project.magi.json' in path
+
+        # Test EPHEMERAL with paranoia_mode: true
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/state_block.magi.json': state_json
+        }
+
+        with patch('os.path.exists', side_effect=mock_exists):
+            def mock_open_impl(path, *args, **kwargs):
+                if 'project.magi.json' in path:
+                    return unittest.mock.mock_open(read_data=proj_paranoia)()
+                return unittest.mock.mock_open(read_data=schema_json)()
+
+            with patch('builtins.open', side_effect=mock_open_impl):
+                results = PRESUBMIT.CheckJsonFiles(
+                    self.mock_input, self.mock_output)
+                self.assertTrue(any(
+                    'project.magi.json has paranoia_mode: true' in r
+                    for r in results))
+
+        # Test EPHEMERAL with auditability_level: VERBOSE
+        with patch('os.path.exists', side_effect=mock_exists):
+            def mock_open_impl2(path, *args, **kwargs):
+                if 'project.magi.json' in path:
+                    return unittest.mock.mock_open(read_data=proj_verbose)()
+                return unittest.mock.mock_open(read_data=schema_json)()
+
+            with patch('builtins.open', side_effect=mock_open_impl2):
+                results = PRESUBMIT.CheckJsonFiles(
+                    self.mock_input, self.mock_output)
+                self.assertTrue(any(
+                    'project.magi.json has auditability_level: VERBOSE' in r
+                    for r in results))
 
 
 if __name__ == '__main__':

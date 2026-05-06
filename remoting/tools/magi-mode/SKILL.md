@@ -131,6 +131,19 @@ next expert.
     *   **CONSENSUS:** Use if `auditability_level == "VERBOSE"`,
         `paranoia_mode == true`, or if the number of selected reviewers > 5.
     *   **SUPERVISOR:** Default for all other cases.
+- **State Transport Selection:** The Engineering Manager MUST calculate a
+  Context Bloat Risk Score `(Reviewer Count * Target Files)` and select
+  `state_transport`:
+    *   **FILE_IO:** Use if `paranoia_mode == true` or Risk Score > 15. All
+        drafts, reviews, and state updates are written to `.magi.*.json` files.
+    *   **EPHEMERAL_WITH_LOGS:** Use if `auditability_level == "VERBOSE"`.
+        Structured data is passed natively in JSON payloads to the Orchestrator,
+        but also teed to `.magi.*.json` files on disk for auditing.
+    *   **EPHEMERAL:** Default. C++ Drafts go to disk, but reviews, constraints,
+        and state updates are passed exclusively in JSON payloads.
+  *In-Memory Validation:* If an `EPHEMERAL` mode is active, the Orchestrator
+  MUST strictly validate incoming JSON payloads against `magi_schema.json` in
+  memory before proceeding, as disk-based presubmit checks will be bypassed.
 - **The Recruiter (Talent Acquisition):** If the Engineering Manager determines
   that a required expertise is lacking in the current catalog, they MUST invoke
   a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
@@ -172,7 +185,8 @@ Once the Domain Experts finish:
       "resolved_constraints": [],
       "personas": ["[Selected Experts]"],
       "next_phase": "CRITIQUE",
-      "review_mode": "[SUPERVISOR/CONSENSUS]"
+      "review_mode": "[SUPERVISOR/CONSENSUS]",
+      "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
     }
     ```
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
@@ -180,9 +194,11 @@ Once the Domain Experts finish:
     `next_phase: CRITIQUE`.
 ### 5. The Review Workflow (Consensus Loop vs. Supervisor)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
-    **File I/O:** Each reviewer MUST securely save their feedback to disk in a
-    unique file: `review.[persona].magi.[iteration].json` conforming to
-    `magi_schema.json`. Do NOT return feedback as text to the Orchestrator.
+    **File I/O:** Output routing depends on `state_transport`:
+    *   `FILE_IO`: Save feedback to disk as
+        `review.[persona].magi.[iteration].json`.
+    *   `EPHEMERAL`: Return the JSON object directly to the Orchestrator.
+    *   `EPHEMERAL_WITH_LOGS`: Return JSON natively AND save to disk.
     **Prompt Template:**
     > Role Details: Read your mandate from `[persona_file_path]`.
     > Project Spec: Read the requirements from `project.magi.json`.

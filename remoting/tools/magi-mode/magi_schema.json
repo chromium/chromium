@@ -10,7 +10,8 @@
         "resolved_constraints": { "type": "array", "items": { "type": "string" } },
         "personas": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
-        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] }
+        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] },
+        "state_transport": { "type": "string", "enum": ["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"] }
       },
       "required": [
         "iteration",
@@ -19,6 +20,7 @@
         "resolved_constraints",
         "personas",
         "review_mode",
+        "state_transport",
         "next_phase"
       ]
     },
@@ -31,7 +33,10 @@
         "edge_cases": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
         "paranoia_mode": { "type": "boolean" },
-        "auditability_level": { "type": "string", "enum": ["NORMAL", "VERBOSE"] }
+        "auditability_level": {
+          "type": "string",
+          "enum": ["NORMAL", "VERBOSE"]
+        }
       },
       "required": [
         "goal",
@@ -62,7 +67,7 @@
         },
         "next_phase": { "type": "string" }
       },
-      "required": ["verdict", "reasoning"]
+      "required": ["verdict", "reasoning", "next_phase"]
     },
     "Constraints": {
       "type": "object",

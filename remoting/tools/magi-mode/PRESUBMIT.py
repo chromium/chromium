@@ -413,6 +413,51 @@ def CheckJsonFiles(input_api, output_api):
                 f'state block: {next_p}'
             )
         )
+
+      # Cross-file validation for state_transport
+      state_transport = content.get('state_transport')
+      if state_transport in ('EPHEMERAL', 'EPHEMERAL_WITH_LOGS'):
+        project_file_path = input_api.os_path.join(
+            input_api.os_path.dirname(f.AbsoluteLocalPath()),
+            'project.magi.json',
+        )
+        proj_content_str = None
+        for af in input_api.AffectedFiles(include_deletes=False):
+          if af.AbsoluteLocalPath() == project_file_path:
+            proj_content_str = input_api.ReadFile(af)
+            break
+
+        if not proj_content_str and input_api.os_path.exists(project_file_path):
+          try:
+            with open(project_file_path, 'r', encoding='utf-8') as proj_f:
+              proj_content_str = proj_f.read()
+          except IOError:
+            pass
+
+        if proj_content_str:
+          try:
+            proj_content = json.loads(proj_content_str)
+            if proj_content.get('paranoia_mode') is True:
+              results.append(
+                  output_api.PresubmitError(
+                      f'File {f.LocalPath()} has state_transport '
+                      f'{state_transport} but project.magi.json has '
+                      'paranoia_mode: true.'
+                  )
+              )
+            if (
+                state_transport == 'EPHEMERAL'
+                and proj_content.get('auditability_level') == 'VERBOSE'
+            ):
+              results.append(
+                  output_api.PresubmitError(
+                      f'File {f.LocalPath()} has state_transport EPHEMERAL '
+                      'but project.magi.json has auditability_level: VERBOSE. '
+                      'Consider using EPHEMERAL_WITH_LOGS instead.'
+                  )
+              )
+          except ValueError:
+            pass
     elif filename.startswith('project'):
       if next_p and next_p != 'SCAFFOLDING':
         results.append(
