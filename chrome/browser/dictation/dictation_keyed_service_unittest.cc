@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace dictation {
@@ -21,6 +22,7 @@ class DictationKeyedServiceTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<MockBrowserWindowInterface> window_;
   std::unique_ptr<DictationKeyedService> service_;
 };
 
@@ -32,12 +34,12 @@ TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
 
 TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
-  service_->StartSession(nullptr);
+  service_->StartSession(window_, nullptr);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
 TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
-  service_->StartSession(nullptr);
+  service_->StartSession(window_, nullptr);
   ASSERT_NE(service_->session_controller(), nullptr);
   service_->EndSession();
   EXPECT_EQ(service_->session_controller(), nullptr);

@@ -26,6 +26,10 @@ class SessionControllerDelegate {
       SessionController& controller) const = 0;
   virtual std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const = 0;
+
+  // Ends the current session. No-op if there is no existing session. Note: this
+  // may destroy the session controller synchronously.
+  virtual void EndSession() = 0;
 };
 
 }  // namespace dictation

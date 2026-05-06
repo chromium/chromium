@@ -44,6 +44,7 @@ class MockSessionControllerDelegate : public SessionControllerDelegate {
               CreateUi,
               (SessionController & controller),
               (const, override));
+  MOCK_METHOD(void, EndSession, (), (override));
 };
 
 class MockTarget : public Target {

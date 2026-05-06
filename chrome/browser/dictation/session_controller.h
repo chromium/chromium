@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/dictation/session_ui_delegate.h"
 
 namespace dictation {
 
@@ -21,7 +22,7 @@ class Target;
 // The session_controller is a coordinating class between the StreamProvider and
 // the UI. It manages Profile-level state and transitions and synchronizes the
 // dictation system.
-class SessionController {
+class SessionController : public SessionUiDelegate {
  public:
   enum class State {
     // Dictation is currently not active, there is no stream provider attached.
@@ -29,7 +30,7 @@ class SessionController {
 
     // A stream provider has just been attached but it is still starting up and
     // not yet active.
-    kInitializing,
+    kStreamInitializing,
 
     // A stream provider is attached and actively transcribing and sending
     // data.
@@ -41,10 +42,15 @@ class SessionController {
   };
 
   explicit SessionController(SessionControllerDelegate& delegate);
-  ~SessionController();
-
+  ~SessionController() override;
   SessionController(const SessionController&) = delete;
   SessionController& operator=(const SessionController&) = delete;
+
+  // Called by the service when it's ready for the session to start.
+  void Initialize();
+
+  // SessionUiDelegate
+  void RequestEndSession() override;
 
   // Starts a new dictation stream by creating and attaching a new stream
   // provider. An existing stream must have been detached before calling this

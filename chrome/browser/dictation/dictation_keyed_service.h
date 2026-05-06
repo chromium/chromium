@@ -8,9 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -19,7 +22,6 @@ class BrowserContext;
 
 namespace dictation {
 
-class SessionController;
 class Target;
 
 // Created on a per-profile basis for any regular profile (i.e. excludes OTR,
@@ -45,6 +47,7 @@ class DictationKeyedService : public KeyedService,
       SessionController& controller) const override;
   std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const override;
+  void EndSession() override;
 
   // Starts a new session from the given target. It's the caller's
   // responsibility to ensure this never called while an existing session in
@@ -53,19 +56,28 @@ class DictationKeyedService : public KeyedService,
   // If a target is provided, the new session will immediately start up a
   // stream. Otherwise, if nullptr is passed the session is created without a
   // stream.
-  void StartSession(Target* target);
-
-  // Ends the current session. No-op if there is no existing session.
-  void EndSession();
+  void StartSession(BrowserWindowInterface& window, Target* target);
 
   // Returns null when no session is in progress.
-  SessionController* session_controller() const {
-    return session_controller_.get();
+  SessionController* session_controller() {
+    return session_ ? &session_->controller_ : nullptr;
+  }
+  const SessionController* session_controller() const {
+    return const_cast<DictationKeyedService*>(this)->session_controller();
   }
 
  private:
   raw_ptr<Profile> profile_;
-  std::unique_ptr<SessionController> session_controller_;
+
+  struct SessionState {
+    SessionState(SessionControllerDelegate& delegate,
+                 base::WeakPtr<BrowserWindowInterface> window);
+    ~SessionState();
+
+    SessionController controller_;
+    base::WeakPtr<BrowserWindowInterface> window_;
+  };
+  std::optional<SessionState> session_;
 };
 
 }  // namespace dictation

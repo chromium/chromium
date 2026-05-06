@@ -40,7 +40,8 @@ TEST_F(DictationSessionControllerTest, StartsInactive) {
 TEST_F(DictationSessionControllerTest, StreamAffectsState) {
   MockTarget target;
   controller_->StartDictationStream(target);
-  EXPECT_EQ(controller_->state(), SessionController::State::kInitializing);
+  EXPECT_EQ(controller_->state(),
+            SessionController::State::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 
   controller_->EndDictationStream();
