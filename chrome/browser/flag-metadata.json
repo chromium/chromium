@@ -8785,7 +8785,7 @@
       "top-chrome-desktop-ui@google.com",
       "//chrome/browser/startup/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "strict-origin-isolation",
