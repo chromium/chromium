@@ -238,6 +238,7 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void updateButtonsVisibility_AndStyling_dedicatedButton() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
@@ -249,6 +250,15 @@ public class FuseboxViewBinderUnitTest {
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.CANVAS);
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("Canvas", mViewHolder.requestType.getText());
+    }
+
+    @Test
+    public void updateButtonsVisibility_AndStyling_notDesktopPlatform() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.AI_MODE);
+
+        // It should be VISIBLE on non-desktop when other conditions met.
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
     }
 
     @Test

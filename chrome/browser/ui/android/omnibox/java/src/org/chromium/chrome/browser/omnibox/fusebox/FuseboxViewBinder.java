@@ -508,9 +508,10 @@ class FuseboxViewBinder {
         boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         @AutocompleteRequestType
         int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
-        boolean aiToolSelected = ToolModeUtils.isAimRequest(requestType);
 
-        if (fuseboxDisabled || !(aiToolSelected || showDedicatedModeButton)) {
+        if (fuseboxDisabled
+                || !(ToolModeUtils.shouldShowRequestTypeButton(requestType)
+                        || showDedicatedModeButton)) {
             view.requestType.setVisibility(View.GONE);
             return;
         }
@@ -529,7 +530,7 @@ class FuseboxViewBinder {
         @ColorInt
         int colorPrimary = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
 
-        if (aiToolSelected) {
+        if (ToolModeUtils.isAimRequest(requestType)) {
             text = res.getString(getTextResForTool(requestType));
             description = res.getString(R.string.accessibility_omnibox_reset_mode, text);
             startDrawable = context.getDrawable(getIconResForTool(requestType));

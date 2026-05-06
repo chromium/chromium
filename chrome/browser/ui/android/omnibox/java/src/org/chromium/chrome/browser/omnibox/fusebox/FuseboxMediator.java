@@ -343,7 +343,9 @@ import java.util.function.Supplier;
     private void onRequestTypeButtonClicked() {
         if (!isInInputSession()) return;
 
-        if (ToolModeUtils.isAimRequest(mInput.getRequestType())) {
+        // On Desktop, dedicated button shows in specialized modes only, and reverts to AI Mode.
+        if (ToolModeUtils.isAimRequest(mInput.getRequestType())
+                && !OmniboxFeatures.isDesktopPlatform()) {
             activateSearchMode();
         } else {
             activateAiMode(
@@ -399,7 +401,12 @@ import java.util.function.Supplier;
             targetState = FuseboxState.EXPANDED;
         } else {
             targetState =
-                    mIsTextWrapping || mInput.getRequestType() != AutocompleteRequestType.SEARCH
+                    // If we're showing the dedicated mode button...
+                    ToolModeUtils.shouldShowRequestTypeButton(mInput.getRequestType())
+                                    // or the text is wrapping...
+                                    || mIsTextWrapping
+                                    // or the attachments list has elements - expand the fusebox.
+                                    || !mModelList.isEmpty()
                             ? FuseboxState.EXPANDED
                             : FuseboxState.COMPACT;
         }

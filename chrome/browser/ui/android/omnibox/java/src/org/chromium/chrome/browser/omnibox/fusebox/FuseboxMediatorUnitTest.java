@@ -430,6 +430,49 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void updateFuseboxState_desktopPlatform_emptyModelList_isCompact() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        recreateMediator();
+
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
+    public void updateFuseboxState_desktopPlatform_nonEmptyModelList_isExpanded() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        recreateMediator();
+
+        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
+    public void updateFuseboxState_notDesktop_textWrapping_isExpanded() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        recreateMediator();
+
+        mMediator.setIsTextWrapping(true);
+
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
+    public void updateFuseboxState_notDesktop_notSearchRequest_isExpanded() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        recreateMediator();
+
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
     public void endInput_clearsState() {
         assertNotEquals(
                 FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
