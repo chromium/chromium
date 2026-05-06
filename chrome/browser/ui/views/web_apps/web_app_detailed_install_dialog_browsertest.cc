@@ -16,7 +16,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -106,9 +106,9 @@ std::vector<webapps::Screenshot> GetScreenshots(const std::string& type) {
 }
 
 std::unique_ptr<webapps::MlInstallOperationTracker> GetMLInstallTracker(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   return webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
       ->RegisterCurrentInstallForWebContents(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
@@ -336,7 +336,9 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
                       /*width=*/500, /*height=*/500);
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
-  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          popup_contents);
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetMLInstallTracker(popup_browser);
@@ -347,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
       GetScreenshots(std::string()), base::flat_set<int>()));
   ShowWebAppDetailedInstallDialog(
-      popup_browser->tab_strip_model()->GetActiveWebContents(),
+      popup_browser->GetTabStripModel()->GetActiveWebContents(),
       GetInstallInfo(), std::move(install_tracker), test_future.GetCallback(),
       screenshot_fetcher(), PwaInProductHelpState::kNotShown);
 
@@ -376,7 +378,9 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
                       GURL("https://www.example.com"));
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
-  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          popup_contents);
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetMLInstallTracker(popup_browser);

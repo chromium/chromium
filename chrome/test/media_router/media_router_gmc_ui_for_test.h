@@ -17,7 +17,7 @@
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace media_router {
 
@@ -56,9 +56,9 @@ class MediaRouterGmcUiForTest : public MediaRouterUiForTestBase {
       WatchType watch_type,
       std::optional<std::string> sink_name = std::nullopt) override;
 
-  Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const { return browser_; }
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   MediaDialogUiForTest dialog_ui_{
       base::BindRepeating(&MediaRouterGmcUiForTest::browser,
                           base::Unretained(this))};

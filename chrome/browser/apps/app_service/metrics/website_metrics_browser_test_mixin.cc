@@ -12,8 +12,8 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -84,7 +84,8 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   params.disposition = disposition;
   Navigate(&params);
   auto* const contents = params.navigated_or_inserted_contents.get();
-  CHECK_EQ(::chrome::FindBrowserWithTab(params.navigated_or_inserted_contents),
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+               params.navigated_or_inserted_contents),
            browser);
   ::content::TestNavigationObserver observer(contents);
   observer.Wait();

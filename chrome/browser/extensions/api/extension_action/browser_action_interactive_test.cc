@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -310,12 +312,15 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
   Browser* new_browser = nullptr;
   {
     // Open a new window.
-    new_browser = chrome::FindBrowserWithTab(browser()->OpenURL(
-        content::OpenURLParams(GURL("about:blank"), content::Referrer(),
-                               WindowOpenDisposition::NEW_WINDOW,
-                               ui::PAGE_TRANSITION_TYPED, false),
-        /*navigation_handle_callback=*/{}));
-    ui_test_utils::BrowserActivationWaiter waiter(new_browser);
+    BrowserWindowInterface* new_browser_interface =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            browser()->OpenURL(
+                content::OpenURLParams(GURL("about:blank"), content::Referrer(),
+                                       WindowOpenDisposition::NEW_WINDOW,
+                                       ui::PAGE_TRANSITION_TYPED, false),
+                /*navigation_handle_callback=*/{}));
+    ui_test_utils::BrowserActivationWaiter waiter(new_browser_interface);
+    new_browser = new_browser_interface->GetBrowserForMigrationOnly();
     waiter.WaitForActivation();
 
     // Pin the extension to test that it opens when the action is on the
@@ -823,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   ui_test_utils::NavigateToURL(&params);
   ASSERT_TRUE(params.browser);
-  Browser* popup_browser = params.browser->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* popup_browser = params.browser;
   // Verify it is a popup, and it is the active window.
   // The window isn't considered "active" on MacOSX for odd reasons. The more
   // important test is that it *is* considered the last active browser, since
@@ -833,11 +838,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
 #if !BUILDFLAG(IS_MAC)
   ui_test_utils::BrowserActivationWaiter waiter(popup_browser);
   waiter.WaitForActivation();
-  EXPECT_TRUE(popup_browser->window()->IsActive());
+  EXPECT_TRUE(popup_browser->GetWindow()->IsActive());
 #endif
   EXPECT_FALSE(browser()->window()->IsActive());
-  EXPECT_FALSE(popup_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureToolbar));
+  EXPECT_FALSE(
+      popup_browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureToolbar));
   EXPECT_EQ(popup_browser,
             ProfileBrowserCollection::GetForProfile(browser()->profile())
                 ->GetLastActiveBrowser());

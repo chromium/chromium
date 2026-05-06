@@ -51,6 +51,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/pref_names.h"
@@ -106,8 +107,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -3824,9 +3825,10 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
 
   url_obvserver.Wait();
 
-  Browser* popup_browser = chrome::FindBrowserWithTab(
-      function->GetWebAuthFlowForTesting()->web_contents());
-  TabStripModel* tabs = popup_browser->tab_strip_model();
+  BrowserWindowInterface* popup_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          function->GetWebAuthFlowForTesting()->web_contents());
+  TabStripModel* tabs = popup_browser->GetTabStripModel();
   EXPECT_NE(browser(), popup_browser);
   ASSERT_EQ(tabs->GetActiveWebContents()->GetURL(), auth_url);
   // Close the opened auth web contents.

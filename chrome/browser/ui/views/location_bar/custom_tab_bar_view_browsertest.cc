@@ -10,7 +10,8 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -47,8 +48,9 @@ class TestTitleObserver : public TabStripModelObserver {
   // |target_title|.
   TestTitleObserver(content::WebContents* contents, std::u16string target_title)
       : contents_(contents), target_title_(target_title) {
-    browser_ = chrome::FindBrowserWithTab(contents_);
-    browser_->tab_strip_model()->AddObserver(this);
+    browser_ =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents_);
+    browser_->GetTabStripModel()->AddObserver(this);
   }
 
   // Run a loop, blocking until a tab has the title |target_title|.
@@ -80,7 +82,7 @@ class TestTitleObserver : public TabStripModelObserver {
   bool seen_target_title_ = false;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };

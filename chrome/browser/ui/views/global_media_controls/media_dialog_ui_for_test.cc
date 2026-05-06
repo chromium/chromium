@@ -269,7 +269,7 @@ class MediaToolbarButtonWatcher
 }  // namespace
 
 MediaDialogUiForTest::MediaDialogUiForTest(
-    base::RepeatingCallback<Browser*()> callback)
+    base::RepeatingCallback<BrowserWindowInterface*()> callback)
     : browser_callback_(callback) {}
 
 MediaDialogUiForTest::~MediaDialogUiForTest() = default;
@@ -335,6 +335,6 @@ void MediaDialogUiForTest::WaitForPictureInPictureButtonVisibility(
 global_media_controls::MediaItemManager* MediaDialogUiForTest::GetItemManager()
     const {
   return MediaNotificationServiceFactory::GetForProfile(
-             browser_callback_.Run()->profile())
+             browser_callback_.Run()->GetProfile())
       ->media_item_manager();
 }

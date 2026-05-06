@@ -36,7 +36,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -3863,7 +3863,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
           content::WebContents::CreateParams(browser()->profile()));
 
   // Verify that there is no browser.
-  ASSERT_FALSE(chrome::FindBrowserWithTab(new_web_contents.get()));
+  ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      new_web_contents.get()));
 
   // Create ChromePasswordManagerClient for newly created web_contents.
   autofill::ChromeAutofillClient::CreateForWebContents(new_web_contents.get());

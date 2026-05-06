@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1026,7 +1027,7 @@ class NavCaptureParameterizedBrowserTest
     return contents;
   }
 
-  void ClickIntentPickerChip(Browser* browser) {
+  void ClickIntentPickerChip(BrowserWindowInterface* browser) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     // Clicking the Intent Picker will trigger a re-parenting (not a new
     // navigation, so the DomMessage has already been sent).
@@ -1036,7 +1037,7 @@ class NavCaptureParameterizedBrowserTest
     // After re-parenting, the old browser gets a new tab contents and we
     // need to wait for that to finish loading before capturing the end
     // state.
-    WaitForLoadStop(browser->tab_strip_model()->GetActiveWebContents());
+    WaitForLoadStop(browser->GetTabStripModel()->GetActiveWebContents());
   }
 
   void GetNewContentsAndPropagationOfLaunchParams(
@@ -1697,7 +1698,7 @@ class NavCaptureParameterizedBrowserTest
     ASSERT_TRUE(MaybeCustomPreSetup(app_a, app_b));
 
     // Setup the initial page.
-    Browser* browser_a;
+    BrowserWindowInterface* browser_a;
     content::WebContents* contents_a;
     {
       if (StartInAppWindow()) {
@@ -1720,11 +1721,12 @@ class NavCaptureParameterizedBrowserTest
              "could mean the test setup didn't wait for enough navigations to "
              "finish.";
 
-      browser_a = chrome::FindBrowserWithTab(contents_a);
+      browser_a = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          contents_a);
       ASSERT_TRUE(browser_a != nullptr);
-      ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
-                                   : Browser::Type::TYPE_NORMAL,
-                browser_a->type());
+      ASSERT_EQ(StartInAppWindow() ? BrowserWindowInterface::Type::TYPE_APP
+                                   : BrowserWindowInterface::Type::TYPE_NORMAL,
+                browser_a->GetType());
     }
 
     ASSERT_TRUE(MaybeCustomPostSetup(app_a, app_b));

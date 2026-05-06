@@ -20,7 +20,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace web_app {
 
@@ -28,23 +28,25 @@ namespace web_app {
 // `kPwaNavigationCapturing` flag to be set on Windows, Mac and Linux. On
 // ChromeOS, this will work by default. Without these flags set on their
 // respective platforms, the tests will CHECK fail.
-IntentChipButton* GetIntentPickerIcon(Browser* browser);
+IntentChipButton* GetIntentPickerIcon(BrowserWindowInterface* browser);
 
 // This test function handles the the case where intent picker migration is
 // enabled to use the PageActionView of the intent picker from the
 // IntentChipButton.
-views::Button* GetIntentPickerButton(Browser* browser);
+views::Button* GetIntentPickerButton(BrowserWindowInterface* browser);
 
 IntentPickerBubbleView* intent_picker_bubble();
 
 testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
     content::WebContents* web_contents);
 
-testing::AssertionResult WaitForIntentPickerToShow(Browser* browser);
+testing::AssertionResult WaitForIntentPickerToShow(
+    BrowserWindowInterface* browser);
 
-testing::AssertionResult ClickIntentPickerChip(Browser* browser);
+testing::AssertionResult ClickIntentPickerChip(BrowserWindowInterface* browser);
 
-testing::AssertionResult ClickIntentPickerAndWaitForBubble(Browser* browser);
+testing::AssertionResult ClickIntentPickerAndWaitForBubble(
+    BrowserWindowInterface* browser);
 
 views::Button* GetIntentPickerButtonAtIndex(size_t index);
 

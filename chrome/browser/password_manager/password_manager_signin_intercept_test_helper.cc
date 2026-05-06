@@ -18,7 +18,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -84,8 +84,9 @@ void PasswordManagerSigninInterceptTestHelper::NavigateToGaiaSigninPage(
   DCHECK(gaia::HasGaiaSchemeHostPort(https_url));
 
   PasswordsNavigationObserver navigation_observer(contents);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(chrome::FindBrowserWithTab(contents),
-                                           https_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents),
+      https_url));
   ASSERT_TRUE(navigation_observer.Wait());
 }
 

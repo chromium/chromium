@@ -1442,9 +1442,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
               Eq(1ul));
 
   // Updates will be applied once the app's window is closed.
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
   ui_test_utils::BrowserDestroyedObserver observer(app_browser);
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
   observer.Wait();
   EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(0ul));
 

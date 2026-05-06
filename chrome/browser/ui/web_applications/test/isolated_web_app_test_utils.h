@@ -27,6 +27,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -69,7 +70,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
       const GURL& url,
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
-  Browser* GetBrowserFromFrame(content::RenderFrameHost* frame);
+  BrowserWindowInterface* GetBrowserFromFrame(content::RenderFrameHost* frame);
 
  private:
   base::test::ScopedFeatureList iwa_scoped_feature_list_;

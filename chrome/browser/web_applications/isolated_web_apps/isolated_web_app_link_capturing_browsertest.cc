@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -312,13 +312,15 @@ class IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
                        NavigationCapture) {
   // Open IWA if required.
-  Browser* existing_app_browser = nullptr;
+  BrowserWindowInterface* existing_app_browser = nullptr;
   content::WebContents* existing_app_contents = nullptr;
 
   if (IsIwaInitiallyOpened()) {
     content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
     existing_app_contents = content::WebContents::FromRenderFrameHost(frame);
-    existing_app_browser = chrome::FindBrowserWithTab(existing_app_contents);
+    existing_app_browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            existing_app_contents);
 
     // Verify initial state launch params.
     WaitForLaunchParams(existing_app_contents,
@@ -485,8 +487,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
   content::WebContents* existing_app_contents =
       content::WebContents::FromRenderFrameHost(frame);
-  Browser* existing_app_browser =
-      chrome::FindBrowserWithTab(existing_app_contents);
+  BrowserWindowInterface* existing_app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          existing_app_contents);
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
@@ -523,8 +526,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
   content::WebContents* existing_app_contents =
       content::WebContents::FromRenderFrameHost(frame);
-  Browser* existing_app_browser =
-      chrome::FindBrowserWithTab(existing_app_contents);
+  BrowserWindowInterface* existing_app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          existing_app_contents);
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
@@ -570,8 +574,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
   content::WebContents* existing_app_contents =
       content::WebContents::FromRenderFrameHost(frame);
-  Browser* existing_app_browser =
-      chrome::FindBrowserWithTab(existing_app_contents);
+  BrowserWindowInterface* existing_app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          existing_app_contents);
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
@@ -747,8 +752,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingAddValidatedOriginBrowserTest,
   content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
   content::WebContents* existing_app_contents =
       content::WebContents::FromRenderFrameHost(frame);
-  Browser* existing_app_browser =
-      chrome::FindBrowserWithTab(existing_app_contents);
+  BrowserWindowInterface* existing_app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          existing_app_contents);
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
 

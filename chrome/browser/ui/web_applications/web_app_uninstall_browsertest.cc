@@ -9,9 +9,9 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -78,11 +78,12 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
   service->RestoreMostRecentEntry(nullptr);
 
   content::WebContents* const restored_web_contents = waiter.Wait();
-  Browser* const restored_browser =
-      chrome::FindBrowserWithTab(restored_web_contents);
+  BrowserWindowInterface* const restored_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          restored_web_contents);
 
-  EXPECT_FALSE(restored_browser->is_type_app());
-  EXPECT_TRUE(restored_browser->is_type_normal());
+  EXPECT_NE(restored_browser->GetType(), BrowserWindowInterface::TYPE_APP);
+  EXPECT_EQ(restored_browser->GetType(), BrowserWindowInterface::TYPE_NORMAL);
 }
 
 // Check that uninstalling a PWA with a window opened doesn't crash.

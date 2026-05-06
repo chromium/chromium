@@ -210,7 +210,9 @@ class TabRestoreTest : public InProcessBrowserTest {
       EXPECT_EQ(initial_tab_count + 1, browser->GetTabStripModel()->count());
     }
 
-    EXPECT_EQ(chrome::FindBrowserWithTab(new_tab), browser);
+    EXPECT_EQ(
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(new_tab),
+        browser);
 
     // Get a handle to the restored tab.
     CHECK_GT(browser->GetTabStripModel()->count(), expected_tabstrip_index);
@@ -267,8 +269,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   void GoBack(BrowserWindowInterface* browser) {
     content::LoadStopObserver observer(
         browser->GetTabStripModel()->GetActiveWebContents());
-    chrome::GoBack(browser->GetBrowserForMigrationOnly(),
-                   WindowOpenDisposition::CURRENT_TAB);
+    chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
 
@@ -1829,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   browser_created_observer.emplace();
-  chrome::RestoreTab(new_browser->GetBrowserForMigrationOnly());
+  chrome::RestoreTab(new_browser);
   BrowserWindowInterface* const restored_browser =
       browser_created_observer->Wait();
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -3105,7 +3106,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
   // Use the second browser to restore the closed window.
   browser_created_observer.emplace();
-  chrome::RestoreTab(second_browser->GetBrowserForMigrationOnly());
+  chrome::RestoreTab(second_browser);
   BrowserWindowInterface* const first_browser =
       browser_created_observer->Wait();
 
@@ -3236,12 +3237,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
   chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   BrowserWindowInterface* const restored_browser_window =
       browser_created_observer.Wait();
-  Browser* restored_browser =
-      restored_browser_window->GetBrowserForMigrationOnly();
-
   // Verify the state.
   auto* new_state_controller =
-      tabs::VerticalTabStripStateController::From(restored_browser);
+      tabs::VerticalTabStripStateController::From(restored_browser_window);
   EXPECT_EQ(new_state_controller->IsCollapsed(), kIsCollapsed);
   EXPECT_EQ(new_state_controller->GetUncollapsedWidth(), kUncollapsedWidth);
 }

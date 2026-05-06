@@ -261,9 +261,10 @@ Browser* LaunchWebAppBrowser(Profile* profile,
     return nullptr;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(browser, app_id));
-  return browser;
+  return browser->GetBrowserForMigrationOnly();
 }
 
 // Launches the app, waits for the app url to load.
@@ -329,13 +330,13 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
     return nullptr;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   ui_test_utils::WaitForBrowserSetLastActive(browser);
 
-  EXPECT_EQ(browser,
-            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
-  EXPECT_EQ(web_contents, browser->tab_strip_model()->GetActiveWebContents());
-  return browser;
+  EXPECT_EQ(browser, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  EXPECT_EQ(web_contents, browser->GetTabStripModel()->GetActiveWebContents());
+  return browser->GetBrowserForMigrationOnly();
 }
 
 Browser* LaunchWebAppToURL(Profile* profile,
@@ -358,9 +359,10 @@ Browser* LaunchWebAppToURL(Profile* profile,
   content::WebContents* web_contents = future.template Get<1>().get();
   EXPECT_TRUE(web_contents);
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(browser, app_id));
-  return browser;
+  return browser->GetBrowserForMigrationOnly();
 }
 
 ExternalInstallOptions CreateInstallOptions(

@@ -31,7 +31,7 @@
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -299,7 +299,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
 
   observer.Wait();
-  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
   auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an isolated PWA browser window.
@@ -401,14 +403,16 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
 
   observer.Wait();
-  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
   auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an IWA window.
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
-  EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
+  EXPECT_FALSE(AppBrowserController::From(app_browser)->HasMinimalUiButtons());
   EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
 }
@@ -428,14 +432,16 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
 
   observer.Wait();
-  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
   auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   // The app's frame should belong to an IWA window.
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
-  EXPECT_FALSE(app_browser->app_controller()->HasMinimalUiButtons());
+  EXPECT_FALSE(AppBrowserController::From(app_browser)->HasMinimalUiButtons());
   EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
 }
@@ -452,7 +458,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   ui_test_utils::SendToOmniboxAndSubmit(browser(), app_url.spec());
 
   observer.Wait();
-  auto* app_browser = chrome::FindBrowserWithTab(observer.web_contents());
+  auto* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
   auto* app_frame = observer.web_contents()->GetPrimaryMainFrame();
 
   EXPECT_NE(app_browser, browser());
@@ -475,13 +483,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
       IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
 
-  EXPECT_FALSE(
-      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
+  EXPECT_FALSE(app_browser->GetBrowserForMigrationOnly()
+                   ->command_controller()
+                   ->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 
   auto app_menu_model = std::make_unique<WebAppMenuModel>(
-      /*provider=*/nullptr, app_browser);
+      /*provider=*/nullptr, app_browser->GetBrowserForMigrationOnly());
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   size_t index = 0;
@@ -1025,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   // Load a page that sets a cookie, then create a cross-origin iframe that
   // loads the same page.
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   CreateIframe(app_frame, "child", non_app_url, "");
 
@@ -1039,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   // Load the pages again. The non-app page should send the cookie, but the
   // app won't because the proxy disables cookies (CredentialsMode::kOmit).
   content::RenderFrameHost* app_frame2 = OpenApp(url_info.app_id());
-  Browser* app_browser2 = GetBrowserFromFrame(app_frame2);
+  BrowserWindowInterface* app_browser2 = GetBrowserFromFrame(app_frame2);
   app_frame2 = ui_test_utils::NavigateToURL(app_browser2, app_url);
   CreateIframe(app_frame2, "child", non_app_url, "");
 
@@ -1101,7 +1110,8 @@ class IsolatedWebAppBrowserServiceWorkerTest
 
   const GURL& app_url() const { return app_url_; }
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_window_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_window_ =
+      nullptr;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       app_web_contents_ = nullptr;
   raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged> app_frame_ =
@@ -1593,8 +1603,12 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
   ui_test_utils::UrlLoadObserver observer(url_info.origin().GetURL());
   ASSERT_TRUE(content::ExecJs(web_contents, "window.open('/')"));
   observer.Wait();
-  auto* new_browser = chrome::FindBrowserWithTab(observer.web_contents());
-  EXPECT_NE(chrome::FindBrowserWithTab(web_contents), new_browser);
+  auto* new_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
+  EXPECT_NE(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
+      new_browser);
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
@@ -1616,8 +1630,12 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
   ASSERT_TRUE(content::ExecJs(web_contents, kWindowOpen));
   observer.Wait();
 
-  auto* new_browser = chrome::FindBrowserWithTab(observer.web_contents());
-  EXPECT_NE(chrome::FindBrowserWithTab(web_contents), new_browser);
+  auto* new_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          observer.web_contents());
+  EXPECT_NE(
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
+      new_browser);
 
   WaitForLaunchQueueEntryWithURL(web_contents,
                                  url_info.origin().GetURL().spec());
@@ -1648,8 +1666,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest, Omnibox) {
     }
   }();
 
-  EXPECT_EQ(chrome::FindBrowserWithTab(web_contents) ==
-                chrome::FindBrowserWithTab(target_contents),
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents) ==
+                GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                    target_contents),
             LaunchHandler(GetParam()).TargetsExistingClients());
 
   WaitForLaunchQueueEntryWithURL(target_contents, url.spec());
@@ -1717,8 +1737,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest, ServiceWorker) {
     }
   }();
 
-  EXPECT_EQ(chrome::FindBrowserWithTab(web_contents) ==
-                chrome::FindBrowserWithTab(target_contents),
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents) ==
+                GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                    target_contents),
             LaunchHandler(GetParam()).TargetsExistingClients());
   WaitForLaunchQueueEntryWithURL(target_contents, url.spec());
 }
@@ -1739,8 +1761,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest, PlainLaunch) {
       content::WebContents::FromRenderFrameHost(OpenIsolatedWebApp(
           profile(), url_info.app_id(), "/something/weird.html"));
 
-  EXPECT_EQ(chrome::FindBrowserWithTab(web_contents) ==
-                chrome::FindBrowserWithTab(new_web_contents),
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                web_contents) ==
+                GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                    new_web_contents),
             LaunchHandler(GetParam()).TargetsExistingClients());
   WaitForLaunchQueueEntryWithURL(
       new_web_contents,

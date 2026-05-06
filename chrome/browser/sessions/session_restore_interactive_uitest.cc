@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -57,7 +58,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     return InProcessBrowserTest::SetUpUserDataDirectory();
   }
 
-  Browser* QuitBrowserAndRestore(Browser* browser) {
+  BrowserWindowInterface* QuitBrowserAndRestore(Browser* browser) {
     Profile* profile = browser->profile();
 
     // Close the browser.
@@ -78,7 +79,9 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     // Create a new window, which should trigger session restore.
     chrome::NewEmptyWindow(profile);
 
-    Browser* new_browser = chrome::FindBrowserWithTab(tab_waiter.Wait());
+    BrowserWindowInterface* new_browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            tab_waiter.Wait());
 
     restore_observer.Wait();
     WaitForTabsToLoad(new_browser);
@@ -162,16 +165,16 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
 
-  Browser* new_browser = QuitBrowserAndRestore(browser());
+  BrowserWindowInterface* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(url1_,
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+            new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 
   ui_test_utils::BrowserActivationWaiter waiter(new_browser);
   waiter.WaitForActivation();
 
   // Ensure window has initial focus on launch.
-  EXPECT_TRUE(new_browser->tab_strip_model()
+  EXPECT_TRUE(new_browser->GetTabStripModel()
                   ->GetActiveWebContents()
                   ->GetRenderWidgetHostView()
                   ->HasFocus());
@@ -196,14 +199,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   EXPECT_TRUE(minimize_waiter.Wait());
 
   // Restart and session restore the tabs.
-  Browser* restored = QuitBrowserAndRestore(browser());
-  EXPECT_EQ(1, restored->tab_strip_model()->count());
+  BrowserWindowInterface* restored = QuitBrowserAndRestore(browser());
+  EXPECT_EQ(1, restored->GetTabStripModel()->count());
 
   // Expect the window to be visible.
   // Prior to the fix for https://crbug.com/40655640, the window was active but
   // not visible.
-  EXPECT_TRUE(restored->window()->IsActive());
-  EXPECT_TRUE(restored->window()->IsVisible());
+  EXPECT_TRUE(restored->GetWindow()->IsActive());
+  EXPECT_TRUE(restored->GetWindow()->IsVisible());
 }
 
 // Verify that in restoring a browser with a normal and minimized window twice,
@@ -261,7 +264,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
   ASSERT_TRUE(controller->GetUncollapsedWidth() == 200);
 
   // Quit and restore.
-  Browser* const restored_browser = QuitBrowserAndRestore(browser());
+  BrowserWindowInterface* const restored_browser =
+      QuitBrowserAndRestore(browser());
   controller = tabs::VerticalTabStripStateController::From(restored_browser);
 
   // Verify states persist after session restore.

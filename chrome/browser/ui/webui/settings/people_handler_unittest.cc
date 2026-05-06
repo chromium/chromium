@@ -32,8 +32,8 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -1896,7 +1896,8 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
   EXPECT_NE(web_ui(), nullptr);
   EXPECT_NE(nullptr, web_ui()->GetWebContents());
 
-  EXPECT_TRUE(chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_ui()->GetWebContents()));
 
   base::ListValue args;
   args.Append(/*value=*/false);

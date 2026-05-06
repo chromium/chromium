@@ -932,7 +932,7 @@ class BorderlessIsolatedWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_;
 };

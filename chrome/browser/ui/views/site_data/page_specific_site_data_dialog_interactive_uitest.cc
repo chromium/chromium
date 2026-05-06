@@ -16,8 +16,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -590,7 +591,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
         test::ScopedPrewarmFeatureList::PrewarmState::kDisabled);
   }
 
-  Browser* InstallAndLaunchIsolatedWebApp() {
+  BrowserWindowInterface* InstallAndLaunchIsolatedWebApp() {
     Profile* profile = browser()->profile();
 
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
@@ -605,12 +606,14 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
     CHECK(content::ExecJs(iwa_frame, "localStorage.setItem('key', 'value')"));
 
-    return chrome::FindBrowserWithTab(
-        content::WebContents::FromRenderFrameHost(iwa_frame));
+    BrowserWindowInterface* iwa_browser =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            content::WebContents::FromRenderFrameHost(iwa_frame));
+    return iwa_browser;
   }
 
   // Installs and launches an IWA, then opens the PageSpecificSiteData dialog.
-  MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
+  MultiStep NavigateAndOpenDialog(BrowserWindowInterface* iwa_browser,
                                   ui::ElementIdentifier section_id) {
     return Steps(
         InstrumentTab(kWebContentsElementId,
@@ -658,7 +661,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(
     PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest,
     MAYBE_AppNameIsDisplayedInsteadOfHostname) {
-  Browser* iwa_browser = InstallAndLaunchIsolatedWebApp();
+  BrowserWindowInterface* iwa_browser = InstallAndLaunchIsolatedWebApp();
   RunTestSequenceInContext(
       BrowserElements::From(iwa_browser)->GetContext(),
       NavigateAndOpenDialog(iwa_browser,

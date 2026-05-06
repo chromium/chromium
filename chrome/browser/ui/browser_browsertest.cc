@@ -516,15 +516,19 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
       captive_portal::CaptivePortalWindowType::kPopup;
   ui_test_utils::NavigateToURL(&captive_portal_params);
   std::u16string captive_portal_window_title =
-      chrome::FindBrowserWithTab(
-          captive_portal_params.navigated_or_inserted_contents)
+      GlobalBrowserCollection::GetInstance()
+          ->FindBrowserWithTab(
+              captive_portal_params.navigated_or_inserted_contents)
+          ->GetBrowserForMigrationOnly()
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   NavigateParams normal_params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   normal_params.disposition = WindowOpenDisposition::NEW_POPUP;
   ui_test_utils::NavigateToURL(&normal_params);
   std::u16string normal_window_title =
-      chrome::FindBrowserWithTab(normal_params.navigated_or_inserted_contents)
+      GlobalBrowserCollection::GetInstance()
+          ->FindBrowserWithTab(normal_params.navigated_or_inserted_contents)
+          ->GetBrowserForMigrationOnly()
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   ASSERT_NE(captive_portal_window_title, normal_window_title);
@@ -1377,7 +1381,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ReattachDevToolsWindow) {
 
   // Re-attach the dev tools window. This resets its Browser*.
   ui_test_utils::BrowserDestroyedObserver observer(
-      chrome::FindBrowserWithTab(devtools_main_web_contents));
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          devtools_main_web_contents));
   devtools_delegate->SetIsDocked(true);
   // Wait until the browser actually gets closed.
   observer.Wait();

@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/test_server_redirect_handle.h"
@@ -547,7 +547,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
   // Reload the page.
   {
     content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
+    chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                       web_contents_),
                    WindowOpenDisposition::CURRENT_TAB);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
@@ -585,7 +586,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
   // Reload the page.
   {
     content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
+    chrome::Reload(GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+                       web_contents_),
                    WindowOpenDisposition::CURRENT_TAB);
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);

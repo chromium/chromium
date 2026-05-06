@@ -17,6 +17,7 @@
 class Browser;
 class BrowserFrameView;
 class BrowserView;
+class BrowserWindowInterface;
 class Profile;
 class GURL;
 class WebAppFrameToolbarView;
@@ -113,7 +114,7 @@ class WebAppFrameToolbarTestHelper {
       content::WebContents* web_contents);
   void GrantWindowManagementPermission();
 
-  Browser* app_browser() { return app_browser_; }
+  Browser* app_browser();
   BrowserView* browser_view() { return browser_view_; }
   BrowserFrameView* frame_view() { return frame_view_; }
   views::View* root_view() { return root_view_; }
@@ -124,9 +125,10 @@ class WebAppFrameToolbarTestHelper {
   void SetOriginTextLabelForTesting(const std::u16string& label_text);
 
  private:
-  void SetViews(Browser* app_browser);
+  void SetViews(BrowserWindowInterface* app_browser);
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
+      nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> root_view_ = nullptr;

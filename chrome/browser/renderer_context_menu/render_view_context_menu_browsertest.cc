@@ -1709,7 +1709,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_EQ(title2, tab->GetLastCommittedURL());
   EXPECT_EQ(tab_strip_model->count(), 2);
   EXPECT_EQ(app_tab_strip_model->count(), 1);
-  EXPECT_TRUE(chrome::FindBrowserWithTab(tab)->is_type_normal());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()
+                  ->FindBrowserWithTab(tab)
+                  ->GetType() == BrowserWindowInterface::TYPE_NORMAL);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -1750,10 +1752,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   EXPECT_EQ(title1, tab->GetLastCommittedURL());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
-  EXPECT_TRUE(chrome::FindBrowserWithTab(tab)->is_type_normal());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()
+                  ->FindBrowserWithTab(tab)
+                  ->GetType() == BrowserWindowInterface::TYPE_NORMAL);
 
-  TabStripModel* tab_strip_model =
-      chrome::FindBrowserWithTab(tab)->tab_strip_model();
+  TabStripModel* tab_strip_model = GlobalBrowserCollection::GetInstance()
+                                       ->FindBrowserWithTab(tab)
+                                       ->GetTabStripModel();
   EXPECT_EQ(app_tab_strip_model->count(), 1);
   EXPECT_EQ(tab_strip_model->count(), 1);
 }

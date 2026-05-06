@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -403,8 +404,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
-  MediaDialogUiForTest ui_{base::BindRepeating(&InProcessBrowserTest::browser,
-                                               base::Unretained(this))};
+  MediaDialogUiForTest ui_{base::BindLambdaForTesting(
+      [this]() -> BrowserWindowInterface* { return browser(); })};
 
  private:
   // Finds a global_media_controls::MediaItemUIUpdatedView by title.

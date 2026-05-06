@@ -307,7 +307,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
       future.GetCallback());
   content::WebContents* web_contents = future.template Get<1>().get();
   ASSERT_TRUE(web_contents);
-  Browser* app_browser = chrome::FindBrowserWithTab(web_contents);
+  Browser* app_browser = GlobalBrowserCollection::GetInstance()
+                             ->FindBrowserWithTab(web_contents)
+                             ->GetBrowserForMigrationOnly();
   App app{app_id, app_browser,
           BrowserView::GetBrowserViewForBrowser(app_browser), web_contents};
 
@@ -538,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   webapps::AppId app_id = InstallTestWebApp(start_url);
   BrowserWindowInterface* app_browser =
       FindWebAppBrowser(browser()->profile(), app_id);
-  CloseAndWait(app_browser->GetBrowserForMigrationOnly());
+  CloseAndWait(app_browser);
 
   // Navigate to the app URL in the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -18,8 +18,8 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -153,10 +153,11 @@ IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
   return web_app::InstallDevModeProxyIsolatedWebApp(profile(), origin);
 }
 
-Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
+BrowserWindowInterface* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
     content::RenderFrameHost* frame) {
-  Browser* browser = chrome::FindBrowserWithTab(
-      content::WebContents::FromRenderFrameHost(frame));
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;
 }
