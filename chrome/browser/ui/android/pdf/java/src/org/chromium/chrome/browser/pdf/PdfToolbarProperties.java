@@ -9,7 +9,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -25,8 +24,8 @@ class PdfToolbarProperties {
     /** The total number of pages in the document. */
     static final WritableIntPropertyKey TOTAL_PAGE_COUNT = new WritableIntPropertyKey();
 
-    /** The zoom level. */
-    static final WritableFloatPropertyKey ZOOM_LEVEL = new WritableFloatPropertyKey();
+    /** The zoom value text. */
+    static final WritableObjectPropertyKey<String> ZOOM_VALUE = new WritableObjectPropertyKey<>();
 
     /** Whether the zoom decrease button is enabled. */
     static final WritableBooleanPropertyKey ZOOM_DECREASE_BUTTON_ENABLED =
@@ -41,12 +40,7 @@ class PdfToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        CURRENT_PAGE_NUMBER,
-        TITLE,
-        TOTAL_PAGE_COUNT,
-        ZOOM_LEVEL,
-        ON_CLICK_LISTENER,
-        ZOOM_DECREASE_BUTTON_ENABLED,
-        ZOOM_INCREASE_BUTTON_ENABLED
+        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_VALUE, ON_CLICK_LISTENER,
+        ZOOM_DECREASE_BUTTON_ENABLED, ZOOM_INCREASE_BUTTON_ENABLED
     };
 }
