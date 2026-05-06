@@ -82,6 +82,8 @@ component("sql") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test/drive_error_test_vfs.cc",
+    "test/drive_error_test_vfs.h",
     "test/scoped_error_expecter.cc",
     "test/scoped_error_expecter.h",
     "test/test_helpers.cc",

@@ -54,9 +54,9 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
+#include "sql/test/drive_error_test_vfs.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
-#include "sql/test/test_vfs.h"
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,8 +67,8 @@ namespace sql {
 
 namespace {
 
+using ::sql::test::DriveErrorTestVfs;
 using ::sql::test::ExecuteWithResult;
-using ::sql::test::TestVfs;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Contains;
@@ -2884,25 +2884,6 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<2>(info.param) ? "ReadOnly" : "ReadWrite"});
     });
 
-// An SQLite VFS for testing the Database class.
-class DatabaseTestVfs : public TestVfs {
- public:
-  int Write(sqlite3_file* file,
-            const void* buffer,
-            int size,
-            sqlite3_int64 offset) override {
-    if (drive_full_) {
-      return SQLITE_FULL;
-    }
-    return TestVfs::Write(file, buffer, size, offset);
-  }
-
-  void set_drive_full(bool drive_full) { drive_full_ = drive_full; }
-
- private:
-  bool drive_full_ = false;
-};
-
 std::optional<std::vector<int>> ReadInts(Database& db,
                                          base::cstring_view query) {
   std::vector<int> result;
@@ -2924,7 +2905,7 @@ class DatabaseDiskFullTest : public Test {
   }
 
  protected:
-  DatabaseTestVfs vfs_;
+  DriveErrorTestVfs vfs_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
 };
