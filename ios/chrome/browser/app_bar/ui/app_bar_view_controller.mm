@@ -380,7 +380,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       return;
     case AppBarButtonTypeNewTab:
       _openNewTabButtonMenu = menu;
-      _openNewTabButton.menu = menu;
+      [self updateNewTabButtonForTabGroupsVisibility];
       return;
     case AppBarButtonTypeTabGrid:
       _tabGridButtonMenu = menu;
@@ -831,14 +831,15 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 // Updates the new tab button for whether the tab groups page in the tab grid or
 // a tab group is visible.
 - (void)updateNewTabButtonForTabGroupsVisibility {
-  _openNewTabButton.menu = _openNewTabButtonMenu;
   if (_isTabGroupsPageVisible || (_isTabGridVisible && _isTabGroupVisible)) {
+    _openNewTabButton.menu = _openNewTabButtonMenu;
     _openNewTabButton.showsMenuAsPrimaryAction = YES;
     return;
   }
 
   // The context menu for the New Tab button should appear on a long press when
   // the tab groups page is not visible.
+  _openNewTabButton.menu = nil;
   _openNewTabButton.showsMenuAsPrimaryAction = NO;
 }
 

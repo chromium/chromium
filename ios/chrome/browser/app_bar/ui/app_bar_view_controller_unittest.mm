@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -135,6 +136,44 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonImageIsClear) {
   ASSERT_NE(config.imageColorTransformer, nil);
   EXPECT_EQ(config.imageColorTransformer(UIColor.whiteColor),
             UIColor.clearColor);
+}
+
+// Tests that the menu property on the new tab button is managed correctly.
+TEST_F(AppBarViewControllerTest, TestNewTabButtonMenuManagement) {
+  UIMenu* dummyMenu = [UIMenu menuWithTitle:@"Test" children:@[]];
+
+  // Set the menu.
+  [view_controller_ setMenu:dummyMenu forButtonType:AppBarButtonTypeNewTab];
+
+  // By default, `showsMenuAsPrimaryAction` is NO, so the button's menu should
+  // be nil.
+  EXPECT_FALSE(openNewTabButton().showsMenuAsPrimaryAction);
+  EXPECT_NSEQ(openNewTabButton().menu, nil);
+
+  // When tab groups page is visible, `showsMenuAsPrimaryAction` is YES, so the
+  // button's menu should be set.
+  [view_controller_ setTabGroupsPageVisible:YES];
+  EXPECT_TRUE(openNewTabButton().showsMenuAsPrimaryAction);
+  EXPECT_NSEQ(openNewTabButton().menu, dummyMenu);
+
+  // When tab groups page is hidden again, `showsMenuAsPrimaryAction` is NO, so
+  // the button's menu should be nil.
+  [view_controller_ setTabGroupsPageVisible:NO];
+  EXPECT_FALSE(openNewTabButton().showsMenuAsPrimaryAction);
+  EXPECT_NSEQ(openNewTabButton().menu, nil);
+
+  // When tab grid and tab group are visible, `showsMenuAsPrimaryAction` is YES,
+  // so the button's menu should be set.
+  [view_controller_ setTabGridVisible:YES];
+  [view_controller_ setTabGroupVisible:YES];
+  EXPECT_TRUE(openNewTabButton().showsMenuAsPrimaryAction);
+  EXPECT_NSEQ(openNewTabButton().menu, dummyMenu);
+
+  // When tab group is hidden, `showsMenuAsPrimaryAction` is NO, so the
+  // button's menu should be nil.
+  [view_controller_ setTabGroupVisible:NO];
+  EXPECT_FALSE(openNewTabButton().showsMenuAsPrimaryAction);
+  EXPECT_NSEQ(openNewTabButton().menu, nil);
 }
 
 }  // namespace
