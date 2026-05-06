@@ -1,0 +1,290 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /MediaBox [0 0 200 200]
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 0
+  /Text (Missing Bounds)
+  /BoundsX 19.0
+  /BoundsY 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 184 Td
+(Missing Bounds) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 1
+  /Text (Invalid Typeface)
+  /BoundsX 19.0
+  /BoundsY 30.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 99
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 164 Td
+(Invalid Typeface) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 2
+  /Text (Invalid Alignment)
+  /BoundsX 19.0
+  /BoundsY 50.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 99
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 144 Td
+(Invalid Alignment) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 3
+  /Text (Invalid Orientation)
+  /BoundsX 19.0
+  /BoundsY 70.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 99
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 124 Td
+(Invalid Orientation) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 4
+  /Text (Missing Typeface)
+  /BoundsX 19.0
+  /BoundsY 90.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 104 Td
+(Missing Typeface) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 5
+  /Text (Missing Alignment)
+  /BoundsX 19.0
+  /BoundsY 110.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 84 Td
+(Missing Alignment) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 6
+  /Text (Missing Orientation)
+  /BoundsX 19.0
+  /BoundsY 130.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 64 Td
+(Missing Orientation) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 7
+  /Text (Multiple attributes)
+  /BoundsX 19.0
+  /BoundsY 150.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 7
+  /Text (Multiple attributes)
+  /BoundsX 19.0
+  /BoundsY 150.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 44 Td
+(Multiple attributes in one text object) Tj
+ET
+EMC
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 8
+  /Text (Multiple attributes)
+  /BoundsX 19.0
+  /BoundsY 170.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 24 Td
+(Multiple attributes across ) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 8
+  /Text (Multiple attributes)
+  /BoundsX 19.0
+  /BoundsY 170.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+120 24 Td
+(multiple text objects) Tj
+ET
+EMC
+
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 9
+  /BoundsX 19.0
+  /BoundsY 190.0
+  /BoundsWidth 100.0
+  /BoundsHeight 10.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 4 Td
+(Missing Text) Tj
+ET
+EMC
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

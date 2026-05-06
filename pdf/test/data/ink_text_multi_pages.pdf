@@ -1,0 +1,119 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 3
+  /MediaBox [0 0 200 200]
+  /Kids [3 0 R 6 0 R 7 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+5 0 obj <<
+  /Length 277
+>>
+stream
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 0
+  /Text (Hello Page 0)
+  /BoundsX 19.0
+  /BoundsY 94.0
+  /BoundsWidth 100.0
+  /BoundsHeight 50.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 1
+  /IsItalic 0
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 100 Td
+(Hello Page 0) Tj
+ET
+EMC
+endstream
+endobj
+6 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+>>
+endobj
+7 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 8 0 R
+>>
+endobj
+8 0 obj <<
+  /Length 278
+>>
+stream
+/GOOG:CrText <<
+  /Version 1
+  /TextboxId 42
+  /Text (Hello Page 2)
+  /BoundsX 19.0
+  /BoundsY 94.0
+  /BoundsWidth 100.0
+  /BoundsHeight 50.0
+  /Typeface 0
+  /Alignment 0
+  /Orientation 0
+  /IsBold 0
+  /IsItalic 1
+>> BDC
+BT
+0 0 0 rg
+/F1 7.5 Tf
+20 100 Td
+(Hello Page 2) Tj
+ET
+EMC
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000169 00000 n 
+0000000295 00000 n 
+0000000371 00000 n 
+0000000701 00000 n 
+0000000752 00000 n 
+0000000878 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+1209
+%%EOF
