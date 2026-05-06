@@ -391,6 +391,7 @@ source_set("browser_tests") {
   sources = [
     "actor_keyed_service_browsertest.cc",
     "actor_util_browsertest.cc",
+    "tools/attempt_login_tool_browsertest.cc",
   ]
   deps = [
     ":actor",
@@ -447,7 +448,6 @@ source_set("browser_tests") {
       "tab_observation_controller_browsertest.cc",
       "tools/action_tracker_for_metrics_browsertest.cc",
       "tools/attempt_form_filling_tool_browsertest.cc",
-      "tools/attempt_login_tool_browsertest.cc",
       "tools/attempt_otp_filling_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",

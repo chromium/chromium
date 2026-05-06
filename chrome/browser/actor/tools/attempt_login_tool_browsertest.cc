@@ -22,7 +22,6 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
@@ -43,6 +42,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -1163,6 +1166,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedShortDelayTest,
   EXPECT_FALSE(mock_login_service().last_sequence_succeeded());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
                        FederatedLoginClicksProviderButtonWithPopup) {
   const GURL idp_url = GURL("https://accounts.google.com");
@@ -1242,6 +1246,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   EXPECT_EQ(signin_success_url, navigation_observer.last_navigation_url());
   EXPECT_TRUE(mock_login_service().last_sequence_succeeded());
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
                        FederatedLoginFailedButtonClick) {
