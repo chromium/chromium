@@ -317,7 +317,8 @@
 #composebox::part(input),
 #composebox::part(tool-chip-label),
 #composebox::part(file-thumbnail-title),
-#composebox::part(mirror) {
+#composebox::part(mirror),
+#composebox::part(smart-compose) {
   font-family: var(--google-sans-font);
 }
 
