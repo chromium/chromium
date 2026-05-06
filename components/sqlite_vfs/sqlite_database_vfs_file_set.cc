@@ -59,14 +59,9 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
                                  ? SandboxedFile::AccessRights::kReadWrite
                                  : SandboxedFile::AccessRights::kReadOnly;
 
-  const base::UnguessableToken shared_locks_id =
-      pending_file_set.shared_lock.IsValid()
-          ? pending_file_set.shared_lock.GetGUID()
-          : base::UnguessableToken();
-
   auto db_file = std::make_unique<SandboxedFile>(
       client, FileType::kMainDb, std::move(pending_file_set.db_file),
-      access_rights, std::move(shared_locks), shared_locks_id,
+      access_rights, std::move(shared_locks),
       std::move(pending_file_set.wal_index_file));
   auto journal_file = std::make_unique<SandboxedFile>(
       client, FileType::kMainJournal, std::move(pending_file_set.journal_file),
