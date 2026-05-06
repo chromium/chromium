@@ -67,6 +67,12 @@ OneTimeTokenSharingHandler::HandleOneTimeTokenNotification(
           /*email_received_timestamp=*/
           FromSharingProtoTimestamp(
               gmail_message_reference.email_received_timestamp()),
+          // `notification_received_timestamp` and
+          // `notification_received_timeticks` are measured at the same physical
+          // time moment. `notification_received_timeticks` is used for pure
+          // client-side usages such as metrics. For more information on the
+          // differences between `base::Time` and `base::TimeTicks`, see
+          // //base/time/time.h.
           /*notification_received_timestamp=*/base::Time::Now(),
           /*notification_received_timeticks=*/base::TimeTicks::Now()));
   return OneTimeTokenValidationResult::kSuccess;

@@ -358,4 +358,45 @@ TEST_F(GmailOtpBackendImplTest, ExpiredTicklesNotProcessedUponSubscription) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+// Tests that SubscriptionWaitLatency is recorded as 0 when a subscription is
+// already active.
+TEST_F(GmailOtpBackendImplTest, SubscriptionWaitLatencyIsZeroWhenActive) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = backend_.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
+      base::TimeDelta(), 1);
+}
+
+// Tests that SubscriptionWaitLatency records the actual wait time when
+// processed from cache.
+TEST_F(GmailOtpBackendImplTest, SubscriptionWaitLatencyRecordsWaitTime) {
+  base::HistogramTester histogram_tester;
+  // Tickle arrives before anyone is subscribed.
+  backend_.OnIncomingOneTimeTokenBackendNotification(
+      OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
+
+  // Time passes.
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  // Subscription arrives.
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = backend_.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
+      base::Seconds(2), 1);
+}
+
 }  // namespace one_time_tokens

@@ -59,6 +59,9 @@ void GmailOtpBackendImpl::ProcessCachedNotifications() {
     return;
   }
   for (const auto& notification : notification_cache_.TakeItems()) {
+    base::UmaHistogramMediumTimes(
+        "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
+        base::TimeTicks::Now() - notification.notification_received_timeticks);
     coordinator_->SignalNetworkRequestNeeded(notification);
   }
 }

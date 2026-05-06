@@ -5757,6 +5757,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency"
+    units="ms" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration a Gmail OTP notification spent in the opportunistic
+    cache waiting for a subscription, from when the notification is received to
+    when it is retrieved from the cache. Recorded when a notification is
+    retrieved from the opportunistic cache.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.Success" enum="Boolean"
     expires_after="2027-05-01">
   <owner>koerber@google.com</owner>
