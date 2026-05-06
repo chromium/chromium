@@ -43,7 +43,8 @@ export class PostMessageHandler {
   private handshakeMessage_: Uint8Array|null = null;
   private onInputPlateBoundsUpdate_:
       ((rect?: Rect, occluders?: Rect[]) => void)|null = null;
-  private lastLoadStartEvent_: chrome.webviewTag.LoadStartEvent|null = null;
+  // The URL of the active navigation. Null if there is no active navigation.
+  private activeNavigationUrl_: string|null = null;
 
   constructor(
       webview: chrome.webviewTag.WebView, browserProxy: BrowserProxy,
@@ -119,7 +120,7 @@ export class PostMessageHandler {
     }
     // Store the start event to be used once its clear if this navigation is
     // committed or aborted
-    this.lastLoadStartEvent_ = event;
+    this.activeNavigationUrl_ = event.url;
   }
 
   private onLoadRedirect_(event: chrome.webviewTag.LoadRedirectEvent) {
@@ -137,7 +138,9 @@ export class PostMessageHandler {
       console.error('Invalid URL in loadredirect:', event.newUrl);
     }
 
-    this.maybeHandleNavigation_(event.oldUrl);
+    if (this.activeNavigationUrl_ === event.oldUrl) {
+      this.activeNavigationUrl_ = event.newUrl;
+    }
   }
 
   // This event is fired when the load has committed in the webview. This is
@@ -157,7 +160,10 @@ export class PostMessageHandler {
       console.error('Invalid URL in loadcommit:', event.url);
     }
 
-    this.maybeHandleNavigation_(event.url);
+    if (this.activeNavigationUrl_ === event.url) {
+      this.restartHandshake_();
+      this.activeNavigationUrl_ = null;
+    }
   }
 
   private onLoadAbort_(event: chrome.webviewTag.LoadAbortEvent) {
@@ -165,20 +171,12 @@ export class PostMessageHandler {
       return;
     }
     // The navigation aborted, so reset the last thread frame load start event.
-    this.lastLoadStartEvent_ = null;
+    this.activeNavigationUrl_ = null;
   }
 
-  // Resets and starts the handshake only if the navigation URL matches the
-  // stashed load start event URL. This ensures we only act once per navigation
-  // chain (either on the first redirect or on commit if no redirect) and
-  // handles aborted navigations correctly.
-  private maybeHandleNavigation_(navigationUrl: string) {
-    if (this.lastLoadStartEvent_ &&
-        this.lastLoadStartEvent_.url === navigationUrl) {
-      this.lastLoadStartEvent_ = null;
-      this.resetHandshake_();
-      this.startHandshake_();
-    }
+  private restartHandshake_() {
+    this.resetHandshake_();
+    this.startHandshake_();
   }
 
   private resetHandshake_() {

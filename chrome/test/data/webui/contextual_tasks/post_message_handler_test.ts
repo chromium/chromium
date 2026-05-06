@@ -435,7 +435,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     assertFalse(postMessageHandler.isHandshakeCompleteForTesting());
   });
 
-  test('resets handshake on loadredirect', function() {
+  test('resets handshake on loadcommit after loadredirect', function() {
     const url = TARGET_ORIGIN + '/matchingPath';
 
     // Complete initial handshake
@@ -451,21 +451,53 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     simulateLoadStart(url);
 
     // Simulate redirect
-    simulateLoadRedirect(url, url + '_new');
+    const newUrl = url + '_new';
+    simulateLoadRedirect(url, newUrl);
 
-    // Handshake should be reset!
+    // Handshake should NOT be reset on redirect!
+    assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+
+    // Simulate commit of the new URL
+    simulateLoadCommit(newUrl);
+
+    // Handshake should be reset on commit!
     assertFalse(postMessageHandler.isHandshakeCompleteForTesting());
   });
 
+  test('does not reset handshake on loadcommit after loadabort', function() {
+    const url = TARGET_ORIGIN + '/matchingPath';
+
+    // Complete initial handshake
+    simulateLoadStart(url);
+    simulateLoadCommit(url);
+
+
+    mockTimer.tick(HANDSHAKE_INTERVAL_MS);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
+    assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+
+    // Start a new navigation
+    simulateLoadStart(url);
+
+    // Abort the navigation
+    simulateLoadAbort(url);
+
+    // Commit happens anyway (e.g. old load or something weird)
+    simulateLoadCommit(url);
+
+
+    // Handshake should STILL be complete!
+    assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
+  });
+
   test(
-      'does not reset handshake on loadcommit after loadabort',
+      'does not reset handshake on loadcommit for non-matching URL',
       function() {
         const url = TARGET_ORIGIN + '/matchingPath';
 
         // Complete initial handshake
         simulateLoadStart(url);
         simulateLoadCommit(url);
-
 
         mockTimer.tick(HANDSHAKE_INTERVAL_MS);
         simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
@@ -474,12 +506,8 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         // Start a new navigation
         simulateLoadStart(url);
 
-        // Abort the navigation
-        simulateLoadAbort(url);
-
-        // Commit happens anyway (e.g. old load or something weird)
-        simulateLoadCommit(url);
-
+        // Commit a non-matching URL
+        simulateLoadCommit(TARGET_ORIGIN + '/nonMatchingPath');
 
         // Handshake should STILL be complete!
         assertTrue(postMessageHandler.isHandshakeCompleteForTesting());
