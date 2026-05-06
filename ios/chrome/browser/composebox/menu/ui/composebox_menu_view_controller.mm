@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -332,7 +333,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     CGFloat availableWidth = containerWidth - kAttachmentSectionInsets.leading -
                              kAttachmentSectionInsets.trailing;
     CGFloat totalSpacing = (itemsCount - 1) * kAttachmentItemSpacing;
-    CGFloat itemWidth = (availableWidth - totalSpacing) / itemsCount;
+    CGFloat itemWidth =
+        AlignValueToPixel((availableWidth - totalSpacing) / itemsCount);
 
     NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
         sizeWithWidthDimension:[NSCollectionLayoutDimension
