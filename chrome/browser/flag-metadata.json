@@ -2252,7 +2252,7 @@
   {
     "name": "default-site-instance-groups",
     "owners": [ "creis@chromium.org", "chrome-security-architecture@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "defer-os-clipboard-read-call-to-get-type",
@@ -2433,8 +2433,8 @@
   {
     "name": "disable-process-reuse",
     "owners": [
-      "alexmos@google.com", "creis@google.com" ],
-    "expiry_milestone": 150
+      "alexmos@google.com", "creis@google.com", "lbrady@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "disable-u18-feedback-desktop",
@@ -3538,8 +3538,8 @@
   },
   {
     "name": "enable-isolated-sandboxed-iframes",
-    "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
-    "expiry_milestone": 145
+    "owners": [ "lbrady@google.com", "alexmos@chromium.org", "creis@chromium.org" ],
+    "expiry_milestone": 170
   },
   {
     "name": "enable-isolated-web-app-allowlist",
@@ -7349,8 +7349,8 @@
   },
   {
     "name": "origin-keyed-processes-by-default",
-    "owners": [ "wjmaclean@chromium.org", "creis@chromium.org", "site-isolation-dev@chromium.org"],
-    "expiry_milestone": 150
+    "owners": [ "lbrady@google.com", "creis@chromium.org", "site-isolation-dev@chromium.org"],
+    "expiry_milestone": 170
   },
   {
     "name": "overlay-scrollbars",
@@ -8789,7 +8789,7 @@
   },
   {
     "name": "strict-origin-isolation",
-    "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
+    "owners": [ "lbrady@google.com", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full
     // origins rather than sites.  Note that this breaks document.domain and is
     // therefore unlikely to ship anytime soon, but this allows experimenting
