@@ -641,9 +641,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     use_last_baseline_for_inline_baseline_ = true;
   }
 
-  void SetGapGeometry(const GapGeometry* gap_geometry) {
-    gap_geometry_ = gap_geometry;
-  }
+  void SetGapGeometry(const GapGeometry* gap_geometry);
 
   const GapGeometry* GetGapGeometry() const { return gap_geometry_; }
 

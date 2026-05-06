@@ -8992,6 +8992,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="434" label="Webgl2"/>
   <int value="435" label="DigitalCredentials"/>
   <int value="436" label="MediaPseudos"/>
+  <int value="437" label="GapDecorations"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

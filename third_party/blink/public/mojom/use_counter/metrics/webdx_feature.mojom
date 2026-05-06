@@ -498,6 +498,7 @@ enum WebDXFeature {
   kWebgl2 = 434,
   kDigitalCredentials = 435,
   kMediaPseudos = 436,
+  kGapDecorations = 437,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

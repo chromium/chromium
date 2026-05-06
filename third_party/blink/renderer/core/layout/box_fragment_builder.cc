@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -825,5 +826,13 @@ void BoxFragmentBuilder::CheckNoBlockFragmentation() const {
 }
 
 #endif
+
+void BoxFragmentBuilder::SetGapGeometry(const GapGeometry* gap_geometry) {
+  if (gap_geometry) {
+    layout_object_->GetDocument().CountWebDXFeature(
+        mojom::blink::WebDXFeature::kGapDecorations);
+  }
+  gap_geometry_ = gap_geometry;
+}
 
 }  // namespace blink
