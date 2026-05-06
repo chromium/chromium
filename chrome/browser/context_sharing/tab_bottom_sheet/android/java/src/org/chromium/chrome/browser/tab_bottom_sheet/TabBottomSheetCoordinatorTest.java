@@ -234,6 +234,22 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
+    public void testShowBottomSheet_MultipleCalls_DoesNotAddMultipleObservers() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        verify(mMockBottomSheetController, times(1)).addObserver(any(BottomSheetObserver.class));
+
+        // Simulate suppression by setting mIsShowingTabBottomSheet to false via callback.
+        observer.onSheetContentChanged(mock(BottomSheetContent.class));
+        assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
+
+        // Try to show again.
+        mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
+
+        // Verify addObserver was not called again (total times should still be 1).
+        verify(mMockBottomSheetController, times(1)).addObserver(any(BottomSheetObserver.class));
+    }
+
+    @Test
     public void testDestroy_WhenShown_HidesAndCleansUp() {
         simulateShowSuccessAndGetObserver();
         assertTrue(mCoordinator.isSheetCurrentlyManagedForTesting());
