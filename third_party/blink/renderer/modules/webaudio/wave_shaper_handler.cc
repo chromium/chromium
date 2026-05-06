@@ -363,7 +363,7 @@ void WaveShaperHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
     // down the chain...
     Output(0).SetNumberOfChannels(number_of_channels);
 
-    // Re-initialize the processor with the new channel count.
+    // Re-initialize the handler with the new channel count.
     Initialize();
   }
 

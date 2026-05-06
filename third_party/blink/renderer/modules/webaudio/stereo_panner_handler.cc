@@ -19,7 +19,7 @@ namespace blink {
 
 namespace {
 
-// A PannerNode only supports 1 or 2 channels
+// A StereoPannerNode only supports 1 or 2 channels.
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 

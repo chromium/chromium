@@ -247,8 +247,6 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
   } else {
     scoped_refptr<AudioBus> source_bus = Input(0).Bus();
 
-    // FIXME: if we take "tail time" into account, then we can avoid calling
-    // processor()->process() once the tail dies down.
     if (!Input(0).IsConnected()) {
       source_bus->Zero();
     }
@@ -313,8 +311,7 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
         }
       }
 
-      // BiquadDSPKernel of each BiquadProcessor.
-
+      // Update the parameters of each biquad kernel.
       if (are_filter_coefficients_dirty) {
         const size_t frames_count = static_cast<size_t>(frames_to_process);
         SECURITY_CHECK(frames_count <= render_quantum_frames_);
