@@ -491,10 +491,6 @@ bool IOSChromePaymentsAutofillClient::IsMandatoryReauthEnabled() {
   return GetPaymentsDataManager().IsPaymentMethodsMandatoryReauthEnabled();
 }
 
-bool IOSChromePaymentsAutofillClient::IsUsingCustomCardIconEnabled() const {
-  return true;
-}
-
 void IOSChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,

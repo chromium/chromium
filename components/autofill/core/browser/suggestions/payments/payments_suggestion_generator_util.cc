@@ -653,16 +653,7 @@ void SetCardArtURL(Suggestion& suggestion,
                                   .payments_data_manager()
                                   .GetCachedCardArtImageForUrl(card_art_url);
     if (image) {
-#if BUILDFLAG(IS_IOS)
-      // Mark the suggestion as having custom art. The art will not be shown if
-      // the flag is off, but this allows for A/B metrics analysis.
-      suggestion.has_custom_card_art_image = true;
-      if (client.GetPaymentsAutofillClient()->IsUsingCustomCardIconEnabled()) {
-        suggestion.custom_icon = *image;
-      }
-#else
       suggestion.custom_icon = *image;
-#endif
     }
   }
 }

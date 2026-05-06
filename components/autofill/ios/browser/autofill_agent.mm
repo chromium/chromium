@@ -704,7 +704,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
                          minorValue:minorValue
                  displayDescription:displayDescription
                                icon:icon
-              hasCustomCardArtImage:popup_suggestion.has_custom_card_art_image
                                type:popup_suggestion.type
                             payload:popup_suggestion.payload
         fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed

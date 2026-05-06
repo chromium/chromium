@@ -67,14 +67,6 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isAutofillVCNUsageEnabled)
     BOOL autofillVCNUsageEnabled;
 
-// Whether or not image fetcher usage is enabled.
-@property(nonatomic, assign, getter=isUseImageFetcherEnabled)
-    BOOL useImageFetcherEnabled;
-
-// Whether or not card custom image usage is enabled.
-@property(nonatomic, assign, getter=isUseCardCustomImageEnabled)
-    BOOL useCardCustomImageEnabled;
-
 // Whether or not risk based authentication is enabled.
 @property(nonatomic, assign, getter=isRiskBasedAuthenticationEnabled)
     BOOL riskBasedAuthenticationEnabled;

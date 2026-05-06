@@ -50,10 +50,6 @@
   return [_formSuggestion.icon copy];
 }
 
-- (BOOL)hasCustomCardArtImage {
-  return _formSuggestion.hasCustomCardArtImage;
-}
-
 - (NSString* __nullable)GUID {
   autofill::Suggestion::Payload payload = _formSuggestion.payload;
   if (const auto* guid = std::get_if<autofill::Suggestion::Guid>(&payload)) {

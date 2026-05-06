@@ -20,12 +20,6 @@ inline constexpr char kCWVAutofillAddressSyncEnabled[] =
 inline constexpr char kCWVAutofillVCNUsageEnabled[] =
     "cwv.autofill.vcn_usage_enabled";
 
-inline constexpr char kUseImageFetcherEnabled[] =
-    "cwv.autofill.image_fetcher_usage_enabled";
-
-inline constexpr char kUseCardCustomImageEnabled[] =
-    "cwv.autofill.use_card_custom_image_enabled";
-
 inline constexpr char kRiskBasedAuthenticationEnabled[] =
     "cwv.autofill.risk_based_authentication_enabled";
 
