@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -58,6 +60,8 @@ class IndigoPageActionControllerTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kIndigo);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        "indigo-script", "/dummy/path");
   }
 
   void TearDown() override {
@@ -173,6 +177,7 @@ class IndigoPageActionControllerTest : public testing::Test {
   std::unique_ptr<page_actions::MockPageActionController>
       page_action_controller_;
   std::unique_ptr<IndigoPageActionController> controller_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(IndigoPageActionControllerTest, ShowsWhenOptimizationGuideReturnsTrue) {

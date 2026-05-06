@@ -24,6 +24,8 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
       return indigo_internals::mojom::LocalEligibility::kMissingCapabilities;
     case indigo::LocalEligibility::kDisabledByPolicy:
       return indigo_internals::mojom::LocalEligibility::kDisabledByPolicy;
+    case indigo::LocalEligibility::kMissingScript:
+      return indigo_internals::mojom::LocalEligibility::kMissingScript;
   }
 }
 

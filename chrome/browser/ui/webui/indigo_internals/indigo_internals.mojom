@@ -10,6 +10,7 @@ enum LocalEligibility {
   kNotSignedIn,
   kMissingCapabilities,
   kDisabledByPolicy,
+  kMissingScript,
 };
 
 // Whether Optimization Guide can make queries to determine whether to offer

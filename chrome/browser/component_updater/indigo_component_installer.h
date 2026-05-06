@@ -12,7 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -51,6 +53,13 @@ class IndigoComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
 };
+
+// Registers a callback to be notified when the Indigo component becomes ready
+// (i.e. installed or updated).
+// Must be called on the Browser UI thread, and the callback will in turn
+// be invoked on the Browser UI thread.
+base::CallbackListSubscription RegisterIndigoComponentReadyCallback(
+    base::RepeatingClosure callback);
 
 // Call once during startup to make the component update service aware of
 // the Indigo component.

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -45,6 +46,19 @@ base::FilePath& GetInstallDirStorage() {
 
 namespace component_updater {
 
+namespace {
+base::RepeatingCallbackList<void()>& GetCallbackList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void()>> callbacks;
+  return *callbacks;
+}
+}  // namespace
+
+base::CallbackListSubscription RegisterIndigoComponentReadyCallback(
+    base::RepeatingClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return GetCallbackList().Add(std::move(callback));
+}
+
 IndigoComponentInstallerPolicy::IndigoComponentInstallerPolicy() = default;
 
 IndigoComponentInstallerPolicy::~IndigoComponentInstallerPolicy() = default;
@@ -75,6 +89,8 @@ void IndigoComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir;
   GetInstallDirStorage() = install_dir;
+
+  GetCallbackList().Notify();
 }
 
 // Called during startup and installation before ComponentReady().

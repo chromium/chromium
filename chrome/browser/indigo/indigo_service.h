@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -34,6 +35,7 @@ enum class LocalEligibility {
   kNotSignedIn,
   kMissingCapabilities,
   kDisabledByPolicy,
+  kMissingScript,
 };
 
 // Combined eligibility status including local constraints (features, profile
@@ -71,6 +73,10 @@ class IndigoService : public KeyedService,
                 signin::IdentityManager* identity_manager,
                 PrefService* pref_service);
   ~IndigoService() override;
+
+  // Returns the path to the Indigo script if available (either via command line
+  // override or component updater).
+  static std::optional<base::FilePath> GetScriptPath();
 
   // Get and subscribe to information about whether the profile is eligible to
   // use the feature, as far as Chrome is concerned. This includes the user
@@ -132,10 +138,13 @@ class IndigoService : public KeyedService,
   base::RepeatingCallbackList<void(LocalEligibility)>
       local_eligibility_callback_list_;
 
+  void OnIndigoComponentReady();
+
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  base::CallbackListSubscription indigo_component_ready_subscription_;
   std::unique_ptr<ApiClient> api_client_;
 
   // The earliest time the anchored message can be shown again.
