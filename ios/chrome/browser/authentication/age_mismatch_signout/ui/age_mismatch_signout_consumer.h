@@ -16,6 +16,10 @@
                         avatar:(UIImage*)avatar
                        managed:(BOOL)managed;
 
+// Sets whether to show the "Stay signed out" button.
+// This must be called before the view is presented.
+- (void)setShowStaySignedOutButton:(BOOL)show;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_AGE_MISMATCH_SIGNOUT_UI_AGE_MISMATCH_SIGNOUT_CONSUMER_H_

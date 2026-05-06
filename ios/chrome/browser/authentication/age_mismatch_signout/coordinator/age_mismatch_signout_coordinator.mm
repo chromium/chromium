@@ -54,17 +54,13 @@
   _mediator = [[AgeMismatchSignoutMediator alloc]
             initWithIdentity:_identity
       identityAvatarProvider:GetApplicationContext()
-                                 ->GetIdentityAvatarProvider()];
+                                 ->GetIdentityAvatarProvider()
+             identityManager:IdentityManagerFactory::GetForProfile(
+                                 self.browser->GetProfile())];
   _viewController =
       [[AgeMismatchSignoutViewController alloc] initWithMode:_mode];
   _viewController.delegate = self;
   _mediator.consumer = _viewController;
-
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
-  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    _viewController.hideStaySignedOutButton = YES;
-  }
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

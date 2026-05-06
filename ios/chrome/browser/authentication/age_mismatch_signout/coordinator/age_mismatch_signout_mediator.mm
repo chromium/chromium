@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_consumer.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -13,15 +14,17 @@
 @implementation AgeMismatchSignoutMediator {
   id<SystemIdentity> _identity;
   raw_ptr<signin::AvatarProvider> _identityAvatarProvider;
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
-          identityAvatarProvider:
-              (signin::AvatarProvider*)identityAvatarProvider {
+          identityAvatarProvider:(signin::AvatarProvider*)identityAvatarProvider
+                 identityManager:(signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     _identity = identity;
     _identityAvatarProvider = identityAvatarProvider;
+    _identityManager = identityManager;
   }
   return self;
 }
@@ -36,6 +39,7 @@
 - (void)disconnect {
   _identity = nil;
   _identityAvatarProvider = nullptr;
+  _identityManager = nullptr;
   _consumer = nil;
 }
 
@@ -55,6 +59,14 @@
                                   email:email
                                  avatar:avatar
                                 managed:NO];
+
+  // It is possible to be signed in when the age mismatch prompt is triggered,
+  // e.g., if the user switches between accounts.
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    [self.consumer setShowStaySignedOutButton:NO];
+  } else {
+    [self.consumer setShowStaySignedOutButton:YES];
+  }
 }
 
 @end

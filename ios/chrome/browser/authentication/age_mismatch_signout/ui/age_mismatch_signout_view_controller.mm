@@ -38,12 +38,15 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
   AgeMismatchPromptMode _mode;
   // Waiting view displayed when blocking the UI.
   HomeWaitingView* _waitingView;
+  // YES if the "Stay signed out" button should be shown. Defaults to YES.
+  BOOL _showStaySignedOutButton;
 }
 
 - (instancetype)initWithMode:(AgeMismatchPromptMode)mode {
   self = [super init];
   if (self) {
     _mode = mode;
+    _showStaySignedOutButton = YES;
   }
   return self;
 }
@@ -76,7 +79,7 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
 
   self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_PRIMARY_BUTTON);
-  if (!self.hideStaySignedOutButton) {
+  if (_showStaySignedOutButton) {
     self.configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_AGE_MISMATCH_SECONDARY_BUTTON);
   }
@@ -243,6 +246,11 @@ constexpr CGFloat kDefaultSubtitleBottomMargin = 22.0;
   AddSameConstraints(_waitingView, self.view);
   [_waitingView startWaiting];
   self.view.userInteractionEnabled = NO;
+}
+
+- (void)setShowStaySignedOutButton:(BOOL)show {
+  CHECK(!self.viewLoaded);
+  _showStaySignedOutButton = show;
 }
 
 @end
