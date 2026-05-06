@@ -4,7 +4,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View text:"Adults" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="labelText"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++++Button text:"Remove adult" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
-++++++EditText viewIdResName:"adults" stateDescription:"1" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
+++++++EditText viewIdResName:"adults" stateDescription:"1" supplementalDescription:"Adults" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
 ++++++Button text:"Add adult" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++TextView text:"Must be between 1 and 8 " viewIdResName:"error-adults" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++++TextView text:"1 to 8" viewIdResName:"help-adults" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

@@ -1,3 +1,3 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"Temperature" viewIdResName:"id-temp-label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++SeekBar viewIdResName:"id-temp-slider" stateDescription:"25.0 degrees Celsius" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]
+++SeekBar viewIdResName:"id-temp-slider" stateDescription:"25.0 degrees Celsius" supplementalDescription:"Temperature" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]

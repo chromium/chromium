@@ -1,3 +1,3 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"Rate your satisfaction with the service you received" viewIdResName:"id-rating-label" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
-++SeekBar viewIdResName:"id-rating" stateDescription:"Choose a rating from 1 to 3 where 3 is extremely satisfied" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]
+++SeekBar viewIdResName:"id-rating" stateDescription:"Choose a rating from 1 to 3 where 3 is extremely satisfied" supplementalDescription:"Rate your satisfaction with the service you received" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, SET_PROGRESS] bundle:[chromeRole="slider"]

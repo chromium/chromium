@@ -1,5 +1,5 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++AlertDialog text:"Confirmation" hint:"Are you sure you want to discard all of your notes?" viewIdResName:"alertdialog" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="alertDialog", hint="Are you sure you want to discard all of your notes?"]
+++AlertDialog hint:"Are you sure you want to discard all of your notes?" viewIdResName:"alertdialog" supplementalDescription:"Confirmation" actions:[AX_FOCUS] bundle:[chromeRole="alertDialog", hint="Are you sure you want to discard all of your notes?"]
 ++++TextView text:"Confirmation" viewIdResName:"dialog_label" heading actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 2"]
 ++++View viewIdResName:"dialog_desc" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++++TextView text:"Are you sure you want to discard all of your notes?" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

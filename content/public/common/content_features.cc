@@ -1347,7 +1347,7 @@ BASE_FEATURE(kAccessibilityPageZoomV2, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables populating the supplemental description information via the
 // Android supplemental description API.
 BASE_FEATURE(kAccessibilityPopulateSupplementalDescriptionApi,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the reactive synchronization of accessibility and keyboard focus,
 // relying on new Android framework behavior.
