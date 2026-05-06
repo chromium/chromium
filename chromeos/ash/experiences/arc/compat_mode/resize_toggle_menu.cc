@@ -190,14 +190,13 @@ ResizeToggleMenu::ResizeToggleMenu(
 
   window_observation_.Observe(window);
 
-  bubble_delegate_ = MakeBubbleDelegate(
-      widget_, GetAnchorRect(),
-      base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
-                          base::Unretained(this)));
-  bubble_widget_ = base::WrapUnique<views::Widget>(
-      views::BubbleDialogDelegate::CreateBubbleDeprecated(
-          bubble_delegate_.get(),
-          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
+      MakeBubbleDelegate(
+          widget_, GetAnchorRect(),
+          base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
+                              base::Unretained(this)));
+  bubble_widget_ =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   widget_observations_.AddObservation(widget_.get());
   widget_observations_.AddObservation(bubble_widget_.get());
   OverlayDialog::Show(widget_->GetNativeWindow(),
@@ -359,7 +358,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ash::ResizeCompatMode mode) {
 }
 
 bool ResizeToggleMenu::IsBubbleShown() const {
-  return bubble_delegate_ && bubble_delegate_->GetWidget();
+  return bubble_widget_ && !bubble_widget_->IsClosed();
 }
 
 void ResizeToggleMenu::CloseBubble() {

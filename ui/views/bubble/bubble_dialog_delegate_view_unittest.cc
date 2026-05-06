@@ -248,6 +248,29 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
   EXPECT_TRUE(bubble_observer.widget_closed());
 }
 
+TEST_F(BubbleDialogDelegateViewTest, CreateBubbleWithUniquePtrAndCallback) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+
+  bool close_callback_invoked = false;
+  auto on_close = base::BindOnce(
+      [](bool* invoked, Widget::ClosedReason reason) { *invoked = true; },
+      &close_callback_invoked);
+
+  // 1. Verify that CreateBubble properly returns a unique_ptr.
+  std::unique_ptr<Widget> bubble_widget = BubbleDialogDelegate::CreateBubble(
+      base::WrapUnique(bubble_delegate), std::move(on_close));
+
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_FALSE(close_callback_invoked);
+
+  // 2. Verify that destroying the widget invokes the provided callback.
+  bubble_widget->CloseNow();
+  EXPECT_TRUE(close_callback_invoked);
+}
+
 TEST_F(BubbleDialogDelegateViewTest, CloseAnchorWidget) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);

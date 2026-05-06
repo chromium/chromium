@@ -142,21 +142,20 @@ void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   bubble_view_ = bubble_view->GetWeakPtr();
 
-  views::Widget* widget = nullptr;
+  std::unique_ptr<views::Widget> widget;
   if (flow_value == data_sharing::kFlowShare) {
     // Sharing flow uses a normal bubble.
-    widget = views::BubbleDialogDelegateView::CreateBubble(
-        std::move(bubble_view), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble_view));
   } else {
     // Manage and Join flow use modals. In this case the `anchor_view_for_share`
     // doesn't take effect.
     bubble_view->SetModalType(ui::mojom::ModalType::kWindow);
-    widget = constrained_window::CreateBrowserModalDialogViews(
-        std::move(bubble_view), browser_view->GetNativeWindow());
+    widget = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
+        std::move(bubble_view), browser_view->GetNativeWindow()));
   }
 
   CHECK(widget);
-  bubble_widget_ = base::WrapUnique(widget);
+  bubble_widget_ = std::move(widget);
   bubble_widget_->MakeCloseSynchronous(base::BindOnce(
       &DataSharingBubbleController::OnWidgetClosing, base::Unretained(this)));
 }

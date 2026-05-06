@@ -664,11 +664,10 @@ user_education::HelpBubbleViewInfo HelpBubbleViewAsh::Create(
   auto bubble =
       base::WrapUnique(new HelpBubbleViewAsh(id, anchor, std::move(params)));
   auto* const bubble_ptr = bubble.get();
-  auto* const widget = views::BubbleDialogDelegateView::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::unique_ptr<views::Widget> widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   bubble_ptr->InitializeAndShow();
-  return user_education::HelpBubbleViewInfo(base::WrapUnique(widget),
-                                            bubble_ptr);
+  return user_education::HelpBubbleViewInfo(std::move(widget), bubble_ptr);
 }
 
 void HelpBubbleViewAsh::InitializeAndShow() {

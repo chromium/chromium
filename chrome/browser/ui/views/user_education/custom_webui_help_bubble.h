@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_CUSTOM_WEBUI_HELP_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_CUSTOM_WEBUI_HELP_BUBBLE_H_
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -149,8 +152,8 @@ CustomWebUIHelpBubble::CreateForController(
   bubble->set_shadow(
       user_education::HelpBubbleFactoryViews::GetDefaultBubbleShadow());
 
-  auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-      std::move(bubble_ptr), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<views::Widget> widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_ptr));
 
   // Maybe set the arrow. This may require recalculating the bubble bounds.
   if (params.arrow != user_education::HelpBubbleArrow::kNone) {
