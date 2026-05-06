@@ -169,18 +169,18 @@ PLATFORM_EXPORT void Zvmul(const float* real1p,
 //
 // where y = clip(x, low, high) = max(low, min(x, high)), effectively making
 // low <= y <= high.
-PLATFORM_EXPORT void Vclip(base::span<const float> source_p,
+PLATFORM_EXPORT void Vclip(base::span<const float> source,
                            int source_stride,
-                           const float* low_threshold_p,
-                           const float* high_threshold_p,
-                           base::span<float> dest_p,
+                           float low_threshold,
+                           float high_threshold,
+                           base::span<float> dest,
                            int dest_stride);
 
-PLATFORM_EXPORT void Vclip(const float* source_p,
+PLATFORM_EXPORT void Vclip(base::span<const float> source,
                            int source_stride,
-                           float low_threshold_p,
-                           float high_threshold_p,
-                           float* dest_p,
+                           float low_threshold,
+                           float high_threshold,
+                           base::span<float> dest,
                            int dest_stride,
                            uint32_t frames_to_process);
 

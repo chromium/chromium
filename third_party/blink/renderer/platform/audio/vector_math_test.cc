@@ -365,7 +365,7 @@ TEST_F(VectorMathTest, Vclip) {
       expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vclip(source.as_span(), source.stride(), &low_threshold, &high_threshold,
+      Vclip(source.as_span(), source.stride(), low_threshold, high_threshold,
             dest.as_span(), dest.stride());
       EXPECT_EQ(expected_dest, dest);
     }

@@ -429,8 +429,8 @@ void WaveShaperHandler::WaveShaperCurveValues(
                      1, frames_to_process);
 
   // Clip virtual_index, in place.
-  vector_math::Vclip(virtual_index, 1, 0, curve_length - 1, virtual_index, 1,
-                     frames_to_process);
+  vector_math::Vclip(virtual_index_.as_span(), 1, 0, curve_length - 1,
+                     virtual_index_.as_span(), 1, frames_to_process);
 
   // index = floor(virtual_index)
   DCHECK_LE(frames_to_process, index_.size());
