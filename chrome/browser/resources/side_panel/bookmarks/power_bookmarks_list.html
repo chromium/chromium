@@ -218,7 +218,8 @@
     </power-bookmarks-labels>
   </div>
 
-  <div id="scroller" class="sp-scroller">
+  <div id="scroller" class="sp-scroller"
+      hidden="[[sectionVisibility_.topLevelEmptyState]]">
     <div class="sp-card">
       <div hidden$="[[!sectionVisibility_.heading]]">
         <sp-heading id="heading"
@@ -342,9 +343,9 @@
     </div>
   </div>
 
-  <div class="sp-scroller">
+  <div class="sp-scroller"
+      hidden="[[!sectionVisibility_.topLevelEmptyState]]">
     <sp-empty-state id="topLevelEmptyState"
-        hidden="[[!sectionVisibility_.topLevelEmptyState]]"
         guest$="[[guestMode_]]"
         image-path="[[getEmptyImagePath_(hasSomeActiveFilter_)]]"
         dark-image-path="[[getEmptyImagePathDark_(hasSomeActiveFilter_)]]"
