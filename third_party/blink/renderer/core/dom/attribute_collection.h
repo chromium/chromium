@@ -47,23 +47,22 @@ class AttributeCollectionGeneric {
   STACK_ALLOCATED();
 
  public:
-  using ValueType = typename Container::ValueType;
-  using iterator = ValueType*;
+  using iterator = typename Container::pointer;
 
   AttributeCollectionGeneric(Container& attributes) : attributes_(attributes) {}
 
-  ValueType& operator[](unsigned index) const { return at(index); }
-  ValueType& at(unsigned index) const {
+  Container::reference operator[](unsigned index) const { return at(index); }
+  Container::reference at(unsigned index) const {
     CHECK_LT(index, size());
     // SAFETY: Check above.
     return UNSAFE_BUFFERS(begin()[index]);
   }
 
-  ValueType* data() { return attributes_.data(); }
-  const ValueType* data() const { return attributes_.data(); }
+  Container::pointer data() { return attributes_.data(); }
+  Container::const_pointer data() const { return attributes_.data(); }
 
-  iterator begin() const { return attributes_.data(); }
-  iterator end() const {
+  Container::pointer begin() const { return attributes_.data(); }
+  Container::pointer end() const {
     // SAFETY: size() describes the number of elements at data().
     // This form is used in place of end() to avoid a conflict
     // between the pointer type used as an iterator for this class,
@@ -123,8 +122,8 @@ class AttributeCollectionGeneric {
   //      corresponding to the him can  be reallocated to a different string
   //      making the |hint| semantically invalid. However, because the
   //      |collection| is not mutated, |hint| will not match anything.
-  iterator FindHinted(const StringView& name,
-                      AtomicStringTable::WeakResult hint) const;
+  Container::pointer FindHinted(const StringView& name,
+                                AtomicStringTable::WeakResult hint) const;
   wtf_size_t FindIndexHinted(const StringView& name,
                              AtomicStringTable::WeakResult hint) const;
 
@@ -134,33 +133,16 @@ class AttributeCollectionGeneric {
   ContainerMemberType attributes_;
 };
 
-class AttributeArray {
-  DISALLOW_NEW();
-
- public:
-  using ValueType = const Attribute;
-
-  AttributeArray(const Attribute* array, unsigned size)
-      : array_(array), size_(size) {}
-
-  const Attribute* data() const { return array_; }
-  unsigned size() const { return size_; }
-
- private:
-  const Attribute* array_;
-  unsigned size_;
-};
+using AttributeArray = base::span<const Attribute>;
 
 class AttributeCollection
     : public AttributeCollectionGeneric<const AttributeArray> {
  public:
   AttributeCollection()
-      : AttributeCollectionGeneric<const AttributeArray>(
-            AttributeArray(nullptr, 0)) {}
+      : AttributeCollectionGeneric<const AttributeArray>(AttributeArray()) {}
 
   explicit AttributeCollection(base::span<const Attribute> attributes)
-      : AttributeCollectionGeneric<const AttributeArray>(
-            AttributeArray(attributes.data(), attributes.size())) {}
+      : AttributeCollectionGeneric<const AttributeArray>(attributes) {}
 };
 
 using AttributeVector = Vector<Attribute, 4>;
