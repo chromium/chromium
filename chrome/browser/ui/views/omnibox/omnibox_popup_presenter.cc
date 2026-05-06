@@ -21,7 +21,7 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
     LocationBar* location_bar,
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
-    : OmniboxPopupPresenterBase(location_bar, presenter_delegate) {
+    : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
   bool full_popup =
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
   SetWebUIContent(std::make_unique<OmniboxPopupWebUIContent>(
@@ -38,16 +38,16 @@ void OmniboxPopupPresenter::Hide() {
 }
 
 std::string_view OmniboxPopupPresenter::GetPopupMetricPrefix() const {
-  return "Omnibox.Popup.WebUI";
+  return OmniboxPopupPresenterBase::kWebUIPopupMetricPrefix;
 }
 
 void OmniboxPopupPresenter::WidgetDestroyed() {
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.
-  auto* controller = location_bar()->GetOmniboxController();
-  if (controller->popup_state_manager()->popup_state() ==
+  if (controller()->popup_state_manager()->popup_state() ==
       OmniboxPopupState::kClassic) {
-    controller->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
   }
 }
 

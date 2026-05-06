@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -93,5 +94,11 @@ std::string GetContextTypeString(ContextType type) {
   }
 }
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:getContextTypeString)
+
+void LogResultToContentReadyEarlyExitReason(
+    ResultToContentReadyEarlyExitReason reason) {
+  std::string_view name = "Omnibox.Popup.ResultToContentReadyEarlyExitReason";
+  base::UmaHistogramEnumeration(name, reason);
+}
 
 }  // namespace omnibox

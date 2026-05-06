@@ -2241,6 +2241,7 @@ void AutocompleteController::NotifyChanged() {
 
   last_result_for_logging_ = internal_result_.GetMatchDedupComparators();
 
+  published_result_.RefreshReadyState();
   for (Observer& obs : observers_) {
     obs.OnResultChanged(this, notify_changed_default_match_);
   }

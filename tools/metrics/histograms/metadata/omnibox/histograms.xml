@@ -3241,6 +3241,48 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.ResultToContentReadyEarlyExitReason"
+    enum="OmniboxPopupResultToContentReadyEarlyExitReason"
+    expires_after="2026-11-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the number of times the popup (Views or WebUI) was shown but not
+    being able to record the Omnibox.Popup.ResultToContentReady metric due to
+    various early exit reasons.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.ResultToContentReadyOnFirstShow" units="ms"
+    expires_after="2026-11-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Measures the latency from when the Omnibox controller receives a new set of
+    results to when the popup is rendered and visible for the very first time
+    after popup creation. Recorded at most once per popup lifetime.
+
+    The starting point is when the controller receives autocomplete results and
+    begins updating the UI. The end point is when content is ready (visual state
+    synchronized for WebUI, compositor presentation for Views).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.ResultToContentReadyPerShow" units="ms"
+    expires_after="2026-11-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Measures the latency from when the Omnibox controller receives a new set of
+    results to when the popup is rendered and visible. Recorded every time the
+    popup transitions from closed to open.
+
+    The starting point is when the controller receives autocomplete results and
+    begins updating the UI. The end point is when content is ready (visual state
+    synchronized for WebUI, compositor presentation for Views).
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.WebUI.ConstructionToFirstShownDuration"
     units="ms" expires_after="2026-12-22">
   <owner>mahmadi@chromium.org</owner>

@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -173,6 +174,10 @@ AutocompleteResult::AutocompleteResult()
   static uint32_t next_sequence_id = 1;
   sequence_id_ = next_sequence_id;
   next_sequence_id++;
+}
+
+void AutocompleteResult::RefreshReadyState() {
+  result_ready_time_ = base::TimeTicks::Now();
 }
 
 AutocompleteResult::~AutocompleteResult() {
@@ -1336,6 +1341,7 @@ void AutocompleteResult::SwapMatchesWith(AutocompleteResult* other) {
   smart_compose_inline_hint_.swap(other->smart_compose_inline_hint_);
   std::swap(has_contextual_chips_, other->has_contextual_chips_);
   std::swap(sequence_id_, other->sequence_id_);
+  std::swap(result_ready_time_, other->result_ready_time_);
 
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -1351,6 +1357,7 @@ void AutocompleteResult::CopyMatchesFrom(const AutocompleteResult& other) {
   suggestion_groups_map_ = other.suggestion_groups_map_;
   smart_compose_inline_hint_ = other.smart_compose_inline_hint_;
   has_contextual_chips_ = other.has_contextual_chips();
+  result_ready_time_ = other.result_ready_time_;
 
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();

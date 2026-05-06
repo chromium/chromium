@@ -20,8 +20,9 @@
 OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     LocationBarView* location_bar_view,
     OmniboxController* controller)
-    : OmniboxPopupPresenterBase(location_bar_view, *location_bar_view),
-      controller_(controller),
+    : OmniboxPopupPresenterBase(location_bar_view,
+                                *location_bar_view,
+                                controller),
       location_bar_view_(location_bar_view) {
   SetWebUIContent(std::make_unique<OmniboxAimPopupWebUIContent>(
       this, location_bar_view_, controller));
@@ -50,7 +51,7 @@ void OmniboxPopupAimPresenter::Hide() {
 }
 
 std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
-  return "Omnibox.Popup.Aim";
+  return OmniboxPopupPresenterBase::kAimPopupMetricPrefix;
 }
 
 bool OmniboxPopupAimPresenter::ShouldDeferUntilVisualStateReady() const {
@@ -67,7 +68,7 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
   // menu is a child widget so this popup widget is still considered active. We
   // will not hide the popup.
   if (!active &&
-      controller_->popup_state_manager()->popup_state() ==
+      controller()->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kAim &&
       !location_bar_view_->in_popup_state_transition()) {
     // Don't close popup if there's an active permission prompt. This check can
@@ -82,15 +83,17 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
         return;
       }
     }
-    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
   }
 }
 
 void OmniboxPopupAimPresenter::WidgetDestroyed() {
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync.
-  if (controller_->popup_state_manager()->popup_state() ==
+  if (controller()->popup_state_manager()->popup_state() ==
       OmniboxPopupState::kAim) {
-    controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
+    controller()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kNone);
   }
 }

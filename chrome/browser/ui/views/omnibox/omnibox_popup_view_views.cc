@@ -35,6 +35,8 @@
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/common/omnibox_metrics_utils.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/closure_animation_observer.h"
@@ -589,35 +591,19 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     return;
   }
 
-  if (visible && popup_create_start_time_.has_value()) {
+  if (visible) {
+    has_logged_content_ready_since_open_ = false;
     // Use the popup's compositor. The next presentation time will correspond to
     // the first visual presentation of the bubble's content after the Widget
     // has been created.
     widget_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
-        base::BindOnce(
-            [](base::WeakPtr<OmniboxPopupViewViews> self,
-               base::TimeTicks popup_create_start_time,
-               const viz::FrameTimingDetails& frame_timing_details) {
-              if (!self) {
-                return;
-              }
-              base::TimeTicks presentation_timestamp =
-                  frame_timing_details.presentation_feedback.timestamp;
-              base::TimeDelta delta =
-                  presentation_timestamp - popup_create_start_time;
-              base::UmaHistogramTimes("Omnibox.Views.PopupFirstPaint", delta);
-
-              // Record metrics via TopChromeWebUIMetricsObserver to allow
-              // comparison between WebUI and Views Omnibox versions.
-              // This is recorded at most once per window (View lifetime) to
-              // align with the WebUI behavior.
-              if (!self->recorded_first_paint_) {
-                self->recorded_first_paint_ = true;
-                TopChromeWebUIMetricsObserver::RecordFirstContentfulPaint(
-                    "OmniboxPopup", delta);
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr(), popup_create_start_time_.value()));
+        base::BindOnce(&OmniboxPopupViewViews::OnPopupFirstPaintPresented,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       controller()
+                           ->autocomplete_controller()
+                           ->result()
+                           .result_ready_time(),
+                       popup_create_start_time_));
     popup_create_start_time_.reset();
   }
 }
@@ -665,6 +651,51 @@ void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
 
 void OmniboxPopupViewViews::OnContentsChanged() {
   UpdatePopupAppearance();
+}
+
+void OmniboxPopupViewViews::OnPopupFirstPaintPresented(
+    base::TimeTicks request_start_time,
+    std::optional<base::TimeTicks> popup_create_start_time,
+    const viz::FrameTimingDetails& frame_timing_details) {
+  if (popup_create_start_time.has_value()) {
+    base::TimeTicks presentation_timestamp =
+        frame_timing_details.presentation_feedback.timestamp;
+    base::TimeDelta delta =
+        presentation_timestamp - popup_create_start_time.value();
+    base::UmaHistogramTimes("Omnibox.Views.PopupFirstPaint", delta);
+
+    // Record metrics via TopChromeWebUIMetricsObserver to allow
+    // comparison between WebUI and Views Omnibox versions.
+    // This is recorded at most once per window (View lifetime) to
+    // align with the WebUI behavior.
+    if (!recorded_first_paint_) {
+      recorded_first_paint_ = true;
+      TopChromeWebUIMetricsObserver::RecordFirstContentfulPaint("OmniboxPopup",
+                                                                delta);
+    }
+  }
+
+  if (request_start_time.is_null()) {
+    omnibox::LogResultToContentReadyEarlyExitReason(
+        omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime);
+    return;
+  }
+
+  base::TimeTicks presentation_timestamp =
+      frame_timing_details.presentation_feedback.timestamp;
+
+  base::TimeDelta delta_request = presentation_timestamp - request_start_time;
+  if (!has_logged_content_ready_since_open_) {
+    has_logged_content_ready_since_open_ = true;
+    base::UmaHistogramTimes("Omnibox.Popup.ResultToContentReadyPerShow",
+                            delta_request);
+  }
+
+  if (!has_logged_first_content_ready_) {
+    has_logged_first_content_ready_ = true;
+    base::UmaHistogramTimes("Omnibox.Popup.ResultToContentReadyOnFirstShow",
+                            delta_request);
+  }
 }
 
 void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(

@@ -268,6 +268,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ModelMode) -->
 
+<!-- LINT.IfChange(OmniboxPopupResultToContentReadyEarlyExitReason) -->
+
+<enum name="OmniboxPopupResultToContentReadyEarlyExitReason">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="No result ready time"/>
+  <int value="2" label="Visual state not ready"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:OmniboxPopupResultToContentReadyEarlyExitReason) -->
+
 <enum name="OmniboxRichAutocompletionType">
   <int value="0" label="None"/>
   <int value="1" label="URL non-prefix"/>
