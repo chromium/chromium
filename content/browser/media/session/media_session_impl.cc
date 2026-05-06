@@ -882,6 +882,11 @@ bool MediaSessionImpl::HasOnlyOneShotPlayers() const {
   return !one_shot_players_.empty() && normal_players_.empty();
 }
 
+bool MediaSessionImpl::HasOnlyAmbientPlayers() const {
+  return !ambient_players_.empty() && normal_players_.empty() &&
+         one_shot_players_.empty();
+}
+
 void MediaSessionImpl::SetDelegateForTests(
     std::unique_ptr<AudioFocusDelegate> delegate) {
   delegate_ = std::move(delegate);
@@ -1112,14 +1117,25 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
     info->ignore_for_active_session = true;
   }
 
-  // The playback state should use |IsActive| to determine whether we are
-  // playing or not. However, if there is a |routed_service_| which is playing
-  // then we should force the playback state to be playing.
+  // The playback state should use `IsActive()` to determine whether we are
+  // playing or not. However, if there is a `routed_service_` which is playing
+  // then we should force the playback state to be playing. We don't generally
+  // allow `routed_service_` to override to a paused state since we don't want
+  // sites to fake a paused state to avoid a force-pause in certain cases,
+  // however we do allow `routed_service_` to override to a paused state if
+  // we are only active due to ambient players since we never force-pause
+  // ambient players.
   info->playback_state =
       IsActive() ? MediaPlaybackState::kPlaying : MediaPlaybackState::kPaused;
-  if (routed_service_ &&
-      routed_service_->playback_state() == MediaSessionPlaybackState::PLAYING) {
-    info->playback_state = MediaPlaybackState::kPlaying;
+  if (routed_service_) {
+    if (routed_service_->playback_state() ==
+        MediaSessionPlaybackState::PLAYING) {
+      info->playback_state = MediaPlaybackState::kPlaying;
+    } else if (routed_service_->playback_state() ==
+                   MediaSessionPlaybackState::PAUSED &&
+               HasOnlyAmbientPlayers()) {
+      info->playback_state = MediaPlaybackState::kPaused;
+    }
   }
 
   info->audio_video_states = GetMediaAudioVideoStates();

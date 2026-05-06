@@ -471,6 +471,10 @@ class MediaSessionImpl : public MediaSession,
   // one-shot.
   bool HasOnlyOneShotPlayers() const;
 
+  // Returns true if there is at least one player and all the players are
+  // ambient.
+  bool HasOnlyAmbientPlayers() const;
+
   // MediaSessionService-related methods
 
   // Called when the routed service may have changed.

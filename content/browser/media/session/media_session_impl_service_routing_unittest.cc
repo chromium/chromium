@@ -1397,6 +1397,49 @@ TEST_F(MediaSessionImplServiceRoutingTest, GetRoutedFrameForServices) {
   ASSERT_EQ(nullptr, GetMediaSession()->GetRoutedFrame());
 }
 
+TEST_F(MediaSessionImplServiceRoutingTest,
+       AmbientPlayersOnly_PausedServiceOverridesPlaybackState) {
+  CreateServiceForFrame(main_frame_);
+  // Start an ambient player on the main frame, so HasOnlyAmbientPlayers() will
+  // be true.
+  StartPlayerForFrame(main_frame_, media::MediaContentType::kAmbient);
+
+  // Verify that the service is routed.
+  ASSERT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  // Set the routed service's playback state to PAUSED.
+  services_[main_frame_]->SetPlaybackState(
+      blink::mojom::MediaSessionPlaybackState::PAUSED);
+
+  // Observe the MediaSessionInfo and verify that its playback_state is updated
+  // to kPaused.
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  observer.WaitForPlaybackState(
+      media_session::mojom::MediaPlaybackState::kPaused);
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       PersistentPlayerPresent_PausedServiceDoesNotOverridePlaybackState) {
+  CreateServiceForFrame(main_frame_);
+  // Start a normal/persistent player on the main frame.
+  StartPlayerForFrame(main_frame_, media::MediaContentType::kPersistent);
+
+  // Verify that the service is routed.
+  ASSERT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  // Set the routed service's playback state to PAUSED.
+  services_[main_frame_]->SetPlaybackState(
+      blink::mojom::MediaSessionPlaybackState::PAUSED);
+
+  // Observe the MediaSessionInfo and verify that its playback_state remains
+  // kPlaying.
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  observer.WaitForPlaybackState(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+}
+
 // Test duration duration update throttle behavior for routed service.
 // TODO (jazzhsu): Remove these tests once media session supports livestream.
 class MediaSessionImplServiceRoutingThrottleTest
