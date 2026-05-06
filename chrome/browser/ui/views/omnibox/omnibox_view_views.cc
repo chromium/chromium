@@ -51,14 +51,15 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
@@ -2385,6 +2386,21 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
+  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    // Remove the emoji item from the omnibox context menu.
+    const std::optional<size_t> emoji_position =
+        menu_contents->GetIndexOfCommandId(IDS_CONTENT_CONTEXT_EMOJI);
+    if (emoji_position.has_value()) {
+      menu_contents->RemoveItemAt(emoji_position.value());
+      // If the next item is a separator, remove it too.
+      if (emoji_position.value() < menu_contents->GetItemCount() &&
+          menu_contents->GetTypeAt(emoji_position.value()) ==
+              ui::MenuModel::ItemType::TYPE_SEPARATOR) {
+        menu_contents->RemoveItemAt(emoji_position.value());
+      }
+    }
+  }
+
   MaybeAddSendTabToSelfItem(menu_contents);
 
   const std::optional<size_t> paste_position =
@@ -2401,6 +2417,10 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
           ? IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS
           : IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
+
+  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   const PrefService::Preference* show_full_urls_pref =
       location_bar_view_->GetProfile()->GetPrefs()->FindPreference(
@@ -2615,6 +2635,10 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
   // Only add this menu entry if SendTabToSelf feature is enabled.
   if (!send_tab_to_self::ShouldDisplayEntryPoint(
           location_bar_view_->GetWebContents())) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
     return;
   }
 
