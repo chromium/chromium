@@ -783,6 +783,9 @@ targets.legacy_matrix_compound_suite(
         # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
         # "litert_e2e_tests_gpu_suite": None,
         "litert_e2e_tests_cpu_suite": None,
+        "litert_lm_advanced_main_legacy_tests_cpu_suite": None,
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_lm_advanced_main_legacy_tests_gpu_suite": None,
     },
 )
 
@@ -866,6 +869,19 @@ targets.legacy_matrix_compound_suite(
                 "non-gce",
             ],
         ),
+        "litert_lm_advanced_main_legacy_tests_cpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_lm_advanced_main_legacy_tests_gpu_suite": targets.legacy_matrix_config(
+        #     mixins = [
+        #         "chrome-intelligence-swarming-pool",
+        #         "non-gce",
+        #     ],
+        # ),
     },
 )
 
@@ -960,5 +976,18 @@ targets.legacy_matrix_compound_suite(
                 "non-gce",
             ],
         ),
+        "litert_lm_advanced_main_legacy_tests_cpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+            ],
+        ),
+        # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+        # "litert_lm_advanced_main_legacy_tests_gpu_suite": targets.legacy_matrix_config(
+        #     mixins = [
+        #         "chrome-intelligence-swarming-pool",
+        #         "non-gce",
+        #     ],
+        # ),
     },
 )

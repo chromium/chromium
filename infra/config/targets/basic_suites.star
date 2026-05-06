@@ -1326,6 +1326,21 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "litert_lm_advanced_main_legacy_tests_cpu_suite",
+    tests = {
+        "litert_lm_advanced_main_legacy_tests_cpu": targets.legacy_test_config(),
+    },
+)
+
+# TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
+# targets.legacy_basic_suite(
+#     name = "litert_lm_advanced_main_legacy_tests_gpu_suite",
+#     tests = {
+#         "litert_lm_advanced_main_legacy_tests_gpu": targets.legacy_test_config(),
+#     },
+# )
+
+targets.legacy_basic_suite(
     name = "opt_target_coverage_test_suite",
     tests = {
         "opt_target_coverage_test": targets.legacy_test_config(

@@ -1790,6 +1790,12 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "litert_lm_advanced_main_legacy_tests",
+    label = "//components/optimization_guide/internal/testing:litert_lm_advanced_main_legacy_tests",
+    module_scheme = "flat",
+)
+
+targets.binaries.generated_script(
     name = "opt_target_coverage_test",
     label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
     module_scheme = "flat",
