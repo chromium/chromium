@@ -1011,7 +1011,9 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      bundle_identifier = shared_bundle_id_for_test_apps
+      if (!defined(bundle_identifier)) {
+        bundle_identifier = shared_bundle_id_for_test_apps
+      }
 
       if (!defined(bundle_deps)) {
         bundle_deps = []
