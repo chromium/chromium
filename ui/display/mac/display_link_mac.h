@@ -40,10 +40,6 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   using Callback = base::RepeatingCallback<void(VSyncParamsMac)>;
   ~VSyncCallbackMac();
 
-  // To prevent constantly switching VSync on and off, allow this max number of
-  // extra CVDisplayLink VSync running before stopping CVDisplayLink.
-  static constexpr int kMaxExtraVSyncs = 12;
-
   base::WeakPtr<VSyncCallbackMac> GetWeakPtr();
 
  private:

@@ -219,7 +219,13 @@ void ExternalBeginFrameSourceMac::RefreshRateChangedOnSameDisplay() {
 }
 void ExternalBeginFrameSourceMac::StartBeginFrame() {
   if (display_link_mac_) {
-    DCHECK(!vsync_callback_mac_);
+    if (vsync_callback_mac_) {
+      // The callback is already registered and running (likely in keep-alive
+      // mode). Reset the counter and return.
+      vsync_callback_keep_alive_counter_ = 0;
+      return;
+    }
+    vsync_callback_keep_alive_counter_ = 0;
     // Request the callback to be called on the register thread.
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(&ExternalBeginFrameSourceMac::OnDisplayLinkCallback,
@@ -244,9 +250,10 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
 void ExternalBeginFrameSourceMac::StopBeginFrame() {
   if (display_link_mac_) {
     DCHECK(vsync_callback_mac_);
-    // Remove and unregister VSyncCallbackMac.
-    vsync_callback_mac_.reset();
     vsyncs_to_skip_ = 0;
+    // Do not reset `vsync_callback_mac_` here. Instead, defer unregistering it
+    // until the keep-alive counter has reached `kMaxKeepAliveCount` in
+    // `OnDisplayLinkCallback()`.
     return;
   }
 
@@ -264,8 +271,6 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
   needs_begin_frames_ = needs_begin_frames;
   just_started_begin_frame_ = true;
 
-  // TODO: Try to prevent constant switching between callback register and
-  // unregister.
   if (needs_begin_frames_) {
     StartBeginFrame();
   } else {
@@ -276,9 +281,18 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
 // Called on the Viz thread.
 void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     ui::VSyncParamsMac params) {
+  // If we have reached `kMaxKeepAliveCount` consecutive callbacks without
+  // needing a begin frame, stop the display link.
+  vsync_callback_keep_alive_counter_++;
+  if (vsync_callback_keep_alive_counter_ >= kMaxKeepAliveCount) {
+    vsync_callback_mac_.reset();
+    return;
+  }
+
   if (!needs_begin_frames_) {
     return;
   }
+  vsync_callback_keep_alive_counter_ = 0;
 
   if (vsyncs_to_skip_ > 0) {
     TRACE_EVENT_INSTANT(

@@ -243,14 +243,7 @@ bool CVDisplayLinkMac::EnsureDisplayLinkRunning() {
 // Called on the system CVDisplayLink thread.
 void CVDisplayLinkMac::StopDisplayLinkIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!callbacks_.empty()) {
-    consecutive_vsyncs_with_no_callbacks_ = 0;
-    return;
-  }
-  consecutive_vsyncs_with_no_callbacks_ += 1;
-  if (consecutive_vsyncs_with_no_callbacks_ <
-      VSyncCallbackMac::kMaxExtraVSyncs) {
     return;
   }
 
@@ -265,7 +258,6 @@ void CVDisplayLinkMac::StopDisplayLinkIfNeeded() {
   }
 
   display_link_is_running_ = false;
-  consecutive_vsyncs_with_no_callbacks_ = 0;
 }
 
 base::TimeDelta CVDisplayLinkMac::GetRefreshInterval() const {
@@ -311,8 +303,6 @@ void CVDisplayLinkMac::RunCallbacks(const VSyncParamsMac& params) {
   for (auto* callback : callbacks_) {
     callback->callback_for_displaylink_thread_.Run(params);
   }
-
-  StopDisplayLinkIfNeeded();
 }
 
 CVDisplayLinkMac::CVDisplayLinkMac(
@@ -391,6 +381,9 @@ void CVDisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("gpu", "CVDisplayLinkMac::UnregisterCallback");
   callbacks_.erase(callback);
+
+  // Stop the display link if there are no more registered callbacks.
+  StopDisplayLinkIfNeeded();
 }
 
 }  // namespace ui

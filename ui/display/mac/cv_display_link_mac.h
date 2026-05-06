@@ -101,11 +101,6 @@ class CVDisplayLinkMac : public DisplayLinkMac {
   // Each VSyncCallbackMac holds a reference to `this`.
   std::set<VSyncCallbackMac*> callbacks_;
 
-  // The number of consecutive DisplayLink VSyncs received after zero
-  // |callbacks_|. DisplayLink will be stopped after |kMaxExtraVSyncs| is
-  // reached. It's guarded by |globals.lock|.
-  int consecutive_vsyncs_with_no_callbacks_ = 0;
-
   // The task runner for the thread on which this is called and on which all
   // callbacks will be made.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
