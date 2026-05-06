@@ -705,6 +705,53 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   RecordDefaultSearchMatchCount(entries_matching_dsp_to_reconcile,
                                 /*is_unreconciled_count=*/false);
 
+  // Debugging https://crbug.com/492852740
+  bool is_dsp_from_policy =
+      default_search_provider && default_search_provider->enforced_by_policy();
+  bool is_dsp_from_extension =
+      default_search_provider &&
+      (default_search_provider->type() == TemplateURL::OMNIBOX_API_EXTENSION ||
+       default_search_provider->type() ==
+           TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
+
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp_match", dsp_match != nullptr);
+
+  // Breakdown of the explanations for a DSP mismatch.
+  bool has_mismatch_explanation =
+      // There is no DSP.
+      !default_search_provider ||
+      // There is no set of existing turls to get a match from.
+      existing_urls.empty();
+
+  // - Confirmed and expected reasons
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_no_preloaded_dsp",
+                        default_search_provider == nullptr);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_existing_urls_empty",
+                        existing_urls.empty());
+  // - Other hypotheses
+  //   Not confirmed because they should normally not be brought up through
+  //   pre-loading DSP, or their first appearance should come after the keywords
+  //   DB is loaded, and then they should have been added to it.
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_policy",
+                        is_dsp_from_policy);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_extension",
+                        is_dsp_from_extension);
+  SCOPED_CRASH_KEY_BOOL(
+      "KwdbRefresh", "is_from_reg_program",
+      default_search_provider &&
+          default_search_provider->CreatedByRegulatoryProgram());
+
+  if (!dsp_match && !has_mismatch_explanation) {
+    // This is not implemented with a `CHECK` for various reasons:
+    // - It's a pre-existing behaviour
+    // - Some of the ways to trigger it are explicitly not blocked upstream on
+    //   some platforms, during prefs loading.
+    // So we keep this as a `DumpWithoutCrashing` to avoid causing test
+    // failures, while still allowing to collect data, validating the logic in
+    // this function and following-up with some defensive checks.
+    base::debug::DumpWithoutCrashing();
+  }
+
   // We expect to only have one regulatory program engine at a time, see
   // `TemplateURLService::ResetPlayAPISearchEngine()`.
   CHECK_LE(regulatory_entries.size(), 1u, base::NotFatalUntil::M150);
