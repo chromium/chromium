@@ -1278,7 +1278,6 @@ interface CanvasRenderingContext2D
     method getContextAttributes
     method getImageData
     method getLineDash
-    method getTextureFormat
     method getTransform
     method isContextLost
     method isPointInPath
@@ -1302,8 +1301,6 @@ interface CanvasRenderingContext2D
     method strokeRect
     method strokeText
     method strokeTextCluster
-    method transferBackFromGPUTexture
-    method transferToGPUTexture
     method transform
     method translate
     setter direction
@@ -6950,7 +6947,6 @@ interface OffscreenCanvasRenderingContext2D
     method getContextAttributes
     method getImageData
     method getLineDash
-    method getTextureFormat
     method getTransform
     method isContextLost
     method isPointInPath
@@ -6974,8 +6970,6 @@ interface OffscreenCanvasRenderingContext2D
     method strokeRect
     method strokeText
     method strokeTextCluster
-    method transferBackFromGPUTexture
-    method transferToGPUTexture
     method transform
     method translate
     setter direction

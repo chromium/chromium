@@ -1540,7 +1540,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getContextAttributes
 [Worker]     method getImageData
 [Worker]     method getLineDash
-[Worker]     method getTextureFormat
 [Worker]     method getTransform
 [Worker]     method isContextLost
 [Worker]     method isPointInPath
@@ -1564,8 +1563,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method strokeRect
 [Worker]     method strokeText
 [Worker]     method strokeTextCluster
-[Worker]     method transferBackFromGPUTexture
-[Worker]     method transferToGPUTexture
 [Worker]     method transform
 [Worker]     method translate
 [Worker]     setter direction

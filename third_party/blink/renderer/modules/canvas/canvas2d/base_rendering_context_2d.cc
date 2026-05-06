@@ -34,18 +34,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_gpu_transfer_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_direction.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_kerning.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_variant_caps.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
@@ -114,18 +111,6 @@ class MemoryManagedPaintCanvas;
 
 namespace {
 
-wgpu::TextureFormat AsDawnType(const viz::SharedImageFormat& format) {
-  // NOTE: Canvas2D can be only RGBA_8888, BGRA_8888, or F16.
-  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
-    return wgpu::TextureFormat::RGBA8Unorm;
-  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
-    return wgpu::TextureFormat::BGRA8Unorm;
-  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-    return wgpu::TextureFormat::RGBA16Float;
-  } else {
-    return wgpu::TextureFormat::Undefined;
-  }
-}
 
 bool IsContextProviderValid() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
@@ -161,16 +146,6 @@ BaseRenderingContext2D::BaseRenderingContext2D(
 void BaseRenderingContext2D::ResetInternal() {
   Canvas2DRecorderContext::ResetInternal();
 
-  // If a WebGPU transfer texture exists, we must destroy it immediately. We
-  // can't allow it to continue to exist, as it would be subject to Javascript
-  // garbage-collection and could vanish any time Oilpan runs a sweep. Normally
-  // it's okay for Oilpan to delete GPUTextures, since Dawn maintains its own
-  // ownership graph of GPU resources, but in our case, destruction of the
-  // GPUTexture will also result in destruction of the associated SharedImage.
-  if (webgpu_access_texture_) {
-    webgpu_access_texture_->destroy();
-    webgpu_access_texture_ = nullptr;
-  }
 }
 
 CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
@@ -736,7 +711,6 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
-  visitor->Trace(webgpu_access_texture_);
   CanvasRenderingContext::Trace(visitor);
   Canvas2DRecorderContext::Trace(visitor);
 }
@@ -1322,243 +1296,6 @@ void BaseRenderingContext2D::setFontVariantCaps(
 UniqueFontSelector* BaseRenderingContext2D::GetFontSelector() const {
   return nullptr;
 }
-
-V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
-  return FromDawnEnum(AsDawnType(GetSharedImageFormat()));
-}
-
-GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
-    const Canvas2dGPUTransferOption* access_options,
-    ExceptionState& exception_state) {
-  if (!OriginClean()) {
-    exception_state.ThrowSecurityError(
-        "The canvas has been tainted by cross-origin data.");
-    return nullptr;
-  }
-
-  blink::GPUDevice* blink_device = access_options->getDeviceOr(nullptr);
-  if (!blink_device) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "GPUDevice cannot be null.");
-    return nullptr;
-  }
-
-  // Verify that we are not inside a canvas layer.
-  if (layer_count_ > 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "A layer is currently active.");
-    return nullptr;
-  }
-
-  // Verify that the usage flags are supported.
-  constexpr wgpu::TextureUsage kSupportedUsageFlags =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
-
-  // If `transferToGPUTexture` is called twice without an intervening call to
-  // `transferBackFromGPUTexture`, the semantics are that the current ongoing
-  // transfer should be discarded and the new transfer given the 2D canvas in
-  // its current state (defined to be blank post-initiation of the first
-  // transfer but then incorporating any canvas 2D operations that have
-  // subsequently occurred on the canvas). Implement that semantics here.
-  // Note that the canvas will have been made blank by the removal of the
-  // CanvasResourceProvider at the initiation of the first transfer but will
-  // then incorporate any canvas 2D operations that have subsequently occurred
-  // on the canvas via the usage of the CanvasResourceProvider that those
-  // operations would have caused to be created as the source for the new
-  // transfer below.
-  if (webgpu_access_texture_) {
-    webgpu_access_texture_->destroy();
-    webgpu_access_texture_ = nullptr;
-    resource_provider_from_webgpu_access_.reset();
-  }
-
-  wgpu::TextureUsage tex_usage =
-      AsDawnFlags<wgpu::TextureUsage>(access_options->usage());
-  if (tex_usage & ~kSupportedUsageFlags) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Usage flags are not supported.");
-    return nullptr;
-  }
-
-  // We will need to access the canvas' resource provider.
-  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
-  if (!host) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to access canvas image.");
-    return nullptr;
-  }
-
-  // SharedImage backings chosen for low latency are not guaranteed to support
-  // transfer to WebGPU (notably on Windows). Disallow this combination for
-  // simplicity.
-  if (host->LowLatencyEnabled()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Transfer of low-latency canvases to WebGPU is not supported.");
-    return nullptr;
-  }
-
-  host->SetTransferToGPUTextureWasInvoked();
-
-  // Prepare to flush the canvas to a WebGPU texture.
-  FinalizeFrame();
-
-  // Ensure that the canvas host lives on the GPU. This call is a no-op if the
-  // host is already accelerated.
-  // TODO(crbug.com/340911120): if the user requested WillReadFrequently, do we
-  // want to behave differently here?
-  EnableAccelerationIfPossible();
-
-  // A texture needs to exist on the GPU. If we aren't able to create an
-  // accelerated SharedImage provider, we won't be able to transfer the canvas.
-  // In that case, WebGPU access is not possible.
-  auto* base_provider = GetOrCreateResourceProvider();
-  Canvas2DResourceProviderSharedImage* provider =
-      base_provider ? base_provider->As2DSharedImageProvider() : nullptr;
-  if (!provider || !provider->IsAccelerated()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to transfer canvas to GPU.");
-    return nullptr;
-  }
-
-  // Get the SharedImage backing this canvas resource for transfer to WebGPU.
-  // This call will ensure that a copy occurs if needed for CopyOnWrite or for
-  // creation of a SharedImage with WebGPU usage and will end the canvas access.
-  gpu::SyncToken canvas_access_sync_token;
-  bool performed_copy = false;
-  scoped_refptr<gpu::ClientSharedImage> client_si =
-      provider->GetBackingClientSharedImageForTransferToWebGPU(
-          canvas_access_sync_token, performed_copy);
-  if (access_options->requireZeroCopy() && performed_copy) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Transferring canvas to GPU was not zero-copy.");
-    return nullptr;
-  }
-
-  // If the backing SharedImage is not available (e.g., because the GPU context
-  // has been lost), zero-copy transfer is not possible.
-  if (!client_si) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Unable to transfer canvas to GPU.");
-    return nullptr;
-  }
-
-  wgpu::TextureFormat dawn_format = AsDawnType(client_si->format());
-  wgpu::TextureDescriptor desc = {
-      .usage = tex_usage,
-      .size = {base::checked_cast<uint32_t>(client_si->size().width()),
-               base::checked_cast<uint32_t>(client_si->size().height())},
-      .format = dawn_format,
-  };
-
-  // Create a WebGPU texture backed by the resource's SharedImage.
-  scoped_refptr<WebGPUMailboxTexture> texture =
-      WebGPUMailboxTexture::FromExistingSharedImage(
-          blink_device->GetDawnControlClient(), blink_device->GetHandle(), desc,
-          client_si,
-          // Ensure that WebGPU waits for the 2D canvas service-side operations
-          // on this resource to complete.
-          canvas_access_sync_token);
-
-  webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(
-      blink_device, dawn_format, tex_usage, std::move(texture),
-      access_options->getLabelOr(String()));
-
-  // We take away the canvas' resource provider here, which will cause the
-  // canvas to be treated as a brand new surface if additional draws occur.
-  // It also gives us a mechanism to detect post-transfer-out draws, which is
-  // used in `transferBackFromWebGPU` to raise an exception.
-  auto owned_provider = ReplaceResourceProvider(nullptr);
-
-  // Note: This must be a CRPSI since this method would have bailed out earlier
-  // otherwise.
-  resource_provider_from_webgpu_access_ =
-      base::WrapUnique<Canvas2DResourceProviderSharedImage>(
-          owned_provider.release()->As2DSharedImageProvider());
-
-  // The user isn't obligated to ever transfer back, which means this resource
-  // provider might stick around for while. Jettison any unnecessary resources.
-  resource_provider_from_webgpu_access_->ClearUnusedResources();
-
-  WillDraw(gfx::Rect(Width(), Height()),
-           CanvasPerformanceMonitor::DrawType::kOther);
-
-  return webgpu_access_texture_;
-}
-
-void BaseRenderingContext2D::transferBackFromGPUTexture(
-    ExceptionState& exception_state) {
-  // If the context is lost or doesn't exist, this call should be a no-op.
-  // We don't want to throw an exception or attempt any changes if
-  // `transferBackFromWebGPU` is called during teardown.
-  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
-  if (!host || isContextLost()) [[unlikely]] {
-    return;
-  }
-
-  // Prevent unbalanced calls to transferBackFromGPUTexture without an earlier
-  // call to transferToGPUTexture.
-  if (!webgpu_access_texture_ || !resource_provider_from_webgpu_access_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "This canvas is not currently in use by WebGPU.");
-    webgpu_access_texture_ = nullptr;
-    resource_provider_from_webgpu_access_ = nullptr;
-    return;
-  }
-
-  // If this canvas already has a resource provider, this means that drawing has
-  // occurred after `transferToWebGPU`. We disallow transferring back in this
-  // case, and raise an exception instead.
-  if (GetResourceProvider()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The canvas was touched after transferToGPUTexture.");
-    webgpu_access_texture_ = nullptr;
-    resource_provider_from_webgpu_access_ = nullptr;
-    return;
-  }
-
-  // If the caller explicitly destroyed the WebGPU access texture, there is
-  // nothing to transfer.
-  if (webgpu_access_texture_->IsDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The texture has been destroyed.");
-    webgpu_access_texture_ = nullptr;
-    resource_provider_from_webgpu_access_ = nullptr;
-    return;
-  }
-
-  // Restore the canvas' resource provider back onto the canvas host,
-  // surrendering our temporary ownership of the provider.
-  Canvas2DResourceProviderSharedImage* resource_provider =
-      resource_provider_from_webgpu_access_.get();
-  ReplaceResourceProvider(std::move(resource_provider_from_webgpu_access_));
-  resource_provider->SetDelegate(host);
-
-  // Disassociate the WebGPU texture from the SharedImage to end its
-  // SharedImage access.
-  gpu::SyncToken webgpu_completion_sync_token =
-      webgpu_access_texture_->GetMailboxTexture()->Dissociate();
-
-  // Signal to the resource provider that the transfer to WebGPU has completed
-  // to ensure that it waits on the WebGPU service-side operations to complete
-  // before any further canvas operations occur.
-  resource_provider->TransferBackFromWebGPU(webgpu_completion_sync_token);
-
-  // Destroy the WebGPU texture to prevent it from being used after
-  // `transferBackFromGPUTexture`.
-  webgpu_access_texture_->destroy();
-
-  // We are finished with the WebGPU texture and its associated device.
-  webgpu_access_texture_ = nullptr;
-
-  WillDraw(gfx::Rect(Width(), Height()),
-           CanvasPerformanceMonitor::DrawType::kOther);
-}
-
 int BaseRenderingContext2D::LayerCount() const {
   return Canvas2DRecorderContext::LayerCount();
 }

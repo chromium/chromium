@@ -109,7 +109,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     virtual void NotifyGpuContextLost() = 0;
     virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
     virtual bool IsPrinting() const { return false; }
-    virtual bool TransferToGPUTextureWasInvoked() { return false; }
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

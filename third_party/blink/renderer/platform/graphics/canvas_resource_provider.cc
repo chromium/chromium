@@ -1538,11 +1538,6 @@ std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
         gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }
 
-  if (delegate && delegate->TransferToGPUTextureWasInvoked()) {
-    shared_image_usage_flags.PutAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                    gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-  }
-
 #if BUILDFLAG(IS_MAC)
   if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
       is_accelerated && format == viz::SinglePlaneFormat::kRGBA_8888) {

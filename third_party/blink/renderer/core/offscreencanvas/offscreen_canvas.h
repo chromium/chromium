@@ -127,9 +127,6 @@ class CORE_EXPORT OffscreenCanvas final
   // determined synchronously.
   // TODO(junov): Propagate changes in visibility from the placeholder canvas.
   bool IsPageVisible() const override { return true; }
-  void SetTransferToGPUTextureWasInvoked() override {
-    transfer_to_gpu_texture_was_invoked_ = true;
-  }
   void DiscardResources() override;
 
   bool PushFrameIfNeeded();
@@ -146,9 +143,6 @@ class CORE_EXPORT OffscreenCanvas final
 
   // CanvasResourceProvider::Delegate implementation
   void NotifyGpuContextLost() override;
-  bool TransferToGPUTextureWasInvoked() override {
-    return transfer_to_gpu_texture_was_invoked_;
-  }
   void SetNeedsCompositingUpdate() override {}
 
   // EventTarget implementation
@@ -288,7 +282,6 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t client_id_ = 0;
   uint32_t sink_id_ = 0;
 
-  bool transfer_to_gpu_texture_was_invoked_ = false;
 };
 
 }  // namespace blink

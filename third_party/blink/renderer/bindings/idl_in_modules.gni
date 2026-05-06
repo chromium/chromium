@@ -104,8 +104,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.idl",
-  "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_gpu_transfer.idl",
-  "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_gpu_transfer_option.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_draw_element_image.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_dictionary.idl",
   "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.idl",

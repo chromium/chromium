@@ -972,10 +972,6 @@
       status: "experimental",
     },
     {
-      name: "Canvas2dGPUTransfer",
-      status: "experimental",
-    },
-    {
       name: "Canvas2dLayers",
     },
     {
