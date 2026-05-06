@@ -266,10 +266,7 @@ template <typename T>
 class BoxedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit BoxedMemory(rust::Box<T> box)
-      : ExternalMemory(UNSAFE_BUFFERS(
-            base::span<uint8_t>(const_cast<uint8_t*>(box->data.data()),
-                                box->data.size()))),
-        box_(std::move(box)) {}
+      : ExternalMemory(box->data), box_(std::move(box)) {}
   ~BoxedMemory() override = default;
 
  private:

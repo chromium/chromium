@@ -30,9 +30,9 @@ fn test_conversion<S, E, F>(
     audio_buf.plane_mut(0).unwrap().copy_from_slice(samples);
 
     let buffer_ref = to_ref(&audio_buf);
-    let mut sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, codec).unwrap();
+    let sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, codec).unwrap();
 
-    let result = create_audio_buffer(buffer_ref, &mut sample_buffer, bytes_per_sample).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer, bytes_per_sample).unwrap();
 
     expect_eq!(result.sample_rate, sample_rate);
     expect_eq!(result.num_frames, samples.len());
@@ -253,10 +253,10 @@ fn test_stereo_interleaving() {
     audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-0.5, -0.1]);
 
     let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
-    let mut sample_buffer =
+    let sample_buffer =
         SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
             .unwrap();
-    let result = create_audio_buffer(buffer_ref, &mut sample_buffer, 4).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer, 4).unwrap();
 
     // Expected interleaved: [0.5, -0.5, 0.1, -0.1]
     let expected: &[f32] = &[0.5, -0.5, 0.1, -0.1];
@@ -314,10 +314,10 @@ fn test_zero_frames() {
     let audio_buf = AudioBuffer::<f32>::new(spec, 0);
 
     let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
-    let mut sample_buffer =
+    let sample_buffer =
         SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Unknown)
             .unwrap();
-    let result = create_audio_buffer(buffer_ref, &mut sample_buffer, 4).unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer, 4).unwrap();
 
     expect_eq!(result.num_frames, 0);
     expect_true!(result.data.is_empty());

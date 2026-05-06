@@ -275,21 +275,13 @@ fn default_audio_buffer() -> ffi::SymphoniaAudioBuffer {
     }
 }
 
-/// An enum to wrap a `symphonia::core::audio::RawSampleBuffer` with a generic
-/// sample type.
-///
-/// This allows for dynamically handling different sample formats at runtime
-/// without needing separate code paths for each format.
 /// A byte-oriented sample buffer that holds decoded sample data in its
 /// original, strongly-typed format (`i16`, `f32`, etc.) while providing
 /// methods to access it as a raw byte slice (`&[u8]`). This is crucial
-/// for passing the data across the FFI boundary. It is reused across `decode`
-/// calls to reduce allocations.
+/// for passing the data across the FFI boundary.
 pub struct SymphoniaRawSampleBuffer {
     /// Interleaved audio sample data as bytes.
     data: Vec<u8>,
-    /// The signal specification of the buffer (channels, rate).
-    spec: symphonia::core::audio::AudioSpec,
     /// The sample format of the data.
     sample_format: ffi::SymphoniaSampleFormat,
     /// The codec of the audio stream.
@@ -303,7 +295,6 @@ impl SymphoniaRawSampleBuffer {
         buf: &GenericAudioBufferRef,
         codec: ffi::SymphoniaAudioCodec,
     ) -> Result<SymphoniaRawSampleBuffer, String> {
-        let spec = buf.spec().clone();
         let sample_format = match buf {
             GenericAudioBufferRef::U8(_) => ffi::SymphoniaSampleFormat::U8,
             GenericAudioBufferRef::S16(_) => ffi::SymphoniaSampleFormat::S16,
@@ -312,7 +303,7 @@ impl SymphoniaRawSampleBuffer {
             GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::F32,
             _ => return Err("unsupported format".to_string()),
         };
-        Ok(Self { data: Vec::new(), spec, sample_format, codec })
+        Ok(Self { data: Vec::new(), sample_format, codec })
     }
 
     /// Determines the FFI `SymphoniaSampleFormat` from the inner buffer type.
@@ -324,20 +315,6 @@ impl SymphoniaRawSampleBuffer {
     /// buffer.
     fn as_bytes(&self) -> &[u8] {
         &self.data
-    }
-
-    /// Checks if the underlying type of the buffer matches the type of the
-    /// provided `GenericAudioBufferRef`.
-    fn formats_match(&self, other: &GenericAudioBufferRef) -> bool {
-        let other_format = match other {
-            GenericAudioBufferRef::U8(_) => ffi::SymphoniaSampleFormat::U8,
-            GenericAudioBufferRef::S16(_) => ffi::SymphoniaSampleFormat::S16,
-            GenericAudioBufferRef::S24(_) => ffi::SymphoniaSampleFormat::S24,
-            GenericAudioBufferRef::S32(_) => ffi::SymphoniaSampleFormat::S32,
-            GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::F32,
-            _ => ffi::SymphoniaSampleFormat::Unknown,
-        };
-        self.sample_format == other_format
     }
 
     /// Copies sample data from a Symphonia `GenericAudioBufferRef` into this
@@ -400,10 +377,6 @@ impl SymphoniaRawSampleBuffer {
 struct DecoderImpl {
     /// The boxed trait object for the `symphonia` decoder.
     decoder: Box<dyn AudioDecoder>,
-
-    /// A reusable buffer for decoded samples to avoid reallocation.
-    /// It is `None` until the first successful decode.
-    sample_buffer: Option<SymphoniaRawSampleBuffer>,
 
     /// Expected bytes per sample.
     bytes_per_sample: u8,
@@ -664,7 +637,6 @@ fn init_symphonia_decoder_impl(config: &ffi::SymphoniaDecoderConfig) -> InitResu
     Ok(SymphoniaDecoder {
         decoder_impl: Some(DecoderImpl {
             decoder,
-            sample_buffer: None,
             bytes_per_sample: config.bytes_per_sample,
             codec: config.codec,
         }),
@@ -702,7 +674,7 @@ impl From<&Error> for ffi::SymphoniaDecodeStatus {
 /// `AudioBufferRef`.
 pub fn create_audio_buffer(
     buffer_ref: GenericAudioBufferRef,
-    sample_buffer: &mut SymphoniaRawSampleBuffer,
+    mut sample_buffer: SymphoniaRawSampleBuffer,
     bytes_per_sample: u8,
 ) -> Result<ffi::SymphoniaAudioBuffer, String> {
     let sample_rate = buffer_ref.spec().rate();
@@ -762,10 +734,9 @@ pub fn create_audio_buffer(
             .flat_map(|chunk| [0, chunk[0], chunk[1], chunk[2]])
             .collect()
     } else {
-        sample_buffer.as_bytes().to_vec()
+        sample_buffer.data
     };
 
-    // TODO(crbug.com/40074653): avoid copy here?
     Ok(ffi::SymphoniaAudioBuffer {
         data,
         sample_format,
@@ -816,35 +787,14 @@ impl SymphoniaDecoder {
             .decode(&symphonia_packet)
             .map_err(|e| ((&e).into(), e.to_string()))?;
 
-        // Lazily initialize the sample buffer on the first successful decode.
-        // We also need to re-initialize if the spec (channel count, rate) or capacity
-        // requirements change (e.g. mid-stream configuration change).
-        let spec = buffer.spec().clone();
-        let needs_realloc = match &decoder_impl.sample_buffer {
-            Some(sb) => !sb.formats_match(&buffer) || sb.spec != spec,
-            None => true,
-        };
-
-        if needs_realloc {
-            decoder_impl.sample_buffer = Some(
-                SymphoniaRawSampleBuffer::new_buffer_for(&buffer, decoder_impl.codec).map_err(
-                    |e| {
-                        (
-                            ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat,
-                            e.to_string(),
-                        )
-                    },
-                )?,
-            );
-        }
+        let sample_buffer = SymphoniaRawSampleBuffer::new_buffer_for(&buffer, decoder_impl.codec)
+            .map_err(|e| {
+            (ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat, e.to_string())
+        })?;
 
         Ok(Box::new(
-            create_audio_buffer(
-                buffer,
-                decoder_impl.sample_buffer.as_mut().unwrap(),
-                decoder_impl.bytes_per_sample,
-            )
-            .map_err(|e| (ffi::SymphoniaDecodeStatus::InsufficentData, e.to_string()))?,
+            create_audio_buffer(buffer, sample_buffer, decoder_impl.bytes_per_sample)
+                .map_err(|e| (ffi::SymphoniaDecodeStatus::InsufficentData, e.to_string()))?,
         ))
     }
 
