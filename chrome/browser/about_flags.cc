@@ -566,6 +566,17 @@ const FeatureEntry::FeatureParam
         {"expand_on_hover_velocity_heuristic_min_samples", "3"},
         {"expand_on_hover_velocity_heuristic_threshold", "0.25"}};
 
+const FeatureEntry::FeatureParam
+    kVerticalTabsExpandOnHover_VelocityHeuristic_WithDelay[] = {
+        {"expand_on_hover_use_velocity_heuristic", "true"},
+        {"expand_on_hover_default_enabled", "true"},
+        {"expand_on_hover_velocity_heuristic_delay", "100ms"},
+        {"expand_on_hover_velocity_heuristic_min_samples", "3"},
+        {"expand_on_hover_velocity_heuristic_threshold", "0.25"},
+        {"expand_on_hover_velocity_heuristic_distance_from_edge", "12"},
+        {"expand_on_hover_velocity_heuristic_edge_delay", "200ms"},
+};
+
 const FeatureEntry::FeatureVariation kVerticalTabsExpandOnHoverVariations[] = {
     {"with 350ms hover delay / 0 click delay",
      kVerticalTabsExpandOnHover_NoClickDelay, nullptr},
@@ -576,7 +587,9 @@ const FeatureEntry::FeatureVariation kVerticalTabsExpandOnHoverVariations[] = {
      nullptr},
     {"with 250dp/s velocity heuristic",
      kVerticalTabsExpandOnHover_VelocityHeuristic_250VelocityThreshold,
-     nullptr}};
+     nullptr},
+    {"with 250dp/s velocity heuristic and small delay",
+     kVerticalTabsExpandOnHover_VelocityHeuristic_WithDelay, nullptr}};
 #endif
 
 #if BUILDFLAG(ENABLE_VR)

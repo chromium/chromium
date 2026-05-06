@@ -51,6 +51,11 @@ BASE_FEATURE_PARAM(bool,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_use_velocity_heuristic",
                    false);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVerticalTabsExpandOnHoverVelocityHeuristicDelay,
+                   &kVerticalTabsExpandOnHover,
+                   "expand_on_hover_velocity_heuristic_delay",
+                   base::Milliseconds(0));
 BASE_FEATURE_PARAM(int,
                    kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples,
                    &kVerticalTabsExpandOnHover,
@@ -66,6 +71,16 @@ BASE_FEATURE_PARAM(double,
                    &kVerticalTabsExpandOnHover,
                    "expand_on_hover_velocity_heuristic_threshold",
                    0.1);
+BASE_FEATURE_PARAM(int,
+                   kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge,
+                   &kVerticalTabsExpandOnHover,
+                   "expand_on_hover_velocity_heuristic_distance_from_edge",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay,
+                   &kVerticalTabsExpandOnHover,
+                   "expand_on_hover_velocity_heuristic_edge_delay",
+                   base::Milliseconds(0));
 
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 

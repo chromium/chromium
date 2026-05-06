@@ -1288,17 +1288,31 @@ void VerticalTabStripRegionView::CalculateMouseVelocityForExpandOnHover() {
   // specified interval.
   expand_on_hover_heuristic_timer_.Reset();
 
+  // Increment the number of samples received.
+  expand_on_hover_heuristic_samples_ += 1;
+
   const int dx = std::abs(current_point.x() -
                           (*point_at_expand_on_hover_timer_start_).x());
   const base::TimeDelta dt =
       base::TimeTicks::Now() - *time_at_expand_on_hover_timer_start_;
 
-  // Avoid divide by zero errors by waiting for more samples.
-  if (dt.InMilliseconds() <= 0) {
+  // Wait a minimum amount of time before potentially expanding. This also
+  // avoids divide by zero errors because this param is at least 0.
+  if (dt <= tabs::kVerticalTabsExpandOnHoverVelocityHeuristicDelay.Get()) {
     return;
   }
 
-  expand_on_hover_heuristic_samples_ += 1;
+  // If the mouse is close to the inside edge, wait longer till the mouse is
+  // more fully inside the tab strip.
+  const int distance_from_inside_edge =
+      std::abs(current_point.x() - GetContentsBounds().right());
+  if (dt <= tabs::kVerticalTabsExpandOnHoverVelocityHeuristicEdgeDelay.Get() &&
+      distance_from_inside_edge <=
+          tabs::kVerticalTabsExpandOnHoverVelocityHeuristicDistanceFromEdge
+              .Get()) {
+    return;
+  }
+
   if (expand_on_hover_heuristic_samples_ >=
           tabs::kVerticalTabsExpandOnHoverVelocityHeuristicMinSamples.Get() &&
       static_cast<double>(dx) / dt.InMilliseconds() <
