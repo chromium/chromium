@@ -35,8 +35,6 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.notifications.scheduler.TipsAgent;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -393,20 +391,6 @@ public class TipsUtils {
      */
     public static boolean shouldAlwaysShowOptInPromo() {
         return ChromeFeatureList.sAndroidTipsNotificationsAlwaysShowOptInPromo.getValue();
-    }
-
-    /**
-     * Set whether the tips notifications channel is enabled for use in the tips notifications magic
-     * stack module for show eligibility checking.
-     */
-    public static void registerTipsNotificationsModuleEnabledSettingsPref() {
-        areTipsNotificationsEnabled(
-                (enabled) -> {
-                    ChromeSharedPreferences.getInstance()
-                            .writeBoolean(
-                                    ChromePreferenceKeys.TIPS_NOTIFICATIONS_CHANNEL_ENABLED,
-                                    enabled);
-                });
     }
 
     private static void clearFeatureTipShownPrefs(Profile profile) {

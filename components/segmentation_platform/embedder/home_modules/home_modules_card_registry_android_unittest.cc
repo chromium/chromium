@@ -19,7 +19,6 @@
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
-#include "components/segmentation_platform/embedder/home_modules/tips_notifications_promo.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -233,43 +232,6 @@ TEST_F(HomeModulesCardRegistryAndroidTest, TestHistorySyncPromoCardDisabled) {
   ExpectCardNotRegistered(
       registry_.get(), kHistorySyncPromo,
       {kHistorySyncPromoShownCount, "educational_tip_shown_count"});
-}
-
-// Tests that the Registry registers the TipsNotificationsPromo card when its
-// feature is enabled.
-TEST_F(HomeModulesCardRegistryAndroidTest,
-       TestTipsNotificationsPromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
-  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
-                                              &local_state_pref_service_);
-
-  EXPECT_GE(registry_->all_cards_input_size(), 3u);
-  ExpectCardRegistered(
-      registry_.get(), kTipsNotificationsPromo,
-      {"tips_notifications_promo_shown_count", "is_eligible_to_tips_opt_in",
-       "educational_tip_shown_count"});
-}
-
-// Tests that the Registry won't register the TipsNotificationsPromo card when
-// it is disabled because of user's impression history.
-TEST_F(HomeModulesCardRegistryAndroidTest,
-       TestTipsNotificationsPromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
-
-  // Simulate showing the card across enough sessions to reach its max limit.
-  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
-    auto card =
-        std::make_unique<TipsNotificationsPromo>(&profile_pref_service_);
-    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
-  }
-
-  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
-                                              &local_state_pref_service_);
-
-  ExpectCardNotRegistered(
-      registry_.get(), kTipsNotificationsPromo,
-      {"tips_notifications_promo_shown_count", "is_eligible_to_tips_opt_in",
-       "educational_tip_shown_count"});
 }
 
 }  // namespace segmentation_platform::home_modules

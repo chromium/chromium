@@ -12,8 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -73,9 +71,6 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(isEligibleToHistoryOptIn(profile)));
                 return inputContext;
             case ModuleType.TIPS_NOTIFICATIONS_PROMO:
-                inputContext.addEntry(
-                        "is_eligible_to_tips_opt_in",
-                        ProcessedValue.fromFloat(isEligibleToTipsOptIn()));
                 return inputContext;
             default:
                 assert false : "Card type not supported: " + moduleType;
@@ -187,17 +182,5 @@ public class EducationalTipCardProviderSignalHandler {
         }
 
         return 0.0f;
-    }
-
-    /**
-     * Returns a value of 1.0f if the notifications channel is enabled (not eligible). Otherwise, it
-     * returns 0.0f.
-     */
-    private static float isEligibleToTipsOptIn() {
-        boolean enabled =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.TIPS_NOTIFICATIONS_CHANNEL_ENABLED, false);
-        return enabled ? 1.0f : 0.0f;
     }
 }

@@ -1594,10 +1594,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             initiateArchivedTabsAutoDeletePromoManager();
 
-            if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
-                TipsUtils.registerTipsNotificationsModuleEnabledSettingsPref();
-            }
-
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_FINDS)) {
                 Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
                 FindsService findsService = FindsService.getForProfile(profile);
