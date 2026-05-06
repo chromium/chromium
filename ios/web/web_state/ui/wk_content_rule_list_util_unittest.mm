@@ -31,11 +31,14 @@ TEST_F(WKContentRuleListUtilTest, LocalResourceJSONBlock) {
   id block_rule = json[0];
   ASSERT_TRUE([block_rule isKindOfClass:[NSDictionary class]]);
   NSArray* filtered_schemes = @[
-    @"file://.*", [@(kTestWebUIScheme) stringByAppendingString:@"://.*"],
-    [@(kTestAppSpecificScheme) stringByAppendingString:@"://.*"]
+    @"^file://.*",
+    [@"^" stringByAppendingString:[@(kTestWebUIScheme)
+                                      stringByAppendingString:@"://.*"]],
+    [@"^" stringByAppendingString:[@(kTestAppSpecificScheme)
+                                      stringByAppendingString:@"://.*"]]
   ];
   ASSERT_NSEQ(filtered_schemes, block_rule[@"trigger"][@"if-top-url"]);
-  ASSERT_NSEQ(@"https?://.*", block_rule[@"trigger"][@"url-filter"]);
+  ASSERT_NSEQ(@"^https?://.*", block_rule[@"trigger"][@"url-filter"]);
   NSArray* filtered_types = @[
     @"image", @"style-sheet", @"script", @"font", @"raw", @"svg-document",
     @"media", @"popup", @"ping"
@@ -58,10 +61,10 @@ TEST_F(WKContentRuleListUtilTest, AutoUpgradeMixedContent) {
   ASSERT_TRUE([json isKindOfClass:[NSArray class]]);
   id block_rule = json[0];
   ASSERT_TRUE([block_rule isKindOfClass:[NSDictionary class]]);
-  NSArray* filtered_schemes = @[ @"https://.*" ];
+  NSArray* filtered_schemes = @[ @"^https://.*" ];
   ASSERT_NSEQ(filtered_schemes, block_rule[@"trigger"][@"if-top-url"]);
 
-  ASSERT_NSEQ(@"http://.*", block_rule[@"trigger"][@"url-filter"]);
+  ASSERT_NSEQ(@"^http://.*", block_rule[@"trigger"][@"url-filter"]);
   NSArray* filtered_types = @[ @"image", @"media" ];
   ASSERT_NSEQ(filtered_types, block_rule[@"trigger"][@"resource-type"]);
   ASSERT_NSEQ(@"make-https", block_rule[@"action"][@"type"]);

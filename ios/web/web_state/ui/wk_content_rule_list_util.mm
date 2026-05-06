@@ -11,17 +11,18 @@
 namespace web {
 
 NSString* CreateLocalBlockingJsonRuleList() {
-  NSMutableArray* local_schemes_urls = [@[ @"file://.*" ] mutableCopy];
+  NSMutableArray* local_schemes_urls = [@[ @"^file://.*" ] mutableCopy];
   WebClient::Schemes schemes;
   GetWebClient()->AddAdditionalSchemes(&schemes);
   GetWebClient()->GetAdditionalWebUISchemes(&(schemes.standard_schemes));
   for (std::string scheme : schemes.standard_schemes) {
-    [local_schemes_urls addObject:base::SysUTF8ToNSString(scheme + "://.*")];
+    [local_schemes_urls
+        addObject:base::SysUTF8ToNSString("^" + scheme + "://.*")];
   }
 
   NSDictionary* local_block = @{
     @"trigger" : @{
-      @"url-filter" : @"https?://.*",
+      @"url-filter" : @"^https?://.*",
       @"if-top-url" : local_schemes_urls,
       @"resource-type" : @[
         // These should be all resource types except document.
@@ -38,8 +39,8 @@ NSString* CreateLocalBlockingJsonRuleList() {
 
   NSDictionary* allow_crbug = @{
     @"trigger" : @{
-      @"url-filter" : @"https://bugs\\.chromium\\.org/.*",
-      @"if-top-url" : @[ @"chrome://.*" ],
+      @"url-filter" : @"^https://bugs\\.chromium\\.org/.*",
+      @"if-top-url" : @[ @"^chrome://.*" ],
       @"resource-type" : @[
         // Allow opening crbug from chrome:// urls
         @"popup"
@@ -62,8 +63,8 @@ NSString* CreateLocalBlockingJsonRuleList() {
 NSString* CreateMixedContentAutoUpgradeJsonRuleList() {
   NSDictionary* mixed_content_autoupgrade = @{
     @"trigger" : @{
-      @"url-filter" : @"http://.*",
-      @"if-top-url" : @[ @"https://.*" ],
+      @"url-filter" : @"^http://.*",
+      @"if-top-url" : @[ @"^https://.*" ],
       @"resource-type" : @[
         // Only upgrade image and media (i.e. audio and video) per
         // https://www.w3.org/TR/mixed-content/#upgrade-algorithm
