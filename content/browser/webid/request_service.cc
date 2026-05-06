@@ -1133,7 +1133,6 @@ void RequestService::MaybeShowAccountsDialog() {
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   bool is_auto_reauthn_blocked_by_embedder =
-      IsFedCmEmbedderCheckEnabled() &&
       auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
           WebContents::FromRenderFrameHost(&render_frame_host()));
 
@@ -2692,7 +2691,6 @@ bool RequestService::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
   }
 
   bool is_auto_reauthn_blocked_by_embedder =
-      IsFedCmEmbedderCheckEnabled() &&
       auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
           WebContents::FromRenderFrameHost(&render_frame_host()));
   if (is_auto_reauthn_blocked_by_embedder) {
