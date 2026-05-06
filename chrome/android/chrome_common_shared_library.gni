@@ -47,9 +47,7 @@ template("chrome_common_shared_library") {
     _module_descs = invoker.module_descs
   }
 
-  # Our linker script uses complicated patterns that mold does not evaluate in
-  # the same way lld does, resulting in missing Java_ symbols.
-  _use_linker_script = !_collect_inputs_only && use_lld
+  _use_linker_script = !_collect_inputs_only
   if (_use_linker_script) {
     _linker_script_target = "${target_name}_linker_script"
     _linker_script = "$target_gen_dir/${target_name}_linker_script.txt"
