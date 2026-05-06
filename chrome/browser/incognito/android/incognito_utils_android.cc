@@ -18,10 +18,24 @@ static bool JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,
   policy::IncognitoModeAvailability incognito_pref =
       IncognitoModePrefs::GetAvailability(prefs);
   DCHECK(incognito_pref == policy::IncognitoModeAvailability::kEnabled ||
-         incognito_pref == policy::IncognitoModeAvailability::kDisabled)
+         incognito_pref == policy::IncognitoModeAvailability::kDisabled ||
+         incognito_pref == policy::IncognitoModeAvailability::kForced)
       << "Unsupported incognito mode preference: "
       << static_cast<int>(incognito_pref);
   return incognito_pref != policy::IncognitoModeAvailability::kDisabled;
+}
+
+static bool JNI_IncognitoUtils_GetIncognitoModeForced(JNIEnv* env,
+                                                      Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  policy::IncognitoModeAvailability incognito_pref =
+      IncognitoModePrefs::GetAvailability(prefs);
+  DCHECK(incognito_pref == policy::IncognitoModeAvailability::kEnabled ||
+         incognito_pref == policy::IncognitoModeAvailability::kDisabled ||
+         incognito_pref == policy::IncognitoModeAvailability::kForced)
+      << "Unsupported incognito mode preference: "
+      << static_cast<int>(incognito_pref);
+  return incognito_pref == policy::IncognitoModeAvailability::kForced;
 }
 
 static bool JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,

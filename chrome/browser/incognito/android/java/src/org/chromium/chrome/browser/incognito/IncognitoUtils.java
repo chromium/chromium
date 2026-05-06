@@ -47,6 +47,18 @@ public class IncognitoUtils {
 
     /**
      * @param profile The {@link Profile} used to determine incognito status.
+     * @return Whether incognito mode is forced by policy.
+     */
+    public static boolean isIncognitoModeForced(Profile profile) {
+        // TODO(b/509871328): Remove feature flag and combine with isIncognitoModeEnabled.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)) {
+            return false;
+        }
+        return IncognitoUtilsJni.get().getIncognitoModeForced(profile);
+    }
+
+    /**
+     * @param profile The {@link Profile} used to determine incognito status.
      * @return Whether incognito mode is managed by policy.
      */
     public static boolean isIncognitoModeManaged(Profile profile) {
@@ -134,6 +146,8 @@ public class IncognitoUtils {
     @NativeMethods
     public interface Natives {
         boolean getIncognitoModeEnabled(@JniType("Profile*") Profile profile);
+
+        boolean getIncognitoModeForced(@JniType("Profile*") Profile profile);
 
         boolean getIncognitoModeManaged(@JniType("Profile*") Profile profile);
     }

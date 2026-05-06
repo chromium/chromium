@@ -197,6 +197,7 @@ BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kHomeModulePrefRefactor);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
+BASE_DECLARE_FEATURE(kIncognitoModeForcedAndroid);
 BASE_DECLARE_FEATURE(kIncognitoNtpSmallIcon);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kIncognitoThemeOverlayTesting);
