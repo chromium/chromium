@@ -14134,6 +14134,21 @@
             ]
         }
     ],
+    "IOSSyncedGroupColor": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SyncedGroupColor"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSyncedSetUp": [
         {
             "platforms": [
