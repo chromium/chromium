@@ -78,11 +78,7 @@ class MediaCodecBridgeBuilder {
                 // since setting it even to disabled (the default) breaks on
                 // some devices (e.g., Android X86 emulator).
                 format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
-
-                // TODO(crbug.com/439294798): This should probably be limited to Dimensity chips.
-                if (decoderName.contains("mtk")) {
-                    format.setInteger("vendor.mtk.vdec.cpu.boost.mode.value", 1);
-                }
+                format.setInteger("vdec-lowlatency", 1);
             }
 
             if (!bridge.configureVideo(
