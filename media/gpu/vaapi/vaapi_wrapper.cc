@@ -117,13 +117,18 @@ std::pair<base::ScopedFD, bool> LoadDrmFD(const base::FilePath& dev_path) {
     return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
                           /*should_skip=*/true);
   }
-  // Skip NVIDIA device because their VA-API drivers do not support
-  // Chromium and can sometimes cause crashes (see crbug.com/1492880).
-  if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
-      !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
-    LOG(WARNING) << "Should skip nVidia device named: " << version_name;
-    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
-                          /*should_skip=*/true);
+
+  if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm")) {
+    // Special handling for nvidia drivers - we will support a correct driver
+    // implementation on linux ARM64, but the driver landscape on x64 linux
+    // tends to be shaky and can sometimes cause crashes: crbug.com/1492880
+    // We do need more checks to ensure that the driver supports linear textures
+    // or a picture processor, which is somewhat driver-version dependent.
+    if (!base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
+      LOG(WARNING) << "Should skip nVidia device named: " << version_name;
+      return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                            /*should_skip=*/true);
+    }
   }
   return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
                         /*should_skip=*/false);
