@@ -66,10 +66,7 @@
 # found in the LICENSE file.
 
 -dontwarn com.google.ar.imp.core.web.FragmentHost
--dontwarn androidx.xr.arcore.internal.PerceptionRuntimeFactory
-
-# TODO(crbug.com/481288291): Remove these once the JXR can be upgraded to alpha12.
--dontwarn org.jetbrains.annotations.VisibleForTesting
+# TODO(crbug.com/481288291): Remove these once the JXR bug is fixed.
 -keep class !**.R$**,androidx.xr.runtime.**,androidx.xr.arcore.**,androidx.xr.scenecore.**,com.google.imp.splitengine.extensions.** {
   <methods>;
   <fields>;

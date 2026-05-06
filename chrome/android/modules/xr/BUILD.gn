@@ -20,10 +20,6 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImpl.java",
   ]
-  additional_jar_files = [ [
-        "service.txt",
-        "META-INF/services/androidx.xr.runtime.internal.PerceptionRuntimeFactory",
-      ] ]
   deps = [
     "//base:build_info_java",
     "//base:bundle_utils_java",
