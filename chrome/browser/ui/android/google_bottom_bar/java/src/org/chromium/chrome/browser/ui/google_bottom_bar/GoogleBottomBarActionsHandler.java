@@ -260,16 +260,15 @@ class GoogleBottomBarActionsHandler {
 
     private void showTooltip(View view, int messageId) {
         ViewRectProvider rectProvider = new ViewRectProvider(view);
-        // TODO(crbug.com/505624919): Replace with Builder pattern.
         TextBubble textBubble =
-                new TextBubble(
-                        view.getContext(),
-                        view,
-                        /* stringId= */ messageId,
-                        /* accessibilityStringId= */ messageId,
-                        /* showArrow= */ true,
-                        rectProvider,
-                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                new TextBubble.Builder(
+                                view.getContext(),
+                                view,
+                                rectProvider,
+                                messageId,
+                                messageId,
+                                ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                        .build();
         textBubble.setFocusable(true);
         textBubble.setDismissOnTouchInteraction(true);
         textBubble.show();
