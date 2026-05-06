@@ -16519,19 +16519,17 @@
             ]
         }
     ],
-    "NetworkServiceThreadIncreasedPriority": [
+    "NetworkServiceThreadIncreasedPriorityV2": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "WhileLoading_20260309",
+                    "name": "WhileLoadingAndDuringStartup",
                     "enable_features": [
+                        "NetworkServiceIncreasedPriorityDuringStartup",
                         "NetworkServiceIncreasedPriorityWhileLoading"
-                    ],
-                    "disable_features": [
-                        "NetworkServiceIncreasedPriorityAlways"
                     ]
                 }
             ]
