@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -221,9 +222,16 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     return;
   }
 
-  if (request.has_request() && request.request().has_device_opt_in_request()) {
-    // TODO (qinmin): Show the device opt-in UI.
+  if (!request.has_request()) {
+    DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
+                     "request payload.";
     std::move(done_callback).Run(nullptr);
+    return;
+  }
+
+  if (request.request().has_device_opt_in_request()) {
+    ProcessDeviceOptInRequest(std::move(message), active_tab,
+                              std::move(done_callback));
     return;
   }
 
@@ -231,13 +239,6 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
                                                          /*create=*/false);
   CHECK(glic_service);
-
-  if (!request.has_request()) {
-    DLOG(WARNING) << "Received GlicExperimentalTriggering message with no "
-                     "request payload.";
-    std::move(done_callback).Run(nullptr);
-    return;
-  }
 
   if (request.request().has_stop_actuation_request()) {
     ProcessStopActionRequest(std::move(message), active_tab, glic_service,
@@ -292,6 +293,22 @@ void GlicExperimentalTriggeringMessageHandler::OnClientConnectedForUpdates(
                                                    std::move(server_channel),
                                                    last_seen_sequence_number),
                  std::move(listener_receiver));
+}
+
+void GlicExperimentalTriggeringMessageHandler::ProcessDeviceOptInRequest(
+    components_sharing_message::SharingMessage message,
+    tabs::TabInterface* active_tab,
+    DoneCallback done_callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!opt_in_controller_) {
+    opt_in_controller_ =
+        std::make_unique<glic::GlicExperimentalOptInController>(profile_);
+  }
+
+  opt_in_controller_->ShowDialog(active_tab->GetContents());
+#endif
+
+  std::move(done_callback).Run(nullptr);
 }
 
 void GlicExperimentalTriggeringMessageHandler::ProcessStopActionRequest(
