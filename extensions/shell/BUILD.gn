@@ -249,6 +249,7 @@ source_set("app_shell_lib") {
   }
 }
 
+# TODO(crbug.com/40425056): Remove this executable. It is unused.
 executable("app_shell") {
   # testonly because :app_shell_lib is testonly. See :app_shell_lib comment.
   testonly = true
@@ -268,90 +269,6 @@ executable("app_shell") {
   }
 }
 
-test("app_shell_unittests") {
-  use_xvfb = use_xvfb_in_this_config
-
-  sources = [
-    "../test/extensions_unittests_main.cc",
-    "browser/shell_content_browser_client_unittest.cc",
-    "browser/shell_extension_loader_unittest.cc",
-    "browser/shell_keep_alive_requester_unittest.cc",
-    "browser/shell_prefs_unittest.cc",
-    "browser/system_logs/shell_system_logs_fetcher_unittest.cc",
-    "test/shell_test_extensions_browser_client.cc",
-    "test/shell_test_extensions_browser_client.h",
-  ]
-
-  data = [
-    "//extensions/test/data/",
-    "$root_out_dir/extensions_shell_and_test.pak",
-  ]
-
-  deps = [
-    ":app_shell_lib",
-    "//apps",
-    "//base",
-    "//base/test:test_support",
-    "//build:android_buildflags",
-    "//build:chromeos_buildflags",
-    "//components/crx_file",
-    "//components/feedback",
-    "//components/keep_alive_registry",
-    "//components/prefs",
-    "//components/user_prefs",
-    "//content/test:test_support",
-    "//extensions:shell_and_test_pak",
-    "//extensions:test_support",
-    "//extensions/browser",
-    "//extensions/common",
-    "//extensions/common/api",
-    "//extensions/shell/browser/system_logs",
-    "//testing/gtest",
-    "//ui/display:test_support",
-    "//ui/gl:test_support",
-    "//ui/platform_window",
-  ]
-
-  data_deps = [
-    # "//gin", # TODO(dpranke): Either gin or v8 data is needed ...
-    "//third_party/angle:includes",
-  ]
-
-  if (use_aura) {
-    sources += [
-      "browser/root_window_controller_unittest.cc",
-      "browser/shell_desktop_controller_aura_unittest.cc",
-      "browser/shell_native_app_window_aura_unittest.cc",
-      "test/shell_test_base_aura.cc",
-      "test/shell_test_base_aura.h",
-      "test/shell_test_helper_aura.cc",
-      "test/shell_test_helper_aura.h",
-    ]
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/base:test_support",
-      "//ui/base/ime/init",
-      "//ui/compositor:test_support",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/dbus/power" ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "browser/shell_audio_controller_chromeos_unittest.cc",
-      "browser/shell_screen_unittest.cc",
-    ]
-    deps += [
-      "//chromeos/ash/components/audio",
-      "//chromeos/ash/components/dbus:test_support",
-      "//chromeos/ash/components/dbus/audio",
-    ]
-  }
-}
-
 process_version("version_header") {
   template_file = "common/version.h.in"
   sources = [
@@ -359,20 +276,4 @@ process_version("version_header") {
     lastchange_file,
   ]
   output = "$target_gen_dir/common/version.h"
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = []
-
-  deps = [
-    ":app_shell_lib",
-    "//base",
-    "//base/test:test_support",
-    "//extensions/browser",
-  ]
-
-  if (is_chromeos) {
-    deps += [ "//components/keyed_service/content" ]
-  }
 }

@@ -322,10 +322,4 @@ test("extensions_unittests") {
       "//ui/android:ui_full_java",
     ]
   }
-
-  # TODO(https://crbug.com/356905053): Gradually include more of these sources
-  # in the desktop-android build.
-  if (enable_extensions) {
-    deps += [ "//extensions/shell:unit_tests" ]
-  }
 }

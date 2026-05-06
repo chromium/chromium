@@ -291,7 +291,6 @@ group("gn_all") {
       deps += [
         "//extensions:extensions_unittests",
         "//extensions/browser/api/declarative_net_request/filter_list_converter",
-        "//extensions/shell:app_shell_unittests",
       ]
     }
 
