@@ -89,6 +89,13 @@ public class LoadProgressMediator {
                                     return;
                                 }
 
+                                if (progress < 1
+                                        && mModel.get(LoadProgressProperties.COMPLETION_STATE)
+                                                != CompletionState.UNFINISHED) {
+                                    if (!tab.isLoading()) return;
+                                    startLoadProgress();
+                                }
+
                                 updateLoadProgress(progress);
                             }
 

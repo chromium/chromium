@@ -69,6 +69,7 @@ class CORE_EXPORT ProgressTracker final
 
   void FinishedParsing();
   void DidFirstContentfulPaint();
+  void DidNavigationApiIntercept();
 
   void WillStartLoading(uint64_t identifier, ResourceLoadPriority);
   void IncrementProgress(uint64_t identifier, const ResourceResponse&);

@@ -236,6 +236,37 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    public void loadingTabProgressUpdateStartsProgressBar() {
+        initMediator();
+        doReturn(true).when(mTab).isLoading();
+        assertEquals(
+                CompletionState.FINISHED_DONT_ANIMATE,
+                mModel.get(LoadProgressProperties.COMPLETION_STATE));
+
+        mTabObserver.onLoadProgressChanged(mTab, 0.7f);
+
+        assertEquals(0.7f, mModel.get(LoadProgressProperties.PROGRESS), MathUtils.EPSILON);
+        assertEquals(
+                CompletionState.UNFINISHED, mModel.get(LoadProgressProperties.COMPLETION_STATE));
+    }
+
+    @Test
+    @SmallTest
+    public void nonLoadingTabProgressUpdateDoesNotStartProgressBar() {
+        initMediator();
+        assertEquals(
+                CompletionState.FINISHED_DONT_ANIMATE,
+                mModel.get(LoadProgressProperties.COMPLETION_STATE));
+
+        mTabObserver.onLoadProgressChanged(mTab, 0.7f);
+
+        assertEquals(
+                CompletionState.FINISHED_DONT_ANIMATE,
+                mModel.get(LoadProgressProperties.COMPLETION_STATE));
+    }
+
+    @Test
+    @SmallTest
     public void testSameDocumentLoad_afterFinishedLoading() {
         initMediator();
         GURL gurl = URL_1;

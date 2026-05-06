@@ -518,6 +518,9 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
       dispatch_params_->should_skip_screenshot, dispatch_params_->involvement,
       dispatch_params_->interaction_id, dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document);
+  if (LocalDOMWindow* window = DomWindow()) {
+    window->GetFrame()->Loader().Progress().DidNavigationApiIntercept();
+  }
 
   React(script_state);
 }
@@ -623,9 +626,14 @@ void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
   delayed_load_start_task_handle_.Cancel();
   if (!defaultPrevented()) {
     switch (intercept_state_) {
-      case InterceptState::kIntercepted:
-        DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+      case InterceptState::kIntercepted: {
+        LocalFrame* frame = DomWindow()->GetFrame();
+        if (frame->IsLoading()) {
+          frame->Loader().Progress().ProgressCompleted();
+        }
+        frame->Client()->DidFailAsyncSameDocumentCommit();
         break;
+      }
       case InterceptState::kCommitted:
         DomWindow()->GetFrame()->Loader().Progress().ProgressCompleted();
         break;

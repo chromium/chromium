@@ -179,4 +179,31 @@ TEST_F(ProgressTrackerTest, ContentfulPaintBeforeFinishParsing) {
   EXPECT_EQ(1.0, WaitForNextProgressChange());
 }
 
+TEST_F(ProgressTrackerTest, NavigationApiInterceptBeforeCompletion) {
+  Progress().ProgressStarted();
+  EXPECT_EQ(0.0, LastProgress());
+
+  Progress().DidFirstContentfulPaint();
+  EXPECT_EQ(0.8, WaitForNextProgressChange());
+
+  Progress().DidNavigationApiIntercept();
+  EXPECT_EQ(0.8, LastProgress());
+
+  Progress().ProgressCompleted();
+  EXPECT_EQ(1.0, WaitForNextProgressChange());
+}
+
+TEST_F(ProgressTrackerTest, NavigationApiInterceptAfterCompletion) {
+  Progress().ProgressStarted();
+  EXPECT_EQ(0.0, LastProgress());
+  Progress().ProgressCompleted();
+  EXPECT_EQ(1.0, WaitForNextProgressChange());
+
+  Progress().ProgressStarted();
+  Progress().DidNavigationApiIntercept();
+  EXPECT_EQ(0.7, WaitForNextProgressChange());
+  Progress().ProgressCompleted();
+  EXPECT_EQ(1.0, WaitForNextProgressChange());
+}
+
 }  // namespace blink

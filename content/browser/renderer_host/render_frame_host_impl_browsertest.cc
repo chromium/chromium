@@ -8087,6 +8087,52 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(delegate->did_show_loading_ui_values()[1]);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    NavigationApiInterceptsRendererInitiatedSameDocumentRepeated) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+      (async () => {
+        navigation.onnavigate = e =>
+            e.intercept({handler: () => new Promise(r => setTimeout(r, 100))});
+        await navigation.navigate('#one').finished;
+        await navigation.navigate('#two').finished;
+      })();
+  )"));
+
+  EXPECT_THAT(delegate->is_loading_values(),
+              testing::ElementsAre(
+                  // First navigation: '#one'.
+                  true,   // Start renderer-initiated same-document navigation.
+                  true,   // Delayed commit requests visible loading UI.
+                  false,  // Navigation completes.
+
+                  // Second navigation: '#two'.
+                  true,  // Start renderer-initiated same-document navigation.
+                  true,  // Delayed commit requests visible loading UI.
+                  false  // Navigation completes.
+                  ));
+
+  EXPECT_THAT(delegate->did_show_loading_ui_values(),
+              testing::ElementsAre(
+                  // First navigation: '#one'.
+                  false,  // Start renderer-initiated same-document navigation.
+                  true,   // Delayed commit requests visible loading UI.
+                  false,  // Navigation completes.
+
+                  // Second navigation: '#two'.
+                  false,  // Start renderer-initiated same-document navigation.
+                  true,   // Delayed commit requests visible loading UI.
+                  false   // Navigation completes.
+                  ));
+}
+
 // Ensure that navigating with a frame tree of A(B(A)) results in the right
 // number of beforeunload messages sent.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
