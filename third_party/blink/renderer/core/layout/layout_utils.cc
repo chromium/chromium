@@ -207,71 +207,83 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
   if (is_initial_block_size_indefinite) {
-    LayoutUnit intrinsic_block_size;
-    // Intrinsic block-size is only defined if the node is unfragmented.
-    if (!physical_fragment.IsFirstForNode() ||
-        physical_fragment.GetBreakToken()) {
-      intrinsic_block_size = kIndefiniteSize;
-    } else {
-      intrinsic_block_size = layout_result.IntrinsicBlockSize();
-    }
-
-    // Grid/flex/fieldset/grid-lanes can have their children calculate their
-    // size based on their parent's final block-size. E.g.
-    //
-    // <div style="display: flex;">
-    //   <div style="display: flex;"> <!-- or "display: grid;" -->
-    //     <!-- Child will stretch to the parent's block-size -->
-    //     <div></div>
-    //   </div>
-    // </div>
-    // <div style="display: flex;">
-    //   <div style="display: flex; flex-direction: column;">
-    //     <!-- Child will grow to the parent's fixed block-size -->
-    //     <div style="flex: 1;"></div>
-    //   </div>
-    // </div>
-    //
-    // If the previous |layout_result| was produced by a space which had a
-    // fixed block-size we can't use |intrinsic_block_size| for determining
-    // the new block-size.
-    //
-    // TODO(ikilpatrick): Similar to %-block-size descendants we could store a
-    // bit on the |LayoutResult| which indicates if it had a child which
-    // sized itself based on the parent's block-size.
-    // We should consider this optimization if we are missing this cache often
-    // within this branch (and could have re-used the result).
-    // TODO(ikilaptrick): This may occur for other layout modes, e.g.
-    // custom-layout.
-    if (old_space.IsFixedBlockSize() ||
-        (old_space.IsBlockAutoBehaviorStretch() &&
-         style.LogicalHeight().HasAuto())) {
-      if (node.IsFlexibleBox() || node.IsGrid() || node.IsGridLanes() ||
-          node.IsFieldsetContainer()) {
-        intrinsic_block_size = kIndefiniteSize;
+    LayoutUnit intrinsic_block_size = [&]() {
+      // Intrinsic block-size is only defined if the node is unfragmented.
+      if (!physical_fragment.IsFirstForNode() ||
+          physical_fragment.GetBreakToken()) {
+        return kIndefiniteSize;
       }
-    }
 
-    // Grid/flex/grid-lanes can have their intrinsic block-size depend on the
-    // %-block-size. This occurs when:
-    //  - A column flex-box has "max-height: 100%" (or similar) on itself.
-    //  - A row flex-box has "height: 100%" (or similar) and children which
-    //    stretch to this size.
-    //  - A grid/grid-lanes with "grid-template-rows: repeat(auto-fill, 50px)"
-    //  or similar.
-    //
-    // Similar to above we can't use the |intrinsic_block_size| for determining
-    // the new block-size.
-    //
-    // TODO(dgrogan): We can hit the cache here for row flexboxes when they
-    // don't have stretchy children.
-    if (physical_fragment.DependsOnPercentageBlockSize() &&
-        new_space.PercentageResolutionBlockSize() !=
-            old_space.PercentageResolutionBlockSize()) {
-      if (node.IsFlexibleBox() || node.IsGrid() || node.IsGridLanes()) {
-        intrinsic_block_size = kIndefiniteSize;
+      if (physical_fragment.IsFragmentationContextRoot() &&
+          style.LogicalMaxHeight().HasPercentOrStretch() &&
+          style.LogicalHeight().HasAuto()) {
+        // If this is a multicol container, and `block-size` is auto,
+        // `max-block-size:stretch` (or a percentage value) may have caused the
+        // block-size of the multicol container to shrink. This affects the
+        // so-called "intrinsic" block-size, so that it's unusable for cache
+        // hitting in this case.
+        return kIndefiniteSize;
       }
-    }
+
+      // Grid/flex/fieldset/grid-lanes can have their children calculate their
+      // size based on their parent's final block-size. E.g.
+      //
+      // <div style="display: flex;">
+      //   <div style="display: flex;"> <!-- or "display: grid;" -->
+      //     <!-- Child will stretch to the parent's block-size -->
+      //     <div></div>
+      //   </div>
+      // </div>
+      // <div style="display: flex;">
+      //   <div style="display: flex; flex-direction: column;">
+      //     <!-- Child will grow to the parent's fixed block-size -->
+      //     <div style="flex: 1;"></div>
+      //   </div>
+      // </div>
+      //
+      // If the previous |layout_result| was produced by a space which had a
+      // fixed block-size we can't use |intrinsic_block_size| for determining
+      // the new block-size.
+      //
+      // TODO(ikilpatrick): Similar to %-block-size descendants we could store a
+      // bit on the |LayoutResult| which indicates if it had a child which
+      // sized itself based on the parent's block-size.
+      // We should consider this optimization if we are missing this cache often
+      // within this branch (and could have re-used the result).
+      // TODO(ikilaptrick): This may occur for other layout modes, e.g.
+      // custom-layout.
+      if (old_space.IsFixedBlockSize() ||
+          (old_space.IsBlockAutoBehaviorStretch() &&
+           style.LogicalHeight().HasAuto())) {
+        if (node.IsFlexibleBox() || node.IsGrid() || node.IsGridLanes() ||
+            node.IsFieldsetContainer()) {
+          return kIndefiniteSize;
+        }
+      }
+
+      // Grid/flex/grid-lanes can have their intrinsic block-size depend on the
+      // %-block-size. This occurs when:
+      //  - A column flex-box has "max-height: 100%" (or similar) on itself.
+      //  - A row flex-box has "height: 100%" (or similar) and children which
+      //    stretch to this size.
+      //  - A grid/grid-lanes with "grid-template-rows: repeat(auto-fill, 50px)"
+      //  or similar.
+      //
+      // Similar to above we can't use the |intrinsic_block_size| for
+      // determining the new block-size.
+      //
+      // TODO(dgrogan): We can hit the cache here for row flexboxes when they
+      // don't have stretchy children.
+      if (physical_fragment.DependsOnPercentageBlockSize() &&
+          new_space.PercentageResolutionBlockSize() !=
+              old_space.PercentageResolutionBlockSize()) {
+        if (node.IsFlexibleBox() || node.IsGrid() || node.IsGridLanes()) {
+          return kIndefiniteSize;
+        }
+      }
+
+      return layout_result.IntrinsicBlockSize();
+    }();
 
     block_size = ComputeBlockSizeForFragment(
         new_space, node, fragment_geometry.border + fragment_geometry.padding,
