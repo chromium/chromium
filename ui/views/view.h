@@ -119,7 +119,6 @@ class FocusTraversable;
 class LayoutProvider;
 class ScrollView;
 class SizeBounds;
-class SubmenuView;
 class ViewAccessibility;
 class ViewMaskLayer;
 class ViewObserver;
@@ -318,7 +317,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     friend class ::ash::ArcNotificationContentView;
     friend class ::exo::ShellSurfaceBase;
     friend class ::eye_dropper::EyeDropperView;
-    friend class SubmenuView;
     FRIEND_TEST_ALL_PREFIXES(WebViewUnitTest, CrashedOverlayView);
 
     OwnedByClientPassKey() = default;

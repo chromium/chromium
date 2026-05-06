@@ -101,6 +101,9 @@ ui::AXNodeID AXViewObjWrapper::GetUniqueId() const {
 }
 
 bool AXViewObjWrapper::HandleAccessibleAction(const ui::AXActionData& action) {
+  if (!view_->GetWidget()) {
+    return false;
+  }
   return view_->HandleAccessibleAction(action);
 }
 

@@ -30,6 +30,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_host.h"
+#include "ui/views/controls/menu/menu_host_root_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
@@ -59,8 +60,6 @@ std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
 
 SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
-  // We'll delete ourselves, otherwise the ScrollView would delete us on close.
-  set_owned_by_client(OwnedByClientPassKey());
 
   // Menus in Chrome are always traversed in a vertical direction.
   GetViewAccessibility().SetIsVertical(true);
@@ -71,6 +70,11 @@ SubmenuView::~SubmenuView() {
   // The menu may not have been closed yet (it will be hidden, but not
   // necessarily closed).
   Close();
+  ReleaseMenuHost();
+
+  if (parent()) {
+    parent()->RemoveChildViewT(this).release();
+  }
 }
 
 std::vector<MenuItemView*> SubmenuView::GetMenuItems() {
@@ -509,7 +513,7 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
     InvalidateLayout();
 
     MenuHost::InitParams new_init_params = init_params;
-    new_init_params.contents_view = scroll_view_container_.get();
+    new_init_params.contents_view = detached_scroll_view_container_.release();
     base::WeakPtr<SubmenuView> weak_ptr = weak_ptr_factory_.GetWeakPtr();
     host_->InitMenuHost(new_init_params);
     if (!weak_ptr) {
@@ -548,9 +552,16 @@ void SubmenuView::Reposition(const gfx::Rect& bounds,
 
 void SubmenuView::Close() {
   if (host_) {
-    host_->DestroyMenuHost();
+    MenuHost* host = host_;
+    // Fire the accessibility event while we are still attached to the Widget
+    // tree so the event bubbles up correctly. We temporarily set host_ to null
+    // so IsShowing() returns false, representing the true collapsed state.
     host_ = nullptr;
     GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
+    host_ = host;
+
+    ReleaseMenuHost();
+    host->DestroyMenuHost();
   }
 }
 
@@ -644,12 +655,12 @@ MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
   }
 
   if (!scroll_view_container_) {
-    scroll_view_container_ = std::make_unique<MenuScrollViewContainer>(this);
-    // Otherwise MenuHost would delete us.
-    scroll_view_container_->set_owned_by_client(OwnedByClientPassKey());
+    detached_scroll_view_container_ =
+        std::make_unique<MenuScrollViewContainer>(this);
+    scroll_view_container_ = detached_scroll_view_container_.get();
     scroll_view_container_->SetBorderColorId(border_color_id_);
   }
-  return scroll_view_container_.get();
+  return scroll_view_container_;
 }
 
 MenuItemView* SubmenuView::GetLastItem() {
@@ -662,8 +673,23 @@ const MenuItemView* SubmenuView::GetLastItem() const {
   return menu_items.empty() ? nullptr : menu_items.back();
 }
 
+void SubmenuView::ReleaseMenuHost() {
+  if (host_) {
+    if (scroll_view_container_ && host_->GetRootView() &&
+        host_->GetRootView()->Contains(scroll_view_container_)) {
+      if (auto* root_view =
+              views::AsViewClass<MenuHostRootView>(host_->GetRootView())) {
+        root_view->ClearSubmenu();
+      }
+      detached_scroll_view_container_ =
+          host_->GetRootView()->RemoveChildViewT(scroll_view_container_);
+    }
+    host_ = nullptr;
+  }
+}
+
 void SubmenuView::MenuHostDestroyed() {
-  host_ = nullptr;
+  ReleaseMenuHost();
   MenuController* controller = parent_menu_item_->GetMenuController();
   if (controller) {
     controller->Cancel(MenuController::ExitType::kDestroyed);

@@ -381,10 +381,9 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
     // SubmenuView does not lay out its children unless it is contained in a
     // view, so make a simple container for it.
     SubmenuView* submenu = root_menu_->GetSubmenu();
-    ASSERT_TRUE(submenu->owned_by_client());
 
     submenu_parent_ = std::make_unique<View>();
-    submenu_parent_->AddChildViewRaw(submenu);
+    submenu_parent_->AddChildView(submenu);
     submenu_parent_->SetPosition(gfx::Point(0, 0));
     submenu_parent_->SetSize(submenu->GetPreferredSize({}));
   }
@@ -396,9 +395,9 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
   }
 
  private:
+  std::unique_ptr<View> submenu_parent_;
   std::unique_ptr<TestMenuItemView> root_menu_;
   raw_ptr<MenuItemView> test_item_ = nullptr;
-  std::unique_ptr<View> submenu_parent_;
 };
 
 // Tests that MenuItemView takes into account the child's margins and preferred

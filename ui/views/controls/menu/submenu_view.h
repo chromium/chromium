@@ -168,6 +168,9 @@ class VIEWS_EXPORT SubmenuView : public View,
   // references to the MenuHost as the MenuHost is about to be deleted.
   void MenuHostDestroyed();
 
+  // Safely detaches the scroll view container and resets the MenuHost.
+  void ReleaseMenuHost();
+
   int icon_area_width() const { return icon_area_width_; }
   int min_icon_height() const { return min_icon_height_; }
   int label_start() const { return label_start_; }
@@ -230,7 +233,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   MenuDelegate::DropPosition drop_position_ = MenuDelegate::DropPosition::kNone;
 
   // Ancestor of the SubmenuView, lazily created.
-  std::unique_ptr<MenuScrollViewContainer> scroll_view_container_;
+  std::unique_ptr<MenuScrollViewContainer> detached_scroll_view_container_;
+  raw_ptr<MenuScrollViewContainer> scroll_view_container_ = nullptr;
 
   // Width of a menu icon area.
   int icon_area_width_ = 0;
