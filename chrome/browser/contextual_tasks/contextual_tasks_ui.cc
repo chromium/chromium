@@ -655,11 +655,6 @@ void ContextualTasksUI::SetThreadId(std::optional<std::string> id) {
   PushTaskDetailsToPage();
 }
 
-void ContextualTasksUI::SetThreadTurnId(std::optional<std::string> id) {
-  thread_turn_id_ = id;
-  PushTaskDetailsToPage();
-}
-
 const std::optional<std::string>& ContextualTasksUI::GetThreadTitle() {
   return thread_title_;
 }
@@ -1402,7 +1397,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     base::Uuid new_task_id = task.GetTaskId();
     task_info_delegate_->SetTaskId(new_task_id);
     task_info_delegate_->SetThreadId(std::nullopt);
-    task_info_delegate_->SetThreadTurnId(std::nullopt);
     task_info_delegate_->SetThreadTitle(std::nullopt);
 
     task_info_delegate_->PrepareForTaskChange();
@@ -1496,7 +1490,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       task_info_delegate_->GetTaskId().value(),
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
-  task_info_delegate_->SetThreadTurnId(mstk);
 
   if (task_changed) {
     OMNIBOX_LOG("embedded_page_nav")
