@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="240"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>SVG Text CSS Decoration: stroke-dasharray on wavy underline</title>
+  <h:link rel="help" href="https://drafts.csswg.org/css-text-decor-3/#text-decoration-style-property"/>
+  <h:link rel="help" href="https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty"/>
+
+  <!--
+    `stroke-dasharray` on a wavy underline must lay out continuously across
+    the whole decoration. The dasharray period (11 + 5 = 16) is chosen so
+    that it is not a divisor of the underline's wavelength: successive
+    wave cycles must therefore show different phases of the dash pattern.
+  -->
+  <text x="20" y="170" font-size="120"
+        stroke="orange" stroke-width="4"
+        stroke-dasharray="11 5"
+        style="text-decoration: underline wavy;">
+    lorem ipsum
+  </text>
+</svg>

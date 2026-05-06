@@ -75,7 +75,8 @@ class DecorationLinePainter final {
  private:
   void PaintWavyTextDecoration(const DecorationGeometry&,
                                const Color&,
-                               const AutoDarkMode&);
+                               const AutoDarkMode&,
+                               const cc::PaintFlags* paint_flags);
 
   GraphicsContext& context_;
 };
