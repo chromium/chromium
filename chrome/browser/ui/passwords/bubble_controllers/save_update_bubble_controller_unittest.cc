@@ -37,6 +37,7 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -310,6 +311,28 @@ TEST_F(SaveUpdateBubbleControllerTest, CloseWithoutInteraction) {
   EXPECT_CALL(*delegate(), NeverSavePassword()).Times(0);
   DestroyModelExpectReason(
       password_manager::metrics_util::NO_DIRECT_INTERACTION);
+}
+
+TEST_F(SaveUpdateBubbleControllerTest, GetDomainForSubhead_SameDomain) {
+  const url::Origin origin = url::Origin::Create(GURL(kSiteOrigin));
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kSiteOrigin));
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), GetOrigin()).WillRepeatedly(Return(origin));
+
+  EXPECT_EQ(std::nullopt, controller()->GetDomainForSubhead());
+  DestroyModelAndVerifyControllerExpectations();
+}
+
+TEST_F(SaveUpdateBubbleControllerTest, GetDomainForSubhead_DifferentDomain) {
+  const url::Origin origin = url::Origin::Create(GURL(kSiteOrigin));
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("http://different.com/login"));
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), GetOrigin()).WillRepeatedly(Return(origin));
+
+  EXPECT_EQ(u"example.com", controller()->GetDomainForSubhead());
+  DestroyModelAndVerifyControllerExpectations();
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWithAccountStorageDisabled) {

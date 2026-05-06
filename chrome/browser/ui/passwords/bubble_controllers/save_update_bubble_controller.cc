@@ -27,7 +27,9 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -254,6 +256,17 @@ std::u16string SaveUpdateBubbleController::GetTitle() const {
                                       : PasswordTitleType::SAVE_PASSWORD);
   return GetSavePasswordDialogTitleText(GetWebContents()->GetVisibleURL(),
                                         GetOrigin(), type);
+}
+
+std::optional<std::u16string> SaveUpdateBubbleController::GetDomainForSubhead()
+    const {
+  if (!net::registry_controlled_domains::SameDomainOrHost(
+          GetWebContents()->GetVisibleURL(), GetOrigin(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return url_formatter::FormatOriginForSecurityDisplay(
+        GetOrigin(), url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  }
+  return std::nullopt;
 }
 
 void SaveUpdateBubbleController::ReportInteractions() {

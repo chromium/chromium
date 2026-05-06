@@ -54,6 +54,9 @@ class SaveUpdateBubbleController
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;
 
+  // Returns the domain to be used as a subhead if the title requires it.
+  std::optional<std::u16string> GetDomainForSubhead() const;
+
 #if defined(UNIT_TEST)
   void set_clock(base::Clock* clock) { clock_ = clock; }
 
