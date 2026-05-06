@@ -378,7 +378,7 @@
   {
     "name": "android-sms-otp-filling",
     "owners": ["koerber@google.com", "lottermann@google.com", "chrome-otp-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "android-surface-color-update",
