@@ -607,29 +607,6 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
                         std::move(callback));
 }
 
-void ContextualSearchboxHandler::AddDriveContext(
-    const std::string& drive_id,
-    const std::string& resource_key,
-    const std::string& mime_type_string,
-    AddDriveContextCallback callback) {
-  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile_->GetPrefs())) {
-    std::move(callback).Run(base::unexpected(
-        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
-    return;
-  }
-  auto* contextual_session_handle = GetContextualSessionHandle();
-  if (!contextual_session_handle) {
-    std::move(callback).Run(base::unexpected(
-        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
-    return;
-  }
-  auto context_token = contextual_session_handle->CreateContextToken();
-  std::move(callback).Run(base::ok(context_token));
-  contextual_session_handle->StartDriveContextUploadFlow(
-      context_token, drive_id, resource_key, mime_type_string);
-}
-
 void ContextualSearchboxHandler::OnDriveUploadClicked(
     OnDriveUploadClickedCallback callback) {
   CHECK(

@@ -116,10 +116,6 @@ class ContextualSearchboxHandler
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
-  void AddDriveContext(const std::string& drive_id,
-                       const std::string& resource_key,
-                       const std::string& mime_type_string,
-                       AddDriveContextCallback callback) override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;

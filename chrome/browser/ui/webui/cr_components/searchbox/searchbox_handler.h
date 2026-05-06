@@ -144,10 +144,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback) override {}
-  void AddDriveContext(const std::string& drive_id,
-                       const std::string& resource_key,
-                       const std::string& mime_type_string,
-                       AddDriveContextCallback callback) override {}
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override {}
   void ClearFiles(bool should_block_auto_suggested_tabs) override {}
