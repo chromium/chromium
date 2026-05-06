@@ -280,7 +280,6 @@ android_library("core_java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/ui/android/pdf:java",
-    "//chrome/browser/ui/android/pdf:pdf_utils_java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
