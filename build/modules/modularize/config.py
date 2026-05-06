@@ -139,7 +139,6 @@ def fix_graph(graph: dict[str, Header],
   if compiler.os == Os.Android:
     graph['android/legacy_stdlib_inlines.h'].textual = True
     graph['android/legacy_threads_inlines.h'].textual = True
-    graph['android/legacy_unistd_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
 
     graph['asm-generic/posix_types.h'].textual = True
