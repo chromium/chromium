@@ -63,8 +63,8 @@ modulemap_config("libcxx_modulemap") {
 }
 
 if (current_toolchain == default_toolchain && !use_unified_system_module) {
-  # The Clang modules build requires libc++ headers, __assertion_handler, and
-  # __config_site to be in the same directory.
+  # The Clang modules build requires libc++ headers, __assertion_handler,
+  # __config_site, and module.modulemap to be in the same directory.
   #
   # To avoid redundant work, the copy targets are declared only in the default
   # toolchain. This prevents unnecessary copies in multi-toolchain builds and
@@ -74,32 +74,37 @@ if (current_toolchain == default_toolchain && !use_unified_system_module) {
   # Note: there are setups where clang_modules is enabled for some, but not all,
   # toolchains (see https://crrev.com/c/6849070). So, this copy must happen
   # unconditionally.
-  copy("copy_libcxx_headers") {
-    sources = libcxx_headers
-    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+  action("copy_libcxx_headers") {
+    script = "sync_dir.py"
+    inputs = libcxx_headers
+    response_file_contents =
+        rebase_path(inputs, "//third_party/libc++/src/include/")
+    outputs = [ "$target_gen_dir/copy_headers.stamp" ]
+
+    foreach(input, inputs) {
+      outputs += [ "${root_build_dir}/gen/third_party/libc++/src/include/" +
+                   rebase_path(input, "//third_party/libc++/src/include/") ]
+    }
+
+    args = [
+      "--stamp",
+      rebase_path(outputs[0], root_build_dir),
+      "--source-dir",
+      rebase_path("//third_party/libc++/src/include/", root_build_dir),
+      "--output-dir",
+      rebase_path("${root_build_dir}/gen/third_party/libc++/src/include/",
+                  root_build_dir),
+      "--except",
+      "__assertion_handler",
+      "--except",
+      "__config_site",
+      "--except",
+      "module.modulemap",
+      "{{response_file_name}}",
+    ]
 
     # Rely on `:headers` instead: it abstract away the default toolchain
     # optimization and the internal copy.
-    visibility = [ ":headers" ]
-  }
-
-  # TODO(crbug.com/503250165): copy_libcxx_headers does not handle file
-  # removals correctly.  It'd probably better if it used a script that took all
-  # files either on the commandline or in a response file, and that then
-  # deleted the outdir before copying over all files. That way, when files are
-  # added or removed, ninja's commandline tracking logic will notice file
-  # removals. For now, this action deletes one file where removal is important.
-  action("remove_float_h") {
-    script = "//build/rm.py"
-    stamp = "$target_gen_dir/clean_up_float_h_stamp"
-    outputs = [ stamp ]
-    args = [
-      "--stamp",
-      rebase_path(stamp, root_build_dir),
-      "-f",
-      "gen/third_party/libc++/src/include/float.h",
-    ]
-
     visibility = [ ":headers" ]
   }
 
@@ -130,7 +135,6 @@ group("headers") {
     deps = [
       ":copy_custom_headers($default_toolchain)",
       ":copy_libcxx_headers($default_toolchain)",
-      ":remove_float_h($default_toolchain)",
     ]
   }
 }
