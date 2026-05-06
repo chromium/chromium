@@ -396,6 +396,7 @@ chrome_java_resources = [
   "java/res/drawable/tab_indicator.xml",
   "java/res/drawable/tablet_black_24dp.xml",
   "java/res/drawable/tablet_recent_tab_empty_state_illustration.xml",
+  "java/res/drawable/task_spark_24dp.xml",
   "java/res/drawable/text_cursor_lowend.xml",
   "java/res/drawable/tips_opt_in_logo.xml",
   "java/res/drawable/tips_promo_bottom_omnibox_logo.xml",

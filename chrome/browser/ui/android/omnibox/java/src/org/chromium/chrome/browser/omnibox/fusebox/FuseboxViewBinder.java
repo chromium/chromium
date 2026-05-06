@@ -399,6 +399,8 @@ class FuseboxViewBinder {
             return R.drawable.ic_timer;
         } else if (iconId == IconResourceIds.BOLT_VALUE) {
             return R.drawable.bolt_24dp;
+        } else if (iconId == IconResourceIds.TASK_SPARK_VALUE) {
+            return R.drawable.task_spark_24dp;
         }
         return Resources.ID_NULL;
     }
