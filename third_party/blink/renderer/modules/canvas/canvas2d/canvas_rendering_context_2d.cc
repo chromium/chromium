@@ -1107,8 +1107,11 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   // If using GPU compositing, try to create a SharedImage-backed provider if
   // either (a) using GPU raster or (b) using CPU raster and want to use
   // mappable SharedImage for Canvas2D.
+  // The layoutsubtree check is so that html-in-canvas uses the shared image
+  // codepath to enable same-frame updates. This could be changed in the future.
   if (is_gpu_compositing_enabled &&
-      (use_gpu_raster || UseMappableSharedImagesForCanvas2D())) {
+      (use_gpu_raster || UseMappableSharedImagesForCanvas2D() ||
+       canvas()->layoutSubtree())) {
     RasterMode raster_mode =
         use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU;
     gpu::SharedImageUsageSet shared_image_usage_flags =
