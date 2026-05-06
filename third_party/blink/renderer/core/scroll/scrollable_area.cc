@@ -1310,6 +1310,19 @@ bool ScrollableArea::PerformSnapping(const cc::SnapSelectionStrategy& strategy,
           reason, previous_snap_targets,
           GetSnapContainerData()->GetTargetSnapAreaElementIds());
 
+  ScrollOffset target_offset = ScrollPositionToOffset(snap_point.value());
+
+  // If we're targeting the same offset in an existing animation, then we
+  // should just continue running that animation. Otherwise, we will cancel the
+  // animation but not set the scroll offset (due to a same-target early out in
+  // ProgrammaticScrollAnimator).
+  if (scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
+      ExistingProgrammaticScrollAnimator() &&
+      ExistingProgrammaticScrollAnimator()->HasRunningAnimation() &&
+      ExistingProgrammaticScrollAnimator()->TargetOffset() == target_offset) {
+    return true;
+  }
+
   // We should set the scrollsnapchanging targets of a snap container the first
   // time it is laid out to avoid a spurious scrollsnapchanging event firing the
   // first time the scroller is scrolled.
