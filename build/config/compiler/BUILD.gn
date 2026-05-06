@@ -1161,7 +1161,7 @@ config("linker") {
 
   # Pass flag to LLD so Android builds can allow pre-Android Q's debuggerd to
   # properly symbolize stack crashes (http://crbug.com/919499).
-  if (use_lld && is_android) {
+  if ((use_lld || use_mold) && is_android) {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
