@@ -13,10 +13,15 @@
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TabStripAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(TabStripAnimations, kVerticalTabStrip);
+
+// Want to ensure every motion gets performance logging.
+// LINT.IfChange(TabStripMotions)
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(TabStripAnimations, kExpand);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(TabStripAnimations, kCollapse);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(TabStripAnimations, kExpandOnHover);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(TabStripAnimations, kCollapseOnHover);
+// LINT.ThenChange(:TabStripAnimation)
+
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations, kTabStripWidth);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(TabStripAnimations,
                                         kTabStripHoverWidth);
@@ -33,6 +38,15 @@ TabStripAnimations::TabStripAnimations() {
       // Top corner default will be updated as needed by the layout, as it
       // depends on other UI elements.
       Default(kTopCorner, -1.0, true), Default(kBottomCorner, 1.0, true));
+
+  SetHistogramName(kVerticalTabStrip, "TabStrip.Vertical");
+
+  // LINT.IfChange(TabStripAnimation)
+  SetHistogramName(kExpand, "Expand");
+  SetHistogramName(kCollapse, "Collapse");
+  SetHistogramName(kExpandOnHover, "ExpandOnHover");
+  SetHistogramName(kCollapseOnHover, "CollapseOnHover");
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabStripAnimation)
 }
 
 TabStripAnimations::~TabStripAnimations() = default;

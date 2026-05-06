@@ -231,11 +231,6 @@ class VerticalTabStripRegionView final
     raw_ptr<VerticalTabStripRegionView> region_view_;
   };
 
-  // Handles reporting performance metrics for each side panel animation. This
-  // needs to be created per animation and the metrics are emitted during
-  // destruction of the the object.
-  class AnimationPerfReporter;
-
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
 
@@ -329,7 +324,6 @@ class VerticalTabStripRegionView final
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
   std::unique_ptr<HoverTabSelector> hover_tab_selector_;
-  std::unique_ptr<AnimationPerfReporter> animation_perf_reporter_;
 
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   std::optional<base::CallbackListSubscription>

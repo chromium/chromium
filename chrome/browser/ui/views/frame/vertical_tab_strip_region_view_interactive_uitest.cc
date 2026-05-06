@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,8 +18,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/widget_activation_waiter.h"
-
-namespace base::test {
 
 class VerticalTabStripRegionViewInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
@@ -112,4 +111,31 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
                         false));
 }
 
-}  // namespace base::test
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewInteractiveUiTest,
+                       LogAnimationPerMetrics) {
+  bool has_fps = false;
+  RunTestSequence(
+      PressButton(kVerticalTabStripCollapseButtonElementId),
+      WaitForEvent(kTabStripRegionElementId,
+                   VerticalTabStripRegionView::kAnimationCompletedEvent),
+      Do([this, &has_fps]() {
+        histogram_tester().ExpectTotalCount(
+            "TabStrip.Vertical.Collapse.TimeOfLongestAnimationStep", 1);
+        has_fps = histogram_tester().GetTotalCountForPrefix(
+                      "TabStrip.Vertical.Collapse.AnimationFPS") > 0;
+      }),
+      CheckResult(
+          [this]() {
+            return histogram_tester().GetTotalSum(
+                "TabStrip.Vertical.Collapse.TimeOfLongestAnimationStep");
+          },
+          testing::Gt(0), "Check longest step is nonzero."),
+      If([&] { return has_fps; },
+         Then(CheckResult(
+             [this]() {
+               return histogram_tester().GetTotalSum(
+                   "TabStrip.Vertical.Collapse.AnimationFPS");
+             },
+             testing::Gt(0), "Check fps is nonzero.")),
+         Else(Log("Compositor failed to render during test."))));
+}

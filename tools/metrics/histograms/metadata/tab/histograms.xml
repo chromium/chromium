@@ -131,6 +131,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Regular" summary="The regular tab model selector."/>
 </variants>
 
+<!-- LINT.IfChange(TabStripAnimation) -->
+
 <variants name="TabStripAnimation">
   <variant name="Collapse" summary="Expand to Collapsed animation"/>
   <variant name="CollapseOnHover"
@@ -139,6 +141,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ExpandOnHover"
       summary="Collapse to Expand on hover animation"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/animations/tab_strip_animations.cc:TabStripAnimation) -->
 
 <variants name="TabStripMode">
   <variant name="HorizontalTabStrip"/>
@@ -3827,8 +3831,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabStrip.Vertical.{TabStripAnimation}.AnimationFPS" units="ms"
-    expires_after="2026-10-04">
+<histogram name="TabStrip.Vertical.{TabStripAnimation}.AnimationFPS"
+    units="fps" expires_after="2026-10-04">
   <owner>estalin@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -3836,6 +3840,20 @@ chromium-metrics-reviews@google.com.
     after each tab strip animation is completed when the tab strip expands or
     collapses.
   </summary>
+  <token key="TabStripAnimation" variants="TabStripAnimation"/>
+</histogram>
+
+<histogram
+    name="TabStrip.Vertical.{TabStripAnimation}.TimeOfLongestAnimationStep"
+    units="ms" expires_after="2026-10-04">
+  <owner>estalin@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the length of the longest frame in a tab strip animation. This is
+    recorded after each tab strip animation is completed when the tab strip
+    expands or collapses.
+  </summary>
+  <token key="TabStripAnimation" variants="TabStripAnimation"/>
 </histogram>
 
 <histogram name="TabStrip.{Mode}.EnteredMode" enum="VerticalTabStripEntryPoint"
