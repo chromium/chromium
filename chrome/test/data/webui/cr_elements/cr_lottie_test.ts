@@ -107,7 +107,7 @@ suite('cr_lottie_test', function() {
   /**
    * @return bool true if all elements in a and b are equal.
    */
-  function arrayEquals(a: any[], b: any[]) {
+  function arrayEquals(a: number[], b: number[]): boolean {
     if (a.length !== b.length) {
       return false;
     }
@@ -327,9 +327,12 @@ suite('cr_lottie_test', function() {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;
 
-    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as any;
-    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as any;
-    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as any;
+    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as
+        unknown as XMLHttpRequest['open'];
+    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as
+        unknown as XMLHttpRequest['send'];
+    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as
+        unknown as XMLHttpRequest['abort'];
 
     const mockXhrConstructor =
         mockController.createFunctionMock(window, 'XMLHttpRequest');
@@ -356,9 +359,12 @@ suite('cr_lottie_test', function() {
       onreadystatechange: () => {},
     } as unknown as XMLHttpRequest;
 
-    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as any;
-    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as any;
-    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as any;
+    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as
+        unknown as XMLHttpRequest['open'];
+    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as
+        unknown as XMLHttpRequest['send'];
+    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as
+        unknown as XMLHttpRequest['abort'];
 
     const mockXhrConstructor =
         mockController.createFunctionMock(window, 'XMLHttpRequest');

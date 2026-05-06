@@ -59,7 +59,7 @@ suite('cr-icon', function() {
       try {
         await element.updatedComplete;
         assertNotReached('Should have thrown');
-      } catch (e: any) {
+      } catch (e: unknown) {
         assertEquals(
             `Assertion failed: Could not find iconset for: '${icon}'`,
             (e as Error).message);

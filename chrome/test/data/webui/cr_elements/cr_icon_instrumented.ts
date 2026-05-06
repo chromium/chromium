@@ -27,7 +27,7 @@ class CrIconInstrumentedElement extends CrIconElement {
     return this.updatedCompleteResolver_.promise;
   }
 
-  override shouldUpdate(changedProperties: Map<string, any>) {
+  override shouldUpdate(changedProperties: PropertyValues<this>) {
     const shouldUpdate = super.shouldUpdate(changedProperties);
     if (shouldUpdate && this.hasUpdated) {
       this.updatedCompleteResolver_ = new PromiseResolver();

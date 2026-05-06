@@ -14,10 +14,10 @@ suite('CrSendWithPromiseTest', function() {
   const originalChromeSend = chrome.send;
   let rejectPromises = false;
 
-  function whenChromeSendCalled(_name: string): Promise<any[]> {
+  function whenChromeSendCalled(_name: string): Promise<unknown[]> {
     assertEquals(originalChromeSend, chrome.send);
-    return new Promise(function(resolve) {
-      chrome.send = (_msg: string, args?: any[]) => {
+    return new Promise<unknown[]>(function(resolve) {
+      chrome.send = (_msg: string, args?: unknown[]) => {
         resolve(args!);
       };
     });
@@ -26,8 +26,8 @@ suite('CrSendWithPromiseTest', function() {
   setup(function() {
     // Simulate a WebUI handler that echoes back all parameters passed to it.
     // Rejects the promise depending on |rejectPromises|.
-    whenChromeSendCalled(CHROME_SEND_NAME).then(function(args: any[]) {
-      const callbackId = args[0];
+    whenChromeSendCalled(CHROME_SEND_NAME).then(function(args: unknown[]) {
+      const callbackId = args[0] as string;
       const response = args[1];
       webUIResponse(callbackId, !rejectPromises, response);
     });

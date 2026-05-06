@@ -184,13 +184,9 @@ template("build_webui_tests") {
         # check by default.
         "//chrome/test/data/webui/compose",
         "//chrome/test/data/webui/contextual_tasks",
-        "//chrome/test/data/webui/cr_components",
         "//chrome/test/data/webui/cr_components/composebox",
         "//chrome/test/data/webui/cr_components/searchbox",
-        "//chrome/test/data/webui/cr_elements",
         "//chrome/test/data/webui/glic",
-        "//chrome/test/data/webui/guest_view_shared",
-        "//chrome/test/data/webui/js",
         "//chrome/test/data/webui/lens",
         "//chrome/test/data/webui/new_tab_page",
         "//chrome/test/data/webui/print_preview",
@@ -202,6 +198,11 @@ template("build_webui_tests") {
         "//chrome/test/data/webui/webui_toolbar",
         "//chrome/test/data/webui/webview",
       ]
+
+      if (is_android) {
+        no_explicit_any_exceptions +=
+            [ "//chrome/test/data/webui/guest_view_shared" ]
+      }
 
       if (!is_ash_webui && filter_include([ get_label_info(":lint", "dir") ],
                                           no_explicit_any_exceptions) == []) {

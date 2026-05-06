@@ -5,6 +5,7 @@
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import type {AutoRemovedEventDetail} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
@@ -2279,10 +2280,9 @@ suite('ShortcutsAutoRemovalToast', () => {
   });
 
   test('auto removal event fired', async () => {
-    let autoRemovalEvent: CustomEvent<{message: string, undo: () => void}>|
-        null = null;
-    mostVisited.addEventListener('most-visited-auto-removed', (e: any) => {
-      autoRemovalEvent = e;
+    let autoRemovalEvent: CustomEvent<AutoRemovedEventDetail>|null = null;
+    mostVisited.addEventListener('most-visited-auto-removed', (e: Event) => {
+      autoRemovalEvent = e as CustomEvent<AutoRemovedEventDetail>;
     }, {once: true});
 
     callbackRouterRemote.onMostVisitedTilesAutoRemoval();
@@ -2297,10 +2297,9 @@ suite('ShortcutsAutoRemovalToast', () => {
   });
 
   test('undo auto removal via event callback', async () => {
-    let autoRemovalEvent: CustomEvent<{message: string, undo: () => void}>|
-        null = null;
-    mostVisited.addEventListener('most-visited-auto-removed', (e: any) => {
-      autoRemovalEvent = e;
+    let autoRemovalEvent: CustomEvent<AutoRemovedEventDetail>|null = null;
+    mostVisited.addEventListener('most-visited-auto-removed', (e: Event) => {
+      autoRemovalEvent = e as CustomEvent<AutoRemovedEventDetail>;
     }, {once: true});
 
     callbackRouterRemote.onMostVisitedTilesAutoRemoval();

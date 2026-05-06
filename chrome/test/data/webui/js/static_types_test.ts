@@ -42,7 +42,7 @@ suite('StaticTypesTest', function() {
   });
 
   test('throws when invalid', () => {
-    function ensureThrows(arg: any) {
+    function ensureThrows(arg: TemplateStringsArray) {
       assertThrows(() => {
         getTrustedHTML(arg);
       });
@@ -54,14 +54,17 @@ suite('StaticTypesTest', function() {
       });
     }
 
-    const a = 'test';
+    // Casting since purposefully passing incorrect value.
+    const a = 'test' as unknown as TemplateStringsArray;
     ensureThrows(a);
 
-    const b = [a];
+    // Casting since purposefully passing incorrect value.
+    const b = [a] as unknown as TemplateStringsArray;
     ensureThrows(b);
 
     // c holds stringified value of `test`, which isn't a template literal.
-    const c = `test`;
+    // Casting since purposefully passing incorrect value.
+    const c = `test` as unknown as TemplateStringsArray;
     ensureThrows(c);
   });
 });
