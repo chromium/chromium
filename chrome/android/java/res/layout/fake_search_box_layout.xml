@@ -6,18 +6,11 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.ntp.search.SearchBoxContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/search_box"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ntp_search_box_height"
-    android:layout_marginStart="@dimen/mvt_container_lateral_margin"
-    android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
-    android:layout_marginTop="0dp"
-    android:layout_marginBottom="@dimen/ntp_section_bottom_margin"
-    android:visibility="visible"
-    android:clipChildren="false"
-    android:clipToPadding="false">
+    android:layout_marginBottom="@dimen/ntp_section_bottom_margin">
 
     <LinearLayout
         android:id="@+id/search_box_container"
@@ -28,6 +21,7 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:paddingStart="@dimen/fake_search_box_start_padding"
         android:paddingEnd="@dimen/fake_search_box_end_padding">
+
         <!-- Fake searchbox is only showing when Google is the DSE. -->
         <org.chromium.ui.widget.ChromeImageView
             style="@style/LocationBarActionButtonForFakeSearchBox"
