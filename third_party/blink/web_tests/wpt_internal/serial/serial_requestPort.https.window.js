@@ -64,3 +64,33 @@ serial_test(async (t, fake) => {
     filters: [{usbProductId: 0x0001}],
   }));
 }, 'requestPort() requires a USB vendor ID if a product ID specified');
+
+serial_test(async (t, fake) => {
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
+
+  await trustedClick();
+  return promise_rejects_js(t, TypeError, navigator.serial.requestPort({
+    allowedBluetoothServiceClassIds: ['abc'],
+  }));
+}, 'requestPort() rejects invalid Bluetooth service class ID');
+
+serial_test(async (t, fake) => {
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
+
+  await trustedClick();
+  return promise_rejects_js(t, TypeError, navigator.serial.requestPort({
+    allowedBluetoothServiceClassIds: [''],
+  }));
+}, 'requestPort() rejects empty Bluetooth service class ID');
+
+serial_test(async (t, fake) => {
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
+
+  await trustedClick();
+  return promise_rejects_js(t, TypeError, navigator.serial.requestPort({
+    allowedBluetoothServiceClassIds: [[]],
+  }));
+}, 'requestPort() rejects nested array in allowedBluetoothServiceClassIds');

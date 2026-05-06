@@ -237,8 +237,13 @@ ScriptPromise<SerialPort> Serial::requestPort(
   Vector<String> allowed_bluetooth_service_class_ids;
   if (options && options->hasAllowedBluetoothServiceClassIds()) {
     for (const auto& id : options->allowedBluetoothServiceClassIds()) {
-      allowed_bluetooth_service_class_ids.push_back(
-          GetBluetoothUUIDFromV8Value(id));
+      String uuid = GetBluetoothUUIDFromV8Value(id);
+      if (uuid.empty()) {
+        exception_state.ThrowTypeError(
+            "Invalid Bluetooth service class ID value.");
+        return EmptyPromise();
+      }
+      allowed_bluetooth_service_class_ids.push_back(uuid);
     }
   }
 
