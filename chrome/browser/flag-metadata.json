@@ -9774,11 +9774,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "web-serial-wired-devices-android",
-    "owners": ["xutan@chromium.org", "ovn@google.com", "lt-web-apps-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "webcrypto-pqc",
     "owners": [ "hchao@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 152

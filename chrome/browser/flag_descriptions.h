@@ -6131,11 +6131,6 @@ inline constexpr char kWebFeedOnboardingName[] = "Web Feed Onboarding";
 inline constexpr char kWebFeedOnboardingDescription[] =
     "Helps the user understand how to use the web feed.";
 
-inline constexpr char kWebSerialWiredDevicesAndroidName[] =
-    "Web Serial API for Wired Devices";
-inline constexpr char kWebSerialWiredDevicesAndroidDescription[] =
-    "Provides a way for websites to interact with wired serial devices";
-
 inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
 inline constexpr char kXplatSyncedSetupDescription[] =
     "Enables the Cross-platform synced setup feature.";

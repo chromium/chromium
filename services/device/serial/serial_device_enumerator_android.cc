@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/base/features.h"
 #include "services/device/serial/serial_io_handler_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -25,9 +24,6 @@ SerialDeviceEnumeratorAndroid::SerialDeviceEnumeratorAndroid()
     : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 void SerialDeviceEnumeratorAndroid::Initialize() {
-  if (!base::FeatureList::IsEnabled(features::kWebSerialWiredDevicesAndroid)) {
-    return;
-  }
   JNIEnv* env = AttachCurrentThread();
   j_serial_manager_.Reset(
       Java_ChromeSerialManager_create(env, reinterpret_cast<int64_t>(this)));
