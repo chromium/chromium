@@ -31,12 +31,16 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/pdf_content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/save_to_drive/get_account.h"
+#include "extensions/common/error_utils.h"
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace extensions {
@@ -191,6 +195,14 @@ PdfViewerPrivateSaveToDriveFunction::RunSaveToDriveFlow(
   if (!event_dispatcher) {
     return RespondNow(Error("Failed to create event dispatcher"));
   }
+
+  // It is possible the tab associated with this call has been closed.
+  if (!SaveToDriveFlow::HasValidTabId(render_frame_host())) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        ExtensionTabUtil::kTabNotFoundError,
+        base::NumberToString(save_to_drive::GetTabId(render_frame_host())))));
+  }
+
   auto content_reader = std::make_unique<save_to_drive::PDFContentReader>(
       render_frame_host(), ToMojomSaveRequestType(request_type));
   auto account_chooser = std::make_unique<save_to_drive::AccountChooser>();

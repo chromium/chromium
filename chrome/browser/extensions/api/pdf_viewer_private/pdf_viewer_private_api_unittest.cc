@@ -26,14 +26,18 @@
 #include "pdf/pdf_features.h"
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "extensions/browser/test_event_router.h"
+#include "extensions/common/error_utils.h"
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace extensions {
@@ -100,6 +104,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
                             base::Unretained(this));
     SaveToDriveFlow::SetCreateCallbackForTesting(
         &create_save_to_drive_flow_callback_);
+    SaveToDriveFlow::SetSkipValidateTabForTesting(true);
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   }
 
@@ -107,6 +112,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     extension_host_ = nullptr;
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
     SaveToDriveFlow::SetCreateCallbackForTesting(nullptr);
+    SaveToDriveFlow::SetSkipValidateTabForTesting(false);
     create_save_to_drive_flow_callback_.Reset();
     flow_ = nullptr;
     event_router_ = nullptr;
@@ -413,6 +419,27 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDrive) {
 
   EXPECT_TRUE(
       api_test_utils::RunFunction(function, R"(["ORIGINAL"])", profile()));
+}
+
+// Failed in sending a request to save a PDF to Drive when there is no valid
+// browser tab.
+// There is no active browser in unit test, so by default, this error message
+// should be returned. `SaveToDriveFlow::SetSkipValidateTabForTesting(true)` is
+// called in test setup to bypass this check, so set false is called for this
+// test.
+TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveNoActiveBrowser) {
+  SaveToDriveFlow::SetSkipValidateTabForTesting(false);
+
+  CreateAndClaimStreamContainer();
+  auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
+  function->SetRenderFrameHost(extension_host());
+
+  EXPECT_EQ(
+      ErrorUtils::FormatErrorMessage(
+          ExtensionTabUtil::kTabNotFoundError,
+          base::NumberToString(save_to_drive::GetTabId(extension_host()))),
+      api_test_utils::RunFunctionAndReturnError(function, R"(["ORIGINAL"])",
+                                                profile()));
 }
 
 // Failed in sending a request to save a PDF to Drive if there is already a

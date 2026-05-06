@@ -22,6 +22,9 @@ namespace save_to_drive {
 base::WeakPtr<extensions::StreamContainer> GetStreamWeakPtr(
     content::RenderFrameHost* render_frame_host);
 
+// Gets the tab id associated with the given `render_frame_host`.
+int GetTabId(content::RenderFrameHost* render_frame_host);
+
 }  // namespace save_to_drive
 
 #endif  // CHROME_BROWSER_SAVE_TO_DRIVE_SAVE_TO_DRIVE_UTILS_H_

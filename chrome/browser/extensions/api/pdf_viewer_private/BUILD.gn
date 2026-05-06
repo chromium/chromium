@@ -18,6 +18,7 @@ source_set("pdf_viewer_private") {
 
   deps = [
     "//base",
+    "//chrome/browser/extensions",
     "//chrome/browser/glic",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
