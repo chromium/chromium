@@ -29,7 +29,7 @@ extern const char kExceptionMessageInputTooLarge[];
 extern const char kExceptionMessageRequestAborted[];
 extern const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[];
 extern const char kExceptionMessageUnsupportedLanguages[];
-extern const char kExceptionMessageUnsupportedOptionsForPerformancePreference[];
+extern const char kExceptionMessageIncompatiblePreferenceOptions[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
 extern const char kExceptionMessagePermissionPolicy[];
 extern const char kExceptionMessageUserActivationRequired[];

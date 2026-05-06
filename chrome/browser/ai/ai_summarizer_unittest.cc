@@ -297,10 +297,9 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
 
 TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
-        {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
-      {{on_device_model::features::kOnDeviceModelCpuBackend}});
+  feature_list.InitWithFeatures(
+      {optimization_guide::features::kOnDeviceModelPerformanceParams},
+      {on_device_model::features::kOnDeviceModelCpuBackend});
 
   fake_broker_->service_settings().performance_class =
       PerformanceClass::kVeryLow;
@@ -917,7 +916,8 @@ TEST_F(AISummarizerManifestTest,
   EXPECT_TRUE(result.has_value());
 }
 
-TEST_F(AISummarizerManifestTest, CanCreateSummarizerDownloadable) {
+TEST_F(AISummarizerManifestTest,
+       CanCreateSummarizerWithSpeedPreferenceDownloadable) {
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kSpeed;
   options->shared_context = "";
@@ -984,9 +984,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1000,9 +999,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1015,9 +1013,8 @@ TEST_F(AISummarizerManifestTest, CanCreateIncompatibleTypeForSpeedPreference) {
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1031,9 +1028,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1047,9 +1043,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1064,9 +1059,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1079,9 +1073,8 @@ TEST_F(AISummarizerManifestTest,
   options->shared_context = "non-empty context";
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::
-                      kUnavailableUnsupportedOptionsForPerformancePreference));
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableIncompatiblePreferenceOptions));
 
   GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
                                                callback.Get());
@@ -1129,9 +1122,9 @@ TEST_F(AISummarizerManifestTest, CreateIncompatibleOptionsForSpeedPreference) {
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error,
-            blink::mojom::AIManagerCreateClientError::
-                kUnsupportedOptionsForPerformancePreference);
+  EXPECT_EQ(
+      result.error().error,
+      blink::mojom::AIManagerCreateClientError::kIncompatiblePreferenceOptions);
 }
 
 TEST_F(AISummarizerManifestTest, SummarizeWithSpeedPreferenceAndContextFails) {

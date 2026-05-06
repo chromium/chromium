@@ -503,11 +503,10 @@ void LanguageModelCreateClient::OnError(
           kExceptionMessageUnsupportedLanguages);
       break;
     }
-    case AIManagerCreateClientError::
-        kUnsupportedOptionsForPerformancePreference: {
+    case AIManagerCreateClientError::kIncompatiblePreferenceOptions: {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kNotSupportedError,
-          kExceptionMessageUnsupportedOptionsForPerformancePreference);
+          kExceptionMessageIncompatiblePreferenceOptions);
       break;
     }
   }

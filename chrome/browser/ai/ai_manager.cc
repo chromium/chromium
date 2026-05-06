@@ -876,9 +876,8 @@ void AIManager::CanCreateSummarizer(
     }
     auto result = IsSpeedPreferenceCompatible(options);
     if (!result.has_value()) {
-      std::move(callback).Run(
-          blink::mojom::ModelAvailabilityCheckResult::
-              kUnavailableUnsupportedOptionsForPerformancePreference);
+      std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableIncompatiblePreferenceOptions);
       return;
     }
   }
@@ -933,7 +932,7 @@ void AIManager::CreateSummarizer(
           std::move(client));
       on_device_ai::SendClientRemoteError(
           client_remote, blink::mojom::AIManagerCreateClientError::
-                             kUnsupportedOptionsForPerformancePreference);
+                             kIncompatiblePreferenceOptions);
       return;
     }
   }

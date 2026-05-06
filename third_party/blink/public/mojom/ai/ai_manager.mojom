@@ -71,8 +71,9 @@ enum ModelAvailabilityCheckResult {
   // The on-device model is not available because the enterprise policy
   // disables the feature.
   kUnavailableEnterprisePolicyDisabled = 20,
-  // The specified options are not supported with the requested performance preference.
-  kUnavailableUnsupportedOptionsForPerformancePreference = 21,
+  // The specified options are not supported with the requested performance
+  // preference.
+  kUnavailableIncompatiblePreferenceOptions = 21,
 
   // Append new line here
 };

@@ -41,8 +41,9 @@ enum AIManagerCreateClientError {
   // The expected language is not supported.
   kUnsupportedLanguage = 3,
 
-  // The specified options are not supported with the requested performance preference.
-  kUnsupportedOptionsForPerformancePreference = 4,
+  // The specified options are not supported with the requested performance
+  // preference.
+  kIncompatiblePreferenceOptions = 4,
 
   // Append new line here
 };

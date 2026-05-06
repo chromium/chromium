@@ -76,7 +76,7 @@ const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[] =
     "The 'system' role message must be the first message of a session.";
 const char kExceptionMessageUnsupportedLanguages[] =
     "The specified languages are not supported.";
-const char kExceptionMessageUnsupportedOptionsForPerformancePreference[] =
+const char kExceptionMessageIncompatiblePreferenceOptions[] =
     "The specified options are not supported with the 'speed' performance "
     "preference.";
 const char kExceptionMessageInvalidRequest[] =
@@ -359,8 +359,8 @@ String ConvertModelAvailabilityCheckResultToDebugString(
              "policy disables the feature.";
 
     case mojom::blink::ModelAvailabilityCheckResult::
-        kUnavailableUnsupportedOptionsForPerformancePreference:
-      return kExceptionMessageUnsupportedOptionsForPerformancePreference;
+        kUnavailableIncompatiblePreferenceOptions:
+      return kExceptionMessageIncompatiblePreferenceOptions;
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:
