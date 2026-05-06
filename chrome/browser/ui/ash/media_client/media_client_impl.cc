@@ -70,33 +70,6 @@ namespace {
 
 MediaClientImpl* g_media_client = nullptr;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class CameraPrivacySwitchEvent {
-  kSwitchOn = 0,
-  kSwitchOff = 1,
-  kSwitchOnNotificationShown = 2,
-  kMaxValue = kSwitchOnNotificationShown
-};
-
-// The name for the histogram used to record camera privacy switch related
-// events.
-constexpr char kCameraPrivacySwitchEventsHistogramName[] =
-    "Ash.Media.CameraPrivacySwitch.Event";
-
-// The name for the histogram used to record delay (in seconds) after a
-// notification about camera privacy switch being on before the user turns
-// the camera privacy switch off.
-constexpr char kCameraPrivacySwitchTimeToTurnOffHistogramName[] =
-    "Ash.Media.CameraPrivacySwitch.TimeFromNotificationToOff";
-
-// The max recorded value for `kCameraPrivacySwitchTimeToTurnOffHistogramName`.
-constexpr int kMaxRecordedTimeInSeconds = 60;
-
-// The granularity used for
-// reporting`kCameraPrivacySwitchToTurnOffHistogramName`.
-constexpr int kRecordedTimeGranularityInSeconds = 5;
-
 // The prefix of ID of the notification shown when the user tries to use a
 // camera while the camera privacy switch is on.
 constexpr char kCameraPrivacySwitchOnNotificationIdPrefix[] =
@@ -586,12 +559,6 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      kCameraPrivacySwitchEventsHistogramName,
-      CameraPrivacySwitchEvent::kSwitchOnNotificationShown);
-
-  camera_switch_notification_shown_timestamp_ = base::TimeTicks::Now();
-
   const std::u16string device_name_u16 = base::UTF8ToUTF16(device_name);
 
   if (resurface) {
@@ -650,11 +617,6 @@ void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
     case cros::mojom::CameraPrivacySwitchState::UNKNOWN:
       break;
     case cros::mojom::CameraPrivacySwitchState::ON: {
-      if (old_state != cros::mojom::CameraPrivacySwitchState::UNKNOWN) {
-        base::UmaHistogramEnumeration(kCameraPrivacySwitchEventsHistogramName,
-                                      CameraPrivacySwitchEvent::kSwitchOn);
-      }
-
       if (hw_switch_toasts_disabled_) {
         break;
       }
@@ -670,24 +632,6 @@ void MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
       break;
     }
     case cros::mojom::CameraPrivacySwitchState::OFF: {
-      if (old_state != cros::mojom::CameraPrivacySwitchState::UNKNOWN) {
-        base::UmaHistogramEnumeration(kCameraPrivacySwitchEventsHistogramName,
-                                      CameraPrivacySwitchEvent::kSwitchOff);
-      }
-
-      // Record the time since the time notification that the privacy switch was
-      // on was shown.
-      if (!camera_switch_notification_shown_timestamp_.is_null()) {
-        base::TimeDelta time_from_notification =
-            base::TimeTicks::Now() -
-            camera_switch_notification_shown_timestamp_;
-        int64_t seconds_from_notification = time_from_notification.InSeconds();
-        base::UmaHistogramExactLinear(
-            kCameraPrivacySwitchTimeToTurnOffHistogramName,
-            seconds_from_notification / kRecordedTimeGranularityInSeconds,
-            kMaxRecordedTimeInSeconds / kRecordedTimeGranularityInSeconds);
-        camera_switch_notification_shown_timestamp_ = base::TimeTicks();
-      }
       // Only show the "Camera is on" toast if the privacy switch state changed
       // from ON (avoiding the toast when the state changes from UNKNOWN).
       if (old_state != cros::mojom::CameraPrivacySwitchState::ON) {

@@ -181,10 +181,6 @@ class MediaClientImpl : public ash::MediaClient,
 
   int active_camera_client_count_ = 0;
 
-  // Most recent time the notification that the camera privacy switch is on was
-  // shown.
-  base::TimeTicks camera_switch_notification_shown_timestamp_;
-
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_remote_;
 

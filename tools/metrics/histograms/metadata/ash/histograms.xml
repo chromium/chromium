@@ -5189,43 +5189,6 @@ chromium-metrics-reviews@google.com.
   <token key="MantaMetricType" variants="MantaMetricType"/>
 </histogram>
 
-<histogram name="Ash.Media.CameraPrivacySwitch.Event"
-    enum="CameraPrivacySwitchEvent" expires_after="2023-09-03">
-  <owner>tbarzic@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Reports events related to camera privacy switch state. The camera privacy
-    switch is a hardware toggle supported by some Chrome OS devices that
-    disables the built in camera video feed. The histogram is reported (1) when
-    a camera privacy switch state change is detected (which generally causes a
-    system toast to get shown), and (2) when a notification informing the user
-    that the camera privacy switch is on (the notification is shown if the user
-    tries to use their camera with the privacy switch tuned on). The camera
-    privacy switch state is only recorded if the state change is a result of a
-    user action - it will not be recorded for state changes that are a result of
-    camera privacy switch state initialization.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Media.CameraPrivacySwitch.TimeFromNotificationToOff"
-    units="5 seconds" expires_after="2023-09-10">
-  <owner>tbarzic@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Time from showing a notification informing the user about the camera privacy
-    switch to the user turning the privacy switch off. The camera privacy switch
-    is a hardware switch supported by some Chrome OS devices that cuts the video
-    camera feed off. The Chrome OS UI shows a notification if the user tries to
-    use the camera with the privacy switch on. The intention is to track the
-    time it takes for the user to flip the privacy switch after they're notified
-    the camera is disabled. The histogram is recorded if the user toggles the
-    camera privacy switch after seeing the notification about the privacy switch
-    being on (if the switch is toggled more than once after the notification
-    gets shown, only the first toggle action will be reported). The time is
-    reported in seconds with 5 second granularity.
-  </summary>
-</histogram>
-
 <histogram name="Ash.MessageCenter.Scroll.PresentationTime" units="ms"
     expires_after="2026-07-14">
   <owner>newcomer@chromium.org</owner>

@@ -430,12 +430,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3" label="kTopRight"/>
 </enum>
 
-<enum name="CameraPrivacySwitchEvent">
-  <int value="0" label="Camera privacy switch toggled on"/>
-  <int value="1" label="Camera privacy switch toggled off"/>
-  <int value="2" label="Camera privacy switch on notification shown"/>
-</enum>
-
 <enum name="CaptureModeBarButtonType">
   <int value="0" label="Screen Capture Button"/>
   <int value="1" label="Screen Record Button"/>
