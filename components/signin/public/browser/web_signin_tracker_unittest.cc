@@ -111,7 +111,7 @@ TEST_F(WebSigninTrackerTest,
   // AccountReconcilor errors should have no effect on the result if the account
   // is already in cookies.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+      GoogleServiceAuthError::FromServiceError(""));
   // Waiting for the AccountReconcilor token request marks cookies as stale, set
   // them again to mark cookies fresh and force `WebSigninTracker` to check the
   // account presence.
@@ -161,8 +161,8 @@ TEST_F(WebSigninTrackerTest, ReconcilorAuthErrorShouldTriggerAuthErrorResult) {
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   identity_test_env_.SetCookieAccounts({});
   identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
   run_loop.Run();
@@ -178,8 +178,8 @@ TEST_F(WebSigninTrackerTest,
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   identity_test_env_.SetCookieAccounts({});
   identity_test_env_.SetPrimaryAccount(account.email, GetConsentLevel());
 
@@ -207,7 +207,7 @@ TEST_F(WebSigninTrackerTest,
   identity_test_env_.SetCookieAccounts({});
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+      GoogleServiceAuthError::FromServiceError(""));
 
   run_loop.Run();
 
@@ -223,7 +223,7 @@ TEST_F(WebSigninTrackerTest,
   identity_test_env_.SetCookieAccounts({});
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+      GoogleServiceAuthError::FromServiceError(""));
 
   base::MockOnceCallback<void(WebSigninTracker::Result)> callback;
   EXPECT_CALL(callback, Run(WebSigninTracker::Result::kOtherError));
