@@ -49,7 +49,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   void UseSharedBuffer(
       const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
       const gpu::SyncToken& buffer_sync_token);
-  void DoneWithSharedBuffer();
+  std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer();
 
   GLuint GetCurrentColorBufferTextureId();
 

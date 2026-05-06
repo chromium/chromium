@@ -21,7 +21,9 @@ class XrLayerClient {
   virtual std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() = 0;
   virtual XRFrameTransportDelegate* GetTransportDelegate() = 0;
 
-  virtual void DoneWithSharedBuffer() {}
+  virtual std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() {
+    return nullptr;
+  }
 };
 
 }  // namespace blink
