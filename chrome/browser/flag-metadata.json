@@ -3121,7 +3121,7 @@
   {
     "name": "enable-cros-cached-location-provider",
     "owners": [ "zauri@google.com", "cros-privacy-features-dev@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "enable-cros-hindi-inscript-layout",
