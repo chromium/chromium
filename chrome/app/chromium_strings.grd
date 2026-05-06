@@ -3274,7 +3274,7 @@ Chromium is unable to recover your settings.
 
       <!-- JS optimizations bubble -->
       <message name="IDS_JS_OPTIMIZATION_BUBBLE_BODY_NON_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled for other reasons.">
-        Chromium turns off JavaScript optimization when you visit a site for the first time.&#xA;
+        For security, Chromium turns off JavaScript optimization when you visit a site for the first time.&#xA;
 If this page isn’t working as expected, try allowing optimization.
       </message>
     </messages>
