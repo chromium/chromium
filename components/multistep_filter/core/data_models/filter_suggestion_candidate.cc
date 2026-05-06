@@ -8,6 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "url/gurl.h"
 
@@ -17,6 +20,11 @@ FilterSuggestionCandidateAttribute::FilterSuggestionCandidateAttribute(
     std::string key,
     std::u16string label)
     : key(std::move(key)), label(std::move(label)) {}
+
+std::string FilterSuggestionCandidateAttribute::ToString() const {
+  return base::StrCat({"FilterSuggestionCandidateAttribute(key=", key,
+                       ", label=", base::UTF16ToUTF8(label), ")"});
+}
 
 FilterSuggestionCandidate::FilterSuggestionCandidate(
     base::Uuid filter_annotation_id,
@@ -36,6 +44,18 @@ FilterSuggestionCandidate& FilterSuggestionCandidate::operator=(
     FilterSuggestionCandidate&&) = default;
 
 FilterSuggestionCandidate::~FilterSuggestionCandidate() = default;
+
+std::string FilterSuggestionCandidate::ToString() const {
+  std::vector<std::string> attribute_strings;
+  for (const FilterSuggestionCandidateAttribute& attr : attributes) {
+    attribute_strings.push_back(attr.ToString());
+  }
+  return base::StrCat({"FilterSuggestionCandidate(filter_annotation_id=",
+                       filter_annotation_id.AsLowercaseString(),
+                       ", navigation_url=", navigation_url.spec(),
+                       ", attributes=[",
+                       base::JoinString(attribute_strings, ", "), "])"});
+}
 
 bool operator==(const FilterSuggestionCandidate&,
                 const FilterSuggestionCandidate&) = default;

@@ -34,6 +34,8 @@ struct FilterSuggestionCandidateAttribute {
 
   ~FilterSuggestionCandidateAttribute() = default;
 
+  std::string ToString() const;
+
   friend bool operator==(const FilterSuggestionCandidateAttribute&,
                          const FilterSuggestionCandidateAttribute&) = default;
 };
@@ -62,6 +64,8 @@ struct FilterSuggestionCandidate {
   FilterSuggestionCandidate& operator=(FilterSuggestionCandidate&&);
 
   ~FilterSuggestionCandidate();
+
+  std::string ToString() const;
 
   friend bool operator==(const FilterSuggestionCandidate&,
                          const FilterSuggestionCandidate&);

@@ -22,6 +22,8 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/google/core/common/google_util.h"
@@ -139,27 +141,126 @@ void LogServerRequestFailed(MultistepFilterLogRouter* log_router,
       << LogDetail("failure_reason", std::string(failure_reason));
 }
 
-void LogServerRequestSent(MultistepFilterLogRouter* log_router,
-                          const int64_t navigation_id,
-                          const std::string_view domain,
-                          const std::string_view request_url) {
-  // TODO(crbug.com/507450354): Log the request body as proto.ShortDebugString()
-  // is not supported for proto lite.
+void LogGetTaskExecutionStrategiesRequestSent(
+    MultistepFilterLogRouter* log_router,
+    const int64_t navigation_id,
+    const std::string_view domain,
+    const std::string_view request_url,
+    const GURL& url,
+    base::span<const FilterAnnotation> filter_annotations) {
+  std::vector<std::string> annotation_strings;
+  annotation_strings.reserve(filter_annotations.size());
+  for (const FilterAnnotation& annotation : filter_annotations) {
+    annotation_strings.push_back(annotation.ToString());
+  }
+  std::string filter_annotations_str =
+      base::StrCat({"[", base::JoinString(annotation_strings, ", "), "]"});
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerRequestSent, domain)
+      << LogDetail("request_url", std::string(request_url))
+      << LogDetail("current_url", url.spec())
+      << LogDetail("execution_candidate_count",
+                   static_cast<int>(filter_annotations.size()))
+      << LogDetail("execution_candidates", filter_annotations_str);
+}
+
+void LogGetSupportedTasksRequestSent(MultistepFilterLogRouter* log_router,
+                                     const int64_t navigation_id,
+                                     const std::string_view domain,
+                                     const std::string_view request_url) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerRequestSent, domain)
       << LogDetail("request_url", std::string(request_url));
 }
 
+void LogExtractTaskAttributesRequestSent(MultistepFilterLogRouter* log_router,
+                                         const int64_t navigation_id,
+                                         const std::string_view domain,
+                                         const std::string_view request_url,
+                                         const GURL& url) {
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerRequestSent, domain)
+      << LogDetail("request_url", std::string(request_url))
+      << LogDetail("source_raw_url", url.spec());
+}
+
 void LogServerResponseReceived(MultistepFilterLogRouter* log_router,
                                const int64_t navigation_id,
                                const std::string_view domain,
-                               const int response_code) {
-  // TODO(crbug.com/507450354): Log the response body as
-  // proto.ShortDebugString() is not supported for proto lite.
+                               const int response_code,
+                               const bool is_success) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerResponseReceived, domain)
-      << LogDetail("is_success", IsHttpSuccess(response_code))
+      << LogDetail("is_success", is_success)
       << LogDetail("response_code", response_code);
+}
+
+void LogResponseObjectsReceived(
+    MultistepFilterLogRouter* log_router,
+    const int64_t navigation_id,
+    const std::string_view domain,
+    const int response_code,
+    const bool is_success,
+    const std::optional<std::vector<FilterSuggestionCandidate>>& result) {
+  std::string candidates_str;
+  if (result.has_value()) {
+    std::vector<std::string> candidate_strings;
+    candidate_strings.reserve(result->size());
+    for (const FilterSuggestionCandidate& candidate : *result) {
+      candidate_strings.push_back(candidate.ToString());
+    }
+    candidates_str =
+        base::StrCat({"[", base::JoinString(candidate_strings, ", "), "]"});
+  }
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerResponseReceived, domain)
+      << LogDetail("is_success", is_success)
+      << LogDetail("response_code", response_code)
+      << LogDetail("filter_suggestion_candidates_count",
+                   result.has_value() ? static_cast<int>(result->size()) : 0)
+      << LogDetail("filter_suggestion_candidates", candidates_str);
+}
+
+void LogResponseObjectsReceived(
+    MultistepFilterLogRouter* log_router,
+    const int64_t navigation_id,
+    const std::string_view domain,
+    const int response_code,
+    const bool is_success,
+    const std::optional<std::vector<std::string>>& result) {
+  std::string tasks_str;
+  if (result.has_value()) {
+    tasks_str = base::StrCat({"[", base::JoinString(*result, ", "), "]"});
+  }
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerResponseReceived, domain)
+      << LogDetail("is_success", is_success)
+      << LogDetail("response_code", response_code)
+      << LogDetail("supported_tasks_count",
+                   result.has_value() ? static_cast<int>(result->size()) : 0)
+      << LogDetail("supported_tasks", tasks_str);
+}
+
+void LogResponseObjectsReceived(MultistepFilterLogRouter* log_router,
+                                const int64_t navigation_id,
+                                const std::string_view domain,
+                                const int response_code,
+                                const bool is_success,
+                                const std::optional<FilterAnnotation>& result) {
+  std::string annotation_str = result.has_value() ? result->ToString() : "";
+
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kServerResponseReceived, domain)
+      << LogDetail("is_success", is_success)
+      << LogDetail("response_code", response_code)
+      << LogDetail("extracted_attributes_count",
+                   result.has_value()
+                       ? static_cast<int>(result->attributes.size())
+                       : 0)
+      << LogDetail("extracted_annotation", annotation_str);
 }
 
 void LogServerResponseMalformed(MultistepFilterLogRouter* log_router,
@@ -187,9 +288,10 @@ base::OnceCallback<void(std::optional<std::string>, int)> BindParseAndConvert(
         std::optional<ResultType> result;
         if (response_body) {
           if (ProtoType proto; proto.ParseFromString(*response_body)) {
-            LogServerResponseReceived(log_router, navigation_id, domain,
-                                      response_code);
             result = conv(proto);
+            LogResponseObjectsReceived(log_router, navigation_id, domain,
+                                       response_code, /*is_success=*/true,
+                                       result);
           } else {
             LogServerResponseMalformed(log_router, navigation_id, domain,
                                        "parsing_failed");
@@ -257,9 +359,10 @@ void AnnotationIndexClientImpl::GetFilterSuggestionCandidates(
 
   GetTaskExecutionStrategiesRequest proto =
       ToGetTaskExecutionStrategiesRequest(url, filter_annotations);
-  LogServerRequestSent(
+  LogGetTaskExecutionStrategiesRequestSent(
       log_router_, navigation_id, domain,
-      api_base_url.Resolve(kGetTaskExecutionStrategiesEndpoint).spec());
+      api_base_url.Resolve(kGetTaskExecutionStrategiesEndpoint).spec(), url,
+      filter_annotations);
 
   ExecuteRequest(
       CreatePostResourceRequest(api_base_url,
@@ -283,8 +386,9 @@ void AnnotationIndexClientImpl::GetSupportedTaskTypesForDomain(
   }
 
   GetSupportedTasksRequest proto = ToGetSupportedTasksRequest(domain);
-  LogServerRequestSent(log_router_, navigation_id, domain,
-                       api_base_url.Resolve(kGetSupportedTasksEndpoint).spec());
+  LogGetSupportedTasksRequestSent(
+      log_router_, navigation_id, domain,
+      api_base_url.Resolve(kGetSupportedTasksEndpoint).spec());
 
   ExecuteRequest(
       CreatePostResourceRequest(api_base_url, kGetSupportedTasksEndpoint),
@@ -308,9 +412,9 @@ void AnnotationIndexClientImpl::ExtractFilterAnnotation(
   }
 
   ExtractTaskAttributesRequest proto = ToExtractTaskAttributesRequest(url);
-  LogServerRequestSent(
+  LogExtractTaskAttributesRequestSent(
       log_router_, navigation_id, domain,
-      api_base_url.Resolve(kExtractTaskAttributesEndpoint).spec());
+      api_base_url.Resolve(kExtractTaskAttributesEndpoint).spec(), url);
 
   ExecuteRequest(
       CreatePostResourceRequest(api_base_url, kExtractTaskAttributesEndpoint),
@@ -450,8 +554,8 @@ void AnnotationIndexClientImpl::OnSimpleURLLoaderComplete(
   active_url_loaders_.erase(loader_it);
 
   if (!is_success) {
-    LogServerResponseReceived(log_router_, navigation_id, domain,
-                              response_code);
+    LogServerResponseReceived(log_router_, navigation_id, domain, response_code,
+                              is_success);
     std::move(callback).Run(std::nullopt, response_code);
     return;
   }
