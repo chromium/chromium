@@ -47,7 +47,6 @@
       transparent 100%
   );
   outline: none;
-  overflow-y: auto;
   resize: none;
   width: 100%;
 }
@@ -60,6 +59,8 @@
   font-family: inherit;
   font-size: 18px;
   line-height: 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
   /* 11px + container padding = 18 px. Parent can set var if needed. */
   padding: var(--composebox-voice-search-top-padding, 11px)
       40px 0 20px;
