@@ -71,6 +71,7 @@
         <structure type="lottie" name="IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE" file="resources/search_ai_mode/search_ai_mode_signin_promo.json" compress="brotli" />
 
         <!-- Web App Internals resources -->
+        <structure type="lottie" name="IDR_WEB_APP_INSTALL_ILLUSTRATION" file="resources/webapps/install_illustration.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEB_APP_INTERNALS_CROS_LAUNCHER" file="resources/webapps/cros_launcher.json" compress="brotli" />
         </if>
         </structures>

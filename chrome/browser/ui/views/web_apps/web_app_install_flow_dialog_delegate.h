@@ -101,7 +101,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
 
  private:
   void OnLearnMoreButtonClicked();
-  void UpdateDialogTitle(InstallDialogStep step);
+  void UpdateDialogTitleAndHeader(InstallDialogStep step);
   void UpdateProgressAndMaybeAdvance();
   void OnInstallResult(bool success, base::OnceClosure reparent_closure);
   void OnAcceptCallback(bool success,

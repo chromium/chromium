@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -249,7 +250,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
     flow_view_->UpdateStepVisibility(current_step_);
   }
 
-  UpdateDialogTitle(current_step_);
+  UpdateDialogTitleAndHeader(current_step_);
 
   return false;
 }
@@ -278,7 +279,7 @@ void WebAppInstallFlowDialogDelegate::OnAccept() {
 }
 
 // Updates dialog title based on current step.
-void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
+void WebAppInstallFlowDialogDelegate::UpdateDialogTitleAndHeader(
     InstallDialogStep step) {
   std::u16string title;
   switch (step) {
@@ -304,6 +305,11 @@ void WebAppInstallFlowDialogDelegate::UpdateDialogTitle(
     host->SetAccessibleTitle(title);
     // Clear the subtitle for all subsequent steps.
     host->SetSubtitle(std::u16string());
+
+    // Clear the header for all subsequent steps.
+    if (host->GetBubbleFrameView()) {
+      host->GetBubbleFrameView()->SetHeaderView(nullptr);
+    }
   }
 }
 
@@ -498,6 +504,11 @@ void WebAppInstallFlowDialogDelegate::Show(
 
   if (install_type == InstallDialogType::kDiy) {
     dialog_model_builder.SetInitiallyFocusedField(kInstallDialogFlowViewId);
+  }
+  if (install_type != InstallDialogType::kDetailed) {
+    dialog_model_builder.SetBannerImage(ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_WEB_APP_INSTALL_ILLUSTRATION)));
   }
 
   if (show_initiating_origin) {
