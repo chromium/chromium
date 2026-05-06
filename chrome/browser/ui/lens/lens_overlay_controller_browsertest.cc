@@ -9326,8 +9326,16 @@ class LensOverlayControllerReinvocationBrowserTest
   }
 };
 
+// TODO(crbug.com/510100103): Re-enable after fixing flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NotifiesSidePanelOfOverlayVisibilityChanges \
+  DISABLED_NotifiesSidePanelOfOverlayVisibilityChanges
+#else
+#define MAYBE_NotifiesSidePanelOfOverlayVisibilityChanges \
+  NotifiesSidePanelOfOverlayVisibilityChanges
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       NotifiesSidePanelOfOverlayVisibilityChanges) {
+                       MAYBE_NotifiesSidePanelOfOverlayVisibilityChanges) {
   WaitForPaint();
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
