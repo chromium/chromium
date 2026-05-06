@@ -384,10 +384,6 @@ inline constexpr char kPermissionsAndroidClapperLoudName[] = "Clapper Loud";
 inline constexpr char kPermissionsAndroidClapperLoudDescription[] =
     "Enables the loud version of the Clapper permission prompt.";
 
-inline constexpr char kPermissionsAndroidClapperQuietName[] = "Clapper Quiet";
-inline constexpr char kPermissionsAndroidClapperQuietDescription[] =
-    "Enables the quiet version of the Clapper permission prompt.";
-
 inline constexpr char kPermissionsGestureGatedPromptsName[] =
     "Permissions Gesture Gated Prompts";
 inline constexpr char kPermissionsGestureGatedPromptsDescription[] =
