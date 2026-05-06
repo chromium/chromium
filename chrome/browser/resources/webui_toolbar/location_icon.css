@@ -60,25 +60,29 @@
 /* An invisible overlay that mimics the native views::InkDrop highlight
    (hover state). */
 #container::before {
+  background-color: var(--color-omnibox-icon-hover, transparent);
+  border-radius: inherit;
   content: '';
-  position: absolute;
   inset: 0;
+  opacity: 0;
   pointer-events: none;
-  background-color: transparent;
+  position: absolute;
   /* Matches views::kHighlightFadeOutOnHoverChangeDuration (250ms) */
-  transition: background-color 250ms ease-in-out;
+  transition: opacity 250ms ease-in-out;
 }
 
 /* An invisible overlay that mimics the native views::InkDrop ripple
    (pressed state). */
 #container::after {
+  background-color: var(--color-omnibox-icon-pressed, transparent);
+  border-radius: inherit;
   content: '';
-  position: absolute;
   inset: 0;
+  opacity: 0;
   pointer-events: none;
-  background-color: transparent;
+  position: absolute;
   /* Matches views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT (300ms) */
-  transition: background-color 300ms ease-in-out;
+  transition: opacity 300ms ease-in-out;
 }
 
 :host([has-text]) #container {
@@ -105,37 +109,27 @@
 :host([clickable]:hover) #container::before,
 :host([clickable]:active) #container::before,
 :host([clickable][anchor-highlighted]) #container::before {
-  background-color: var(--color-omnibox-icon-hover);
+  /* The alpha value is baked directly into the color variable in C++. */
+  opacity: 1;
 }
 
-:host([is-text-dangerous][clickable]:hover) #container::before,
-:host([is-text-dangerous][clickable]:active) #container::before,
-:host([is-text-dangerous][clickable][anchor-highlighted]) #container::before {
-  background-color: var(--color-omnibox-security-chip-ink-drop-hover);
+:host([is-text-dangerous]) #container::before {
+  background-color:
+      var(--color-omnibox-security-chip-ink-drop-hover, transparent);
 }
 
 /* --- PRESSED LAYER (RIPPLE) ---
    Native Views composites the ripple on top of the hover highlight. */
-:host([clickable]:active) #container::after {
-  background-color: var(--color-omnibox-icon-pressed);
+:host([clickable]:active) #container::after,
+:host([clickable][anchor-highlighted]) #container::after {
+  /* The alpha value is baked directly into the color variable in C++. */
+  opacity: 1;
   transition: none; /* Instant press */
 }
 
-:host([is-text-dangerous][clickable]:active) #container::after {
-  background-color: var(--color-omnibox-security-chip-ink-drop-ripple);
-  transition: none;
-}
-
-/* Anchor highlighted state (bubble open) holds the pressed color.
-   Includes [clickable] to match the specificity of the :hover rule,
-   ensuring the highlight color isn't overridden when the mouse hovers
-   over the open bubble's anchor. */
-:host([clickable][anchor-highlighted]) #container::after {
-  background-color: var(--color-omnibox-icon-pressed);
-}
-
-:host([is-text-dangerous][clickable][anchor-highlighted]) #container::after {
-  background-color: var(--color-omnibox-security-chip-ink-drop-ripple);
+:host([is-text-dangerous]) #container::after {
+  background-color:
+      var(--color-omnibox-security-chip-ink-drop-ripple, transparent);
 }
 
 /* Renders the SVG icon using a webkit mask. This allows the icon to
