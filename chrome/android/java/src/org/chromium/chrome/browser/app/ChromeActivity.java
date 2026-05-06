@@ -860,12 +860,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             ControlContainer controlContainer =
                     (ControlContainer) findViewById(R.id.control_container);
 
-            if (controlContainer == null) {
-                // omnibox_results_container_stub anchors off of control_container, and will
-                // crash during layout if control_container doesn't exist.
-                UiUtils.removeViewFromParent(findViewById(R.id.omnibox_results_container_stub));
-            }
-
             // Inflate the correct toolbar layout for the device.
             int toolbarLayoutId = getToolbarLayoutId();
             if (toolbarLayoutId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
