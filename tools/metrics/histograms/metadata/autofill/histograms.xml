@@ -5704,6 +5704,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve a Gmail one time
+    token from the backend. Recorded when the asynchronous job failed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription"
     enum="Boolean" expires_after="2027-05-01">
   <owner>koerber@google.com</owner>
@@ -5754,6 +5764,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records whether the attempt to retrieve a Gmail one time token from the
     backend succeeds. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.SuccessLatency"
+    units="ms" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve a Gmail one time
+    token from the backend. The latency is measured from when the incoming
+    notification enters the pending queue to when the response from the Gmail
+    backend is received. Recorded when the asynchronous job succeeded.
   </summary>
 </histogram>
 
