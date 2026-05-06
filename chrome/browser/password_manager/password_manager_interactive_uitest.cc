@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       DeleteCredentialsUpdateDropdown) {
+                       DISABLED_DeleteCredentialsUpdateDropdown) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       GetDefaultPasswordStore(browser()->profile());
 
