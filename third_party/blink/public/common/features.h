@@ -1870,8 +1870,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStreamlineRendererInit);
 // Subsample a very chatty UKM metric.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubSampleWindowProxyUsageMetrics);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSupportOpeningDraggedLinksInSameTab);
-
 // When enabled, task state traces are emitted for microtasks when the
 // "task_attribution" trace category is enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

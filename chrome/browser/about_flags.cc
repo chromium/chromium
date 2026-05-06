@@ -11205,12 +11205,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kScheduleWindowCleaning)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"open-dragged-links-same-tab",
-     flag_descriptions::kOpenDraggedLinksSameTabName,
-     flag_descriptions::kOpenDraggedLinksSameTabDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kSupportOpeningDraggedLinksInSameTab)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-use-display-topology",

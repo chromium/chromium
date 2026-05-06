@@ -344,8 +344,6 @@ void DragController::PerformDrop(DragData* drag_data,
     bool has_transient_user_activation = LocalFrame::HasTransientUserActivation(
         document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr);
 
-    const bool is_single_link = urls.size() == 1 && !drag_data->ContainsFiles();
-
     bool should_focus_tab = true;
     for (const String& url : urls) {
       ResourceRequest resource_request(url);
@@ -363,19 +361,12 @@ void DragController::PerformDrop(DragData* drag_data,
       FrameLoadRequest request(nullptr, resource_request);
 
       // Open the dropped URL in a new tab to avoid potential data-loss in the
-      // current tab. See https://crbug.com/451659. The feature
-      // kSupportOpeningDraggedLinksInSameTab explores allowing links to be
-      // opened in the same tab if the drop data indicates that should be the
-      // case.
-      if (!base::FeatureList::IsEnabled(
-              blink::features::kSupportOpeningDraggedLinksInSameTab) ||
-          !is_single_link) {
-        // First tab should be focused, the rest should be background tabs.
-        request.SetNavigationPolicy(
-            should_focus_tab
-                ? NavigationPolicy::kNavigationPolicyNewForegroundTab
-                : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
-      }
+      // current tab. See https://crbug.com/451659.
+      // First tab should be focused, the rest should be background tabs.
+      request.SetNavigationPolicy(
+          should_focus_tab
+              ? NavigationPolicy::kNavigationPolicyNewForegroundTab
+              : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
       local_root.Navigate(request, WebFrameLoadType::kStandard);
       should_focus_tab = false;
     }

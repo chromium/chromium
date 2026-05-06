@@ -547,7 +547,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kPreserveDropEffect, {}},
          {blink::features::kSetDefaultDropEffect, {}}},
-        {blink::features::kSupportOpeningDraggedLinksInSameTab});
+        {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -956,52 +956,6 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   // Verify that the focus moved from the omnibox to the tab contents.
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
-}
-
-class DragAndDropDragLinksInSameTabBrowserTest : public DragAndDropBrowserTest {
- public:
-  void SetUp() override {
-    // Ensure PreserveDropEffect is enabled based on the setting of parent class
-    // DragAndDropBrowserTest.
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPreserveDropEffect, {}},
-         {blink::features::kSupportOpeningDraggedLinksInSameTab, {}}},
-        {});
-    InProcessBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Scenario: drag URL from outside the browser and drop to half of a Split View.
-IN_PROC_BROWSER_TEST_P(DragAndDropDragLinksInSameTabBrowserTest,
-                       DropValidUrlFromOutside) {
-  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
-  ASSERT_TRUE(NavigateToTestPage(frame_site));
-
-  // Create a second tab and create split view.
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  browser()->tab_strip_model()->AddToNewSplit(
-      {0}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-
-  // Drag a normal URL from outside the browser into/over the left side of the
-  // Split View.
-  GURL dragged_url = https_test_server()->GetURL("d.test", "/title2.html");
-  ASSERT_TRUE(
-      drag_simulator()->SimulateDragEnter(gfx::Point(100, 100), dragged_url));
-  ASSERT_TRUE(drag_simulator()->SimulateDrop(gfx::Point(100, 100)));
-
-  // Verify that dropping |dragged_url| navigates the left tab to that URL.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  content::WebContents* left_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  content::TestNavigationObserver(left_web_contents, 1).Wait();
-  EXPECT_EQ(dragged_url,
-            left_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2317,18 +2271,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CrossSiteSubframe,
     DragAndDropBrowserTest,
-    ::testing::Combine(::testing::Values(true),
-                       ::testing::ValuesIn(ui_scaling_factors)));
-
-INSTANTIATE_TEST_SUITE_P(
-    SameSiteSubframe,
-    DragAndDropDragLinksInSameTabBrowserTest,
-    ::testing::Combine(::testing::Values(false),
-                       ::testing::ValuesIn(ui_scaling_factors)));
-
-INSTANTIATE_TEST_SUITE_P(
-    CrossSiteSubframe,
-    DragAndDropDragLinksInSameTabBrowserTest,
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(ui_scaling_factors)));
 

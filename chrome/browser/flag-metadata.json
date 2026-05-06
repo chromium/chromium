@@ -7297,14 +7297,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "open-dragged-links-same-tab",
-    "owners": [
-      "agale@chromium.org",
-      "top-chrome-desktop-ui@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "open-edit-group-view-by-tapping-title",
     "owners": [ "achara@google.com", "bling-meridian@google.com" ],
     "expiry_milestone": 153
