@@ -100,10 +100,7 @@ source_set("impl") {
     ]
   }
 
-  public_deps = [
-    ":segmentation_platform",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":segmentation_platform" ]
 
   deps = [
     "//chrome/browser:browser_process",
