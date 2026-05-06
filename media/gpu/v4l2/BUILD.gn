@@ -51,6 +51,13 @@ source_set("v4l2") {
     "v4l2_video_decoder_delegate_vp9.h",
     "v4l2_vp9_helpers.cc",
     "v4l2_vp9_helpers.h",
+    "vp9/v4l2_vp9_compressed_header.cc",
+    "vp9/v4l2_vp9_compressed_header.h",
+    "vp9/vp9_bool_decoder.cc",
+    "vp9/vp9_bool_decoder.h",
+    "vp9/vp9_compressed_header_parser.cc",
+    "vp9/vp9_compressed_header_parser.h",
+    "vp9/vp9_v4l2_compressed_header_types.h",
   ]
 
   # enable_av1_v4l2_decoder

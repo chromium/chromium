@@ -13,6 +13,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
+#include "media/gpu/v4l2/vp9/v4l2_vp9_compressed_header.h"
 #include "media/parsers/vp9_parser.h"
 
 namespace media {
@@ -106,13 +107,50 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
 
   SafeArrayMemcpy(v4l2_seg->feature_data, vp9_seg_params.feature_data);
 }
+
+void FillV4L2VP9MvProbsParams(const Vp9FrameContext& vp9_ctx,
+                              struct v4l2_vp9_mv_probs* v4l2_mv_probs) {
+  SafeArrayMemcpy(v4l2_mv_probs->joint, vp9_ctx.mv_joint_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->sign, vp9_ctx.mv_sign_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->classes, vp9_ctx.mv_class_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_bit, vp9_ctx.mv_class0_bit_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->bits, vp9_ctx.mv_bits_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_fr, vp9_ctx.mv_class0_fr_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->fr, vp9_ctx.mv_fr_probs);
+  SafeArrayMemcpy(v4l2_mv_probs->class0_hp, vp9_ctx.mv_class0_hp_prob);
+  SafeArrayMemcpy(v4l2_mv_probs->hp, vp9_ctx.mv_hp_prob);
+}
+
+void FillV4L2VP9ProbsParams(const Vp9FrameContext& vp9_ctx,
+                            struct v4l2_ctrl_vp9_compressed_hdr* v4l2_probs) {
+  SafeArrayMemcpy(v4l2_probs->tx8, vp9_ctx.tx_probs_8x8);
+  SafeArrayMemcpy(v4l2_probs->tx16, vp9_ctx.tx_probs_16x16);
+  SafeArrayMemcpy(v4l2_probs->tx32, vp9_ctx.tx_probs_32x32);
+  SafeArrayMemcpy(v4l2_probs->coef, vp9_ctx.coef_probs);
+  SafeArrayMemcpy(v4l2_probs->skip, vp9_ctx.skip_prob);
+  SafeArrayMemcpy(v4l2_probs->inter_mode, vp9_ctx.inter_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->interp_filter, vp9_ctx.interp_filter_probs);
+  SafeArrayMemcpy(v4l2_probs->is_inter, vp9_ctx.is_inter_prob);
+  SafeArrayMemcpy(v4l2_probs->comp_mode, vp9_ctx.comp_mode_prob);
+  SafeArrayMemcpy(v4l2_probs->single_ref, vp9_ctx.single_ref_prob);
+  SafeArrayMemcpy(v4l2_probs->comp_ref, vp9_ctx.comp_ref_prob);
+  SafeArrayMemcpy(v4l2_probs->y_mode, vp9_ctx.y_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->uv_mode, vp9_ctx.uv_mode_probs);
+  SafeArrayMemcpy(v4l2_probs->partition, vp9_ctx.partition_probs);
+
+  FillV4L2VP9MvProbsParams(vp9_ctx, &v4l2_probs->mv);
+}
+
 }  // namespace
 
 V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : surface_handler_(surface_handler), device_(device) {
-  VLOGF(1);
+    : surface_handler_(surface_handler),
+      device_(device),
+      supports_compressed_header_(
+          device->IsCtrlExposed(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)) {
+  VLOGF(1) << "supports_compressed_header: " << supports_compressed_header_;
   DCHECK(surface_handler_);
   DCHECK(device_);
 
@@ -152,6 +190,19 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
     const Vp9ReferenceFrameVector& ref_frames) {
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
+
+  Vp9V4L2CompressedParseResult compressed_parse{};
+  if (supports_compressed_header_) {
+    DVLOGF(4) << "Parse VP9 compressed header";
+    std::optional<Vp9V4L2CompressedParseResult> parsed_compressed_header =
+        ParseVp9CompressedHeaderForV4L2(*frame_hdr);
+    if (!parsed_compressed_header) {
+      return DecodeStatus::kFail;
+    }
+
+    compressed_parse = std::move(*parsed_compressed_header);
+  }
+
   struct v4l2_ctrl_vp9_frame v4l2_frame_params = {};
 
 #define SET_FLAG_IF(cond, flag) \
@@ -202,6 +253,10 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   v4l2_frame_params.interpolation_filter = frame_hdr->interpolation_filter;
   v4l2_frame_params.tile_cols_log2 = frame_hdr->tile_cols_log2;
   v4l2_frame_params.tile_rows_log2 = frame_hdr->tile_rows_log2;
+  if (supports_compressed_header_) {
+    v4l2_frame_params.reference_mode =
+        compressed_parse.compressed_header.reference_mode;
+  }
   for (size_t i = 0; i < Vp9RefType::VP9_FRAME_MAX - VP9_FRAME_LAST; i++) {
     v4l2_frame_params.ref_frame_sign_bias |=
         (frame_hdr->ref_frame_sign_bias[i + VP9_FRAME_LAST] ? (1 << i) : 0);
@@ -249,6 +304,18 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
        .size = sizeof(v4l2_frame_params),
        .ptr = &v4l2_frame_params},
   };
+
+  struct v4l2_ctrl_vp9_compressed_hdr v4l2_compressed_hdr_probs;
+  if (supports_compressed_header_) {
+    memset(&v4l2_compressed_hdr_probs, 0, sizeof(v4l2_compressed_hdr_probs));
+    v4l2_compressed_hdr_probs.tx_mode =
+        compressed_parse.compressed_header.tx_mode;
+    FillV4L2VP9ProbsParams(compressed_parse.frame_context,
+                           &v4l2_compressed_hdr_probs);
+    ext_ctrls.push_back({.id = V4L2_CID_STATELESS_VP9_COMPRESSED_HDR,
+                         .size = sizeof(v4l2_compressed_hdr_probs),
+                         .ptr = &v4l2_compressed_hdr_probs});
+  }
 
   const __u32 ext_ctrls_size = base::checked_cast<__u32>(ext_ctrls.size());
   struct v4l2_ext_controls ctrls = {.count = ext_ctrls_size,
