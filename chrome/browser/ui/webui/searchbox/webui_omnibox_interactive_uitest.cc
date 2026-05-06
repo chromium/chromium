@@ -115,7 +115,8 @@ class OmniboxWebUiInteractiveTestBase
     if (force_enable_aim) {
       base::FieldTrialParams aim_params = {
           {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
-           "below_results"}};
+           "below_results"},
+          {omnibox::kHideClassicContextButton.name, "false"}};
       features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
                             aim_params);
       features.emplace_back(omnibox::kAiModeOmniboxEntryPoint,
