@@ -35,6 +35,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
   return html`<!--_html_template_start_-->
     ${this.energyEffectAnimationEnabled &&
       (this.animationState === GlowAnimationState.DRAGGING ||
+       this.animationState === GlowAnimationState.SUBMITTING ||
        this.isZeroState) ? html`
       <div class="gradient-blur-wrapper">
         <div class="gradient"></div>
