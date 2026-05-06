@@ -53,26 +53,11 @@ class DISPLAY_EXPORT VSyncProviderMac {
  private:
   friend class base::NoDestructor<VSyncProviderMac>;
 
-  // To prevent CADisplayLink from frequently switching between the on and off
-  // states, keep VSync alive for extra callbacks after all clients are
-  // unregistered. This reduces IPC latency for the first frame after pause.
-  static constexpr int kMaxExtraVSyncCallbacks = 20;
-
   VSyncProviderMac();
   virtual ~VSyncProviderMac();
 
   void AddSupportedDisplayLinkId(int64_t display_id);
   void RemoveSupportedDisplayLinkId(int64_t display_id);
-
-  struct DisplayState {
-    DisplayState();
-    ~DisplayState();
-    DisplayState(DisplayState&& other);
-    DisplayState& operator=(DisplayState&& other);
-
-    std::list<VSyncCallbackMac::Callback> callbacks;
-    int consecutive_vsyncs_with_no_callbacks = 0;
-  };
 
   NeedsBeginFrameCB needs_begin_frame_callback_;
 
@@ -80,7 +65,7 @@ class DISPLAY_EXPORT VSyncProviderMac {
   // Use this lock when it's written on the Viz thread and read back on the gpu
   // main thread. No need to lock when read on Viz thread.
   base::Lock id_lock_;
-  std::map<int64_t, DisplayState> display_states_;
+  std::map<int64_t, std::list<VSyncCallbackMac::Callback>> callback_lists_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
