@@ -6,11 +6,18 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/indigo/indigo_service_factory.h"
+#include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
@@ -77,17 +84,18 @@ class IndigoPageActionControllerTest : public testing::Test {
       profile_ = IdentityTestEnvironmentProfileAdaptor::
           CreateProfileForIdentityTestEnvironment(builder);
 
-      mock_optimization_guide_ =
-          static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
-              OptimizationGuideKeyedServiceFactory::GetForProfile(
-                  profile_.get()));
-
       identity_test_env_adaptor_ =
           std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
               profile_.get());
       identity_test_env_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("user@example.com",
                                         signin::ConsentLevel::kSignin);
+
+      mock_optimization_guide_ =
+          static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+              OptimizationGuideKeyedServiceFactory::GetForProfile(
+                  profile_.get()));
+
       SetModelExecutionCapability(true);
     }
 
@@ -411,6 +419,92 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
         url, tab_interface_->GetContents());
     navigation->Commit();
   }
+}
+
+TEST_F(IndigoPageActionControllerTest, InvokeActionTriggersEligibilityCheck) {
+  CreateController();
+
+  base::test::TestFuture<void> fetcher_called;
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->SetRemoteEligibilityFetcherForTesting(base::BindLambdaForTesting(
+          [&](IndigoService::RemoteEligibilityCallback callback) {
+            fetcher_called.SetValue();
+            std::move(callback).Run(RemoteEligibility{});
+          }));
+
+  controller_->InvokeAction();
+  EXPECT_TRUE(fetcher_called.Wait());
+}
+
+TEST_F(IndigoPageActionControllerTest, OnboardingSuccessTriggersContinuation) {
+  CreateController();
+
+  // Explicitly set the initial state for onboarding preference.
+  profile_->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, false);
+
+  OnboardingResult result;
+  result.acknowledge_chrome_disclaimer = true;
+
+  base::test::TestFuture<void> fetcher_called;
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->SetRemoteEligibilityFetcherForTesting(base::BindLambdaForTesting(
+          [&](IndigoService::RemoteEligibilityCallback callback) {
+            fetcher_called.SetValue();
+            std::move(callback).Run(RemoteEligibility{});
+          }));
+
+  // Initial state: eligible but needs onboarding. This should show the dialog.
+  CombinedEligibility eligibility;
+  eligibility.local_eligibility = LocalEligibility::kEligible;
+  eligibility.remote_eligibility = RemoteEligibility{
+      .is_service_supported_for_account = true, .has_user_image = false};
+  eligibility.has_onboarded_pref = false;
+
+  base::OnceCallback<void(const OnboardingResult&)> captured_callback;
+  IndigoPageActionController::TestApi(controller_.get())
+      .SetOnboardingDialogFactory(base::BindLambdaForTesting(
+          [&](tabs::TabInterface& tab, const GURL& url,
+              base::OnceCallback<void(const OnboardingResult&)> callback)
+              -> std::unique_ptr<IndigoOnboardingDialog> {
+            captured_callback = std::move(callback);
+            return nullptr;
+          }));
+
+  IndigoPageActionController::TestApi(controller_.get())
+      .CheckEligibilityForOnboarding(eligibility);
+
+  ASSERT_TRUE(!captured_callback.is_null());
+
+  // Now simulate the dialog closing with success.
+  std::move(captured_callback).Run(result);
+
+  // Closing with success set the pref and trigger a re-fetch for continuation.
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
+  EXPECT_TRUE(fetcher_called.Wait());
+}
+
+TEST_F(IndigoPageActionControllerTest, OnboardingCancelledDoesNotTrigger) {
+  CreateController();
+
+  // Explicitly set the initial state for onboarding preference.
+  profile_->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, false);
+
+  OnboardingResult result;
+  result.acknowledge_chrome_disclaimer = false;
+
+  base::test::TestFuture<void> fetcher_called;
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->SetRemoteEligibilityFetcherForTesting(base::BindLambdaForTesting(
+          [&](IndigoService::RemoteEligibilityCallback callback) {
+            fetcher_called.SetValue();
+            std::move(callback).Run(RemoteEligibility{});
+          }));
+
+  IndigoPageActionController::TestApi(controller_.get())
+      .CheckOnboardingResult(result);
+
+  EXPECT_FALSE(fetcher_called.IsReady());
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIndigoHasOnboarded));
 }
 
 }  // namespace

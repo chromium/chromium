@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -44,6 +45,12 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
  public:
   DECLARE_USER_DATA(IndigoPageActionController);
 
+  using OnboardingDialogFactory =
+      base::RepeatingCallback<std::unique_ptr<IndigoOnboardingDialog>(
+          tabs::TabInterface&,
+          const GURL&,
+          base::OnceCallback<void(const OnboardingResult&)>)>;
+
   explicit IndigoPageActionController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
@@ -68,11 +75,38 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void OnReplaceOriginalPhoto(IndigoToolbar* toolbar) override;
   void OnDeleteOriginalPhoto(IndigoToolbar* toolbar) override;
 
+  class TestApi {
+   public:
+    explicit TestApi(IndigoPageActionController* controller)
+        : controller_(controller) {}
+
+    void CheckEligibilityForOnboarding(const CombinedEligibility& eligibility) {
+      controller_->CheckEligibilityForOnboarding(eligibility);
+    }
+
+    void CheckOnboardingResult(const OnboardingResult& result) {
+      controller_->OnOnboardingDialogClosed(result);
+    }
+
+    void SetOnboardingDialogFactory(OnboardingDialogFactory factory) {
+      controller_->onboarding_dialog_factory_for_testing_ = std::move(factory);
+    }
+
+   private:
+    raw_ptr<IndigoPageActionController> controller_;
+  };
+
  private:
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
 
-  // Called when the onboarding dialog is closed.
+  // Called when the eligibility has been fetched.
+  void CheckEligibilityForOnboarding(const CombinedEligibility& eligibility);
+
+  // Called when eligibility is known and onboarding is completed (if needed).
+  void ContinueInvoke(const CombinedEligibility& eligibility);
+
+  // Updates state and handles preference changes when the dialog closes.
   void OnOnboardingDialogClosed(const OnboardingResult& result);
 
   // Called when the profile state has changed in a way that might affect
@@ -109,6 +143,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // The onboarding dialog, if shown.
   std::unique_ptr<IndigoOnboardingDialog> onboarding_dialog_;
 
+  // Factory for creating the onboarding dialog in tests.
+  OnboardingDialogFactory onboarding_dialog_factory_for_testing_;
+
   // The floating toolbar, if shown.
   std::unique_ptr<IndigoToolbar> toolbar_;
 
@@ -116,6 +153,15 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   ui::ScopedUnownedUserData<IndigoPageActionController>
       scoped_unowned_user_data_;
+
+  // Weak pointer factory used for the invocation flow. This is invalidated on
+  // navigation to ensure that if a user starts an action (like onboarding) and
+  // then navigates away, the action does not continue on the new page.
+  base::WeakPtrFactory<IndigoPageActionController> invoke_weak_ptr_factory_{
+      this};
+
+  // Weak pointer factory for general callbacks that should persist across
+  // navigations (as long as this controller exists).
   base::WeakPtrFactory<IndigoPageActionController> weak_ptr_factory_{this};
 };
 

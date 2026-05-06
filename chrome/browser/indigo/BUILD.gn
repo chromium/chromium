@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/component_updater",
     "//chrome/browser/extensions",
+    "//chrome/browser/indigo/onboarding",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/ui/views/page_action:test_support",
     "//chrome/common:chrome_features",
