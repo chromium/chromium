@@ -3302,11 +3302,10 @@
   },
   {
     "name": "enable-experimental-cookie-features",
-    "owners": [ "bingler@chromium.org", "//net/cookies/OWNERS" ],
-    // This should expire once all cookie handling changes have been enabled by
-    // default. This is expected to take a while, and this expiry will probably
-    // need to be extended.
-    "expiry_milestone": 150
+    "owners": [ "chlily@chromium.org", "//net/cookies/OWNERS" ],
+    // Used by developers to activate upcoming cookie handling changes for
+    // testing.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-experimental-rgb-keyboard-patterns",

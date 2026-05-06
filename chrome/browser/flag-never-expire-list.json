@@ -42,6 +42,7 @@
   "enable-command-line-on-non-rooted-devices",
   "enable-component-updater-test-request",
   "enable-debug-for-store-billing",
+  "enable-experimental-cookie-features",
   "enable-experimental-web-platform-features",
   "enable-experimental-webassembly-features",
   "enable-fake-keyboard-heuristic",
