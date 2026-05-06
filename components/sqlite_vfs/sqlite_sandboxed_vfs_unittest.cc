@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected_macros.h"
 #include "components/sqlite_vfs/client.h"
@@ -38,12 +37,11 @@ class SqliteSandboxedVfsTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet(
-      bool single_connection = false) {
+  std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     std::optional<SqliteVfsFileSet> file_set;
     if (auto pending_file_set = MakePendingFileSet(
             Client::kTest, temp_dir_.GetPath(), base::FilePath(kTestBaseName),
-            single_connection, /*journal_mode_wal=*/false);
+            /*single_connection=*/false, /*journal_mode_wal=*/false);
         !pending_file_set.has_value()) {
       ADD_FAILURE() << "Failed creating pending file set";
     } else {
@@ -310,91 +308,5 @@ TEST_F(SqliteSandboxedVfsTest, SqliteIntegration) {
                    "Test");
   EXPECT_TRUE(db.Open(vfs_file_set.GetDbVirtualFilePath()));
 }
-
-TEST_F(SqliteSandboxedVfsTest, RegisterSandboxedFilesSharedSuccess) {
-  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set_1,
-                       CreateFilesAndBuildVfsFileSet());
-  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set_2,
-                       GetReadOnlyVfsFileSet(vfs_file_set_1));
-
-  ASSERT_EQ(vfs_file_set_1.GetSharedLock().GetGUID(),
-            vfs_file_set_2.GetSharedLock().GetGUID());
-
-  SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_1 =
-      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-          vfs_file_set_1);
-
-  SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_2 =
-      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-          vfs_file_set_2);
-}
-
-// These tests trigger a CHECK(NotFatalUntil), so they only crash unofficial
-// builds.
-#if !defined(OFFICIAL_BUILD)
-using SqliteSandboxedVfsDeathTest = SqliteSandboxedVfsTest;
-
-TEST_F(SqliteSandboxedVfsDeathTest, RegisterSandboxedFilesDuplicateFailure) {
-  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set_1,
-                       CreateFilesAndBuildVfsFileSet());
-  ASSERT_OK_AND_ASSIGN(SqliteVfsFileSet vfs_file_set_2,
-                       CreateFilesAndBuildVfsFileSet());
-
-  ASSERT_NE(vfs_file_set_1.GetSharedLock().GetGUID(),
-            vfs_file_set_2.GetSharedLock().GetGUID());
-
-  SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_1 =
-      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-          vfs_file_set_1);
-
-  EXPECT_CHECK_DEATH({
-    auto runner =
-        SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-            vfs_file_set_2);
-  });
-}
-
-#if BUILDFLAG(IS_POSIX)
-TEST_F(SqliteSandboxedVfsDeathTest,
-       RegisterSandboxedFilesSingleConnectionFailure) {
-  ASSERT_OK_AND_ASSIGN(
-      SqliteVfsFileSet vfs_file_set_1,
-      CreateFilesAndBuildVfsFileSet(/*single_connection=*/true));
-  ASSERT_OK_AND_ASSIGN(
-      SqliteVfsFileSet vfs_file_set_2,
-      CreateFilesAndBuildVfsFileSet(/*single_connection=*/true));
-
-  SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_1 =
-      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-          vfs_file_set_1);
-
-  EXPECT_CHECK_DEATH({
-    auto runner =
-        SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-            vfs_file_set_2);
-  });
-}
-
-TEST_F(SqliteSandboxedVfsDeathTest,
-       RegisterSandboxedFilesSingleAndSharedConnectionFailure) {
-  ASSERT_OK_AND_ASSIGN(
-      SqliteVfsFileSet vfs_file_set_1,
-      CreateFilesAndBuildVfsFileSet(/*single_connection=*/false));
-  ASSERT_OK_AND_ASSIGN(
-      SqliteVfsFileSet vfs_file_set_2,
-      CreateFilesAndBuildVfsFileSet(/*single_connection=*/true));
-
-  SqliteSandboxedVfsDelegate::UnregisterRunner unregister_runner_1 =
-      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-          vfs_file_set_1);
-
-  EXPECT_CHECK_DEATH({
-    auto runner =
-        SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
-            vfs_file_set_2);
-  });
-}
-#endif  // BUILDFLAG(IS_POSIX)
-#endif  // !defined(OFFICIAL_BUILD)
 
 }  // namespace sqlite_vfs

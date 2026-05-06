@@ -16,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "components/sqlite_vfs/file_system_id.h"
 #include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/metrics_util.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -28,24 +27,16 @@ SandboxedFile::SandboxedFile(Client client,
                              base::File file,
                              AccessRights access_rights,
                              std::optional<SharedLocks> shared_locks,
-                             base::UnguessableToken shared_locks_id,
                              base::File wal_index_file)
     : client_(client),
       file_type_(file_type),
       underlying_file_(std::move(file)),
       access_rights_(access_rights),
       shared_locks_(std::move(shared_locks)),
-      shared_locks_id_(std::move(shared_locks_id)),
       wal_index_file_(std::move(wal_index_file)) {
   CHECK(!shared_locks_ || file_type_ == FileType::kMainDb);
   CHECK(!wal_index_file_.IsValid() || file_type_ == FileType::kMainDb);
   CHECK(!wal_index_file_.IsValid() || shared_locks_.has_value());
-
-  // Cache the ID of the main database file for double-open protection; see
-  // RegisterSandboxedFiles.
-  if (file_type_ == FileType::kMainDb && underlying_file_.IsValid()) {
-    file_system_id_ = GetFileSystemId(client_, underlying_file_);
-  }
 }
 
 SandboxedFile::~SandboxedFile() = default;
