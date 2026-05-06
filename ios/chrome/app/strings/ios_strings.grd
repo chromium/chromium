@@ -3312,6 +3312,9 @@
       <message name="IDS_IOS_GEMINI_IMAGE_REMIX_TOOL_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can upload an image to remix with Nano Banana.">
         Upload an image to remix with Nano Banana
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_SHARING_LABEL" desc="Label describing the current page context shown in Gemini Live mode, indicating that the current page is being shared. [iOS only]">
+        Sharing <ph name="PAGE_TITLE">$1<ex>Example Page</ex></ph>
+      </message>
       <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_BODY" desc="Text body of the Gemini-specific camera permission prompt when camera is already disabled.">
         To let Gemini use your camera, turn on Camera in iOS settings
       </message>
