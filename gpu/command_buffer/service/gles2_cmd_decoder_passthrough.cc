@@ -480,6 +480,16 @@ bool PassthroughResources::ResumeSharedImageAccessIfNeeded(gl::GLApi* api) {
   return success;
 }
 
+void PassthroughResources::MarkContextLost() {
+  texture_object_map.ForEach(
+      [](GLuint client_id, scoped_refptr<TexturePassthrough> texture) {
+        texture->MarkContextLost();
+      });
+  for (auto& pair : texture_shared_image_map) {
+    pair.second.representation()->OnContextLost();
+  }
+}
+
 void PassthroughResources::Destroy(gl::GLApi* api,
                                    gl::ProgressReporter* progress_reporter) {
   bool have_context = !!api;
@@ -1644,10 +1654,25 @@ void GLES2DecoderPassthroughImpl::MarkContextLost(
     return;
   }
 
-  // SECURITY: crbug.com/500187083. Unconditionally clear the debug callback if
-  // current context IsCurrent before it gets lost to prevent UAF.
-  if (context_ && context_->IsCurrent(nullptr) && api()) {
-    api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
+  bool have_context = context_ && context_->IsCurrent(nullptr);
+  if (have_context) {
+    for (auto& bound_texture_type : bound_textures_) {
+      for (auto& bound_texture : bound_texture_type) {
+        if (bound_texture.texture) {
+          bound_texture.texture->MarkContextLost();
+        }
+      }
+    }
+
+    if (resources_) {
+      resources_->MarkContextLost();
+    }
+
+    // SECURITY: crbug.com/500187083. Unconditionally clear the debug callback
+    // if current context IsCurrent before it gets lost to prevent UAF.
+    if (api()) {
+      api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
+    }
   }
 
   // Don't make GL calls in here, the context might not be current.

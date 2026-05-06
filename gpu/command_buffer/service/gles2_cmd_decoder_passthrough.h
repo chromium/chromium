@@ -66,6 +66,7 @@ struct PassthroughResources {
   PassthroughResources();
   ~PassthroughResources();
 
+  void MarkContextLost();
   // api is null if we don't have a context (e.g. lost).
   void Destroy(gl::GLApi* api, gl::ProgressReporter* progress_reporter);
 
