@@ -103,6 +103,7 @@ source_set("input_plate") {
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/shared/coordinator",
+    "//ios/chrome/browser/composebox/shared/metrics",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui/presentation",

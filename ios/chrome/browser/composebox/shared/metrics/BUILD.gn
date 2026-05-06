@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "composebox_metrics_recorder.h",
+    "composebox_metrics_recorder.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_metrics_recorder_unittest.mm" ]
+  deps = [
+    ":metrics",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

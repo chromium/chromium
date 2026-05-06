@@ -20,8 +20,6 @@ source_set("ui") {
     "composebox_input_plate_view_controller.h",
     "composebox_input_plate_view_controller.mm",
     "composebox_input_plate_view_controller_delegate.h",
-    "composebox_metrics_recorder.h",
-    "composebox_metrics_recorder.mm",
     "composebox_navigation_consumer.h",
     "composebox_present_animator.h",
     "composebox_present_animator.mm",
@@ -43,6 +41,7 @@ source_set("ui") {
     "//ios/chrome/browser/composebox/public:input_plate_controls",
     "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/public:theme",
+    "//ios/chrome/browser/composebox/shared/metrics",
     "//ios/chrome/browser/composebox/shared/ui",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/keyboard/ui_bundled",
@@ -95,10 +94,7 @@ source_set("state") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "composebox_metrics_recorder_unittest.mm",
-    "composebox_strings_unittest.mm",
-  ]
+  sources = [ "composebox_strings_unittest.mm" ]
   deps = [
     ":state",
     ":ui",
