@@ -199,6 +199,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       AutofillSuggestionTriggerSource trigger_source,
       AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) final;
   void HideAutofillSuggestions(SuggestionHidingReason reason) final;
+  void OpenGeminiInSidebar(const std::u16string& prompt) final;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data) final;

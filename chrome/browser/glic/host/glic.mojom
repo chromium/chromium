@@ -1605,6 +1605,8 @@ enum InvocationSource {
   [MinVersion=19] kExperimentalTriggering = 28,
   // Actuation triggered by the password change feature.
   [MinVersion=20] kPasswordChange = 29,
+  // From an Autofill action.
+  [MinVersion=21] kAutofill = 30,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

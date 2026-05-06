@@ -112,6 +112,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "WebContentsContextMenu";
     case mojom::InvocationSource::kWhatsNew:
       return "WhatsNew";
+    case mojom::InvocationSource::kAutofill:
+      return "Autofill";
     case mojom::InvocationSource::kZeroStateAutoSummarize:
       return "ZeroStateAutoSummarize";
   }

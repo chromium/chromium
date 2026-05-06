@@ -189,6 +189,7 @@ source_set("impl") {
     "//chrome/browser/autofill/actor",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/device_reauth",
+    "//chrome/browser/glic",
     "//chrome/browser/history",
     "//chrome/browser/metrics",
     "//chrome/browser/optimization_guide",
@@ -327,8 +328,10 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility_annotator",
+    "//chrome/browser/account_settings",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill:test_support",
+    "//chrome/browser/glic",
     "//chrome/browser/ssl",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
@@ -394,6 +397,7 @@ source_set("unit_tests") {
       "update_address_bubble_controller_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/user_education",

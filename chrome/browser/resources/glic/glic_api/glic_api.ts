@@ -222,7 +222,7 @@ export declare interface GlicWebClient {
    * take place.
    */
   getExperimentalTriggeringUpdates?
-      (): Observable2<ExperimentalTriggeringUpdate>;
+    (): Observable2<ExperimentalTriggeringUpdate>;
 
   // !!! ATTENTION !!!
   // Avoid adding new methods to this interface! Instead, to push information to
@@ -530,7 +530,7 @@ export declare interface GlicBrowserHost {
    * be terminated and a new one will begin.
    */
   captureRegion?
-      (params?: CaptureRegionParams): ObservableValue<CaptureRegionResult>;
+    (params?: CaptureRegionParams): ObservableValue<CaptureRegionResult>;
 
   /**
    * Deletes a captured region.
@@ -2970,6 +2970,8 @@ export enum InvocationSource {
   EXPERIMENTAL_TRIGGERING = 28,
   // Actuation triggered by the password change feature.
   PASSWORD_CHANGE = 29,
+  // From an Autofill action.
+  AUTOFILL = 30,
 }
 
 ///////////////////////////////////////////////
