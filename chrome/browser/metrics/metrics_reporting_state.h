@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_
 #define CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "components/metrics/metrics_reporting_level.h"
 
@@ -13,12 +15,6 @@ namespace metrics {
 using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 using OnMetricsReportingLevelCallbackType =
     base::OnceCallback<void(MetricsReportingLevel)>;
-
-// Specifies from where a change to the metrics reporting level was made.
-// TODO(b/483043192): Implement this.
-enum class ChangeMetricsReportingLevelCalledFrom {
-  kUiSettings,
-};
 
 // Specifies from where a change to the metrics reporting state was made. When
 // metrics reporting is enabled from a settings page, histogram data that was
@@ -73,33 +69,38 @@ void ChangeMetricsReportingStateWithReply(
     OnMetricsReportingCallbackType callback_fn,
     ChangeMetricsReportingStateCalledFrom called_from);
 
-// Changes metrics reporting level without caring about the success of the
-// change. |called_from| should be set to |kUiSettings| when enabling metrics
-// from a settings page (to mark histogram data collected while metrics
-// reporting was disabled as reported so as to not include them in the next
-// log). If |called_from| is set to anything else, then metrics will not be
-// cleared when enabling metrics reporting.
-// TODO(b/492510818): This will be replacing the ChangeMetricsReportingState()
-// method.
-void ChangeMetricsReportingLevel(
-    MetricsReportingLevel level,
-    ChangeMetricsReportingLevelCalledFrom called_from);
-
-// Changes metrics reporting level to the new value of |level|. Starts or
-// stops the metrics service based on the new level and then runs |callback_fn|
-// (which can be null) with the updated level (as the operation may fail). On
-// platforms other than CrOS and Android, also updates the underlying pref.
+// Implementation detail for ChangeMetricsReportingStateWithReply.
+// Not intended for use outside of this file and
+// ChromeMetricsServiceAccessor.
+//
+// Changes metrics reporting state to the new value of |enabled|. Starts or
+// stops the metrics service based on the new state and then runs |callback_fn|
+// (which can be null) with the updated state (as the operation may fail).
+// If |level_to_write| is provided, it updates the kMetricsReportingLevel pref;
+// otherwise, it updates the underlying legacy kMetricsReportingEnabled pref (on
+// platforms other than CrOS and Android).
 // |called_from| should be set to |kUiSettings| when enabling metrics from a
 // settings page (to mark histogram data collected while metrics reporting was
 // disabled as reported so as to not include them in the next log). If
 // |called_from| is set to anything else, then metrics will not be cleared when
 // enabling metrics reporting.
-// TODO(b/492510818): This will be replacing the
-// ChangeMetricsReportingStateWithReply() method.
-void ChangeMetricsReportingLevelWithReply(
+void ChangeMetricsReportingStateWithReplyImpl(
+    bool enabled,
+    OnMetricsReportingCallbackType callback_fn,
+    ChangeMetricsReportingStateCalledFrom called_from,
+    std::optional<MetricsReportingLevel> level_to_write);
+
+// Changes metrics reporting state to the new value based on |level| without
+// caring about the success of the change. |called_from| should be set to
+// |kUiSettings| when enabling metrics from a settings page (to mark histogram
+// data collected while metrics reporting was disabled as reported so as to not
+// include them in the next log). If |called_from| is set to anything else,
+// then metrics will not be cleared when enabling metrics reporting.
+// TODO(b/492510818): This will be replacing the ChangeMetricsReportingState()
+// method taking a boolean.
+void ChangeMetricsReportingState(
     MetricsReportingLevel level,
-    OnMetricsReportingLevelCallbackType callback_fn,
-    ChangeMetricsReportingLevelCalledFrom called_from);
+    ChangeMetricsReportingStateCalledFrom called_from);
 
 // Update metrics prefs on a permission (opt-in/out) change. When opting out,
 // this clears various client ids. When opting in, this resets saving crash

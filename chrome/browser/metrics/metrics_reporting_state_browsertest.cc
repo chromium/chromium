@@ -28,8 +28,10 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/installer/util/google_update_settings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
@@ -317,6 +319,60 @@ INSTANTIATE_TEST_SUITE_P(
          metrics::ChangeMetricsReportingStateCalledFrom::kSessionCrashedDialog,
          metrics::ChangeMetricsReportingStateCalledFrom::
              kCrosMetricsSettingsChange}));
+
+struct MetricsReportingLevelTestParams {
+  metrics::MetricsReportingLevel level;
+  bool expected_enabled;
+};
+
+class MetricsReportingLevelTest
+    : public MetricsReportingStateTest,
+      public testing::WithParamInterface<MetricsReportingLevelTestParams> {
+ public:
+  bool IsMetricsReportingEnabledInitialValue() const override { return false; }
+};
+
+IN_PROC_BROWSER_TEST_P(MetricsReportingLevelTest, ChangeMetricsReportingState) {
+  ASSERT_FALSE(MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
+
+  // Enable the metrics consent restructure.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(
+      metrics::prefs::kMetricsConsentRestructureFeatureState, true);
+  local_state->SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+  ASSERT_TRUE(metrics::MetricsReportingChoiceService::
+                  ShouldUseMetricsConsentRestructure(local_state));
+
+  metrics::MetricsReportingLevel level = GetParam().level;
+  bool expected_enabled = GetParam().expected_enabled;
+
+  metrics::ChangeMetricsReportingState(
+      level, metrics::ChangeMetricsReportingStateCalledFrom::kUiSettings);
+
+  // ChangeMetricsReportingState() is asynchronous. Wait for it to finish.
+  base::RunLoop run_loop;
+  GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(expected_enabled,
+            MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
+
+  EXPECT_EQ(static_cast<int>(level),
+            local_state->GetInteger(metrics::prefs::kMetricsReportingLevel));
+  // The legacy pref should not have been updated.
+  EXPECT_FALSE(
+      local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
+}
+
+INSTANTIATE_TEST_SUITE_P(MetricsReportingStateTests,
+                         MetricsReportingLevelTest,
+                         testing::ValuesIn<MetricsReportingLevelTestParams>(
+                             {{metrics::MetricsReportingLevel::kNone, false},
+                              {metrics::MetricsReportingLevel::kBasic, true},
+                              {metrics::MetricsReportingLevel::kAdvanced,
+                               true}}));
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Used to verify that managed/unmanged devices returns correct values based on

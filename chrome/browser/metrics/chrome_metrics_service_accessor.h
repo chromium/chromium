@@ -150,14 +150,11 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class domain_reliability::TestDomainReliabilityServiceDelegate;
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
-  friend void metrics::ChangeMetricsReportingStateWithReply(
+  friend void metrics::ChangeMetricsReportingStateWithReplyImpl(
       bool,
       metrics::OnMetricsReportingCallbackType,
-      metrics::ChangeMetricsReportingStateCalledFrom);
-  friend void metrics::ChangeMetricsReportingLevelWithReply(
-      metrics::MetricsReportingLevel,
-      metrics::OnMetricsReportingLevelCallbackType,
-      metrics::ChangeMetricsReportingLevelCalledFrom);
+      metrics::ChangeMetricsReportingStateCalledFrom,
+      std::optional<metrics::MetricsReportingLevel>);
   friend void metrics::ApplyMetricsReportingPolicy();
   friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;
