@@ -92,12 +92,13 @@ NSString* GetPromoLabelString(
           IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::kSaveToDriveIos:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE);
-    case signin_metrics::AccessPoint::kSettings:
-    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
-      // No text.
-      return nil;
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHOOSE_FROM_DRIVE);
+    case signin_metrics::AccessPoint::kIosPageActionMenu:
+    case signin_metrics::AccessPoint::kIosAppBar:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_GEMINI);
+    case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
     case signin_metrics::AccessPoint::kStartPage:
     case signin_metrics::AccessPoint::kMenu:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
@@ -164,8 +165,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAshChromeSessionManager:
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
-    case signin_metrics::AccessPoint::kIosPageActionMenu:
-    case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
