@@ -415,6 +415,22 @@ class GlicBrowserTestMixin : public T {
   }
 
  private:
+  // Hide functionality not available on Android to discourage use.
+  // Callers can instead use, e.g. PlatformBrowserTest::browser(), or
+  // redeclare PlatformBrowserTest::browser as public on the test fixture.
+#if !BUILDFLAG(IS_ANDROID)
+  // Alternative: CreateAndActivateTab(GURL("about:blank"))
+  using T::AddBlankTabAndShow;
+  // Alternative: GetBrowser()
+  using T::browser;
+  // Alternative:
+  // chrome/browser/ui/browser_window/public/create_browser_window.h.
+  using T::CreateBrowser;
+  using T::CreateBrowserForApp;
+  using T::CreateBrowserForPopup;
+  using T::CreateIncognitoBrowser;
+  using T::OpenURLOffTheRecord;
+#endif
   GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)

@@ -6,7 +6,7 @@ import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateTyp
 import type {AdditionalContext, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 
 
 class ApiTests extends ApiTestFixtureBase {
@@ -17,6 +17,52 @@ class ApiTests extends ApiTestFixtureBase {
   async testDoNothing() {}
 
   async testReloadWebUi() {}
+
+  async testDefaultTabContextApiIsUndefinedWhenFeatureDisabled() {
+    assertTrue(this.host.getDefaultTabContextPermissionState === undefined);
+  }
+
+  async testGetDefaultTabContextPermissionState() {
+    assertDefined(this.host.getDefaultTabContextPermissionState);
+    const defaultTabContextState =
+        observeSequence(this.host.getDefaultTabContextPermissionState());
+    assertTrue(await defaultTabContextState.next() as boolean);
+    await this.advanceToNextStep();
+    assertFalse(await defaultTabContextState.next() as boolean);
+  }
+
+  async testPinOnBind() {
+    assertDefined(this.host.getDefaultTabContextPermissionState);
+    assertDefined(this.host.getFocusedTabStateV2);
+    const defaultTabContextState =
+        observeSequence(this.host.getDefaultTabContextPermissionState());
+    assertTrue(await defaultTabContextState.next() as boolean);
+    assertDefined(this.host.getPinnedTabs);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+
+    // The active tab should be automatically pinned on bind.
+    const pinnedTabs =
+        await pinnedTabsUpdates.waitFor(tabs => tabs.length === 1);
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const activeTabId = checkDefined(focus.hasFocus?.tabData.tabId);
+    assertEquals(pinnedTabs[0]!.tabId, activeTabId);
+  }
+
+  async testNoPinOnBindWhenSettingOff() {
+    assertDefined(this.host.getPinnedTabs);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+
+    // The initial value is an empty array.
+    const initialTabs = await pinnedTabsUpdates.next();
+    assertEquals(0, initialTabs.length);
+
+    // Wait briefly to ensure no unexpected updates arrive.
+    await sleep(200);
+    assertTrue(
+        pinnedTabsUpdates.isEmpty(),
+        'Pinned tabs should remain empty when auto-pinning is disabled.');
+  }
 
   async testInvocationSource() {
     const expectedSource = this.testParams as number;

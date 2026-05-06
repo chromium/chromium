@@ -131,6 +131,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithPixelOutput",
       "NewGlicApiTestWithGeminiActOnWebPolicy",
       "NewGlicApiMultiProfileTest",
+      "NewGlicApiTestWithDefaultTabContextDisabled",
+      "NewGlicApiTestWithDefaultTabContextEnabled",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithSkills",
 #endif
@@ -241,8 +243,8 @@ class NewGlicApiTest : public GlicApiBrowserTest,
 
 #if !BUILDFLAG(IS_ANDROID)
   void CloseMainBrowserWithIncognitoKeepAlive() {
-    CreateIncognitoBrowser();
-    CloseBrowserAsynchronously(browser());
+    PlatformBrowserTest::CreateIncognitoBrowser();
+    CloseBrowserAsynchronously(GetBrowserWindowInterface());
   }
 #endif
 
@@ -260,7 +262,7 @@ class NewGlicApiMultiProfileTest : public NewGlicApiTest {
         profile_manager->GenerateNextProfileDirectoryPath();
     Profile& new_profile =
         profiles::testing::CreateProfileSync(profile_manager, new_path);
-    return CreateBrowser(&new_profile);
+    return PlatformBrowserTest::CreateBrowser(&new_profile);
 #else
     NOTREACHED();
 #endif
@@ -298,6 +300,58 @@ class NewGlicApiTestWithPixelOutput : public NewGlicApiTest {
     EnablePixelOutput(2.0f);
   }
 };
+
+class NewGlicApiTestWithDefaultTabContextDisabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithDefaultTabContextDisabled() {
+    feature_list_.InitWithFeatures({},
+                                   {features::kGlicDefaultTabContextSetting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestWithDefaultTabContextEnabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithDefaultTabContextEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicDefaultTabContextSetting},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextEnabled,
+                       testGetDefaultTabContextPermissionState) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                       false);
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextEnabled,
+                       testPinOnBind) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextEnabled,
+                       testNoPinOnBindWhenSettingOff) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                       false);
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
                        testWebClientReadyOnPreload) {
@@ -1120,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
 #if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
   BrowserWindowInterface* browser_to_close = GetBrowserWindowInterface();
-  CreateIncognitoBrowser();
+  PlatformBrowserTest::CreateIncognitoBrowser();
   CloseBrowserAsynchronously(browser_to_close);
 
   ui_test_utils::WaitForBrowserToClose(browser_to_close);
@@ -1173,6 +1227,16 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithDefaultTabContextDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithDefaultTabContextEnabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 // Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
@@ -1188,6 +1252,10 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithPixelOutput);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithGeminiActOnWebPolicy);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiMultiProfileTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithDefaultTabContextDisabled);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithDefaultTabContextEnabled);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 #endif

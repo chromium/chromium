@@ -22,6 +22,8 @@ namespace glic {
 
 class GlicExperimentalOptInTest : public GlicBrowserTest {
  public:
+  // These tests don't run on Android, so allow browser() use.
+  using PlatformBrowserTest::browser;
   GlicExperimentalOptInTest() {
     feature_list_.InitAndEnableFeature(features::kGlicExperimentalTriggering);
   }

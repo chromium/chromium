@@ -181,8 +181,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
-      "GlicApiTestWithDefaultTabContextDisabled",
-      "GlicApiTestWithDefaultTabContextEnabled",
       "GlicApiTestWithMqlsIdGetterEnabled",
       "GlicApiTestWithMqlsIdGetterDisabled",
       "GlicApiTestRuntimeFeatureOff",
@@ -359,30 +357,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicApiTestWithDefaultTabContextEnabled : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithDefaultTabContextEnabled() {
-    feature_list_.InitWithFeatures({features::kGlicDefaultTabContextSetting},
-                                   {});
-  }
-
-  void SetUpOnMainThread() override { GlicApiTest::SetUpOnMainThread(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GlicApiTestWithDefaultTabContextDisabled : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithDefaultTabContextDisabled() {
-    feature_list_.InitWithFeatures({},
-                                   {features::kGlicDefaultTabContextSetting});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class GlicApiTestWithWebActuationSettingEnabled : public GlicApiTestWithOneTab {
@@ -749,35 +723,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextDisabled,
-                       testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
-                       testGetDefaultTabContextPermissionState) {
-  // Default kGlicDefaultTabContextEnabled value is true.
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kGlicDefaultTabContextEnabled, false);
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled, testPinOnBind) {
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDefaultTabContextEnabled,
-                       testNoPinOnBindWhenSettingOff) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kGlicDefaultTabContextEnabled, false);
-
-  NavigateTabAndOpenGlic();
-  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
@@ -3701,14 +3646,6 @@ INSTANTIATE_TEST_SUITE_P(
     &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithDefaultTabContextEnabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithDefaultTabContextDisabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

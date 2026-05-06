@@ -19,6 +19,8 @@ namespace glic {
 
 class GlicContextMenuBrowserTestBase : public GlicBrowserTest {
  protected:
+  // These tests don't run on Android, so allow browser() use.
+  using PlatformBrowserTest::browser;
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

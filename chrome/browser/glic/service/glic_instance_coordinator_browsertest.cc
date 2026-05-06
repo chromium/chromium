@@ -252,7 +252,7 @@ class GlicInstanceCoordinatorBrowserTest
         TabRestoreServiceFactory::GetForProfile(GetProfile());
     service->RestoreMostRecentEntry(live_tab_context);
 #else
-    chrome::RestoreTab(browser());
+    chrome::RestoreTab(PlatformBrowserTest::browser());
 #endif
   }
   TestResult<> CloseGlicForTabAndWait(tabs::TabInterface* tab) {
@@ -1413,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeSuccess) {
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        ResolveTargetSurfaceCreatesNewWindow) {
   Profile* incognito_profile =
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Initially there should be no browsers for incognito profile.
   EXPECT_EQ(ProfileBrowserCollection::GetForProfile(incognito_profile)
@@ -1797,9 +1797,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   task->Start(done_future.GetCallback());
 
   // Destroy the tab.
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents),
-      TabCloseTypes::CLOSE_USER_GESTURE);
+  GetTabListInterface()->CloseTab(tab->GetHandle());
 
   // Wait for the task to complete. It should complete when the timer fires,
   // and it should not crash.
