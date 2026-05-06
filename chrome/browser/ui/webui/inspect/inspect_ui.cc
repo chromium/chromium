@@ -666,6 +666,9 @@ void InspectUI::Open(const std::string& source_id,
 void InspectUI::Pause(const std::string& source_id,
                       const std::string& target_id) {
   scoped_refptr<DevToolsAgentHost> target = FindTarget(source_id, target_id);
+  if (!target) {
+    return;
+  }
   content::WebContents* web_contents = target->GetWebContents();
   if (web_contents) {
     DevToolsWindow::OpenDevToolsWindow(web_contents,
