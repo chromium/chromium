@@ -1239,6 +1239,25 @@ suite('ContentController', () => {
 
       assertEquals(0, sentBlocks.length);
     });
+
+    test('overwrites stored nodes on subsequent calls', () => {
+      const container1 = document.createElement('div');
+      container1.textContent = 'First call';
+      const container2 = document.createElement('div');
+      container2.textContent = 'Second call';
+
+      // First call
+      contentController.onRenderedTextBlocksAvailable(container1);
+      assertEquals(1, sentBlocks.length);
+      assertEquals('First call', sentBlocks[0]![0]);
+
+      // Second call - should replace the internal array
+      contentController.onRenderedTextBlocksAvailable(container2);
+      assertEquals(2, sentBlocks.length);
+      assertEquals('Second call', sentBlocks[1]![0]);
+
+      assertEquals(1, sentBlocks[1]!.length);
+    });
   });
 
   suite('updateAnchorsForReadability', () => {

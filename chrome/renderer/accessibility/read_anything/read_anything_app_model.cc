@@ -1380,18 +1380,15 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   }
 
   text_to_ax_map_.clear();
-  text_to_ax_map_index_.clear();
+  // Ensure the mapping storage size matches the input blocks.
+  text_to_ax_map_.resize(blocks.size());
   should_map_rendered_text_to_tree_for_readability_ = false;
 
   FlattenAXTree(tree);
 
   // TODO: crbug.com/507448617 - Implement mapping algorithm
   // The mapping algorithm results are populated into |text_to_ax_map_|, where
-  // each block string maps to a vector of its occurrences in the page.
-  // |text_to_ax_map_index_| tracks sequential consumption by the WebUI,
-  // ensuring that identical strings (e.g., multiple "Read More" links) are
-  // linked to their respective AXNodes in the order they appear in the
-  // distilled DOM.
+  // text_to_ax_map_[i] contains the segments for blocks[i].
   return true;
 }
 
@@ -1451,8 +1448,11 @@ void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
 }
 
 std::vector<ReadAnythingAppModel::MappingSegment>
-ReadAnythingAppModel::GetAXMappingForText(const std::string& text) const {
+ReadAnythingAppModel::GetAXMapping(size_t index) const {
   // TODO: crbug.com/507447796 - 10. Implement getter for frontend to receive
-  // mapped segments from a block.
-  return {};
+  // mapped segments from a block. Done in ReadAnythingAppController.
+  if (index >= text_to_ax_map_.size()) {
+    return {};
+  }
+  return text_to_ax_map_[index];
 }

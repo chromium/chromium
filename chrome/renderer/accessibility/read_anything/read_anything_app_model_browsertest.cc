@@ -2510,8 +2510,9 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_ResetsMappingState) {
   EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
 
   // Verify that the internal mapping storage was cleared/initialized.
-  EXPECT_TRUE(model().text_to_ax_map().empty());
-  EXPECT_TRUE(model().text_to_ax_map_index().empty());
+  EXPECT_EQ(model().text_to_ax_map().size(), 2u);
+  EXPECT_TRUE(model().text_to_ax_map()[0].empty());
+  EXPECT_TRUE(model().text_to_ax_map()[1].empty());
 }
 
 TEST_F(ReadAnythingAppModelTest,

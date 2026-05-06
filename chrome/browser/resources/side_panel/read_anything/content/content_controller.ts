@@ -148,6 +148,11 @@ export class ContentController {
   // reference and do not trigger a "Policy already exists" TypeError.
   private static trustedUpdatePolicy: TrustedTypePolicy|undefined;
 
+  // Holds the text nodes extracted from the current rendered distillation.
+  // This array ensures that we can link a DOM node back to its AXTree
+  // mapping for text selection via its index in this array.
+  private renderedTextNodes_: Node[] = [];
+
   getState(): ContentState {
     return this.currentState_;
   }
@@ -667,10 +672,14 @@ export class ContentController {
       return;
     }
 
-    const nodes = getReadingModeTextNodes(container);
+    // Capture the specific node instances currently rendered in the UI.
+    // We store them in an array so that the index becomes the identifier that
+    // links this node to its AXTree mapping in the renderer.
+    this.renderedTextNodes_ = getReadingModeTextNodes(container);
 
-    // Extract the raw text content from each node.
-    const blocks = nodes.map(n => n.textContent || '');
+    // Extract the raw text content from each node to send to the mapping
+    // algorithm in the renderer.
+    const blocks = this.renderedTextNodes_.map(n => n.textContent || '');
 
     chrome.readingMode.onRenderedTextBlocksAvailable(blocks);
   }
