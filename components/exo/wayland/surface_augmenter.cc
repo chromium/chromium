@@ -149,6 +149,13 @@ void augmented_surface_set_background_color(wl_client* client,
   std::optional<SkColor4f> sk_color;
   // Empty data means no color.
   if (color_data->size) {
+    if (color_data->size != sizeof(float) * 4) {
+      wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_INVALID_SIZE,
+                             "The color data must contain 4 %zu-byte floats "
+                             "(%zu bytes given)",
+                             sizeof(float), color_data->size);
+      return;
+    }
     float* data = reinterpret_cast<float*>(color_data->data);
     sk_color = {data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]),
                 UNSAFE_TODO(data[3])};
@@ -364,6 +371,13 @@ void augmenter_create_solid_color_buffer(wl_client* client,
                                          wl_array* color_data,
                                          int width,
                                          int height) {
+  if (color_data->size != sizeof(float) * 4) {
+    wl_resource_post_error(resource, SURFACE_AUGMENTER_ERROR_INVALID_SIZE,
+                           "The color data must contain 4 %zu-byte floats "
+                           "(%zu bytes given)",
+                           sizeof(float), color_data->size);
+    return;
+  }
   float* data = reinterpret_cast<float*>(color_data->data);
   SkColor4f color = {data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]),
                      UNSAFE_TODO(data[3])};

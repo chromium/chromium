@@ -11,9 +11,9 @@
 
 namespace exo::wayland {
 
-// version: 12
+// version: 13
 constexpr uint32_t kSurfaceAugmenterVersion =
-    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION + 1;
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION + 2;
 
 void bind_surface_augmenter(wl_client* client,
                             void* data,

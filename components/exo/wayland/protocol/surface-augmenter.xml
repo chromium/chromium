@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="12">
+  <interface name="surface_augmenter" version="13">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -33,6 +33,9 @@
       disconnecting the direct relationship between the buffer and the
       surface content (adding support for solid quads and rounded corner
       for instance).
+
+      <!-- Version 13 additions -->
+      Added invalid_size error.
     </description>
 
     <request name="destroy" type="destructor">
@@ -47,6 +50,8 @@
       <entry name="augmented_surface_exists" value="0"
              summary="the surface already has a augmenter object
              associated"/>
+      <entry name="invalid_size" value="1"
+             summary="array sent with invalid dimensions"/>
     </enum>
 
     <request name="create_solid_color_buffer">
@@ -98,7 +103,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="12">
+  <interface name="augmented_surface" version="13">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -146,6 +151,9 @@
       Then the final composition order, from bottom to top, is:
       wl_surface@1, augmented_surface@1,2,3, wl_surface@2, augmented_surface@4,5,
       wl_surface@3, augmented_surface@6
+
+      <!-- Version 13 additions -->
+      Added invalid_size error.
     </description>
      <request name="destroy" type="destructor">
       <description summary="remove delegated composition of the surface">
@@ -162,6 +170,8 @@
 	     summary="the wl_surface was destroyed"/>
       <entry name="bad_surface" value="2"
 	     summary="incompatible surface"/>
+      <entry name="invalid_size" value="3"
+	     summary="array sent with invalid dimensions"/>
     </enum>
 
     <request name="set_rounded_corners">
