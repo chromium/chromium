@@ -53,6 +53,9 @@ class AuthController : public signin::IdentityManager::Observer {
   // Called when the client reports that it has encountered an error.
   void OnClientError();
 
+  // Called when the client reports that it has encountered a transient error.
+  void OnClientTransientError(mojo_base::mojom::AbslStatusCode status_code);
+
   // Show the sign-in page. `after_signin` will be called after the user has
   // signed in. It will not be called if the user cancels the sign-in, or the
   // sign-in doesn't happen before:

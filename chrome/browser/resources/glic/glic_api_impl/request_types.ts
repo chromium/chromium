@@ -665,6 +665,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserReportClientTransientError: {
+    request: {
+      abslStatus: number,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserSubscribeToZoomLevel: {
     backgroundAllowed: true,
   },
@@ -951,6 +957,7 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
 interface UnreportedRequests {
   RecordHistogram: null;
   SetErrorDialogState: null;
+  ReportClientTransientError: null;
 }
 
 type RemoveStringPrefix<S extends string, Prefix extends string> =

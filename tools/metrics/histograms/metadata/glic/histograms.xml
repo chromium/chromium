@@ -255,6 +255,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.Client.TransientError" enum="GoogleRpcCode"
+    expires_after="2027-05-04">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records when the glic web client reports a transient error. These errors may
+    be presented to the user, but may not prevent further use of Glic.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-09-27">
   <owner>carlosk@chromium.org</owner>

@@ -215,6 +215,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.openPasswordManagerSettingsPage();
   }
 
+  glicBrowserReportClientTransientError(request: {abslStatus: number}): void {
+    this.handler.reportClientTransientError(request.abslStatus);
+  }
+
   glicBrowserClosePanel(): void {
     return this.handler.closePanel();
   }

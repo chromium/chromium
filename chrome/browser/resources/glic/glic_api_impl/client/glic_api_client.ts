@@ -949,6 +949,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserOpenPasswordManagerSettingsPage', undefined);
   }
 
+  reportClientTransientError(abslStatus: number): void {
+    this.sender.requestNoResponse(
+        'glicBrowserReportClientTransientError', {abslStatus});
+  }
+
   closePanel(): Promise<void> {
     return this.sender.requestWithResponse('glicBrowserClosePanel', undefined);
   }

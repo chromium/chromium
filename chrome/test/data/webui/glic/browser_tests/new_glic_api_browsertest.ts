@@ -288,6 +288,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.setErrorDialogState);
     this.host.setErrorDialogState!(1 /* kDisabledByOrganization */);
   }
+
+  async testReportClientTransientError() {
+    assertDefined(this.host.reportClientTransientError);
+    this.host.reportClientTransientError!(16 /* kUnauthenticated */);
+  }
 }
 
 class FaviconTest extends ApiTests {

@@ -360,6 +360,24 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testShowClientErrorDialog) {
       [&]() { return service()->GetAuthController().NeedsSyncForTesting(); }));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testReportClientTransientError) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Wait for the histogram to be recorded.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetAllSamples("Glic.Api.Client.TransientError")
+               .size() > 0;
+  }));
+  histogram_tester.ExpectUniqueSample("Glic.Api.Client.TransientError",
+                                      /*kUnauthenticated*/ 16, 1);
+
+  // Verify that the pref was set to true.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return service()->GetAuthController().NeedsSyncForTesting(); }));
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testLoadWhileWindowClosed) {
   // Open Glic
   ToggleGlicForActiveTab();

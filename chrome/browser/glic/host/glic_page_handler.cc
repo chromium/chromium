@@ -1570,6 +1570,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void ReportClientTransientError(
+      mojo_base::mojom::AbslStatusCode status_code) override {
+    glic_service_->GetAuthController().OnClientTransientError(status_code);
+    base::UmaHistogramSparse("Glic.Api.Client.TransientError",
+                             static_cast<int>(status_code));
+  }
+
   void LogBeginAsyncEvent(uint64_t event_async_id,
                           int32_t task_id,
                           const std::string& event,

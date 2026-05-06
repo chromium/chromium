@@ -191,6 +191,19 @@ void AuthController::OnClientError() {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
 }
 
+void AuthController::OnClientTransientError(
+    mojo_base::mojom::AbslStatusCode status_code) {
+  switch (status_code) {
+    case mojo_base::mojom::AbslStatusCode::kUnauthenticated:
+    case mojo_base::mojom::AbslStatusCode::kInternal:
+      profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
+                                       true);
+      break;
+    default:
+      break;
+  }
+}
+
 bool AuthController::NeedsSyncForTesting() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync);
 }

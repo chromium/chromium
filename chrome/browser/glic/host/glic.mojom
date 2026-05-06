@@ -7,6 +7,7 @@ module glic.mojom;
 import "chrome/browser/glic/host/glic_features.mojom";
 import "chrome/common/actor_webui.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/absl_status.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
@@ -1289,6 +1290,10 @@ interface WebClientHandler {
   // Notifies the browser that the client error dialog state has changed.
   // `shown_dialog_type` is null when no dialog is shown (e.g., it was closed).
   ClientErrorDialogStateChanged(ClientErrorDialogType? shown_dialog_type);
+
+  // Reports that the web client encountered a transient error. These errors may
+  // be presented to the user, but may not prevent further use of Glic.
+  ReportClientTransientError(mojo_base.mojom.AbslStatusCode status_code);
 
   // Log a begin event in the journal.
   LogBeginAsyncEvent(

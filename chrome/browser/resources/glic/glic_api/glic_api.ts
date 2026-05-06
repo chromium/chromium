@@ -1120,6 +1120,17 @@ export declare interface GlicBrowserHost {
    *   `undefined`, no error dialog is showing.
    */
   setErrorDialogState?(shownDialogType?: ClientErrorDialogType): void;
+
+  /**
+   * Reports that the web client encountered a transient error. Transient errors
+   * are errors may be presented to the user, but may not prevent further use of
+   * GiC. Chrome may use this information to influence whether sign in cookies
+   * are synced later.
+   *
+   * @param abslStatus A absl::StatusCode value. See
+   *     https://abseil.io/docs/cpp/guides/status-codes.
+   */
+  reportClientTransientError?(abslStatus: number): void;
 }
 
 /** Information about a conversation. */
