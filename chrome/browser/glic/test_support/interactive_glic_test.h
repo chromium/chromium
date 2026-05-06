@@ -439,8 +439,7 @@ class InteractiveGlicTestMixin : public T {
         Api::Do([this]() {
           GetInstanceCoordinator().Toggle(
               /*browser=*/nullptr, true, mojom::InvocationSource::kOsButton,
-              /*deprecated_prompt_suggestion=*/std::nullopt,
-              /*conversation_id=*/std::nullopt);
+              /*deprecated_prompt_suggestion=*/std::nullopt);
         }),
         WaitForAndInstrumentGlic(instrument_mode), WaitForGlicOpen());
 
@@ -471,8 +470,7 @@ class InteractiveGlicTestMixin : public T {
         return Api::Do([this, invocation_source] {
           instance_coordinator().Toggle(
               browser(), false, invocation_source,
-              /*deprecated_prompt_suggestion=*/std::nullopt,
-              /*conversation_id=*/std::nullopt);
+              /*deprecated_prompt_suggestion=*/std::nullopt);
         });
     }
   }

@@ -29,7 +29,6 @@ class MockGlicInstanceCoordinator
               (BrowserWindowInterface*,
                bool,
                mojom::InvocationSource,
-               std::optional<std::string>,
                std::optional<std::string>),
               (override));
   MOCK_METHOD(void, EnsurePreload, (), (override));

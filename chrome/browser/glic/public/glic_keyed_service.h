@@ -275,8 +275,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   void ToggleUIInternal(BrowserWindowInterface* bwi,
                         bool prevent_close,
                         mojom::InvocationSource source,
-                        std::optional<std::string> prompt_suggestion,
-                        std::optional<std::string> conversation_id);
+                        std::optional<std::string> prompt_suggestion);
 
   bool MaybeInvoke(BrowserWindowInterface* bwi,
                    mojom::InvocationSource source,

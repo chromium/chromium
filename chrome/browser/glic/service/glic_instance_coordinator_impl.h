@@ -139,8 +139,7 @@ class GlicInstanceCoordinatorImpl
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source,
-              std::optional<std::string> deprecated_prompt_suggestion,
-              std::optional<std::string> deprecated_conversation_id) override;
+              std::optional<std::string> deprecated_prompt_suggestion) override;
   void EnsurePreload() override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
@@ -227,8 +226,7 @@ class GlicInstanceCoordinatorImpl
   void ToggleSidePanel(BrowserWindowInterface* browser,
                        bool prevent_close,
                        glic::mojom::InvocationSource source,
-                       std::optional<std::string> prompt_suggestion,
-                       std::optional<std::string> conversation_id);
+                       std::optional<std::string> prompt_suggestion);
 
   void CloseFloaty(const CloseOptions& options = {});
 

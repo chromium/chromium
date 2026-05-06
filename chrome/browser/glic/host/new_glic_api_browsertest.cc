@@ -471,8 +471,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInvocationSource) {
     // Toggle Glic from source.
     coordinator().Toggle(GetBrowser(), /*prevent_close=*/false,
                          /*source=*/source,
-                         /*deprecated_prompt_suggestion=*/std::nullopt,
-                         /*deprecated_conversation_id=*/std::nullopt);
+                         /*deprecated_prompt_suggestion=*/std::nullopt);
 
     ASSERT_OK(WaitForGlicOpen());
 

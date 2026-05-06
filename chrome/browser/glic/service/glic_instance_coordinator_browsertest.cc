@@ -539,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Open floaty and start listening
   coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_conversation_id=*/std::nullopt);
+                       /*deprecated_prompt_suggestion=*/std::nullopt);
   GlicInstanceImpl* floaty_instance =
       static_cast<GlicInstanceImpl*>(coordinator().GetActiveInstance());
   ASSERT_TRUE(floaty_instance);
@@ -559,8 +558,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   coordinator().Toggle(tab2->GetBrowserWindowInterface(),
                        /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt,
-                       /*deprecated_conversation_id=*/std::nullopt);
+                       /*deprecated_prompt_suggestion=*/std::nullopt);
   ASSERT_OK_AND_ASSIGN(auto side_panel_instance, WaitForGlicOpen(tab2));
   ASSERT_EQ(side_panel_instance->GetPanelState().kind,
             mojom::PanelStateKind::kAttached);
@@ -1063,55 +1061,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(instance2->IsHibernated());
-}
-
-class GlicInstanceCoordinatorToggleWithConversationTest
-    : public GlicInstanceCoordinatorBrowserTest {
- public:
-  GlicInstanceCoordinatorToggleWithConversationTest() {
-    feature_list_.InitAndEnableFeature(features::kGlicWebContinuity);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
-                       ToggleWithConversationId) {
-  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
-  const std::string cid1 = "conv_1";
-  const std::string cid2 = "conv_2";
-
-  // Toggle with cid1.
-  coordinator().Toggle(tab1->GetBrowserWindowInterface(),
-                       /*prevent_close=*/false,
-                       mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt, cid1);
-
-  ASSERT_OK_AND_ASSIGN(auto instance1, WaitForGlicOpen(tab1));
-  EXPECT_EQ(instance1->conversation_id(), cid1);
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
-
-  // Toggle again with SAME cid1 on a second tab. Should reuse instance1.
-  auto* tab2 = CreateAndActivateTab(GURL("about:blank"));
-  coordinator().Toggle(tab2->GetBrowserWindowInterface(),
-                       /*prevent_close=*/false,
-                       mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt, cid1);
-
-  ASSERT_OK(WaitForActiveEmbedderToMatchTab(instance1, tab2));
-  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
-
-  // Toggle with DIFFERENT cid2 on a third tab. Should create a new instance.
-  auto* tab3 = CreateAndActivateTab(GURL("about:blank"));
-  coordinator().Toggle(tab3->GetBrowserWindowInterface(),
-                       /*prevent_close=*/false,
-                       mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt, cid2);
-
-  ASSERT_OK_AND_ASSIGN(auto instance2, WaitForGlicInstanceBoundToTab(tab3));
-  EXPECT_EQ(instance2->conversation_id(), cid2);
-  EXPECT_EQ(coordinator().GetInstances().size(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,

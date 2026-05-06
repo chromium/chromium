@@ -79,8 +79,7 @@ class GlicInstanceCoordinator {
       BrowserWindowInterface* bwi,
       bool prevent_close,
       mojom::InvocationSource source,
-      std::optional<std::string> deprecated_prompt_suggestion,
-      std::optional<std::string> deprecated_conversation_id) = 0;
+      std::optional<std::string> deprecated_prompt_suggestion) = 0;
 
   // Readies glic to show.
   virtual void EnsurePreload() = 0;

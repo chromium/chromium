@@ -303,8 +303,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
       mojom::InvocationSource::kOsHotkey,
-      /*deprecated_prompt_suggestion=*/std::nullopt,
-      /*deprecated_conversation_id=*/std::nullopt);
+      /*deprecated_prompt_suggestion=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
                                       mojom::InvocationSource::kOsHotkey, 1);
@@ -315,8 +314,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   glic_service->instance_coordinator().Toggle(
       /*browser=*/nullptr, /*prevent_close=*/false,
       mojom::InvocationSource::kOsHotkey,
-      /*deprecated_prompt_suggestion=*/std::nullopt,
-      /*deprecated_conversation_id=*/std::nullopt);
+      /*deprecated_prompt_suggestion=*/std::nullopt);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
                                       mojom::InvocationSource::kOsHotkey, 2);

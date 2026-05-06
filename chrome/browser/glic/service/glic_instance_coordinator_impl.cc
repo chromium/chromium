@@ -251,8 +251,7 @@ void GlicInstanceCoordinatorImpl::Toggle(
     BrowserWindowInterface* browser,
     bool prevent_close,
     mojom::InvocationSource source,
-    std::optional<std::string> deprecated_prompt_suggestion,
-    std::optional<std::string> deprecated_conversation_id) {
+    std::optional<std::string> deprecated_prompt_suggestion) {
   if (!browser) {
     if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -264,14 +263,12 @@ void GlicInstanceCoordinatorImpl::Toggle(
         return;
       }
     } else {
-      CHECK(!deprecated_conversation_id || deprecated_conversation_id->empty());
       ToggleFloaty(prevent_close, source, deprecated_prompt_suggestion);
       return;
     }
   }
 
-  ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion,
-                  deprecated_conversation_id);
+  ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion);
 }
 
 void GlicInstanceCoordinatorImpl::EnsurePreload() {
@@ -659,8 +656,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     BrowserWindowInterface* browser,
     bool prevent_close,
     mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion,
-    std::optional<std::string> conversation_id) {
+    std::optional<std::string> prompt_suggestion) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     LOG(ERROR) << "Active tab is null";
@@ -673,16 +669,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 
   GlicInstanceImpl* instance = nullptr;
 
-  if (base::FeatureList::IsEnabled(features::kGlicWebContinuity) &&
-      conversation_id && !conversation_id->empty()) {
-    instance = GetInstanceImplForConversationId(*conversation_id);
-    if (!instance) {
-      instance = CreateGlicInstance();
-      auto info = mojom::ConversationInfo::New();
-      info->conversation_id = *conversation_id;
-      instance->RegisterConversation(std::move(info), base::DoNothing());
-    }
-  } else if (source == glic::mojom::InvocationSource::kSharedImage) {
+  if (source == glic::mojom::InvocationSource::kSharedImage) {
     // kSharedImage currently requires a new instance.
     instance = CreateGlicInstance();
   } else {
