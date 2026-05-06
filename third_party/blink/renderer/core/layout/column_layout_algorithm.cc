@@ -385,8 +385,6 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
-  container_builder_.SetBlockOffsetForAdditionalColumns(
-      CurrentContentBlockOffset(intrinsic_block_size_));
 
   PositionAnyUnclaimedListMarker();
 

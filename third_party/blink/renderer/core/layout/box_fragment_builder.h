@@ -441,16 +441,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     monolithic_overflow_ = std::max(monolithic_overflow_, monolithic_overflow);
   }
 
-  // Set how much of the column block-size we've used so far. This will be used
-  // to determine the block-size of any new columns added by descendant
-  // out-of-flow positioned elements.
-  void SetBlockOffsetForAdditionalColumns(LayoutUnit size) {
-    block_offset_for_additional_columns_ = size;
-  }
-  LayoutUnit BlockOffsetForAdditionalColumns() const {
-    return block_offset_for_additional_columns_;
-  }
-
   void SetSequenceNumber(unsigned sequence_number) {
     sequence_number_ = sequence_number;
   }
@@ -823,8 +813,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // fragmentainer.
   bool should_text_box_trim_fragmentainer_start_ = false;
   bool should_text_box_trim_fragmentainer_end_ = false;
-
-  LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit block_size_for_fragmentation_;
   LayoutUnit consumed_block_size_;
