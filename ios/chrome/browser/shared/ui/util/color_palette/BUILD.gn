@@ -25,6 +25,7 @@ source_set("group_color") {
     ":color_palette",
     "//base",
     "//components/tab_groups",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//skia",
