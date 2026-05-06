@@ -494,7 +494,8 @@ std::string HashesToBase64String(
   std::vector<std::string> strings;
   strings.reserve(hashes.size());
   for (const auto& hash : hashes) {
-    strings.push_back(net::HashValue(hash).ToString());
+    strings.push_back(
+        net::HashValue(net::HashValueTag::HASH_VALUE_SHA256, hash).ToString());
   }
   return base::JoinString(strings, ",");
 }

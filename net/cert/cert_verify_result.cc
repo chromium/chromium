@@ -55,7 +55,9 @@ base::DictValue CertVerifyResult::NetLogParams(int net_error) const {
 
   base::ListValue hashes;
   for (const auto& public_key_hash : public_key_hashes)
-    hashes.Append(HashValue(public_key_hash).ToString());
+    hashes.Append(
+        HashValue(net::HashValueTag::HASH_VALUE_SHA256, public_key_hash)
+            .ToString());
   dict.Set("public_key_hashes", std::move(hashes));
 
   dict.Set("scts", net::NetLogSignedCertificateTimestampParams(&scts));

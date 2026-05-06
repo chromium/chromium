@@ -164,8 +164,8 @@ class TransportSecurityStateTest : public ::testing::Test,
 
   static HashValueVector GetSampleSPKIHashes() {
     HashValueVector spki_hashes;
-    HashValue hash(GetSampleSPKIHash(1));
-    spki_hashes.push_back(hash);
+    spki_hashes.push_back(net::HashValue(net::HashValueTag::HASH_VALUE_SHA256,
+                                         GetSampleSPKIHash(1)));
     return spki_hashes;
   }
 

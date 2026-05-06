@@ -1445,7 +1445,9 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
   // Convert |public_key_hashes| to strings for ease of comparison.
   std::vector<std::string> public_key_hash_strings;
   for (const auto& public_key_hash : verify_result.public_key_hashes) {
-    public_key_hash_strings.push_back(HashValue(public_key_hash).ToString());
+    public_key_hash_strings.push_back(
+        HashValue(net::HashValueTag::HASH_VALUE_SHA256, public_key_hash)
+            .ToString());
   }
 
   std::vector<std::string> expected_public_key_hashes = {
