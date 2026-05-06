@@ -96,6 +96,10 @@ enum WebTextInputFlags {
   // type we don't want autocomplete or a keyboard to memorize the content.
   kWebTextInputFlagHasBeenPasswordField = 1 << 12,
   kWebTextInputFlagVertical = 1 << 13,
+  // Whether an input field is or has been a custom password field. This is a
+  // best effort heuristic to determine what a "password" is based on the
+  // field's behavior.
+  kWebTextInputFlagHasBeenCustomPassword = 1 << 14,
 };
 // LINT.ThenChange(//ui/base/ime/text_input_flags.h:TextInputFlags)
 

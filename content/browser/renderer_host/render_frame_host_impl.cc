@@ -159,6 +159,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/sandboxed_opaque_origin_creator.h"
 #include "content/browser/scoped_active_url.h"
@@ -323,7 +324,10 @@
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
+#include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -9447,6 +9451,24 @@ void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
         selected_text = text_view.substr(relative_start, length);
       }
     }
+  }
+
+  // Don't broadcast password selections.
+  bool is_password = false;
+  if (auto* view = GetView()) {
+    if (auto* text_input_manager = view->GetTextInputManager()) {
+      if (const ui::mojom::TextInputState* state =
+              text_input_manager->GetTextInputState()) {
+        is_password =
+            state->type == ui::TEXT_INPUT_TYPE_PASSWORD ||
+            (state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) ||
+            (state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
+      }
+    }
+  }
+
+  if (is_password) {
+    selected_text = std::u16string_view();
   }
 
   delegate_->TextSelectionChanged(this, selected_text);

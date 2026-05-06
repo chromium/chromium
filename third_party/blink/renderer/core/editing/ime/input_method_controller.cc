@@ -1848,6 +1848,16 @@ int InputMethodController::TextInputFlags() const {
       flags |= kWebTextInputFlagHasBeenPasswordField;
   }
 
+  if (element->HasBeenHeuristicCustomPasswordCSS()) {
+    flags |= kWebTextInputFlagHasBeenCustomPassword;
+  }
+
+  if (auto* text_control = DynamicTo<TextControlElement>(element)) {
+    if (text_control->HasBeenHeuristicCustomPasswordJS()) {
+      flags |= kWebTextInputFlagHasBeenCustomPassword;
+    }
+  }
+
   return flags;
 }
 
