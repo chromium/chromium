@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -178,6 +179,62 @@ TEST_F(ImeServiceConnectorTest, SimultaneousRequestsDifferentURL) {
 
   // The first request should still be pending
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadBlocksMaliciousRedirect) {
+  base::test::TestFuture<base::FilePath> future;
+  GURL valid_url("https://dl.google.com/test.dict");
+  GURL malicious_url("https://malicious.com/redirect");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = malicious_url;
+
+  network::TestURLLoaderFactory::Redirects redirects;
+  redirects.push_back({redirect_info, network::mojom::URLResponseHead::New()});
+
+  test_url_loader_factory_.AddResponse(
+      valid_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::OK), std::move(redirects));
+
+  connector_->DownloadImeFileTo(valid_url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+
+  // Because the redirect is malicious, it should immediately abort and return
+  // an empty path.
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadAllowsAllowlistedRedirect) {
+  base::test::TestFuture<base::FilePath> future;
+  GURL valid_url("https://dl.google.com/test.dict");
+  GURL redirected_valid_url("https://edgedl.me.gvt1.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = redirected_valid_url;
+
+  network::TestURLLoaderFactory::Redirects redirects;
+  redirects.push_back({redirect_info, network::mojom::URLResponseHead::New()});
+
+  // Prime the factory for the redirected URL as well.
+  test_url_loader_factory_.AddResponse(
+      valid_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::OK), std::move(redirects));
+  test_url_loader_factory_.AddResponse(redirected_valid_url.spec(),
+                                       "test contents");
+
+  connector_->DownloadImeFileTo(valid_url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+
+  // Should succeed because redirected_valid_url is allowlisted.
+  EXPECT_EQ(future.Get(), expected_full_path);
 }
 
 }  // namespace

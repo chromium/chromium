@@ -17,6 +17,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -171,6 +172,8 @@ void ImeServiceConnector::MaybeTriggerDownload(
   download_callbacks_.clear();
   download_callbacks_.emplace_back(std::move(callback));
   url_loader_ = CreateUrlLoader(url);
+  url_loader_->SetOnRedirectCallback(base::BindRepeating(
+      &ImeServiceConnector::OnRedirect, weak_ptr_factory_.GetWeakPtr()));
   url_loader_->DownloadToFile(
       url_loader_factory_.get(),
       base::BindOnce(&ImeServiceConnector::HandleDownloadResponse,
@@ -195,6 +198,16 @@ void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
   // Clear the currently active request info.
   url_loader_.reset();
   active_request_url_ = std::nullopt;
+}
+
+void ImeServiceConnector::OnRedirect(
+    const GURL& url_before_redirect,
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    std::vector<std::string>* removed_headers) {
+  if (!IsDownloadURLValid(redirect_info.new_url)) {
+    NotifyAllDownloadListeners(base::FilePath());
+  }
 }
 
 }  // namespace input_method
