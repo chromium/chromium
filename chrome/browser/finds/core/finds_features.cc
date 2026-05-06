@@ -50,4 +50,7 @@ constexpr base::FeatureParam<bool> kEnableThemeUrlVisitCountOptIn{
     &kChromeFinds, "enable_theme_url_visit_count_opt_in",
     /*default_value=*/true};
 
+constexpr base::FeatureParam<bool> kBlockModelExecution{
+    &kChromeFinds, "block_model_execution", /*default_value=*/false};
+
 }  // namespace finds::features

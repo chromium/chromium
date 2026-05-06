@@ -1035,4 +1035,28 @@ TEST_F(FindsServiceTest, TestSRPBackNavigationEnterprisePolicyDisabled) {
   service_->RemoveObserver(&observer);
 }
 
+TEST_F(FindsServiceTest, TestModelExecutionDisabledByParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds, {{"block_model_execution", "true"}});
+
+  EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _)).Times(0);
+  EXPECT_CALL(*opt_guide_service_, ExecuteModel(_, _, _, _)).Times(0);
+
+  bool callback_called = false;
+  service_->ExecuteModelAndScheduleNotification(
+      base::BindLambdaForTesting([&](FindsService::Result result) {
+        EXPECT_EQ(FindsService::Result::Status::kModelExecutionDisabledByParam,
+                  result.status);
+        EXPECT_EQ("Error: Model execution disabled by feature parameter.",
+                  result.message);
+        callback_called = true;
+      }));
+  EXPECT_TRUE(callback_called);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Finds.Result",
+      FindsService::Result::Status::kModelExecutionDisabledByParam, 1);
+}
+
 }  // namespace finds

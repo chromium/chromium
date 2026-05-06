@@ -65,6 +65,9 @@ extern const base::FeatureParam<bool> kEnableSrpReturnCountOptIn;
 // The feature flag param to enable the theme URL visit count opt-in flow.
 extern const base::FeatureParam<bool> kEnableThemeUrlVisitCountOptIn;
 
+// The feature flag param to block model execution.
+extern const base::FeatureParam<bool> kBlockModelExecution;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_

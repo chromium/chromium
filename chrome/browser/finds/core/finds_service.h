@@ -78,8 +78,9 @@ class FindsService : public KeyedService, public base::SupportsUserData {
       kNoSuggestionsForTheme = 10,
       kFailedToScheduleNotification = 11,
       kDisabledByEnterprisePolicy = 12,
+      kModelExecutionDisabledByParam = 13,
 
-      kMaxValue = kDisabledByEnterprisePolicy,
+      kMaxValue = kModelExecutionDisabledByParam,
     };
     // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:FindsResult)
     Status status;

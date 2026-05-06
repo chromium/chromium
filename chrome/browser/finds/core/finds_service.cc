@@ -242,6 +242,14 @@ void FindsService::ExecuteModelAndScheduleNotification(
     return;
   }
 
+  if (finds::features::kBlockModelExecution.Get()) {
+    RecordFindsResultAndRunCallback(
+        std::move(callback),
+        {Result::Status::kModelExecutionDisabledByParam,
+         "Error: Model execution disabled by feature parameter."});
+    return;
+  }
+
   if (!IsModelExecutionCooldownPassed(pref_service_)) {
     RecordFindsResultAndRunCallback(std::move(callback),
                                     {Result::Status::kModelExecutionOnCooldown,

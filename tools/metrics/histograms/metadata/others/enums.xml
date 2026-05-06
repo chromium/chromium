@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="NoSuggestionsForTheme"/>
   <int value="11" label="FailedToScheduleNotification"/>
   <int value="12" label="DisabledByEnterprisePolicy"/>
+  <int value="13" label="ModelExecutionDisabledByParam"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_service.h:Status) -->
