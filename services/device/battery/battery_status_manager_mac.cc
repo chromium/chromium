@@ -9,13 +9,10 @@
 #include <IOKit/ps/IOPowerSources.h>
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/feature_list.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -113,16 +110,12 @@ void FetchBatteryStatus(CFDictionaryRef description,
   }
 }
 
-std::vector<mojom::BatteryStatus> GetInternalBatteriesStates(bool may_block) {
+std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
   std::vector<mojom::BatteryStatus> internal_sources;
 
-  // This function is known to block but cannot always be tagged as such right
-  // now because it might run on the UI thread. When running on the ThreadPool
-  // though it should be appropriately tagged.
-  std::optional<base::ScopedBlockingCall> scoped_blocking_call;
-  if (may_block) {
-    scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
-  }
+  // IOPSCopyPowerSourcesInfo is known to block.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
 
   base::apple::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
   base::apple::ScopedCFTypeRef<CFArrayRef> power_sources_list(
@@ -172,12 +165,8 @@ void HandleNewBatteryStatus(const BatteryCallback& callback,
 void OnBatteryStatusChangedAsync(const BatteryCallback& callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&GetInternalBatteriesStates, true),
+      base::BindOnce(&GetInternalBatteriesStates),
       base::BindOnce(&HandleNewBatteryStatus, callback));
-}
-
-void OnBatteryStatusChanged(const BatteryCallback& callback) {
-  HandleNewBatteryStatus(callback, GetInternalBatteriesStates(false));
 }
 
 class BatteryStatusObserver {
@@ -220,11 +209,7 @@ class BatteryStatusObserver {
 
  private:
   static void CallOnBatteryStatusChanged(void* callback) {
-    if (base::FeatureList::IsEnabled(base::features::kReducePPMs)) {
-      OnBatteryStatusChangedAsync(*static_cast<BatteryCallback*>(callback));
-    } else {
-      OnBatteryStatusChanged(*static_cast<BatteryCallback*>(callback));
-    }
+    OnBatteryStatusChangedAsync(*static_cast<BatteryCallback*>(callback));
   }
 
   BatteryCallback callback_;
