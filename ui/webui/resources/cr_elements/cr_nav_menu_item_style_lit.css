@@ -12,8 +12,8 @@
   /* cr-nav-menu-item CSS inputs */
   --cr-nav-menu-item-color: var(--google-grey-900);
   --cr-nav-menu-item-color-selected: var(--google-blue-700);
-  --cr-nav-menu-item-bg-color-hover: var(--google-grey-200);
-  --cr-nav-menu-item-bg-color-selected: var(--google-blue-50);
+  --cr-nav-menu-item-background-color-hover: var(--google-grey-200);
+  --cr-nav-menu-item-background-color-selected: var(--google-blue-50);
   --cr-nav-menu-item-icon-color: var(--google-grey-700);
   --cr-nav-menu-item-icon-color-hover: var(--google-grey-700);
   --cr-nav-menu-item-icon-color-selected: var(--google-blue-600);
@@ -45,18 +45,32 @@
   text-decoration: none;
 }
 
+:host-context([webui-refresh-2026]) {
+  .cr-nav-menu-item {
+    /* TODO(crbug.com/509908129): Remove redundant CSS variables. */
+    --cr-nav-menu-item-color: var(--color-nav-menu-item);
+    --cr-nav-menu-item-color-selected: var(--color-nav-menu-item-selected);
+    --cr-nav-menu-item-background-color-hover: var(
+        --color-nav-menu-item-background-hover);
+    --cr-nav-menu-item-background-color-selected: var(
+        --color-nav-menu-item-background-selected);
+    --cr-nav-menu-item-icon-color: var(--color-nav-menu-item);
+    --cr-nav-menu-item-icon-color-selected: var(--color-nav-menu-item-selected);
+  }
+}
+
 :host-context(cr-drawer) .cr-nav-menu-item {
   margin-inline-end: 8px;
 }
 
 .cr-nav-menu-item:hover {
   --iron-icon-fill-color: var(--cr-nav-menu-item-icon-color-hover);
-  background: var(--cr-nav-menu-item-bg-color-hover);
+  background: var(--cr-nav-menu-item-background-color-hover);
 }
 
 .cr-nav-menu-item[selected] {
   --iron-icon-fill-color: var(--cr-nav-menu-item-icon-color-selected);
-  background: var(--cr-nav-menu-item-bg-color-selected);
+  background: var(--cr-nav-menu-item-background-color-selected);
   color: var(--cr-nav-menu-item-color-selected);
 }
 
@@ -65,8 +79,8 @@
     --cr-nav-menu-item-color: white;
     --cr-nav-menu-item-color-selected: var(--google-grey-900);
 
-    --cr-nav-menu-item-bg-color-hover: var(--google-grey-800);
-    --cr-nav-menu-item-bg-color-selected: var(--google-blue-300);
+    --cr-nav-menu-item-background-color-hover: var(--google-grey-800);
+    --cr-nav-menu-item-background-color-selected: var(--google-blue-300);
 
     --cr-nav-menu-item-icon-color: var(--google-grey-500);
     --cr-nav-menu-item-icon-color-hover: white;

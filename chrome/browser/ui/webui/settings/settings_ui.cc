@@ -693,6 +693,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                 accessibility_annotator::
                                     RemoteAnnotatorEnablementState::kEnabled);
 
+  html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(
+                                                 features::kWebuiRefresh2026)
+                                                 ? "webui-refresh-2026"
+                                                 : "");
+
   TryShowHatsSurveyWithTimeout();
 }
 

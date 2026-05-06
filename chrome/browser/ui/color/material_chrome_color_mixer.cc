@@ -340,6 +340,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorMultiContentsViewInactiveContentOutline] = {
       ui::kColorSysNeutralOutline};
 
+  // Nav menu item colors.
+  mixer[kColorNavMenuItem] = {ui::kColorSysOnSurface};
+  mixer[kColorNavMenuItemSelected] = {ui::kColorSysPrimary};
+  mixer[kColorNavMenuItemBackgroundHover] = {ui::kColorSysStateHover};
+  mixer[kColorNavMenuItemBackgroundSelected] = {ui::kColorSysBaseContainer};
+
   mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
       ui::kColorSysStateFocusRing,
       ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,

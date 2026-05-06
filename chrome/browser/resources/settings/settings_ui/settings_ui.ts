@@ -25,9 +25,11 @@ import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -154,6 +156,12 @@ export class SettingsUiElement extends SettingsUiElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
     document.documentElement.classList.remove('loading');
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
@@ -295,6 +303,14 @@ export class SettingsUiElement extends SettingsUiElementBase {
       };
       this.$.drawer.addEventListener('close', boundCloseListener);
     }
+  }
+
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
   }
 }
 

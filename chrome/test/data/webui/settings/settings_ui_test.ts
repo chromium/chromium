@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrSettingsPrefs, loadTimeData, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -157,5 +159,33 @@ suite('SettingsUISearch', function() {
     toolbar.narrow = false;
     await toolbar.updateComplete;
     assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
+  });
+});
+
+suite('WebuiRefresh2026', () => {
+  const WEBUI_REFRESH_ATTR = 'webui-refresh-2026';
+  let ui: SettingsUiElement;
+
+  function createSettingsUI() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    ui = document.createElement('settings-ui');
+    document.body.appendChild(ui);
+    flush();
+  }
+
+  test('Enabled', async () => {
+    loadTimeData.overrideValues({webuiRefresh2026: WEBUI_REFRESH_ATTR});
+    createSettingsUI();
+    await flushTasks();
+
+    assertNotEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
+  });
+
+  test('Disabled', async () => {
+    loadTimeData.overrideValues({webuiRefresh2026: ''});
+    createSettingsUI();
+    await flushTasks();
+
+    assertEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
   });
 });

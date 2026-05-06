@@ -229,6 +229,11 @@
   E_CPONLY(kColorMultiContentsViewInactiveContentOutline) \
   E_CPONLY(kColorMultiContentsViewHighlightContentOutline) \
   E_CPONLY(kColorMultiContentsViewMiniToolbarForeground) \
+  /* Nav Menu Item colors. */ \
+  E_CPONLY(kColorNavMenuItem) \
+  E_CPONLY(kColorNavMenuItemSelected) \
+  E_CPONLY(kColorNavMenuItemBackgroundHover) \
+  E_CPONLY(kColorNavMenuItemBackgroundSelected) \
   /* New tab button colors. */ \
   E_CPONLY(kColorNewTabButtonForegroundFrameActive) \
   E_CPONLY(kColorNewTabButtonForegroundFrameInactive) \
