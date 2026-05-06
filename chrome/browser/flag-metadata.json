@@ -385,15 +385,7 @@
     "owners": [ "mattreynolds@google.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 160
   },
-  {
-    "name": "android-tab-group-colors",
-    "owners": [
-      "hitarthkothari@google.com",
-      "ckitagawa@google.com",
-      "clank-tab-dev@google.com"
-    ],
-    "expiry_milestone": 155
-  },
+
   {
     "name": "android-theme-module",
     "owners": [
@@ -9296,6 +9288,17 @@
     // This is required by test teams to verify functionality on devices which
     // have no access to commandline flags.
     "expiry_milestone": -1
+  },
+  {
+    "name": "update-tab-group-colors",
+    "owners": [
+      "hitarthkothari@google.com",
+      "ckitagawa@google.com",
+      "clank-tab-dev@google.com",
+      "ewannpv@chromium.org",
+      "bling-meridian@google.com"
+    ],
+    "expiry_milestone": 155
   },
   {
     "name": "updated-fre-screens-sequence",

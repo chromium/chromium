@@ -8958,6 +8958,7 @@ from previous Chrome versions.
   <int value="-1686782572" label="ChromeHomeInactivitySheetExpansion:disabled"/>
   <int value="-1686658737"
       label="AutofillEnableFlatRateCardBenefitsFromCurinos:enabled"/>
+  <int value="-1685717619" label="UpdateTabGroupColors:disabled"/>
   <int value="-1685173786" label="HandwritingLegacyRecognition:enabled"/>
   <int value="-1684815580" label="GlicMITabContextMenu:enabled"/>
   <int value="-1684773837" label="TabEngagementReportingAndroid:disabled"/>
@@ -17880,6 +17881,7 @@ from previous Chrome versions.
   <int value="1273447411" label="TranslationAPI:enabled"/>
   <int value="1273509994"
       label="ClientSideDetectionBrandAndIntentForScamDetection:enabled"/>
+  <int value="1273643713" label="UpdateTabGroupColors:enabled"/>
   <int value="1273930925" label="RobustWindowManagement:enabled"/>
   <int value="1274277775" label="SimLockPolicy:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>

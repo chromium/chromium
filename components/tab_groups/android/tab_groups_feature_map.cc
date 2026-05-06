@@ -4,7 +4,7 @@
 
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
-#include "components/tab_groups/android/features.h"
+#include "components/tab_groups/features.h"
 #include "components/tab_groups/tab_groups_jni_headers/TabGroupsFeatureMap_jni.h"
 
 namespace tab_groups_android {
@@ -13,10 +13,10 @@ namespace {
 
 // Array of features exposed through the Java TabGroupsFeatureMap API.
 // Entries in this array may either refer to features defined in
-// components/tab_groups/android/features.h or in other locations in the code
+// components/tab_groups/features.h or in other locations in the code
 // base.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kAndroidTabGroupColors,
+    &tab_groups::kUpdateTabGroupColors,
 };
 
 // static

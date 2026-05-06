@@ -15,12 +15,12 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("tab_groups_android")
 @NullMarked
 public class TabGroupsFeatureMap extends FeatureMap {
-    public static final String ANDROID_TAB_GROUP_COLORS = "AndroidTabGroupColors";
+    public static final String UPDATE_TAB_GROUP_COLORS = "UpdateTabGroupColors";
 
     private static final TabGroupsFeatureMap sInstance = new TabGroupsFeatureMap();
 
-    public static final MutableFlagWithSafeDefault sAndroidTabGroupColors =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_GROUP_COLORS, false);
+    public static final MutableFlagWithSafeDefault sUpdateTabGroupColors =
+            newMutableFlagWithSafeDefault(UPDATE_TAB_GROUP_COLORS, false);
 
     // Do not instantiate this class.
     private TabGroupsFeatureMap() {}

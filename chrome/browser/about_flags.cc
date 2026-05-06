@@ -188,7 +188,7 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/features.h"
-#include "components/tab_groups/android/features.h"
+#include "components/tab_groups/features.h"
 #include "components/thin_webview/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 #include "components/touch_to_search/core/browser/public.h"
@@ -9882,9 +9882,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-tab-group-colors", flag_descriptions::kAndroidTabGroupColorsName,
-     flag_descriptions::kAndroidTabGroupColorsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(tab_groups_android::kAndroidTabGroupColors)},
+    {"update-tab-group-colors", flag_descriptions::kUpdateTabGroupColorsName,
+     flag_descriptions::kUpdateTabGroupColorsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(tab_groups::kUpdateTabGroupColors)},
 
     {"android-zoom-immersive", flag_descriptions::kAndroidZoomImmersiveName,
      flag_descriptions::kAndroidZoomImmersiveDescription, kOsAndroid,

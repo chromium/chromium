@@ -9,6 +9,8 @@ if (is_android) {
 
 component("tab_groups") {
   sources = [
+    "features.cc",
+    "features.h",
     "tab_group_color.cc",
     "tab_group_color.h",
     "tab_group_id.h",
@@ -31,11 +33,7 @@ component("tab_groups") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/features.cc",
-      "android/features.h",
-      "android/tab_groups_feature_map.cc",
-    ]
+    sources += [ "android/tab_groups_feature_map.cc" ]
     deps += [ ":tab_groups_jni_headers" ]
   }
 }

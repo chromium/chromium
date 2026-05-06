@@ -76,7 +76,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/features.h"
 #include "components/sync_sessions/features.h"
-#include "components/tab_groups/android/features.h"
+#include "components/tab_groups/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/visited_url_ranking/public/features.h"
@@ -531,8 +531,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
     &syncer::kSyncTrustedVaultErrorMessageDuration,
     &syncer::kWebApkBackupAndRestoreBackend,
+    &tab_groups::kUpdateTabGroupColors,
     &tab_groups::kUseAlternateHistorySyncIllustration,
-    &tab_groups_android::kAndroidTabGroupColors,
     &variations::kOmniboxAutofocusOnIncognitoNtp,
     &visited_url_ranking::features::kGroupSuggestionService,
     &visited_url_ranking::features::kVisitedURLRankingService,

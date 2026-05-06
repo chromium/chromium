@@ -5336,9 +5336,9 @@ inline constexpr char kAndroidWindowPopupResizeAfterSpawnDescription[] =
     "enable-android-window-popup-predict-final-bounds flag that regulates "
     "pre-creation bounds adjustments.";
 
-inline constexpr char kAndroidTabGroupColorsName[] = "Android Tab Group Colors";
-inline constexpr char kAndroidTabGroupColorsDescription[] =
-    "Enable new tab group colors on Android.";
+inline constexpr char kUpdateTabGroupColorsName[] = "Update Tab Group Colors";
+inline constexpr char kUpdateTabGroupColorsDescription[] =
+    "Enable updating tab group colors.";
 
 inline constexpr char kAndroidZoomImmersiveName[] = "Android Zoom Immersive";
 inline constexpr char kAndroidZoomImmersiveDescription[] =
