@@ -211,7 +211,7 @@
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       anchorView:self.baseViewController.view
-                     accessPoint:AccountMenuAccessPoint::kPageActionMenu
+                     accessPoint:AccountMenuAccessPoint::kGeminiEntryFlow
                              URL:GURL()];
   _accountMenuCoordinator.delegate = self;
   [_accountMenuCoordinator start];
