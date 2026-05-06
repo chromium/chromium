@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ContextualTasksBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ContextualTasksBridgeTest {
+public class ContextualTasksBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;

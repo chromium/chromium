@@ -48,7 +48,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ContextualTasksFuseboxManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ContextualTasksFuseboxManagerImplTest {
+public class ContextualTasksFuseboxManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;

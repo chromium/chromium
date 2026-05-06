@@ -616,8 +616,9 @@ if (is_android) {
 
   robolectric_library("junit") {
     sources = [
-      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridgeTest.java",
-      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImplTest.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridgeUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImplUnitTest.java",
+      "fusebox/android/java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksSessionStateUnitTest.java",
     ]
     deps = [
       ":java",
