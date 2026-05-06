@@ -38,6 +38,9 @@ class LayerTreeFrameSink::ContextLostForwarder
   ContextLostForwarder& operator=(const ContextLostForwarder&) = delete;
 
   void OnContextLost() override {
+    if (!task_runner_) {
+      return;
+    }
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&LayerTreeFrameSink::OnContextLost, frame_sink_));
