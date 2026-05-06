@@ -29,13 +29,21 @@ struct CompareData {
 
 // Raw collection of some PE header data, without using pe_image_safe.
 // This function assumes full headers from a legitimate PE image.
-bool GetComparisonData(char* buffer, CompareData* data) {
-  data->dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(buffer);
+bool GetComparisonData(base::span<char> buffer, CompareData* data) {
+  if (buffer.size() < sizeof(IMAGE_DOS_HEADER)) {
+    return false;
+  }
+
+  data->dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(buffer.data());
   if (data->dos_header->e_magic != IMAGE_DOS_SIGNATURE)
     return false;
 
-  data->nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(UNSAFE_TODO(
-      reinterpret_cast<char*>(data->dos_header) + data->dos_header->e_lfanew));
+  if (buffer.size() < data->dos_header->e_lfanew + sizeof(IMAGE_NT_HEADERS)) {
+    return false;
+  }
+
+  data->nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(
+      buffer.subspan(static_cast<size_t>(data->dos_header->e_lfanew)).data());
   if (data->nt_headers->Signature != IMAGE_NT_SIGNATURE)
     return false;
 
@@ -77,7 +85,7 @@ TEST(PEImageSafe, SanityTest) {
 
   // Grab some key data out of the pe headers first, NOT using pe_image_safe.
   CompareData data_for_comparison = {};
-  ASSERT_TRUE(GetComparisonData(buffer.data(), &data_for_comparison));
+  ASSERT_TRUE(GetComparisonData(buffer, &data_for_comparison));
 
   // Apply scaffolding.
   PEImageSafe pe_image(buffer.data(), static_cast<DWORD>(buffer.size()));
