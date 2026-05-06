@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -32,7 +33,9 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -71,6 +74,7 @@ public class GestureUserEducationIphController {
     private @Nullable Profile mProfile;
     private boolean mIsIphShowing;
     private boolean mIsGestureNavModeForTesting;
+    private @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     /**
      * Constructor for the controller
@@ -153,6 +157,21 @@ public class GestureUserEducationIphController {
                                     R.layout.gesture_user_education_iph_layout, mAnchorView, false);
             mAnchorView.addView(mGestureUserEducationIphLayout);
 
+            // Handle accessibility
+            AccessibilityEvent accessibilityEvent =
+                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+            accessibilityEvent.setContentChangeTypes(
+                    AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
+            AccessibilityState.sendAccessibilityEvent(accessibilityEvent);
+
+            if (mWebContentsAccessibility == null && tab.getWebContents() != null) {
+                mWebContentsAccessibility =
+                        WebContentsAccessibility.fromWebContents(tab.getWebContents());
+            }
+            if (mWebContentsAccessibility != null) {
+                mWebContentsAccessibility.setObscuredByAnotherView(true);
+            }
+
             // Create Gesture Detector for touch events on the scrim
             mDetector = new GestureDetector(tab.getContext(), mGestureDetectorListener);
 
@@ -210,6 +229,17 @@ public class GestureUserEducationIphController {
 
     private void hideIph() {
         assert mIsIphShowing;
+
+        AccessibilityEvent accessibilityEvent =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+        accessibilityEvent.setContentChangeTypes(
+                AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
+        AccessibilityState.sendAccessibilityEvent(accessibilityEvent);
+
+        if (mWebContentsAccessibility != null) {
+            mWebContentsAccessibility.setObscuredByAnotherView(false);
+        }
+
         if (mScrimPropertyModel != null) {
             mScrimManager.hideScrim(mScrimPropertyModel, false);
         }
@@ -268,5 +298,9 @@ public class GestureUserEducationIphController {
 
     void setIsGestureNavModeForTesting(boolean isGestureNavModeForTesting) {
         mIsGestureNavModeForTesting = isGestureNavModeForTesting;
+    }
+
+    void setWebContentsAccessibilityForTesting(WebContentsAccessibility webContentsAccessibility) {
+        mWebContentsAccessibility = webContentsAccessibility;
     }
 }

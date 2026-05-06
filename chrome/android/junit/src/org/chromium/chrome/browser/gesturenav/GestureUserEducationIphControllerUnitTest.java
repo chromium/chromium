@@ -41,6 +41,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.MotionEventTestUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -66,6 +67,7 @@ public class GestureUserEducationIphControllerUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
+    @Mock private WebContentsAccessibility mWebContentsAccessibility;
     @Mock private NavigationController mNavigationController;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Window mWindow;
@@ -87,6 +89,7 @@ public class GestureUserEducationIphControllerUnitTest {
         mController =
                 new GestureUserEducationIphController(
                         mAnchorView, mActivityTabProvider, mBackPressManager, mScrimManager);
+        mController.setWebContentsAccessibilityForTesting(mWebContentsAccessibility);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getContext()).thenReturn(mActivity);
@@ -114,6 +117,8 @@ public class GestureUserEducationIphControllerUnitTest {
         ShadowLooper.idleMainLooper(PAGE_LOAD_DELAY, TimeUnit.MILLISECONDS);
         verify(mScrimManager).showScrim(any());
         Assert.assertEquals(1, mAnchorView.getChildCount());
+
+        verify(mWebContentsAccessibility).setObscuredByAnotherView(true);
     }
 
     @Test
@@ -189,13 +194,19 @@ public class GestureUserEducationIphControllerUnitTest {
         ArgumentCaptor<PropertyModel> scrimPropertyModelCaptor =
                 ArgumentCaptor.forClass(PropertyModel.class);
         verify(mScrimManager).showScrim(scrimPropertyModelCaptor.capture());
+        Assert.assertEquals(
+                "Layout should be present before hiding", 1, mAnchorView.getChildCount());
 
         scrimPropertyModelCaptor
                 .getValue()
                 .get(ScrimProperties.GESTURE_DETECTOR)
                 .onTouchEvent(MotionEventTestUtils.getTrackpadTouchDownEventNoClick());
+        ShadowLooper.idleMainLooper();
+
         verify(mScrimManager).hideScrim(any(), anyBoolean());
         Assert.assertEquals(0, mAnchorView.getChildCount());
+
+        verify(mWebContentsAccessibility).setObscuredByAnotherView(false);
     }
 
     @Test
@@ -224,6 +235,7 @@ public class GestureUserEducationIphControllerUnitTest {
 
         verify(mScrimManager).hideScrim(any(), anyBoolean());
         Assert.assertEquals(0, mAnchorView.getChildCount());
+        verify(mWebContentsAccessibility).setObscuredByAnotherView(false);
     }
 
     @Test
@@ -248,6 +260,7 @@ public class GestureUserEducationIphControllerUnitTest {
 
         verify(mScrimManager).hideScrim(any(), anyBoolean());
         Assert.assertEquals(0, mAnchorView.getChildCount());
+        verify(mWebContentsAccessibility).setObscuredByAnotherView(false);
     }
 
     @Test
