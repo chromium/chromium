@@ -34,8 +34,7 @@ import org.chromium.ui.interpolators.Interpolators;
 /** Implementation of {@link SideUiCoordinator}. */
 @NullMarked
 final class SideUiCoordinatorImpl implements SideUiCoordinator {
-    // TODO(crbug.com/491606333): Update placeholder animation duration.
-    private static final long TRANSITION_DURATION_MS = 0L;
+    private static final long TRANSITION_DURATION_MS = 350L;
 
     private final ViewGroup mAnchorContainerParent;
     private final ViewGroup mStartAnchorContainer;
@@ -121,7 +120,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         // 3. If animating, notify observers of the upcoming SideUiSpecs from the previous step and
         // gather their Transitions into a TransitionSet.
         @Nullable TransitionSet transitionSet =
-                suppressAnimations ? null : collectTransitions(newSideUiSpecs);
+                suppressAnimations
+                        ? null
+                        : collectTransitions(newSideUiSpecs, properties.mAnchorSide);
 
         // 4. Commit the new SideUiSpecs.
         commitNewSideUiSpecs(newSideUiSpecs, transitionSet, properties.mAnchorSide);
@@ -182,21 +183,35 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      * returns a TransitionSet that plays all the Transitions together.
      *
      * @param sideUiSpecs The new SideUiSpecs representing the state for the end of the Transition.
+     * @param anchorSide The side to which the side container is anchored.
      */
-    private TransitionSet collectTransitions(SideUiSpecs sideUiSpecs) {
+    // TODO(crbug.com/510059861): Add tests for transition animations.
+    private TransitionSet collectTransitions(SideUiSpecs sideUiSpecs, @AnchorSide int anchorSide) {
         assert mSideUiContainer != null;
 
         TransitionSet transitionSet =
                 new TransitionSet()
                         .setDuration(TRANSITION_DURATION_MS)
                         .setOrdering(TransitionSet.ORDERING_TOGETHER)
-                        // TODO(crbug.com/491606333): Update placeholder interpolator.
-                        .setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+                        .setInterpolator(Interpolators.STANDARD_ACCELERATE);
 
         // Add transitions for the side UI container.
+        // TODO(crbug.com/478338737): Update to account for multiple side containers.
+        if (anchorSide == AnchorSide.START) {
+            transitionSet.addTransition(
+                    SideUiContainerTransition.createContainerTransition(
+                            mSideUiContainer, AnchorSide.START, sideUiSpecs.mStartContainerWidth));
+        } else {
+            transitionSet.addTransition(
+                    SideUiContainerTransition.createContainerTransition(
+                            mSideUiContainer, AnchorSide.END, sideUiSpecs.mEndContainerWidth));
+        }
 
         for (SideUiObserver observer : mSideUiObservers) {
-            transitionSet.addTransition(observer.onPreSideUiSpecsChange(sideUiSpecs));
+            @Nullable Transition observerTransition = observer.onPreSideUiSpecsChange(sideUiSpecs);
+            if (observerTransition != null) {
+                transitionSet.addTransition(observerTransition);
+            }
         }
 
         return transitionSet;
@@ -267,9 +282,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
             // like setting a View's translation, is not enough alone.
             ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
             TransitionManager.beginDelayedTransition(getRootView(), transitionSet);
-
-            // Trigger transitions for the side containers.
+            SideUiContainerTransition.triggerContainerTransition(
+                    mSideUiContainer, anchorSide, sideUiWidth);
         } else {
+            // Reset the side UI container to clear any leftover state from previous Transitions.
+            SideUiContainerTransition.resetContainer(mSideUiContainer);
+
             if (sideUiWidth != 0) {
                 attachSideUiContainerView(mSideUiContainer.getView(), anchorSide);
             } else {

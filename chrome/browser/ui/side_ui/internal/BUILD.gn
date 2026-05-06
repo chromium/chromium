@@ -11,6 +11,7 @@ android_library("java") {
   ]
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiContainerTransition.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImpl.java",
   ]
