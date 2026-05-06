@@ -2660,6 +2660,25 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
                          VaapiStatus::Codes::kFailedToExportSurface);
   }
 
+  gfx::NativePixmapHandle handle;
+  CHECK_GE(descriptor.num_objects, 1u);
+  handle.modifier = descriptor.objects[0].drm_format_modifier;
+  std::vector<base::ScopedFD> fds;
+  for (size_t index = 0; index < descriptor.num_objects; ++index) {
+    const auto& object = UNSAFE_TODO(descriptor.objects[index]);
+    // The modifier should not change for different planes.
+    CHECK_EQ(handle.modifier, object.drm_format_modifier);
+
+    // The file descriptor (FD) should be owned by us: per va/va.h, "the
+    // exported handles are owned by the caller." |fds| will own the file
+    // descriptors. Any FD's that are referenced by a plane will be moved into
+    // |handle.planes| for that plane. If an FD is referenced by two or more
+    // planes, it will be duplicated the minimal number of times to build
+    // |handle.planes|. If an FD is not referenced by any plane, it will be
+    // closed when |fds| goes out of scope, which is fine.
+    fds.emplace_back(object.fd);
+  }
+
   // Translate the pixel format to a viz::SharedImageFormat.
   viz::SharedImageFormat si_format;
   switch (descriptor.fourcc) {
@@ -2682,31 +2701,9 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
       si_format = viz::SinglePlaneFormat::kBGRA_8888;
       break;
     default:
-      // TODO(crbug.com/508312480): This might be leaking file descriptors
-      // allocated by vaExportSurfaceHandle. This should be investigated and
-      // fixed.
       return VaapiStatus{VaapiStatus::Codes::kFailedToExportSurface,
                          "Cannot export surface with unknown FOURCC", "fourcc",
                          FourccToString(descriptor.fourcc)};
-  }
-
-  gfx::NativePixmapHandle handle;
-  CHECK_GE(descriptor.num_objects, 1u);
-  handle.modifier = descriptor.objects[0].drm_format_modifier;
-  std::vector<base::ScopedFD> fds;
-  for (size_t index = 0; index < descriptor.num_objects; ++index) {
-    const auto& object = UNSAFE_TODO(descriptor.objects[index]);
-    // The modifier should not change for different planes.
-    CHECK_EQ(handle.modifier, object.drm_format_modifier);
-
-    // The file descriptor (FD) should be owned by us: per va/va.h, "the
-    // exported handles are owned by the caller." |fds| will own the file
-    // descriptors. Any FD's that are referenced by a plane will be moved into
-    // |handle.planes| for that plane. If an FD is referenced by two or more
-    // planes, it will be duplicated the minimal number of times to build
-    // |handle.planes|. If an FD is not referenced by any plane, it will be
-    // closed when |fds| goes out of scope, which is fine.
-    fds.emplace_back(object.fd);
   }
 
   for (uint32_t index = 0; index < descriptor.num_layers; ++index) {
