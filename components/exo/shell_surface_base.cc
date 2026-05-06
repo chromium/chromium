@@ -339,6 +339,10 @@ class CustomWindowTargeter : public aura::WindowTargeter {
       return true;
     }
 
+    if (shell_surface_->IsPointWithinOverlay(local_point)) {
+      return true;
+    }
+
     aura::Window::ConvertPointToTarget(window, surface->window(), &local_point);
     return surface->HitTest(local_point);
   }
@@ -1129,6 +1133,19 @@ void ShellSurfaceBase::RemoveOverlay() {
         aura::client::kSkipImeProcessing, true);
   }
   UpdateResizability();
+}
+
+bool ShellSurfaceBase::IsPointWithinOverlay(const gfx::Point& point) const {
+  if (!HasOverlay()) {
+    return false;
+  }
+
+  gfx::Point point_in_overlay = point;
+  aura::Window::ConvertPointToTarget(widget_->GetNativeWindow(),
+                                     overlay_widget_->GetNativeWindow(),
+                                     &point_in_overlay);
+
+  return overlay_widget_->GetNativeWindow()->ContainsPoint(point_in_overlay);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

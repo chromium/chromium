@@ -234,6 +234,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   bool HasOverlay() const { return !!overlay_widget_; }
 
+  // Returns true if the given |point| is within the bounds of the overlay
+  // widget. |point| is expected to be in the coordinate space of the
+  // ShellSurfaceBase's window.
+  bool IsPointWithinOverlay(const gfx::Point& point) const;
+
   // Set specific orientation lock for this surface. When this surface is in
   // foreground and the display can be rotated (e.g. tablet mode), apply the
   // behavior defined by |orientation_lock|. See more details in

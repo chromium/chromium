@@ -3599,6 +3599,136 @@ TEST_F(ShellSurfaceTest, PropertyResolverTest) {
   }
 }
 
+TEST_F(ShellSurfaceTest, OverlayEventTargeting) {
+  auto shell_surface = test::ShellSurfaceBuilder({100, 100})
+                           .SetFrame(SurfaceFrameType::NORMAL)
+                           .BuildShellSurface();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kSkipImeProcessing, true);
+
+  EXPECT_FALSE(shell_surface->HasOverlay());
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  aura::Window* parent_window = window->parent();
+  aura::WindowTargeter parent_targeter;
+  int frame_height = views::GetCaptionButtonLayoutSize(
+                         views::CaptionButtonLayoutSize::kNonBrowserCaption)
+                         .height();
+
+  // Test case 1: Overlay does NOT overlap the frame.
+  {
+    ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+    params.overlaps_frame = false;
+    shell_surface->AddOverlay(std::move(params));
+
+    EXPECT_TRUE(shell_surface->HasOverlay());
+
+    // Point inside the frame (above the overlay).
+    gfx::Point point_in_frame(10, frame_height - 1);
+    gfx::Point point_in_parent_frame = point_in_frame;
+    aura::Window::ConvertPointToTarget(window, parent_window,
+                                       &point_in_parent_frame);
+
+    ui::MouseEvent event_in_frame(ui::EventType::kMousePressed,
+                                  point_in_parent_frame, point_in_parent_frame,
+                                  base::TimeTicks::Now(), 0, 0);
+    ui::EventTarget* target_in_frame =
+        parent_targeter.FindTargetForEvent(parent_window, &event_in_frame);
+    EXPECT_TRUE(target_in_frame);
+
+    // The event should NOT be targeted to the overlay widget's window.
+    EXPECT_FALSE(shell_surface->overlay_widget_for_testing()
+                     ->GetNativeWindow()
+                     ->Contains(static_cast<aura::Window*>(target_in_frame)));
+
+    // Point inside the overlay (near the bottom).
+    gfx::Point point_in_overlay(10, 100 - 5);
+    gfx::Point point_in_parent_overlay = point_in_overlay;
+    aura::Window::ConvertPointToTarget(window, parent_window,
+                                       &point_in_parent_overlay);
+
+    ui::MouseEvent event_in_overlay(
+        ui::EventType::kMousePressed, point_in_parent_overlay,
+        point_in_parent_overlay, base::TimeTicks::Now(), 0, 0);
+    ui::EventTarget* target_in_overlay =
+        parent_targeter.FindTargetForEvent(parent_window, &event_in_overlay);
+    EXPECT_TRUE(target_in_overlay);
+    // The event should be targeted exactly to the overlay widget's window.
+    EXPECT_EQ(shell_surface->overlay_widget_for_testing()->GetNativeWindow(),
+              static_cast<aura::Window*>(target_in_overlay));
+
+    shell_surface->RemoveOverlay();
+  }
+
+  // Test case 2: Overlay overlaps the frame.
+  {
+    ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+    params.overlaps_frame = true;
+    shell_surface->AddOverlay(std::move(params));
+    EXPECT_TRUE(shell_surface->HasOverlay());
+
+    // Point inside the frame (which is now covered by the overlay).
+    gfx::Point point_in_frame(10, frame_height - 1);
+    gfx::Point point_in_parent_frame = point_in_frame;
+    aura::Window::ConvertPointToTarget(window, parent_window,
+                                       &point_in_parent_frame);
+
+    ui::MouseEvent event_in_frame(ui::EventType::kMousePressed,
+                                  point_in_parent_frame, point_in_parent_frame,
+                                  base::TimeTicks::Now(), 0, 0);
+    ui::EventTarget* target_in_frame =
+        parent_targeter.FindTargetForEvent(parent_window, &event_in_frame);
+    EXPECT_TRUE(target_in_frame);
+    // The event SHOULD be targeted exactly to the overlay widget's window.
+    EXPECT_EQ(shell_surface->overlay_widget_for_testing()->GetNativeWindow(),
+              static_cast<aura::Window*>(target_in_frame));
+
+    shell_surface->RemoveOverlay();
+  }
+}
+
+TEST_F(ShellSurfaceTest, OverlayEventTargetingWithEmptyRootSurface) {
+  // Create a shell surface with a 1x1 root surface to simulate the
+  // ArcGhostWindowView scenario where the Wayland surface hasn't fully
+  // initialized but the overlay is shown.
+  auto shell_surface = test::ShellSurfaceBuilder({1, 1})
+                           .SetMinimumSize(gfx::Size(100, 100))
+                           .SetFrame(SurfaceFrameType::NORMAL)
+                           .BuildShellSurface();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kSkipImeProcessing, true);
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  aura::Window* parent_window = window->parent();
+  aura::WindowTargeter parent_targeter;
+
+  ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+  params.overlaps_frame = false;
+  shell_surface->AddOverlay(std::move(params));
+  EXPECT_TRUE(shell_surface->HasOverlay());
+
+  // Point inside the overlay, but way outside the 1x1 root surface.
+  // The overlay's bounds are based on the widget's bounds (100x100), not the
+  // root surface's bounds (1x1).
+  gfx::Point point_in_overlay(50, 50);
+  gfx::Point point_in_parent_overlay = point_in_overlay;
+  aura::Window::ConvertPointToTarget(window, parent_window,
+                                     &point_in_parent_overlay);
+
+  ui::MouseEvent event_in_overlay(
+      ui::EventType::kMousePressed, point_in_parent_overlay,
+      point_in_parent_overlay, base::TimeTicks::Now(), 0, 0);
+  ui::EventTarget* target_in_overlay =
+      parent_targeter.FindTargetForEvent(parent_window, &event_in_overlay);
+  EXPECT_TRUE(target_in_overlay);
+
+  // The event should be targeted exactly to the overlay widget's window,
+  // even though the root surface bounds are 1x1, because the overlay bounds
+  // are based on the widget bounds.
+  EXPECT_EQ(shell_surface->overlay_widget_for_testing()->GetNativeWindow(),
+            static_cast<aura::Window*>(target_in_overlay));
+}
+
 TEST_F(ShellSurfaceTest, Overlay) {
   auto shell_surface =
       test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
