@@ -123,9 +123,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       return false;
     }
 
-    return this.showDropdown &&
-        (this.showFileCarousel || this.shouldShowSubmitButton() ||
-         this.inToolMode);
+    return super.shouldShowDivider();
   }
 
   // TODO(crbug.com/486707998): Remove once this is added to mixin.
