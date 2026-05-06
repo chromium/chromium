@@ -252,47 +252,6 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     return std::nullopt;
   }
 
-  void EncompassContributionSize(MinMaxSizes sizes) {
-    DCHECK(contribution_sizes);
-    contribution_sizes->min_max_contribution.Encompass(sizes);
-  }
-
-  void EncompassIntrinsicMinIgnoringTrackPlacement(LayoutUnit size) {
-    DCHECK(contribution_sizes);
-    contribution_sizes->intrinsic_min_ignoring_track_placement = std::max(
-        contribution_sizes->intrinsic_min_ignoring_track_placement, size);
-  }
-
-  void EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(LayoutUnit size) {
-    DCHECK(contribution_sizes);
-    contribution_sizes
-        ->intrinsic_min_ignoring_track_placement_unclamped = std::max(
-        contribution_sizes->intrinsic_min_ignoring_track_placement_unclamped,
-        size);
-  }
-
-  void EncompassIntrinsicMinAssumingTrackPlacement(LayoutUnit size) {
-    DCHECK(contribution_sizes);
-    contribution_sizes->intrinsic_min_assuming_track_placement = std::max(
-        contribution_sizes->intrinsic_min_assuming_track_placement, size);
-  }
-
-  // The min clamp size is the margin, border, padding, and baseline shim
-  // for an item that may be clamped. We take the largest of these to ensure
-  // we don't clamp past the largest such value for these items. This may not
-  // be 100% equivalent to what we would get with the grid implementation, but
-  // should be as close as we can get without leading to overflow.
-  void EncompassMinClampSize(LayoutUnit min_clamp_size) {
-    DCHECK(contribution_sizes);
-    contribution_sizes->min_clamp_size =
-        std::max(contribution_sizes->min_clamp_size, min_clamp_size);
-  }
-
-  void SetSharedBaseline(LayoutUnit baseline) {
-    DCHECK(contribution_sizes);
-    contribution_sizes->group_shared_baseline = baseline;
-  }
-
   // Reset all contribution sizes stored on a virtual item to their default
   // values. Allocates a fresh `VirtualItemContributions` (rather than mutating
   // the existing one) so any sibling virtual items that share the previous
@@ -365,6 +324,39 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     VirtualItemContributions() = default;
 
     void Trace(Visitor*) const {}
+
+    void EncompassContributionSize(MinMaxSizes sizes) {
+      min_max_contribution.Encompass(sizes);
+    }
+
+    void EncompassIntrinsicMinIgnoringTrackPlacement(LayoutUnit size) {
+      intrinsic_min_ignoring_track_placement =
+          std::max(intrinsic_min_ignoring_track_placement, size);
+    }
+
+    void EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(LayoutUnit size) {
+      intrinsic_min_ignoring_track_placement_unclamped =
+          std::max(intrinsic_min_ignoring_track_placement_unclamped, size);
+    }
+
+    void EncompassIntrinsicMinAssumingTrackPlacement(LayoutUnit size) {
+      intrinsic_min_assuming_track_placement =
+          std::max(intrinsic_min_assuming_track_placement, size);
+    }
+
+    // The min clamp size is the margin, border, padding, and baseline shim
+    // for an item that may be clamped. We take the largest of these to ensure
+    // we don't clamp past the largest such value for these items. This may
+    // not be 100% equivalent to what we would get with the grid
+    // implementation, but should be as close as we can get without leading to
+    // overflow.
+    void EncompassMinClampSize(LayoutUnit min_clamp) {
+      min_clamp_size = std::max(min_clamp_size, min_clamp);
+    }
+
+    void SetSharedBaseline(LayoutUnit baseline) {
+      group_shared_baseline = baseline;
+    }
 
     MinMaxSizes min_max_contribution;
 

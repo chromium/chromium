@@ -222,21 +222,19 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // From https://drafts.csswg.org/css-grid-3/#track-sizing-performance:
   //   "... synthesize a virtual masonry item that has the maximum of every
   //   intrinsic size contribution among the items in that group."
-  // Returns a collection of items that reflect the intrinsic contributions from
-  // the item groups, which will be used to resolve the grid axis' track sizes.
-  // If `needs_intrinsic_track_size` is true, that means that we are in the
-  // first track size pass required to compute intrinsic track sizes within a
-  // repeat definition, which requires adjustments to virtual item creation and
-  // track sizing per
+  // This method returns a collection of virtual items, with empty intrinsic
+  // contribution sizes, as these get calculated after track initialization has
+  // occurred. If `needs_intrinsic_track_size` is true, that means that we are
+  // in the first track size pass required to compute intrinsic track sizes
+  // within a repeat definition, which requires adjustments to virtual item
+  // creation and track sizing per
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
   VirtualItems* BuildVirtualGridLanesItems(
       const GridLineResolver& line_resolver,
       const GridItems& grid_lanes_items,
       const bool needs_intrinsic_track_size,
-      SizingConstraint sizing_constraint,
       const wtf_size_t auto_repetition_count,
-      wtf_size_t& start_offset,
-      bool& has_baseline_aligned_items) const;
+      wtf_size_t& start_offset) const;
 
   // Computes the block-axis contribution of a virtual grid-lanes item for track
   // sizing. Also computes a baseline shim for the item and sets `baseline_shim`
@@ -279,6 +277,21 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridItems::GridItemDataVector& group_items,
       GridTrackSizingDirection grid_axis_direction,
       SizingConstraint sizing_constraint) const;
+
+  // From https://drafts.csswg.org/css-grid-3/#track-sizing-performance:
+  //   "... synthesize a virtual masonry item that has the maximum of every
+  //   intrinsic size contribution among the items in that group."
+  // This method calculates the intrinsic contribution sizes and per-track
+  // shared baselines for each virtual item group and updates the corresponding
+  // virtual item(s) associated with each group accordingly, which will be used
+  // to resolve the grid axis' track sizes. If `needs_intrinsic_track_size` is
+  // true, that means that we are in the first track size pass required to
+  // compute intrinsic track sizes within a repeat definition, which requires
+  // adjustments to virtual item creation and track sizing per
+  // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
+  void MeasureVirtualGridLanesItems(const GridSizingSubtree& sizing_subtree,
+                                    SizingConstraint sizing_constraint,
+                                    bool needs_intrinsic_track_size) const;
 
   // Lays out `grid_lanes_item` for measurement using `space_for_measure`. If
   // the available inline size is indefinite (e.g., for an orthogonal virtual

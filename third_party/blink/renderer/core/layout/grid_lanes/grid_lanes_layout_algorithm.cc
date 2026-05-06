@@ -902,10 +902,8 @@ VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const GridLineResolver& line_resolver,
     const GridItems& grid_lanes_items,
     const bool needs_intrinsic_track_size,
-    SizingConstraint sizing_constraint,
     const wtf_size_t auto_repetition_count,
-    wtf_size_t& start_offset,
-    bool& has_baseline_aligned_items) const {
+    wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
@@ -944,34 +942,13 @@ VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
 
     // Share the same contribution size as that stored on the item group.
     // Each virtual item created from the same group will share the same
-    // contribution sizes.
-    //
-    // TODO(almaher): Move contribution calculation until after track
-    // initialization.
+    // contribution sizes.The actual contribution measurements will happen at a
+    // later stage after track initialization.
     virtual_item->contribution_sizes = item_group.contribution_sizes;
 
     GridSpan span = group_properties.Span();
     wtf_size_t span_size = span.SpanSize();
     CHECK_GT(span_size, 0u);
-
-    // For each group, iterate all items, compute each item's baseline, and
-    // choose the maximum as `shared_baseline` for the group. This value is
-    // later used to calculate baseline shims for alignment within the track.
-    //
-    // The baseline shim added into each item's contribution size below is
-    // specific to the `BuildVirtualGridLanesItems` phase. Per the spec,
-    // "determine the baselines of the virtual grid item by placing all of
-    // its items into a single hypothetical grid track and finding their
-    // shared baseline(s) and shims. Increase the group's intrinsic size
-    // contributions accordingly." [1]
-    //
-    // [1] https://www.w3.org/TR/css-grid-3/#track-sizing-performance
-    const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
-        group_items, grid_axis_direction, sizing_constraint);
-
-    // Store the group's shared baseline so copies inherit it for baseline
-    // shim computation during track sizing.
-    virtual_item->SetSharedBaseline(shared_baseline);
 
     // Copy baseline alignment properties from the first item in the group,
     // since all items in a group have the same baseline-sharing group.
@@ -984,20 +961,114 @@ VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       virtual_item->row_baseline_group = group_items[0]->row_baseline_group;
     }
 
-    for (const Member<GridItemData>& group_item : group_items) {
+    // If `needs_intrinsic_track_size` is true, that means we have a repeat()
+    // track definition with an intrinsic sized track(s). The current track
+    // sizing pass is used to find the track size to apply to the intrinsic
+    // sized track(s). Ignore item placement as part of this pass, and apply all
+    // items in every position, regardless of explicit placement [1].
+    //
+    // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+    if (span.IsIndefinite() || needs_intrinsic_track_size) {
+      auto PlaceItemInEveryPosition = [&](GridSpan& item_span) {
+        while (item_span.EndLine() < max_end_line) {
+          auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
+          item_copy->resolved_position.SetSpan(item_span, grid_axis_direction);
+          virtual_items->Append(item_copy);
+
+          // `Translate` will move the span to the start and end of the next
+          // line, allowing us to "slide" over the entire implicit grid.
+          item_span.Translate(1);
+
+          // Per the auto-fit heuristic, don't add auto placed items to
+          // tracks within the auto-fit range that are greater than the
+          // total span count of auto placed items.
+          //
+          // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
+          if (!auto_fit_span.IsIndefinite()) {
+            while (item_span.Intersects(auto_fit_span) &&
+                   item_span.EndLine() > unplaced_item_span_count) {
+              item_span.Translate(1);
+            }
+          }
+        }
+      };
+
+      // If `needs_intrinsic_track_size` is true, that means we have a repeat()
+      // track definition with an intrinsic sized track(s). The current track
+      // sizing pass is used to find the track size to apply to the intrinsic
+      // sized track(s). During this pass, we need to use the growth limit as
+      // the track size for intrinsic tracks. However, the growth limit is
+      // stored within a Grid set. To enable this look up, we create a
+      // single-span virtual item that has zero contribution sizes, and place it
+      // in every position. This guarantees we have one track per set, allowing
+      // us to look up the growth limit for each track quickly and accurately.
+      //
+      // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+      if (needs_intrinsic_track_size && virtual_items->IsEmpty()) {
+        auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
+        GridSpan single_span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
+        virtual_item->ResetContributionSizes();
+        PlaceItemInEveryPosition(single_span);
+
+        if (single_span.EndLine() <= max_end_line) {
+          virtual_item->resolved_position.SetSpan(single_span,
+                                                  grid_axis_direction);
+          virtual_items->Append(virtual_item);
+        }
+        virtual_item = item_copy;
+      }
+
+      // For groups of items that are auto-placed, we need to create
+      // copies of the virtual item and place them at each possible start
+      // line. At the end of the loop below, `span` will be located at the
+      // last start line, which should be the position of the last copy
+      // appended to `virtual_items`.
+      span = GridSpan::TranslatedDefiniteGridSpan(0, span.SpanSize());
+      PlaceItemInEveryPosition(span);
+    }
+
+    DCHECK(span.IsTranslatedDefinite());
+    if (span.EndLine() <= max_end_line) {
+      virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
+      virtual_items->Append(virtual_item);
+    }
+  }
+  return virtual_item_results;
+}
+
+void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
+    const GridSizingSubtree& sizing_subtree,
+    SizingConstraint sizing_constraint,
+    bool needs_intrinsic_track_size) const {
+  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
+  const bool is_for_columns = grid_axis_direction == kForColumns;
+  auto& layout_data = sizing_subtree.LayoutData();
+
+  for (const Member<GridLanesItemGroup>& group :
+       sizing_subtree.GetVirtualItemGroups()) {
+    DCHECK(group->contribution_sizes);
+    auto* contribution_sizes = group->contribution_sizes.Get();
+
+    // Per the spec, https://www.w3.org/TR/css-grid-3/#track-sizing-performance,
+    // "determine the baselines of the virtual grid item by placing all of its
+    // items into a single hypothetical grid track and finding their shared
+    // baseline(s) and shims. Increase the group's intrinsic size contributions
+    // accordingly." Stashed on `contribution_sizes` so all virtual items
+    // produced from this group observe it via their shared `Member<>` pointer
+    // (e.g. for the per-track baseline loop later).
+    const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
+        group->items, grid_axis_direction, sizing_constraint);
+    contribution_sizes->SetSharedBaseline(shared_baseline);
+
+    for (const Member<GridItemData>& group_item : group->items) {
       GridItemData& item_data = *group_item;
 
       // Per https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution,
       // "the subgrid itself acts as if it was completely empty for track sizing
-      // purposes in the subgridded dimension." Give it a zero contribution so
-      // it still provides range coverage but doesn't affect track sizes.
+      // purposes in the subgridded dimension."
       if (item_data.MustConsiderGridItemsForSizing(grid_axis_direction)) {
-        virtual_item->EncompassContributionSize(MinMaxSizes());
         continue;
       }
-
-      has_baseline_aligned_items |=
-          item_data.IsBaselineSpecified(grid_axis_direction);
 
       const BlockNode& item_node = item_data.node;
       // TODO(almaher): `SubgriddedItemData` should incorporate the parent
@@ -1117,13 +1188,13 @@ VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       AdjustItemContribution(contribution_ignoring_tracks);
       AdjustItemContribution(contribution_assuming_tracks);
 
-      // Store the different contribution sizes on the virtual item to be used
+      // Store the different contribution sizes on the virtual items to be used
       // later during track sizing.
-      virtual_item->EncompassContributionSize(min_max_contribution);
-      virtual_item->EncompassIntrinsicMinAssumingTrackPlacement(
+      contribution_sizes->EncompassContributionSize(min_max_contribution);
+      contribution_sizes->EncompassIntrinsicMinAssumingTrackPlacement(
           contribution_assuming_tracks);
       if (maybe_clamp) {
-        virtual_item->EncompassIntrinsicMinIgnoringTrackPlacement(
+        contribution_sizes->EncompassIntrinsicMinIgnoringTrackPlacement(
             contribution_ignoring_tracks);
 
         const auto border_padding = ComputeBorders(space, item_node) +
@@ -1132,87 +1203,37 @@ VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
                                             ? border_padding.InlineSum()
                                             : border_padding.BlockSum();
 
-        virtual_item->EncompassMinClampSize(margin_sum + border_padding_sum +
-                                            baseline_shim);
+        contribution_sizes->EncompassMinClampSize(
+            margin_sum + border_padding_sum + baseline_shim);
       } else {
-        virtual_item->EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(
-            contribution_ignoring_tracks);
+        contribution_sizes
+            ->EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(
+                contribution_ignoring_tracks);
       }
-    }
-
-    // If `needs_intrinsic_track_size` is true, that means we have a repeat()
-    // track definition with an intrinsic sized track(s). The current track
-    // sizing pass is used to find the track size to apply to the intrinsic
-    // sized track(s). Ignore item placement as part of this pass, and apply all
-    // items in every position, regardless of explicit placement [1].
-    //
-    // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-    if (span.IsIndefinite() || needs_intrinsic_track_size) {
-      auto PlaceItemInEveryPosition = [&](GridSpan& item_span) {
-        while (item_span.EndLine() < max_end_line) {
-          auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
-          item_copy->resolved_position.SetSpan(item_span, grid_axis_direction);
-          virtual_items->Append(item_copy);
-
-          // `Translate` will move the span to the start and end of the next
-          // line, allowing us to "slide" over the entire implicit grid.
-          item_span.Translate(1);
-
-          // Per the auto-fit heuristic, don't add auto placed items to
-          // tracks within the auto-fit range that are greater than the
-          // total span count of auto placed items.
-          //
-          // https://drafts.csswg.org/css-grid-3/#repeat-auto-fit
-          if (!auto_fit_span.IsIndefinite()) {
-            while (item_span.Intersects(auto_fit_span) &&
-                   item_span.EndLine() > unplaced_item_span_count) {
-              item_span.Translate(1);
-            }
-          }
-        }
-      };
-
-      // If `needs_intrinsic_track_size` is true, that means we have a repeat()
-      // track definition with an intrinsic sized track(s). The current track
-      // sizing pass is used to find the track size to apply to the intrinsic
-      // sized track(s). During this pass, we need to use the growth limit as
-      // the track size for intrinsic tracks. However, the growth limit is
-      // stored within a Grid set. To enable this look up, we create a
-      // single-span virtual item that has zero contribution sizes, and place it
-      // in every position. This guarantees we have one track per set, allowing
-      // us to look up the growth limit for each track quickly and accurately.
-      //
-      // [1] https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
-      if (needs_intrinsic_track_size && virtual_items->IsEmpty()) {
-        auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
-        GridSpan single_span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
-        virtual_item->ResetContributionSizes();
-        PlaceItemInEveryPosition(single_span);
-
-        if (single_span.EndLine() <= max_end_line) {
-          virtual_item->resolved_position.SetSpan(single_span,
-                                                  grid_axis_direction);
-          virtual_items->Append(virtual_item);
-        }
-        virtual_item = item_copy;
-      }
-
-      // For groups of items that are auto-placed, we need to create
-      // copies of the virtual item and place them at each possible start
-      // line. At the end of the loop below, `span` will be located at the
-      // last start line, which should be the position of the last copy
-      // appended to `virtual_items`.
-      span = GridSpan::TranslatedDefiniteGridSpan(0, span.SpanSize());
-      PlaceItemInEveryPosition(span);
-    }
-
-    DCHECK(span.IsTranslatedDefinite());
-    if (span.EndLine() <= max_end_line) {
-      virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
-      virtual_items->Append(virtual_item);
     }
   }
-  return virtual_item_results;
+
+  // Build per-track shared baselines from all virtual item copies. Each
+  // copy's `group_shared_baseline` is set to the maximum baseline across
+  // its item group. Here, we take the max across all copies for each track,
+  // so the track ends up with the largest baseline from any group.
+  //
+  // Note: these track baselines are specific to this track sizing phase --
+  // they are derived from virtual items and used to compute baseline shims
+  // for intrinsic track sizing. Later, in `ComputeBaselineAlignment`, track
+  // baselines are reset and recomputed from actual item placements.
+  auto& track_collection = layout_data.SizingCollection(grid_axis_direction);
+  if (layout_data.HasBaselines(grid_axis_direction) &&
+      track_collection.HasNonDefiniteTrack()) {
+    for (auto& virtual_item : sizing_subtree.GetVirtualItems()) {
+      if (!virtual_item.IsBaselineAligned(grid_axis_direction)) {
+        continue;
+      }
+      SetTrackBaseline(virtual_item, grid_axis_direction,
+                       virtual_item.contribution_sizes->group_shared_baseline,
+                       layout_data);
+    }
+  }
 }
 
 LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
@@ -1486,6 +1507,9 @@ GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
         // though we could end up with potentially more allowed repetitions
         // after percentages are properly resolved.
         InitializeTrackSizes(&sizing_tree);
+        MeasureVirtualGridLanesItems(GridSizingSubtree(&sizing_tree),
+                                     sizing_constraint,
+                                     /*needs_intrinsic_track_size=*/false);
         CompleteTrackSizingAlgorithm(sizing_constraint, &sizing_tree,
                                      /*needs_intrinsic_track_size=*/false);
       } else if (container_style.AlignContent() !=
@@ -1530,12 +1554,10 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
     return;
   }
 
-  bool has_baseline_aligned_items = false;
   wtf_size_t start_offset = 0;
   *opt_virtual_items = BuildVirtualGridLanesItems(
-      line_resolver, grid_items, needs_intrinsic_track_size, sizing_constraint,
-      line_resolver.AutoRepetitions(grid_axis_direction), start_offset,
-      has_baseline_aligned_items);
+      line_resolver, grid_items, needs_intrinsic_track_size,
+      line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
 
   // Cache placement data. This is used for DevTools inspector highlighting and
   // also to access the computed auto repetitions in
@@ -1549,6 +1571,7 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
   To<LayoutGridLanes>(Node().GetLayoutBox())
       ->SetCachedPlacementData(std::move(placement_data));
 
+  bool has_baseline_aligned_items = false;
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
         style, grid_axis_direction,
@@ -1561,6 +1584,8 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
       range_builder.EnsureTrackCoverage(span.StartLine(), span.IntegerSpan(),
                                         &range_indices.begin,
                                         &range_indices.end);
+      has_baseline_aligned_items |=
+          virtual_item.IsBaselineSpecified(grid_axis_direction);
     }
     return range_builder.FinalizeRanges(needs_intrinsic_track_size);
   };
@@ -1603,27 +1628,6 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
         (grid_axis_direction == kForColumns)
             ? BorderScrollbarPadding().inline_start
             : BorderScrollbarPadding().block_start);
-
-    // Build per-track shared baselines from all virtual item copies. Each
-    // copy's `group_shared_baseline` is set to the maximum baseline across
-    // its item group. Here, we take the max across all copies for each track,
-    // so the track ends up with the largest baseline from any group.
-    //
-    // Note: these track baselines are specific to this track sizing phase —
-    // they are derived from virtual items and used to compute baseline shims
-    // for intrinsic track sizing. Later, in `ComputeBaselineAlignment`, track
-    // baselines are reset and recomputed from actual item placements.
-    if (layout_data.HasBaselines(grid_axis_direction)) {
-      for (auto& virtual_item : sizing_subtree.GetVirtualItems()) {
-        if (!virtual_item.IsBaselineAligned(grid_axis_direction) ||
-            !virtual_item.contribution_sizes) {
-          continue;
-        }
-        SetTrackBaseline(virtual_item, grid_axis_direction,
-                         virtual_item.contribution_sizes->group_shared_baseline,
-                         layout_data);
-      }
-    }
   } else {
     // If all tracks have a definite size upfront, we can use the current set
     // sizes as the used track sizes (applying alignment, if present).
@@ -1858,6 +1862,8 @@ void GridLanesLayoutAlgorithm::ComputeSizingTreeInGridAxis(
                                 sizing_constraint, needs_intrinsic_track_size);
 
   InitializeTrackSizes(sizing_tree);
+  MeasureVirtualGridLanesItems(GridSizingSubtree(sizing_tree),
+                               sizing_constraint, needs_intrinsic_track_size);
   CompleteTrackSizingAlgorithm(sizing_constraint, sizing_tree,
                                needs_intrinsic_track_size);
 }
