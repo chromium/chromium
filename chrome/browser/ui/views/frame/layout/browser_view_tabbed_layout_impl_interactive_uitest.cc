@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -336,6 +337,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
+      SelectTab(kBrowserViewElementId, 0),
+      ScreenshotLeft(kTabStripRegionElementId, "tabstrip_leading", 3),
+      ScreenshotRight(kTabStripRegionElementId, "tabstrip_trailing", 3),
+      ScreenshotLeft(ToolbarView::kToolbarElementId, "toolbar_leading", 3),
+      ScreenshotRight(ToolbarView::kToolbarElementId, "toolbar_trailing", 3));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
+                       HorizontalTabsFirstTabActiveWithTabSearchUnpinned) {
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              "Test is screenshot-only."),
+      Do([this]() {
+        browser()->profile()->GetPrefs()->SetBoolean(
+            prefs::kTabSearchPinnedToTabstrip, false);
+      }),
       SelectTab(kBrowserViewElementId, 0),
       ScreenshotLeft(kTabStripRegionElementId, "tabstrip_leading", 3),
       ScreenshotRight(kTabStripRegionElementId, "tabstrip_trailing", 3),
