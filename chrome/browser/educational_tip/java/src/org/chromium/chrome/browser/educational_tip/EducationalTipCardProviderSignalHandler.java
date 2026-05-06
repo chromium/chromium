@@ -64,6 +64,7 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
             case ModuleType.QUICK_DELETE_PROMO:
+            case ModuleType.NTP_THEME_PROMO:
                 return inputContext;
             case ModuleType.HISTORY_SYNC_PROMO:
                 inputContext.addEntry(

@@ -112,6 +112,9 @@ public class HomeModulesConfigManagerUnitTest {
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
                 getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
+        assertEquals(
+                defaultBrowserPromoPreferenceKey,
+                getSettingsPreferenceKey(ModuleType.NTP_THEME_PROMO));
 
         // Verifies that the PRICE_CHANGE has its own preference key.
         assertEquals(priceChangePreferenceKey, getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));

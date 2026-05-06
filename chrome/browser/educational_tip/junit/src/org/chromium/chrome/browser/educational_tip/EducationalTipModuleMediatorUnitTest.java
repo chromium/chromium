@@ -166,6 +166,13 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_tips_notifications_title,
                 R.string.educational_tip_tips_notifications_description,
                 R.drawable.tips_notifications_promo_logo);
+
+        // Test showing quick delete promo card.
+        testShowModuleImpl(
+                ModuleType.NTP_THEME_PROMO,
+                R.string.educational_tip_ntp_theme_title,
+                R.string.educational_tip_ntp_theme_description,
+                R.drawable.ntp_theme_promo_logo);
     }
 
     @Test

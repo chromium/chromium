@@ -45,6 +45,7 @@ public interface ModuleDelegate {
         ModuleType.SAVE_PASSWORDS_PROMO,
         ModuleType.PASSWORD_CHECKUP_PROMO,
         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
+        ModuleType.NTP_THEME_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -68,7 +69,8 @@ public interface ModuleDelegate {
         int SAVE_PASSWORDS_PROMO = 16;
         int PASSWORD_CHECKUP_PROMO = 17;
         int SETUP_LIST_CELEBRATORY_PROMO = 18;
-        int NUM_ENTRIES = 19;
+        int NTP_THEME_PROMO = 19;
+        int NUM_ENTRIES = 20;
     }
 
     // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes)

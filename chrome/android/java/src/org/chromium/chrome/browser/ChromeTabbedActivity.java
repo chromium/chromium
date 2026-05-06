@@ -3391,6 +3391,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
+            public void openNtpThemeCustomizationBottomSheet() {
+                NtpCustomizationCoordinator coordinator =
+                        NtpCustomizationCoordinatorFactory.getInstance()
+                                .create(
+                                        ChromeTabbedActivity.this,
+                                        mRootUiCoordinator.getBottomSheetController(),
+                                        mTabModelProfileSupplier,
+                                        NtpCustomizationCoordinator.BottomSheetType.THEME,
+                                        getWindowAndroid(),
+                                        mModuleRegistrySupplier.get());
+                coordinator.showBottomSheet();
+            }
+
+            @Override
             public void showHistorySyncOptInLegacy(Runnable dismissHistorySyncModuleCallback) {
                 BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
                         createHistorySyncBottomSheetConfig();

@@ -590,7 +590,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SIGN_IN_PROMO,
                         ModuleType.SAVE_PASSWORDS_PROMO,
                         ModuleType.PASSWORD_CHECKUP_PROMO,
-                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
+                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
+                        ModuleType.NTP_THEME_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -613,7 +614,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SIGN_IN_PROMO,
                         ModuleType.SAVE_PASSWORDS_PROMO,
                         ModuleType.PASSWORD_CHECKUP_PROMO,
-                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
+                        ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
+                        ModuleType.NTP_THEME_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
