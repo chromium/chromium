@@ -119,7 +119,7 @@ export {ExceptionEntryElement} from './performance_page/tab_discard/exception_en
 export {ExceptionListElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE} from './performance_page/tab_discard/exception_list.js';
 export {ExceptionAddDialogTabs, ExceptionTabbedAddDialogElement} from './performance_page/tab_discard/exception_tabbed_add_dialog.js';
 export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard/exception_validation_mixin.js';
-export {HatsBrowserProxyImpl, SecurityPageV2Interaction, SecuritySettingsBundleSetting, TrustSafetyInteraction} from './privacy_page/hats_browser_proxy.js';
+export {HatsBrowserProxyImpl, SecurityPageInteraction, SecurityPageV2Interaction, SecuritySettingsBundleSetting, TrustSafetyInteraction} from './privacy_page/hats_browser_proxy.js';
 export type {HatsBrowserProxy} from './privacy_page/hats_browser_proxy.js';
 export {PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export type {PrivacyGuideBrowserProxy} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';

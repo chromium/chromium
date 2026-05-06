@@ -7,12 +7,13 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, SecurityPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SafeBrowsingInteractions, SecureDnsMode} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, SecurityPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 
@@ -218,6 +219,95 @@ suite('Main', function() {
     assertFalse(isChildVisible(page, '#secureDnsSettingOld'));
   });
   // </if>
+});
+
+suite('SecurityPageHappinessTrackingSurveys', function() {
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+
+    page = document.createElement('settings-security-page');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+    testHatsBrowserProxy.reset();
+    Router.getInstance().navigateTo(routes.SECURITY);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('SecurityPageSwitchRouteCallsHatsProxy', async function() {
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    // Switch tabs within the settings page.
+    Router.getInstance().navigateTo(routes.PRIVACY);
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify that the method securityPageHatsRequest was called and the time
+    // the user spent on the security page was logged correctly.
+    const expectedTotalTimeInFocus = t2 - t1;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
+  });
+
+  test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
+    // Interact with the security page.
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
+
+    const t1 = 10000;
+    testHatsBrowserProxy.setNow(t1);
+    window.dispatchEvent(new Event('focus'));
+
+    const t2 = 20000;
+    testHatsBrowserProxy.setNow(t2);
+    window.dispatchEvent(new Event('blur'));
+
+    const t3 = 60000;
+    testHatsBrowserProxy.setNow(t3);
+    window.dispatchEvent(new Event('focus'));
+
+    const t4 = 80000;
+    testHatsBrowserProxy.setNow(t4);
+    window.dispatchEvent(new Event('blur'));
+
+    // Fire the beforeunload event to simulate closing the page.
+    window.dispatchEvent(new Event('beforeunload'));
+
+    const args =
+        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+
+    // Verify the latest interaction type.
+    assertEquals(SecurityPageInteraction.RADIO_BUTTON_ENHANCED_CLICK, args[0]);
+
+    // Verify the safe browsing state on open.
+    assertEquals(SafeBrowsingSetting.STANDARD, args[1]);
+
+    // Verify the time the user spend on the security page.
+    const expectedTotalTimeInFocus = t2 - t1 + t4 - t3;
+    assertEquals(expectedTotalTimeInFocus, args[2]);
+  });
 });
 
 suite('FlagsDisabled', function() {

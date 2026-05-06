@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {HatsBrowserProxy, SafeBrowsingSetting, SecurityPageV2Interaction, SecuritySettingsBundleSetting, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import type {HatsBrowserProxy, SafeBrowsingSetting, SecurityPageInteraction, SecurityPageV2Interaction, SecuritySettingsBundleSetting, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestHatsBrowserProxy extends TestBrowserProxy implements
@@ -13,6 +13,7 @@ export class TestHatsBrowserProxy extends TestBrowserProxy implements
     super([
       'trustSafetyInteractionOccurred',
       'securityPageHatsRequest',
+      'securityPageV2HatsRequest',
       'now',
     ]);
     this.currentTime = 0;
@@ -23,10 +24,18 @@ export class TestHatsBrowserProxy extends TestBrowserProxy implements
   }
 
   securityPageHatsRequest(
+      securityPageInteraction: SecurityPageInteraction,
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number) {
+    this.methodCalled(
+      'securityPageHatsRequest',
+      [securityPageInteraction, safeBrowsingSetting, totalTimeOnPage]);
+  }
+
+  securityPageV2HatsRequest(
       securityPageInteractions: SecurityPageV2Interaction[],
       safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number,
       securitySettingsBundleSetting: SecuritySettingsBundleSetting) {
-    this.methodCalled('securityPageHatsRequest', [
+    this.methodCalled('securityPageV2HatsRequest', [
       securityPageInteractions,
       safeBrowsingSetting,
       totalTimeOnPage,

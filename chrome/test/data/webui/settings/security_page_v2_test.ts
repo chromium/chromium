@@ -770,7 +770,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     // Verify interactions.
     assertEquals(0, args[0].length);
@@ -824,7 +824,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     // Verify the interactions. Order doesn't matter, so check for
     // presence and length.
@@ -877,7 +877,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     const interactions = args[0] as SecurityPageV2Interaction[];
     const expectedInteractions = [
@@ -922,7 +922,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     const interactions = args[0] as SecurityPageV2Interaction[];
     const expectedInteractions = [
@@ -958,7 +958,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     const interactions = args[0] as SecurityPageV2Interaction[];
     const expectedInteractions = [
@@ -979,7 +979,7 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     const interactions = args[0] as SecurityPageV2Interaction[];
     const expectedInteractions = [
@@ -1048,7 +1048,7 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
     window.dispatchEvent(new Event('beforeunload'));
 
     const args =
-        await testHatsBrowserProxy.whenCalled('securityPageHatsRequest');
+        await testHatsBrowserProxy.whenCalled('securityPageV2HatsRequest');
 
     const interactions = args[0] as SecurityPageV2Interaction[];
 

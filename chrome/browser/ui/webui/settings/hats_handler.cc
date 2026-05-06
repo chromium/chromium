@@ -75,6 +75,68 @@ void HatsHandler::RegisterMessages() {
       "securityPageHatsRequest",
       base::BindRepeating(&HatsHandler::HandleSecurityPageHatsRequest,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "securityPageV2HatsRequest",
+      base::BindRepeating(&HatsHandler::HandleSecurityPageV2HatsRequest,
+                          base::Unretained(this)));
+}
+
+/**
+ * First arg in the list indicates the SecurityPageInteraction.
+ * Second arg in the list indicates the SafeBrowsingState.
+ */
+void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
+  AllowJavascript();
+
+  // There are 3 argument in the input list.
+  // The first one is the SecurityPageInteraction that triggered the survey.
+  // The second one is the safe browsing setting the user was on.
+  // The third one is the total amount of time a user spent on the security page
+  // in focus.
+  CHECK_EQ(3U, args.size());
+
+  Profile* profile = Profile::FromWebUI(web_ui());
+
+  // Enterprise users consideration.
+  // If the admin disabled the survey, the survey will not be requested.
+  if (!safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs())) {
+    return;
+  }
+
+  // Request HaTS survey.
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      profile, /* create_if_necessary = */ true);
+
+  // The HaTS service may not be available for the profile, for example if it
+  // is a guest profile.
+  if (!hats_service) {
+    return;
+  }
+
+  // Do not send the survey if the user didn't stay on the page long enough.
+  if (args[2].GetDouble() <
+      features::kHappinessTrackingSurveysForSecurityPageTime.Get()
+          .InMilliseconds()) {
+    return;
+  }
+
+  auto interaction = static_cast<SecurityPageInteraction>(args[0].GetInt());
+  if (features::kHappinessTrackingSurveysForSecurityPageRequireInteraction
+          .Get() &&
+      interaction == SecurityPageInteraction::NO_INTERACTION) {
+    return;
+  }
+
+  // Generate the Product Specific bits data from |profile| and |args|.
+  SurveyStringData product_specific_string_data =
+      GetSecurityPageProductSpecificStringData(profile, args);
+
+  hats_service->LaunchSurvey(
+      kHatsSurveyTriggerSettingsSecurity,
+      /*success_callback*/ base::DoNothing(),
+      /*failure_callback*/ base::DoNothing(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/product_specific_string_data);
 }
 
 /**
@@ -87,7 +149,7 @@ void HatsHandler::RegisterMessages() {
  * Fourth arg indicates the SecuritySettingsBundleSetting when the settings page
  * was opened.
  */
-void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
+void HatsHandler::HandleSecurityPageV2HatsRequest(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(4U, args.size());
@@ -118,14 +180,101 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
   }
   // Generate the Product Specific bits data from |profile| and |args|.
   SurveyStringData product_specific_string_data =
-      GetSecurityPageProductSpecificStringData(profile, args);
+      GetSecurityPageV2ProductSpecificStringData(profile, args);
 
   hats_service->LaunchSurvey(
-      kHatsSurveyTriggerSettingsSecurity,
+      kHatsSurveyTriggerSettingsSecurityV2,
       /*success_callback*/ base::DoNothing(),
       /*failure_callback*/ base::DoNothing(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/product_specific_string_data);
+}
+
+/**
+ * Generate the Product Specific string data from |profile| and |args|.
+ * - First arg in the list indicates the SecurityPageInteraction.
+ * - Second arg in the list indicates the SafeBrowsingState.
+ * - Third arg in the list indicates the amount of time user spent on the
+ * security page in focus.
+ */
+SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
+    Profile* profile,
+    const base::ListValue& args) {
+  auto interaction = static_cast<SecurityPageInteraction>(args[0].GetInt());
+  auto safe_browsing_state = static_cast<SafeBrowsingState>(args[1].GetInt());
+
+  std::string security_page_interaction_type = "";
+  std::string safe_browsing_setting_before = "";
+  std::string safe_browsing_setting_current = "";
+
+  switch (interaction) {
+    case SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK: {
+      security_page_interaction_type =
+          "enhanced_protection_radio_button_clicked";
+      break;
+    }
+    case SecurityPageInteraction::RADIO_BUTTON_STANDARD_CLICK: {
+      security_page_interaction_type =
+          "standard_protection_radio_button_clicked";
+      break;
+    }
+    case SecurityPageInteraction::RADIO_BUTTON_DISABLE_CLICK: {
+      security_page_interaction_type = "no_protection_radio_button_clicked";
+      break;
+    }
+    case SecurityPageInteraction::EXPAND_BUTTON_ENHANCED_CLICK: {
+      security_page_interaction_type =
+          "enhanced_protection_expand_button_clicked";
+      break;
+    }
+    case SecurityPageInteraction::EXPAND_BUTTON_STANDARD_CLICK: {
+      security_page_interaction_type =
+          "standard_protection_expand_button_clicked";
+      break;
+    }
+    case SecurityPageInteraction::NO_INTERACTION: {
+      security_page_interaction_type = "no_interaction";
+      break;
+    }
+  }
+
+  switch (safe_browsing_state) {
+    case SafeBrowsingState::ENHANCED_PROTECTION: {
+      safe_browsing_setting_before = "enhanced_protection";
+      break;
+    }
+    case SafeBrowsingState::STANDARD_PROTECTION: {
+      safe_browsing_setting_before = "standard_protection";
+      break;
+    }
+    case SafeBrowsingState::NO_SAFE_BROWSING: {
+      safe_browsing_setting_before = "no_protection";
+      break;
+    }
+  }
+
+  bool safe_browsing_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
+  bool safe_browsing_enhanced_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
+  if (safe_browsing_enhanced_enabled) {
+    safe_browsing_setting_current = "enhanced_protection";
+  } else if (safe_browsing_enabled) {
+    safe_browsing_setting_current = "standard_protection";
+  } else {
+    safe_browsing_setting_current = "no_protection";
+  }
+
+  std::string client_channel =
+      std::string(version_info::GetChannelString(chrome::GetChannel()));
+
+  return {
+      {"Security Page User Action", security_page_interaction_type},
+      {"Safe Browsing Setting Before Trigger", safe_browsing_setting_before},
+      {"Safe Browsing Setting After Trigger", safe_browsing_setting_current},
+      {"Client Channel", client_channel},
+      {"Time On Page", base::NumberToString(args[2].GetDouble())},
+  };
 }
 
 /**
@@ -136,7 +285,7 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
  * security page in focus.
  * - Fourth arg in the list indicates the SecuritySettingsBundleSetting.
  */
-SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
+SurveyStringData HatsHandler::GetSecurityPageV2ProductSpecificStringData(
     Profile* profile,
     const base::ListValue& args) {
   const base::ListValue& interactions = args[0].GetList();
