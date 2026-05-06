@@ -1011,24 +1011,6 @@ TEST_F(USBDeviceImplTest, ControlTransferProtectedClassBlock) {
   }
 
   {
-    // A VENDOR request to the DEVICE with index 7 (targeting the blocked
-    // interface) should be blocked.
-    auto params = mojom::UsbControlTransferParams::New();
-    params->type = UsbControlTransferType::VENDOR;
-    params->recipient = UsbControlTransferRecipient::DEVICE;
-    params->request = 5;
-    params->value = 6;
-    params->index = 7;
-    base::RunLoop loop;
-    device->ControlTransferIn(
-        std::move(params), 8, 0,
-        base::BindOnce(&ExpectTransferInAndThen,
-                       mojom::UsbTransferStatus::PERMISSION_DENIED,
-                       std::vector<uint8_t>(), loop.QuitClosure()));
-    loop.Run();
-  }
-
-  {
     // A CLASS request to the DEVICE with index 7 (targeting the blocked
     // interface) should be blocked.
     auto params = mojom::UsbControlTransferParams::New();
@@ -1088,6 +1070,68 @@ TEST_F(USBDeviceImplTest, ControlTransferProtectedClassBlock) {
         base::BindOnce(&ExpectTransferInAndThen,
                        mojom::UsbTransferStatus::PERMISSION_DENIED,
                        std::vector<uint8_t>(), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, VendorControlTransferToDevice) {
+  // Block interface class 2.
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  // Interface 1 has class 2 (blocked).
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/1,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/2, /*subclass_code=*/0,
+                                  /*protocol_code=*/0)
+                    .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(
+        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    // A VENDOR request to the DEVICE with index 1 (AOA pattern) should be
+    // ALLOWED. Even though index 1 matches the interface number of a protected
+    // class, for VENDOR requests the index is vendor-defined and does not
+    // necessarily identify an interface.
+    std::vector<uint8_t> fake_data = {1, 2, 3};
+    AddMockInboundData(fake_data);
+
+    EXPECT_CALL(mock_handle(),
+                ControlTransferInternal(UsbTransferDirection::INBOUND,
+                                        UsbControlTransferType::VENDOR,
+                                        UsbControlTransferRecipient::DEVICE, 52,
+                                        0, 1, _, 0, _));
+
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::VENDOR;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 52;
+    params->value = 0;
+    params->index = 1;
+    base::RunLoop loop;
+    device->ControlTransferIn(
+        std::move(params), static_cast<uint32_t>(fake_data.size()), 0,
+        base::BindOnce(&ExpectTransferInAndThen,
+                       mojom::UsbTransferStatus::COMPLETED, fake_data,
+                       loop.QuitClosure()));
     loop.Run();
   }
 

@@ -185,12 +185,14 @@ bool DeviceImpl::HasControlTransferPermission(
     // For the ENDPOINT recipient, the low byte of `index` is the endpoint
     // address. We look up the interface that owns this endpoint.
     interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
-  } else {
-    // For the INTERFACE recipient, the low byte of `index` is the interface
-    // number.
-    // For DEVICE and OTHER recipients, the USB spec allows `index` to be used
-    // arbitrarily by the vendor/class. We treat the low byte of `index` as a
-    // candidate interface ID to prevent routing bypasses.
+  } else if (recipient == UsbControlTransferRecipient::INTERFACE ||
+             type == mojom::UsbControlTransferType::CLASS) {
+    // For the INTERFACE recipient, `index` identifies the target interface.
+    // For CLASS requests to DEVICE/OTHER recipients, `index` is often used to
+    // identify an interface as defined in class-specific specs (e.g. HID, Mass
+    // Storage, Audio). For VENDOR requests, `index` is manufacturer-defined and
+    // highly variable (e.g. AOA string index), so it is not treated as an
+    // interface ID.
     auto interface_it =
         std::ranges::find(config->interfaces, index & 0xff,
                           &mojom::UsbInterfaceInfo::interface_number);
@@ -203,9 +205,9 @@ bool DeviceImpl::HasControlTransferPermission(
   // Storage), it must be blocked. This prevents a site from communicating
   // with a protected interface,
   // 1. by explicitly targeting an INTERFACE or ENDPOINT recipient, or
-  // 2. VENDOR or CLASS requests to the DEVICE or OTHER recipient where
-  //    index looks like an interface number in case the device will
-  //    respond to these requests despite an incorrectly set recipient.
+  // 2. CLASS requests to the DEVICE or OTHER recipient where index looks
+  //    like an interface number in case the device will respond to these
+  //    requests despite an incorrectly set recipient.
   if (interface && base::FeatureList::IsEnabled(
                        features::kWebUsbProtectedClassControlTransferBlock)) {
     for (const auto& alternate : interface->alternates) {
