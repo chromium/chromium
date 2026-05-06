@@ -211,8 +211,8 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
   }
 
   if (!current_page_ocr_results_.empty()) {
-    // If the page is being painted or cannot be unloaded, wait.
-    if (!current_page_->PageCanBeUnloaded() ||
+    // Wait if the text page cannot be reloaded, or the page is being painted.
+    if (!current_page_->CanReloadTextPage() ||
         engine_->IsPageScheduledForPaint(current_page_->index())) {
       if (state_ == State::kWaitingForResults) {
         state_ = State::kWaitingForPageAvailability;

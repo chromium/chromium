@@ -152,8 +152,8 @@ class PDFiumPage {
   // any text to the page or not.
   bool IsPageSearchified() const;
 
-  // Returns if the page can be unloaded.
-  bool PageCanBeUnloaded() const;
+  // Returns if it is safe to call `ReloadTextPage()`.
+  bool CanReloadTextPage() const;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // For all the highlights on the page, get their underlying text ranges and

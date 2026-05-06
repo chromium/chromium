@@ -960,7 +960,7 @@ bool PDFiumPage::IsPageSearchified() const {
   return has_searchify_added_text_.has_value();
 }
 
-bool PDFiumPage::PageCanBeUnloaded() const {
+bool PDFiumPage::CanReloadTextPage() const {
   return preventing_page_unload_count_ == 0;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
