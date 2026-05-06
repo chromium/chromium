@@ -342,10 +342,10 @@ public final class InfoBarControlLayout extends ViewGroup {
                         inflateLayout(getContext(), R.layout.infobar_control_icon_with_title, this);
         addView(layout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.control_title_icon);
+        ImageView iconView = layout.findViewById(R.id.control_title_icon);
         iconView.setImageResource(iconResourceId);
 
-        TextView titleView = (TextView) layout.findViewById(R.id.control_title);
+        TextView titleView = layout.findViewById(R.id.control_title);
         titleView.setText(titleMessage);
         titleView.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
@@ -407,20 +407,20 @@ public final class InfoBarControlLayout extends ViewGroup {
                                 getContext(), R.layout.infobar_control_icon_with_description, this);
         addView(layout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        ImageView iconView = layout.findViewById(R.id.control_icon);
         iconView.setImageResource(iconResourceId);
         if (iconColorId != 0) {
             iconView.setColorFilter(getContext().getColor(iconColorId));
         }
 
         // The primary message text is always displayed.
-        TextView primaryView = (TextView) layout.findViewById(R.id.control_message);
+        TextView primaryView = layout.findViewById(R.id.control_message);
         primaryView.setText(primaryMessage);
         primaryView.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(resourceId));
 
         // The secondary message text is optional.
-        TextView secondaryView = (TextView) layout.findViewById(R.id.control_secondary_message);
+        TextView secondaryView = layout.findViewById(R.id.control_secondary_message);
         if (secondaryMessage == null) {
             layout.removeView(secondaryView);
         } else {
@@ -460,20 +460,20 @@ public final class InfoBarControlLayout extends ViewGroup {
                                 getContext(), R.layout.infobar_control_icon_with_description, this);
         addView(layout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        ImageView iconView = layout.findViewById(R.id.control_icon);
         iconView.setImageBitmap(iconBitmap);
         if (iconColorId != 0) {
             iconView.setColorFilter(getContext().getColor(iconColorId));
         }
 
         // The primary message text is always displayed.
-        TextView primaryView = (TextView) layout.findViewById(R.id.control_message);
+        TextView primaryView = layout.findViewById(R.id.control_message);
         primaryView.setText(primaryMessage);
         primaryView.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(resourceId));
 
         // The secondary message text is optional.
-        TextView secondaryView = (TextView) layout.findViewById(R.id.control_secondary_message);
+        TextView secondaryView = layout.findViewById(R.id.control_secondary_message);
         if (secondaryMessage == null) {
             layout.removeView(secondaryView);
         } else {
@@ -510,7 +510,7 @@ public final class InfoBarControlLayout extends ViewGroup {
                 (LinearLayout) inflateLayout(getContext(), R.layout.infobar_control_toggle, this);
         addView(switchLayout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) switchLayout.findViewById(R.id.control_icon);
+        ImageView iconView = switchLayout.findViewById(R.id.control_icon);
         if (iconResourceId == 0) {
             switchLayout.removeView(iconView);
         } else {
@@ -520,7 +520,7 @@ public final class InfoBarControlLayout extends ViewGroup {
             }
         }
 
-        TextView messageView = (TextView) switchLayout.findViewById(R.id.control_message);
+        TextView messageView = switchLayout.findViewById(R.id.control_message);
         messageView.setText(toggleMessage);
 
         SwitchCompat switchView =

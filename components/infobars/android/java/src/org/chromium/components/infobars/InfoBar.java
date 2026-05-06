@@ -196,7 +196,7 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
         if (mView == null) return "";
 
         CharSequence title = null;
-        TextView messageView = (TextView) mView.findViewById(R.id.infobar_message);
+        TextView messageView = mView.findViewById(R.id.infobar_message);
         if (messageView != null) {
             title = messageView.getText();
         }
