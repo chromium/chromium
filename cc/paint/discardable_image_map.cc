@@ -319,7 +319,7 @@ class DiscardableImageMap::Generator {
     }
 
     if (paint_image.ShouldAnimate()) {
-      map_.animated_images_metadata_.try_emplace(
+      map_.animated_images_metadata_.insert_or_assign(
           paint_image.stable_id(),
           AnimatedImageMetadata(
               paint_image.stable_id(), paint_image.completion_state(),

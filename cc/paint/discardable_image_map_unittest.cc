@@ -806,6 +806,39 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   EXPECT_DCHECK_DEATH(images[2]->frame_index());
 }
 
+TEST_F(DiscardableImageMapTest, AnimatedImageMetadataReflectsCurrentState) {
+  gfx::Rect visible_rect(1000, 1000);
+  std::vector<FrameMetadata> frames = {
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3))};
+  gfx::Size image_size(100, 100);
+
+  PaintImage initial =
+      PaintImageBuilder::WithCopy(CreateAnimatedImage(image_size, frames, 1u))
+          .set_id(1)
+          .set_reset_animation_sequence_id(0)
+          .TakePaintImage();
+  PaintImage current =
+      PaintImageBuilder::WithCopy(CreateAnimatedImage(image_size, frames, 1u))
+          .set_id(1)
+          .set_reset_animation_sequence_id(8)
+          .TakePaintImage();
+
+  FakeContentLayerClient content_layer_client;
+  content_layer_client.set_bounds(visible_rect.size());
+  content_layer_client.add_draw_image(initial, gfx::Point(0, 0));
+  content_layer_client.add_draw_image(current, gfx::Point(100, 100));
+
+  scoped_refptr<DisplayItemList> display_list =
+      content_layer_client.PaintContentsToDisplayList();
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+
+  const auto& metadata = image_map->animated_images_metadata();
+  ASSERT_TRUE(metadata.contains(1u));
+  EXPECT_EQ(metadata.at(1u).reset_animation_sequence_id, 8u);
+}
+
 TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
   gfx::Rect visible_rect(1000, 1000);
   FakeContentLayerClient content_layer_client;
