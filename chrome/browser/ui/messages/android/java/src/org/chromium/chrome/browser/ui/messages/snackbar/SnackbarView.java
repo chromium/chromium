@@ -29,6 +29,7 @@ import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,6 +69,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     protected Snackbar mSnackbar;
     private final View mRootContentView;
+
+    private final KeyboardVisibilityDelegate.KeyboardVisibilityListener
+            mKeyboardVisibilityListener = (isShowing) -> adjustViewPosition();
     private @ColorInt int mBackgroundColor;
     private boolean mIsBeingDragged;
     private boolean mIsAnimating;
@@ -188,6 +192,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     public void show() {
         addToParent();
+        KeyboardVisibilityDelegate.getInstance()
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mContainerView.addOnLayoutChangeListener(
                 new OnLayoutChangeListener() {
                     @Override
@@ -216,6 +222,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         // Prevent clicks during dismissal animations. Intentionally not using setEnabled(false) to
         // avoid unnecessary text color changes in this transitory state.
         mActionButtonView.setOnClickListener(null);
+        KeyboardVisibilityDelegate.getInstance()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mAdditionalBottomMarginPxSupplier.removeObserver(mAdditionalBottomMarginPxObserver);
         Pair<Float, Float> translateData = mSnackbarSwipeHandler.getTranslateData();
         AnimatorSet moveAnimator = new AnimatorSet();
@@ -260,14 +268,18 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             mPreviousVisibleRect.set(mCurrentVisibleRect);
             FrameLayout.LayoutParams lp = getLayoutParams();
 
-            int prevWidth = lp.width;
-            int prevGravity = lp.gravity;
-
             lp.width = Math.min(mMaxWidth, mParent.getWidth() - 2 * mSnackbarMargin);
             lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            if (prevWidth != lp.width || prevGravity != lp.gravity) {
-                mContainerView.setLayoutParams(lp);
-            }
+
+            // Adjust bottom margin to stay above the software keyboard when it is visible.
+            int keyboardHeight =
+                    KeyboardVisibilityDelegate.getInstance()
+                            .calculateTotalKeyboardHeight(mRootContentView);
+            int newBottomMargin =
+                    mDefaultBottomMargin + mAdditionalBottomMarginPxSupplier.get() + keyboardHeight;
+            lp.bottomMargin = newBottomMargin;
+
+            mContainerView.setLayoutParams(lp);
         }
         if (mIsBeingDragged) {
             Pair<Float, Float> translate = mSnackbarSwipeHandler.getTranslateData();

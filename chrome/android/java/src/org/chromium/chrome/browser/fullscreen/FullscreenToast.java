@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.Toast.ToastPriority;
@@ -109,7 +110,17 @@ interface FullscreenToast {
             mNotificationToast =
                     Toast.makeTextWithPriority(
                             mActivity, toastTextId, Toast.LENGTH_LONG, ToastPriority.HIGH);
-            mNotificationToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
+            // Show the toast above the keyboard if it is visible, to prevent spoofing
+            // attacks that use the keyboard to obscure the fullscreen notification.
+            boolean keyboardVisible =
+                    KeyboardVisibilityDelegate.getInstance()
+                            .isKeyboardShowing(
+                                    mActivity.getWindow().getDecorView().getRootView());
+            if (keyboardVisible) {
+                mNotificationToast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 0);
+            } else {
+                mNotificationToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
+            }
             mNotificationToast.show();
         }
 
