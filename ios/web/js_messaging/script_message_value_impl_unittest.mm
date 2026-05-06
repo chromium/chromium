@@ -42,6 +42,12 @@ TEST_F(ScriptMessageValueTest, DoubleConstructor) {
   EXPECT_EQ(3.14, message_value.GetValue().GetDouble());
 }
 
+TEST_F(ScriptMessageValueTest, ValueShouldSupportDictConstruction) {
+  NSDictionary* ns_dict = @{@"key" : @"value"};
+  ScriptMessageValue message_value(ns_dict);
+  EXPECT_EQ(base::Value::Type::DICT, message_value.type());
+}
+
 // Tests move construction and move assignment.
 TEST_F(ScriptMessageValueTest, MoveOperations) {
   ScriptMessageValue original(true);

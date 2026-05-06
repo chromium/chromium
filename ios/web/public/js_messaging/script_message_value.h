@@ -4,6 +4,7 @@
 
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_VALUE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_VALUE_H_
+
 #include <Foundation/Foundation.h>
 
 #include <optional>
@@ -13,6 +14,7 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
+#include "ios/web/public/js_messaging/script_message_dict_value.h"
 
 namespace web {
 
@@ -31,17 +33,21 @@ class ScriptMessageValue {
   explicit ScriptMessageValue(std::u16string_view value);
   explicit ScriptMessageValue(double value);
   explicit ScriptMessageValue(bool value);
+  explicit ScriptMessageValue(ScriptMessageDictValue value);
+  explicit ScriptMessageValue(NSDictionary* value);
 
   ~ScriptMessageValue();
   // Type checker functions.
   base::Value::Type type() const;
 
-  // Access the underlying data structure.
+  // Accesses the underlying data structures, but fails with a `CHECK()` on a
+  // type mismatch.
   const base::Value& GetValue();
+  const ScriptMessageDictValue& GetDict() const;
 
  private:
   // The object ScriptMessageValue encapsulates.
-  std::variant<std::monostate, base::Value> data_;
+  std::variant<std::monostate, base::Value, ScriptMessageDictValue> data_;
 };
 
 }  // namespace web
