@@ -168,9 +168,7 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
 WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() = default;
 
 bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
-  if (!dialog_model()) {
-    return false;
-  }
+  CHECK(dialog_model());
 
   // Update install dialog step.
   switch (current_step_) {
@@ -299,18 +297,17 @@ void WebAppInstallFlowDialogDelegate::UpdateDialogTitleAndHeader(
       break;
   }
 
-  if (dialog_model() && dialog_model()->host()) {
-    auto* host =
-        static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
-    host->SetTitle(title);
-    host->SetAccessibleTitle(title);
-    // Clear the subtitle for all subsequent steps.
-    host->SetSubtitle(std::u16string());
+  CHECK(dialog_model() && dialog_model()->host());
+  auto* host =
+      static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
+  host->SetTitle(title);
+  host->SetAccessibleTitle(title);
+  // Clear the subtitle for all subsequent steps.
+  host->SetSubtitle(std::u16string());
 
-    // Clear the header for all subsequent steps.
-    if (host->GetBubbleFrameView()) {
-      host->GetBubbleFrameView()->SetHeaderView(nullptr);
-    }
+  // Clear the header for all subsequent steps.
+  if (host->GetBubbleFrameView()) {
+    host->GetBubbleFrameView()->SetHeaderView(nullptr);
   }
 }
 
