@@ -7598,7 +7598,7 @@
       "hempjudith@google.com",
       "//components/permissions/PERMISSIONS_OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "permissions-android-clapper-loud",
