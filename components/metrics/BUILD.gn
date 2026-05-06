@@ -55,7 +55,7 @@ if (!is_cronet_build && is_android) {
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":metrics_java" instead.
     visibility = [ ":*" ]
-    sources = [ "//components/metrics/metrics_switches.cc" ]
+    sources = [ "metrics_switches.h" ]
     class_name = "org.chromium.components.metrics.MetricsSwitches"
   }
 
