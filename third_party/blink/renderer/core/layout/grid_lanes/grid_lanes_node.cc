@@ -108,10 +108,10 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
       max_end_line = std::max(max_end_line, item_span.EndLine());
     }
 
-    item_groups.emplace_back(GridLanesItemGroup{
+    item_groups.emplace_back(MakeGarbageCollected<GridLanesItemGroup>(
         std::move(group_items),
         GridLanesItemGroupProperties(item_span,
-                                     group_properties.GetBaselineGroup())});
+                                     group_properties.GetBaselineGroup())));
   }
   return item_groups;
 }

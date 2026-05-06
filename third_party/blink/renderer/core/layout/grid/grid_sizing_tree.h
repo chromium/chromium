@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_item_group.h"
 
 namespace blink {
 
@@ -96,7 +97,7 @@ class CORE_EXPORT GridSizingTree {
     // calculate track sizes before item placement [1].
     //
     // [1] https://drafts.csswg.org/css-grid-3/#track-sizing-performance
-    Member<GridItems> virtual_items;
+    Member<VirtualItems> virtual_items;
     // TODO(crbug.com/460491953): Make this Member<const GridLayoutData>
     Member<GridLayoutData> layout_data;
     wtf_size_t subtree_size{1};
@@ -114,14 +115,20 @@ class CORE_EXPORT GridSizingTree {
   void SetSizingNodeData(const BlockNode& grid_node,
                          GridItems* grid_items,
                          GridLayoutData* layout_data,
-                         GridItems* virtual_items = nullptr);
+                         VirtualItems* virtual_items = nullptr);
 
   GridItems& GetGridItems(wtf_size_t index = 0) {
     return *At(index).grid_items;
   }
 
   GridItems& GetVirtualItems(wtf_size_t index = 0) {
-    return *At(index).virtual_items;
+    DCHECK(At(index).virtual_items);
+    return *At(index).virtual_items->items;
+  }
+
+  const GridLanesItemGroups& GetVirtualItemGroups(wtf_size_t index = 0) const {
+    DCHECK(At(index).virtual_items);
+    return At(index).virtual_items->item_groups;
   }
 
   GridLayoutData& LayoutData(wtf_size_t index = 0) {
@@ -230,6 +237,10 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
 
   GridItems& GetVirtualItems() const {
     return SizingTree().GetVirtualItems(subtree_root_);
+  }
+
+  const GridLanesItemGroups& GetVirtualItemGroups() const {
+    return SizingTree().GetVirtualItemGroups(subtree_root_);
   }
 
   GridLayoutData& LayoutData() const {

@@ -19,7 +19,7 @@ void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
 void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
                                        GridItems* grid_items,
                                        GridLayoutData* layout_data,
-                                       GridItems* virtual_items) {
+                                       VirtualItems* virtual_items) {
   DCHECK(grid_node.IsGrid() || grid_node.IsGridLanes());
 
   const bool has_standalone_columns =

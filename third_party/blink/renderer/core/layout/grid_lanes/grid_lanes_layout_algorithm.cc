@@ -898,7 +898,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
   return shared_baseline;
 }
 
-GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
+VirtualItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const GridLineResolver& line_resolver,
     const GridItems& grid_lanes_items,
     const bool needs_intrinsic_track_size,
@@ -911,7 +911,8 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
   wtf_size_t max_end_line;
-  GridItems* virtual_items = MakeGarbageCollected<GridItems>();
+  auto* virtual_item_results = MakeGarbageCollected<VirtualItems>();
+  GridItems* virtual_items = virtual_item_results->items.Get();
 
   // If there is an auto-fit track definition, store what tracks it spans.
   const GridTrackList& track_list =
@@ -928,16 +929,26 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
 
   wtf_size_t unplaced_item_span_count = 0;
 
-  for (const auto& [group_items, group_properties] :
-       Node().CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,
-                                start_offset, unplaced_item_span_count)) {
+  // Store the item groups in `virtual_item_results` so that the virtual item
+  // contributions can be computed from those groups after track initialization.
+  GridLanesItemGroups& item_groups = virtual_item_results->item_groups =
+      Node().CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,
+                               start_offset, unplaced_item_span_count);
+
+  for (auto& item_group_ptr : item_groups) {
+    GridLanesItemGroup& item_group = *item_group_ptr;
+    const auto& group_items = item_group.items;
+    const auto& group_properties = item_group.properties;
+
     auto* virtual_item = MakeGarbageCollected<GridItemData>();
 
-    // Eagerly allocate the shared `VirtualItemContributions` so all
-    // translated/auto-placed copies created by `PlaceItemInEveryPosition` will
-    // inherit the same instance when copied, letting us compute contributions
-    // once per group.
-    virtual_item->ResetContributionSizes();
+    // Share the same contribution size as that stored on the item group.
+    // Each virtual item created from the same group will share the same
+    // contribution sizes.
+    //
+    // TODO(almaher): Move contribution calculation until after track
+    // initialization.
+    virtual_item->contribution_sizes = item_group.contribution_sizes;
 
     GridSpan span = group_properties.Span();
     wtf_size_t span_size = span.SpanSize();
@@ -1201,7 +1212,7 @@ GridItems* GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       virtual_items->Append(virtual_item);
     }
   }
-  return virtual_items;
+  return virtual_item_results;
 }
 
 LayoutUnit GridLanesLayoutAlgorithm::ContributionSizeForVirtualItem(
@@ -1509,7 +1520,8 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
     GridLayoutData& layout_data,
     SizingConstraint sizing_constraint,
     bool needs_intrinsic_track_size,
-    GridItems** opt_virtual_items) const {
+    VirtualItems** opt_virtual_items) const {
+  CHECK(opt_virtual_items);
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
 
@@ -1542,7 +1554,7 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
         style, grid_axis_direction,
         line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
 
-    for (auto& virtual_item : **opt_virtual_items) {
+    for (auto& virtual_item : *(*opt_virtual_items)->items) {
       auto& range_indices = virtual_item.RangeIndices(grid_axis_direction);
       const auto& span = virtual_item.Span(grid_axis_direction);
 

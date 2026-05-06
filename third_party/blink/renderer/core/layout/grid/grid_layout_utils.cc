@@ -731,7 +731,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   const bool has_standalone_columns = subgrid_area.columns.IsIndefinite();
   const bool has_standalone_rows = subgrid_area.rows.IsIndefinite();
 
-  GridItems* virtual_items = MakeGarbageCollected<GridItems>();
+  VirtualItems* virtual_items = nullptr;
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,

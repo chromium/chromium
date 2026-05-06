@@ -80,25 +80,50 @@ class GridLanesItemGroupProperties {
   std::optional<BaselineGroup> baseline_group_;
 };
 
-struct GridLanesItemGroup {
-  DISALLOW_NEW();
+struct CORE_EXPORT GridLanesItemGroup
+    : public GarbageCollected<GridLanesItemGroup> {
+  GridLanesItemGroup(GridItems::GridItemDataVector&& items,
+                     GridLanesItemGroupProperties properties)
+      : items(std::move(items)),
+        properties(properties),
+        contribution_sizes(
+            MakeGarbageCollected<GridItemData::VirtualItemContributions>()) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(items); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(items);
+    visitor->Trace(contribution_sizes);
+  }
 
   GridItems::GridItemDataVector items;
   GridLanesItemGroupProperties properties;
+
+  // The shared contribution sizes for the resulting virtual items created from
+  // this group.
+  Member<GridItemData::VirtualItemContributions> contribution_sizes;
 };
 
 using GridLanesItemGroupMap =
     HeapHashMap<GridLanesItemGroupProperties, GridItems::GridItemDataVector>;
-using GridLanesItemGroups = HeapVector<GridLanesItemGroup, 16>;
+using GridLanesItemGroups = HeapVector<Member<GridLanesItemGroup>, 16>;
+
+// Stores an instance of grid item groups and the virtual grid items that were
+// created from them.
+struct CORE_EXPORT VirtualItems : public GarbageCollected<VirtualItems> {
+  VirtualItems() : items(MakeGarbageCollected<GridItems>()) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(items);
+    visitor->Trace(item_groups);
+  }
+
+  Member<GridItems> items;
+  GridLanesItemGroups item_groups;
+};
 
 template <>
 struct HashTraits<GridLanesItemGroupProperties>
     : SimpleClassHashTraits<GridLanesItemGroupProperties> {};
 
 }  // namespace blink
-
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::GridLanesItemGroup)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_ITEM_GROUP_H_

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_item_group.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
@@ -68,7 +69,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLayoutData& layout_data,
       SizingConstraint sizing_constraint = SizingConstraint::kLayout,
       bool needs_intrinsic_track_size = false,
-      GridItems** opt_virtual_items = nullptr) const;
+      VirtualItems** opt_virtual_items = nullptr) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
@@ -228,13 +229,14 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // repeat definition, which requires adjustments to virtual item creation and
   // track sizing per
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
-  GridItems* BuildVirtualGridLanesItems(const GridLineResolver& line_resolver,
-                                        const GridItems& grid_lanes_items,
-                                        const bool needs_intrinsic_track_size,
-                                        SizingConstraint sizing_constraint,
-                                        const wtf_size_t auto_repetition_count,
-                                        wtf_size_t& start_offset,
-                                        bool& has_baseline_aligned_items) const;
+  VirtualItems* BuildVirtualGridLanesItems(
+      const GridLineResolver& line_resolver,
+      const GridItems& grid_lanes_items,
+      const bool needs_intrinsic_track_size,
+      SizingConstraint sizing_constraint,
+      const wtf_size_t auto_repetition_count,
+      wtf_size_t& start_offset,
+      bool& has_baseline_aligned_items) const;
 
   // Computes the block-axis contribution of a virtual grid-lanes item for track
   // sizing. Also computes a baseline shim for the item and sets `baseline_shim`

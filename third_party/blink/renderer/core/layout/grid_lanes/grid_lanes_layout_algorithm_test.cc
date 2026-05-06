@@ -293,7 +293,9 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
 
   EXPECT_EQ(item_groups.size(), 4u);
 
-  for (const auto& [items, properties] : item_groups) {
+  for (const auto& group : item_groups) {
+    const auto& items = group->items;
+    const auto& properties = group->properties;
     wtf_size_t expected_size = 0;
     const auto& span = properties.Span();
     if (span == GridSpan::IndefiniteGridSpan(3) ||
@@ -337,7 +339,9 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroupsWithBaseline) {
   EXPECT_EQ(item_groups.size(), 5u);
   const auto grid_axis_direction = node.Style().GridLanesTrackSizingDirection();
 
-  for (const auto& [items, properties] : item_groups) {
+  for (const auto& group : item_groups) {
+    const auto& items = group->items;
+    const auto& properties = group->properties;
     const auto& span = properties.Span();
     if (span == GridSpan::IndefiniteGridSpan(1)) {
       BaselineGroup baseline_group =
