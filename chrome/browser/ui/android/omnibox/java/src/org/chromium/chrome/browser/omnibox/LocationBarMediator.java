@@ -717,6 +717,12 @@ class LocationBarMediator
         }
 
         String text = info.getText();
+
+        if (text.startsWith(" ")) {
+            // Don't trigger site search if leading by spaces.
+            return false;
+        }
+
         // Check if a single space character was added (either by pure insertion or by replacing
         // selection with a single space).
         // This is the primary condition for site-search activation.
