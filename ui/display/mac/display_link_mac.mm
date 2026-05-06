@@ -31,6 +31,15 @@ bool DisplayLinkMac::SupportsDisplayLinkMacInBrowser() {
       display::features::kCADisplayLinkInBrowser);
 }
 
+// Static
+bool DisplayLinkMac::IsDisplayLinkAllowed(int64_t display_id) {
+  if (DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return ExternalDisplayLinkMac::IsDisplayLinkSupported(display_id);
+  }
+
+  return true;
+}
+
 // static
 scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     int64_t vsync_display_id) {
@@ -58,11 +67,6 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   }
 
   return CVDisplayLinkMac::GetForDisplay(display_id);
-}
-
-// static
-bool DisplayLinkMac::IsCADisplayLinkValidInGpuProcess(int64_t display_id) {
-  return CADisplayLinkMac::IsValidInGpuProcess(display_id);
 }
 
 void DisplayLinkMac::RecordDisplayLinkCreation(bool success) {

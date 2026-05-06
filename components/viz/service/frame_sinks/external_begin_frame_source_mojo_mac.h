@@ -26,7 +26,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
           controller_receiver,
       mojo::PendingRemote<mojom::ExternalBeginFrameControllerClient>
           controller_remote_client,
-      base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb);
+      base::RepeatingClosure update_vsync_displays_cb);
   ~ExternalBeginFrameSourceMojoMac() override;
 
   // mojom::ExternalBeginFrameController implementation.
@@ -51,10 +51,9 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojoMac
 
   mojo::Remote<mojom::ExternalBeginFrameControllerClient> remote_client_;
 
-  // Callback to FrameSinkManagerImpl::UpdateVSyncDisplays(), used to notify
-  // all root frame sinks on the specified display to refresh their vsync
-  // sources.
-  base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb_;
+  // This is a callback to FrameSinkManagerImpl::UpdateVSyncDisplays() which
+  // updates DisplayLinkMac in all RootCompositorFrameSink if needed.
+  base::RepeatingClosure update_vsync_displays_cb_;
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMojoMac> weak_factory_{this};
 };

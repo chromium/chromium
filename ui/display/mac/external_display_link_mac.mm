@@ -14,7 +14,7 @@ namespace ui {
 // static
 scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
     int64_t display_id) {
-  if (!IsDisplayLinkInBrowserValid(display_id)) {
+  if (!IsDisplayLinkSupported(display_id)) {
     return nullptr;
   }
 
@@ -22,9 +22,8 @@ scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
 }
 
 // static
-bool ExternalDisplayLinkMac::IsDisplayLinkInBrowserValid(int64_t display_id) {
-  return VSyncProviderMac::GetInstance()->IsDisplayLinkInBrowserValid(
-      display_id);
+bool ExternalDisplayLinkMac::IsDisplayLinkSupported(int64_t display_id) {
+  return VSyncProviderMac::GetInstance()->IsDisplayLinkSupported(display_id);
 }
 
 ExternalDisplayLinkMac::ExternalDisplayLinkMac(int64_t display_id)
