@@ -1173,11 +1173,6 @@ SharedImageRepresentationFactory::ProduceDawnBuffer(
                                      device, backend_type, context_state);
 }
 
-std::unique_ptr<WebNNTensorRepresentation>
-SharedImageRepresentationFactory::ProduceWebNNTensor(const Mailbox& mailbox) {
-  return manager_->ProduceWebNNTensor(mailbox, memory_type_tracker_.get());
-}
-
 std::unique_ptr<OverlayImageRepresentation>
 SharedImageRepresentationFactory::ProduceOverlay(const gpu::Mailbox& mailbox) {
   return manager_->ProduceOverlay(mailbox, memory_type_tracker_.get());

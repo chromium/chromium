@@ -295,8 +295,6 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
       scoped_refptr<SharedContextState> context_state);
-  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
-      const Mailbox& mailbox);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox);
   std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
