@@ -58,9 +58,6 @@ public interface NtpSearchBox {
 
     void applyWhiteBackground(boolean apply);
 
-    /* Sets whether the fusebox is eligible. */
-    void setIsFuseboxEligible(boolean isEligible);
-
     /**
      * Calculates the percentage (between 0 and 1) of the transition from the search box to the
      * omnibox at the top of the New Tab Page, which is determined by the amount of scrolling and

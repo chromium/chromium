@@ -105,11 +105,6 @@ public class SearchBoxCoordinator implements NtpSearchBox {
     }
 
     @Override
-    public void setIsFuseboxEligible(boolean isEligible) {
-        mMediator.setIsFuseboxEligible(isEligible);
-    }
-
-    @Override
     public void setLensButtonVisibility(boolean visible) {
         mModel.set(SearchBoxProperties.LENS_VISIBILITY, visible);
     }

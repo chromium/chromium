@@ -359,7 +359,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         initializeSearchBoxTextView();
 
         initializeComposeplateFlags(mProfile);
-        mNtpSearchBox.setIsFuseboxEligible(Boolean.TRUE.equals(mIsComposeplateEnabled));
         if (assumeNonNull(mIsComposeplateEnabled)) {
             initializeComposeplate();
         }
@@ -1462,10 +1461,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     public @Nullable HomeModulesCoordinator getHomeModulesCoordinatorForTesting() {
         return mHomeModulesCoordinator;
-    }
-
-    public @Nullable NtpSearchBox getNtpSearchBoxForTesting() {
-        return mNtpSearchBox;
     }
 
     public PropertyModel getModelForTesting() {
