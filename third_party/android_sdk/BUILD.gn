@@ -75,7 +75,8 @@ if (enable_java_templates) {
       jar_deps = [ "//third_party/android_sdk/window_extensions:androidx_window_extensions" ]
       deps =
           [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
-      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.turbine.jar" ]
+      # Must be javac.jar; turbine.jar breaks bytecode rewriting (Absent Code attribute).
+      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar" ]
     }
   }
 }
