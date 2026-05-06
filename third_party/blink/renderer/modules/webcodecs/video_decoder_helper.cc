@@ -95,6 +95,7 @@ VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
           if (const auto* sps = parser.GetSPS(sps_id)) {
             // Interlaced content isn't supported by any hardware decoders based
             // on media::H264Decoder and is only sometimes supported on Android.
+            // Similarly, 4:4:4 content is often unsupported by hardware.
             //
             // Sadly this information is not part of the codec string, nor is it
             // part of the information we get back from the OS support matrix.
@@ -106,7 +107,8 @@ VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
             // This does not fix the problem for annex-b formatted H.264, which
             // we can't detect until after we've selected the decoder. Given how
             // rare this type of content is, this fix is best effort.
-            requires_software_decoder_ = sps->frame_mbs_only_flag == 0;
+            requires_software_decoder_ =
+                sps->frame_mbs_only_flag == 0 || sps->chroma_format_idc == 3;
           }
         }
       }
