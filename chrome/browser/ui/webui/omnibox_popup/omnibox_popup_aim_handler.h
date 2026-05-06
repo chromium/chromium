@@ -65,12 +65,6 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // Forwards a `FocusInput()` call to the page.
   void FocusInput();
 
-  // Sets the message filter for the internal AIM receiver.
-  void SetPageHandlerFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
-  // Sets the message filter for the page remote.
-  void SetPageFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
  protected:
   virtual OmniboxAimPopupWebUIContent* GetAimPopupContent();
 

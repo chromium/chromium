@@ -966,20 +966,6 @@ SearchboxHandler::~SearchboxHandler() {
   controller_ = nullptr;
 }
 
-void SearchboxHandler::SetPageHandlerFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  page_handler_.SetFilter(std::move(filter));
-}
-
-void SearchboxHandler::SetPageFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  if (page_.is_bound()) {
-    page_.SetFilter(std::move(filter));
-  } else {
-    page_filter_ = std::move(filter);
-  }
-}
-
 // TODO(crbug.com/500739761): Remove this check since searchbox.mojom uses
 // factory pattern for instantiation making the remote and receiver bound
 // at the same time.

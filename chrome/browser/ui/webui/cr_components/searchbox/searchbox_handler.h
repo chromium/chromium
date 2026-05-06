@@ -84,12 +84,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       base::UnguessableToken token,
       searchbox::mojom::SelectedFileInfoPtr file_info);
 
-  // Sets the message filter for the internal searchbox receiver.
-  void SetPageHandlerFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
-  // Sets the message filter for the searchbox page remote.
-  void SetPageFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
   // Notifies the WebUI that the contextual input status has changed.
   void OnContextualInputStatusChanged(
       base::UnguessableToken token,
@@ -212,8 +206,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
-  // Holds the page filter until the page remote is bound.
-  std::unique_ptr<mojo::MessageFilter> page_filter_;
   base::OnceClosure page_is_bound_callback_for_testing_;
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(

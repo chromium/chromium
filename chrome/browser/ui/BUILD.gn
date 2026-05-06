@@ -1420,7 +1420,6 @@ static_library("ui") {
       "webui/omnibox_popup/omnibox_popup_aim_handler.h",
       "webui/omnibox_popup/omnibox_popup_handler.cc",
       "webui/omnibox_popup/omnibox_popup_handler.h",
-      "webui/omnibox_popup/omnibox_popup_mojo_visibility_guard.h",
       "webui/omnibox_popup/omnibox_popup_ui.cc",
       "webui/omnibox_popup/omnibox_popup_ui.h",
       "webui/omnibox_popup/omnibox_popup_web_contents_helper.cc",
@@ -1714,13 +1713,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/data_sharing",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
-      "//chrome/browser/ui/webui/omnibox_popup/mojom:mojom__generate_message_ids",
       "//chrome/browser/ui/webui/util:impl",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
-      "//components/omnibox/browser:mojo_bindings__generate_message_ids",
       "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings__generate_message_ids",
 
       # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",

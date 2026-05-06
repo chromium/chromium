@@ -40,12 +40,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       ClearSessionHandleCallback clear_session_callback);
   ~ComposeboxHandler() override;
 
-  // Sets the message filter for the internal composebox receiver.
-  void SetPageHandlerMessageFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
-  // Sets the message filter for the composebox page remote.
-  void SetPageMessageFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
   // composebox::mojom::PageHandler:
   void FocusChanged(bool focused) override;
 

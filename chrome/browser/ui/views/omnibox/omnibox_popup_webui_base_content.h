@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -52,16 +51,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
       delete;
   ~OmniboxPopupWebUIBaseContent() override;
 
-  template <typename T = OmniboxPopupWebUIBaseContent>
-  static T* GetFromEmbedder(TopChromeWebUIController::Embedder* embedder) {
-    if (!embedder) {
-      return nullptr;
-    }
-    auto* wrapper = static_cast<WebUIContentsWrapper*>(embedder);
-    auto host = wrapper->GetHost();
-    return host ? static_cast<T*>(host.get()) : nullptr;
-  }
-
   WebUIContentsWrapperT<OmniboxPopupUI>* contents_wrapper() {
     return contents_wrapper_.get();
   }
@@ -89,8 +78,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   // Notifies the page the widget was hidden and performs cleanup.
   virtual void Clear() = 0;
-
-  bool IsShown() const { return is_shown_; }
 
   // Returns the WebContents from within the wrapper. Don't use
   // GetWebContents() since that may be nullptr if the popup isn't visible.

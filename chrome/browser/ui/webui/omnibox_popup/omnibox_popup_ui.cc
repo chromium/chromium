@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
@@ -36,7 +35,6 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
-#include "components/omnibox/browser/searchbox.mojom-shared-message-ids.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -223,16 +221,6 @@ void OmniboxPopupUI::CreatePageHandler(
       web_ui(),
       base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
-  omnibox_handler_->SetPageFilter(
-      CreateVisibilityFilter<searchbox::mojom::Page>());
-  // TODO(crbug.com/493298087): Audit allowlisted methods to ensure they are
-  // expected to be called while the popup is hidden.
-  omnibox_handler_->SetPageHandlerFilter(
-      CreateVisibilityFilter<searchbox::mojom::PageHandler>(
-          {searchbox::mojom::messages::PageHandler::kGetInputState,
-           searchbox::mojom::messages::PageHandler::kGetPageClassification,
-           searchbox::mojom::messages::PageHandler::kQueryAutocomplete,
-           searchbox::mojom::messages::PageHandler::kNotifySessionAbandoned}));
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -247,10 +235,6 @@ void OmniboxPopupUI::CreatePageHandler(
   popup_handler_ = std::make_unique<OmniboxPopupHandler>(std::move(receiver),
                                                          std::move(page));
   popup_handler_->set_embedder(embedder());
-  popup_handler_->SetPageFilter(
-      CreateVisibilityFilter<omnibox_popup::mojom::Page>());
-  popup_handler_->SetPageHandlerFilter(
-      CreateVisibilityFilter<omnibox_popup::mojom::PageHandler>());
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -266,13 +250,6 @@ void OmniboxPopupUI::CreatePageHandler(
   popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
       std::move(receiver), std::move(page), web_ui()->GetWebContents());
   popup_aim_handler_->set_embedder(embedder());
-  // TODO(crbug.com/493298087): Audit allowlisted methods to ensure they are
-  // expected to be called while the popup is hidden.
-  popup_aim_handler_->SetPageFilter(
-      CreateVisibilityFilter<omnibox_popup_aim::mojom::Page>(
-          {omnibox_popup_aim::mojom::messages::Page::kClearPopup}));
-  popup_aim_handler_->SetPageHandlerFilter(
-      CreateVisibilityFilter<omnibox_popup_aim::mojom::PageHandler>());
 }
 
 void OmniboxPopupUI::BindInterface(
@@ -299,28 +276,6 @@ void OmniboxPopupUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&OmniboxPopupUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
-  composebox_handler_->SetPageMessageFilter(
-      CreateVisibilityFilter<composebox::mojom::Page>());
-  composebox_handler_->SetPageFilter(
-      CreateVisibilityFilter<searchbox::mojom::Page>());
-  // TODO(crbug.com/493298087): Audit allowlisted methods to ensure they are
-  // expected to be called while the popup is hidden.
-  composebox_handler_->SetPageHandlerMessageFilter(
-      CreateVisibilityFilter<composebox::mojom::PageHandler>(
-          {::composebox::mojom::messages::PageHandler::kFocusChanged}));
-  // TODO(crbug.com/493298087): Audit allowlisted methods to ensure they are
-  // expected to be called while the popup is hidden.
-  composebox_handler_->SetPageHandlerFilter(
-      CreateVisibilityFilter<searchbox::mojom::PageHandler>(
-          {searchbox::mojom::messages::PageHandler::kGetInputState,
-           searchbox::mojom::messages::PageHandler::kNotifySessionStarted,
-           searchbox::mojom::messages::PageHandler::kClearFiles,
-           searchbox::mojom::messages::PageHandler::kStopAutocomplete,
-           searchbox::mojom::messages::PageHandler::kSetActiveToolMode,
-           searchbox::mojom::messages::PageHandler::kSetActiveModelMode,
-           searchbox::mojom::messages::PageHandler::kGetPageClassification,
-           searchbox::mojom::messages::PageHandler::kQueryAutocomplete,
-           searchbox::mojom::messages::PageHandler::kNotifySessionAbandoned}));
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -342,10 +297,4 @@ OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
 
 void OmniboxPopupUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
-}
-
-bool OmniboxPopupUI::IsShown() {
-  auto* popup_content =
-      OmniboxPopupWebUIBaseContent::GetFromEmbedder(embedder().get());
-  return popup_content && popup_content->IsShown();
 }

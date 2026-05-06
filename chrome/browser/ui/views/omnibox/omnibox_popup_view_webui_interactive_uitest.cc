@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_mojo_visibility_guard.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -112,7 +111,6 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
   }
 
   void SetUp() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // Wait until page remote is bound and ready to receive calls.
   void WaitForHandler();
@@ -185,15 +183,6 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
 void OmniboxPopupViewWebUITest::SetUp() {
   feature_list_.InitAndEnableFeature(omnibox::internal::kWebUIOmniboxPopup);
   InProcessBrowserTest::SetUp();
-}
-
-void OmniboxPopupViewWebUITest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpCommandLine(command_line);
-  // Disable the Mojo visibility guard crash. This test loads the WebUI and
-  // interacts with it, but doesn't fully exercise the native widget visibility
-  // lifecycle, which trips the guard and causes an intentional crash.
-  command_line->AppendSwitch(kDisableCrashOnOmniboxPopupMojoVisibilitySwitch);
 }
 
 void OmniboxPopupViewWebUITest::WaitForHandler() {

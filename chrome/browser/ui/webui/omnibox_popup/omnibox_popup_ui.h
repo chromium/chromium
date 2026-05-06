@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_UI_H_
 
-#include <initializer_list>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
-#include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom-shared-message-ids.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_mojo_visibility_guard.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,7 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/composebox/composebox.mojom-shared-message-ids.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class Profile;
@@ -118,9 +114,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void ClearContextualSessionHandle();
 
  private:
-  // Returns true if the Omnibox popup is currently shown.
-  bool IsShown();
-
   raw_ptr<Profile> profile_;
 
   // Must outlive `omnibox_handler_` and `composebox_handler_`.
@@ -143,13 +136,6 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
 
-  template <typename Interface, typename MethodType = uint32_t>
-  std::unique_ptr<MojoVisibilityFilter<Interface, MethodType>>
-  CreateVisibilityFilter(std::initializer_list<MethodType> allowlist = {}) {
-    return std::make_unique<MojoVisibilityFilter<Interface, MethodType>>(
-        base::BindRepeating(&OmniboxPopupUI::IsShown, base::Unretained(this)),
-        allowlist);
-  }
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

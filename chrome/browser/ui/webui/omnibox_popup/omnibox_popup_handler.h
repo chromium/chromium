@@ -36,12 +36,6 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   // Forwards an `OnShow()` call to the page.
   void OnShow();
 
-  // Sets the message filter for the internal receiver.
-  void SetPageHandlerFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
-  // Sets the message filter for the page remote.
-  void SetPageFilter(std::unique_ptr<mojo::MessageFilter> filter);
-
  private:
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup::mojom::Page> page_;

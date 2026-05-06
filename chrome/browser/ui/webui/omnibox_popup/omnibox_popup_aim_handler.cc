@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
@@ -88,16 +88,10 @@ void OmniboxPopupAimHandler::FocusInput() {
 }
 
 OmniboxAimPopupWebUIContent* OmniboxPopupAimHandler::GetAimPopupContent() {
-  return OmniboxPopupWebUIBaseContent::GetFromEmbedder<
-      OmniboxAimPopupWebUIContent>(embedder_.get());
-}
-
-void OmniboxPopupAimHandler::SetPageHandlerFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  receiver_.SetFilter(std::move(filter));
-}
-
-void OmniboxPopupAimHandler::SetPageFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  page_.SetFilter(std::move(filter));
+  if (!embedder_) {
+    return nullptr;
+  }
+  WebUIContentsWrapper* wrapper =
+      static_cast<WebUIContentsWrapper*>(embedder_.get());
+  return static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
 }

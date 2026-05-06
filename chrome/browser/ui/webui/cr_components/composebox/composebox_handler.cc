@@ -166,16 +166,6 @@ ComposeboxHandler::ComposeboxHandler(
 
 ComposeboxHandler::~ComposeboxHandler() = default;
 
-void ComposeboxHandler::SetPageHandlerMessageFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  handler_.SetFilter(std::move(filter));
-}
-
-void ComposeboxHandler::SetPageMessageFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  page_.SetFilter(std::move(filter));
-}
-
 void ComposeboxHandler::FocusChanged(bool focused) {
   // Unimplemented. Currently the composebox session is tied to when it is
   // connected/disconnected from the DOM, so this is not needed.

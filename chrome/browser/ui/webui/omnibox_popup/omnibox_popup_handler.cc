@@ -22,13 +22,3 @@ void OmniboxPopupHandler::ShowContextMenu(const gfx::Point& point) {
 void OmniboxPopupHandler::OnShow() {
   page_->OnShow();
 }
-
-void OmniboxPopupHandler::SetPageHandlerFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  receiver_.SetFilter(std::move(filter));
-}
-
-void OmniboxPopupHandler::SetPageFilter(
-    std::unique_ptr<mojo::MessageFilter> filter) {
-  page_.SetFilter(std::move(filter));
-}
