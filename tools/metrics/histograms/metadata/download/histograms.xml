@@ -138,8 +138,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Android.WarningBypassDialog.Events"
-    enum="AndroidDownloadWarningBypassDialogEvent" expires_after="2026-05-30">
-  <owner>chlily@chromium.org</owner>
+    enum="AndroidDownloadWarningBypassDialogEvent" expires_after="2026-11-30">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records events and user interactions with the download warning bypass dialog

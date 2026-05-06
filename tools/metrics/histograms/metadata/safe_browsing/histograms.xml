@@ -288,8 +288,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.AndroidTelemetry.DownloadDirectlyTriggeredByIntent"
-    enum="Boolean" expires_after="2026-06-08">
-  <owner>chlily@chromium.org</owner>
+    enum="Boolean" expires_after="2026-12-08">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records whether an APK download on Android was triggered by an intent.
