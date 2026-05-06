@@ -138,7 +138,7 @@ BASE_FEATURE(kNetworkServiceIncreasedPriorityDuringStartup,
 
 // When enabled, sets the in-process network service thread to
 // base::ThreadType::kPresentation when the scenario indicates that the user is
-// actively loading the focused page and not scrolling.
+// actively loading the visible page and not scrolling.
 BASE_FEATURE(kNetworkServiceIncreasedPriorityWhileLoading,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -209,13 +209,13 @@ class BoostNetworkThreadPriority
  private:
   friend class base::NoDestructor<BoostNetworkThreadPriority>;
 
-  // Boost the network service thread when loading the focused page and not
+  // Boost the network service thread when loading the visible page and not
   // scrolling, since the higher thread priority of the network service thread
   // can take cycles away from threads that are critical to smooth scrolling.
   static constexpr performance_scenarios::ScenarioPattern
       kBoostScenarioPattern = {
           .loading =
-              {performance_scenarios::LoadingScenario::kFocusedPageLoading},
+              {performance_scenarios::LoadingScenario::kVisiblePageLoading},
           .input = {performance_scenarios::InputScenario::kNoInput,
                     performance_scenarios::InputScenario::kTyping,
                     performance_scenarios::InputScenario::kTap}};
