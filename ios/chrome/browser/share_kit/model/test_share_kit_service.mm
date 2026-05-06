@@ -141,7 +141,7 @@ void TestShareKitService::CancelSession(NSString* session_id) {
 
 NSString* TestShareKitService::ShareTabGroup(
     ShareKitShareGroupConfiguration* config) {
-  const TabGroup* tab_group = config.tabGroup;
+  const TabGroup* tab_group = config.tabGroup.get();
   if (!tab_group) {
     return nil;
   }

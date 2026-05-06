@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/weak_ptr.h"
+
 @protocol SceneCommands;
 enum class ShareKitFlowOutcome;
 class TabGroup;
@@ -23,7 +25,7 @@ typedef void (^ShareKitShouldUnshareGroupBlock)(BOOL shouldDelete);
 @property(nonatomic, copy) NSString* collabID;
 
 // Local tab group.
-@property(nonatomic, assign) const TabGroup* tabGroup;
+@property(nonatomic, assign) base::WeakPtr<const TabGroup> tabGroup;
 
 // The group image preview.
 @property(nonatomic, copy) UIImage* groupImage;
