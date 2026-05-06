@@ -914,7 +914,11 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != input_type_for_command_id_.end()) {
         if (it->second == omnibox::InputType::INPUT_TYPE_DRIVE) {
           if (composebox_handler) {
-            composebox_handler->OnDriveUploadClicked();
+            composebox_handler->OnDriveUploadClicked(base::BindOnce(
+                [](searchbox::mojom::DriveUploadResponsePtr response) {
+                  // TODO(crbug.com/493562277): Add Drive files as context to
+                  // the composebox.
+                }));
           }
           return;
         }

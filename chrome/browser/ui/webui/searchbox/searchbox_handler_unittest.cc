@@ -150,6 +150,22 @@ TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
   EXPECT_EQ("CGQ", *strings.FindString("searchboxLensVariations"));
 }
 
+TEST_F(RealboxHandlerTest, ShouldShowDriveDisclaimer) {
+  base::test::TestFuture<bool> future;
+  handler_->ShouldShowDriveDisclaimer(future.GetCallback());
+  EXPECT_FALSE(future.Take());
+}
+
+TEST_F(RealboxHandlerTest, OnDriveUploadClicked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
+  handler_->OnDriveUploadClicked(future.GetCallback());
+  auto response = future.Take();
+  EXPECT_TRUE(response);
+}
+
 TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   // Stop observing the AutocompleteController instance which will be destroyed.
   handler_->autocomplete_controller_observation_.Reset();

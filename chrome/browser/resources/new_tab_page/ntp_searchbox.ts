@@ -9,7 +9,7 @@ import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import type {ComposeboxState, ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -28,7 +28,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -529,8 +529,23 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.onVoiceSearchClick_();
   }
 
-  protected onOpenDriveUpload_() {
-    this.pageHandler().onDriveUploadClicked();
+  protected async onOpenDriveUpload_() {
+    const {response} = await this.pageHandler().onDriveUploadClicked();
+
+    const driveUploads: DriveUpload[] =
+        response.files.map(file => ({
+                             token: file.token,
+                             mimeType: file.mimeType,
+                             fileName: file.fileName,
+                             thumbnailUrl: file.thumbnailUrl ?? null,
+                           }));
+
+    recordContextualElementClickedMetric(
+        this.composeboxSource, 'ClassicPopup', ContextType.DRIVE);
+
+    this.openComposebox_(
+        driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
+        response.error ?? undefined);
   }
 
   protected onContextMenuEntrypointClick_() {
@@ -601,7 +616,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   protected openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified) {
+      model: ModelMode = ModelMode.kUnspecified, error?: DriveUploadError) {
     if (this.ntpRealboxNextEnabled) {
       const context =
           this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
@@ -622,6 +637,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       files: uploads,
       mode: mode,
       model: model,
+      error: error,
     });
     this.setInputText('');
   }

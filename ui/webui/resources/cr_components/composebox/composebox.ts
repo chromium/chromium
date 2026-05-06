@@ -30,7 +30,7 @@ import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composeb
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {ComposeboxFile, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
-import type {ComposeboxState, TabUpload} from './common.js';
+import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
@@ -399,8 +399,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (this.showZps && files.length === 0) {
       this.queryAutocomplete(/* clearMatches= */ false);
     }
-    if (files.length > 0) {
+    if (files.length > 0 || state.error !== undefined) {
       const dataTransfer = new DataTransfer();
+      const driveUploads: DriveUpload[] = [];
       for (const file of files) {
         if ('tabId' in file) {
           // If the composebox is being initialized with tab context from the
@@ -421,11 +422,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
             replaceAutoActiveTabToken: false,
             origin: file.origin,
           } as TabUpload);
+        } else if ('mimeType' in file) {
+          driveUploads.push(file);
         } else {
           dataTransfer.items.add(file.file);
         }
       }
       this.processFiles(dataTransfer.files);
+      if (driveUploads.length > 0 || state.error !== undefined) {
+        this.addDriveUploads(driveUploads, state.error);
+      }
     }
     if (mode !== ToolMode.kUnspecified) {
       this.handleToolClick(mode);

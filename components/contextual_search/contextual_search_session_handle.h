@@ -129,7 +129,7 @@ class ContextualSearchSessionHandle {
   virtual void StartDriveContextUploadFlow(
       const base::UnguessableToken& file_token,
       const std::string& drive_id,
-      const std::string& resource_key,
+      std::optional<std::string> resource_key,
       const std::string& mime_type_string);
 
   // Starts the Modality Chip upload flow for the given file token. The file

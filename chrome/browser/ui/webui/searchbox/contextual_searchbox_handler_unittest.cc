@@ -1036,6 +1036,38 @@ TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_FlagDisabled) {
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
+
+  base::MockCallback<ComposeboxHandler::OnDriveUploadClickedCallback> callback;
+
+  std::vector<base::UnguessableToken> start_file_upload_flow_tokens;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillRepeatedly(
+          [&](const base::UnguessableToken& file_token,
+              std::unique_ptr<lens::ContextualInputData> contextual_input,
+              std::optional<lens::ImageEncodingOptions> image_options) {
+            start_file_upload_flow_tokens.push_back(file_token);
+          });
+
+  searchbox::mojom::DriveUploadResponsePtr callback_response;
+  EXPECT_CALL(callback, Run)
+      .WillOnce([&](searchbox::mojom::DriveUploadResponsePtr response) {
+        callback_response = std::move(response);
+      });
+
+  handler().OnDriveUploadClicked(callback.Get());
+
+  ASSERT_TRUE(callback_response);
+  EXPECT_EQ(callback_response->files.size(),
+            start_file_upload_flow_tokens.size());
+  for (size_t i = 0; i < callback_response->files.size(); ++i) {
+    EXPECT_EQ(callback_response->files[i]->token,
+              start_file_upload_flow_tokens[i]);
+  }
+}
+
 TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
   base::UserActionTester user_action_tester;
 
