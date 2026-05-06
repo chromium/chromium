@@ -22,6 +22,7 @@ extern const char kUsEnglishLocale[];
 extern const char kEnglishLocaleNoCountry[];
 
 // Metrics names for keeping track of SODA installation.
+extern const char kSodaPreemptiveDownloadStarted[];
 extern const char kSodaBinaryInstallationResult[];
 extern const char kSodaBinaryInstallationSuccessTimeTaken[];
 extern const char kSodaBinaryInstallationFailureTimeTaken[];
@@ -338,6 +339,16 @@ const std::string GetInstallationFailureTimeMetricForLanguage(
 const std::string GetInstallationResultMetricForLanguagePack(
     const LanguageCode& language_code);
 const std::string GetInstallationResultMetricForLanguage(
+    std::string_view language);
+
+// Returns the `SodaInstaller.Language.{language}.UninstalledDueToExpiration`
+// uma metric string for the language code.
+const std::string GetUninstalledDueToExpirationMetricForLanguage(
+    std::string_view language);
+
+// Returns the `SodaInstaller.Language.{language}.RedownloadedAfterExpiration`
+// uma metric string for the language code.
+const std::string GetRedownloadedAfterExpirationMetricForLanguage(
     std::string_view language);
 
 // Returns the available Live Caption language best matching the

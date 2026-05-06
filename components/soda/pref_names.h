@@ -202,10 +202,19 @@ inline constexpr std::string_view kSodaNlNlScheduledDeletionTime =
 inline constexpr std::string_view kSodaSvSeScheduledDeletionTime =
     "accessibility.captions.soda_sv_se_scheduled_deletion_time";
 
+// Whether SODA was ever downloaded preemptively.
+inline constexpr std::string_view kSodaPreemptiveDownloadInitiated =
+    "accessibility.captions.soda_preemptive_download_initiated";
+
 // The list of Speech On-Device API (SODA) language packs installed or
 // registered to be installed.
 inline constexpr std::string_view kSodaRegisteredLanguagePacks =
     "accessibility.captions.soda_registered_language_packs";
+
+// The list of Speech On-Device API (SODA) language packs that were uninstalled
+// due to the 30-day expiration timer.
+inline constexpr std::string_view kSodaLanguagePacksRemovedDueToExpiration =
+    "accessibility.captions.soda_language_packs_removed_due_to_expiration";
 
 }  // namespace prefs
 

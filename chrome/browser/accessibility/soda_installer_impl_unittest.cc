@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,6 +17,7 @@
 #include "components/soda/soda_installer.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -279,14 +281,6 @@ TEST_F(SodaInstallerImplTest, ReinstallSoda) {
   ASSERT_TRUE(IsSodaInstalled());
 }
 
-// Tests that SODA is not installed if nothing is using it.
-TEST_F(SodaInstallerImplTest, NotInstalledIfNoConsumers) {
-  SetLiveCaptionEnabled(false);
-  SetHeadlessCaptionEnabled(false);
-  Init();
-  ASSERT_FALSE(IsSodaInstalled());
-}
-
 // Tests that headless captions installs SODA.
 TEST_F(SodaInstallerImplTest, InstalledForHeadlessCaption) {
   SetLiveCaptionEnabled(false);
@@ -334,6 +328,81 @@ TEST_F(SodaInstallerImplProgressTest,
   soda_installer_impl_->OnEvent(item);
   ASSERT_TRUE(last_progress_.has_value());
   EXPECT_EQ(100, last_progress_.value());
+}
+
+TEST_F(SodaInstallerImplTest, PreemptiveDownload) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kPreemptiveSodaDownload);
+
+  SetLiveCaptionEnabled(false);
+
+  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(
+      pref_service_->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated));
+
+  Init();
+
+  ASSERT_TRUE(IsSodaInstalled());
+  ASSERT_TRUE(
+      pref_service_->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated));
+
+  histogram_tester.ExpectBucketCount(speech::kSodaPreemptiveDownloadStarted,
+                                     true, 1);
+}
+
+TEST_F(SodaInstallerImplTest, PreemptiveDownloadFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kPreemptiveSodaDownload);
+
+  SetLiveCaptionEnabled(false);
+
+  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(
+      pref_service_->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated));
+
+  Init();
+
+  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(
+      pref_service_->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated));
+}
+
+TEST_F(SodaInstallerImplTest, ExpirationMetricsTest) {
+  base::HistogramTester histogram_tester;
+  Init();
+
+  // English is installed by default upon Init() because of kLiveCaptionEnabled.
+  ASSERT_TRUE(IsLanguagePackInstalled(kEnglishLocale));
+
+  // Disable Live Caption so it is allowed to be uninstalled.
+  SetLiveCaptionEnabled(false);
+
+  // Set the deletion time to the past to simulate expiration.
+  pref_service_->SetTime(prefs::kSodaEnUsScheduledDeletionTime,
+                         base::Time::Now() - base::Days(1));
+
+  // Re-Init to trigger MaybeUninstallSoda.
+  SetSodaInstallerInitialized(false);
+  Init();
+
+  // Verify English was uninstalled.
+  ASSERT_FALSE(IsLanguagePackInstalled(kEnglishLocale));
+
+  // Verify expiration metric was emitted.
+  histogram_tester.ExpectBucketCount(
+      GetUninstalledDueToExpirationMetricForLanguage(
+          GetLanguageName(kEnglishLocale)),
+      true, 1);
+
+  // Now reinstall the language to verify redownload metric.
+  InstallLanguage(speech::GetLanguageName(kEnglishLocale));
+
+  // Verify redownload metric was emitted.
+  histogram_tester.ExpectBucketCount(
+      GetRedownloadedAfterExpirationMetricForLanguage(
+          GetLanguageName(kEnglishLocale)),
+      true, 1);
 }
 
 }  // namespace speech

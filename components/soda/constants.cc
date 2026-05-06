@@ -79,6 +79,9 @@ const char kUsEnglishLocale[] = "en-US";
 const char kEnglishLocaleNoCountry[] = "en";
 const char kChineseLocaleNoCountry[] = "cmn";
 
+const char kSodaPreemptiveDownloadStarted[] =
+    "SodaInstaller.PreemptiveDownloadStarted";
+
 const char kSodaBinaryInstallationResult[] =
     "SodaInstaller.BinaryInstallationResult";
 
@@ -311,6 +314,18 @@ const std::string GetInstallationResultMetricForLanguage(
     std::string_view language) {
   return base::StrCat(
       {"SodaInstaller.Language.", language, ".InstallationResult"});
+}
+
+const std::string GetUninstalledDueToExpirationMetricForLanguage(
+    std::string_view language) {
+  return base::StrCat(
+      {"SodaInstaller.Language.", language, ".UninstalledDueToExpiration"});
+}
+
+const std::string GetRedownloadedAfterExpirationMetricForLanguage(
+    std::string_view language) {
+  return base::StrCat(
+      {"SodaInstaller.Language.", language, ".RedownloadedAfterExpiration"});
 }
 
 std::string_view GetDefaultLiveCaptionLanguage(

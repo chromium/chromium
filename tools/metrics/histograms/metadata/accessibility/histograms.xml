@@ -4609,6 +4609,45 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.RedownloadedAfterExpiration"
+    enum="Boolean" expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded when a SODA language pack is redownloaded (registered) after having
+    been previously uninstalled due to the 30-day expiration timer. This is
+    recorded as true when the language pack is requested to be installed again.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram
+    name="SodaInstaller.Language.{SodaLanguageCode}.UninstalledDueToExpiration"
+    enum="Boolean" expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded when a SODA language pack is uninstalled due to the 30-day
+    expiration timer, which occurs if the language pack has not been used by any
+    feature relying on SODA for 30 days. This is recorded as true when the
+    uninstallation occurs.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
+<histogram name="SodaInstaller.PreemptiveDownloadStarted" enum="Boolean"
+    expires_after="2027-04-20">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Recorded when the browser starts and initiates a preemptive download of the
+    SODA binary and default language pack. This happens exactly once per user
+    installation if the kPreemptiveSodaDownload feature is enabled. It is
+    recorded as true when the preemptive download is triggered.
+  </summary>
+</histogram>
+
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
     expires_after="2027-06-01">
   <owner>dtseng@chromium.org</owner>

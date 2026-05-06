@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -61,6 +63,9 @@ SodaInstaller::~SodaInstaller() {
 void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
 
+  registry->RegisterBooleanPref(prefs::kSodaPreemptiveDownloadInitiated, false);
+  registry->RegisterListPref(prefs::kSodaLanguagePacksRemovedDueToExpiration);
+
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     registry->RegisterTimePref(config.scheduled_deletion_time_pref,
@@ -98,9 +103,21 @@ void SodaInstaller::Init(PrefService* profile_prefs,
   // features.
   MaybeUninstallSoda(profile_prefs, global_prefs);
 
+  bool preemptive_download_enabled =
+      base::FeatureList::IsEnabled(media::kPreemptiveSodaDownload) &&
+      !global_prefs->GetBoolean(prefs::kSodaPreemptiveDownloadInitiated);
+
+  if (preemptive_download_enabled) {
+    global_prefs->SetBoolean(prefs::kSodaPreemptiveDownloadInitiated, true);
+    base::UmaHistogramBoolean(kSodaPreemptiveDownloadStarted, true);
+    RegisterLanguage(GetDefaultLiveCaptionLanguage(
+                         base::i18n::GetConfiguredLocale(), profile_prefs),
+                     global_prefs);
+  }
+
   // Register SODA if a feature is actively using SODA or used it recently.
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs) ||
-      WasSodaUsedRecently(global_prefs)) {
+      WasSodaUsedRecently(global_prefs) || preemptive_download_enabled) {
     soda_installer_initialized_ = true;
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
     InitLanguages(profile_prefs, global_prefs);
@@ -268,6 +285,14 @@ void SodaInstaller::RegisterLanguage(std::string_view language,
     update->Append(language);
   }
 
+  ScopedListPrefUpdate removed_update(
+      global_prefs, prefs::kSodaLanguagePacksRemovedDueToExpiration);
+  if (removed_update->contains(language)) {
+    base::UmaHistogramBoolean(
+        GetRedownloadedAfterExpirationMetricForLanguage(language), true);
+    removed_update->EraseValue(base::Value(language));
+  }
+
   SetUninstallTimer(global_prefs, language);
 }
 
@@ -375,6 +400,15 @@ void SodaInstaller::MaybeUninstallSoda(PrefService* profile_prefs,
     if (!language_deletion_time.is_null() &&
         language_deletion_time <= base::Time::Now()) {
       languages_to_uninstall.push_back(language.GetString());
+      base::UmaHistogramBoolean(
+          GetUninstalledDueToExpirationMetricForLanguage(language.GetString()),
+          true);
+
+      ScopedListPrefUpdate removed_update(
+          global_prefs, prefs::kSodaLanguagePacksRemovedDueToExpiration);
+      if (!removed_update->contains(language.GetString())) {
+        removed_update->Append(language.GetString());
+      }
     }
   }
 
