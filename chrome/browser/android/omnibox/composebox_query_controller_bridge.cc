@@ -36,6 +36,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
@@ -100,8 +101,10 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     Profile* profile,
     content::WebContents* contextual_tasks_web_contents)
     : profile_{profile}, java_obj_(java_obj) {
-  is_task_scoped_ = contextual_tasks_web_contents != nullptr;
-  if (contextual_tasks_web_contents &&
+  is_task_scoped_ =
+      contextual_tasks_web_contents != nullptr &&
+      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  if (is_task_scoped_ && contextual_tasks_web_contents &&
       !contextual_tasks_web_contents->IsBeingDestroyed()) {
     contextual_tasks_web_ui_interface_ =
         contextual_tasks::GetWebUiInterface(contextual_tasks_web_contents);
