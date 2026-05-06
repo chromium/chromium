@@ -2542,6 +2542,7 @@ Called by update_net_error_codes.py.-->
   <int value="51" label="Open in Incognito window"/>
   <int value="52" label="View page source"/>
   <int value="53" label="Copy video frame"/>
+  <int value="54" label="Download video frame"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->

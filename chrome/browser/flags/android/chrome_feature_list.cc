@@ -485,6 +485,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &media::kAutoPictureInPictureAndroid,
     &media::kContextMenuCopyVideoFrame,
     &media::kContextMenuPictureInPictureAndroid,
+    &media::kContextMenuSaveVideoFrameAs,
     &media::kFullscreenVideoPictureInPicture,
     &net::features::kVerifyQWACs,
     &network::features::kLocalNetworkAccessChecks,

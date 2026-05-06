@@ -246,6 +246,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.OPEN_IN_INCOGNITO_WINDOW,
             Action.VIEW_PAGE_SOURCE,
             Action.COPY_VIDEO_FRAME,
+            Action.DOWNLOAD_VIDEO_FRAME,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -303,7 +304,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int OPEN_IN_INCOGNITO_WINDOW = 51;
             int VIEW_PAGE_SOURCE = 52;
             int COPY_VIDEO_FRAME = 53;
-            int NUM_ENTRIES = 54;
+            int DOWNLOAD_VIDEO_FRAME = 54;
+            int NUM_ENTRIES = 55;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -702,10 +704,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 /* showInProductHelp= */ false,
                                 /* enabled= */ true));
             }
+            if (ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled()
+                    && mParams.canSaveMedia()
+                    && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+                videoGroup.add(
+                        createListItem(
+                                Item.DOWNLOAD_VIDEO_FRAME,
+                                /* showInProductHelp= */ false,
+                                /* enabled= */ !mIsDownloadRestrictedByPolicy));
+            }
 
             if (mParams.canPictureInPicture()
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)) {
+                    && ChromeFeatureList.sContextMenuPictureInPictureAndroid.isEnabled()) {
                 int titleResId =
                         mParams.isPictureInPicture()
                                 ? R.string.contextmenu_exit_picture_in_picture
@@ -896,6 +906,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_copy_video_frame) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_VIDEO_FRAME);
             copyVideoFrameToClipboard();
+        } else if (itemId == R.id.contextmenu_download_video_frame) {
+            recordContextMenuSelection(ContextMenuUma.Action.DOWNLOAD_VIDEO_FRAME);
+            if (mIsDownloadRestrictedByPolicy) {
+                showDownloadRestrictedToast();
+            } else {
+                downloadVideoFrame();
+            }
         } else if (itemId == R.id.contextmenu_copy_link_address) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_LINK_ADDRESS);
             copyLinkUrlIfAllowedByPolicy(
@@ -1246,6 +1263,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private void copyVideoFrameToClipboard() {
         verifyGenericCopyImageActionIsAllowedByPolicy(
                 mParams.getSrcUrl().getSpec(), () -> mNativeDelegate.copyVideoFrame());
+    }
+
+    /** Download the video frame, that triggered the current context menu, to the device. */
+    private void downloadVideoFrame() {
+        mNativeDelegate.downloadVideoFrame();
     }
 
     private void verifyGenericCopyImageActionIsAllowedByPolicy(
@@ -1645,7 +1667,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         || mMode == ContextMenuMode.THIN_WEB_VIEW);
     }
 
-    private void showDownloadRestrictedToast() {
+    @VisibleForTesting
+    void showDownloadRestrictedToast() {
         Toast.makeText(
                         mContext,
                         R.string.download_message_single_download_blocked,

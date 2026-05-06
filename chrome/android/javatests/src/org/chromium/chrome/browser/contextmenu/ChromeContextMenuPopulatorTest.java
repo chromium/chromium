@@ -94,6 +94,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.util.EmbedderSupportFeatures;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -1020,7 +1021,10 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
         ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
     })
-    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
+    })
     public void testVideoCopyFrame() {
         setAllMandatoryFlowsComplete();
         ContextMenuParams params = createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_NONE);
@@ -1049,7 +1053,10 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
         ChromeFeatureList.ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID
     })
-    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
+    })
     public void testVideoCopyFrame_notAllowedByPolicy() {
         doAnswer(
                         (invocation) -> {
@@ -1076,9 +1083,168 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID
+    })
+    public void testVideoDownloadVideoFrame() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        ListItem downloadVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_download_video_frame));
+        assertNotNull("Should have 'Download video frame' menu item.", downloadVideoFrameItem);
+
+        assertTrue(
+                "Clicking on download video frame should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_download_video_frame));
+        verify(mNativeDelegate).downloadVideoFrame();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID
+    })
+    public void testVideoDownloadVideoFrame_cannotSaveMedia() {
+        setAllMandatoryFlowsComplete();
+        // Set canSaveMedia to false.
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.VIDEO,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        new GURL(PAGE_URL),
+                        new GURL(IMAGE_SRC_URL),
+                        "VIDEO!",
+                        GURL.emptyGURL(),
+                        new GURL(IMAGE_SRC_URL),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        /* additionalNavigationParams= */ null);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        ListItem downloadVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_download_video_frame));
+        assertNull("Should NOT have 'Download video frame' menu item.", downloadVideoFrameItem);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        EmbedderSupportFeatures.ANDROID_CHROME_SCHEME_NAVIGATION_KILL_SWITCH_NAME
+    })
+    public void testVideoDownloadVideoFrame_notDownloadableScheme() {
+        setAllMandatoryFlowsComplete();
+        // Use a non-downloadable scheme like "chrome://".
+        GURL internalUrl = new GURL("chrome://history");
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.VIDEO,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        new GURL(PAGE_URL),
+                        internalUrl,
+                        "VIDEO!",
+                        GURL.emptyGURL(),
+                        internalUrl,
+                        "",
+                        null,
+                        true,
+                        0,
+                        0,
+                        MenuSourceType.TOUCH,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* interestForNodeID= */ 0,
+                        /* additionalNavigationParams= */ null);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        ListItem downloadVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_download_video_frame));
+        assertNull(
+                "Should NOT have 'Download video frame' menu item for chrome: URL.",
+                downloadVideoFrameItem);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID
+    })
+    public void testVideoDownloadVideoFrame_restrictedByPolicy() {
+        setAllMandatoryFlowsComplete();
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        ContextMenuParams params = createVideoPipParams(ContextMenuDataMediaFlags.MEDIA_NONE);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+        doNothing().when(mPopulator).showDownloadRestrictedToast();
+
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        ListItem downloadVideoFrameItem =
+                findItemWithTitle(
+                        menuState,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.contextmenu_download_video_frame));
+        assertNotNull("Should have 'Download video frame' menu item.", downloadVideoFrameItem);
+        assertFalse(
+                "Menu item should be disabled by policy.",
+                downloadVideoFrameItem.model.get(ENABLED));
+
+        assertTrue(
+                "Clicking on download video frame should be handled even if restricted.",
+                mPopulator.onItemSelected(R.id.contextmenu_download_video_frame));
+        verify(mPopulator).showDownloadRestrictedToast();
+        verify(mNativeDelegate, never()).downloadVideoFrame();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     @DisableFeatures({
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
     })
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     @UseMethodParameter(ContextMenuPopulatorTestParams.class)
@@ -1224,7 +1390,8 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures({
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
-        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
     })
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
     public void testVideoLinkWithDownloadBlockedByPolicy() {
@@ -1342,7 +1509,10 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
-    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
+    })
     public void testVideoPictureInPicture_Enter() {
         setAllMandatoryFlowsComplete();
         final String enterPip =
@@ -1375,7 +1545,10 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
-    @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID
+    })
     public void testVideoPictureInPicture_Exit() {
         setAllMandatoryFlowsComplete();
         final String enterPip =

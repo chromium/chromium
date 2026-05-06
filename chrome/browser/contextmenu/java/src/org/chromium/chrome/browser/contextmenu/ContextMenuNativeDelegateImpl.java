@@ -141,6 +141,13 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
         ContextMenuNativeDelegateImplJni.get().copyVideoFrame(mNativePtr, mRenderFrameHost);
     }
 
+    @Override
+    public void downloadVideoFrame() {
+        if (mNativePtr == 0) return;
+
+        ContextMenuNativeDelegateImplJni.get().downloadVideoFrame(mNativePtr, mRenderFrameHost);
+    }
+
     /** The class hold the |retrieveImageForShare| callback result. */
     @VisibleForTesting
     static class ImageCallbackResult {
@@ -208,6 +215,10 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
                 boolean enterPip);
 
         void copyVideoFrame(
+                long nativeContextMenuNativeDelegateImpl,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost);
+
+        void downloadVideoFrame(
                 long nativeContextMenuNativeDelegateImpl,
                 @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost);
     }

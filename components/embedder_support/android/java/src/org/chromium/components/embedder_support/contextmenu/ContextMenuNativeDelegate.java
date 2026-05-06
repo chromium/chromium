@@ -72,4 +72,7 @@ public interface ContextMenuNativeDelegate {
 
     /** Copies the current video frame to the clipboard. */
     void copyVideoFrame();
+
+    /** Download the current video frame to the device. */
+    void downloadVideoFrame();
 }

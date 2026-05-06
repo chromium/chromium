@@ -493,12 +493,9 @@ BASE_FEATURE(kContextMenuCopyVideoFrame,
 );
 
 // Enables the "Save Video Frame As" context menu item.
+// On Android, this is "Download Video Frame" context menu item.
 BASE_FEATURE(kContextMenuSaveVideoFrameAs,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 // Enables the "Search Video Frame with <Search Provider>" context menu item.

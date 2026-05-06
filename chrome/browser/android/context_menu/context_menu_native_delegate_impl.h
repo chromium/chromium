@@ -45,6 +45,8 @@ class ContextMenuNativeDelegateImpl {
                            content::RenderFrameHost* render_frame_host,
                            bool enter_pip);
   void CopyVideoFrame(JNIEnv* env, content::RenderFrameHost* render_frame_host);
+  void DownloadVideoFrame(JNIEnv* env,
+                          content::RenderFrameHost* render_frame_host);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(

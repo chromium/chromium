@@ -1047,7 +1047,11 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID})
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID,
+        ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
+    })
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "videoDOMElement");
@@ -1055,6 +1059,7 @@ public class ContextMenuTest {
 
         Integer[] expectedItems = {R.id.contextmenu_save_video};
         expectedItems = maybeAddCopyVideoFrameItem(expectedItems);
+        expectedItems = maybeAddDownloadVideoFrameItem(expectedItems);
         expectedItems = maybeAddPictureInPictureItem(expectedItems);
         expectedItems = maybeAddInspectElementItem(expectedItems);
         assertMenuItemsAreEqual(mMenuCoordinator, expectedItems);
@@ -1553,6 +1558,13 @@ public class ContextMenuTest {
                 ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled(),
                 baseItems,
                 new Integer[] {R.id.contextmenu_copy_video_frame});
+    }
+
+    private Integer[] maybeAddDownloadVideoFrameItem(Integer[] baseItems) {
+        return addItemsIf(
+                ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled(),
+                baseItems,
+                new Integer[] {R.id.contextmenu_download_video_frame});
     }
 
     private void saveMediaFromContextMenu(
