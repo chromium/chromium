@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
@@ -50,6 +51,12 @@ VIEWS_EXPORT gfx::NativeViewAccessible HWNDNativeViewAccessibleForView(
 // Widget resides.
 VIEWS_EXPORT gfx::NativeViewAccessible HWNDNativeViewAccessibleForWidget(
     const Widget* widget);
+
+// Inflates client-area size constraints by the window's frame border/insets
+// so they can be applied to the HWND.
+VIEWS_EXPORT void InflateClientSizeConstraintsInPixels(HWND hwnd,
+                                                       gfx::Size& min,
+                                                       gfx::Size& max);
 
 }  // namespace views
 

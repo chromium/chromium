@@ -2615,6 +2615,30 @@ TEST_F(DesktopWidgetTest, MinimumSizeConstraints) {
   EXPECT_EQ(minimum_size, widget->GetClientAreaBoundsInScreen().size());
 }
 
+#if BUILDFLAG(IS_WIN)
+// On Windows, size constraints are client-sized but SetBounds()
+// operates on window size which includes insets. Ensure the window
+// is clamped correctly if it exceeds its constraints.
+// https://crbug.com/506480944
+TEST_F(DesktopWidgetTest, SetBoundsRespectsMaximumSize) {
+  TestDesktopWidgetDelegate delegate;
+  const gfx::Size maximum_size(400, 300);
+
+  // Start with a smaller preferred/min size to ensure that minimum
+  // size enforcement does not pass the test by itself.
+  auto contents = std::make_unique<StaticSizedView>(gfx::Size(200, 200));
+  contents->set_maximum_size(maximum_size);
+  delegate.set_contents_view(contents.release());
+  delegate.InitWidget(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                   Widget::InitParams::TYPE_WINDOW));
+  Widget* widget = delegate.GetWidget();
+  widget->Show();
+
+  widget->SetBounds(gfx::Rect(0, 0, 4000, 3000));
+  EXPECT_EQ(maximum_size, widget->GetClientAreaBoundsInScreen().size());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // When a non-desktop widget has a desktop child widget, due to the
 // async nature of desktop widget shutdown, the parent can be destroyed before
 // its child. Make sure that parent() returns nullptr at this time.

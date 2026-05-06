@@ -18,6 +18,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/class_property.h"
+#include "ui/gfx/win/msg_util.h"
 #include "ui/views/widget/widget.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(Microsoft::WRL::ComPtr<IAccessible>*)
@@ -141,6 +142,27 @@ gfx::NativeViewAccessible HWNDNativeViewAccessibleForWidget(
       window->SetProperty(kParentAccessibleKey, std::move(new_parent));
 
   return parent_accessible->Get();
+}
+
+void InflateClientSizeConstraintsInPixels(HWND hwnd,
+                                          gfx::Size& min,
+                                          gfx::Size& max) {
+  RECT client_rect;
+  RECT window_rect;
+  ::GetClientRect(hwnd, &client_rect);
+  ::GetWindowRect(hwnd, &window_rect);
+  CR_DEFLATE_RECT(&window_rect, &client_rect);
+  const gfx::Size inset = gfx::Size(window_rect.right - window_rect.left,
+                                    window_rect.bottom - window_rect.top);
+
+  min.Enlarge(inset.width(), inset.height());
+  // zero means "no maximum" so enlarge width/height independently.
+  if (max.width()) {
+    max.Enlarge(inset.width(), 0);
+  }
+  if (max.height()) {
+    max.Enlarge(0, inset.height());
+  }
 }
 
 }  // namespace views

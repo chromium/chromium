@@ -1521,6 +1521,17 @@ gfx::Rect DesktopWindowTreeHostWin::AdjustedContentBounds(
   gfx::Size maximum_size;
   GetMinMaxSize(&minimum_size, &maximum_size);
 
+  if (WidgetSizeIsClientSize()) {
+    // Constraints are sized to the client area, not the HWND (see
+    // OnGetMinMaxInfo), so inflate otherwise the max size will be too small.
+    display::win::ScreenWin* screen = display::win::GetScreenWin();
+    gfx::Size min_px = screen->DIPToScreenSize(GetHWND(), minimum_size);
+    gfx::Size max_px = screen->DIPToScreenSize(GetHWND(), maximum_size);
+    InflateClientSizeConstraintsInPixels(GetHWND(), min_px, max_px);
+    minimum_size = screen->ScreenToDIPSize(GetHWND(), min_px);
+    maximum_size = screen->ScreenToDIPSize(GetHWND(), max_px);
+  }
+
   gfx::Size bounds_size = bounds.size();
 
   if (!maximum_size.IsEmpty()) {

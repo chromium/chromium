@@ -2084,19 +2084,8 @@ void HWNDMessageHandler::OnGetMinMaxInfo(MINMAXINFO* minmax_info) {
   // Add the native frame border size to the minimum and maximum size if the
   // view reports its size as the client size.
   if (delegate_->WidgetSizeIsClientSize()) {
-    RECT client_rect, window_rect;
-    ::GetClientRect(hwnd(), &client_rect);
-    ::GetWindowRect(hwnd(), &window_rect);
-    CR_DEFLATE_RECT(&window_rect, &client_rect);
-    min_window_size.Enlarge(window_rect.right - window_rect.left,
-                            window_rect.bottom - window_rect.top);
-    // Either axis may be zero, so enlarge them independently.
-    if (max_window_size.width()) {
-      max_window_size.Enlarge(window_rect.right - window_rect.left, 0);
-    }
-    if (max_window_size.height()) {
-      max_window_size.Enlarge(0, window_rect.bottom - window_rect.top);
-    }
+    InflateClientSizeConstraintsInPixels(hwnd(), min_window_size,
+                                         max_window_size);
   }
   minmax_info->ptMinTrackSize.x = min_window_size.width();
   minmax_info->ptMinTrackSize.y = min_window_size.height();
@@ -3885,6 +3874,11 @@ void HWNDMessageHandler::SizeWindowToAspectRatio(UINT param,
   delegate_->GetMinMaxSize(&min_window_size, &max_window_size);
   min_window_size = delegate_->DIPToScreenSize(min_window_size);
   max_window_size = delegate_->DIPToScreenSize(max_window_size);
+
+  if (delegate_->WidgetSizeIsClientSize()) {
+    InflateClientSizeConstraintsInPixels(hwnd(), min_window_size,
+                                         max_window_size);
+  }
 
   std::optional<gfx::Size> max_size_param;
   if (!max_window_size.IsEmpty()) {
