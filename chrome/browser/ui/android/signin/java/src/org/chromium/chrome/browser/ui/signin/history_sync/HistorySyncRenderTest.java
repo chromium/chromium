@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -111,6 +113,8 @@ public class HistorySyncRenderTest {
     @ParameterAnnotations.UseMethodParameterBefore(
             HistorySyncRenderTest.NightModeAndOrientationParameterProvider.class)
     public void setupNightModeAndDeviceOrientation(boolean nightModeEnabled, int orientation) {
+        Assume.assumeFalse(
+                DeviceInfo.isDesktop() && orientation == Configuration.ORIENTATION_PORTRAIT);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppCompatDelegate.setDefaultNightMode(
