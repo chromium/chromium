@@ -17,8 +17,8 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/color/color_id.h"
@@ -28,6 +28,7 @@
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/slide_out_controller.h"
@@ -182,8 +183,6 @@ class NotificationGroupingControllerTest : public AshTestBase {
     ui::GestureEvent gesture_event(0, 0, ui::EF_NONE, base::TimeTicks(),
                                    details);
     slide_out_controller->OnGestureEvent(&gesture_event);
-
-    base::RunLoop().RunUntilIdle();
   }
 
   void GenerateSwipe(int swipe_amount,
@@ -594,8 +593,12 @@ TEST_F(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
 
   // Swiping out a group child notification while the parent notification is
   // expanded should only slide and remove the group child notification.
-  GenerateSwipe(300, GetSlideOutController(
-                         static_cast<AshNotificationView*>(message_view_3)));
+  {
+    message_center::MessageCenterWaiter waiter(id3);
+    GenerateSwipe(300, GetSlideOutController(
+                           static_cast<AshNotificationView*>(message_view_3)));
+    waiter.WaitUntilRemoved();
+  }
   EXPECT_FALSE(message_center->FindNotificationById(id3));
   EXPECT_TRUE(message_center->FindNotificationById(parent_id));
 
@@ -607,6 +610,8 @@ TEST_F(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
   // notification center.
   GenerateSwipe(300, GetSlideOutController(
                          static_cast<AshNotificationView*>(message_view_2)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !message_center->FindPopupNotificationById(parent_id); }));
 
   EXPECT_FALSE(message_center->FindPopupNotificationById(parent_id));
   EXPECT_TRUE(message_center->FindNotificationById(id1));
