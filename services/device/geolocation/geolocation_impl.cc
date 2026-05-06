@@ -112,6 +112,25 @@ void GeolocationImpl::QueryNextPosition(QueryNextPositionCallback callback) {
   RecordUmaGeolocationImplClientId(client_id_);
 }
 
+void GeolocationImpl::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  if (position_override_) {
+    std::move(callback).Run(position_override_.Clone());
+    return;
+  }
+
+  mojom::GeopositionResultPtr result =
+      GeolocationProvider::GetInstance()->GetCachedPosition();
+  if (result) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+          mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
+}
+
 void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {
   if (!position_callback_.is_null()) {
     if (!current_result_) {

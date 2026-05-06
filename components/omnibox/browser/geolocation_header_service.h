@@ -64,6 +64,10 @@ class GeolocationHeaderService : public KeyedService {
     location_age_for_testing_ = age;
   }
 
+  bool is_geolocation_bound_for_testing() const {
+    return geolocation_.is_bound();
+  }
+
  private:
   // Returns true if both the site-level and OS-level geolocation permissions
   // are granted for the given URL.
@@ -73,7 +77,8 @@ class GeolocationHeaderService : public KeyedService {
   bool IsUrlEligibleForLocationHeader(const GURL& url) const;
 
   // Encapsulates the logic to connect to the device geolocation service.
-  bool EnsureGeolocationServiceConnection(const GURL& requesting_url);
+  bool EnsureGeolocationServiceConnection(const GURL& requesting_url,
+                                          bool use_cache_only = false);
 
   void OnLocationUpdate(device::mojom::GeopositionResultPtr result);
 

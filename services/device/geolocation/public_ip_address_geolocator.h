@@ -45,6 +45,7 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
  private:
   // mojom::Geolocation:
   void QueryNextPosition(QueryNextPositionCallback callback) override;
+  void QueryCachedPosition(QueryCachedPositionCallback callback) override;
   void SetHighAccuracyHint(bool high_accuracy) override;
 
   // Callback to register with PublicIpAddressLocationNotifier.

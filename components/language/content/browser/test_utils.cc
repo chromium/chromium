@@ -18,6 +18,12 @@ void MockGeoLocation::QueryNextPosition(QueryNextPositionCallback callback) {
   std::move(callback).Run(result_.Clone());
 }
 
+void MockGeoLocation::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  NOTREACHED()
+      << "QueryCachedPosition should not be called by the Language service";
+}
+
 void MockGeoLocation::BindGeoLocation(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver) {
   receiver_.Bind(std::move(receiver));

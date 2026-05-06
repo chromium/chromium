@@ -21,6 +21,7 @@ export class GeolocationMock {
      * call.
     */
     this.result_ = null;
+    this.cachedResult_ = null;
 
     /**
      * While true, position requests will result in a timeout error.
@@ -128,6 +129,23 @@ export class GeolocationMock {
     return Promise.resolve({result});
   }
 
+  /**
+   * A mock implementation of GeolocationService.queryCachedPosition(). This
+   * returns the current cached location or kPositionUnavailable error.
+   */
+  queryCachedPosition() {
+    if (this.cachedResult_ && this.cachedResult_.position) {
+      return Promise.resolve({result: this.cachedResult_});
+    }
+
+    const error = {
+      errorMessage: "",
+      errorCode: GeopositionErrorCode.kPositionUnavailable,
+      errorTechnical: "",
+    };
+    return Promise.resolve({result: {error}});
+  }
+
   makeGeoposition(latitude, longitude, accuracy, altitude = undefined,
                   altitudeAccuracy = undefined, heading = undefined,
                   speed = undefined) {
@@ -169,6 +187,7 @@ export class GeolocationMock {
     const position = this.makeGeoposition(latitude, longitude, accuracy,
         altitude, altitudeAccuracy, heading, speed);
     this.result_ = {position};
+    this.cachedResult_ = {position};
   }
 
   /**
@@ -183,6 +202,7 @@ export class GeolocationMock {
       errorTechnical: "",
     };
     this.result_ = {error};
+    this.cachedResult_ = {error};
   }
 
   /**

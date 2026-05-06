@@ -36,6 +36,9 @@ class GeolocationProvider {
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) = 0;
 
+  // Returns the current cached position result if available.
+  virtual mojom::GeopositionResultPtr GetCachedPosition() = 0;
+
   // Sets the singleton GeolocationProvider that will be returned by
   // GetInstance().
   static void SetInstanceForTesting(GeolocationProvider* instance_for_testing);

@@ -144,6 +144,22 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   return subscription;
 }
 
+mojom::GeopositionResultPtr GeolocationProviderImpl::GetCachedPosition() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    if (low_accuracy_result_) {
+      return low_accuracy_result_.Clone();
+    }
+    if (high_accuracy_result_) {
+      return high_accuracy_result_.Clone();
+    }
+  } else if (result_) {
+    return result_.Clone();
+  }
+  return nullptr;
+}
+
 void GeolocationProviderImpl::OverrideLocationForTesting(
     mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

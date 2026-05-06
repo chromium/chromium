@@ -82,6 +82,15 @@ void InstalledWebappGeolocationBridge::QueryNextPosition(
   }
 }
 
+// QueryCachedPosition is not supported by this provider since it is not
+// needed by Trusted Web Activities.
+void InstalledWebappGeolocationBridge::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  std::move(callback).Run(device::mojom::GeopositionResult::NewError(
+      device::mojom::GeopositionError::New(
+          device::mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
+}
+
 void InstalledWebappGeolocationBridge::SetOverride(
     device::mojom::GeopositionResultPtr result) {
   CHECK(result);

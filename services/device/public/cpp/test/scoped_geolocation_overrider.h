@@ -50,6 +50,9 @@ class ScopedGeolocationOverrider {
   // they should no longer be listening.
   size_t GetGeolocationInstanceCount() const;
 
+  size_t GetQueryNextPositionCount() const;
+  size_t GetQueryCachedPositionCount() const;
+
   // Register callback to be notified when a Remote<Geolocation> is cleared and
   // the corresponding fake Geolocation instance is disposed.
   void SetGeolocationCloseCallback(base::RepeatingClosure closure);

@@ -116,9 +116,12 @@ void GeolocationHeaderService::PrimeLocation() {
   GURL requesting_url = default_provider->GenerateSearchURL(
       template_url_service_->search_terms_data());
 
+  bool is_ills_enabled =
+      base::FeatureList::IsEnabled(omnibox::kInlineLocationSignaling);
+
   if (!requesting_url.is_valid() ||
       !requesting_url.SchemeIs(url::kHttpsScheme) ||
-      !IsAllowedByPermission(requesting_url)) {
+      (!IsAllowedByPermission(requesting_url) && !is_ills_enabled)) {
     last_position_.reset();
     return;
   }
@@ -132,12 +135,20 @@ void GeolocationHeaderService::PrimeLocation() {
     }
   }
 
-  if (!EnsureGeolocationServiceConnection(requesting_url)) {
+  bool use_cache_only =
+      is_ills_enabled && !IsAllowedByPermission(requesting_url);
+
+  if (!EnsureGeolocationServiceConnection(requesting_url, use_cache_only)) {
     return;
   }
 
-  geolocation_->QueryNextPosition(base::BindOnce(
-      &GeolocationHeaderService::OnLocationUpdate, weak_factory_.GetWeakPtr()));
+  auto callback = base::BindOnce(&GeolocationHeaderService::OnLocationUpdate,
+                                 weak_factory_.GetWeakPtr());
+  if (use_cache_only) {
+    geolocation_->QueryCachedPosition(std::move(callback));
+  } else {
+    geolocation_->QueryNextPosition(std::move(callback));
+  }
 }
 
 bool GeolocationHeaderService::HasCachedLocation() const {
@@ -258,7 +269,8 @@ bool GeolocationHeaderService::IsUrlEligibleForLocationHeader(
 }
 
 bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
-    const GURL& requesting_url) {
+    const GURL& requesting_url,
+    bool use_cache_only) {
   if (geolocation_.is_bound()) {
     return true;
   }
@@ -279,7 +291,9 @@ bool GeolocationHeaderService::EnsureGeolocationServiceConnection(
       geolocation_.BindNewPipeAndPassReceiver(), requesting_url,
       device::mojom::GeolocationClientId::kOmnibox, has_precise);
 
-  geolocation_->SetHighAccuracyHint(has_precise);
+  if (!use_cache_only) {
+    geolocation_->SetHighAccuracyHint(has_precise);
+  }
 
   geolocation_.set_disconnect_handler(base::BindOnce(
       [](base::WeakPtr<GeolocationHeaderService> service) {

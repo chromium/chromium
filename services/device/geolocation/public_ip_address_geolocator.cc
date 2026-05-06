@@ -53,6 +53,15 @@ void PublicIpAddressGeolocator::QueryNextPosition(
   RecordUmaPublicIpAddressGeolocatorClientId(client_id_);
 }
 
+// QueryCachedPosition is not supported by this provider since it does not
+// maintain a traditional local cache of positions like GeolocationImpl.
+void PublicIpAddressGeolocator::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  std::move(callback).Run(
+      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+          mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
+}
+
 // Low/high accuracy toggle is ignored by this implementation.
 void PublicIpAddressGeolocator::SetHighAccuracyHint(bool high_accuracy) {}
 

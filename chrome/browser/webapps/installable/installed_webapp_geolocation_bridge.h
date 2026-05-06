@@ -63,6 +63,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
   // device::mojom::Geolocation:
   void SetHighAccuracyHint(bool high_accuracy) override;
   void QueryNextPosition(QueryNextPositionCallback callback) override;
+  void QueryCachedPosition(QueryCachedPositionCallback callback) override;
 
   void OnConnectionError();
 

@@ -600,3 +600,128 @@ TEST_F(GeolocationHeaderServiceTest, HighAccuracyHint) {
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
 }
+
+class GeolocationHeaderServiceInlineLocationTest
+    : public GeolocationHeaderServiceTest {
+ public:
+  GeolocationHeaderServiceInlineLocationTest() {
+    feature_list_.InitWithFeatures(
+        {omnibox::kPlatformAgnosticXGeo,
+         omnibox::kOmniboxXGeoPermissionGranularity,
+         omnibox::kInlineLocationSignaling,
+         content_settings::features::kApproximateGeolocationPermission},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that when the InlineLocationSignaling flag is enabled and the DSE
+// lacks permission, PrimeLocation uses the cache-only flow and does not
+// trigger active scans.
+TEST_F(GeolocationHeaderServiceInlineLocationTest, PrimeLocationCacheOnly) {
+  std::unique_ptr<GeolocationHeaderService> service = CreateService();
+
+  // Setup DSE but without permissions (ASK)
+  SetDefaultSearchProviderUrl(kGoogleUrl);
+  SetSitePermissionWithOptions(
+      GURL(kGoogleUrl), {PermissionOption::kAsk, PermissionOption::kAsk});
+
+  // Clear the mock service location by overriding with an error
+  geolocation_overrider_.OverrideGeolocation(
+      device::mojom::GeopositionResult::NewError(
+          device::mojom::GeopositionError::New(
+              device::mojom::GeopositionErrorCode::kPositionUnavailable, "",
+              "")));
+
+  service->PrimeLocation();
+
+  // Wait for the call to complete (connection reset). If a non-cached location
+  // was used, it would stay bound waiting for an update.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !service->is_geolocation_bound_for_testing(); }));
+
+  EXPECT_EQ(geolocation_overrider_.GetQueryCachedPositionCount(), 1u);
+  EXPECT_EQ(geolocation_overrider_.GetQueryNextPositionCount(), 0u);
+  EXPECT_FALSE(service->HasCachedLocation());
+}
+
+// Tests that when the InlineLocationSignaling flag is enabled and the DSE
+// has permission, PrimeLocation uses the standard flow and waits for active
+// scans.
+TEST_F(GeolocationHeaderServiceInlineLocationTest, PrimeLocationStandard) {
+  std::unique_ptr<GeolocationHeaderService> service = CreateService();
+
+  SetupGoogleDseWithPermissions();
+
+  // Clear the mock service location by overriding with an error
+  geolocation_overrider_.OverrideGeolocation(
+      device::mojom::GeopositionResult::NewError(
+          device::mojom::GeopositionError::New(
+              device::mojom::GeopositionErrorCode::kPositionUnavailable, "",
+              "")));
+
+  service->PrimeLocation();
+
+  // Verify it is waiting for update (connection remains bound)
+  EXPECT_TRUE(service->is_geolocation_bound_for_testing());
+
+  // Now simulate a fresh update.
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  // Wait for the call to complete (connection reset)
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !service->is_geolocation_bound_for_testing(); }));
+
+  EXPECT_EQ(geolocation_overrider_.GetQueryCachedPositionCount(), 0u);
+  EXPECT_EQ(geolocation_overrider_.GetQueryNextPositionCount(), 1u);
+  EXPECT_TRUE(service->HasCachedLocation());
+}
+
+// Tests that when the InlineLocationSignaling flag is disabled and the DSE
+// lacks permission, PrimeLocation aborts early and does not query the service.
+TEST_F(GeolocationHeaderServiceTest, PrimeLocationFlagDisabled) {
+  std::unique_ptr<GeolocationHeaderService> service = CreateService();
+
+  // Setup DSE but without permissions (ASK)
+  SetDefaultSearchProviderUrl(kGoogleUrl);
+  SetSitePermissionWithOptions(
+      GURL(kGoogleUrl), {PermissionOption::kAsk, PermissionOption::kAsk});
+
+  // Clear the mock service location by overriding with an error
+  geolocation_overrider_.OverrideGeolocation(
+      device::mojom::GeopositionResult::NewError(
+          device::mojom::GeopositionError::New(
+              device::mojom::GeopositionErrorCode::kPositionUnavailable, "",
+              "")));
+
+  service->PrimeLocation();
+
+  // Since the flag was disabled and DSE not allowed, it should have aborted
+  // early.
+  EXPECT_EQ(geolocation_overrider_.GetQueryCachedPositionCount(), 0u);
+  EXPECT_EQ(geolocation_overrider_.GetQueryNextPositionCount(), 0u);
+  EXPECT_FALSE(service->HasCachedLocation());
+  EXPECT_FALSE(service->is_geolocation_bound_for_testing());
+
+  // Now grant permission to the DSE and verify that PrimeLocation proceeds.
+  SetupGoogleDseWithPermissions();
+
+  service->PrimeLocation();
+
+  // Verify it is waiting for update (connection remains bound)
+  EXPECT_TRUE(service->is_geolocation_bound_for_testing());
+
+  // Now simulate a fresh update.
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  // Wait for the call to complete (connection reset)
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !service->is_geolocation_bound_for_testing(); }));
+
+  EXPECT_EQ(geolocation_overrider_.GetQueryNextPositionCount(), 1u);
+  EXPECT_TRUE(service->HasCachedLocation());
+}

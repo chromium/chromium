@@ -65,7 +65,19 @@ class ScopedGeolocationOverrider::FakeGeolocationContext
     close_callback_ = std::move(callback);
   }
 
+  size_t query_next_position_count() const {
+    return query_next_position_count_;
+  }
+  size_t query_cached_position_count() const {
+    return query_cached_position_count_;
+  }
+
+  void IncrementQueryNextPositionCount() { ++query_next_position_count_; }
+  void IncrementQueryCachedPositionCount() { ++query_cached_position_count_; }
+
  private:
+  size_t query_next_position_count_ = 0;
+  size_t query_cached_position_count_ = 0;
   mojom::GeopositionResultPtr result_;
   // |override_result_| enables overriding the override set by this class, as
   // required by the mojom::GeolocationContext interface.
@@ -94,6 +106,7 @@ class ScopedGeolocationOverrider::FakeGeolocation : public mojom::Geolocation {
 
   // mojom::Geolocation implementation:
   void QueryNextPosition(QueryNextPositionCallback callback) override;
+  void QueryCachedPosition(QueryCachedPositionCallback callback) override;
   void SetHighAccuracyHint(bool high_accuracy) override;
   const GURL& url() { return url_; }
 
@@ -167,6 +180,14 @@ void ScopedGeolocationOverrider::Resume() {
 
 size_t ScopedGeolocationOverrider::GetGeolocationInstanceCount() const {
   return geolocation_context_->GetGeolocationInstanceCount();
+}
+
+size_t ScopedGeolocationOverrider::GetQueryNextPositionCount() const {
+  return geolocation_context_->query_next_position_count();
+}
+
+size_t ScopedGeolocationOverrider::GetQueryCachedPositionCount() const {
+  return geolocation_context_->query_cached_position_count();
 }
 
 void ScopedGeolocationOverrider::SetGeolocationCloseCallback(
@@ -350,10 +371,26 @@ void ScopedGeolocationOverrider::FakeGeolocation::OnPermissionRevoked() {
 
 void ScopedGeolocationOverrider::FakeGeolocation::QueryNextPosition(
     QueryNextPositionCallback callback) {
+  context_->IncrementQueryNextPositionCount();
   // Pending callbacks might be overrided.
   position_callback_ = std::move(callback);
 
   RunPositionCallbackIfNeeded();
+}
+
+void ScopedGeolocationOverrider::FakeGeolocation::QueryCachedPosition(
+    QueryCachedPositionCallback callback) {
+  context_->IncrementQueryCachedPositionCount();
+  const mojom::GeopositionResult* result =
+      context_->GetGeoposition(high_accuracy_hint_);
+  if (result && result->is_position()) {
+    std::move(callback).Run(result->Clone());
+    return;
+  }
+
+  std::move(callback).Run(
+      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+          mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
 }
 
 void ScopedGeolocationOverrider::FakeGeolocation::SetHighAccuracyHint(
