@@ -62,6 +62,8 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor cancelButtonTitle: string = '';
 
   private caretResizeObserver_: ResizeObserver|null = null;
+  private smartComposeResizeObserver_: ResizeObserver|null = null;
+  private smartComposeHeightUpdateFrame_: number|null = null;
   private lastObservedInputWrapperWidth_: number = -1;
   private anchoredSpan_: HTMLElement|null = null;
 
@@ -72,6 +74,9 @@ export class ComposeboxInputElement extends I18nMixinLit
   override connectedCallback() {
     super.connectedCallback();
     this.setupCaretResizeObserver_();
+    this.smartComposeResizeObserver_ = new ResizeObserver(() => {
+      this.scheduleSmartComposeHeightUpdate_();
+    });
   }
 
   override disconnectedCallback() {
@@ -79,6 +84,14 @@ export class ComposeboxInputElement extends I18nMixinLit
     if (this.caretResizeObserver_) {
       this.caretResizeObserver_.disconnect();
       this.caretResizeObserver_ = null;
+    }
+    if (this.smartComposeResizeObserver_) {
+      this.smartComposeResizeObserver_.disconnect();
+      this.smartComposeResizeObserver_ = null;
+    }
+    if (this.smartComposeHeightUpdateFrame_ !== null) {
+      cancelAnimationFrame(this.smartComposeHeightUpdateFrame_);
+      this.smartComposeHeightUpdateFrame_ = null;
     }
     this.lastObservedInputWrapperWidth_ = -1;
   }
@@ -96,28 +109,80 @@ export class ComposeboxInputElement extends I18nMixinLit
 
     if (changedProperties.has('smartComposeInlineHint')) {
       if (this.smartComposeInlineHint) {
-        this.adjustInputForSmartCompose();
-      } else {
-        this.$.input.style.height = '';
-        this.$.input.style.minHeight = '';
-        const smartCompose = this.shadowRoot.getElementById('smartCompose');
+        const smartCompose =
+            this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
         if (smartCompose) {
-          smartCompose.style.minHeight = '';
+          this.smartComposeResizeObserver_?.observe(smartCompose);
+          this.scheduleSmartComposeHeightUpdate_();
         }
+      } else {
+        this.smartComposeResizeObserver_?.disconnect();
+        if (this.smartComposeHeightUpdateFrame_ !== null) {
+          cancelAnimationFrame(this.smartComposeHeightUpdateFrame_);
+          this.smartComposeHeightUpdateFrame_ = null;
+        }
+        this.$.input.style.minHeight = '';
       }
     }
   }
 
-  adjustInputForSmartCompose() {
-    const smartCompose = this.shadowRoot.getElementById('smartCompose');
+  private scheduleSmartComposeHeightUpdate_() {
+    // Stale-callback guard at schedule-time: skip registration when the element
+    // is detached or the hint already cleared. Avoids burning a frame slot for
+    // work that the rAF callback would no-op on.
+    if (!this.isConnected || !this.smartComposeInlineHint) {
+      return;
+    }
+    if (this.smartComposeHeightUpdateFrame_ !== null) {
+      return;
+    }
+    this.smartComposeHeightUpdateFrame_ = requestAnimationFrame(() => {
+      this.smartComposeHeightUpdateFrame_ = null;
+      // Stale-callback guard at run-time: state may have changed between
+      // schedule and the rAF firing (e.g. hint cleared, element removed).
+      // Re-check before touching DOM.
+      if (!this.isConnected || !this.smartComposeInlineHint) {
+        return;
+      }
+      this.updateSmartComposeHeight_();
+    });
+  }
+
+  private updateSmartComposeHeight_() {
+    const smartCompose =
+        this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
     if (!smartCompose) {
       return;
     }
+    const input = this.$.input;
 
-    const ghostHeight = smartCompose.scrollHeight;
-    if (ghostHeight > 48) {
-      this.$.input.style.minHeight = `68px`;
-      smartCompose.style.minHeight = `68px`;
+    // Convergence guard: short-circuit when the currently set inline
+    // min-height already matches the rendered #smartCompose height.
+    // browser_tests showed that writing #input.style.minHeight = feeds back
+    // into the observed #smartCompose box, so repeated cross-frame
+    // clear-and-set cycles can become observable churn event with the rAF
+    // schedule. Skipping the clear/measure/write path when no change is needed
+    // keeps the system at a fixed point.
+    const currentSmartComposeHeight = smartCompose.scrollHeight;
+    const desiredMinHeight = `${currentSmartComposeHeight}px`;
+    if (input.style.minHeight === desiredMinHeight) {
+      return;
+    }
+
+    // Always invoked via scheduleSmartComposeHeightUpdate_() from a frame
+    // separate ResizeObserver delivery. Running this synchronously inside
+    // the ResizeObserver callback triggered "ResizeObserver loop completed
+    // with undelivered notifications." in the browser_tests, even though the
+    // observed (#smartCompose) and written (#input) targets were disjoint.
+    // Re-measure smartCompose.scrollHeight after the clear so shrink cases
+    // (hint -> shorter, or input typed past hint length) can return
+    // input.minHeight to '' instead of a stale value.
+    input.style.minHeight = '';
+
+    const inputHeight = input.scrollHeight;
+    const smartComposeHeight = smartCompose.scrollHeight;
+    if (smartComposeHeight > inputHeight) {
+      input.style.minHeight = `${smartComposeHeight}px`;
     }
   }
 
