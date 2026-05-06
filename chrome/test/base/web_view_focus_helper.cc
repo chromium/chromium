@@ -14,51 +14,87 @@
 
 namespace ui_test_utils {
 
-WebViewFocusManager::WebViewFocusManager(views::FocusManager* focus_manager,
-                                         content::WebContents* web_contents)
-    : focus_manager_(focus_manager) {
-  focus_manager->AddFocusChangeListener(this);
-  Observe(web_contents);
-}
-WebViewFocusManager::~WebViewFocusManager() {
-  focus_manager_->RemoveFocusChangeListener(this);
+FocusChangeObserver::FocusChangeObserver(views::FocusManager* focus_manager) {
+  focus_manager_observation_.Observe(focus_manager);
 }
 
-void WebViewFocusManager::AdvanceFocus(bool reverse) {
-  base::Time start = base::Time::Now();
-  // Try-bots sometimes don't register these key presses (even with if the
-  // view is copyable), so we try multiple times to avoid flakes.
-  do {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        web_contents()->GetTopLevelNativeWindow(), ui::VKEY_TAB, false, reverse,
-        false, false));
+FocusChangeObserver::FocusChangeObserver(
+    views::FocusManager* focus_manager,
+    const std::vector<content::WebContents*>& web_contents)
+    : FocusChangeObserver(focus_manager) {
+  for (content::WebContents* wc : web_contents) {
+    web_contents_observers_.push_back(
+        std::make_unique<WebContentsFocusObserver>(this, wc));
+  }
+}
+
+FocusChangeObserver::~FocusChangeObserver() = default;
+
+bool FocusChangeObserver::WaitForFocusChange(base::TimeDelta timeout) {
+  if (changed_) {
+    return true;
+  }
+  run_loop_ = std::make_unique<base::RunLoop>();
+  if (timeout != base::TimeDelta::Max()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop_->QuitClosure(), base::Seconds(1));
-    run_loop_->Run();
-    run_loop_.reset();
-  } while (!done_ && (base::Time::Now() < start + base::Seconds(5)));
+        FROM_HERE, run_loop_->QuitClosure(), timeout);
+  }
+  run_loop_->Run();
+  bool result = changed_;
+  run_loop_.reset();
+  return result;
 }
 
-void WebViewFocusManager::OnFocusChangedInPage(
+void FocusChangeObserver::OnDidChangeFocus(views::View* focused_before,
+                                           views::View* focused_now) {
+  OnFocusChanged();
+}
+
+void FocusChangeObserver::OnFocusChanged() {
+  changed_ = true;
+  if (run_loop_ && run_loop_->running()) {
+    run_loop_->Quit();
+  }
+}
+
+FocusChangeObserver::WebContentsFocusObserver::WebContentsFocusObserver(
+    FocusChangeObserver* owner,
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents), owner_(owner) {}
+
+FocusChangeObserver::WebContentsFocusObserver::~WebContentsFocusObserver() =
+    default;
+
+void FocusChangeObserver::WebContentsFocusObserver::OnFocusChangedInPage(
     const content::FocusedNodeDetails& details) {
   if (details.node_bounds_in_screen.IsEmpty()) {
     // Focus is leaving the web contents
     return;
   }
-  Done();
+  owner_->OnFocusChanged();
 }
 
-void WebViewFocusManager::OnDidChangeFocus(views::View* focused_before,
-                                           views::View* focused_now) {
-  Done();
-}
+WebViewFocusManager::WebViewFocusManager(views::FocusManager* focus_manager,
+                                         content::WebContents* web_contents)
+    : focus_manager_(focus_manager), web_contents_(web_contents) {}
 
-void WebViewFocusManager::Done() {
-  done_ = true;
-  if (run_loop_) {
-    run_loop_->Quit();
+WebViewFocusManager::~WebViewFocusManager() = default;
+
+void WebViewFocusManager::AdvanceFocus(bool reverse) {
+  base::Time start = base::Time::Now();
+  // Try-bots sometimes don't register these key presses (even with if the
+  // view is copyable), so we try multiple times to avoid flakes.
+  while (base::Time::Now() < start + base::Seconds(5)) {
+    FocusChangeObserver obs(focus_manager_, {web_contents_});
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        web_contents_->GetTopLevelNativeWindow(), ui::VKEY_TAB, false, reverse,
+        false, false));
+
+    if (obs.WaitForFocusChange(base::Seconds(1))) {
+      return;
+    }
   }
+  GTEST_FAIL() << "Failed to advance focus after 5 seconds.";
 }
 
 void AdvanceFocus(views::FocusManager* focus_manager, bool reverse) {

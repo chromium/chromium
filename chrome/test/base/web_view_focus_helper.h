@@ -16,32 +16,61 @@
 
 namespace ui_test_utils {
 
+// Listens to UI and DOM element focus changes across multiple WebContents and
+// a FocusManager.
+class FocusChangeObserver : public views::FocusChangeListener {
+ public:
+  explicit FocusChangeObserver(views::FocusManager* focus_manager);
+  FocusChangeObserver(views::FocusManager* focus_manager,
+                      const std::vector<content::WebContents*>& web_contents);
+  ~FocusChangeObserver() override;
+
+  // Waits until focus changes. Returns true if focus changed, false if it timed
+  // out.
+  bool WaitForFocusChange(base::TimeDelta timeout = base::TimeDelta::Max());
+
+  // views::FocusChangeListener:
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
+
+ private:
+  class WebContentsFocusObserver : public content::WebContentsObserver {
+   public:
+    WebContentsFocusObserver(FocusChangeObserver* owner,
+                             content::WebContents* web_contents);
+    ~WebContentsFocusObserver() override;
+
+    // content::WebContentsObserver:
+    void OnFocusChangedInPage(
+        const content::FocusedNodeDetails& details) override;
+
+   private:
+    raw_ptr<FocusChangeObserver> owner_;
+  };
+
+  void OnFocusChanged();
+
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
+  std::vector<std::unique_ptr<WebContentsFocusObserver>>
+      web_contents_observers_;
+  bool changed_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 // A helper to manage focus advancement (Tab/Shift-Tab) when WebViews are
 // involved. WebViews often need special handling for focus traversal.
-class WebViewFocusManager : views::FocusChangeListener,
-                            content::WebContentsObserver {
+class WebViewFocusManager {
  public:
-  explicit WebViewFocusManager(views::FocusManager* focus_manager,
-                               content::WebContents* web_contents);
-
-  ~WebViewFocusManager() override;
+  WebViewFocusManager(views::FocusManager* focus_manager,
+                      content::WebContents* web_contents);
+  ~WebViewFocusManager();
 
   void AdvanceFocus(bool reverse);
 
  private:
-  // content::WebContentsObserver overrides
-  void OnFocusChangedInPage(
-      const content::FocusedNodeDetails& details) override;
-
-  // views::FocusChangeListener
-  void OnDidChangeFocus(views::View* focused_before,
-                        views::View* focused_now) override;
-
-  void Done();
-
-  bool done_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
   raw_ptr<views::FocusManager> focus_manager_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 // Global helper to advance focus, potentially using WebViewFocusManager if
