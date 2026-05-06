@@ -8937,7 +8937,7 @@
   {
     "name": "sync-themes-ios",
     "owners": [ "bwwilliams@google.com", "jhimawan@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "sync-trusted-vault-infobar-message-improvements",
