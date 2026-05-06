@@ -2078,6 +2078,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2402226831639195063">Tonai</translation>
 <translation id="2405887402346713222">Įrenginių ir komponentų serijos numeriai</translation>
 <translation id="2406153734066939945">Ištrinti šį profilį ir jo duomenis?</translation>
+<translation id="2406942743794219791">Patvirtinkite norimą numatytąjį paieškos variklį</translation>
 <translation id="2407671304279211586">Pasirinkite DNS teikėją</translation>
 <translation id="2408018932941436077">Išsaugoma kortelė</translation>
 <translation id="2408742686124047357">Prisekite „Google Lens“ įrankių juostoje, kad kitą kartą galėtumėte lengvai pasiekti</translation>
@@ -3059,6 +3060,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3046892784550338476"><ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> versija (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tinklalapis, baigti</translation>
 <translation id="304747341537320566">Kalbų varikliai</translation>
+<translation id="3047618804758101928">Plėtinys „<ph name="EXTENSION_NAME" />“ pakeitė jūsų nustatymus</translation>
 <translation id="3047678109605649715">Jūsų įrenginyje nėra balsų <ph name="LANGUAGE" />. Išvalykite erdvę įrenginyje ir bandykite dar kartą.</translation>
 <translation id="3048336643003835855">HID įrenginiai iš teikėjo <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Paleisti (k)</translation>
@@ -10024,6 +10026,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7939062555109487992">Išplėstinės parinktys</translation>
 <translation id="793923212791838">Jūsų įrenginys nesuderinamas su šia svetaine</translation>
 <translation id="7939328347457537652">Tvarkykite įrenginių sertifikatus</translation>
+<translation id="7939918959917132075">Plėtinys pakeitė į šį nustatymą</translation>
 <translation id="7940087892955752820">Nepavyko nebebendrinti, nes programa naudoja šį aplanką. Aplankas bus nebebendrinamas, kai kitą kartą išjungsite „<ph name="SPECIFIC_NAME" />“.</translation>
 <translation id="7940265372707990269">Rūšiuoti pagal: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Parengimas naudoti įrenginį kaip modemą:</translation>

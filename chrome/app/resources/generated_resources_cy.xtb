@@ -2078,6 +2078,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2402226831639195063">Tonau</translation>
 <translation id="2405887402346713222">Rhifau Cyfresol Dyfais a Chydrannau</translation>
 <translation id="2406153734066939945">Dileu'r proffil hwn a'i ddata?</translation>
+<translation id="2406942743794219791">Cadarnhewch y peiriant chwilio diofyn rydych ei eisiau</translation>
 <translation id="2407671304279211586">Dewis darparwr DNS</translation>
 <translation id="2408018932941436077">Wrthi'n cadw cerdyn</translation>
 <translation id="2408742686124047357">Pinio Google Lens i'ch bar offer i gael mynediad hawdd y tro nesaf</translation>
@@ -3059,6 +3060,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3046892784550338476">Fersiwn <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tudalen We, Wedi Gorffen</translation>
 <translation id="304747341537320566">Peiriannau Lleferydd</translation>
+<translation id="3047618804758101928">Newidiodd yr estyniad "<ph name="EXTENSION_NAME" />" eich gosodiadau</translation>
 <translation id="3047678109605649715">Does dim lleisiau <ph name="LANGUAGE" /> ar eich dyfais. Cliriwch le ar eich dyfais, a rhowch gynnig arall arni.</translation>
 <translation id="3048336643003835855">Dyfeisiau HID gan y gwerthwr <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Chwarae (k)</translation>
@@ -10023,6 +10025,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7939062555109487992">Dewisiadau uwch</translation>
 <translation id="793923212791838">Ni allwch ddefnyddio'ch dyfais gyda'r wefan hon</translation>
 <translation id="7939328347457537652">Rheoli tystysgrifau dyfais</translation>
+<translation id="7939918959917132075">Wedi'i newid i hwn gan estyniad</translation>
 <translation id="7940087892955752820">Methu â dadrannu oherwydd bod ap yn defnyddio'r ffolder hon. Bydd y ffolder yn cael ei dadrannu pan fydd <ph name="SPECIFIC_NAME" /> yn cael ei gau nesaf.</translation>
 <translation id="7940265372707990269">Trefnu yn ôl <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Parodrwydd Rhannu Cysylltiad:</translation>

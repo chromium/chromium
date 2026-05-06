@@ -2072,6 +2072,7 @@
 <translation id="2402226831639195063">صداها</translation>
 <translation id="2405887402346713222">شماره‌های سریال دستگاه و قطعات</translation>
 <translation id="2406153734066939945">این نمایه و داده‌های آن حذف شود؟</translation>
+<translation id="2406942743794219791">موتور جستجوی پیش‌فرض موردنظرتان را تأیید کنید</translation>
 <translation id="2407671304279211586">انتخاب رساننده ساناد</translation>
 <translation id="2408018932941436077">درحال ذخیره کارت</translation>
 <translation id="2408742686124047357">‏«لنز Google» را به نوارابزار خود سنجاق کنید تا دفعه بعد به‌راحتی به آن دسترسی داشته باشید</translation>
@@ -3053,6 +3054,7 @@
 <translation id="3046892784550338476">نسخه <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">صفحهٔ وب، کامل</translation>
 <translation id="304747341537320566">موتورهای گفتار</translation>
+<translation id="3047618804758101928">افزونه «<ph name="EXTENSION_NAME" />» تنظیمات شما را تغییر داد</translation>
 <translation id="3047678109605649715">هیچ صدایی به زبان <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. فضای دستگاهتان را آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3048336643003835855">‏دستگاه‌های HID از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏پخش کردن (k)</translation>
@@ -10013,6 +10015,7 @@
 <translation id="7939062555109487992">گزینه‌های پیشرفته</translation>
 <translation id="793923212791838">نمی‌توان از دستگاهتان در این سایت استفاده کرد</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>
+<translation id="7939918959917132075">افزونه آن را به این تغییر داد</translation>
 <translation id="7940087892955752820">لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعدی که <ph name="SPECIFIC_NAME" /> را خاموش کنید، پوشه لغو هم‌رسانی خواهد شد.</translation>
 <translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>

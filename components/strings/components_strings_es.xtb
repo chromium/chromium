@@ -392,7 +392,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1595731774593926493">Eliminar número Redess</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Enlace del consejo de Chrome, pulsa Intro para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Enviado. Abre Chrome en tu otro dispositivo.</translation>
 <translation id="1599199147673445968">¿Tarjeta nueva? <ph name="BEGIN_LINK" />Introducir información de la tarjeta<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Belleza y ejercicio físico</translation>
@@ -993,6 +992,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2521385132275182522">Grapado en la parte inferior derecha</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2524461107774643265">Añade más información</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />El contenido de la página de tramitación de la compra se comparte con Google para ofrecer estas opciones.<ph name="END_BOLD" /> Los planes de pago están sujetos a requisitos. Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />configuración de pago<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para ejecutar esta aplicación, vuelve a habilitar el modo Desarrollador de aplicaciones web aisladas</translation>
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>

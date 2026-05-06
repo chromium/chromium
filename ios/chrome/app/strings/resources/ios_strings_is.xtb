@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Fylla kortanúmerið sem endar á <ph name="LAST_DIGITS" /> sjálfkrafa út</translation>
 <translation id="3738428049780661523">Búið til <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Myndavélarmappa</translation>
+<translation id="3746269120925354434">Upplýsingar vistaðar í Google-veski</translation>
 <translation id="3750225824417196283">Síða með nýjum huliðsflipa</translation>
 <translation id="3751873026576444885">Hætta að leita á skjánum með Google-linsu</translation>
 <translation id="3753408171347588045">Vaktar verð</translation>
@@ -2170,6 +2171,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8533670235862049797">Kveikt er á öruggri vefnotkun</translation>
 <translation id="8534481786647257214">Google+ færsla birt.</translation>
 <translation id="8535368836838588657">Sýna aðgangsorð</translation>
+<translation id="8540426897269305488">Skráðu þig inn með <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Athugaðu stillingar sjálfgefins vafra</translation>
 <translation id="854938212724803178">1 aðgangsorð er í hættu. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="8551311254462607218">Ýttu á myndavélartákn Google-linsu á veffangastikunni</translation>

@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">حذف شماره جبران خسارت</translation>
 <translation id="1597307423671074806">‏ویدیو WebM</translation>
 <translation id="159800670740560023">‏پیوند «نکته Chrome»، برای باز کردن <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />، کلید Enter را فشار دهید</translation>
-<translation id="1599079390582151174">‏ارسال شد. Chrome را در دستگاه دیگرتان باز کنید.</translation>
 <translation id="1599199147673445968">کارت جدیدی دارید؟ <ph name="BEGIN_LINK" />جزئیات کارت را وارد کنید<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">زیبایی و تناسب اندام</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">گالری تصاویر آنلاین</translation>
 <translation id="2161656808144014275">نوشتار</translation>
 <translation id="2162435186600002085">نشان‌واره سرصفحه اصلی</translation>
+<translation id="2162535140284745414">دریافت پیشنهادهای لحظه‌ای که می‌توانند در پیدا کردن روش‌های جدیدی برای مرور کردن با هوشواره به شما کمک کنند.</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">احتمال وجود غلط املائی در <ph name="HOST_NAME" /> را بررسی کنید.</translation>
 <translation id="2166049586286450108">دسترسی کامل سرپرست</translation>
@@ -1460,6 +1460,7 @@
 <translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
 <translation id="3262698603497362968">گزینه‌های خرید</translation>
 <translation id="3264315627780269177">امکان هم‌رسانی این زبانه وجود ندارد</translation>
+<translation id="3264637689694266148">‏اگر پیشنهادها را خاموش کنید، عنوان صفحه و نشانی‌های وب زبانه‌هایتان ممکن است همچنان برای ویژگی‌های دیگر Chrome پردازش شود. می‌توانید دسترسی مرورگر به این داده‌ها را در این بخش مدیریت کنید</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">زبانه‌های باز</translation>
 <translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید</translation>
@@ -1995,6 +1996,7 @@
 <translation id="4103249731201008433">شماره سریال دستگاه نامعتبر است</translation>
 <translation id="4103592298805904008">مقوا (تک‌جداره)</translation>
 <translation id="4104702906064390950">‏درحال ذخیره کردن اطلاعات IBAN</translation>
+<translation id="4106101218644797743">تنظیمات همگام‌سازی</translation>
 <translation id="4106887816571530227">محتوای جاسازی‌شده مجاز نیست</translation>
 <translation id="4107047499377819067">نصب سرویس‌های پس‌زمینه‌ای وی‌پی‌ان شروع شد و ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4110642094637545339">‏‫Google Pay، نشان‌واره AfterPay</translation>
@@ -2330,6 +2332,7 @@
 <translation id="4640225694041297329">نمایش نتایج مربوط به ۷ روز گذشته</translation>
 <translation id="4642296966515958616">‏برای پیوستن به این گروه زبانه‌ها، Chrome را به‌روز کنید</translation>
 <translation id="464342062220857295">ویژگی‌های جستجو</translation>
+<translation id="4643958597583594452">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در دستگاه شما یا در فضایی خصوصی در فضای ابری پردازش می‌کند</translation>
 <translation id="4644567637638438744">‏فایل‌ها تنها درصورتی بارگذاری می‌شوند که به سیستم Microsoft OneDrive وارد شده باشید</translation>
 <translation id="4644670975240021822">روبه‌پایین به‌ترتیب معکوس</translation>
 <translation id="4648262692072505866">‏درهم‌سازی باید در قالب SHA-256 باشد.</translation>
@@ -2577,6 +2580,7 @@
 <translation id="5019293549442035120">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="USER_EMAIL" />) ذخیره خواهد شد.</translation>
 <translation id="5019819206251569004">حسگرهای حرکتی و نوری</translation>
 <translation id="5019952743397118625">خط‌مشی <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> تنظیم شده است. ‫<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> دردسترس بودن حالت توسعه‌دهنده در صفحه افزونه‌ها را کنترل نخواهد کرد.</translation>
+<translation id="5020862932518041900">‏اگر پیشنهادی را انتخاب کنید یا نادیده بگیرید، Chrome خود را تطبیق می‌دهد تا مطمئن شود فقط موارد مربوط را مشاهده می‌کنید</translation>
 <translation id="5021500396464456616">با شخصی که این پیوند را ارسال کرده است تماس بگیرید</translation>
 <translation id="5021557570875267742">‏ردیابی قیمت‌ها با Chrome</translation>
 <translation id="5023310440958281426">خط‌مشی‌های سرپرست سیستمتان را بررسی کنید</translation>
@@ -3518,6 +3522,7 @@
 <translation id="6451458296329894277">تأیید ارسال مجدد فرم</translation>
 <translation id="6452429044474066211">فعالیت‌های زیرآب و غواصی</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">از عنوان صفحه‌ها و نشانی‌های وب زبانه‌های باز شما برای ارائه پیشنهادهای مربوط استفاده می‌شود</translation>
 <translation id="6455632609396391811">بیمه درمانی</translation>
 <translation id="6456955391422100996">آگهی حذف شد.</translation>
 <translation id="6457206614190510200">منگنه تخت</translation>
@@ -4412,6 +4417,7 @@
 <translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7822611063308883975">کنسول‌های بازی دستی</translation>
 <translation id="7825558994363763489">مایکروویو</translation>
+<translation id="7827688884439021871">دریافت پیشنهادهای لحظه‌ای که می‌توانند در پیدا کردن روش‌های جدید برای مرور کردن با هوشواره به شما کمک کنند</translation>
 <translation id="782886543891417279">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
 <translation id="7831993212387676366">«فهرست خرید» چیست؟</translation>
 <translation id="7840103971441592723">ضبط صفحه شروع شده است</translation>
@@ -4703,6 +4709,7 @@
 <translation id="8289355894181816810">اگر این موضوع را متوجه نمی‌شوید، با سرپرست شبکه‌تان تماس بگیرید.</translation>
 <translation id="8291367150570302588">کارت شناسایی</translation>
 <translation id="829335040383910391">صدا</translation>
+<translation id="8294425747071240447">پیشنهادها، با بهره‌گیری از هوشواره</translation>
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8297545700510100061">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ به‌عنوان مثال برای وارد کردن شما به سیستم یا شخصی کردن آگهی‌ها. برای مدیریت کوکی‌های همه سایت‌ها، به <ph name="SETTINGS" /> بروید.</translation>
 <translation id="8298115750975731693">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>

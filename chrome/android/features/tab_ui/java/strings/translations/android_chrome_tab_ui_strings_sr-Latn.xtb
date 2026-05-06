@@ -56,7 +56,7 @@
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Vratite i otvorite grupu kartica sa <ph name="TABS_COUNT_ONE" /> karticom, boje <ph name="COLOR_NAME" />.}one{Vratite i otvorite grupu kartica sa <ph name="TABS_COUNT_MANY" /> karticom, boje <ph name="COLOR_NAME" />.}few{Vratite i otvorite grupu kartica sa <ph name="TABS_COUNT_MANY" /> kartice, boje <ph name="COLOR_NAME" />.}other{Vratite i otvorite grupu kartica sa <ph name="TABS_COUNT_MANY" /> kartica, boje <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
-<translation id="266935134738038806">Poseti sajt</translation>
+<translation id="266935134738038806">Idi na sajt</translation>
 <translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Ažurirano je pre <ph name="NUM_WEEKS_ONE" /> nedelje}one{Ažurirano je pre <ph name="NUM_WEEKS_MANY" /> nedelje}few{Ažurirano je pre <ph name="NUM_WEEKS_MANY" /> nedelje}other{Ažurirano je pre <ph name="NUM_WEEKS_MANY" /> nedelja}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Ažurirano je pre <ph name="NUM_HOURS_ONE" /> sat}one{Ažurirano je pre <ph name="NUM_HOURS_MANY" /> sat}few{Ažurirano je pre <ph name="NUM_HOURS_MANY" /> sata}other{Ažurirano je pre <ph name="NUM_HOURS_MANY" /> sati}}</translation>

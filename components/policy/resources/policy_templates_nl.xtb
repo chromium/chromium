@@ -1882,6 +1882,25 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
+<translation id="2260635608598936994">Hiermee stel je filters in om te selecteren welke clientcertificaten worden opgenomen in rapporten over het beveiligingssignaal <ph name="PRODUCT_NAME" />. Deze rapporten sturen informatie over de browser- en apparaatstatus naar <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />. Beheerders kunnen deze informatie gebruiken om <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />-regels in te stellen.
+
+Met dit beleid kun je filters definiëren op basis van kenmerken van clientcertificaten, zoals de DN's (Distinguished Names) ISSUER en/of SUBJECT. <ph name="PRODUCT_NAME" /> neemt alleen certificaten op in de signaalrapporten als ze overeenkomen met minstens een van de ingevoerde filters.
+
+     Voorbeelden voor het gebruik van het gedeelte <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Als <ph name="SELECTOR_PLACEHOLDER" /> is ingesteld op <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />, worden er alleen clientcertificaten geselecteerd die zijn uitgegeven door een certificaat met de CommonName <ph name="ISSUER_CN_PLACEHOLDER" />.
+
+      * Als <ph name="SELECTOR_PLACEHOLDER" /> zowel het gedeelte <ph name="ISSUER_STRING_VALUE" /> als het gedeelte <ph name="SUBJECT_STRING_VALUE" /> bevat, worden alleen clientcertificaten geselecteerd die aan beide voorwaarden voldoen.
+
+      * Als <ph name="SELECTOR_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met de waarde <ph name="FILTER_STRING_ORGANIZATION" /> bevat, moet een certificaat ten minste één organisatie hebben die overeenkomt met de ingevoerde waarde om te worden geselecteerd.
+
+      * Als <ph name="SELECTOR_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met een waarde <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> bevat, moet een certificaat ten minste één organisatie-eenheid hebben die overeenkomt met de ingevoerde waarde om te worden geselecteerd.
+
+      * Als <ph name="SELECTOR_PLACEHOLDER" /> is ingesteld op <ph name="EMPTY_DICTIONARY" />, worden lege gegevens voor dit beleid genegeerd.
+
+      Als je het beleid niet instelt, worden er geen clientcertificaten geselecteerd tijdens de signaalrapportage.
+
+*Belangrijk:* Dit beleid wordt alleen van kracht als het beleid <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> aanstaat. Dit beleid bepaalt de algemene functie voor het sturen van beveiligingssignalen vanuit Chrome.</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
 <translation id="2262701937800507517">Standaard coderingsvolgorde van <ph name="PRODUCT_OS_NAME" /> gebruiken</translation>
 <translation id="2263881357524831360">Toestaan dat wachtwoordmanagers van derden worden gebruikt in <ph name="PRODUCT_NAME" /> op <ph name="ANDROID_NAME" /></translation>
@@ -2688,6 +2707,15 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 Als je dit beleid toepast of niet instelt, mogen gebruikers Kerberos-accounts toevoegen via de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen. Gebruikers hebben het volledige beheer over accounts die ze hebben toegevoegd en kunnen deze aanpassen of verwijderen.
 
 Als je dit beleid niet toepast, mogen gebruikers geen Kerberos-accounts toevoegen. De accounts kunnen alleen via het beleid Kerberos-accounts configureren worden toegevoegd. Dit is een effectieve manier om accounts te vergrendelen.</translation>
+<translation id="2771222727845689796">Met dit beleid kun je een lijst met URL-patronen instellen. Webcontent op de achtergrond die overeenkomt met deze patronen, wordt gedwongen uitgevoerd met prioriteit op de voorgrond.
+
+Als je het beleid <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> toepast, wordt deze lijst genegeerd omdat alle tabbladen prioriteit op de voorgrond krijgen.
+
+Als <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> uitstaat of niet is ingesteld, wordt alleen content die overeenkomt met de patronen in deze lijst geforceerd.
+
+Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige <ph name="URL_LABEL" />-patronen.
+
+Als deze lijst leeg is of niet is ingesteld, wordt er geen achtergrondcontent uitgevoerd met prioriteit op de voorgrond.</translation>
 <translation id="2772231477628401250">HTTP gebruiken voor downloads van updates</translation>
 <translation id="2772955711376920612">Als je dit beleid toepast en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, blijft stroom voor piekuren aan (als het apparaat hiervoor geschikt is). Het beleid voor stroombeheer voor piekuren is een energiebesparingsbeleid waarmee het gebruik van wisselstroom op piekuren wordt geminimaliseerd. Voor elke dag van de week kun je een begin- en eindtijd instellen voor stroom voor piekuren. Zolang de batterij op deze momenten boven de ingestelde drempelwaarde blijft, blijft het apparaat op de batterij draaien (zelfs als het is aangesloten op wisselstroom). Na de ingestelde eindtijd gebruikt het apparaat wisselstroom (als het daarop is aangesloten) maar wordt de batterij niet opgeladen. Het apparaat keert terug naar de normale werking waarbij wisselstroom wordt gebruikt en de batterij wordt opgeladen na de opgegeven begintijd voor opladen.
 
@@ -4833,6 +4861,7 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
       Als je dit beleid niet toepast of niet instelt, kunnen gebruikers deze instelling wijzigen.
 
       Opmerking: Voor Android gebruik je het beleid <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Clientcertificaten die overeenkomen met filters voor rapporten over het beveiligingssignaal <ph name="PRODUCT_NAME" /> automatisch selecteren.</translation>
 <translation id="4261820385751181068">Taal voor inlogscherm van apparaat</translation>
 <translation id="4263788921751326798">Rapportage voor informatie over crashrapporten van apparaat uitzetten</translation>
 <translation id="4268586991084547853">Meer compatibel met sitelijsten in de Microsoft IE-/Edge-bedrijfsmodus.</translation>
@@ -8140,6 +8169,7 @@ Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</t
 
       Ongeacht of dit beleid is ingesteld, kan de gebruiker de instelling voor WPAD-optimalisatie niet wijzigen.</translation>
 <translation id="6363485842496031347">De instelling voor de sneltoets Verwijderen gebruikt de sneltoets met de functietoets Alt</translation>
+<translation id="6364336078281746235">Voorgrondprioriteit afdwingen voor specifieke URL's</translation>
 <translation id="6366574325767783825">Als je het beleid instelt op True of niet instelt, accepteert <ph name="PRODUCT_NAME" /> webcontent die wordt getoond als Signed HTTP Exchange.
 
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>

@@ -2072,6 +2072,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2402226831639195063">Sauti</translation>
 <translation id="2405887402346713222">Nambari za Ufuatiliaji za Kifaa na Kijenzi</translation>
 <translation id="2406153734066939945">Ungependa kufuta wasifu huu na data iliyomo?</translation>
+<translation id="2406942743794219791">Thibitisha mtambo chaguomsingi wa kutafuta unaotaka</translation>
 <translation id="2407671304279211586">Chagua mtoa huduma wa DNS</translation>
 <translation id="2408018932941436077">Inahifadhi kadi</translation>
 <translation id="2408742686124047357">Bandika Lenzi ya Google kwenye upau wa vidhibiti vyako ili uweze kuifikia kwa urahisi wakati ujao</translation>
@@ -3053,6 +3054,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3046892784550338476">Toleo la <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Ukurasa wa wavuti, Umekamilika</translation>
 <translation id="304747341537320566">Mitambo ya Sauti</translation>
+<translation id="3047618804758101928">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kimebadilisha mipangilio yako</translation>
 <translation id="3047678109605649715">Hakuna sauti za <ph name="LANGUAGE" /> kwenye kifaa chako. Futa vipengee ili upate nafasi kwenye kifaa chako kisha ujaribu tena.</translation>
 <translation id="3048336643003835855">Vifaa vya HID kutoka kwa muuzaji mwenye kitambulisho cha <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Cheza (k)</translation>
@@ -10009,6 +10011,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7939062555109487992">Chaguo mahiri</translation>
 <translation id="793923212791838">Huwezi kutumia kifaa chako kufikia tovuti hii</translation>
 <translation id="7939328347457537652">Dhibiti vyeti vya kifaa</translation>
+<translation id="7939918959917132075">Kiendelezi kimeibadilisha kuwa hii</translation>
 <translation id="7940087892955752820">Imeshindwa kughairi kushiriki kwa sababu kuna programu inayotumia folda hii. Itaghairi kushiriki folda wakati <ph name="SPECIFIC_NAME" /> itafungwa tena.</translation>
 <translation id="7940265372707990269">Panga kulingana na <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Utayari wa Kusambaza Mtandao:</translation>

@@ -2064,6 +2064,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2402226831639195063">Intonācijas</translation>
 <translation id="2405887402346713222">Ierīces un komponentu sērijas numuri</translation>
 <translation id="2406153734066939945">Vai dzēst šo profilu un tā datus?</translation>
+<translation id="2406942743794219791">Apstipriniet vēlamo noklusējuma meklētājprogrammu</translation>
 <translation id="2407671304279211586">Atlasiet DNS pakalpojumu sniedzēju</translation>
 <translation id="2408018932941436077">Karte tiek saglabāta.</translation>
 <translation id="2408742686124047357">Piespraudiet Google Lens rīkjoslā, lai nākamreiz varētu ērtāk piekļūt šai funkcijai.</translation>
@@ -3045,6 +3046,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3046892784550338476">Versija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tīmekļa lapa, pabeigta</translation>
 <translation id="304747341537320566">Runas programmas</translation>
+<translation id="3047618804758101928">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja jūsu iestatījumus</translation>
 <translation id="3047678109605649715">Jūsu ierīcē nav balss <ph name="LANGUAGE" /> valodā. Atbrīvojiet nepieciešamo vietu savā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="3048336643003835855">HID ierīces, ko piedāvā pakalpojumu sniedzējs <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Atskaņot (k)</translation>
@@ -10001,6 +10003,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7939062555109487992">Papildopcijas</translation>
 <translation id="793923212791838">Jūsu ierīci nevar izmantot ar šo vietni</translation>
 <translation id="7939328347457537652">Pārvaldīt ierīces sertifikātus</translation>
+<translation id="7939918959917132075">Paplašinājums mainīja uz šo vērtību</translation>
 <translation id="7940087892955752820">Nevarēja atsaukt kopīgošanu, jo šo mapi izmanto lietojumprogramma. Mapes kopīgošana tiks atsaukta, kad nākamreiz tiks izslēgta virtuālā mašīna <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Kārtot pēc: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Piesaistes gatavība:</translation>

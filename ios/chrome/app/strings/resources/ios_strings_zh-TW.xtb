@@ -763,6 +763,7 @@
 <translation id="372676576864368480">自動填入卡號 (末四碼為 <ph name="LAST_DIGITS" />)</translation>
 <translation id="3738428049780661523">建立時間：<ph name="DATE" /></translation>
 <translation id="3742498336182910186">相機膠卷</translation>
+<translation id="3746269120925354434">資訊已儲存到 Google 錢包</translation>
 <translation id="3750225824417196283">新的無痕分頁頁面</translation>
 <translation id="3751873026576444885">停止使用 Google 智慧鏡頭搜尋畫面</translation>
 <translation id="3753408171347588045">正在追蹤價格</translation>
@@ -2170,6 +2171,7 @@
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>
 <translation id="8535368836838588657">顯示密碼</translation>
+<translation id="8540426897269305488">登入：<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">檢查預設瀏覽器設定</translation>
 <translation id="854938212724803178">你有 1 組密碼外洩，請立即修正確保安全。</translation>
 <translation id="8551311254462607218">輕觸網址列中的 Google 智慧鏡頭相機圖示</translation>

@@ -8741,7 +8741,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7038632520572155338">Brytarstyrning</translation>
 <translation id="7038710352229712897">Lägg till ett Google-konto för <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Komma åt USB-enheter från <ph name="VENDOR_NAME" /></translation>
-<translation id="7039697949826432881">Kan inte laddas upp. Filen överskrider den maximala storleken på <ph name="MAX_FILE_SIZE" /> MB.</translation>
+<translation id="7039697949826432881">Uppladdningen misslyckades. Filen överskrider den maximala storleken på <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Microsofts Logga in med smartkort</translation>
 <translation id="7039951224110875196">Skapa ett Google-konto åt ett barn</translation>
 <translation id="7042116641003232070">Får spara data på enheten</translation>

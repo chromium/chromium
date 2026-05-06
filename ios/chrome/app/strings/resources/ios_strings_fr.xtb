@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Saisir automatiquement le numéro de carte se terminant par <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Créé le <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Pellicule</translation>
+<translation id="3746269120925354434">Infos enregistrées dans Google Wallet</translation>
 <translation id="3750225824417196283">Page du nouvel onglet de navigation privée</translation>
 <translation id="3751873026576444885">Arrêter de rechercher sur l'écran avec Google Lens</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
@@ -2170,6 +2171,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="8534481786647257214">Post Google+ publié.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
+<translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Vérifier les réglages par défaut de votre navigateur</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, appuyez sur l'icône d'appareil photo Google Lens</translation>

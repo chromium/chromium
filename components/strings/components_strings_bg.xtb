@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Изтриване на номера в програмата за обезщетения</translation>
 <translation id="1597307423671074806">Видеоклип във формат WebM</translation>
 <translation id="159800670740560023">Връзка към съвет за Chrome. Натиснете Enter, за да отворите <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Изпратено. Отворете Chrome на другото си устройство.</translation>
 <translation id="1599199147673445968">Нова карта? <ph name="BEGIN_LINK" />Въведете данните ѝ<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Архивиране</translation>
 <translation id="1604192142734009334">Козметика и фитнес</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">Онлайн фотогалерии</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162435186600002085">Основно лого в заглавката</translation>
+<translation id="2162535140284745414">Получавайте предложения в реално време, които могат да ви помогнат да намерите нови начини за сърфиране с AI.</translation>
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверете дали <ph name="HOST_NAME" /> е изписано правилно.</translation>
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
@@ -1459,6 +1459,7 @@
 <translation id="3261488570342242926">Научете повече за виртуалните карти</translation>
 <translation id="3262698603497362968">Опции за купуване</translation>
 <translation id="3264315627780269177">Този раздел не може да бъде споделен</translation>
+<translation id="3264637689694266148">Ако изключите предложенията, заглавията на страниците и URL адресите на разделите ви пак може да се обработват за други функции на Chrome. Можете да управлявате достъпа на браузъра до тези данни от</translation>
 <translation id="3266793032086590337">Стойност (несъвместима)</translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3270041629388773465">Плащайте по-бързо, когато кодовете за проверка са запазени</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4103249731201008433">Серийният номер на устройството е невалиден</translation>
 <translation id="4103592298805904008">Картон (едностенен)</translation>
 <translation id="4104702906064390950">Информацията за IBAN се запазва</translation>
+<translation id="4106101218644797743">настройките си за синхронизиране</translation>
 <translation id="4106887816571530227">Вграденото съдържание е забранено</translation>
 <translation id="4107047499377819067">Инсталирането на фоновите услуги за VPN стартира. Това може да отнеме няколко минути.</translation>
 <translation id="4110642094637545339">Лого на Google Pay и AfterPay</translation>
@@ -2329,6 +2331,7 @@
 <translation id="4640225694041297329">Показване на резултатите от последните 7 дни</translation>
 <translation id="4642296966515958616">За да се присъедините към тази група раздели, актуализирайте Chrome</translation>
 <translation id="464342062220857295">Функции за търсене</translation>
+<translation id="4643958597583594452">Chrome обработва заглавията на страниците и URL адресите на устройството ви или в частно пространство в облака</translation>
 <translation id="4644567637638438744">Можете да качвате файлове само ако сте влезли в Microsoft OneDrive</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
 <translation id="4648262692072505866">Хеш стойността трябва да е във формат SHA-256.</translation>
@@ -2576,6 +2579,7 @@
 <translation id="5019293549442035120">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">сензори за движение и светлина</translation>
 <translation id="5019952743397118625">Правилото <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е зададено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> няма да контролира наличността на режима за програмисти на страницата с разширения.</translation>
+<translation id="5020862932518041900">Ако изберете или пренебрегнете дадено предложение, Chrome ще се адаптира така, че да виждате само това, което е уместно за вас</translation>
 <translation id="5021500396464456616">Свържете се с човека, изпратил тази връзка</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
@@ -3517,6 +3521,7 @@
 <translation id="6451458296329894277">Потвърдете повторното изпращане на формуляра</translation>
 <translation id="6452429044474066211">Гмуркане и подводни дейности</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Заглавията на страниците и URL адресите на отворените ви раздели се използват, за да ви се предоставят уместни предложения</translation>
 <translation id="6455632609396391811">Здравно застраховане</translation>
 <translation id="6456955391422100996">Рекламата бе премахната.</translation>
 <translation id="6457206614190510200">Седловидно зашиване</translation>
@@ -4411,6 +4416,7 @@
 <translation id="7819605256207059717">Блокирано от организацията ви</translation>
 <translation id="7822611063308883975">Ръчни игрови конзоли</translation>
 <translation id="7825558994363763489">Микровълнови фурни</translation>
+<translation id="7827688884439021871">Получавайте предложения в реално време, които могат да ви помогнат да намерите нови начини за сърфиране с AI</translation>
 <translation id="782886543891417279">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите страницата й за вход.</translation>
 <translation id="7831993212387676366">Какво представлява списъкът за пазаруване?</translation>
 <translation id="7840103971441592723">Функцията за заснемане на екрана стартира</translation>
@@ -4702,6 +4708,7 @@
 <translation id="8289355894181816810">Свържете се със системния си администратор, ако не сте сигурни какво означава това.</translation>
 <translation id="8291367150570302588">Документ за самоличност</translation>
 <translation id="829335040383910391">звук</translation>
+<translation id="8294425747071240447">Предложения, базирани на AI</translation>
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

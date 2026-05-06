@@ -392,7 +392,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1595731774593926493">Slett redress-nummer</translation>
 <translation id="1597307423671074806">WebM-video</translation>
 <translation id="159800670740560023">Chrome-tipslink – trykk på Enter for å åpne <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Sendt. Åpne Chrome på den andre enheten.</translation>
 <translation id="1599199147673445968">Nytt kort? <ph name="BEGIN_LINK" />Oppgi kortopplysningene<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Opprett ZIP-arkiv</translation>
 <translation id="1604192142734009334">Skjønnhet og trening</translation>
@@ -746,6 +745,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="21613918653299710">Bildegallerier på internett</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primær topptekstlogo</translation>
+<translation id="2162535140284745414">Få forslag i sanntid som kan hjelpe deg med å finne nye måter å surfe på med AI.</translation>
 <translation id="2162620598375156287">Nå <ph name="CURRENT_PRICE" /> på <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Sjekk om det er en skrivefeil i <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Full administratortilgang</translation>
@@ -993,6 +993,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2521385132275182522">Stift nede til høyre</translation>
 <translation id="2521736961081452453">Opprett skjema</translation>
 <translation id="2524461107774643265">Legg til mer informasjon</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Innhold fra betalingssiden deles med Google for å tilby disse alternativene.<ph name="END_BOLD" /> Betalingsavtaler er avhengig av godkjenning. Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> for å skjule alternativene for å betale senere.</translation>
 <translation id="2526062290525841862">For å kjøre denne appen, slå på igjen utviklermodus for isolerte nettapper</translation>
 <translation id="2526280916094749336">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-koden står på forsiden av kortet. Det er den firesifrede koden øverst til høyre over kortnummeret ditt.</translation>
@@ -1459,6 +1460,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3261488570342242926">Finn ut mer om virtuelle kort</translation>
 <translation id="3262698603497362968">Kjøpsalternativer</translation>
 <translation id="3264315627780269177">Denne fanen kan ikke deles</translation>
+<translation id="3264637689694266148">Selv om du slår av forslag, kan sidetittelen og nettadressene til fanene dine fortsatt bli behandlet for andre Chrome-funksjoner. Du kan administrere nettlesertilgangen til disse dataene i</translation>
 <translation id="3266793032086590337">Verdi (konflikt)</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
 <translation id="3270041629388773465">Betal raskere med lagrede verifiseringskoder</translation>
@@ -1994,6 +1996,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4103249731201008433">Enhetens serienummer er ugyldig</translation>
 <translation id="4103592298805904008">Kartong (enkeltvegg)</translation>
 <translation id="4104702906064390950">Lagrer IBAN-informasjonen</translation>
+<translation id="4106101218644797743">synkroniseringsinnstillinger</translation>
 <translation id="4106887816571530227">Innebygd innhold er ikke tillatt</translation>
 <translation id="4107047499377819067">Installasjonen av VPN-bakgrunnstjenester er påbegynt. Dette kan ta noen minutter.</translation>
 <translation id="4110642094637545339">Google Pay-, AfterPay-logo</translation>
@@ -2329,6 +2332,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4640225694041297329">Vis resultater fra de siste 7 dagene</translation>
 <translation id="4642296966515958616">Oppdater Chrome for å bli med i denne fanegruppen.</translation>
 <translation id="464342062220857295">Søkefunksjoner</translation>
+<translation id="4643958597583594452">Chrome behandler sidetitler og nettadresser på enheten din eller i et privat område i skyen</translation>
 <translation id="4644567637638438744">Filer kan bare lastes opp hvis du er logget på Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Motsatt rekkefølge – forsiden ned</translation>
 <translation id="4648262692072505866">Hash-verdien må være i formatet SHA-256.</translation>
@@ -2576,6 +2580,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5019293549442035120">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">bevegelses- og lyssensorer</translation>
 <translation id="5019952743397118625">Regelen <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er angitt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> kontrollerer ikke tilgjengeligheten av utviklermodus på utvidelsessiden.</translation>
+<translation id="5020862932518041900">Hvis du velger eller ignorerer et forslag, tilpasser Chrome seg for å sikre at du bare ser det som er relevant for deg</translation>
 <translation id="5021500396464456616">Kontakt personen som sendte denne linken</translation>
 <translation id="5021557570875267742">Spor priser med Chrome</translation>
 <translation id="5023310440958281426">Kontroller retningslinjene til administratoren din</translation>
@@ -3517,6 +3522,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6451458296329894277">Bekreft ny innsending av skjema</translation>
 <translation id="6452429044474066211">Dykking og undervannsaktiviteter</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Sidetitler og nettadresser til de åpne fanene dine brukes til å gi deg relevante forslag</translation>
 <translation id="6455632609396391811">Helseforsikring</translation>
 <translation id="6456955391422100996">Annonsen er fjernet.</translation>
 <translation id="6457206614190510200">Ryggstifting</translation>
@@ -4410,6 +4416,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7819605256207059717">Blokkert av organisasjonen din</translation>
 <translation id="7822611063308883975">Håndholdte spillkonsoller</translation>
 <translation id="7825558994363763489">Mikrobølgeovner</translation>
+<translation id="7827688884439021871">Få forslag i sanntid som kan hjelpe deg med å finne nye måter å surfe på med AI</translation>
 <translation id="782886543891417279">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker en påloggingsside.</translation>
 <translation id="7831993212387676366">Hva er handlelisten?</translation>
 <translation id="7840103971441592723">Et skjermopptak er startet</translation>
@@ -4701,6 +4708,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8289355894181816810">Kontakt nettverksadministratoren hvis du ikke er sikker på hva dette betyr.</translation>
 <translation id="8291367150570302588">ID-kort</translation>
 <translation id="829335040383910391">lyd</translation>
+<translation id="8294425747071240447">Forslag basert på AI</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8297545700510100061">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

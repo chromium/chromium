@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Tidak Perlu</translation>
 <translation id="1531038290222364269">Paparkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
+<translation id="1539535193627863227">Tiada kata laluan atau kunci laluan ditemukan untuk laman ini</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="154312949627292154">Buka tab yang diterima daripada peranti anda yang lain daripada skrin kunci.</translation>
 <translation id="1545749641540134597">Imbas Kod QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Perubahan anda tidak dapat disimpan.</translation>
 <translation id="3254806613790954367">Tab terakhir yang anda buka merentas semua peranti anda</translation>
 <translation id="325717987950204592">Ketik "Privasi dan Keselamatan"</translation>
+<translation id="3259451381796379533">Akaun ini tidak akan berfungsi dengan Gemini. Log masuk dengan Google Account yang lain.</translation>
 <translation id="3265736395246760288">Log masuk dengan lebih pantas daripada mana-mana peranti anda yang disegerakkan.</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3273510436356991673">Sesuaikan skrin utama</translation>
@@ -1864,6 +1866,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7498234416455752244">Teruskan mengedit</translation>
 <translation id="7500244509706269886">Borang autolengkap</translation>
 <translation id="750493650310597496">0 dipilih</translation>
+<translation id="7505402981231763928">Anda perlu log masuk untuk menggunakan Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
 <translation id="750886945254958667">Simpan kumpulan ini untuk menambahkan tab kemudian atau keluar daripada kumpulan ini jika anda tidak mahu akses kepada kumpulan ini lagi</translation>

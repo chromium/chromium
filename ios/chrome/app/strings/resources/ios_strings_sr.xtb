@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Не, хвала</translation>
 <translation id="1531038290222364269">Прикажите картице</translation>
 <translation id="1536390784834419204">Преведи страницу</translation>
+<translation id="1539535193627863227">Нису пронађени ниједна лозинка ни приступни кључ за овај сајт</translation>
 <translation id="1540800554400757039">1. ред за адресу</translation>
 <translation id="154312949627292154">Отварајте картице које сте примили са других уређаја са закључаног екрана.</translation>
 <translation id="1545749641540134597">Скенирајте QR кôд</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Чување промене није успело.</translation>
 <translation id="3254806613790954367">Последња отворена картица на свим уређајима</translation>
 <translation id="325717987950204592">Додирните Приватност и безбедност</translation>
+<translation id="3259451381796379533">Овај налог неће радити са Gemini-јем. Пријавите се помоћу другог Google налога.</translation>
 <translation id="3265736395246760288">Брже се пријављујте са било ког синхронизованог уређаја.</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Аутоматски попуните број картице која се завршава на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Направљено <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Са уређаја</translation>
+<translation id="3746269120925354434">Информације су сачуване у Google новчанику</translation>
 <translation id="3750225824417196283">Нова страница на картици без архивирања</translation>
 <translation id="3751873026576444885">Зауставите претрагу екрана помоћу Google објектива</translation>
 <translation id="3753408171347588045">Цене се прате</translation>
@@ -1863,6 +1866,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7498234416455752244">Наставите са изменама</translation>
 <translation id="7500244509706269886">Аутоматски попуни образац</translation>
 <translation id="750493650310597496">Изабрано је 0 ставки</translation>
+<translation id="7505402981231763928">Треба да се пријавите да бисте користили Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Да бисте закључали картице без архивирања, подесите Touch ID, Face ID или шифру.</translation>
 <translation id="750886945254958667">Задржите ову групу да бисте додали картице касније или је напустите ако више не желите да јој приступате</translation>
@@ -2170,6 +2174,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8533670235862049797">Безбедно прегледање је укључено</translation>
 <translation id="8534481786647257214">Google+ пост је довршен.</translation>
 <translation id="8535368836838588657">Прикажите лозинку</translation>
+<translation id="8540426897269305488">Пријави ме помоћу акредитива <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Проверите подешавања подразумеваног прегледача</translation>
 <translation id="854938212724803178">Имате 1 угрожену лозинку. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="8551311254462607218">На траци за адресу додирните икону камере Google објектива</translation>

@@ -392,7 +392,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1595731774593926493">Izbris kontrolne številke</translation>
 <translation id="1597307423671074806">Videoposnetek WebM</translation>
 <translation id="159800670740560023">Povezava z nasveti za Chrome, pritisnite Enter, če želite odpreti <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Poslano. Odprite Chrome v drugi napravi.</translation>
 <translation id="1599199147673445968">Nova kartica? <ph name="BEGIN_LINK" />Vnesite podrobnosti o kartici<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Lepota in fitnes</translation>
@@ -994,6 +993,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2521385132275182522">Spenjanje spodaj desno</translation>
 <translation id="2521736961081452453">Ustvari obrazec</translation>
 <translation id="2524461107774643265">Dodajanje več podatkov</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Vsebina s strani za zaključek nakupa se deli z Googlom, da je mogoče ponuditi te možnosti.<ph name="END_BOLD" /> Plačilni paketi so odvisni od primernosti. Če želite skriti možnosti poznejšega plačila, odprite <ph name="BEGIN_LINK" />nastavitve plačil<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Če želite zagnati to aplikacijo, znova omogočite način za razvijalce za izolirane spletne aplikacije</translation>
 <translation id="2526280916094749336">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Koda CVC je na sprednji strani kartice. To je 4-mestna koda v zgornjem desnem kotu nad številko kartice.</translation>

@@ -292,6 +292,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2318045970523081853">Toca para llamar</translation>
+<translation id="232137538351753795">Desliza desde el borde izquierdo para volver</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio web</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
 <translation id="2330186936255788117">Más marcadores</translation>
@@ -1202,7 +1203,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6196315980958524839">Las contraseñas se guardan en el Gestor de contraseñas de Google en este dispositivo</translation>
 <translation id="6204781143409202534">Chrome ha detectado posible spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
-<translation id="6210282067670792090">En la barra de direcciones, usa este atajo de teclado con atajos para buscadores y búsquedas en sitios</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando vista previa de esta página</translation>
 <translation id="6212567362666004597">Añadir pestaña al grupo</translation>
@@ -1328,7 +1328,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6659594942844771486">Tabulador</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notificarme</translation>
-<translation id="6670767097276846646">Algunas extensiones pueden añadir buscadores a Chrome</translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6672697278890207089">Introduce tu frase de contraseña</translation>
 <translation id="6672917148207387131">Añadir <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés</translation>
+<translation id="7997875520309653083">Desliza desde el borde derecho para volver</translation>
 <translation id="7998918019931843664">Volver a abrir pestaña cerrada</translation>
 <translation id="8001245658307297681">Estás viendo un archivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>

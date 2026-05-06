@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">குறைதீர்வு எண்ணை நீக்குதல்</translation>
 <translation id="1597307423671074806">WebM வீடியோ</translation>
 <translation id="159800670740560023">Chrome உதவிக்குறிப்பிற்கான இணைப்பு, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> பக்கத்தைத் திறக்க Enter அழுத்தவும்</translation>
-<translation id="1599079390582151174">அனுப்பப்பட்டது. உங்களின் மற்றொரு சாதனத்தில் Chromeமைத் திறக்கவும்.</translation>
 <translation id="1599199147673445968">புதிய கார்டா? <ph name="BEGIN_LINK" />கார்டு விவரங்களை உள்ளிடுக<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ஜிப்</translation>
 <translation id="1604192142734009334">அழகு மற்றும் உடற்பயிற்சி</translation>
@@ -994,6 +993,7 @@
 <translation id="2521385132275182522">ஸ்டேப்பில் பாட்டம் ரைட்</translation>
 <translation id="2521736961081452453">படிவத்தை உருவாக்கு</translation>
 <translation id="2524461107774643265">மேலும் தகவலைச் சேர்க்கவும்</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />இந்த விருப்பங்களை வழங்க, செக்-அவுட் பக்கத்தில் உள்ள உள்ளடக்கம் Googleளுடன் பகிரப்படும்.<ph name="END_BOLD" /> பேமெண்ட் திட்டங்கள் தகுதிநிலைக்கு உட்பட்டவை. பிறகு பணம் செலுத்தும் வழிகளை மறைக்க, <ph name="BEGIN_LINK" />பேமெண்ட் அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="2526062290525841862">இந்த ஆப்ஸை இயக்க, தனிப்பட்ட இணைய ஆப்ஸ் டெவெலப்பர் பயன்முறையை மீண்டும் இயக்கவும்</translation>
 <translation id="2526280916094749336">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) சேமிக்கப்படும்.</translation>
 <translation id="2527451058878391043">கார்டின் முன்பக்கத்தில் CVC எண் இருக்கும். அது கார்டு எண்ணிற்கு மேல் வலதுபுறத்தில் உள்ள 4 இலக்க எண்ணாகும்.</translation>

@@ -2063,6 +2063,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2402226831639195063">Tonalités</translation>
 <translation id="2405887402346713222">Numéros de série des appareils et composants</translation>
 <translation id="2406153734066939945">Voulez-vous supprimer ce profil et ses données associées ?</translation>
+<translation id="2406942743794219791">Confirmez le moteur de recherche par défaut que vous souhaitez</translation>
 <translation id="2407671304279211586">Sélectionner un fournisseur DNS</translation>
 <translation id="2408018932941436077">Enregistrement de la carte…</translation>
 <translation id="2408742686124047357">Épinglez Google Lens à votre barre d'outils pour y accéder facilement la prochaine fois</translation>
@@ -3044,6 +3045,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Page Web, complète</translation>
 <translation id="304747341537320566">Moteurs de synthèse vocale</translation>
+<translation id="3047618804758101928">L'extension "<ph name="EXTENSION_NAME" />" a modifié vos paramètres</translation>
 <translation id="3047678109605649715">Aucune voix en <ph name="LANGUAGE" /> n'est disponible sur votre appareil. Libérez de l'espace sur votre appareil, puis réessayez.</translation>
 <translation id="3048336643003835855">Appareils HID du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Lecture (k)</translation>
@@ -10001,6 +10003,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="793923212791838">Impossible d'utiliser votre appareil avec ce site</translation>
 <translation id="7939328347457537652">Gérer les certificats d'appareil</translation>
+<translation id="7939918959917132075">Modifié par cette extension</translation>
 <translation id="7940087892955752820">Impossible d'annuler le partage, car une appli utilise ce dossier. Le partage sera annulé au prochain arrêt de <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Trier par <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Aptitude au partage de connexion :</translation>

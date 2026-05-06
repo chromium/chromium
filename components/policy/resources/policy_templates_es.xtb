@@ -2692,6 +2692,15 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
 Si se habilita esta política o no se define, los usuarios podrán añadir cuentas de Kerberos a través de la configuración de cuentas de Kerberos en la página de configuración de cuentas de Kerberos. Los usuarios tendrán control total sobre las cuentas que han añadido y podrán modificarlas o eliminarlas.
 
 Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerberos. Solo se podrán añadir cuentas mediante la política "Configurar cuentas de Kerberos". Esta es una forma eficaz de bloquear cuentas.</translation>
+<translation id="2771222727845689796">Esta política te permite especificar una lista de patrones de URL. El contenido web en segundo plano que coincida con estos patrones se forzará a ejecutarse con prioridad de primer plano.
+
+Si se habilita la política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />, se ignorará esta lista, ya que se forzará que todas las pestañas tengan prioridad de primer plano.
+
+Si se inhabilita <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> o no se define, solo se forzará el contenido que coincida con los patrones de esta lista.
+
+Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si esta lista está vacía o no se define, no se forzará la prioridad de primer plano para ningún contenido en segundo plano.</translation>
 <translation id="2772231477628401250">Usar HTTP para descargar actualizaciones</translation>
 <translation id="2772955711376920612">Si se habilita la política y se establecen <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantiene activado el cambio de alimentación en picos (en caso de ser compatible con el dispositivo). La política de gestión del cambio de alimentación en picos es una política de ahorro de energía que minimiza el uso de corriente alterna durante las horas en las que más energía se utiliza del día. Para ejecutar el modo de cambio de alimentación en picos, se puede configurar una hora de inicio y de finalización para cada día de la semana. Siempre y cuando la batería se mantenga por encima del umbral especificado, el dispositivo funciona con la batería durante esas horas (aunque esté conectada la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (si está conectada), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando la corriente alterna y cargando la batería después de la hora de inicio de carga especificada.
 
@@ -8227,6 +8236,7 @@ Nota: Esta política solo se aplica a las plataformas compatibles con extensione
 
       Independientemente de si se establece o no esta política, los usuarios no podrán cambiar la opción de configuración de WPAD.</translation>
 <translation id="6363485842496031347">Los ajustes de Supr usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
+<translation id="6364336078281746235">Forzar la prioridad de primer plano para URLs concretas</translation>
 <translation id="6366574325767783825">Si se le asigna el valor "Habilitada" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> aceptará contenidos web de tipo Signed HTTP Exchanges.
 
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>

@@ -292,6 +292,7 @@
 <translation id="230115972905494466">അനുയോജ്യമായ ഉപകരണങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2316129865977710310">വേണ്ട, നന്ദി</translation>
 <translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="232137538351753795">തിരികെ പോകാൻ ഇടത്തേയറ്റത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2328474416100889417">എല്ലാവർക്കും ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, എല്ലാ ക്ഷണ ലിങ്കുകളും ഓഫാക്കുകയും ചെയ്യും</translation>
 <translation id="2330186936255788117">കൂടുതൽ ബുക്ക്‌മാർക്കുകൾ</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">ഈ ഉപകരണത്തിലെ Google Password Manager-ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നു</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> എന്നതിൽ നിന്നുള്ള, സ്‌പാം ആകാനിടയുള്ള അറിയിപ്പ് Chrome കണ്ടെത്തി.</translation>
 <translation id="6205314730813004066">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത</translation>
-<translation id="6210282067670792090">വിലാസ ബാറിൽ, തിരയൽ യന്ത്രങ്ങൾക്കും സൈറ്റ് തിരയലിനുമുള്ള കുറുക്കുവഴികൾക്കൊപ്പം ഈ കീബോർഡ് കുറുക്കുവഴികൾ ഉപയോഗിക്കുക</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> അല്ലേ?</translation>
 <translation id="6211386937064921208">ഈ പേജ് പ്രിവ്യു ചെയ്യുന്നു</translation>
 <translation id="6212567362666004597">ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>
@@ -1328,7 +1328,6 @@
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
-<translation id="6670767097276846646">ചില വിപുലീകരണങ്ങൾക്ക് Chrome-ലേക്ക് തിരയൽ യന്ത്രങ്ങൾ ചേർക്കാനാകും</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ചേർക്കുക</translation>
@@ -1675,6 +1674,7 @@
 <translation id="7977451675950311423">ഡാറ്റാ ലംഘനത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് നിങ്ങൾ ഉപയോഗിക്കുകയാണെങ്കിൽ മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="799576009106109668">നിങ്ങളുടെ നിലവിലെ വെബ്‌പേജ് സന്ദർശനം അടിസ്ഥാനമാക്കി സമയോചിതമായി ഉള്ളടക്കം ലോഡ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് കൂടുതൽ വേഗത്തിൽ ബ്രൗസ് ചെയ്യാം</translation>
+<translation id="7997875520309653083">തിരികെ പോകാൻ അരികിൽ നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="7998918019931843664">അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="8001245658307297681">ലോക്കൽ ഫയൽ ആണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>

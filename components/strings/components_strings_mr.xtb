@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">निवारणाचा क्रमांक हटवा</translation>
 <translation id="1597307423671074806">WebM व्हिडिओ</translation>
 <translation id="159800670740560023">Chrome शी संबंधित टीप याची लिंक, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> उघडण्यासाठी एंटर प्रेस करा</translation>
-<translation id="1599079390582151174">पाठवला आहे. तुमच्या दुसऱ्या डिव्हाइसवर Chrome उघडा.</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">पिन</translation>
 <translation id="1604192142734009334">सौंदर्य आणि फिटनेस</translation>
@@ -994,6 +993,7 @@
 <translation id="2521385132275182522">स्टेपल बॉटम राइट</translation>
 <translation id="2521736961081452453">फॉर्म तयार करा</translation>
 <translation id="2524461107774643265">अधिक माहिती जोडा</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />हे पर्याय देण्यासाठी चेकआउट पेजवरील आशय Google सोबत शेअर केला जातो.<ph name="END_BOLD" /> पेमेंट प्लॅन हे पात्रतेच्या अधीन आहेत. नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="BEGIN_LINK" />पेमेंट सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="2526062290525841862">हे अ‍ॅप रन करण्यासाठी, आयसोलेटेड वेब ॲप विकसक मोड पुन्हा सुरू करा</translation>
 <translation id="2526280916094749336">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा पत्ता तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह केला जाईल.</translation>
 <translation id="2527451058878391043">तुमचा CVC हा तुमच्या कार्डच्या समोरील बाजूस असतो. तुमच्या कार्ड नंबरच्या सर्वात वरती हा चार अंकी कोड आहे.</translation>

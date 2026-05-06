@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Täytä automaattisesti kortin numero, jonka loppuosa on <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Luotu <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kameran rulla</translation>
+<translation id="3746269120925354434">Tiedot tallennettu Google Walletiin</translation>
 <translation id="3750225824417196283">Uusi sivu incognito-välilehdellä</translation>
 <translation id="3751873026576444885">Lopeta näytön hakeminen Google Lensillä</translation>
 <translation id="3753408171347588045">Hintoja seurataan</translation>
@@ -2170,6 +2171,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8533670235862049797">Selaussuoja on päällä</translation>
 <translation id="8534481786647257214">Google+ -viesti julkaistu.</translation>
 <translation id="8535368836838588657">Näytä salasana</translation>
+<translation id="8540426897269305488">Kirjaudu sisään: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Tarkista oletusselaimen asetukset</translation>
 <translation id="854938212724803178">Sinulla on 1 vaarantunut salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
 <translation id="8551311254462607218">Napauta Google Lens ‐kamerakuvaketta osoitepalkista</translation>

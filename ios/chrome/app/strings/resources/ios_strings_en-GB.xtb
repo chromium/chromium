@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, thanks</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
+<translation id="1539535193627863227">No passwords or passkeys found for this site</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="154312949627292154">Open tabs received from your other devices from the lock screen.</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3254806613790954367">Your last open tab across all your devices</translation>
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
+<translation id="3259451381796379533">This account won't work with Gemini. Sign in with a different Google Account.</translation>
 <translation id="3265736395246760288">Sign in faster from any of your synced devices.</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
@@ -1864,6 +1866,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7498234416455752244">Keep editing</translation>
 <translation id="7500244509706269886">Autofill form</translation>
 <translation id="750493650310597496">0 selected</translation>
+<translation id="7505402981231763928">You need to sign in to use Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>

@@ -2060,6 +2060,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2402226831639195063">Zvuci</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponenti</translation>
 <translation id="2406153734066939945">Želite li da izbrišete ovaj profil i podatke na njemu?</translation>
+<translation id="2406942743794219791">Potvrdite željeni podrazumevani pretraživač</translation>
 <translation id="2407671304279211586">Izaberite DNS dobavljača</translation>
 <translation id="2408018932941436077">Kartica se čuva</translation>
 <translation id="2408742686124047357">Zakačite Google objektiv na traku s alatkama radi lakšeg pristupa sledeći put</translation>
@@ -3041,6 +3042,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3046892784550338476">Verzija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Veb-stranica, kompletna</translation>
 <translation id="304747341537320566">Mehanizmi govora</translation>
+<translation id="3047618804758101928">Dodatak <ph name="EXTENSION_NAME" /> je promenio podešavanja</translation>
 <translation id="3047678109605649715">Nema glasova (<ph name="LANGUAGE" />) na uređaju. Oslobodite prostor na uređaju i probajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji prodavca <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Pusti (k)</translation>
@@ -10002,6 +10004,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj ne može da se koristi sa ovim sajtom</translation>
 <translation id="7939328347457537652">Upravljajte sertifikatima uređaja</translation>
+<translation id="7939918959917132075">Dodatak je promenio podešavanje u ovu opciju</translation>
 <translation id="7940087892955752820">Opozivanje deljenja nije uspelo jer neka aplikacija koristi ovaj folder. Deljenje foldera će biti opozvano kada se <ph name="SPECIFIC_NAME" /> sledeći put zatvori.</translation>
 <translation id="7940265372707990269">Sortiraj prema: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Spremnost za privezivanje:</translation>

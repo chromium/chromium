@@ -292,6 +292,7 @@
 <translation id="230115972905494466">Сумісних пристроїв не знайдено</translation>
 <translation id="2316129865977710310">Ні, дякую</translation>
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
+<translation id="232137538351753795">Щоб перейти назад, проведіть пальцем від лівого краю екрана</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
 <translation id="2328474416100889417">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і всі посилання для запрошення буде вимкнено</translation>
 <translation id="2330186936255788117">Більше закладок</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">Паролі збережено в Менеджері паролів Google на цьому пристрої</translation>
 <translation id="6204781143409202534">Вебпереглядач Chrome виявив можливий спам із домену <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
-<translation id="6210282067670792090">Використайте в адресному рядку цю комбінацію клавіш і команду для пошукових систем та пошуку на сайтах</translation>
 <translation id="6210748933810148297">Не <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Попередній перегляд цієї сторінки</translation>
 <translation id="6212567362666004597">Додати вкладку в групу</translation>
@@ -1328,7 +1328,6 @@
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="666731172850799929">Відкрити в програмі <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Сповіщати мене</translation>
-<translation id="6670767097276846646">Деякі розширення можуть додавати пошукові системи в Chrome</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6672697278890207089">Введіть парольну фразу</translation>
 <translation id="6672917148207387131">Додати домен <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки останнім часом ви не відвідували сайт</translation>
 <translation id="799576009106109668">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
+<translation id="7997875520309653083">Щоб перейти назад, проведіть пальцем від правого краю екрана</translation>
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8001245658307297681">Ви переглядаєте локальний файл</translation>
 <translation id="8004582292198964060">Переглядач</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">スキップ</translation>
 <translation id="1531038290222364269">タブを表示</translation>
 <translation id="1536390784834419204">ページを翻訳</translation>
+<translation id="1539535193627863227">このサイト用のパスワードまたはパスキーが見つかりません</translation>
 <translation id="1540800554400757039">住所1行目</translation>
 <translation id="154312949627292154">他のデバイスから受信したタブをロック画面から開きます。</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">変更を保存できませんでした。</translation>
 <translation id="3254806613790954367">すべてのデバイスで最後に開いたタブ</translation>
 <translation id="325717987950204592">[プライバシーとセキュリティ] をタップします</translation>
+<translation id="3259451381796379533">このアカウントでは Gemini を使用できません。別の Google アカウントでログインしてください。</translation>
 <translation id="3265736395246760288">同期しているすべてのデバイスからすばやくログインできます。</translation>
 <translation id="3272527697863656322">キャンセル</translation>
 <translation id="3273510436356991673">ホーム画面をカスタマイズ</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">編集を続ける</translation>
 <translation id="7500244509706269886">フォームに自動入力</translation>
 <translation id="750493650310597496">選択されていません</translation>
+<translation id="7505402981231763928">Gemini を使用するにはログインする必要があります</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" />（<ph name="FILESIZE" />）。</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="750886945254958667">後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します</translation>

@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Odabrano: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Odobrena su dopuštenja <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu uređaja za virtualnu stvarnost. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati uređaje za virtualnu stvarnost.</translation>
+<translation id="7279851812866769760">Podijelite kontakte</translation>
 <translation id="7282197670900591579">Tema boje limuna</translation>
 <translation id="728412880473384942">Web-lokacije su brže, ali manje sigurne</translation>
 <translation id="7352902948037373520">Upravljajte u <ph name="BEGIN_LINK1" />postavkama Androida<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="9156722768168878035">Dopustite Chromeu da prikazuje vaše nedavne kartice na popisu aplikacija i u rezultatima pretraživanja na uređaju. To uvijek možete isključiti u postavkama Chromea.</translation>
 <translation id="9162462602695099906">Ova je stranica opasna</translation>
 <translation id="9182556968660520230">Ne dopuštaj web-lokacijama reproduciranje zaštićenog sadržaja</translation>
+<translation id="927148002081263046">Podijelite kontakt</translation>
 <translation id="947156494302904893">Web-lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Organizirajte se</translation>
 <translation id="960590623979248167">Prikaži hiperveze</translation>

@@ -292,6 +292,7 @@
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
 <translation id="2316129865977710310">Нет, спасибо</translation>
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
+<translation id="232137538351753795">Чтобы вернуться, проведите слева направо</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
 <translation id="2330186936255788117">Ещё закладки</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">Пароли сохраняются в Google Менеджере паролей на этом устройстве.</translation>
 <translation id="6204781143409202534">Браузер Chrome обнаружил возможный спам от домена <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
-<translation id="6210282067670792090">Используйте это сочетание клавиш с быстрыми командами в поисковых системах и для поиска по определенным сайтам.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6212567362666004597">Добавить вкладку в группу</translation>
@@ -1328,7 +1328,6 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Включить</translation>
-<translation id="6670767097276846646">Некоторые расширения могут добавлять поисковые системы в Chrome.</translation>
 <translation id="6671495933530132209">Скопировать изображение</translation>
 <translation id="6672697278890207089">Введите кодовую фразу</translation>
 <translation id="6672917148207387131">Добавить сайт <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@
 <translation id="7977451675950311423">Предупреждает, если вы используете пароль, скомпрометированный в результате утечки данных.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
 <translation id="799576009106109668">Работа браузера станет быстрее благодаря автоматической загрузке контента с учетом просматриваемой в настоящий момент страницы.</translation>
+<translation id="7997875520309653083">Чтобы вернуться, проведите справа налево</translation>
 <translation id="7998918019931843664">Открыть закрытую вкладку</translation>
 <translation id="8001245658307297681">Вы просматриваете локальный файл.</translation>
 <translation id="8004582292198964060">Браузер</translation>

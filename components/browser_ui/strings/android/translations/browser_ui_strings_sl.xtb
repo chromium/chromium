@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Št. izbranih: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dovoljeno: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav za navidezno resničnost. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav za navidezno resničnost.</translation>
+<translation id="7279851812866769760">Deljenje stikov</translation>
 <translation id="7282197670900591579">Limonova tema</translation>
 <translation id="728412880473384942">Spletna mesta delujejo hitreje, vendar manj varno</translation>
 <translation id="7352902948037373520">Upravljanje v <ph name="BEGIN_LINK1" />nastavitvah za Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="9156722768168878035">Chrome naj prikaže vaše nedavne zavihke na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli izklopite v nastavitvah Chroma.</translation>
 <translation id="9162462602695099906">Ta stran je nevarna.</translation>
 <translation id="9182556968660520230">Spletnim mestom ni dovoljeno predvajanje zaščitene vsebine.</translation>
+<translation id="927148002081263046">Deljenje stika</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="959682366969460160">Postanite bolj organizirani</translation>
 <translation id="960590623979248167">Pokaži hiperpovezave</translation>

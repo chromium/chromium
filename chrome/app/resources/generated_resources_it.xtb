@@ -2061,6 +2061,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2402226831639195063">Toni</translation>
 <translation id="2405887402346713222">Numeri di serie del dispositivo e del componente</translation>
 <translation id="2406153734066939945">Vuoi eliminare questo profilo e i relativi dati?</translation>
+<translation id="2406942743794219791">Conferma il motore di ricerca predefinito che preferisci</translation>
 <translation id="2407671304279211586">Seleziona provider DNS</translation>
 <translation id="2408018932941436077">Salvataggio della carta</translation>
 <translation id="2408742686124047357">Blocca Google Lens sulla barra degli strumenti per accedervi facilmente la prossima volta</translation>
@@ -3042,6 +3043,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3046892784550338476">Versione <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
+<translation id="3047618804758101928">L'estensione "<ph name="EXTENSION_NAME" />" ha modificato le tue impostazioni</translation>
 <translation id="3047678109605649715">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Libera spazio sul dispositivo e riprova.</translation>
 <translation id="3048336643003835855">Dispositivi HID del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Riproduci (k)</translation>
@@ -9996,6 +9998,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7939062555109487992">Opzioni avanzate</translation>
 <translation id="793923212791838">Il dispositivo non può essere utilizzato con questo sito</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
+<translation id="7939918959917132075">Modificato dall'estensione</translation>
 <translation id="7940087892955752820">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata al successivo arresto di <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordina per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilità tethering:</translation>

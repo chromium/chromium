@@ -2061,6 +2061,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de serie do dispositivo e dos compoñentes</translation>
 <translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
+<translation id="2406942743794219791">Confirma o buscador predeterminado que queres usar</translation>
 <translation id="2407671304279211586">Seleccionar fornecedor de DNS</translation>
 <translation id="2408018932941436077">Gardando tarxeta</translation>
 <translation id="2408742686124047357">Fixa Google Lens na barra de ferramentas para acceder facilmente a próxima vez</translation>
@@ -3042,6 +3043,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Páxina web, completa</translation>
 <translation id="304747341537320566">Motores de fala</translation>
+<translation id="3047618804758101928">A extensión <ph name="EXTENSION_NAME" /> cambiou a túa configuración</translation>
 <translation id="3047678109605649715">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Libera espazo e téntao de novo.</translation>
 <translation id="3048336643003835855">Dispositivos HID do provedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (K)</translation>
@@ -4271,7 +4273,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> require permisos para: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898498281932368596">Bloquear e saír</translation>
 <translation id="3898743717925399322">O contrasinal de <ph name="WEBSITE" /> está gardado neste dispositivo e na túa Conta de Google. De onde queres eliminalo?</translation>
-<translation id="3898768766145818464">Reproducir ou pór vídeo en pausa</translation>
+<translation id="3898768766145818464">Reproducir ou pór o vídeo en pausa</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3899457911440165602">Produciuse un erro ao eliminar o certificado</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
@@ -9998,6 +10000,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7939062555109487992">Opcións avanzadas</translation>
 <translation id="793923212791838">Non se pode utilizar o dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Xestionar certificados do dispositivo</translation>
+<translation id="7939918959917132075">A extensión cambiou a esta opción</translation>
 <translation id="7940087892955752820">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando <ph name="SPECIFIC_NAME" /> se apague.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación para conexión compartida:</translation>

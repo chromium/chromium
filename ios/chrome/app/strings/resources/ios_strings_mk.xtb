@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Пополни го автоматски бројот на картичката што завршува со <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Создадено: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Фотографии од камерата</translation>
+<translation id="3746269120925354434">Податоците се зачувани во Google Wallet</translation>
 <translation id="3750225824417196283">Нова страница во картичка „Инкогнито“</translation>
 <translation id="3751873026576444885">Сопри го пребарувањето на екранот со Google Lens</translation>
 <translation id="3753408171347588045">Цените се следат</translation>
@@ -2170,6 +2171,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8533670235862049797">„Безбедното прелистување“ е вклучено</translation>
 <translation id="8534481786647257214">Објавата на Google+ е завршена.</translation>
 <translation id="8535368836838588657">Прикажи ја лозинката</translation>
+<translation id="8540426897269305488">Најавете се со <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Проверете ги вашите поставки за стандардниот прелистувач</translation>
 <translation id="854938212724803178">Имате 1 компромитирана лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="8551311254462607218">Во лентата за адреса, допрете ја иконата за камера за Google Lens</translation>

@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Удалить идентификатор Redress Number</translation>
 <translation id="1597307423671074806">Видео в формате WebM</translation>
 <translation id="159800670740560023">Ссылка на совет Chrome. Чтобы открыть страницу <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />, нажмите Ввод.</translation>
-<translation id="1599079390582151174">Отправлено. Откройте Chrome на другом устройстве.</translation>
 <translation id="1599199147673445968">Новая карта? <ph name="BEGIN_LINK" />Введите реквизиты<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Создать ZIP-архив</translation>
 <translation id="1604192142734009334">Красота и фитнес</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">Веб-галереи изображений</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162435186600002085">Логотип основного заголовка</translation>
+<translation id="2162535140284745414">Получайте мгновенные подсказки, которые позволят вам освоить новые способы работы в браузере с помощью ИИ.</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
@@ -993,6 +993,7 @@
 <translation id="2521385132275182522">Скоба в правом нижнем углу</translation>
 <translation id="2521736961081452453">Создать форму</translation>
 <translation id="2524461107774643265">Укажите дополнительную информацию</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Для показа этих вариантов данные о контенте на странице покупки передаются в Google.<ph name="END_BOLD" /> Платежи в рассрочку доступны при соответствии требованиям. Чтобы скрыть варианты оплаты в рассрочку, перейдите в <ph name="BEGIN_LINK" />платежные настройки<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Чтобы запустить это приложение, включите режим разработчика изолированных веб-приложений.</translation>
 <translation id="2526280916094749336">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-код находится на лицевой стороне вашей карты. Это 4 цифры справа над номером карты.</translation>
@@ -1458,6 +1459,7 @@
 <translation id="3261488570342242926">Подробнее…</translation>
 <translation id="3262698603497362968">Предложения</translation>
 <translation id="3264315627780269177">Этой вкладкой нельзя поделиться</translation>
+<translation id="3264637689694266148">Если отключить подсказки, то заголовки и URL вкладок по-прежнему могут обрабатываться для других функций Chrome. Управляйте доступом браузера к этим данным в</translation>
 <translation id="3266793032086590337">Значение (конфликтующее)</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3270041629388773465">Разрешив сохранять CVC-коды, вы сможете быстрее оформлять покупки</translation>
@@ -1993,6 +1995,7 @@
 <translation id="4103249731201008433">Серийный номер устройства недействителен</translation>
 <translation id="4103592298805904008">Картон (однослойный)</translation>
 <translation id="4104702906064390950">Идет сохранение кода IBAN</translation>
+<translation id="4106101218644797743">настройках синхронизации</translation>
 <translation id="4106887816571530227">Доступ к встроенному контенту запрещен</translation>
 <translation id="4107047499377819067">Началась установка фоновых служб VPN. Подождите несколько минут.</translation>
 <translation id="4110642094637545339">Логотипы Google Pay и Afterpay</translation>
@@ -2328,6 +2331,7 @@
 <translation id="4640225694041297329">Показать результаты за последние 7 дней</translation>
 <translation id="4642296966515958616">Чтобы получить доступ к этой группе вкладок, обновите Chrome.</translation>
 <translation id="464342062220857295">Функции поиска</translation>
+<translation id="4643958597583594452">Chrome обрабатывает заголовки и URL страниц на вашем устройстве или в защищенном облачном пространстве.</translation>
 <translation id="4644567637638438744">Чтобы продолжить, войдите в Microsoft OneDrive.</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
 <translation id="4648262692072505866">Хеш должен быть в формате SHA-256.</translation>
@@ -2575,6 +2579,7 @@
 <translation id="5019293549442035120">Сохраненные адреса можно использовать в разных продуктах Google. Этот адрес будет сохранен в вашем аккаунте Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">датчики движения и освещенности</translation>
 <translation id="5019952743397118625">Настроено правило <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не будет управлять доступом к режиму разработчика на странице расширений.</translation>
+<translation id="5020862932518041900">Когда вы выбираете или игнорируете подсказки, Chrome адаптируется, чтобы показывать только полезную вам информацию.</translation>
 <translation id="5021500396464456616">Обратитесь к пользователю, который прислал эту ссылку.</translation>
 <translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6451458296329894277">Подтвердите повторную отправку формы</translation>
 <translation id="6452429044474066211">Дайвинг и подводное плавание</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Чтобы давать подходящие рекомендации, мы используем заголовки и URL открытых вкладок.</translation>
 <translation id="6455632609396391811">Страхование здоровья</translation>
 <translation id="6456955391422100996">Объявление удалено.</translation>
 <translation id="6457206614190510200">Скрепление внакидку</translation>
@@ -4410,6 +4416,7 @@
 <translation id="7819605256207059717">Заблокировано вашей организацией</translation>
 <translation id="7822611063308883975">Портативные игровые консоли</translation>
 <translation id="7825558994363763489">Микроволновые печи</translation>
+<translation id="7827688884439021871">Получайте мгновенные подсказки, которые позволят вам освоить новые способы работы в браузере с помощью ИИ.</translation>
 <translation id="782886543891417279">Возможно, вам нужно перейти на страницу входа сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="7831993212387676366">Что такое список покупок</translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
@@ -4701,6 +4708,7 @@
 <translation id="8289355894181816810">Уточните информацию у администратора сети.</translation>
 <translation id="8291367150570302588">Удостоверение личности</translation>
 <translation id="829335040383910391">звук</translation>
+<translation id="8294425747071240447">Рекомендации от ИИ</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8297545700510100061">Файлы cookie и другие данные сайтов используются, чтобы хранить информацию о вас, в том числе для входа в систему и персонализации рекламы. Для управления файлами cookie перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>

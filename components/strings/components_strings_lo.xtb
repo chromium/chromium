@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">ລຶບໝາຍເລກປະຈຳຕົວຜູ້ທີ່ຢູ່ໃນກຸ່ມສ່ຽງ</translation>
 <translation id="1597307423671074806">ວິດີໂອ WebM</translation>
 <translation id="159800670740560023">ລິ້ງເຄັດລັບ Chrome, ກົດ Enter ເພື່ອເປີດ <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">ສົ່ງແລ້ວ. ເປີດ Chrome ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ.</translation>
 <translation id="1599199147673445968">ບັດໃໝ່ບໍ? <ph name="BEGIN_LINK" />ປ້ອນລາຍລະອຽດບັດ<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ສ້າງໄຟລ໌ Zip</translation>
 <translation id="1604192142734009334">ສຸຂະພາບ ແລະ ຄວາມງາມ</translation>
@@ -993,6 +992,7 @@
 <translation id="2521385132275182522">ໜີບກະຫຼັບເຟີຢູ່ລຸ່ມສຸດເບື້ອງຂວາ</translation>
 <translation id="2521736961081452453">ສ້າງແບບຟອມ</translation>
 <translation id="2524461107774643265">ເພີ່ມຂໍ້ມູນເພີ່ມເຕີມ</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />ລະບົບຈະແບ່ງປັນເນື້ອຫາຈາກໜ້າຈ່າຍເງິນກັບ Google ເພື່ອສະເໜີຕົວເລືອກເຫຼົ່ານີ້.<ph name="END_BOLD" /> ແພັກເກດການຈ່າຍເງິນຂຶ້ນຢູ່ກັບການມີສິດ. ເພື່ອເຊື່ອງຕົວເລືອກຈ່າຍພາຍຫຼັງ, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຈ່າຍເງິນ<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">ເພື່ອເອີ້ນໃຊ້ແອັບນີ້, ໃຫ້ເປີດການນຳໃຊ້ໂໝດຜູ້​ພັດ​ທະ​ນາ​ເວັບແອັບທີ່ແຍກໄວ້ຄືນໃໝ່</translation>
 <translation id="2526280916094749336">ທ່ານສາມາດໃຊ້ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ທົ່ວຜະລິດຕະພັນ Google ໄດ້. ທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC ຂອງທ່ານແມ່ນສະແດງຢູ່ດ້ານໜ້າບັດຂອງທ່ານ. ໂດຍເປັນລະຫັດ 4 ຕົວເລກທີ່ຢູ່ດ້ານຂວາເທິງເລກບັດຂອງທ່ານ.</translation>

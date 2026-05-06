@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Redress 番号の削除</translation>
 <translation id="1597307423671074806">WebM 動画</translation>
 <translation id="159800670740560023">Chrome のヒントのリンクです。Enter キーを押すと <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> を開きます</translation>
-<translation id="1599079390582151174">送信しました。他のデバイスで Chrome を開きます。</translation>
 <translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">美容、フィットネス</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">オンライン画像集</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2162435186600002085">メインヘッダーのロゴ</translation>
+<translation id="2162535140284745414">AI を活用した新しいブラウジング方法を見つけるのに役立つリアルタイムの提案が表示されます。</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> にタイプミスがないか確認してください。</translation>
 <translation id="2166049586286450108">すべてのデータへの管理者アクセス</translation>
@@ -993,6 +993,7 @@
 <translation id="2521385132275182522">ステープル（右下）</translation>
 <translation id="2521736961081452453">フォームを作成</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />購入手続きページのコンテンツは、これらのオプションを提供するために Google と共有されます。<ph name="END_BOLD" />お支払いプランは、ご利用条件を満たしていることが条件となります。後払いオプションを非表示にするには、<ph name="BEGIN_LINK" />お支払い設定<ph name="END_LINK" />に移動してください。</translation>
 <translation id="2526062290525841862">このアプリを実行するには、独立したウェブアプリのデベロッパー モードを再度有効にしてください</translation>
 <translation id="2526280916094749336">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2527451058878391043">CVC コードはカードの表面に記載されています。カード番号の右上にある 4 桁のコードです。</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3261488570342242926">仮想カードについて</translation>
 <translation id="3262698603497362968">購入のオプション</translation>
 <translation id="3264315627780269177">このタブは共有できません</translation>
+<translation id="3264637689694266148">提案をオフにしても、タブで開いているページのタイトルと URL は他の Chrome 機能で使用するため処理されることがあります。このデータへのブラウザ アクセスは、同期設定で管理できます</translation>
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3270041629388773465">CVC を保存するとすばやくお支払いできます</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4103249731201008433">デバイスのシリアル番号が無効です</translation>
 <translation id="4103592298805904008">段ボール（一重）</translation>
 <translation id="4104702906064390950">IBAN 情報を保存しています</translation>
+<translation id="4106101218644797743">同期設定</translation>
 <translation id="4106887816571530227">埋め込みコンテンツは許可されていません</translation>
 <translation id="4107047499377819067">VPN バックグラウンド サービスのインストールが開始しました。完了まで数分かかることがあります。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay のロゴ</translation>
@@ -2329,6 +2332,7 @@
 <translation id="4640225694041297329">過去 7 日間の結果を表示</translation>
 <translation id="4642296966515958616">このタブグループに参加するには、Chrome を更新してください</translation>
 <translation id="464342062220857295">検索機能</translation>
+<translation id="4643958597583594452">Chrome は、デバイス上またはクラウドのプライベート スペースでページのタイトルと URL を処理します</translation>
 <translation id="4644567637638438744">Microsoft OneDrive にログインしている場合のみ、ファイルをアップロードできます</translation>
 <translation id="4644670975240021822">逆の順序（下向き）</translation>
 <translation id="4648262692072505866">ハッシュ形式には SHA-256 を使用する必要があります。</translation>
@@ -2576,6 +2580,7 @@
 <translation id="5019293549442035120">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="5019819206251569004">モーション センサーと光センサー</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ポリシーを設定しました。拡張機能ページでデベロッパー モードを使用できるかどうかは <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> で制御されなくなります。</translation>
+<translation id="5020862932518041900">提案を選択または無視すると、Chrome でユーザーと関連性の高い情報のみが表示されるように調整します</translation>
 <translation id="5021500396464456616">このリンクを送信したユーザーにお問い合わせください</translation>
 <translation id="5021557570875267742">Chrome で価格をトラッキング</translation>
 <translation id="5023310440958281426">管理者のポリシーを確認してください</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6451458296329894277">フォーム再送信の確認</translation>
 <translation id="6452429044474066211">ダイビング、水中アクティビティ</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">開いているタブのページのタイトルと URL を使用して、関連性の高い提案が表示されます</translation>
 <translation id="6455632609396391811">健康保険</translation>
 <translation id="6456955391422100996">広告を削除しました。</translation>
 <translation id="6457206614190510200">中綴じ</translation>
@@ -4411,6 +4417,7 @@
 <translation id="7819605256207059717">組織でブロックされました</translation>
 <translation id="7822611063308883975">携帯ゲーム機</translation>
 <translation id="7825558994363763489">電子レンジ</translation>
+<translation id="7827688884439021871">AI を活用した新しいブラウジング方法を見つけるのに役立つリアルタイムの提案が表示されます</translation>
 <translation id="782886543891417279">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="7831993212387676366">ショッピング リストとは</translation>
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
@@ -4702,6 +4709,7 @@
 <translation id="8289355894181816810">確認方法がわからない場合は、ネットワーク管理者までお問い合わせください。</translation>
 <translation id="8291367150570302588">ID カード</translation>
 <translation id="829335040383910391">音声</translation>
+<translation id="8294425747071240447">AI による提案</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" />をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>

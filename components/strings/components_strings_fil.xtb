@@ -392,7 +392,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1595731774593926493">I-delete ang numero ng pag-redress</translation>
 <translation id="1597307423671074806">WebM Video</translation>
 <translation id="159800670740560023">Link ng Tip sa Chrome, pindutin ang Enter para buksan ang <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Naipadala na. Buksan ang Chrome sa iba mo pang device.</translation>
 <translation id="1599199147673445968">Bagong card? <ph name="BEGIN_LINK" />Ilagay ang Mga Detalye ng Card<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Pagpapaganda at Fitness</translation>
@@ -993,6 +992,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Gumawa ng form</translation>
 <translation id="2524461107774643265">Magdagdag ng Higit Pang Impormasyon</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Sine-share sa Google ang content mula sa page para sa pag-checkout para maialok ang mga opsyong ito.<ph name="END_BOLD" /> Napapailalim sa pagiging kwalipikado ang mga plan sa pagbabayad. Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga setting ng pagbabayad<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para patakbuhin ang app na ito, i-enable ulit ang Developer Mode ng Naka-isolate na Web App</translation>
 <translation id="2526280916094749336">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Nasa harap ng iyong card ang CVC mo. Ito ang 4 na digit na code sa kanang bahagi sa itaas ng numero ng iyong card.</translation>

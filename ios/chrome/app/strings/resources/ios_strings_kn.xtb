@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">ಬೇಡ</translation>
 <translation id="1531038290222364269">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1536390784834419204">ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
+<translation id="1539535193627863227">ಈ ಸೈಟ್‌ಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಪಾಸ್‌ಕೀಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="1540800554400757039">ವಿಳಾಸ 1</translation>
 <translation id="154312949627292154">ಲಾಕ್‌ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ಸ್ವೀಕರಿಸಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">ನಿಮ್ಮ ಬದಲಾವಣೆಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3254806613790954367">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ನೀವು ಕೊನೆಯದಾಗಿ ತೆರೆದ ಟ್ಯಾಬ್‌</translation>
 <translation id="325717987950204592">"ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="3259451381796379533">ಈ ಖಾತೆಯು Gemini ಜೊತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ಬೇರೊಂದು Google ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="3265736395246760288">ನಿಮ್ಮ ಯಾವುದೇ ಸಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಿಂದ ವೇಗವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="3272527697863656322">ರದ್ದುಮಾಡಿ</translation>
 <translation id="3273510436356991673">ಹೋಮ್‌ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> ನಿಂದ ಕೊನೆಗೊಳ್ಳುವ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="3742498336182910186">ಕ್ಯಾಮರಾ ರೋಲ್‌</translation>
+<translation id="3746269120925354434">Google Wallet ನಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3750225824417196283">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ ಪುಟ</translation>
 <translation id="3751873026576444885">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹುಡುಕುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="3753408171347588045">ದರಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -1863,6 +1866,7 @@
 <translation id="7498234416455752244">ಎಡಿಟ್‌ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="7500244509706269886">ಆಟೋಫಿಲ್‌ ಫಾರ್ಮ್</translation>
 <translation id="750493650310597496">0 ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="7505402981231763928">Gemini ಅನ್ನು ಬಳಸಲು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಲು, Touch ID, Face ID ಅಥವಾ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ.</translation>
 <translation id="750886945254958667">ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ತೊರೆಯಿರಿ</translation>
@@ -2170,6 +2174,7 @@
 <translation id="8533670235862049797">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8534481786647257214">Google+ ಪೋಸ್ಟ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="8535368836838588657">ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬಹಿರಂಗಪಡಿಸಿ</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> ಮೂಲಕ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ</translation>
 <translation id="8545276357312221485">ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್‌ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="854938212724803178">ನೀವು ಅಪಾಯಕ್ಕೀಡಾದ 1 ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಸುರಕ್ಷಿತವಾಗಿರಲು ಈಗಲೇ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
 <translation id="8551311254462607218">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ, Google Lens ಕ್ಯಾಮರಾ ಐಕಾನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>

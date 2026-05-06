@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Redress Number मिटाएं</translation>
 <translation id="1597307423671074806">WebM वीडियो</translation>
 <translation id="159800670740560023">Chrome से जुड़ी सलाह का लिंक, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> को खोलने के लिए Enter दबाएं</translation>
-<translation id="1599079390582151174">भेजा गया. अपने दूसरे डिवाइस पर Chrome खोलें.</translation>
 <translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip फ़ाइल बनाएं</translation>
 <translation id="1604192142734009334">ब्यूटी और फ़िटनेस</translation>
@@ -995,6 +994,7 @@
 <translation id="2521385132275182522">नीचे दाईं ओर स्टेपल</translation>
 <translation id="2521736961081452453">फ़ॉर्म बनाएं</translation>
 <translation id="2524461107774643265">ज़्यादा जानकारी जोड़ें</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />चेकआउट पेज का कॉन्टेंट Google के साथ शेयर किया जाता है, ताकि ये विकल्प दिखाए जा सकें.<ph name="END_BOLD" /> बिलिंग प्लान, ज़रूरी शर्तें पूरी करने पर ही उपलब्ध होते हैं. बाद में पेमेंट करने के विकल्प छिपाने के लिए, <ph name="BEGIN_LINK" />पेमेंट सेटिंग<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="2526062290525841862">इस ऐप्लिकेशन को चलाने के लिए, आइसोलेटेड वेब ऐप्लिकेशन डेवलपर मोड को फिर से चालू करें</translation>
 <translation id="2526280916094749336">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता, आपके Google खाते <ph name="ACCOUNT" /> में सेव किया जाएगा.</translation>
 <translation id="2527451058878391043">आपका सीवीसी आपके कार्ड के सामने वाले हिस्से पर होता है. यह आपके कार्ड नंबर के ऊपर दाईं ओर मौजूद, चार अंकों का कोड होता है.</translation>

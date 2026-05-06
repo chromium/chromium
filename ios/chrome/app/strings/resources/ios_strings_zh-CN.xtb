@@ -763,6 +763,7 @@
 <translation id="372676576864368480">自动填充尾号为 <ph name="LAST_DIGITS" /> 的卡号</translation>
 <translation id="3738428049780661523">创建时间：<ph name="DATE" /></translation>
 <translation id="3742498336182910186">相机胶卷</translation>
+<translation id="3746269120925354434">信息已保存到 Google 钱包</translation>
 <translation id="3750225824417196283">“新的无痕式标签页”页面</translation>
 <translation id="3751873026576444885">停止使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="3753408171347588045">正在跟踪价格</translation>
@@ -1573,7 +1574,7 @@
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="647867789226964031">建议更改密码</translation>
 <translation id="6480363549849064919">客户端身份验证</translation>
-<translation id="6489174933860678546">打开无痕式标签页，即可以更私密的方式浏览网页。</translation>
+<translation id="6489174933860678546">打开无痕式标签页，以更私密的方式浏览网页。</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>
@@ -2170,6 +2171,7 @@
 <translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>
 <translation id="8535368836838588657">显示密码</translation>
+<translation id="8540426897269305488">通过以下凭证登录：<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">检查默认浏览器设置</translation>
 <translation id="854938212724803178">发现有 1 个密码已泄露。建议立即更改密码，确保安全。</translation>
 <translation id="8551311254462607218">在地址栏中，点按“Google 智能镜头”相机图标</translation>

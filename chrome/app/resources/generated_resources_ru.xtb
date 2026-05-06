@@ -2064,6 +2064,7 @@
 <translation id="2402226831639195063">Тональные символы</translation>
 <translation id="2405887402346713222">Серийные номера устройства и компонентов</translation>
 <translation id="2406153734066939945">Удалить профиль и все его данные?</translation>
+<translation id="2406942743794219791">Подтвердите, какую поисковую систему вы хотите использовать по умолчанию</translation>
 <translation id="2407671304279211586">Выбрать поставщика услуг DNS</translation>
 <translation id="2408018932941436077">Сохранение карты</translation>
 <translation id="2408742686124047357">Закрепите Google Объектив на панели инструментов для удобства.</translation>
@@ -3045,6 +3046,7 @@
 <translation id="3046892784550338476">Версия: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница полностью</translation>
 <translation id="304747341537320566">Синтезаторы речи</translation>
+<translation id="3047618804758101928">Расширение "<ph name="EXTENSION_NAME" />" изменило ваши настройки.</translation>
 <translation id="3047678109605649715">На устройстве нет голосов для этого языка: <ph name="LANGUAGE" />. Освободите место и повторите попытку.</translation>
 <translation id="3048336643003835855">HID-устройства от поставщика с идентификатором <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Воспроизвести (K)</translation>
@@ -10007,6 +10009,7 @@
 <translation id="7939062555109487992">Расширенные настройки</translation>
 <translation id="793923212791838">Ваше устройство нельзя использовать на этом сайте</translation>
 <translation id="7939328347457537652">Управление сертификатами устройства</translation>
+<translation id="7939918959917132075">Изменено расширением</translation>
 <translation id="7940087892955752820">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Сортировать: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовность режима модема</translation>

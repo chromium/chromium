@@ -763,6 +763,7 @@
 <translation id="372676576864368480">تکمیل خودکار شماره کارتی که به <ph name="LAST_DIGITS" /> ختم می‌شود</translation>
 <translation id="3738428049780661523">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">حلقه فیلم دوربین</translation>
+<translation id="3746269120925354434">‏اطلاعات در «کیف پول Google» ذخیره شد</translation>
 <translation id="3750225824417196283">صفحه زبانه «ناشناس» جدید</translation>
 <translation id="3751873026576444885">‏توقف جستجوی صفحه با «لنز Google»</translation>
 <translation id="3753408171347588045">درحال پیگیری قیمت‌ها هستید</translation>
@@ -2170,6 +2171,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>
 <translation id="8534481786647257214">‏پست +Google ارسال شد.</translation>
 <translation id="8535368836838588657">نشان دادن گذرواژه</translation>
+<translation id="8540426897269305488">ورود به سیستم با <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">تنظیمات مرورگر پیش‌فرض را بررسی کنید</translation>
 <translation id="854938212724803178">۱ گذرواژه لورفته دارید. همین‌حالا مشکل را برطرف کنید تا ایمن بمانید.</translation>
 <translation id="8551311254462607218">‏در نوار نشانی، روی نماد دوربین «لنز Google» تک‌ضرب بزنید</translation>

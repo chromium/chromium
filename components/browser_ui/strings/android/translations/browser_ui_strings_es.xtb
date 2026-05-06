@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Si está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
+<translation id="7279851812866769760">Compartir contactos</translation>
 <translation id="7282197670900591579">Tema mostaza</translation>
 <translation id="728412880473384942">Los sitios son más rápidos, pero menos seguros</translation>
 <translation id="7352902948037373520">Gestionar en los <ph name="BEGIN_LINK1" />ajustes de Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="823874716226307142">Si se activa, los sitios pueden solicitar permiso para acceder a otros dispositivos de tu red local. Si se desactiva, los sitios no pueden acceder a otros dispositivos de tu red local.</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8273596202562472147">Más opciones de <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una aplicación</translation>
 <translation id="8301363963630676147">Permitida esta vez • Usando aproximada</translation>
@@ -794,6 +796,7 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="9156722768168878035">Permite que Chrome muestre tus pestañas recientes en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
+<translation id="927148002081263046">Compartir un contacto</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="960590623979248167">Mostrar hiperenlaces</translation>

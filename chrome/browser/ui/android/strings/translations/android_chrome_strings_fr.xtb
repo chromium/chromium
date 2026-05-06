@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
-<translation id="1007349221964075684">Utiliser le déverrouillage de l'écran pour voir les fenêtres de navigation privée ouvertes</translation>
+<translation id="1007349221964075684">Utilisez le déverrouillage de l'écran pour voir les fenêtres de navigation privée ouvertes</translation>
 <translation id="1010283278930414892">Aucun mot de passe enregistré sur cet appareil</translation>
 <translation id="1011749477052068769">Déplacer ici</translation>
 <translation id="1014083013111769343">Préférences du mode Lecture ouvertes à pleine hauteur</translation>
@@ -1202,7 +1202,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="6204781143409202534">Chrome a détecté un spam potentiel de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
-<translation id="6210282067670792090">Dans la barre d'adresse, utilisez ce raccourci clavier avec les raccourcis des moteurs de recherche et de la recherche sur les sites</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
 <translation id="6212567362666004597">Ajouter l'onglet à un groupe</translation>
@@ -1328,7 +1327,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6659594942844771486">Tabulation</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">M'avertir</translation>
-<translation id="6670767097276846646">Certaines extensions peuvent ajouter des moteurs de recherche dans Chrome</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6672697278890207089">Saisir votre phrase secrète</translation>
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>

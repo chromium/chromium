@@ -2076,6 +2076,7 @@
 <translation id="2402226831639195063">Тонови</translation>
 <translation id="2405887402346713222">Сериски броеви на уредот и компонентите</translation>
 <translation id="2406153734066939945">Да се избрише профилот и неговите податоци?</translation>
+<translation id="2406942743794219791">Потврдете го стандардниот пребарувач што го сакате</translation>
 <translation id="2407671304279211586">Изберете давател на услуги на DNS</translation>
 <translation id="2408018932941436077">Се зачувува картичката</translation>
 <translation id="2408742686124047357">Закачете ја Google Lens за алатникот за полесен пристап следниот пат</translation>
@@ -3057,6 +3058,7 @@
 <translation id="3046892784550338476">Верзија <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница, целосна</translation>
 <translation id="304747341537320566">Софтвер за говор</translation>
+<translation id="3047618804758101928">Екстензијата „<ph name="EXTENSION_NAME" />“ ги промени вашите поставки</translation>
 <translation id="3047678109605649715">Нема гласови на <ph name="LANGUAGE" /> на уредот. Ослободете простор на уредот и обидете се повторно.</translation>
 <translation id="3048336643003835855">HID-уреди од продавачот <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пушти (k)</translation>
@@ -10015,6 +10017,7 @@
 <translation id="7939062555109487992">Напредни опции</translation>
 <translation id="793923212791838">Вашиот уред не може да се користи со овој сајт</translation>
 <translation id="7939328347457537652">Управувајте со сертификатите на уредот</translation>
+<translation id="7939918959917132075">Екстензијата ја промени опцијата на ова</translation>
 <translation id="7940087892955752820">Не можеше да се откаже споделувањето затоа што конкретна апликација ја користи папкава. Споделувањето на папкава ќе се откаже следниот пат кога ќе се исклучи <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Подреди по <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Подготвеност за интернет преку мобилен:</translation>

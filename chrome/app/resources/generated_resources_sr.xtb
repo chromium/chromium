@@ -2060,6 +2060,7 @@
 <translation id="2402226831639195063">Звуци</translation>
 <translation id="2405887402346713222">Серијски бројеви уређаја и компоненти</translation>
 <translation id="2406153734066939945">Желите ли да избришете овај профил и податке на њему?</translation>
+<translation id="2406942743794219791">Потврдите жељени подразумевани претраживач</translation>
 <translation id="2407671304279211586">Изаберите DNS добављача</translation>
 <translation id="2408018932941436077">Картица се чува</translation>
 <translation id="2408742686124047357">Закачите Google објектив на траку с алаткама ради лакшег приступа следећи пут</translation>
@@ -3041,6 +3042,7 @@
 <translation id="3046892784550338476">Верзија <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница, комплетна</translation>
 <translation id="304747341537320566">Механизми говора</translation>
+<translation id="3047618804758101928">Додатак <ph name="EXTENSION_NAME" /> је променио подешавања</translation>
 <translation id="3047678109605649715">Нема гласова (<ph name="LANGUAGE" />) на уређају. Ослободите простор на уређају и пробајте поново.</translation>
 <translation id="3048336643003835855">HID уређаји продавца <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пусти (k)</translation>
@@ -10002,6 +10004,7 @@
 <translation id="7939062555109487992">Напредне опције</translation>
 <translation id="793923212791838">Уређај не може да се користи са овим сајтом</translation>
 <translation id="7939328347457537652">Управљајте сертификатима уређаја</translation>
+<translation id="7939918959917132075">Додатак је променио подешавање у ову опцију</translation>
 <translation id="7940087892955752820">Опозивање дељења није успело јер нека апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се <ph name="SPECIFIC_NAME" /> следећи пут затвори.</translation>
 <translation id="7940265372707990269">Сортирај према: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Спремност за привезивање:</translation>

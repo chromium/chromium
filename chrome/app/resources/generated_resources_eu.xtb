@@ -2061,6 +2061,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2402226831639195063">Tonuak</translation>
 <translation id="2405887402346713222">Gailuaren eta osagaien serie-zenbakiak</translation>
 <translation id="2406153734066939945">Profil hau eta bertako datuak ezabatu nahi dituzu?</translation>
+<translation id="2406942743794219791">Berretsi nahi duzun bilatzaile lehenetsia</translation>
 <translation id="2407671304279211586">Hautatu DNSen hornitzaile bat</translation>
 <translation id="2408018932941436077">Txartela gordetzen</translation>
 <translation id="2408742686124047357">Ainguratu Google Lens tresna-barrara, hurrengoan erraz erabil dezazun</translation>
@@ -3042,6 +3043,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3046892784550338476">Bertsioa: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webgune osoa</translation>
 <translation id="304747341537320566">Hizketa-motorrak</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" luzapenak zure ezarpenak aldatu ditu</translation>
 <translation id="3047678109605649715">Ez dago <ph name="LANGUAGE" /> darabilen ahotsik gailuan. Egin tokia gailuan eta saiatu berriro.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> etxeko HID bidezko gailuak</translation>
 <translation id="3048589239114571785">Erreproduzitu (k)</translation>
@@ -9990,6 +9992,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7939062555109487992">Aukera aurreratuak</translation>
 <translation id="793923212791838">Gailua ezin da erabili webgune honetan</translation>
 <translation id="7939328347457537652">Kudeatu gailuen ziurtagiriak</translation>
+<translation id="7939918959917132075">Luzapen batek aldatu du bilatzaile honetara</translation>
 <translation id="7940087892955752820">Ezin izan zaio partekatzeari utzi, aplikazio bat ari delako karpeta hau erabiltzen. <ph name="SPECIFIC_NAME" /> ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="7940265372707990269">Ordenatzeko irizpidea: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Konexioa partekatzeko aukeraren erabilgarritasuna:</translation>

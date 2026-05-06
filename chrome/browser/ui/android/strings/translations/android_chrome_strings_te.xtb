@@ -292,6 +292,7 @@
 <translation id="230115972905494466">అనుకూల పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2318045970523081853">కాల్ చేయడానికి నొక్కండి</translation>
+<translation id="232137538351753795">వెనుకకు వెళ్లడానికి ఎడమ వైపు అంచు నుండి స్వైప్ చేయండి</translation>
 <translation id="2323763861024343754">సైట్ స్టోరేజ్‌</translation>
 <translation id="2328474416100889417">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అలాగే అన్ని ఆహ్వాన లింక్‌లు ఆఫ్ చేయబడతాయి</translation>
 <translation id="2330186936255788117">మరిన్ని బుక్‌మార్క్‌లు</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> నుండి వచ్చే నోటిఫికేషన్ స్పామ్ అయ్యే అవకాశమున్నట్లు Chrome గుర్తించింది.</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
-<translation id="6210282067670792090">అడ్రస్ బార్‌లో, సెర్చ్ ఇంజిన్‌లు, సైట్ సెర్చ్ షార్ట్‌కట్‌లతో ఈ కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> కాదా?</translation>
 <translation id="6211386937064921208">ఈ పేజీని ప్రివ్యూ చేస్తోంది</translation>
 <translation id="6212567362666004597">ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి</translation>
@@ -1326,7 +1326,6 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />లో తెరువు</translation>
 <translation id="6669390930482049506">నాకు తెలియజేయి</translation>
-<translation id="6670767097276846646">కొన్ని ఎక్స్‌టెన్షన్‌లు, సెర్చ్ ఇంజిన్‌లను Chromeకు జోడించగలవు</translation>
 <translation id="6671495933530132209">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="6672697278890207089">మీ పాస్‌ఫ్రేజ్‌ని ఎంటర్ చేయండి</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" />‌ను జోడించండి</translation>
@@ -1673,6 +1672,7 @@
 <translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> మీరు ఇటీవల వెబ్‌సైట్‌ను చూసిన కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="799576009106109668">మీ ప్రస్తుత వెబ్‌పేజీ సందర్శన ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడినందున మీరు వేగంగా బ్రౌజ్ చేస్తారు</translation>
+<translation id="7997875520309653083">వెనుకకు వెళ్లడానికి కుది వైపు అంచు నుండి స్వైప్ చేయండి</translation>
 <translation id="7998918019931843664">మూసిన ట్యాబ్‌ను మళ్లీ తెరువు</translation>
 <translation id="8001245658307297681">మీరు స్థానిక పైల్‌ని చూస్తున్నారు</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>

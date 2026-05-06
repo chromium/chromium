@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1531038290222364269">ટૅબ બતાવો</translation>
 <translation id="1536390784834419204">પેજનો અનુવાદ કરો</translation>
+<translation id="1539535193627863227">આ સાઇટ માટે કોઈ પાસવર્ડ કે પાસકી મળી નથી</translation>
 <translation id="1540800554400757039">સરનામું 1</translation>
 <translation id="154312949627292154">લૉક સ્ક્રીનમાંથી તમારા અન્ય ડિવાઇસમાંથી પ્રાપ્ત થયેલા ટૅબ ખોલો.</translation>
 <translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">તમારો ફેરફાર સાચવી શકાયો નથી.</translation>
 <translation id="3254806613790954367">તમારા સમગ્ર ડિવાઇસ પર તમારું છેલ્લે ખોલવામાં આવેલું ટૅબ</translation>
 <translation id="325717987950204592">"પ્રાઇવસી અને સુરક્ષા" પર ટૅપ કરો</translation>
+<translation id="3259451381796379533">આ એકાઉન્ટ Gemini સાથે કામ કરશે નહીં. કોઈ અલગ Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="3265736395246760288">તમારા સિંક કરેલા કોઈપણ ડિવાઇસમાંથી વધુ ઝડપથી સાઇન ઇન કરો.</translation>
 <translation id="3272527697863656322">રદ કરો</translation>
 <translation id="3273510436356991673">તમારી હોમ સ્ક્રીન કસ્ટમાઇઝ કરો</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">ફેરફાર કરવાનું ચાલુ રાખો</translation>
 <translation id="7500244509706269886">ફોર્મને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="750493650310597496">0 પસંદ કર્યાં</translation>
+<translation id="7505402981231763928">Geminiનો ઉપયોગ કરવા માટે તમારે સાઇન ઇન કરવું જરૂરી છે</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>

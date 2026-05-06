@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1531038290222364269">ٹیبز دکھائیں</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
+<translation id="1539535193627863227">اس سائٹ کے لیے کوئی پاس ورڈ یا پاس کی نہیں ملی</translation>
 <translation id="1540800554400757039">پتہ 1</translation>
 <translation id="154312949627292154">لاک اسکرین سے اپنے دوسرے آلات سے موصول کردہ ٹیبز کو کھولیں۔</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">آپ کی تبدیلی محفوظ نہیں ہو سکی۔</translation>
 <translation id="3254806613790954367">آپ کے تمام آلات پر کھلا ہوا آخری ٹیب</translation>
 <translation id="325717987950204592">"رازداری اور سیکیورٹی" پر تھپتھپائیں</translation>
+<translation id="3259451381796379533">‏یہ اکاؤنٹ Gemini کے ساتھ کام نہیں کرے گا۔ ایک مختلف Google اکاؤنٹ کے ساتھ سائن ان کریں۔</translation>
 <translation id="3265736395246760288">اپنے کسی بھی مطابقت پذیر آلے سے تیزی سے سائن ان کریں۔</translation>
 <translation id="3272527697863656322">منسوخ کریں</translation>
 <translation id="3273510436356991673">اپنی ہوم اسکرین کو حسب ضرورت بنائیں</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">‫<ph name="LAST_DIGITS" /> سے ختم ہونے والا کارڈ نمبر آٹو فل کریں</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="3742498336182910186">کیمرا رول</translation>
+<translation id="3746269120925354434">‏‫Google والٹ میں معلومات محفوظ ہو گئی</translation>
 <translation id="3750225824417196283">پوشیدگی ٹیب کا نیا صفحہ</translation>
 <translation id="3751873026576444885">‏‫Google لینز کے ساتھ اپنی اسکرین کو تلاش کرنا بند کریں</translation>
 <translation id="3753408171347588045">قیمتیں ٹریک کی جا رہی ہیں</translation>
@@ -1863,6 +1866,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7498234416455752244">ترمیم جاری رکھیں</translation>
 <translation id="7500244509706269886">آٹو فل فارم</translation>
 <translation id="750493650310597496">0 منتخب کیا گیا</translation>
+<translation id="7505402981231763928">‏‫Gemini استعمال کرنے کے لیے آپ کو سائن ان کرنا ہوگا</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)۔</translation>
 <translation id="7508728395076009983">‏اپنے پوشیدگی ٹیبز کو مقفل کرنے کے لئے ٹچ ID، چہرے کی ID یا پاس کوڈ سیٹ اپ کریں۔</translation>
 <translation id="750886945254958667">اس گروپ کو بعد میں ٹیبز شامل کرنے کے لیے رکھیں، یا اگر آپ اس تک مزید رسائی نہیں چاہتے ہیں تو اسے چھوڑ دیں</translation>
@@ -2170,6 +2174,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>
 <translation id="8534481786647257214">‏Google+‎ اشاعت مکمل ہوگئی۔</translation>
 <translation id="8535368836838588657">پاس ورڈ ظاہر کریں</translation>
+<translation id="8540426897269305488">‫<ph name="CELL_ACCESSIBILITY_LABEL" /> کے ساتھ سائن ان کریں</translation>
 <translation id="8545276357312221485">اپنے ڈیفالٹ براؤزر کی ترتیبات چیک کریں</translation>
 <translation id="854938212724803178">آپ کے پاس 1 متاثرہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
 <translation id="8551311254462607218">‏ایڈریس بار میں، Google لینز کیمرا کے آئیکن پر تھپتھپائیں</translation>

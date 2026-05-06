@@ -2074,6 +2074,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2402226831639195063">Tonovi</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponente</translation>
 <translation id="2406153734066939945">Izbrisati ovaj profil i njegove podatke?</translation>
+<translation id="2406942743794219791">Potvrdite zadani pretraživač koji želite</translation>
 <translation id="2407671304279211586">Odaberite pružaoca DNS usluga</translation>
 <translation id="2408018932941436077">Pohranjivanje kartice</translation>
 <translation id="2408742686124047357">Zakačite Google Objektiv na alatnu traku da mu jednostavno pristupite sljedeći put</translation>
@@ -3055,6 +3056,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3046892784550338476">Verzija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web stranica, kompletna</translation>
 <translation id="304747341537320566">Alati za govor</translation>
+<translation id="3047618804758101928">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila vaše postavke</translation>
 <translation id="3047678109605649715">Na uređaju nema glasova koji koriste <ph name="LANGUAGE" />. Obrišite prostor na uređaju i pokušajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodukcija (k)</translation>
@@ -10017,6 +10019,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj se ne može koristiti s ovom web lokacijom</translation>
 <translation id="7939328347457537652">Upravljaj certifikatima uređaja</translation>
+<translation id="7939918959917132075">Ovo je promijenila ekstenzija</translation>
 <translation id="7940087892955752820">Prekidanje dijeljenja nije uspjelo jer neka aplikacija koristi ovaj folder. Dijeljenje foldera će se prekinuti nakon sljedećeg isključivanja uređaja <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Poredaj po: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Spremnost dijeljenja internetske veze:</translation>

@@ -392,7 +392,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1595731774593926493">Suprimeix el número Redress</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Enllaç Consell de Chrome. Prem Retorn per obrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />.</translation>
-<translation id="1599079390582151174">S'ha enviat. Obre Chrome a l'altre dispositiu.</translation>
 <translation id="1599199147673445968">És una targeta nova? <ph name="BEGIN_LINK" />Introdueix els detalls de la targeta<ph name="END_LINK" />.</translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1604192142734009334">Bellesa i fitnes</translation>
@@ -2156,7 +2155,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4318312030194671742">Servei de composició de previsualitzacions d'imatges</translation>
 <translation id="4318566738941496689">El nom i l'adreça de xarxa del dispositiu</translation>
 <translation id="4320119221194966055">Préstecs personals</translation>
-<translation id="432088302786119211">{COUNT,plural, =1{S'ha rebut un enllaç del <ph name="DEVICE_NAME" />}other{S'han rebut # enllaços del <ph name="DEVICE_NAME" />}}</translation>
+<translation id="432088302786119211">{COUNT,plural, =1{S'ha rebut un enllaç de: <ph name="DEVICE_NAME" />}other{S'han rebut # enllaços de: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="4325600325087822253">Safata 17</translation>
 <translation id="4325863107915753736">No s'ha pogut trobar l'article</translation>
 <translation id="4326324639298822553">Comprova la data de caducitat i torna-ho a provar</translation>
@@ -4973,7 +4972,7 @@ Detalls addicionals:
 <translation id="8758529215314160755">Pots editar el teu nom al teu <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /> <ph name="ACCOUNT" /></translation>
 <translation id="8759274551635299824">Aquesta targeta ha caducat</translation>
 <translation id="87601671197631245">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes, els missatges o les targetes de crèdit).</translation>
-<translation id="8763676559028782284">{COUNT,plural, =1{S'ha enviat un enllaç des del <ph name="DEVICE_NAME" />}other{S'han enviat # enllaços des del <ph name="DEVICE_NAME" />}}</translation>
+<translation id="8763676559028782284">{COUNT,plural, =1{S'ha enviat un enllaç des de: <ph name="DEVICE_NAME" />}other{S'han enviat # enllaços des de: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
 <translation id="8763986294015493060">Tanca totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="8766943070169463815">El full d'autenticació de credencials de pagament segur està obert</translation>

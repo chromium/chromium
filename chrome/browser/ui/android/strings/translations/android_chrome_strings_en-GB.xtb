@@ -292,6 +292,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
+<translation id="232137538351753795">Swipe from the left edge to go back</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
@@ -1202,7 +1203,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
 <translation id="6204781143409202534">Chrome detected possible spam from <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
-<translation id="6210282067670792090">In the address bar, use this keyboard shortcut with shortcuts for search engines and site search</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6212567362666004597">Add tab to group</translation>
@@ -1328,7 +1328,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notify me</translation>
-<translation id="6670767097276846646">Some extensions can add search engines to Chrome</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
 <translation id="6672917148207387131">Add <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
+<translation id="7997875520309653083">Swipe from the right edge to go back</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8001245658307297681">You're viewing a local file</translation>
 <translation id="8004582292198964060">Browser</translation>

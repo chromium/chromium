@@ -2076,6 +2076,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2402226831639195063">Tónar</translation>
 <translation id="2405887402346713222">Raðnúmer tækis og íhlutar</translation>
 <translation id="2406153734066939945">Eyða þessum prófíl og gögnum hans?</translation>
+<translation id="2406942743794219791">Staðfestu sjálfgefna leitarvél sem þú vilt nota</translation>
 <translation id="2407671304279211586">Veldu DNS-veitanda</translation>
 <translation id="2408018932941436077">Vistar kort</translation>
 <translation id="2408742686124047357">Festu Google-linsu við tækjastikuna til að fá auðveldan aðgang næst</translation>
@@ -3057,6 +3058,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3046892784550338476">Útgáfa <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Vefsíða, í heild</translation>
 <translation id="304747341537320566">Talgervlar</translation>
+<translation id="3047618804758101928">Viðbótin „<ph name="EXTENSION_NAME" />“ breytti stillingunum þínum</translation>
 <translation id="3047678109605649715">Það eru engar raddir á tungumálinu <ph name="LANGUAGE" /> í tækinu þínu. Losaðu um pláss í tækinu og reyndu aftur.</translation>
 <translation id="3048336643003835855">HID-tæki frá söluaðila <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spila (k)</translation>
@@ -10015,6 +10017,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7939062555109487992">Ítarlegir valkostir</translation>
 <translation id="793923212791838">Ekki er hægt að nota tækið þitt með þessu vefsvæði</translation>
 <translation id="7939328347457537652">Stjórna tækjavottorðum</translation>
+<translation id="7939918959917132075">Breytt í þetta af viðbót</translation>
 <translation id="7940087892955752820">Ekki var hægt að hætta að deila vegna þess að forrit er að nota þessa möppu. Hætt verður að deila möppunni næst þegar slökkt er á <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Raða eftir <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Staða tjóðrunar:</translation>

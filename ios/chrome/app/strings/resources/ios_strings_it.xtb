@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Compila automaticamente il numero della carta che termina con <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data creazione: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rullino</translation>
+<translation id="3746269120925354434">Informazioni salvate in Google Wallet</translation>
 <translation id="3750225824417196283">Pagina Nuova scheda Incognito</translation>
 <translation id="3751873026576444885">Interrompi la ricerca sullo schermo con Google Lens</translation>
 <translation id="3753408171347588045">Stai monitorando i prezzi</translation>
@@ -2170,6 +2171,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8534481786647257214">Pubblicazione su Google+ completata.</translation>
 <translation id="8535368836838588657">Mostra password</translation>
+<translation id="8540426897269305488">Accedi con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Controlla le impostazioni del browser predefinito</translation>
 <translation id="854938212724803178">Hai 1 password compromessa. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="8551311254462607218">Nella barra degli indirizzi, tocca l'icona della fotocamera di Google Lens</translation>
@@ -2294,7 +2296,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8915916167043355778">Chiudi tutte</translation>
 <translation id="892185197271200809">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi</translation>
 <translation id="8923178205567790913">Password</translation>
-<translation id="8926498511977337209">Naviga in incognito</translation>
+<translation id="8926498511977337209">Naviga in Incognito</translation>
 <translation id="892776311701544612">Scopri di più…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestito dalla tua organizzazione, attualmente selezionato. Scegli un account.</translation>

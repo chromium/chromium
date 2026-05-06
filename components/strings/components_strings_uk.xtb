@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Видалити номер оскарження</translation>
 <translation id="1597307423671074806">Відео у форматі WebM</translation>
 <translation id="159800670740560023">Посилання на пораду щодо Chrome. Натисніть клавішу Enter, щоб відкрити посилання "<ph name="IPH_LINK_FOCUSED_LINK_TEXT" />".</translation>
-<translation id="1599079390582151174">Надіслано. Відкрийте Chrome на іншому пристрої.</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="1601786938618212857">Створити ZIP-архів</translation>
 <translation id="1604192142734009334">Краса й фітнес</translation>
@@ -993,6 +992,7 @@
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
 <translation id="2521736961081452453">Створити форму</translation>
 <translation id="2524461107774643265">Додайте більше інформації</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Щоб пропонувати ці варіанти, у Google надсилається вміст сторінки оформлення замовлення.<ph name="END_BOLD" /> Платіжні плани доступні за певних умов. Щоб приховати варіанти оплати пізніше, перейдіть у <ph name="BEGIN_LINK" />налаштування платежів<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Щоб запустити цей додаток, знову ввімкніть режим розробника для ізольованих вебдодатків</translation>
 <translation id="2526280916094749336">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу буде збережено у вашому обліковому записі Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Код CVC вказується на лицьовій стороні картки. Це – 4-значний код, розташований угорі праворуч над номером вашої картки.</translation>

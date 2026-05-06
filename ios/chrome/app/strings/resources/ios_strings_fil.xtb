@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
 <translation id="1531038290222364269">Ipakita ang mga tab</translation>
 <translation id="1536390784834419204">Isalin ang page</translation>
+<translation id="1539535193627863227">Walang nakitang password o passkey para sa site na ito</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="154312949627292154">Buksan ang mga tab na natanggap mula sa iba mo pang device sa lock screen.</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Hindi ma-save ang iyong pagbabago.</translation>
 <translation id="3254806613790954367">Ang iyong huling nakabukas na tab sa lahat ng device mo</translation>
 <translation id="325717987950204592">I-tap ang "Privacy at Seguridad"</translation>
+<translation id="3259451381796379533">Hindi gagana ang account na ito sa Gemini. Mag-sign in gamit ang ibang Google Account.</translation>
 <translation id="3265736395246760288">Mas mabilis na mag-sign in mula sa alinman sa iyong mga naka-sync na device.</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
@@ -1864,6 +1866,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7498234416455752244">Magpatuloy sa pag-edit</translation>
 <translation id="7500244509706269886">I-autofill ang form</translation>
 <translation id="750493650310597496">0 ang napili</translation>
+<translation id="7505402981231763928">Kailangan mong mag-sign in para magamit ang Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para ma-lock ang iyong mga tab na Incognito, ma-set up ang Touch ID, Face ID, o Passcode.</translation>
 <translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>

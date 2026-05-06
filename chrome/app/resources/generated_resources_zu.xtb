@@ -2075,6 +2075,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2402226831639195063">Amathoni</translation>
 <translation id="2405887402346713222">Izinombolo Zomkhiqizo Zedivayisi Nengxenye</translation>
 <translation id="2406153734066939945">Susa le phrofayela nedatha yayo?</translation>
+<translation id="2406942743794219791">Qinisekisa injini yokusesha ezenzakalelayo oyifunayo</translation>
 <translation id="2407671304279211586">Khetha Umhlinzeki we-DNS</translation>
 <translation id="2408018932941436077">Ilondoloza ikhadi</translation>
 <translation id="2408742686124047357">Phona iGoogle Lens kubha yakho yamathuluzi ukuze uyithole kalula ngokulandelayo</translation>
@@ -3056,6 +3057,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3046892784550338476">Uhlobo <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Ikhasi lewebhu, kuqediwe</translation>
 <translation id="304747341537320566">Izinjini zenkulumo</translation>
+<translation id="3047618804758101928">Isandiso esithi "<ph name="EXTENSION_NAME" />" sishintshe amasethingi wakho</translation>
 <translation id="3047678109605649715">Awekho amaphimbo e-<ph name="LANGUAGE" /> edivayisini yakho. Vula isikhala kudivayisi yakho, bese uzama futhi.</translation>
 <translation id="3048336643003835855">Amadivayisi we-HID avela kumthengisi <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Dlala (k)</translation>
@@ -10014,6 +10016,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7939062555109487992">Izinketho ezithuthukile</translation>
 <translation id="793923212791838">Idivayisi yakho ayikwazi ukusetshenziswa naleli sayithi</translation>
 <translation id="7939328347457537652">Phatha izitifiketi zedivayisi</translation>
+<translation id="7939918959917132075">Kushintshwe kwaba yilokhu ngesandiso</translation>
 <translation id="7940087892955752820">Akukwazanga ukuyeka ukwabelana ngoba uhlelo lokusebenza lusebenzisa le folda. Ifolda izoyeka ukwabiwa lapho i-<ph name="SPECIFIC_NAME" /> isisondele ekucisheni.</translation>
 <translation id="7940265372707990269">Hlunga nge-<ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Ukulungela Kokusebenzisa Ifoni Njengemodemu:</translation>

@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">ხმები</translation>
 <translation id="2405887402346713222">მოწყობილობათა და კომპონენტების სერიული ნომრები</translation>
 <translation id="2406153734066939945">გსურთ, წაშალოთ ეს პროფილი და მისი მონაცემები?</translation>
+<translation id="2406942743794219791">დაადასტურეთ თქვენთვის სასურველი ნაგულისხმევი საძიებო სისტემა</translation>
 <translation id="2407671304279211586">აირჩიეთ DNS-ის პროვაიდერი</translation>
 <translation id="2408018932941436077">მიმდინარეობს ბარათის შენახვა</translation>
 <translation id="2408742686124047357">ჩაამაგრეთ Google Lens თქვენს ხელსაწყოთა ზოლში, რომ მასზე მარტივი წვდომა გქონდეთ</translation>
@@ -3043,6 +3044,7 @@
 <translation id="3046892784550338476">ვერსია <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ვებგვერდო, მთლიანი</translation>
 <translation id="304747341537320566">მეტყველების მოდულები</translation>
+<translation id="3047618804758101928">გაფართოებამ „<ph name="EXTENSION_NAME" />“ შეცვალა თქვენი პარამეტრები</translation>
 <translation id="3047678109605649715">თქვენს მოწყობილობაში არ არის <ph name="LANGUAGE" /> ხმები. გაათავისუფლეთ მეხსიერების სივრცე თქვენს მოწყობილობაზე და ცადეთ ხელახლა.</translation>
 <translation id="3048336643003835855">HID მოწყობილობები, რომელთა მომწოდებელია <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">დაკვრა (k)</translation>
@@ -9998,6 +10000,7 @@
 <translation id="7939062555109487992">გაფართოებული ვარიანტები</translation>
 <translation id="793923212791838">თქვენი მოწყობილობის ამ საიტზე გამოყენება ვერ მოხერხდება</translation>
 <translation id="7939328347457537652">მოწყობილობის სერტიფიკატების მართვა</translation>
+<translation id="7939918959917132075">გაფართოებამ შეცვალა შემდეგნაირად</translation>
 <translation id="7940087892955752820">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება <ph name="SPECIFIC_NAME" />-ის მომდევნო გათიშვისას.</translation>
 <translation id="7940265372707990269">დალაგება კრიტერიუმით: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ტეტერინგის მზადყოფნა:</translation>

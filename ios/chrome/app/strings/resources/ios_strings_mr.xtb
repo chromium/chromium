@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">नाही, नको</translation>
 <translation id="1531038290222364269">टॅब दाखवा</translation>
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
+<translation id="1539535193627863227">या साइटसाठी कोणतेही पासवर्ड किंवा पासकी आढळल्या नाहीत</translation>
 <translation id="1540800554400757039">पत्ता 1</translation>
 <translation id="154312949627292154">तुमच्या इतर डिव्हाइसवरून मिळालेले टॅब लॉक स्क्रीनवरून उघडा.</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">तुमचा बदल सेव्ह करता आला नाही.</translation>
 <translation id="3254806613790954367">तुमच्या सर्व डिव्हाइसवर तुम्ही शेवटचा उघडलेला टॅब</translation>
 <translation id="325717987950204592">"गोपनीयता आणि सुरक्षा" वर टॅप करा</translation>
+<translation id="3259451381796379533">हे खाते Gemini सह काम करणार नाही. वेगळे Google खाते वापरून साइन इन करा.</translation>
 <translation id="3265736395246760288">तुमच्या सिंक केलेल्या कोणत्याही डिव्हाइसवरून अधिक जलद साइन इन करा.</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3273510436356991673">तुमची होम स्क्रीन कस्टमाइझ करा</translation>
@@ -1865,6 +1867,7 @@
 <translation id="7498234416455752244">संपादन सुरू ठेवा</translation>
 <translation id="7500244509706269886">फॉर्म ऑटोफिल करा</translation>
 <translation id="750493650310597496">0 निवडले</translation>
+<translation id="7505402981231763928">Gemini वापरण्यासाठी तुम्हाला साइन इन करणे आवश्यक आहे</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">तुमचे गुप्त टॅब लॉक करण्यासाठी, टच आयडी, फेस आयडी किंवा पासकोड सेट करा.</translation>
 <translation id="750886945254958667">नंतर टॅब जोडण्यासाठी हा गट कायम ठेवा किंवा तुम्हाला यापुढे त्याचा अ‍ॅक्सेस नको असल्यास, त्यामधून बाहेर पडा</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Не, дзякуй</translation>
 <translation id="1531038290222364269">Паказваць укладкі</translation>
 <translation id="1536390784834419204">Перакласці старонку</translation>
+<translation id="1539535193627863227">Паролі і ключы доступу для гэтага сайта не знойдзены</translation>
 <translation id="1540800554400757039">Радок адраса 1</translation>
 <translation id="154312949627292154">Укладкі, атрыманыя з іншых вашых прылад, будуць адкрывацца з экрана блакіроўкі.</translation>
 <translation id="1545749641540134597">Сканіраваць QR-код</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Не ўдалося захаваць змяненне.</translation>
 <translation id="3254806613790954367">Апошняя адкрытая ўкладка на ўсіх вашых прыладах</translation>
 <translation id="325717987950204592">Націсніце "Прыватнасць і бяспека".</translation>
+<translation id="3259451381796379533">Гэты ўліковы запіс не будзе працаваць з Gemini. Увайдзіце з дапамогай іншага Уліковага запісу Google.</translation>
 <translation id="3265736395246760288">Выконвайце ўваход хутчэй з любой сінхранізаванай прылады.</translation>
 <translation id="3272527697863656322">Скасаваць</translation>
 <translation id="3273510436356991673">Наладзіць галоўны экран</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Аўтаматычна запоўніць нумар карткі, які заканчваецца на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Створана <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Галерэя камеры</translation>
+<translation id="3746269120925354434">Інфармацыя захавана ў Google Кашальку</translation>
 <translation id="3750225824417196283">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
 <translation id="3751873026576444885">Спыніць пошук змесціва на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="3753408171347588045">Адсочванне цэн</translation>
@@ -1863,6 +1866,7 @@
 <translation id="7498234416455752244">Рэдагаваць далей</translation>
 <translation id="7500244509706269886">Аўтаматычна запоўніць форму</translation>
 <translation id="750493650310597496">Выбрана: 0</translation>
+<translation id="7505402981231763928">Каб карыстацца Gemini, трэба ўвайсці ва ўліковы запіс</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Каб блакіраваць свае ўкладкі ў рэжыме інкогніта, наладзьце Touch ID, Face ID або код доступу.</translation>
 <translation id="750886945254958667">Вы можаце захаваць гэту групу, каб дадаць укладкі пазней, ці выйсці з яе, калі доступ да гэтай групы вам больш не патрэбны</translation>
@@ -2170,6 +2174,7 @@
 <translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>
 <translation id="8534481786647257214">Публікацыя ў Google+ выканана.</translation>
 <translation id="8535368836838588657">Паказаць пароль</translation>
+<translation id="8540426897269305488">Увайсці праз <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Праверце налады стандартнага браўзера</translation>
 <translation id="854938212724803178">У вас 1 раскрыты пароль. У мэтах бяспекі выправіце гэта.</translation>
 <translation id="8551311254462607218">У адрасным радку націсніце на значок камеры Google Аб’ектыва</translation>

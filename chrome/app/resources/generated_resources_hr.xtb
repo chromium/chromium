@@ -2065,6 +2065,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2402226831639195063">Tonovi</translation>
 <translation id="2405887402346713222">Serijski brojevi uređaja i komponenti</translation>
 <translation id="2406153734066939945">Želite li izbrisati ovaj profil i podatke na njemu?</translation>
+<translation id="2406942743794219791">Potvrdite željenu zadanu tražilicu</translation>
 <translation id="2407671304279211586">Odaberite davatelja usluge DNS-a</translation>
 <translation id="2408018932941436077">Spremanje kartice</translation>
 <translation id="2408742686124047357">Prikvačite Google objektiv na alatnu traku radi lakšeg pristupa sljedeći put</translation>
@@ -3046,6 +3047,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3046892784550338476">Verzija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web-stranica, potpuna</translation>
 <translation id="304747341537320566">Alati za pretvaranje teksta u govor</translation>
+<translation id="3047618804758101928">Proširenje <ph name="EXTENSION_NAME" /> promijenilo je vaše postavke</translation>
 <translation id="3047678109605649715">Na uređaju nema glasova za <ph name="LANGUAGE" />. Oslobodite prostor na uređaju i pokušajte ponovo.</translation>
 <translation id="3048336643003835855">HID uređaji dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodukcija (k)</translation>
@@ -10002,6 +10004,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7939062555109487992">Napredne opcije</translation>
 <translation id="793923212791838">Uređaj se ne može upotrebljavati s ovom web-lokacijom</translation>
 <translation id="7939328347457537652">Upravljanje certifikatima uređaja</translation>
+<translation id="7939918959917132075">Proširenje je izmijenilo postavku na ovu opciju</translation>
 <translation id="7940087892955752820">Prestanak dijeljenja nije bio moguć jer jedna aplikacija koristi tu mapu. Dijeljenje mape prekinut će se kad se <ph name="SPECIFIC_NAME" /> isključi.</translation>
 <translation id="7940265372707990269">Poredaj prema kriteriju: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Spremnost za modemsko povezivanje:</translation>

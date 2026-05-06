@@ -392,7 +392,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1595731774593926493">Elimine o número de correção</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
 <translation id="159800670740560023">Link de dica do Chrome, prima Enter para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Enviado. Abra o Chrome no seu outro dispositivo.</translation>
 <translation id="1599199147673445968">Tem um cartão novo? <ph name="BEGIN_LINK" />Introduza os detalhes do cartão<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Criar ZIP</translation>
 <translation id="1604192142734009334">Beleza e fitness</translation>
@@ -994,6 +993,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2521385132275182522">Agrafar parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2524461107774643265">Adicionar mais informações</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />O conteúdo da página de pagamento é partilhado com a Google para oferecer estas opções.<ph name="END_BOLD" /> Os planos de pagamento estão sujeitos a elegibilidade. Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />definições de pagamento<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Para executar esta app, reative o modo de programador para apps Web isoladas</translation>
 <translation id="2526280916094749336">Pode usar moradas guardadas em produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O seu Código de Segurança/CVC encontra-se na parte da frente do cartão. É o código de 4 dígitos no canto superior direito acima do número do cartão.</translation>

@@ -2076,6 +2076,7 @@
 <translation id="2402226831639195063">টোন</translation>
 <translation id="2405887402346713222">ডিভাইস ও কম্পোনেন্ট সিরিয়াল নম্বর</translation>
 <translation id="2406153734066939945">এই প্রোফাইল এবং এর ডেটা মুছে ফেলতে চান?</translation>
+<translation id="2406942743794219791">আপনার পছন্দের ডিফল্ট সার্চ ইঞ্জিনটি কনফার্ম করুন</translation>
 <translation id="2407671304279211586">ডিএনএস প্রদানকারী বেছে নিন</translation>
 <translation id="2408018932941436077">কার্ড সেভ করা হচ্ছে</translation>
 <translation id="2408742686124047357">পরের বার সহজে অ্যাক্সেস করতে আপনার টুলবারে Google Lens পিন করে রাখুন</translation>
@@ -3057,6 +3058,7 @@
 <translation id="3046892784550338476">ভার্সন <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webpage, Complete</translation>
 <translation id="304747341537320566">ভাষ্য ইঞ্জিন</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" এক্সটেনশনটি আপনার সেটিংস পরিবর্তন করেছে</translation>
 <translation id="3047678109605649715">আপনার ডিভাইসে <ph name="LANGUAGE" /> ভাষার ভয়েস কাজ করে না। আপনার ডিভাইসে জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" />-এর HID ডিভাইস</translation>
 <translation id="3048589239114571785">চালু করুন (k)</translation>
@@ -10018,6 +10020,7 @@
 <translation id="7939062555109487992">উন্নত বিকল্প</translation>
 <translation id="793923212791838">এই সাইটের সাথে আপনার ডিভাইস ব্যবহার করা যাবে না</translation>
 <translation id="7939328347457537652">ডিভাইস সার্টিফিকেট ম্যানেজ করুন</translation>
+<translation id="7939918959917132075">এক্সটেনশন দ্বারা এটিতে পরিবর্তন করা হয়েছে</translation>
 <translation id="7940087892955752820">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটি ব্যবহার করছে। পরবর্তী সময়ে <ph name="SPECIFIC_NAME" /> যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসারে সাজান</translation>
 <translation id="7941179291434537290">টেথারিং রেডিনেস:</translation>

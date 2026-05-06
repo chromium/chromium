@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">კომპენსაციის ნომრის წაშლა</translation>
 <translation id="1597307423671074806">WebM ვიდეო</translation>
 <translation id="159800670740560023">Chrome-ის მინიშნების ბმული, დააჭირეთ Enter-ს, რათა გახსნათ <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">გაგზავნილია. გახსენით Chrome თქვენს სხვა მოწყობილობაზე.</translation>
 <translation id="1599199147673445968">ახალი ბარათი გაქვთ? <ph name="BEGIN_LINK" />შეიყვანეთ ბარათის მონაცემები<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">სილამაზე და ფიტნესი</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">სურათების ონლაინგალერეები</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
 <translation id="2162435186600002085">ძირითადი სათაურის ლოგო</translation>
+<translation id="2162535140284745414">რეალურ დროში მიიღეთ შემოთავაზებები, რომლებიც დაგეხმარებათ ხელოვნური ინტელექტით დათვალიერების ახალი გზების პოვნაში.</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />-ზე ახლა <ph name="CURRENT_PRICE" /> ღირს</translation>
 <translation id="2164510882479075877">შეამოწმეთ, სწორად არის თუ არა აკრეფილი <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">ადმინისტრატორის სრული წვდომა</translation>
@@ -1459,6 +1459,7 @@
 <translation id="3261488570342242926">შეიტყვეთ ვირტუალური ბარათების შესახებ</translation>
 <translation id="3262698603497362968">ყიდვის ვარიანტები</translation>
 <translation id="3264315627780269177">ამ ჩანართის გაზიარება შეუძლებელია</translation>
+<translation id="3264637689694266148">შემოთავაზებების გამორთვის შემთხვევაში, თქვენი ჩანართების გვერდის სათაური და URL-ები მაინც დამუშავდება Chrome-ის სხვა ფუნქციებისთვის. ამ მონაცემებზე ბრაუზერის წვდომის სამართავად გახსენით</translation>
 <translation id="3266793032086590337">მნიშვნელობა (კონფლიქტში)</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
 <translation id="3270041629388773465">სწრაფი ანგარიშსწორებისთვის შეინახეთ თქვენი CVC-ები</translation>
@@ -1994,6 +1995,7 @@
 <translation id="4103249731201008433">მოწყობილობის სერიული ნომერი არასწორია</translation>
 <translation id="4103592298805904008">მუყაო (ერთშრიანი)</translation>
 <translation id="4104702906064390950">მიმდინარეობს IBAN-ის ინფორმაციის შენახვა</translation>
+<translation id="4106101218644797743">სინქრონიზაციის პარამეტრები</translation>
 <translation id="4106887816571530227">ჩაშენებული კონტენტი არ არის დაშვებული</translation>
 <translation id="4107047499377819067">VPN-ის ფონური სერვისების ინსტალაცია დაიწყო და დასრულებას რამდენიმე წუთი დასჭირდება.</translation>
 <translation id="4110642094637545339">Google Pay-ს, AfterPay-ს ლოგო</translation>
@@ -2329,6 +2331,7 @@
 <translation id="4640225694041297329">ბოლო 7 დღის შედეგების ჩვენება</translation>
 <translation id="4642296966515958616">ჩანართების ამ ჯგუფში შესაერთებლად განაახლეთ Chrome</translation>
 <translation id="464342062220857295">ძიების ფუნქციები</translation>
+<translation id="4643958597583594452">Chrome ამუშავებს გვერდის სათაურებსა და URL-ებს თქვენს მოწყობილობაში ან ღრუბელში არსებულ პირად სივრცეში</translation>
 <translation id="4644567637638438744">ფაილების ატვირთვა შესაძლებელია მხოლოდ მაშინ, თუ შესული ხართ Microsoft OneDrive-ში</translation>
 <translation id="4644670975240021822">უკუმიმდევრობა ნაბეჭდი მხარით დაღმა</translation>
 <translation id="4648262692072505866">ჰეში უნდა იყოს SHA-256 ფორმატის.</translation>
@@ -2576,6 +2579,7 @@
 <translation id="5019293549442035120">შენახული მისამართების გამოყენება Google-ის სხვადასხვა პროდუქტში შეგიძლიათ. ეს მისამართი შეინახება თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">მოძრაობის და განათების სენსორები</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> წესები დაყენებულია. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> არ გააკონტროლებს გაფართოებების გვერდზე შემმუშავებლის რეჟიმის ხელმისაწვდომობას.</translation>
+<translation id="5020862932518041900">თუ აირჩევთ ან უგულებელყოფთ შემოთავაზებას, Chrome ადაპტირდება, რათა გარანტირებულად თქვენთვის შესაბამისი კონტენტი შემოგთავაზოთ</translation>
 <translation id="5021500396464456616">დაუკავშირდით ბმულის გამომგზავნ პირს</translation>
 <translation id="5021557570875267742">გააკონტროლეთ ფასები Chrome-ის მეშვეობით</translation>
 <translation id="5023310440958281426">შეამოწმეთ ადმინისტრატორის წესები</translation>
@@ -3517,6 +3521,7 @@
 <translation id="6451458296329894277">დაადასტურეთ ფორმოს ხელმეორედ ჩაბარება</translation>
 <translation id="6452429044474066211">ყვინთვა და წყალქვეშა აქტივობები</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">გვერდის სათაურები და თქვენი გახსნილი ჩანართების URL-ები გამოიყენება თქვენთვის შესაბამისი შეთავაზებების მოსაწოდებლად</translation>
 <translation id="6455632609396391811">ჯანმრთელობის დაზღვევა</translation>
 <translation id="6456955391422100996">რეკლამა ამოიშალა.</translation>
 <translation id="6457206614190510200">მიკერება</translation>
@@ -4410,6 +4415,7 @@
 <translation id="7819605256207059717">დაბლოკილია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="7822611063308883975">ხელში დასაჭერი სათამაშო კონსოლები</translation>
 <translation id="7825558994363763489">მიკროტალღური ღუმელები</translation>
+<translation id="7827688884439021871">რეალურ დროში მიიღეთ შემოთავაზებები, რომლებიც დაგეხმარებათ ხელოვნური ინტელექტით დათვალიერების ახალი გზების პოვნაში</translation>
 <translation id="782886543891417279">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა მის ავტორიზაციის გვერდზე.</translation>
 <translation id="7831993212387676366">რა არის საყიდლების სია?</translation>
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
@@ -4701,6 +4707,7 @@
 <translation id="8289355894181816810">დაუკავშირდით ქსელის ადმინისტრატორს, თუ არ ხართ დარწმუნებული, რას ნიშნავს ეს.</translation>
 <translation id="8291367150570302588">პირადობის მოწმობა</translation>
 <translation id="829335040383910391">ხმა</translation>
+<translation id="8294425747071240447">შეთავაზებები, შექმნილია ხელოვნური ინტელექტის მიერ</translation>
 <translation id="8294431847097064396">წყარო</translation>
 <translation id="8297545700510100061">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეგიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად მოინახულეთ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

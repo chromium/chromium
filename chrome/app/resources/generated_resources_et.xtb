@@ -2066,6 +2066,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2402226831639195063">Toonid</translation>
 <translation id="2405887402346713222">Seadme ja selle komponentide seerianumbrid</translation>
 <translation id="2406153734066939945">Kas kustutada see profiil ja selle andmed?</translation>
+<translation id="2406942743794219791">Soovitud vaikeotsingumootori kinnitamine</translation>
 <translation id="2407671304279211586">Valige DNS-i pakkuja</translation>
 <translation id="2408018932941436077">Kaardi salvestamine</translation>
 <translation id="2408742686124047357">Kinnitage Google Lens oma tööriistaribale, et sellele järgmine kord hõlpsasti juurde pääseda</translation>
@@ -3047,6 +3048,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3046892784550338476">Versioon <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Veebileht, valmis</translation>
 <translation id="304747341537320566">Kõnesünteesimootorid</translation>
+<translation id="3047618804758101928">Laiendus „<ph name="EXTENSION_NAME" />“ muutis teie seadeid</translation>
 <translation id="3047678109605649715">Teie seadmes pole hääli, mis oleks järgmises keeles: <ph name="LANGUAGE" /> Vabastage oma seadmes ruumi ja proovige uuesti.</translation>
 <translation id="3048336643003835855">HID-seadmed teenusepakkujalt <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Esita (k)</translation>
@@ -10005,6 +10007,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7939062555109487992">Täpsemad valikud</translation>
 <translation id="793923212791838">Teie seadet ei saa sellel saidil kasutada</translation>
 <translation id="7939328347457537652">Seadmete sertifikaatide haldamine</translation>
+<translation id="7939918959917132075">Laiendus muutis selle selleks.</translation>
 <translation id="7940087892955752820">Jagamist ei saanud lõpetada, kuna rakendus kasutab seda kausta. Kausta jagamine lõpetatakse üksuse <ph name="SPECIFIC_NAME" /> väljalülitamisel.</translation>
 <translation id="7940265372707990269">Sortimisalus: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Jagamise valmidus:</translation>

@@ -2074,6 +2074,7 @@
 <translation id="2402226831639195063">ໂທນສຽງ</translation>
 <translation id="2405887402346713222">ໝາຍເລກຊີຣຽວອຸປະກອນ ແລະ ສ່ວນປະກອບ</translation>
 <translation id="2406153734066939945">ລຶບໂປຣໄຟລ໌ນີ້ ແລະ ຂໍ້ມູນຂອງມັນບໍ?</translation>
+<translation id="2406942743794219791">ຢືນຢັນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="2407671304279211586">ເລືອກຜູ້ໃຫ້ບໍລິການ DNS</translation>
 <translation id="2408018932941436077">ກຳລັງບັນທຶກບັດ</translation>
 <translation id="2408742686124047357">ປັກໝຸດ Google Lens ໄວ້ຢູ່ແຖບເຄື່ອງມືຂອງທ່ານເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍໃນເທື່ອຕໍ່ໄປ</translation>
@@ -3055,6 +3056,7 @@
 <translation id="3046892784550338476">ເວີຊັນ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ໜ້າເວັບສໍາ​ເລັດ</translation>
 <translation id="304747341537320566">ໂປຣແກຣມສຽງເວົ້າ</translation>
+<translation id="3047618804758101928">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="3047678109605649715">ບໍ່ມີສຽງພາສາ <ph name="LANGUAGE" /> ໃນອຸປະກອນຂອງທ່ານ. ອະນາໄມພື້ນທີ່ຢູ່ອຸປະກອນຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="3048336643003835855">ອຸປະກອນ HID ຈາກຜູ້ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">ຫຼິ້ນ (k)</translation>
@@ -7294,6 +7296,7 @@
 <translation id="604388835206766544">ແຍກວິເຄາະການກຳນົດຄ່າບໍ່ສຳເລັດ</translation>
 <translation id="6043994281159824495">ອອກຈາກ​ລະບົບ ດຽວນີ້</translation>
 <translation id="6045114302329202345">ປຸ່ມ TrackPoint ຫຼັກ</translation>
+<translation id="6045425183320109397">ໂດຍ</translation>
 <translation id="6047632800149092791">ການຊິ້ງຂໍ້ມູນໃຊ້ບໍ່ໄດ້. ລອງອອກຈາກລະບົບແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
 <translation id="6048747414605857443">ເລືອກ ແລະ ປັບແຕ່ງສຽງການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າສໍາລັບ ChromeVox ແລ້ວເລືອກເພື່ອເວົ້າ</translation>
 <translation id="6050189528197190982">ໂທນສີເທົາ</translation>
@@ -10009,6 +10012,7 @@
 <translation id="7939062555109487992">ຕົວເລືອກຂັ້ນສູງ</translation>
 <translation id="793923212791838">ບໍ່ສາມາດໃຊ້ອຸປະກອນຂອງທ່ານກັບເວັບໄຊນີ້ໄດ້</translation>
 <translation id="7939328347457537652">ຈັດການໃບຮັບຮອງອຸປະກອນ</translation>
+<translation id="7939918959917132075">ປ່ຽນເປັນລາຍການນີ້ໂດຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="7940087892955752820">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເນື່ອງຈາກມີແອັບພລິເຄຊັນທີ່ກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອມີການປິດ <ph name="SPECIFIC_NAME" /> ໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="7940265372707990269">ຈັດຮຽງຕາມ <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ຄວາມພ້ອມຂອງການປ່ອຍສັນຍານ:</translation>

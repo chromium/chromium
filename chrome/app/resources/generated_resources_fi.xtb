@@ -2074,6 +2074,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2402226831639195063">Toonit</translation>
 <translation id="2405887402346713222">Laitteen ja osien sarjanumerot</translation>
 <translation id="2406153734066939945">Poistetaanko tämä profiili ja sen data?</translation>
+<translation id="2406942743794219791">Vahvista haluamasi oletushakukone</translation>
 <translation id="2407671304279211586">Valitse DNS-tarjoaja</translation>
 <translation id="2408018932941436077">Tallennetaan korttia</translation>
 <translation id="2408742686124047357">Kiinnitä Google Lens yläpalkkiin, niin löydät sen helposti ensi kerralla</translation>
@@ -3055,6 +3056,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3046892784550338476">Versio <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Verkkosivu, täydellinen</translation>
 <translation id="304747341537320566">Puhemoottorit</translation>
+<translation id="3047618804758101928">Laajennus "<ph name="EXTENSION_NAME" />" muutti asetuksia</translation>
 <translation id="3047678109605649715">Laitteella ei ole ääniä, joiden kieli on <ph name="LANGUAGE" />. Vapauta tilaa laitteelta ja yritä uudelleen.</translation>
 <translation id="3048336643003835855">HID-laitteet (myyjä: <ph name="VENDOR_ID" />)</translation>
 <translation id="3048589239114571785">Toista (k)</translation>
@@ -7531,7 +7533,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6207937957461833379">Maa/alue</translation>
 <translation id="6208521041562685716">Mobiilidataa aktivoidaan</translation>
 <translation id="6208725777148613371">Tallennus kohteeseen <ph name="WEB_DRIVE" /> epäonnistui – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="6209589022625766110">Pituuden on oltava vähintään kahdeksan merkkiä, ja salasanassa on oltava vähintään kaksi isoa kirjainta, pientä kirjainta, numeroa tai symbolia Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
+<translation id="6209589022625766110">Pituuden on oltava vähintään kahdeksan merkkiä, ja salasanassa on oltava vähintään kaksi isoa kirjainta, pientä kirjainta, numeroa tai symbolia. Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
 <translation id="6209908325007204267">Laitteesi sisältää Chrome Enterprise ‑päivityksen, mutta käyttäjänimelläsi ei löydy Enterprise-tiliä. Luo Enterprise-tili siirtymällä osoitteeseen g.co/ChromeEnterpriseAccount toisella laitteella.</translation>
 <translation id="6210282067670792090">Käytä tätä pikanäppäintä osoitepalkissa hakukoneiden ja sivustohaun pikakomentojen kanssa</translation>
 <translation id="6211067089253408231">Laita pikahotspot päälle</translation>
@@ -7666,7 +7668,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6295855836753816081">Tallennetaan…</translation>
 <translation id="6298456705131259420">Vaikuttaa tässä listattuihin sivustoihin. Jos lisäät verkkotunnuksen eteen merkkijonon "[*.]", poikkeus koskee koko verkkotunnusta. Jos esimerkiksi lisäät osoitteen "[*.]google.com", kolmannen osapuolen evästeet voivat olla aktiivisia myös osoitteessa mail.google.com, koska se on osa google.comia.</translation>
 <translation id="6300177430812514606">Tietojen lähetyksen tai vastaanoton viimeistely kielletty</translation>
-<translation id="6300478323573969040">Salasanassa on oltava vähintään 12 merkkiä, joihin kuuluu isoja ja pieniä kirjaimia, numeroita ja symboleita Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
+<translation id="6300478323573969040">Salasanassa on oltava vähintään 12 merkkiä, joihin kuuluu isoja ja pieniä kirjaimia, numeroita ja symboleita. Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
 <translation id="630065524203833229">Poist&amp;u</translation>
 <translation id="6300718114348072351">Automaattinen määritys epäonnistui: <ph name="PRINTER_NAME" />. Määritä tulostimen lisäasetukset. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6301300352769835063">Salli Googlen käyttää laitedataasi palvelun (<ph name="DEVICE_OS" />) kehittämiseksi. Jos kieltäydyt, dataa lähetetään Googlelle tarvittavien päivitysten selvittämiseksi, mutta sitä ei tallenneta tai käytetä muihin tarkoituksiin. Lue lisää osoitteesta g.co/flex/HWDataCollection.</translation>
@@ -8919,7 +8921,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7186903260115204164">Lisää käsin piirrettyjä kuvia, allekirjoituksia ja korostuksia uudella piirtotyökalulla</translation>
 <translation id="7186935534137027449">Sovelluskomento</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
-<translation id="7188755083797868960">Avaa lukutila nopeammin pikakuvakkeella. Vaihda lukutilaa painamalla Alt + vaihto + R.</translation>
+<translation id="7188755083797868960">Avaa lukutila nopeammin pikakuvakkeella. Laita lukutila päälle tai pois päältä painamalla Alt + vaihto + R.</translation>
 <translation id="7189234443051076392">Varmista, että laitteellasi on tarpeeksi tilaa.</translation>
 <translation id="7189451821249468368">Sinulla ei ole tarpeeksi päivityksiä tämän laitteen rekisteröintiä varten. Osta niitä lisää ottamalla yhteyttä myyntitiimiin. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
 <translation id="7189558282078169397">Välilehdet muilta laitteilta</translation>
@@ -10010,6 +10012,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7939062555109487992">Lisäasetukset</translation>
 <translation id="793923212791838">Laitettasi ei voi käyttää tällä sivustolla</translation>
 <translation id="7939328347457537652">Hallinnoi laitteen varmenteita</translation>
+<translation id="7939918959917132075">Laajennus valitsi tämän</translation>
 <translation id="7940087892955752820">Jakamista ei voitu peruuttaa, koska sovellus käyttää tätä kansiota. Kansion jakaminen perutaan, kun <ph name="SPECIFIC_NAME" /> seuraavan kerran sammutetaan.</translation>
 <translation id="7940265372707990269">Lajitteluperuste: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Valmius yhteyden jakamiseen:</translation>

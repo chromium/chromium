@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Isi otomatis nomor kartu yang diakhiri dengan <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rol Kamera</translation>
+<translation id="3746269120925354434">Info disimpan ke Google Wallet</translation>
 <translation id="3750225824417196283">Halaman tab Samaran baru</translation>
 <translation id="3751873026576444885">Berhenti menelusuri layar Anda dengan Google Lens</translation>
 <translation id="3753408171347588045">Memantau harga</translation>
@@ -2170,6 +2171,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8533670235862049797">Safe Browsing aktif</translation>
 <translation id="8534481786647257214">Kirim Google+ selesai.</translation>
 <translation id="8535368836838588657">Perlihatkan sandi</translation>
+<translation id="8540426897269305488">Login dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Periksa setelan browser default Anda</translation>
 <translation id="854938212724803178">Anda memiliki 1 sandi yang telah dibobol. Perbaiki sekarang agar tetap terlindungi.</translation>
 <translation id="8551311254462607218">Di kolom URL, ketuk ikon kamera Google Lens</translation>

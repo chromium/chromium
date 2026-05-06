@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galería de fotos</translation>
+<translation id="3746269120925354434">Se guardó la información en la Billetera de Google</translation>
 <translation id="3750225824417196283">Nueva página de pestaña de incógnito</translation>
 <translation id="3751873026576444885">Dejar de buscar en la pantalla con Google Lens</translation>
 <translation id="3753408171347588045">Se está realizando el seguimiento de los precios</translation>
@@ -2170,6 +2171,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8534481786647257214">Entrada de Google+ publicada</translation>
 <translation id="8535368836838588657">Mostrar contraseña</translation>
+<translation id="8540426897269305488">Acceder con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Revisa la configuración de tu navegador predeterminado</translation>
 <translation id="854938212724803178">Tienes 1 contraseña hackeada. Cámbiala ahora para protegerte.</translation>
 <translation id="8551311254462607218">En la barra de direcciones, presiona el ícono de la cámara de Google Lens</translation>

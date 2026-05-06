@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Нөхөн төлөх дугаарыг устгах</translation>
 <translation id="1597307423671074806">WebM видео</translation>
 <translation id="159800670740560023">Chrome-н зөвлөгөөний холбоос, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />-г нээхийн тулд Enter дээр дарна уу</translation>
-<translation id="1599079390582151174">Илгээсэн. Нөгөө төхөөрөмж дээрээ Chrome-г нээнэ үү.</translation>
 <translation id="1599199147673445968">Шинэ карт уу? <ph name="BEGIN_LINK" />Картын дэлгэрэнгүйг оруулна уу<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Гоо сайхан, фитнес</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">Онлайн зургийн цомгууд</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162435186600002085">Үндсэн толгой хэсгийн лого</translation>
+<translation id="2162535140284745414">Танд ХОУ-аар үзэх шинэ аргуудыг олоход туслах бодит цагийн зөвлөмж аваарай.</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> үг үсгийн алдаатай бичигдсэн эсэхийг шалгана уу.</translation>
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
@@ -993,6 +993,7 @@
 <translation id="2521385132275182522">Баруун доод буланд үдэх</translation>
 <translation id="2521736961081452453">Маягт үүсгэх</translation>
 <translation id="2524461107774643265">Дэлгэрэнгүй мэдээлэл нэмэх</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Эдгээр сонголтыг санал болгохын тулд тооцоо хийх хуудасны агуулгыг Google-тэй хуваалцдаг.<ph name="END_BOLD" /> Төлбөрийн төлөвлөгөө нь зохих эрхтэй эсэхээс хамаарна. Дараа төлөх сонголтуудыг нуухын тулд <ph name="BEGIN_LINK" />төлбөрийн тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="2526062290525841862">Энэ аппыг ажиллуулахын тулд Тусгаарласан веб аппын хөгжүүлэгч горимыг дахин идэвхжүүлнэ үү</translation>
 <translation id="2526280916094749336">Та Google-н бүтээгдэхүүнүүдэд хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="ACCOUNT" /> Google Бүртгэлд хадгална.</translation>
 <translation id="2527451058878391043">Таны Карт баталгаажуулалтын код нь картын тань урд талд байдаг. Энэ нь таны картын дугаарын баруун дээд талд байх 4 оронтой код юм.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3261488570342242926">Виртуал картын талаар мэдэж авах</translation>
 <translation id="3262698603497362968">Худалдан авах сонголт</translation>
 <translation id="3264315627780269177">Энэ табыг хуваалцах боломжгүй</translation>
+<translation id="3264637689694266148">Хэрэв та зөвлөмжийг унтраавал таны табын хуудасны гарчиг, URL-г Chrome-н бусад онцлогт зориулж боловсруулсан хэвээр байж магадгүй. Та хөтчид энэ өгөгдөлд хандах эрхийг дараахад удирдах боломжтой</translation>
 <translation id="3266793032086590337">Утга (зөрчил)</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3270041629388773465">Таны карт баталгаажуулалтын кодыг хадгалсан үед тооцоог илүү хурдан хийнэ үү</translation>
@@ -1995,6 +1997,7 @@
 <translation id="4103249731201008433">Төхөөрөмжийн сериал дугаар буруу байна</translation>
 <translation id="4103592298805904008">Цаасан хайрцаг (дан)</translation>
 <translation id="4104702906064390950">IBAN-н мэдээллийг хадгалж байна</translation>
+<translation id="4106101218644797743">синк хийх тохиргоо</translation>
 <translation id="4106887816571530227">Оруулсан контентыг зөвшөөрдөггүй</translation>
 <translation id="4107047499377819067">VPN-н дэвсгэрийн үйлчилгээг суулгаж эхэлсэн. Үүнд цөөн хэдэн минут зарцуулж магадгүй.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay-н лого</translation>
@@ -2330,6 +2333,7 @@
 <translation id="4640225694041297329">Сүүлийн 7 хоногийн илэрцийг харуулах</translation>
 <translation id="4642296966515958616">Энэ табын бүлэгт нэгдэхийн тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="464342062220857295">Онцлогийг хайх</translation>
+<translation id="4643958597583594452">Chrome хуудасны гарчиг, URL-г таны төхөөрөмж эсвэл үүлэн дэх хаалттай орон зайд боловсруулдаг</translation>
 <translation id="4644567637638438744">Файлуудыг зөвхөн та Microsoft OneDrive-т нэвтэрсэн тохиолдолд байршуулах боломжтой</translation>
 <translation id="4644670975240021822">Нүүрээр нь доош харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="4648262692072505866">Хэш нь SHA-256 форматтай байх ёстой.</translation>
@@ -2577,6 +2581,7 @@
 <translation id="5019293549442035120">Та Google-н бүтээгдэхүүнүүд дээр хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгална.</translation>
 <translation id="5019819206251569004">хөдөлгөөн, гэрэл мэдрэгчид</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> бодлогыг тохируулсан. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> өргөтгөлийн хуудсан дээрх хөгжүүлэгч горимын боломжтой байдлыг хянахгүй.</translation>
+<translation id="5020862932518041900">Хэрэв та зөвлөмж сонгох эсвэл үл хэрэгсвэл Chrome танд зөвхөн хамааралтай зүйлсийг харуулахаар дасан зохицно</translation>
 <translation id="5021500396464456616">Энэ холбоосыг илгээсэн хүнтэй холбогдоно уу</translation>
 <translation id="5021557570875267742">Chrome-р үнэ хянах</translation>
 <translation id="5023310440958281426">Админимтраторын журмыг шалгах</translation>
@@ -3517,6 +3522,7 @@
 <translation id="6451458296329894277">Маягтын дахин мэдүүлгийг баталгаажуулах</translation>
 <translation id="6452429044474066211">Шумбах, усан доорх үйл ажиллагаанууд</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Танд хамааралтай зөвлөмж өгөхөд таны нээлттэй табуудын хуудасны гарчиг, URL-г ашигладаг</translation>
 <translation id="6455632609396391811">Эрүүл мэндийн даатгал</translation>
 <translation id="6456955391422100996">Зарыг хассан.</translation>
 <translation id="6457206614190510200">Хажуугаас үдэх</translation>
@@ -4410,6 +4416,7 @@
 <translation id="7819605256207059717">Танай байгууллагаас блоклосон</translation>
 <translation id="7822611063308883975">Гартаа барьдаг видео тоглоомын консолууд</translation>
 <translation id="7825558994363763489">Богино долгионы зуухнууд</translation>
+<translation id="7827688884439021871">Танд ХОУ-аар үзэх шинэ аргуудыг олоход туслах бодит цагийн зөвлөмж аваарай</translation>
 <translation id="782886543891417279">Таны ашиглаж буй Wi-Fi (<ph name="WIFI_NAME" />) сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
 <translation id="7831993212387676366">Авах зүйлийн жагсаалт гэж юу вэ?</translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
@@ -4701,6 +4708,7 @@
 <translation id="8289355894181816810">Хэрэв та үүнийг юу гэсэн үг болохыг сайн мэдэхгүй байгаа бол сүлжээнийхээ админтай холбоо барина уу.</translation>
 <translation id="8291367150570302588">Биеийн байцаалт</translation>
 <translation id="829335040383910391">дуу чимээ</translation>
+<translation id="8294425747071240447">ХОУ-аар дэмжсэн зөвлөмж</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
 <translation id="8297545700510100061">Күүки болон сайтын бусад өгөгдлийг таныг нэвтрүүлэх эсвэл зарыг хувийн болгох зэргээр таныг санахад ашигладаг. Бүх сайтын күүкийг удирдахын тулд <ph name="SETTINGS" />-г харна уу.</translation>
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>

@@ -392,7 +392,6 @@
 <translation id="1595731774593926493">Выдаленне нумара перагляду</translation>
 <translation id="1597307423671074806">Відэа ў фармаце WebM</translation>
 <translation id="159800670740560023">Спасылка "Парада Chrome". Каб адкрыць спасылку "<ph name="IPH_LINK_FOCUSED_LINK_TEXT" />", націсніце Увод.</translation>
-<translation id="1599079390582151174">Адпраўлена. Адкрыйце Chrome на іншай прыладзе.</translation>
 <translation id="1599199147673445968">Новая картка? <ph name="BEGIN_LINK" />Увесці рэквізіты<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Прыгажосць і фітнес</translation>
@@ -746,6 +745,7 @@
 <translation id="21613918653299710">Вэб-галерэі відарысаў</translation>
 <translation id="2161656808144014275">Тэкст</translation>
 <translation id="2162435186600002085">Лагатып асноўнага загалоўка</translation>
+<translation id="2162535140284745414">Атрымлівайце прапановы ў рэальным часе, якія дапамогуць знаходзіць новыя спосабы прагляду з дапамогай штучнага інтэлекту.</translation>
 <translation id="2162620598375156287">Цяперашняя цана на сайце <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">Праверце, ці няма памылкі ў напісанні: <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Поўны доступ адміністратара</translation>
@@ -994,6 +994,7 @@
 <translation id="2521385132275182522">Скаба знізу справа</translation>
 <translation id="2521736961081452453">Стварыць форму</translation>
 <translation id="2524461107774643265">Дадаць болей звестак</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Каб прапанаваць гэтыя варыянты, змесціва са старонкі афармлення заказу абагульваецца з Google.<ph name="END_BOLD" /> Тарыфныя планы даступныя пры адпаведнасці патрабаванням. Каб схаваць варыянты аплаты ў растэрміноўку, адкрыйце <ph name="BEGIN_LINK" />налады аплаты<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Каб гэта праграма працавала, уключыце зноў рэжым распрацоўшчыка для ізаляваных вэб-праграм</translation>
 <translation id="2526280916094749336">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Код CVC размешчаны на пярэднім баку карткі. Гэта чатыры лічбы справа над яе нумарам.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3261488570342242926">Даведацца больш пра віртуальныя карткі</translation>
 <translation id="3262698603497362968">Варыянты купляў</translation>
 <translation id="3264315627780269177">Не ўдалося абагуліць гэту ўкладку</translation>
+<translation id="3264637689694266148">Калі вы выключыце прапановы, загалоўкі старонак і URL-адрасы вашых укладак усё роўна могуць апрацоўвацца для іншых функцый Chrome. Вы можаце кіраваць доступам браўзера да гэтых даных у раздзеле</translation>
 <translation id="3266793032086590337">Значэнне (канфліктуючае)</translation>
 <translation id="3268451620468152448">Адкрытыя ўкладкі</translation>
 <translation id="3270041629388773465">Калі захаваць коды CVC, афармленне заказаў стане хутчэйшым</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4103249731201008433">Серыйны нумар прылады – памылковы</translation>
 <translation id="4103592298805904008">Аднаслойны гафрыраваны кардон</translation>
 <translation id="4104702906064390950">Захоўваюцца даныя IBAN</translation>
+<translation id="4106101218644797743">налады сінхранізацыі</translation>
 <translation id="4106887816571530227">Убудаванае змесціва не дазволена</translation>
 <translation id="4107047499377819067">Пачалося ўсталяванне фонавых сэрвісаў VPN. Гэты працэс можа заняць некалькі хвілін.</translation>
 <translation id="4110642094637545339">Лагатыпы Google Pay і AfterPay</translation>
@@ -2329,6 +2332,7 @@
 <translation id="4640225694041297329">Паказаць вынікі за апошнія 7 дзён</translation>
 <translation id="4642296966515958616">Каб далучыцца да гэтай групы ўкладак, абнавіце Chrome</translation>
 <translation id="464342062220857295">Функцыі пошуку</translation>
+<translation id="4643958597583594452">Chrome апрацоўвае загалоўкі старонак і URL-адрасы на вашай прыладзе або ў прыватнай прасторы ў воблаку</translation>
 <translation id="4644567637638438744">Каб запампоўваць файлы, неабходна ўвайсці ў Microsoft OneDrive</translation>
 <translation id="4644670975240021822">У адваротным парадку, рабочым бокам уніз</translation>
 <translation id="4648262692072505866">Хэш павінен мець фармат SHA-256.</translation>
@@ -2576,6 +2580,7 @@
 <translation id="5019293549442035120">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">датчыкі руху і святла</translation>
 <translation id="5019952743397118625">Дзейнічае палітыка <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не кантралюе даступнасць рэжыму распрацоўшчыка на старонцы пашырэнняў.</translation>
+<translation id="5020862932518041900">Калі вы прымаеце або ігнаруеце прапанову, Chrome будзе адаптавацца і паказваць толькі тое, што адпавядае вашым інтарэсам</translation>
 <translation id="5021500396464456616">Звяжыцеся з карыстальнікам, які адправіў спасылку</translation>
 <translation id="5021557570875267742">Адсочвайце цэны з Chrome</translation>
 <translation id="5023310440958281426">Праверце палітыкі адміністратара</translation>
@@ -3516,6 +3521,7 @@
 <translation id="6451458296329894277">Пацвердзіце паўторную адпраўку формы</translation>
 <translation id="6452429044474066211">Дайвінг і падводныя забавы</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Загалоўкі старонак і URL-адрасы адкрытых укладак выкарыстоўваюцца для паказу рэлевантных прапаноў</translation>
 <translation id="6455632609396391811">Медыцынскае страхаванне</translation>
 <translation id="6456955391422100996">Рэклама выдалена.</translation>
 <translation id="6457206614190510200">Брашуроўка скобамі па спінцы</translation>
@@ -4410,6 +4416,7 @@
 <translation id="7819605256207059717">Элемент заблакіраваны вашай арганізацыяй</translation>
 <translation id="7822611063308883975">Партатыўныя гульнявыя прыстаўкі</translation>
 <translation id="7825558994363763489">Мікрахвалевыя печы</translation>
+<translation id="7827688884439021871">Атрымлівайце прапановы ў рэальным часе, якія дапамогуць знаходзіць новыя спосабы прагляду з дапамогай штучнага інтэлекту</translation>
 <translation id="782886543891417279">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць яе старонку ўваходу.</translation>
 <translation id="7831993212387676366">Што такое спіс пакупак?</translation>
 <translation id="7840103971441592723">Здыманне экрана пачалося</translation>
@@ -4701,6 +4708,7 @@
 <translation id="8289355894181816810">Калі вы не ўпэўненыя, што гэта значыць, звярніцеся да адміністратара сеткі.</translation>
 <translation id="8291367150570302588">Пасведчанне асобы</translation>
 <translation id="829335040383910391">гук</translation>
+<translation id="8294425747071240447">Прапановы на аснове штучнага інтэлекту</translation>
 <translation id="8294431847097064396">Крыніца</translation>
 <translation id="8297545700510100061">Файлы cookie і іншыя даныя сайтаў выкарыстоўваюцца, каб захоўваць звесткі пра вас, у тым ліку для ўваходу ва ўліковы запіс і персаналізацыі рэкламы. Кіраваць файламі cookie для ўсіх сайтаў можна ў раздзеле <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць старонку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

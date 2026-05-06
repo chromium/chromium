@@ -2065,6 +2065,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2402226831639195063">Tonlar</translation>
 <translation id="2405887402346713222">Cihaz və komponentin seriya nömrələri</translation>
 <translation id="2406153734066939945">Bu profil və datası silinsin?</translation>
+<translation id="2406942743794219791">İstədiyiniz defolt axtarış sistemini təsdiqləyin</translation>
 <translation id="2407671304279211586">DNS provayderini seçin</translation>
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
 <translation id="2408742686124047357">Növbəti dəfə asan giriş üçün Google Linzanı alətlər panelinə bərkidin</translation>
@@ -3046,6 +3047,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3046892784550338476">Versiya <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Səhifə, Tam</translation>
 <translation id="304747341537320566">Nitq Mühərrikləri</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" artırması ayarları dəyişdi</translation>
 <translation id="3047678109605649715">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. Cihazınızda yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> adlı təminatçıdan HID cihazları</translation>
 <translation id="3048589239114571785">Oxudun (k)</translation>
@@ -9998,6 +10000,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7939062555109487992">Qabaqcıl seçimlər</translation>
 <translation id="793923212791838">Cihaz bu saytı dəstəkləmir</translation>
 <translation id="7939328347457537652">Cihaz sertifikatlarını idarə edin</translation>
+<translation id="7939918959917132075">Artırma tərəfindən buna dəyişdirildi</translation>
 <translation id="7940087892955752820">Tətbiq bu qovluğu istifadə etdiyi üçün paylaşım ləğv edilmədi. <ph name="SPECIFIC_NAME" /> növbəti dəfə söndürüldükdə qovluq paylaşımı ləğv ediləcək.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> üzrə çeşidləyin</translation>
 <translation id="7941179291434537290">Modem Rejiminin Hazır Olub-Olmaması:</translation>

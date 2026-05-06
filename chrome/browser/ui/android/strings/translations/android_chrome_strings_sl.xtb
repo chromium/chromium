@@ -292,6 +292,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="230115972905494466">Ni združljivih naprav</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2318045970523081853">Dotaknite se, če želite klicati</translation>
+<translation id="232137538351753795">Povlecite z levega roba za vrnitev</translation>
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
 <translation id="2328474416100889417">Vsi bodo takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in vse povezave do povabila bodo izklopljene</translation>
 <translation id="2330186936255788117">Več zaznamkov</translation>
@@ -1202,7 +1203,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6196315980958524839">Gesla so shranjena v Google Upravitelju gesel v tej napravi.</translation>
 <translation id="6204781143409202534">Chrome je zaznal morebitno neželeno vsebino od pošiljatelja <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
-<translation id="6210282067670792090">V naslovni vrstici uporabite te bližnjične tipke z bližnjicami za iskalnike in iskanje po spletnem mestu.</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Predogled te strani</translation>
 <translation id="6212567362666004597">Dodaj zavihek skupini</translation>
@@ -1328,7 +1328,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6659594942844771486">Zavihek</translation>
 <translation id="666731172850799929">Odpri v: <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Obvesti me</translation>
-<translation id="6670767097276846646">Nekatere razširitve lahko v Chrome dodajo iskalnike.</translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6672697278890207089">Vnesite geslo</translation>
 <translation id="6672917148207387131">Dodajanje spletnega mesta <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7977451675950311423">Opozori vas, če uporabite geslo, ki je ogroženo zaradi podatkovne kršitve.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker nedavno niste obiskali</translation>
 <translation id="799576009106109668">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
+<translation id="7997875520309653083">Povlecite z desnega roba za vrnitev</translation>
 <translation id="7998918019931843664">Vnovično odpiranje zaprtega zavihka</translation>
 <translation id="8001245658307297681">Ogledujete si lokalno datoteko</translation>
 <translation id="8004582292198964060">Brskalnik</translation>

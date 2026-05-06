@@ -2073,6 +2073,7 @@
 <translation id="2402226831639195063">צלילים</translation>
 <translation id="2405887402346713222">מספרים סידוריים של מכשירים ורכיבים</translation>
 <translation id="2406153734066939945">למחוק את הפרופיל הזה ואת הנתונים שלו?</translation>
+<translation id="2406942743794219791">צריך לאשר את מנוע החיפוש שיוגדר כברירת מחדל</translation>
 <translation id="2407671304279211586">‏בחירת ספק DNS</translation>
 <translation id="2408018932941436077">שמירת הכרטיס מתבצעת</translation>
 <translation id="2408742686124047357">‏אפשר להצמיד את Google Lens לסרגל הכלים כדי לאפשר גישה נוחה בפעם הבאה</translation>
@@ -3054,6 +3055,7 @@
 <translation id="3046892784550338476">גרסה <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
+<translation id="3047618804758101928">התוסף "<ph name="EXTENSION_NAME" />" שינה את ההגדרות שלך</translation>
 <translation id="3047678109605649715">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך לפנות מקום במכשיר ולנסות שוב.</translation>
 <translation id="3048336643003835855">‏מכשירי HID מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏הפעלה (k)</translation>
@@ -10017,6 +10019,7 @@
 <translation id="7939062555109487992">אפשרויות מתקדמות</translation>
 <translation id="793923212791838">לא ניתן להשתמש במכשיר שלך במסגרת האתר הזה</translation>
 <translation id="7939328347457537652">ניהול אישורי מכשירים</translation>
+<translation id="7939918959917132075">נבחר כברירת המחדל על ידי התוסף</translation>
 <translation id="7940087892955752820">לא ניתן לבטל את השיתוף כי יש אפליקציה שמשתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">מיון לפי <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">‏המוּכנוּת לשיתוף אינטרנט (tethering):</translation>

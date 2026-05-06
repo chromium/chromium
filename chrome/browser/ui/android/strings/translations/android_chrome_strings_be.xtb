@@ -292,6 +292,7 @@
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
+<translation id="232137538351753795">Каб вярнуцца назад, правядзіце пальцам ад левага краю</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
 <translation id="2328474416100889417">Усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />", а ўсе спасылкі з запрашэннем будуць адключаны</translation>
 <translation id="2330186936255788117">Іншыя закладкі</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
 <translation id="6204781143409202534">Браўзер Chrome выявіў магчымы спам з дамена <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
-<translation id="6210282067670792090">Выкарыстоўвайце ў адрасным радку гэта спалучэнне клавіш разам з камандамі, каб выкарыстоўваць канкрэтныя пошукавыя сістэмы і выконваць пошук на асобных сайтах</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="6212567362666004597">Дадаць укладку ў групу</translation>
@@ -1328,7 +1328,6 @@
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="666731172850799929">Адкрыць у праграме <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Апавяшчаць мяне</translation>
-<translation id="6670767097276846646">Некаторыя пашырэнні могуць дадаваць пошукавыя сістэмы ў Chrome</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6672697278890207089">Увядзіце фразу-пароль</translation>
 <translation id="6672917148207387131">Дадаць <ph name="DOMAIN" /></translation>
@@ -1675,6 +1674,7 @@
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
 <translation id="799576009106109668">Паскорыцца прагляд сайтаў, паколькі змесціва будзе загружацца без запыту на падставе даных з бягучай вэб-старонкі.</translation>
+<translation id="7997875520309653083">Каб вярнуцца назад, правядзіце пальцам ад правага краю</translation>
 <translation id="7998918019931843664">Паўторна адкрыць закрытую ўкладку</translation>
 <translation id="8001245658307297681">Вы праглядаеце лакальны файл</translation>
 <translation id="8004582292198964060">Браўзер</translation>

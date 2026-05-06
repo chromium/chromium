@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selected</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>
 <translation id="7276071417425470385">When on, sites can ask to use virtual reality devices. When off, sites can't use virtual reality devices.</translation>
+<translation id="7279851812866769760">Share contacts</translation>
 <translation id="7282197670900591579">Citron theme</translation>
 <translation id="728412880473384942">Sites are faster but less secure</translation>
 <translation id="7352902948037373520">Manage in <ph name="BEGIN_LINK1" />Android settings<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="9156722768168878035">Let Chrome show your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
+<translation id="927148002081263046">Share a contact</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="959682366969460160">Get organised</translation>
 <translation id="960590623979248167">Show hyperlinks</translation>

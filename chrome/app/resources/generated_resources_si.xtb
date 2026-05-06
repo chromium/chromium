@@ -2063,6 +2063,7 @@
 <translation id="2402226831639195063">ශබ්දලීලාවන්</translation>
 <translation id="2405887402346713222">උපාංග සහ සංරචක අනුක්‍රමික අංක</translation>
 <translation id="2406153734066939945">මෙම පැතිකඩ සහ එහි දත්ත මකන්නද?</translation>
+<translation id="2406942743794219791">ඔබට අවශ්‍ය පෙරනිමි සෙවුම් යන්ත්‍රය තහවුරු කරන්න</translation>
 <translation id="2407671304279211586">DNS සපයන්නා තෝරන්න</translation>
 <translation id="2408018932941436077">කාඩ්පත සුරකිනු ලැබේ</translation>
 <translation id="2408742686124047357">ඊළඟ වතාවේ පහසු ප්‍රවේශය සඳහා Google Lens ඔබේ මෙවලම් තීරුවට අමුණන්න</translation>
@@ -3044,6 +3045,7 @@
 <translation id="3046892784550338476">අනුවාදය <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">වෙබ් පිටුව සම්පූර්නයි</translation>
 <translation id="304747341537320566">කථන එන්ජින්</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" දිගුව ඔබේ සැකසීම් වෙනස් කළා</translation>
 <translation id="3047678109605649715">ඔබේ උපාංගය මත <ph name="LANGUAGE" /> හඬ කිසිවක් නැත. ඔබේ උපාංගයෙහි ඉඩ හිස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> විකිණුම්කරු වෙතින් HID උපාංග</translation>
 <translation id="3048589239114571785">ධාවන කරන්න (k)</translation>
@@ -9999,6 +10001,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7939062555109487992">උසස් විකල්ප</translation>
 <translation id="793923212791838">ඔබේ උපාංගය මෙම අඩවිය සමග භාවිතා කළ නොහැක</translation>
 <translation id="7939328347457537652">උපාංග සහතික කළමනාකරණය කරන්න</translation>
+<translation id="7939918959917132075">දිගුව මගින් මෙයට වෙනස් කරන ලදි</translation>
 <translation id="7940087892955752820">යෙදුමක් මෙම ෆෝල්ඩරය භාවිත කරන බැවින් බෙදා ගැනීම ඉවත් කළ නොහැකි විය. <ph name="SPECIFIC_NAME" /> මීළඟට වසා දැමූ විට ෆෝල්ඩරය බෙදා නොගනී.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="7941179291434537290">ටෙදරින් සූදානම:</translation>

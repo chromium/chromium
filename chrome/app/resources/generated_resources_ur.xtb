@@ -2064,6 +2064,7 @@
 <translation id="2402226831639195063">ٹونز</translation>
 <translation id="2405887402346713222">آلہ اور اجزا کے نمبر شمار</translation>
 <translation id="2406153734066939945">اس پروفائل اور اس کے ڈیٹا کو حذف کریں؟</translation>
+<translation id="2406942743794219791">اپنے مطلوبہ ڈیفالٹ سرچ انجن کی تصدیق کریں</translation>
 <translation id="2407671304279211586">‏DNS فراہم کنندہ کو منتخب کریں</translation>
 <translation id="2408018932941436077">کارڈ محفوظ ہو رہا ہے</translation>
 <translation id="2408742686124047357">‏اگلی بار آسان رسائی کے لیے Google لینز کو اپنے ٹول بار میں پن کریں</translation>
@@ -3045,6 +3046,7 @@
 <translation id="3046892784550338476">ورژن <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ویب صفحہ، مکمل</translation>
 <translation id="304747341537320566">اسپیچ انجنز</translation>
+<translation id="3047618804758101928">ایکسٹینشن "<ph name="EXTENSION_NAME" />" نے آپ کی ترتیبات کو تبدیل کر دیا</translation>
 <translation id="3047678109605649715">آپ کے آلے پر کوئی <ph name="LANGUAGE" /> کی آوازیں نہیں ہیں۔ اپنے آلے پر اسپیس کو صاف کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3048336643003835855">‏<ph name="VENDOR_ID" /> وینڈر کی جانب سے HID آلات</translation>
 <translation id="3048589239114571785">‏چلائیں (k)</translation>
@@ -7280,6 +7282,7 @@
 <translation id="604388835206766544">کنفیگریشن پارس کرنے میں ناکام</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
 <translation id="6045114302329202345">‏بنیادی TrackPoint بٹن</translation>
+<translation id="6045425183320109397">بذریعہ</translation>
 <translation id="6047632800149092791">مطابقت پذیری کام نہیں کر رہی ہے۔ سائن آؤٹ اور پھر دوبارہ سائن ان کر کے دیکھیں۔</translation>
 <translation id="6048747414605857443">‏ChromeVox اور 'سننے کیلئے منتخب کریں' کے لیے ٹیکسٹ ٹو اسپیچ آوازوں کو منتخب کریں اور حسب ضرورت بنائیں</translation>
 <translation id="6050189528197190982">گرے اسکیل</translation>
@@ -9996,6 +9999,7 @@
 <translation id="7939062555109487992">اعلی درجے کے اختیارات</translation>
 <translation id="793923212791838">آپ کا آلہ اس سائٹ کے ساتھ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7939328347457537652">ڈیوائس کے سرٹیفکیٹس کا نظم کریں</translation>
+<translation id="7939918959917132075">ایکسٹینشن کے ذریعے اس میں تبدیلی کی گئی</translation>
 <translation id="7940087892955752820">اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار <ph name="SPECIFIC_NAME" /> بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> کے لحاظ سے ترتیب دیں</translation>
 <translation id="7941179291434537290">ٹیدرنگ کی تیاری:</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ні, дякую</translation>
 <translation id="1531038290222364269">Показати вкладки</translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
+<translation id="1539535193627863227">Немає паролів або ключів доступу для цього сайту</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="154312949627292154">Відкривайте вкладки, надіслані з інших пристроїв, на екрані блокування.</translation>
 <translation id="1545749641540134597">Сканувати QR-код</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Не вдалося зберегти зміну.</translation>
 <translation id="3254806613790954367">Остання відкрита вкладка на будь-якому з ваших пристроїв</translation>
 <translation id="325717987950204592">Натисніть "Конфіденційність і безпека"</translation>
+<translation id="3259451381796379533">Цей обліковий запис не працюватиме з Gemini. Увійдіть за допомогою іншого облікового запису Google.</translation>
 <translation id="3265736395246760288">Швидше входьте в обліковий запис на будь-якому синхронізованому пристрої.</translation>
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3273510436356991673">Налаштуйте головний екран</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Продовжити редагування</translation>
 <translation id="7500244509706269886">Заповнити форму автоматично</translation>
 <translation id="750493650310597496">Вибрано 0</translation>
+<translation id="7505402981231763928">Щоб використовувати Gemini, потрібно ввійти в обліковий запис</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>

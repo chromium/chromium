@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">音調</translation>
 <translation id="2405887402346713222">裝置和元件序號</translation>
 <translation id="2406153734066939945">要刪除這個設定檔和相關資料嗎？</translation>
+<translation id="2406942743794219791">確認要使用的預設搜尋引擎</translation>
 <translation id="2407671304279211586">選取 DNS 供應商</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408742686124047357">固定 Google 智慧鏡頭至工具列，方便日後使用</translation>
@@ -3043,6 +3044,7 @@
 <translation id="3046892784550338476">版本：<ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">完整的網頁</translation>
 <translation id="304747341537320566">語音引擎</translation>
+<translation id="3047618804758101928">「<ph name="EXTENSION_NAME" />」擴充功能已變更你的設定</translation>
 <translation id="3047678109605649715">裝置上沒有<ph name="LANGUAGE" />語音，請釋出裝置空間，然後再試一次。</translation>
 <translation id="3048336643003835855">來自供應商 <ph name="VENDOR_ID" /> 的 HID 裝置</translation>
 <translation id="3048589239114571785">播放 (K 鍵)</translation>
@@ -9987,6 +9989,7 @@
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="793923212791838">無法搭配你的裝置使用這個網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
+<translation id="7939918959917132075">由擴充功能變更</translation>
 <translation id="7940087892955752820">某個應用程式正在使用這個資料夾，因此無法取消共用。系統會在下次關閉 <ph name="SPECIFIC_NAME" /> 時取消共用這個資料夾。</translation>
 <translation id="7940265372707990269">按「<ph name="SORT_TYPE" />」排序</translation>
 <translation id="7941179291434537290">網路共用完備性：</translation>

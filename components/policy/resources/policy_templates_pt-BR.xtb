@@ -4575,6 +4575,22 @@ A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATF
           Se esta política não for definida, as teclas de aderência ficarão inicialmente desativadas na tela de login, mas poderão ser ativadas pelo usuário a qualquer momento.</translation>
 <translation id="3927291637826333102">Permitir captura de área de trabalho, janela e guia por estas origens</translation>
 <translation id="3928726028264020458">Ativar relatórios de informações VPD do dispositivo</translation>
+<translation id="393516164454995927">Se a política for definida, será especificado o número máximo de conexões simultâneas por servidor proxy para solicitações WebSocket.
+
+Para modificar o limite de solicitações que não são WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão de 128.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos, então, definir um valor inferior a 128 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (128) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256.
+Se você definir um número acima desse limite, o valor 256 será usado.
+Aumentar acima do padrão (128) fica sob sua responsabilidade.</translation>
 <translation id="3935592079035695061">Milissegundos desde a meia-noite.</translation>
 <translation id="3937800910397007337">Forçar a prioridade de primeiro plano para todas as guias</translation>
 <translation id="3941289958028934630">Desativar a resposta falada na tela de login</translation>
@@ -7993,6 +8009,22 @@ Se a política for definida como "false", a atribuição à extensão no rodapé
 Se o valor for "true" ou não for definido, a lista poderá ser usada.
 
 Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
+<translation id="6061604539167728530">Se a política for definida, será especificado o número máximo de conexões simultâneas por servidor proxy para solicitações que não são WebSocket.
+
+Para modificar o limite de solicitações WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se a política não for definida, será usado o valor padrão de 128.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos, então, definir um valor inferior a 128 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar muitas conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (128) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256 (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Se você definir um número acima desse limite, o valor 256 será usado (99 para <ph name="PRODUCT_NAME" /> e 147 em versões anteriores).
+Aumentar acima do padrão (128) fica sob sua responsabilidade.</translation>
 <translation id="6066761914755798079">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará o URL do mecanismo que fornecerá sugestões de pesquisa. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
 
       É possível especificar o URL de pesquisa do Google como: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

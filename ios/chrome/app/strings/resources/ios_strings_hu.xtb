@@ -763,6 +763,7 @@
 <translation id="372676576864368480">A következő számsorral végződő kártyaszám automatikus kitöltése: <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Létrehozva: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galéria</translation>
+<translation id="3746269120925354434">Információk mentve a Google Walletbe</translation>
 <translation id="3750225824417196283">Új inkognitó lap oldal</translation>
 <translation id="3751873026576444885">A képernyőn való Google Lens-keresés leállítása</translation>
 <translation id="3753408171347588045">Az árak nyomon követése elkezdődött</translation>
@@ -2170,6 +2171,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8533670235862049797">A Biztonságos Böngészés be van kapcsolva</translation>
 <translation id="8534481786647257214">A Google+-bejegyzés kész.</translation>
 <translation id="8535368836838588657">Jelszó megjelenítése</translation>
+<translation id="8540426897269305488">Bejelentkezés a következővel: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Az alapértelmezett böngészőbeállítások ellenőrzése</translation>
 <translation id="854938212724803178">1 jelszavához illetéktelenül hozzáfértek. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="8551311254462607218">Koppintson a címsávban a Google Lens kamera ikonjára</translation>

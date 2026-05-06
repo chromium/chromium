@@ -2060,6 +2060,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2402226831639195063">Tonlar</translation>
 <translation id="2405887402346713222">Cihaz ve Bileşen Seri Numaraları</translation>
 <translation id="2406153734066939945">Bu profil ve verileri silinsin mi?</translation>
+<translation id="2406942743794219791">İstediğiniz varsayılan arama motorunu onaylayın</translation>
 <translation id="2407671304279211586">DNS sağlayıcı seç</translation>
 <translation id="2408018932941436077">Kart kaydediliyor</translation>
 <translation id="2408742686124047357">Bir dahaki sefere kolayca erişebilmek için Google Lens'i araç çubuğunuza sabitleyin.</translation>
@@ -3041,6 +3042,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3046892784550338476">Sürüm <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Web Sayfası, Tamamı</translation>
 <translation id="304747341537320566">Konuşma Motorları</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" uzantısı, ayarlarınızı değiştirdi</translation>
 <translation id="3047678109605649715">Cihazınızda <ph name="LANGUAGE" /> ses yok. Cihazınızda yer açıp tekrar deneyin.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> tarafından sağlanan HID cihazları</translation>
 <translation id="3048589239114571785">Oynat (k)</translation>
@@ -9996,6 +9998,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7939062555109487992">Gelişmiş seçenekler</translation>
 <translation id="793923212791838">Cihazınız bu sitede kullanılamaz</translation>
 <translation id="7939328347457537652">Cihaz sertifikalarını yönet</translation>
+<translation id="7939918959917132075">Uzantı tarafından bu değere değiştirildi</translation>
 <translation id="7940087892955752820">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. <ph name="SPECIFIC_NAME" /> kapatıldığında paylaşılan klasör geri alınacak.</translation>
 <translation id="7940265372707990269">Sıralama ölçütü: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering Hazırlık Durumu:</translation>

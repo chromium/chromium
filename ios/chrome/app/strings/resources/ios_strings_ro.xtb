@@ -763,6 +763,7 @@
 <translation id="372676576864368480">Completează automat numărul cardului care se termină în <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creat pe <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Dosarul camerei foto</translation>
+<translation id="3746269120925354434">Informații salvate în Portofelul Google</translation>
 <translation id="3750225824417196283">Pagina Filă incognito nouă</translation>
 <translation id="3751873026576444885">Nu mai căuta pe ecran folosind Google Lens</translation>
 <translation id="3753408171347588045">Se urmăresc prețurile</translation>
@@ -2170,6 +2171,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="8534481786647257214">S-a postat pe Google+.</translation>
 <translation id="8535368836838588657">Afișează parola</translation>
+<translation id="8540426897269305488">Conectează-te cu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Verifică setările browserului prestabilit</translation>
 <translation id="854938212724803178">Ai o parolă compromisă. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="8551311254462607218">În bara de adrese, atinge pictograma camerei Google Lens</translation>

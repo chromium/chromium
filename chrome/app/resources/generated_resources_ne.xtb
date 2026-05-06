@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">टोनहरू</translation>
 <translation id="2405887402346713222">डिभाइस र कम्पोनेन्टहरूको क्रम सङ्ख्या</translation>
 <translation id="2406153734066939945">यो प्रोफाइल र यसका डेटा मेटाउने हो?</translation>
+<translation id="2406942743794219791">आफूले चाहेको डिफल्ट सर्च इन्जिन पुष्टि गर्नुहोस्</translation>
 <translation id="2407671304279211586">DNS सेवा प्रदायक चयन गर्नुहोस्</translation>
 <translation id="2408018932941436077">कार्ड सेभ गरिँदै छ</translation>
 <translation id="2408742686124047357">अर्को पटक Google लेन्स सजिलैसँग एक्सेस गर्न यसलाई आफ्नो टुलबारमा पिन गर्नुहोस्</translation>
@@ -3044,6 +3045,7 @@
 <translation id="3046892784550338476">संस्करण <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">वेबपेज, पूरा</translation>
 <translation id="304747341537320566">बोलीका इन्जिनहरू</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले तपाईंका सेटिङ परिवर्तन गरेको छ</translation>
 <translation id="3047678109605649715">तपाईंको डिभाइसमा कुनै पनि <ph name="LANGUAGE" /> भ्वाइस उपलब्ध छैन। आफ्नो डिभाइसको भण्डारण खाली गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> विक्रेताका HID डिभाइसहरू</translation>
 <translation id="3048589239114571785">प्ले गर्नुहोस् (k)</translation>
@@ -9996,6 +9998,7 @@
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
 <translation id="793923212791838">तपाईंको डिभाइसमा यो साइटले राम्रोसँग काम गर्दैन</translation>
 <translation id="7939328347457537652">डिभाइसका प्रमाणपत्रहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="7939918959917132075">एक्स्टेन्सनले परिवर्तन गरी यो बनाएको छ</translation>
 <translation id="7940087892955752820">कुनै एपले यो फोल्डर प्रयोग गरिरहेको हुनाले यो फोल्डर अनसेयर गर्न सकिँदैन। <ph name="SPECIFIC_NAME" /> अर्को पटक बन्द हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> का आधारमा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="7941179291434537290">टेदरिङको उपलब्धता:</translation>

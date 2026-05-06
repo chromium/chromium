@@ -2074,6 +2074,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2402226831639195063">Nada</translation>
 <translation id="2405887402346713222">Nomor Seri Perangkat dan Komponen</translation>
 <translation id="2406153734066939945">Hapus profil ini dan datanya?</translation>
+<translation id="2406942743794219791">Konfirmasi mesin telusur default yang Anda inginkan</translation>
 <translation id="2407671304279211586">Pilih penyedia DNS</translation>
 <translation id="2408018932941436077">Menyimpan kartu</translation>
 <translation id="2408742686124047357">Sematkan Google Lens ke toolbar agar mudah diakses lain kali</translation>
@@ -3055,6 +3056,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3046892784550338476">Versi <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Halaman Web, Lengkap</translation>
 <translation id="304747341537320566">Mesin Ucapan</translation>
+<translation id="3047618804758101928">Ekstensi "<ph name="EXTENSION_NAME" />" mengubah setelan Anda</translation>
 <translation id="3047678109605649715">Tidak ada suara bahasa <ph name="LANGUAGE" /> di perangkat Anda. Kosongkan ruang penyimpanan di perangkat Anda, lalu coba lagi.</translation>
 <translation id="3048336643003835855">Perangkat HID dari vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Putar (k)</translation>
@@ -10012,6 +10014,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7939062555109487992">Opsi lanjutan</translation>
 <translation id="793923212791838">Perangkat Anda tidak dapat digunakan dengan situs ini</translation>
 <translation id="7939328347457537652">Kelola sertifikat perangkat</translation>
+<translation id="7939918959917132075">Diubah oleh ekstensi ke setelan ini</translation>
 <translation id="7940087892955752820">Tidak dapat membatalkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan dibatalkan saat berikutnya <ph name="SPECIFIC_NAME" /> dimatikan.</translation>
 <translation id="7940265372707990269">Urutkan menurut <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Kesiapan Tethering:</translation>

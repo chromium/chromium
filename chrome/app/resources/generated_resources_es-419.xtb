@@ -2059,6 +2059,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y los componentes</translation>
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
+<translation id="2406942743794219791">Confirma el motor de búsqueda predeterminado que quieres</translation>
 <translation id="2407671304279211586">Seleccionar proveedor de DNS</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408742686124047357">Fija Google Lens a la barra de herramientas para acceder fácilmente la próxima vez</translation>
@@ -3040,6 +3041,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Página web, completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047618804758101928">La extensión "<ph name="EXTENSION_NAME" />" cambió tu configuración</translation>
 <translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en el dispositivo y vuelve a intentarlo.</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (k)</translation>
@@ -8478,7 +8480,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="686839242150793617">Pueden ingresar automáticamente al modo de pantalla en pantalla</translation>
 <translation id="6868734951249611611">Haz clic con el botón derecho aquí y selecciona “Mostrar las pestañas verticalmente”</translation>
 <translation id="6868934826811377550">Ver detalles</translation>
-<translation id="6870470066213933201">Administra la optimización y la seguridad de JavaScript</translation>
+<translation id="6870470066213933201">Administrar la optimización y la seguridad de JavaScript</translation>
 <translation id="6870953451576517204">La autoevaluación se completó correctamente</translation>
 <translation id="6871644448911473373">Respondedor de OCSP:<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
@@ -9998,6 +10000,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="793923212791838">No se puede usar tu dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Administrar certificados de dispositivos</translation>
+<translation id="7939918959917132075">La extensión seleccionó esta opción</translation>
 <translation id="7940087892955752820">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilidad de la conexión mediante dispositivo móvil:</translation>

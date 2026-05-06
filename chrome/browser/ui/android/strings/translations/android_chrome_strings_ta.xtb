@@ -292,6 +292,7 @@
 <translation id="230115972905494466">இணக்கமான சாதனங்கள் இல்லை</translation>
 <translation id="2316129865977710310">வேண்டாம், நன்றி</translation>
 <translation id="2318045970523081853">அழைக்க தட்டவும்</translation>
+<translation id="232137538351753795">பின்செல்ல இடது ஓரத்திலிருந்து ஸ்வைப் செய்யுங்கள்</translation>
 <translation id="2323763861024343754">தளச் சேமிப்பகம்</translation>
 <translation id="2328474416100889417">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான அணுகலை அனைவரும் உடனடியாக இழப்பார்கள். அத்துடன், அழைப்புக்கான எல்லா இணைப்புகளும் முடக்கப்படும்.</translation>
 <translation id="2330186936255788117">கூடுதல் புக்மார்க்குகள்</translation>
@@ -1202,7 +1203,6 @@
 <translation id="6196315980958524839">இந்தச் சாதனத்தில் உள்ள Google Password Managerரில் கடவுச்சொற்கள் சேமிக்கப்படுகின்றன</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> இல் இருந்து வந்த அறிவிப்பு ஸ்பேமாக இருக்கலாம் என்று Chrome கண்டறிந்துள்ளது.</translation>
 <translation id="6205314730813004066">விளம்பரத் தனியுரிமை</translation>
-<translation id="6210282067670792090">தேடல் இன்ஜின்கள் &amp; தளத் தேடல்களுக்கான ஷார்ட்கட்களுடன் முகவரிப்பட்டியில் இந்தக் கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
 <translation id="6212567362666004597">குழுவில் பக்கத்தைச் சேர்</translation>
@@ -1328,7 +1328,6 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669390930482049506">எனக்குத் தெரிவி</translation>
-<translation id="6670767097276846646">சில நீட்டிப்புகள் Chromeமில் தேடல் இன்ஜின்களைச் சேர்க்கும்</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6672697278890207089">உங்கள் கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> டொமைனைச் சேர்க்கும்</translation>
@@ -1675,6 +1674,7 @@
 <translation id="7977451675950311423">தரவு மீறலில் பாதிக்கப்பட்டுள்ள கடவுச்சொல்லை நீங்கள் பயன்படுத்தினால் உங்களை எச்சரிக்கும்.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
 <translation id="799576009106109668">நீங்கள் தற்போது பார்க்கும் இணையப் பக்கத்தின் அடிப்படையில் உள்ளடக்கம் முன்கூட்டியே ஏற்றப்படுவதால் விரைவாக உலாவலாம்</translation>
+<translation id="7997875520309653083">பின்செல்ல வலது ஓரத்திலிருந்து ஸ்வைப் செய்யுங்கள்</translation>
 <translation id="7998918019931843664">மூடப்பட்ட தாவலை மீண்டும் திற</translation>
 <translation id="8001245658307297681">சாதனத்தில் உள்ள ஃபைலைப் பார்க்கிறீர்கள்</translation>
 <translation id="8004582292198964060">உலாவி</translation>

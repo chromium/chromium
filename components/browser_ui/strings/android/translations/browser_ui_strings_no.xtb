@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er valgt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> er tillatt</translation>
 <translation id="7276071417425470385">Når dette er på, kan nettsteder be om å få bruke virtuell virkelighet-enheter. Når dette er av, kan ikke nettsteder bruke virtuell virkelighet-enheter.</translation>
+<translation id="7279851812866769760">Del kontakter</translation>
 <translation id="7282197670900591579">Sitron tema</translation>
 <translation id="728412880473384942">Nettsteder er raskere, men mindre sikre</translation>
 <translation id="7352902948037373520">Administrer i <ph name="BEGIN_LINK1" />Android-innstillingene<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="823874716226307142">Når dette er på, kan nettsteder be om å få bruke andre enheter på det lokale nettverket ditt. Når dette er av, kan ikke nettsteder bruke andre enheter på det lokale nettverket ditt.</translation>
 <translation id="8249310407154411074">Flytt til toppen</translation>
 <translation id="8261506727792406068">Slett</translation>
+<translation id="8273596202562472147">Flere alternativer for <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Teksting</translation>
 <translation id="8300705686683892304">Administreres av app</translation>
 <translation id="8301363963630676147">Tillatt denne gangen • Bruker omtrentlig</translation>
@@ -794,6 +796,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="9156722768168878035">La Chrome vise de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="9162462602695099906">Denne siden er farlig</translation>
 <translation id="9182556968660520230">Ikke la nettsteder spille av beskyttet innhold</translation>
+<translation id="927148002081263046">Del en kontakt</translation>
 <translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="959682366969460160">Få orden på ting</translation>
 <translation id="960590623979248167">Vis hyperlinker</translation>

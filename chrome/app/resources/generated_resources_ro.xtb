@@ -2063,6 +2063,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2402226831639195063">Tonuri</translation>
 <translation id="2405887402346713222">Numere de serie ale dispozitivului și ale componentelor</translation>
 <translation id="2406153734066939945">Ștergi profilul și datele asociate?</translation>
+<translation id="2406942743794219791">Confirmă motorul de căutare prestabilit dorit</translation>
 <translation id="2407671304279211586">Selectează furnizorul DNS</translation>
 <translation id="2408018932941436077">Se salvează cardul</translation>
 <translation id="2408742686124047357">Fixează Google Lens în bara de instrumente pentru acces ușor data viitoare</translation>
@@ -3044,6 +3045,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3046892784550338476">Versiunea <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completă</translation>
 <translation id="304747341537320566">Motoare de vorbire</translation>
+<translation id="3047618804758101928">Extensia <ph name="EXTENSION_NAME" /> a modificat setările</translation>
 <translation id="3047678109605649715">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Eliberează spațiu pe dispozitiv și încearcă din nou.</translation>
 <translation id="3048336643003835855">Dispozitive HID de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Redare (k)</translation>
@@ -10001,6 +10003,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7939062555109487992">Opțiuni avansate</translation>
 <translation id="793923212791838">Dispozitivul nu poate fi folosit cu acest site</translation>
 <translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>
+<translation id="7939918959917132075">Modificat de extensie</translation>
 <translation id="7940087892955752820">Trimiterea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Trimiterea dosarului va fi anulată la următoarea închidere a sistemului <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Sortează după <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pregătirea pentru tethering:</translation>

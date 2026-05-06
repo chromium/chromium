@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">Танальныя сігналы</translation>
 <translation id="2405887402346713222">Серыйныя нумары прылад і кампанентаў</translation>
 <translation id="2406153734066939945">Выдаліць профіль і ўсе яго даныя?</translation>
+<translation id="2406942743794219791">Выберыце, якую пошукавую сістэму вы хочаце выкарыстоўваць у якасці стандартнай</translation>
 <translation id="2407671304279211586">Выбраць пастаўшчыка паслуг DNS</translation>
 <translation id="2408018932941436077">Ідзе захаванне даных карткі</translation>
 <translation id="2408742686124047357">Для лёгкага доступу замацуйце Google Аб’ектыў на панэлі інструментаў</translation>
@@ -3043,6 +3044,7 @@
 <translation id="3046892784550338476">Версія <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Вэб-старонка поўнасцю</translation>
 <translation id="304747341537320566">Модулі маўлення</translation>
+<translation id="3047618804758101928">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла вашы налады</translation>
 <translation id="3047678109605649715">На прыладзе адсутнічаюць галасы для чытання ўслых на наступнай мове: <ph name="LANGUAGE" />. Вызваліце месца на прыладзе і паўтарыце спробу.</translation>
 <translation id="3048336643003835855">Прылады HID ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Прайграць (k)</translation>
@@ -7280,6 +7282,7 @@
 <translation id="604388835206766544">Не ўдалося прааналізаваць канфігурацыю</translation>
 <translation id="6043994281159824495">Выйсці</translation>
 <translation id="6045114302329202345">Асноўная кнопка TrackPoint</translation>
+<translation id="6045425183320109397">Аўтар:</translation>
 <translation id="6047632800149092791">Сінхранізацыя не працуе. Паспрабуйце выйсці і ўвайсці зноў.</translation>
 <translation id="6048747414605857443">Выберыце і наладзьце галасы для сінтэзу маўлення ў ChromeVox і функцыі "Чытаць у голас"</translation>
 <translation id="6050189528197190982">Адценні шэрага</translation>
@@ -10002,6 +10005,7 @@
 <translation id="7939062555109487992">Дадатковыя параметры</translation>
 <translation id="793923212791838">Вашу прыладу нельга выкарыстоўваць на гэтым сайце</translation>
 <translation id="7939328347457537652">Кіраванне сертыфікатамі прылады</translation>
+<translation id="7939918959917132075">Зменена на гэта пашырэннем</translation>
 <translation id="7940087892955752820">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага завяршэння працы <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Параметр сартавання: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Гатоўнасць рэжыму мадэма:</translation>

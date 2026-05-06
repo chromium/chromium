@@ -392,7 +392,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1595731774593926493">Izbriši broj za ostvarivanje zaštite</translation>
 <translation id="1597307423671074806">WebM videozapis</translation>
 <translation id="159800670740560023">Veza na savjete za Chrome, pritisnite Enter da biste otvorili <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
-<translation id="1599079390582151174">Poslano. Otvorite Chrome na drugom uređaju.</translation>
 <translation id="1599199147673445968">Nova kartica? <ph name="BEGIN_LINK" />Unesite podatke o kartici<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Komprimiraj</translation>
 <translation id="1604192142734009334">Ljepota i fitness</translation>
@@ -993,6 +992,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2521385132275182522">Spajanje pri dnu desno</translation>
 <translation id="2521736961081452453">Izradite obrazac</translation>
 <translation id="2524461107774643265">Dodajte još podataka</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Sadržaj stranice za naplatu dijeli se s Googleom kako bi Google ponudio te opcije<ph name="END_BOLD" />. Planovi plaćanja ovise o ispunjavanju kriterija. Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />postavke plaćanja<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Da biste pokrenuli ovu aplikaciju, ponovno omogućite način rada razvojnog programera za izolirane web-aplikacije</translation>
 <translation id="2526280916094749336">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Ta će se adresa spremiti na vaš Google račun, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC možete pronaći na prednjoj strani kartice. To je četveroznamenkasti kôd u gornjem desnom kutu iznad broja kartice.</translation>
