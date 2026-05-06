@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -84,7 +85,7 @@ MATCHER_P6(InkAffineTransformEq,
          Matches(FloatEq(expected_f))(arg.F());
 }
 
-MATCHER_P8(InkTextBoxAttributesEq,
+MATCHER_P9(InkTextBoxAttributesEq,
            rect,
            color,
            css_font_size,
@@ -93,11 +94,13 @@ MATCHER_P8(InkTextBoxAttributesEq,
            orientation,
            is_bold,
            is_italic,
+           text,
            "matches InkTextBoxAttributes") {
   return arg.rect == rect && arg.color == color &&
          arg.css_font_size == css_font_size && arg.typeface == typeface &&
          arg.alignment == alignment && arg.orientation == orientation &&
-         arg.is_bold == is_bold && arg.is_italic == is_italic;
+         arg.is_bold == is_bold && arg.is_italic == is_italic &&
+         arg.text == text;
 }
 
 MATCHER_P5(InkTextInfoEq,

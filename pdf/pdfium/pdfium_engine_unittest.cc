@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -3080,7 +3081,8 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
         /*alignment=*/TextAlignment::kLeft,
         /*orientation=*/0,
         /*is_bold=*/false,
-        /*is_italic=*/false);
+        /*is_italic=*/false,
+        /*text=*/"Hello!");
   }
 };
 
@@ -3166,6 +3168,9 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
   CheckPdfRenderingIsBlank200x200(page.GetPage());
 
+  constexpr char kExpectedText[] = "Hello!";
+  constexpr char16_t kExpectedText16[] = u"Hello!";
+
   FontId font_id = AddDefaultFont(engine.get());
   GlyphsAndPositions text_data1 =
       GetGlyphsForText("Hello", /*font_size=*/10.0f);
@@ -3178,6 +3183,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   // Draw some text with two runs to force multiple text objects.
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
   attribute.is_bold = true;
+  attribute.text = kExpectedText;
   engine->DrawText(
       kPageIndex, InkTextId(1),
       {InkTextInfo(font_id, text_data1.glyphs, text_data1.glyph_positions,
@@ -3225,6 +3231,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
                   testing::Optional(1));
       EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"),
                   testing::Optional(0));
+      EXPECT_THAT(GetPageObjectMarkStringParam(mark, "Text"),
+                  testing::Optional(std::u16string(kExpectedText16)));
     } else {
       // Verify the remaining text objects do not have the full metadata.
       EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Version").has_value());
@@ -3239,6 +3247,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
       EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Orientation").has_value());
       EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsBold").has_value());
       EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsItalic").has_value());
+      EXPECT_FALSE(GetPageObjectMarkStringParam(mark, "Text").has_value());
     }
   }
 }

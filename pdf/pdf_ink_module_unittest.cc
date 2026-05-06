@@ -948,7 +948,8 @@ class PdfInkModuleTextTest : public testing::Test {
     return textbox_rect;
   }
 
-  // Matches `SampleTextAttributesDict()` and `SampleTextBoxRectDict()`.
+  // Matches `SampleTextAttributesDict()`, `SampleTextBoxRectDict()`, and
+  // `SampleFinishTextAnnotationData()`.
   static Matcher<const InkTextBoxAttributes&>
   SampleInkTextBoxAttributesMatcher() {
     return InkTextBoxAttributesEq(
@@ -959,7 +960,8 @@ class PdfInkModuleTextTest : public testing::Test {
         /*alignment=*/TextAlignment::kCenter,
         /*orientation=*/1,
         /*is_bold=*/true,
-        /*is_italic=*/true);
+        /*is_italic=*/true,
+        /*text=*/"hi");
   }
 
   static base::BlobStorage SampleInkTextInfoBlob(FontId typeface_id) {

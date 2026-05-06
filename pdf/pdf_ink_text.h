@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "pdf/mojom/pdf.mojom.h"
@@ -42,7 +43,8 @@ struct InkTextBoxAttributes {
                        TextAlignment alignment,
                        int orientation,
                        bool is_bold,
-                       bool is_italic);
+                       bool is_italic,
+                       const std::string& text);
   ~InkTextBoxAttributes();
 
   // `rect` is in CSS screen coordinates.
@@ -55,6 +57,7 @@ struct InkTextBoxAttributes {
   int orientation;
   bool is_bold;
   bool is_italic;
+  std::string text;
 };
 
 struct InkTextInfo {

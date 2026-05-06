@@ -5,6 +5,7 @@
 #include "pdf/pdf_ink_text.h"
 
 #include <iterator>
+#include <string>
 
 #include "base/check_op.h"
 
@@ -111,7 +112,8 @@ InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
                                            TextAlignment alignment,
                                            int orientation,
                                            bool is_bold,
-                                           bool is_italic)
+                                           bool is_italic,
+                                           const std::string& text)
     : rect(rect),
       color(color),
       css_font_size(css_font_size),
@@ -119,7 +121,8 @@ InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
       alignment(alignment),
       orientation(orientation),
       is_bold(is_bold),
-      is_italic(is_italic) {}
+      is_italic(is_italic),
+      text(text) {}
 InkTextBoxAttributes::~InkTextBoxAttributes() = default;
 
 InkTextInfo::InkTextInfo(FontId font_id,

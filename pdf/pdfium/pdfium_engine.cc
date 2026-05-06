@@ -187,6 +187,9 @@ void AddMetadataToTextObject(FPDF_DOCUMENT doc,
                                     attributes.is_bold));
   CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "IsItalic",
                                     attributes.is_italic));
+
+  CHECK(FPDFPageObjMark_SetStringParam(doc, text_object, mark, "Text",
+                                       attributes.text.c_str()));
 }
 
 // Windows has native panning capabilities. No need to use our own.

@@ -185,7 +185,8 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
 
   return InkTextBoxAttributes(textbox, GetColorFromDict(text_attributes),
                               css_font_size, typeface, alignment, orientation,
-                              /*is_bold=*/is_bold, /*is_italic=*/is_italic);
+                              /*is_bold=*/is_bold, /*is_italic=*/is_italic,
+                              *data.FindString("text"));
 }
 
 ink::Rect GetEraserRect(const gfx::PointF& center) {
