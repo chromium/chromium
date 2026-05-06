@@ -92,6 +92,7 @@ public class ContextMenuCoordinatorTest {
     @Mock ContextMenuNativeDelegate mNativeDelegate;
     @Mock WebContentsImpl mWebContentsMock;
     @Mock private MenuModelBridge mMenuModelBridge;
+    @Mock WindowAndroid mWindowAndroid;
 
     private ContextMenuCoordinator mCoordinator;
     private Activity mActivity;
@@ -342,6 +343,7 @@ public class ContextMenuCoordinatorTest {
 
         return ContextMenuCoordinator.createContextMenuDialog(
                 mActivity,
+                mWindowAndroid,
                 rootView,
                 contentView,
                 isPopup,
@@ -349,8 +351,8 @@ public class ContextMenuCoordinatorTest {
                 ContextMenuUtils.isPopupSupported(mActivity),
                 0,
                 0,
-                0,
-                0,
+                null,
+                null,
                 webContentView,
                 new Rect(0, 0, 0, 0),
                 null);
@@ -380,11 +382,10 @@ public class ContextMenuCoordinatorTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         final Window window = Mockito.mock(Window.class);
 
-        doReturn(new WeakReference<>(mActivity)).when(windowAndroid).getActivity();
-        doReturn(window).when(windowAndroid).getWindow();
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        doReturn(window).when(mWindowAndroid).getWindow();
         final WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
         doReturn(attrs).when(window).getAttributes();
         final View mockDecorView = Mockito.mock(View.class);
@@ -395,7 +396,7 @@ public class ContextMenuCoordinatorTest {
                 new TestViewAndroidDelegate(mockContainerView);
         doReturn(viewAndroidDelegate).when(mWebContentsMock).getViewAndroidDelegate();
 
-        mCoordinator.displayMenu(windowAndroid, mWebContentsMock, params, items, null, null, null);
+        mCoordinator.displayMenu(mWindowAndroid, mWebContentsMock, params, items, null, null, null);
 
         FlyoutController<ContextMenuDialog> controller =
                 mCoordinator.getHierarchicalMenuControllerForTest().getFlyoutController();
