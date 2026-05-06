@@ -33,6 +33,7 @@ gcc_toolchain("wasm") {
     use_remoteexec = false
     use_debug_fission = false
     clang_use_chrome_plugins = false
+    clang_use_unsafe_buffers_plugin = false
     use_allocator_shim = false
     is_component_build = false
 
