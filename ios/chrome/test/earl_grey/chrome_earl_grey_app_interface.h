@@ -270,6 +270,9 @@ enum class TipsNotificationType;
 // windows.
 + (void)openSettingsInWindowWithNumber:(int)windowNumber;
 
+// Returns the interface orientation of the scene.
++ (UIInterfaceOrientation)interfaceOrientation;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with `element_id` within window.frames[0] of the
@@ -579,8 +582,8 @@ enum class TipsNotificationType;
 // Returns whether the ComposeboxIOS feature is enabled.
 + (BOOL)isComposeboxIOSEnabled;
 
-// Returns the interface orientation of the scene.
-+ (UIInterfaceOrientation)interfaceOrientation;
+// Returns whether chrome next is enabled.
++ (BOOL)isChromeNextEnabled;
 
 #pragma mark - ContentSettings
 

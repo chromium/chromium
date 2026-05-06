@@ -1505,6 +1505,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
          [self localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition];
 }
 
+- (BOOL)isChromeNextEnabled {
+  return [ChromeEarlGreyAppInterface isChromeNextEnabled];
+}
+
 #pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {

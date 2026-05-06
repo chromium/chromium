@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -169,7 +170,12 @@
       break;
     }
     case InProductHelpType::kToolbarSwipe: {
-      [_presenter presentToolbarSwipeGestureInProductHelp];
+      OmniboxPositionBrowserAgent* omniboxAgent =
+          OmniboxPositionBrowserAgent::FromBrowser(self.browser);
+      if (!IsChromeNextIaEnabled() ||
+          (omniboxAgent && omniboxAgent->IsCurrentLayoutBottomOmnibox())) {
+        [_presenter presentToolbarSwipeGestureInProductHelp];
+      }
       break;
     }
     case InProductHelpType::kLensOverlayEntrypoint: {

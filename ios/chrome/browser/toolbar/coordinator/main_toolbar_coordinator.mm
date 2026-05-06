@@ -212,6 +212,9 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
   BOOL isOmniboxInBottomPosition =
       [_mainToolbarMediator isOmniboxInBottomPosition];
 
+  OmniboxPositionBrowserAgent::FromBrowser(self.browser)
+      ->SetIsCurrentLayoutBottomOmnibox(isOmniboxInBottomPosition);
+
   if (IsChromeNextIaEnabled()) {
     _topLocationBarCoordinator =
         [self createLocationBarCoordinatorActive:!isOmniboxInBottomPosition

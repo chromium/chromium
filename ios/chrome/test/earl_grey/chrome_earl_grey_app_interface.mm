@@ -688,6 +688,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return nil;
 }
 
++ (UIInterfaceOrientation)interfaceOrientation {
+  return GetInterfaceOrientation();
+}
+
 #pragma mark - WebState Utilities (EG2)
 
 + (NSError*)tapWebStateElementInIFrameWithID:(NSString*)elementID {
@@ -1335,8 +1339,8 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsComposeboxIOSEnabled();
 }
 
-+ (UIInterfaceOrientation)interfaceOrientation {
-  return GetInterfaceOrientation();
++ (BOOL)isChromeNextEnabled {
+  return IsChromeNextIaEnabled();
 }
 
 #pragma mark - ContentSettings

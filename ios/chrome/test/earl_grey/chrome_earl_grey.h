@@ -802,6 +802,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;
 
+// Returns whether Chrome Next is enabled.
+- (BOOL)isChromeNextEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

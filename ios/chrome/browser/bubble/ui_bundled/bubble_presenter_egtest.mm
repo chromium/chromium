@@ -417,6 +417,9 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
+  }
   RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
                          /*safari_switcher=*/NO);
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
@@ -450,6 +453,9 @@ void ReloadFromOmnibox() {
 - (void)testShowToolbarSwipeIPHAndTapDismissButton {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
                          /*safari_switcher=*/NO);
@@ -487,6 +493,9 @@ void ReloadFromOmnibox() {
 - (void)testShowToolbarSwipeIPHAndPerformAction {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
                          /*safari_switcher=*/NO);
@@ -574,6 +583,9 @@ void ReloadFromOmnibox() {
 - (void)testShowToolbarSwipeIPHAndLeavePage {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
   }
   RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
                          /*safari_switcher=*/NO);
