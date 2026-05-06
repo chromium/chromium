@@ -750,7 +750,7 @@ bool Button::ShouldEnterPushedState(const ui::Event& event) {
 void Button::PaintButtonContents(gfx::Canvas* canvas) {}
 
 bool Button::ShouldEnterHoveredState() {
-  if (!GetVisible()) {
+  if (!GetVisible() || GetVisibleBounds().IsEmpty()) {
     return false;
   }
 

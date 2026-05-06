@@ -314,6 +314,34 @@ TEST_F(ButtonTest, HoverStateOnVisibilityChange) {
 #endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 }
 
+TEST_F(ButtonTest, HoverStateOnEmptyVisibleBounds) {
+  // Create a parent view with small bounds.
+  View* parent = widget()->SetContentsView(std::make_unique<View>());
+  parent->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+
+  // Add a button that is positioned completely outside the parent's bounds.
+  TestButton* test_button =
+      parent->AddChildView(std::make_unique<TestButton>(false));
+  test_button->SetBoundsRect(gfx::Rect(100, 100, 50, 50));
+
+  // The button is locally visible, but its visible bounds are empty due to
+  // being outside the parent's bounds.
+  EXPECT_TRUE(test_button->GetVisible());
+  EXPECT_TRUE(test_button->GetVisibleBounds().IsEmpty());
+
+  // Move the mouse over the button's screen center point.
+  event_generator()->MoveMouseTo(
+      test_button->GetBoundsInScreen().CenterPoint());
+
+  // Force a state update to trigger ShouldEnterHoveredState().
+  test_button->SetEnabled(false);
+  test_button->SetEnabled(true);
+
+  // The button should not enter the hovered state because its visible bounds
+  // are empty.
+  EXPECT_EQ(Button::STATE_NORMAL, test_button->GetState());
+}
+
 // Tests that the hover state is preserved during a view hierarchy update of a
 // button's child View.
 TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
