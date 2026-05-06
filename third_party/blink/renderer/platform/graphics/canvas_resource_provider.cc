@@ -306,16 +306,7 @@ void CanvasResourceProviderSharedImage::OnContextLost() {
 }
 
 void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
-  if (notified_context_lost_) {
-    return;
-  }
-  ClearUnusedResources();
-  // Notify the owner of this resource provider that the GPU context was
-  // lost. The call is done in a separate task, so that the owner can delete
-  // this resource provider if needed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
-  notified_context_lost_ = true;
+  OnContextLost();
 }
 
 scoped_refptr<CanvasResourceSharedImage>
