@@ -328,6 +328,10 @@ class ServiceWorkerTaskQueue
     // `extension_id` has been registered in the //content layer. It is always
     // called, even if the registration request fails.
     virtual void OnWorkerRegistered(const ExtensionId& extension_id) {}
+
+    // Called when a service worker registration is delayed because there is a
+    // pending unregistration for the same extension.
+    virtual void OnWorkerRegistrationDelayed(const ExtensionId& extension_id) {}
   };
 
   static void SetObserverForTest(TestObserver* observer);

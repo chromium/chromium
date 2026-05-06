@@ -529,6 +529,9 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
           context_id.token, worker_unregistration_wait_retries_,
           base::BindOnce(&ServiceWorkerTaskQueue::RetryRegisterServiceWorker,
                          weak_factory_.GetWeakPtr(), context_id, reason))) {
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistrationDelayed(context_id.extension_id);
+    }
     return;
   }
 
@@ -848,7 +851,7 @@ void ServiceWorkerTaskQueue::ClearRetryState(
     return;
   }
 
-  if (it->second->backoff_entry.failure_count() > 0) {
+  if (histogram_name && it->second->backoff_entry.failure_count() > 0) {
     base::UmaHistogramBoolean(histogram_name, success);
   }
   retry_map.erase(it);
@@ -934,9 +937,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                   "WorkerRegistrationRetryAttemptsResult",
                   success);
   ClearRetryState(context_id.token, worker_unregistration_wait_retries_,
-                  "Extensions.ServiceWorkerBackground."
-                  "WorkerRegistrationRetryForUnregistrationAttemptsResult",
-                  success);
+                  nullptr, success);
 
   // After retries are exhausted, emit the ultimate end result.
   base::UmaHistogramBoolean(

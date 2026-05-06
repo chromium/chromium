@@ -4387,23 +4387,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryForUnregistrationAttemptsResult"
-    enum="Boolean" expires_after="2026-05-03">
-  <owner>andreaorru@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    When an extension with a service worker is loaded immediately after it was
-    unloaded the service worker registration can fail if the previous
-    unregistration has not completed yet. When this happens we delay the
-    registration and retry multiple times to try to make the registration
-    succeed.
-
-    Emits true if the retry results in a successful registration. Emits false if
-    all retry attempts have been exhausted without success.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
     enum="Boolean" expires_after="2026-09-06">
   <owner>jlulejian@chromium.org</owner>
