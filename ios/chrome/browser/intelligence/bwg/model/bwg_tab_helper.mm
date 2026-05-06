@@ -674,7 +674,14 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 
   badge_config.badgeText = cue_label;
   badge_config.shouldHideBadgeAfterChipCollapse = true;
-  [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
+  bool success = false;
+  if ([(id)location_bar_badge_commands_handler_
+          respondsToSelector:@selector(updateBadgeConfig:)]) {
+    [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
+    success = true;
+  }
+  base::UmaHistogramBoolean("IOS.Gemini.LocationBarBadgeUpdateSuccess",
+                            success);
 }
 
 // Computes Gemini eligibility based on the presence of metadata.

@@ -2673,6 +2673,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.LocationBarBadgeUpdateSuccess" enum="Boolean"
+    expires_after="2027-04-30">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a location bar badge update operation was successfully
+    dispatched.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.PageAvailability" enum="IOSGeminiPageAvailability"
     expires_after="2027-03-25">
   <owner>joemerramos@google.com</owner>
