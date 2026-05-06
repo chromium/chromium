@@ -55,6 +55,7 @@ using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Return;
+using ::testing::SaveArgByMove;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
 
@@ -2496,7 +2497,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
         .Times(1)
         .WillOnce(
             Invoke(this, &SessionServiceImplWithStoreTest::OnSessionsLoaded));
-    EXPECT_CALL(store(), SaveSession).Times(1);
+    EXPECT_CALL(store(), SaveSession);
     EXPECT_CALL(store(), DeleteSession).Times(1);
   }
 
@@ -2623,10 +2624,7 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
       store(),
       RestoreSessionBindingKey(
           SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce([&](const SessionKey& session_key,
-                    SessionStore::RestoreSessionBindingKeyCallback cb) {
-        restore_key_callback = std::move(cb);
-      });
+      .WillOnce(SaveArgByMove<1>(&restore_key_callback));
   service().DeferRequestForRefresh(*dbsc_request, *maybe_deferral,
                                    base::DoNothing());
   // Simulate the request being cleaned up before the callback has been called.
@@ -2637,6 +2635,80 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   // was cleaned up.
   std::move(restore_key_callback)
       .Run(unexportable_keys::UnexportableSigningKeyId());
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       WaiterRequestResumedIfTriggerCanceledDuringKeyRestoration) {
+  // Start loading
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  std::unique_ptr<Session> session =
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_TRUE(session);
+
+  SessionStore::SessionsMap session_map;
+  session_map.insert(
+      {SessionKey{SchemefulSite(kTestUrl), session->id()}, std::move(session)});
+  FinishLoadingSessions(std::move(session_map));
+
+  // Create request1 that should be deferred due to the session
+  net::TestDelegate delegate1;
+  std::unique_ptr<URLRequest> request1 =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation);
+  request1->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  HttpRequestHeaders extra_headers1;
+  auto dbsc_request1 = std::make_unique<DbscRequest>(request1.get());
+  std::optional<SessionService::DeferralParams> deferral1 =
+      service().ShouldDefer(*dbsc_request1, &extra_headers1,
+                            FirstPartySetMetadata());
+  ASSERT_TRUE(deferral1);
+  EXPECT_EQ(**deferral1->session_id, kSessionId);
+
+  // Now actually defer request1 to trigger RestoreSessionBindingKey
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  EXPECT_CALL(
+      store(),
+      RestoreSessionBindingKey(
+          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
+      .WillOnce(SaveArgByMove<1>(&restore_key_callback));
+  service().DeferRequestForRefresh(*dbsc_request1, *deferral1,
+                                   base::DoNothing());
+  ASSERT_TRUE(restore_key_callback);
+
+  // Create request2 and defer it while RestoreSessionBindingKey is pending
+  net::TestDelegate delegate2;
+  std::unique_ptr<URLRequest> request2 =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation);
+  request2->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  HttpRequestHeaders extra_headers2;
+  DbscRequest dbsc_request2(request2.get());
+  std::optional<SessionService::DeferralParams> deferral2 =
+      service().ShouldDefer(dbsc_request2, &extra_headers2,
+                            FirstPartySetMetadata());
+  ASSERT_TRUE(deferral2);
+
+  base::test::TestFuture<RefreshResult> future2;
+  service().DeferRequestForRefresh(dbsc_request2, *deferral2,
+                                   future2.GetCallback());
+
+  // Now cancel/destroy request1 before the key restoration completes
+  dbsc_request1.reset();
+  request1.reset();
+
+  // Set expectations for the refresh completion
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
+  EXPECT_CALL(store(), SaveSession);
+
+  // Resolve the key restoration.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Take(), RefreshResult::kRefreshed);
 }
 
 TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
@@ -2670,7 +2742,7 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   // Now actually defer the request
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
-  EXPECT_CALL(store(), SaveSession(_, _)).Times(1);
+  EXPECT_CALL(store(), SaveSession);
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
@@ -2718,10 +2790,7 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
       store(),
       RestoreSessionBindingKey(
           SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce([&](const SessionKey& session_key,
-                    SessionStore::RestoreSessionBindingKeyCallback cb) {
-        restore_key_callback_a = std::move(cb);
-      });
+      .WillOnce(SaveArgByMove<1>(&restore_key_callback_a));
 
   base::test::TestFuture<RefreshResult> future_a;
   service().DeferRequestForRefresh(dbsc_request_a, *maybe_deferral_a,
@@ -2750,7 +2819,7 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   // Mock success for Request B
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
-  EXPECT_CALL(store(), SaveSession).Times(1);
+  EXPECT_CALL(store(), SaveSession);
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
@@ -2901,7 +2970,7 @@ TEST_F(SessionServiceImplWithStoreTest,
       RestoreSessionBindingKey(
           SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
       .WillOnce(RunOnceCallback<1>(key));
-  EXPECT_CALL(store(), SaveSession).Times(1);
+  EXPECT_CALL(store(), SaveSession);
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
