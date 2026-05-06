@@ -8,8 +8,10 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_cell.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_view.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_header_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_section.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_separator_footer.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
@@ -42,14 +44,7 @@ const NSDirectionalEdgeInsets kListSectionInsets = {0, 16.0, 20.0, 16.0};
 const NSDirectionalEdgeInsets kAttachmentSectionInsets = {16.0, 16.0, 8.0,
                                                           16.0};
 
-// Leading constant for the header label.
-const CGFloat kHeaderLabelLeadingPadding = 15.0f;
 
-// Vertical constant for the header label.
-const CGFloat kHeaderLabelVerticalPadding = 10.0f;
-
-// Font size for the header label.
-const CGFloat kHeaderLabelFontSize = 16.0f;
 
 // Vertical padding for the separator.
 const CGFloat kSeparatorVerticalPadding = 10.0f;
@@ -145,30 +140,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 }  // namespace
 
-@interface ComposeboxMenuSeparatorFooter : UICollectionReusableView
-@end
 
-@implementation ComposeboxMenuSeparatorFooter
-
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
-  if (self) {
-    UIView* separator = [[UIView alloc] init];
-    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-    separator.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:separator];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [separator.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-      [separator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-      [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],
-    ]];
-  }
-  return self;
-}
-
-@end
 
 @interface ComposeboxMenuViewController () <UICollectionViewDelegate>
 @end
@@ -506,14 +478,17 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
   UICollectionViewSupplementaryRegistration* headerRegistration =
       [UICollectionViewSupplementaryRegistration
-          registrationWithSupplementaryClass:[UICollectionReusableView class]
+          registrationWithSupplementaryClass:[ComposeboxMenuHeaderView class]
                                  elementKind:
                                      UICollectionElementKindSectionHeader
-                        configurationHandler:^(UICollectionReusableView* view,
+                        configurationHandler:^(ComposeboxMenuHeaderView* view,
                                                NSString* elementKind,
                                                NSIndexPath* indexPath) {
-                          [weakSelf configureHeaderView:view
-                                            atIndexPath:indexPath];
+                          __strong __typeof(weakSelf) strongSelf = weakSelf;
+                          if (strongSelf) {
+                            view.label.text =
+                                strongSelf->_sections[indexPath.section].title;
+                          }
                         }];
 
   UICollectionViewSupplementaryRegistration* footerRegistration =
@@ -640,27 +615,6 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   } else {
     cell.accessories = @[];
   }
-}
-
-- (void)configureHeaderView:(UICollectionReusableView*)view
-                atIndexPath:(NSIndexPath*)indexPath {
-  UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont systemFontOfSize:kHeaderLabelFontSize
-                                 weight:UIFontWeightBold];
-  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.text = _sections[indexPath.section].title;
-
-  [view addSubview:label];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [label.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                        constant:kHeaderLabelLeadingPadding],
-    [label.topAnchor constraintEqualToAnchor:view.topAnchor
-                                    constant:kHeaderLabelVerticalPadding],
-    [label.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                       constant:-kHeaderLabelVerticalPadding],
-  ]];
 }
 
 @end

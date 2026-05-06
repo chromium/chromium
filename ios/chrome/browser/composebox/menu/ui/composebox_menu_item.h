@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 
 // Represents a menu item in the Composebox menu.
-@interface ComposeboxMenuItem : NSObject
+@interface ComposeboxMenuItem : NSObject <NSCopying>
 
 // The composebox menu item title.
 @property(nonatomic, copy, readonly) NSString* title;
@@ -22,6 +22,9 @@
 @property(nonatomic, readonly, getter=isDisabled) BOOL disabled;
 // The composebox menu item favicon.
 @property(nonatomic, strong, readonly) UIImage* favicon;
+
+- (BOOL)isEqual:(id)object;
+- (NSUInteger)hash;
 
 - (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
