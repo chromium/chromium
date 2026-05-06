@@ -262,7 +262,6 @@ public class SearchBoxMediatorUnitTest {
     public void testApplyWhiteBackgroundWithShadow() {
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
-        View searchBoxContainer = mView.findViewById(R.id.search_box_container);
 
         // Tests the case to apply a white background with shadow.
         int resId = R.style.TextAppearance_FakeSearchBoxTextMediumDark;
@@ -275,7 +274,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
-        verifyApplyBackground(searchBoxContainer);
+        verifyApplyBackground(mView);
 
         // Tests the case to remove the white background with shadow.
         resId = R.style.TextAppearance_FakeSearchBoxTextMedium;
@@ -288,7 +287,7 @@ public class SearchBoxMediatorUnitTest {
         assertEquals(
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
-        verifyResetBackground(searchBoxContainer, defaultBackground);
+        verifyResetBackground(mView, defaultBackground);
     }
 
     @Test

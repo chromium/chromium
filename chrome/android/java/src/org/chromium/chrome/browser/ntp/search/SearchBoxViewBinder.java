@@ -65,11 +65,11 @@ class SearchBoxViewBinder
             view.mHintTextView.setOnDragListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_END_PADDING == propertyKey) {
-            view.mSearchBoxContainer.setPadding(
-                    view.mSearchBoxContainer.getPaddingLeft(),
-                    view.mSearchBoxContainer.getPaddingTop(),
+            view.setPadding(
+                    view.getPaddingLeft(),
+                    view.getPaddingTop(),
                     model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
-                    view.mSearchBoxContainer.getPaddingBottom());
+                    view.getPaddingBottom());
         } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
             ViewGroup.LayoutParams lp = view.getLayoutParams();
             lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);

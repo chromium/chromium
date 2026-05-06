@@ -77,7 +77,7 @@ public class SearchBoxViewBinderUnitTest {
     public void testSetSearchBoxEndPadding() {
         @Px int padding = 20;
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, padding);
-        assertEquals(padding, mSearchBoxLayout.mSearchBoxContainer.getPaddingRight());
+        assertEquals(padding, mSearchBoxLayout.getPaddingRight());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class SearchBoxViewBinderUnitTest {
     @Test
     public void testApplyWhiteBackground() {
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
-        Drawable background = mSearchBoxLayout.mSearchBoxContainer.getBackground();
+        Drawable background = mSearchBoxLayout.getBackground();
         assertTrue(background instanceof GradientDrawable);
         assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());
     }

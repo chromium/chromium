@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,7 +27,6 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 /** Provides the additional capabilities needed for the SearchBox container layout. */
 @NullMarked
 public class SearchBoxContainerView extends LinearLayout {
-    View mSearchBoxContainer;
     TextView mHintTextView;
     ImageView mDseIconView;
     ImageView mVoiceSearchButton;
@@ -44,7 +42,6 @@ public class SearchBoxContainerView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mSearchBoxContainer = findViewById(R.id.search_box_container);
         mHintTextView = findViewById(R.id.search_box_text);
         mDseIconView = findViewById(R.id.search_box_engine_icon);
         mVoiceSearchButton = findViewById(R.id.voice_search_button);
@@ -85,6 +82,6 @@ public class SearchBoxContainerView extends LinearLayout {
      * @param apply Whether to apply a white background color to the fake search box.
      */
     void applyWhiteBackground(boolean apply) {
-        ComposeplateUtils.applyWhiteBackground(getContext(), mSearchBoxContainer, apply);
+        ComposeplateUtils.applyWhiteBackground(getContext(), this, apply);
     }
 }
