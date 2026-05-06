@@ -9,9 +9,18 @@
         "active_constraints": { "type": "array", "items": { "type": "string" } },
         "resolved_constraints": { "type": "array", "items": { "type": "string" } },
         "personas": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" }
+        "next_phase": { "type": "string" },
+        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] }
       },
-      "required": ["iteration", "stall_count", "active_constraints", "resolved_constraints", "personas"]
+      "required": [
+        "iteration",
+        "stall_count",
+        "active_constraints",
+        "resolved_constraints",
+        "personas",
+        "review_mode",
+        "next_phase"
+      ]
     },
     "ProjectSpec": {
       "type": "object",
@@ -20,9 +29,19 @@
         "target_files": { "type": "array", "items": { "type": "string" } },
         "anti_goals": { "type": "array", "items": { "type": "string" } },
         "edge_cases": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" }
+        "next_phase": { "type": "string" },
+        "paranoia_mode": { "type": "boolean" },
+        "auditability_level": { "type": "string", "enum": ["NORMAL", "VERBOSE"] }
       },
-      "required": ["goal", "target_files", "anti_goals", "edge_cases"]
+      "required": [
+        "goal",
+        "target_files",
+        "anti_goals",
+        "edge_cases",
+        "next_phase",
+        "paranoia_mode",
+        "auditability_level"
+      ]
     },
     "ReviewFeedback": {
       "type": "object",
@@ -50,9 +69,10 @@
       "properties": {
         "iteration": { "type": "integer" },
         "constraints": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" }
+        "next_phase": { "type": "string" },
+        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] }
       },
-      "required": ["iteration", "constraints"]
+      "required": ["iteration", "constraints", "review_mode", "next_phase"]
     }
   }
 }

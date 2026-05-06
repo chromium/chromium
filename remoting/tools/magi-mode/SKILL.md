@@ -31,17 +31,20 @@ code or summarize state itself. It delegates to several auxiliary personas:
     the codebase, and writes a strict `project.magi.json` specification document
     conforming to `magi_schema.json`.
 2.  **The Synthesizing Architect:** Writes the actual C++ code by combining
-    initial drafts and adhering to constraints provided by the Technical Program
-    Manager.
-3.  **The Review Analyst:** Condenses raw feedback from multiple reviewers into
-    a strict list of actionable constraints in
+    initial drafts and adhering to constraints provided by the Supervisor or
+    Technical Program Manager.
+3.  **The Review Analyst:** (Consensus Mode Only) Condenses raw feedback from
+    multiple reviewers into a strict list of actionable constraints in
     `constraints.magi.[iteration].json` conforming to `magi_schema.json`.
-4.  **The Technical Program Manager:** Maintains the State Block across rounds,
-    explicitly checking for "flip-flopping" or stalled progress, and provides
-    the final constraints to the Synthesizing Architect.
-5.  **The Trainer:** Captures knowledge or systemic gaps discovered during the
+4.  **The Technical Program Manager:** (Consensus Mode Only) Maintains the State
+    Block across rounds, explicitly checking for "flip-flopping" or stalled
+    progress, and provides the final constraints to the Synthesizing Architect.
+5.  **The Supervisor:** (Supervisor Mode Only) Acts as a hub to read all
+    reviews, update the State Block, and generate the final constraints for the
+    Synthesizing Architect in a single turn.
+6.  **The Trainer:** Captures knowledge or systemic gaps discovered during the
     Consensus Loop and upgrades the expert Persona definitions.
-6.  **The Release Engineer:** A terminal agent invoked with a clean context to
+7.  **The Release Engineer:** A terminal agent invoked with a clean context to
     handle workspace hygiene, formatting, resolving lint and presubmit errors,
     verifying the files in the CL are expected, and the final staging/upload of
     CLs.
@@ -68,6 +71,7 @@ next expert.
 *   **Review Analyst:** `TPM_UPDATE`
 *   **Technical Program Manager:** `SYNTHESIS` (if iteration needed) or
     `TRAINING`
+*   **Supervisor:** `SYNTHESIS` (if iteration needed) or `TRAINING`
 *   **Trainer:** `VALIDATION`
 *   **Validation:** `DEPLOYMENT`
 
@@ -88,7 +92,9 @@ next expert.
     "target_files": ["Absolute paths to the files that must be modified."],
     "anti_goals": ["What should explicitly NOT be changed."],
     "edge_cases": ["Specific warnings from logs or code context."],
-    "next_phase": "SCAFFOLDING"
+    "next_phase": "SCAFFOLDING",
+    "paranoia_mode": false,
+    "auditability_level": "NORMAL"
   }
   ```
 
@@ -119,6 +125,12 @@ next expert.
   catalog) to assess and select the most appropriate Domain Experts required
   to implement the stubs. It returns the absolute file paths of their definition
   files to the Orchestrator.
+- **Review Mode Selection:** The Engineering Manager MUST select the
+  `review_mode` (`SUPERVISOR` or `CONSENSUS`) and include it in the initial
+  `state_block.magi.json`.
+    *   **CONSENSUS:** Use if `auditability_level == "VERBOSE"`,
+        `paranoia_mode == true`, or if the number of selected reviewers > 5.
+    *   **SUPERVISOR:** Default for all other cases.
 - **The Recruiter (Talent Acquisition):** If the Engineering Manager determines
   that a required expertise is lacking in the current catalog, they MUST invoke
   a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
@@ -128,8 +140,9 @@ next expert.
   *CRITICAL:* These MAGI system changes MUST NOT be entangled with the main
   work CL (see VCS Isolation rule below).
 - **Transparency:** The Orchestrator MUST output the Engineering Manager's
-  persona selection logic to the human. Ensure the workspace is clean. The
-  Engineering Manager MUST set `next_phase` to `IMPLEMENTATION` in its output.
+  persona selection logic and `review_mode` decision to the human. Ensure the
+  workspace is clean. The Engineering Manager MUST set `next_phase` to
+  `IMPLEMENTATION` in its output.
 - **Opaque Passing:** The Orchestrator passes the *file paths* of the selected
   personas to the sub-agents. The sub-agents read the file from disk to load
   their mandate, keeping the Orchestrator's context window lean.
@@ -158,13 +171,14 @@ Once the Domain Experts finish:
       "active_constraints": [],
       "resolved_constraints": [],
       "personas": ["[Selected Experts]"],
-      "next_phase": "CRITIQUE"
+      "next_phase": "CRITIQUE",
+      "review_mode": "[SUPERVISOR/CONSENSUS]"
     }
     ```
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
     drafts and synthesize them into "Draft A" in the original file. Signal
     `next_phase: CRITIQUE`.
-### 5. The Consensus Loop (Expanded Review)
+### 5. The Review Workflow (Consensus Loop vs. Supervisor)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
     **File I/O:** Each reviewer MUST securely save their feedback to disk in a
     unique file: `review.[persona].magi.[iteration].json` conforming to
@@ -177,35 +191,52 @@ Once the Domain Experts finish:
     >   ("ACCEPT" or "REJECT"), `reasoning` (array of bullet points), `comments`
     >   (array of objects with `file`, optional `line`, and `comment`), and
     >   `next_phase` ("ANALYSIS") to `review.[persona].magi.[iteration].json`.
-2.  **The Review Analyst:** If any agent rejects, this agent reads all
+
+#### Path A: Supervisor Synthesis (Default)
+If `review_mode == SUPERVISOR`, the Orchestrator (or a specialized Supervisor
+agent) performs the following in a single turn:
+1.  **Decision:** Read all `review.*.magi.[iteration].json` files.
+2.  **State Update:** Update `state_block.magi.json` with the new iteration
+    and stall count.
+3.  **Constraint Generation:** Save a strict list of Actionable Constraints and
+    the current `review_mode` to `constraints.magi.[iteration].json`.
+4.  **Handoff:** Signal `next_phase: SYNTHESIS` (if more work is needed) or
+    `TRAINING`.
+
+#### Path B: Consensus Loop (Verbose/Paranoia)
+If `review_mode == CONSENSUS`, use the granular relay:
+1.  **The Review Analyst:** If any agent rejects, this agent reads all
     `review.*.magi.[iteration].json` files and saves a strict list of 3-5
-    Actionable Constraints and `next_phase: TPM_UPDATE` to
-    `constraints.magi.[iteration].json` on disk.
-3.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
+    Actionable Constraints, `review_mode: "CONSENSUS"`, and
+    `next_phase: TPM_UPDATE` to `constraints.magi.[iteration].json` on disk.
+2.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
     and updates `state_block.magi.json` conforming to `magi_schema.json`. Checks
     for "flip-flopping" (e.g., Constraint 1 violates a constraint from Round 1).
     Set `next_phase` to `SYNTHESIS` if more work is needed, otherwise
     `TRAINING`.
     **Deadlock API:** If `Stall Count` exceeds 3, the Technical Program
-    Manager's ONLY output must be the exact string `STATUS: DEADLOCK` followed
-    by a structured report (Core Conflict, Blocked Personas, Human Decision
-    Needed).
-4.  **Transparency:** The Orchestrator reads `constraints.magi.[iteration].json`
+    Manager MUST output a valid `state_block.magi.json` with
+    `next_phase: DEADLOCK` and append a structured deadlock report (Core
+    Conflict, Blocked Personas, Human Decision Needed) to the
+    `active_constraints` array.
+
+#### Common Convergence
+1.  **Transparency:** The Orchestrator reads `constraints.magi.[iteration].json`
     and outputs it directly to the user as a status update. Do NOT invoke a
     separate Liaison agent.
-5.  **Convergence & Iteration:** The Synthesizing Architect reads
+2.  **Convergence & Iteration:** The Synthesizing Architect reads
     `state_block.magi.json` and `constraints.magi.[iteration].json` to generate
     the next iteration (e.g., "Draft B").
-6.  **Executive Tie-Breaker (Handover):** If the Orchestrator receives the
-    `STATUS: DEADLOCK` string, it MUST immediately halt the loop, print the
+3.  **Executive Tie-Breaker (Handover):** If the Orchestrator receives the
+    `next_phase: DEADLOCK` signal, it MUST immediately halt the loop, print the
     structured report to the human, and wait for a tie-breaking decision.
-7.  **CLEANUP:** Do NOT delete `.magi` files yet; the Trainer will need them.
+4.  **CLEANUP:** Do NOT delete `.magi` files yet; the Trainer will need them.
     The Orchestrator reports the final conclusion of the work.
 
 ### 6. Specialized Modes
 *   **Paranoia Mode:** For high-stakes security code, use a **Multi-Model
     Cohort** for the Reviewers (up to 9 agents). Run each persona through
-    multiple models.
+    multiple models. Engineering Manager MUST select `review_mode: CONSENSUS`.
 
 ### 7. Production Hardening Checklist
 The Synthesizing Architect MUST ensure:

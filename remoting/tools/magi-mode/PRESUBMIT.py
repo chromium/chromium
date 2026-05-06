@@ -364,6 +364,12 @@ def CheckJsonFiles(input_api, output_api):
                   f"File {f.LocalPath()} key '{key}' should be integer."
               )
           )
+        elif expected_type == 'boolean' and not isinstance(value, bool):
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} key '{key}' should be boolean."
+              )
+          )
         elif expected_type == 'array' and not isinstance(value, list):
           results.append(
               output_api.PresubmitError(
@@ -377,19 +383,68 @@ def CheckJsonFiles(input_api, output_api):
               )
           )
 
-    # Specifically validate enum for verdict if active schema is
-    # ReviewFeedback
-    if active_schema is review_feedback_schema:
-      verdict_enum = (
-          active_schema.get('properties', {}).get('verdict', {}).get('enum', [])
-      )
-      if 'verdict' in content and content['verdict'] not in verdict_enum:
+        # Generic enum validation
+        expected_enum = properties[key].get('enum')
+        if expected_enum and value not in expected_enum:
+          results.append(
+              output_api.PresubmitError(
+                  f"File {f.LocalPath()} key '{key}' must be one of "
+                  f'{expected_enum}.'
+              )
+          )
+
+    # 4. Decision Graph Validation
+    review_mode = content.get('review_mode')
+    next_p = content.get('next_phase')
+
+    if filename.startswith('state_block'):
+      if next_p and next_p not in [
+          'CRITIQUE',
+          'SCAFFOLDING',
+          'PREPARATION',
+          'IMPLEMENTATION',
+          'SYNTHESIS',
+          'TRAINING',
+          'DEADLOCK',
+      ]:
         results.append(
             output_api.PresubmitError(
-                f"File {f.LocalPath()} key 'verdict' must be one of "
-                f'{verdict_enum}.'
+                f'File {f.LocalPath()} has invalid next_phase for '
+                f'state block: {next_p}'
             )
         )
+    elif filename.startswith('project'):
+      if next_p and next_p != 'SCAFFOLDING':
+        results.append(
+            output_api.PresubmitError(
+                f'File {f.LocalPath()} must signal next_phase: SCAFFOLDING'
+            )
+        )
+    elif filename.startswith('review'):
+      if next_p and next_p != 'ANALYSIS':
+        results.append(
+            output_api.PresubmitError(
+                f'File {f.LocalPath()} must signal next_phase: ANALYSIS'
+            )
+        )
+    elif filename.startswith('constraints'):
+      if review_mode == 'SUPERVISOR':
+        if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
+          results.append(
+              output_api.PresubmitError(
+                  f'File {f.LocalPath()} (SUPERVISOR) must signal '
+                  f'SYNTHESIS or TRAINING, not {next_p}'
+              )
+          )
+      elif review_mode == 'CONSENSUS':
+        if next_p and next_p != 'TPM_UPDATE':
+          results.append(
+              output_api.PresubmitError(
+                  f'File {f.LocalPath()} (CONSENSUS) must signal '
+                  f'TPM_UPDATE, not {next_p}'
+              )
+          )
+
   return results
 
 
