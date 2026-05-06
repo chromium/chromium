@@ -82,8 +82,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
     private TintedCompositorTextButton mGlicButton;
-    private TintedCompositorTextButton mGlicActorButton;
     private TintedCompositorButton mGlicDismissButton;
+    private TintedCompositorTextButton mGlicActorButton;
     private final long mBwiPtr = 123L;
     private boolean mIsIncognito;
 
@@ -128,6 +128,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mGlicButton = mCoordinator.getGlicButton();
         mGlicActorButton = mCoordinator.getGlicActorButton();
         if (mGlicButton != null) mGlicDismissButton = mGlicButton.getDismissButton();
+        mGlicActorButton = mCoordinator.getGlicActorButton();
     }
 
     @After
@@ -313,5 +314,81 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse(
                 "Glic button should be hidden when supplier indicates incognito window.",
                 mCoordinator.shouldGlicBeVisible());
+    }
+
+    @Test
+    public void testStandardClick_TrailingButtons() {
+        mCoordinator.setGlicActorButtonVisible(true);
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+
+        // 1. Test click routing on Glic Button coordinates
+        float glicX = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
+        float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
+        boolean glicHandled = mCoordinator.click(0L, glicX, glicY, 0, 0, /* tabWidthDp= */ 100f);
+        assertTrue("Click on Glic coordinates should be handled.", glicHandled);
+        verify(mGlicClickHandler, Mockito.times(1)).run();
+
+        // 2. Test click routing on Glic Actor Button coordinates
+        float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
+        float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
+        boolean actorHandled = mCoordinator.click(0L, actorX, actorY, 0, 0, /* tabWidthDp= */ 100f);
+        assertTrue("Click on Glic Actor coordinates should be handled.", actorHandled);
+    }
+
+    @Test
+    public void testOnDown_TrailingButtons() {
+        assertNotNull("Glic button should be created.", mGlicButton);
+        mCoordinator.setGlicActorButtonVisible(true);
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+
+        // 1. Simulate tactile touch-down on Glic button
+        float glicX = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
+        float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
+        boolean glicPressed = mCoordinator.onDown(glicX, glicY, 0);
+        assertTrue("Touch down on Glic coordinates should be handled.", glicPressed);
+        assertTrue("Glic button should be pressed.", mGlicButton.isPressed());
+
+        // 2. Simulate tactile touch-down on Glic Actor button
+        float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
+        float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
+        boolean actorPressed = mCoordinator.onDown(actorX, actorY, 0);
+        assertTrue("Touch down on Glic Actor coordinates should be handled.", actorPressed);
+        assertTrue("Glic Actor button should be pressed.", mGlicActorButton.isPressed());
+    }
+
+    @Test
+    public void testHoverLifecycle_TrailingButtons() {
+        assertNotNull("Glic button should be created.", mGlicButton);
+        mCoordinator.setGlicActorButtonVisible(true);
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+
+        float glicX = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
+        float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
+        float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
+        float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
+
+        // 1. Pointer moves into Glic primary bounds
+        boolean handled1 = mCoordinator.onHoverEvent(glicX, glicY);
+        assertTrue("Hovering Glic should be handled.", handled1);
+        assertTrue("Glic should be in hovered state.", mGlicButton.isHovered());
+        assertFalse("Glic Actor should not be hovered yet.", mGlicActorButton.isHovered());
+        verify(mRenderHost, Mockito.atLeastOnce()).requestRender();
+        Mockito.clearInvocations(mRenderHost);
+
+        // 2. Pointer sweeps over onto Companion Actor bounds directly
+        boolean handled2 = mCoordinator.onHoverEvent(actorX, actorY);
+        assertTrue("Hovering Glic Actor bounds should be handled.", handled2);
+        assertFalse("Glic should clear hover state.", mGlicButton.isHovered());
+        assertTrue("Glic Actor should acquire hover state.", mGlicActorButton.isHovered());
+        verify(mRenderHost, Mockito.atLeastOnce()).requestRender();
+        Mockito.clearInvocations(mRenderHost);
+
+        // 3. Pointer completely leaves the trailing buttons area
+        mCoordinator.onHoverExit();
+        assertFalse("Glic should remain unhovered.", mGlicButton.isHovered());
+        assertFalse(
+                "Glic Actor hover state must reset to false upon exit.",
+                mGlicActorButton.isHovered());
+        verify(mRenderHost, Mockito.atLeastOnce()).requestRender();
     }
 }

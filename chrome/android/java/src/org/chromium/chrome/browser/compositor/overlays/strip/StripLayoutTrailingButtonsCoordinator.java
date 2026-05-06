@@ -785,7 +785,12 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @return true if the event was handled.
      */
     public boolean onDown(float x, float y, int buttons) {
-        return mGlicButton != null && mGlicButton.onDown(x, y, buttons);
+        if (mGlicButton != null && mGlicButton.onDown(x, y, buttons)) {
+            return true;
+        } else if (mGlicActorButton != null && mGlicActorButton.onDown(x, y, buttons)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -794,11 +799,13 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @return true if the event was handled.
      */
     public boolean onUpOrCancel() {
-        boolean handled = mGlicButton != null && mGlicButton.onUpOrCancel();
-        if (handled) {
+        if (mGlicButton != null && mGlicButton.onUpOrCancel()) {
             mGlicClickHandler.run();
+            return true;
+        } else if (mGlicActorButton != null && mGlicActorButton.onUpOrCancel()) {
+            return true;
         }
-        return handled;
+        return false;
     }
 
     /**
@@ -817,6 +824,8 @@ public class StripLayoutTrailingButtonsCoordinator {
             // Clear the pressed state so a click isn't triggered in addition to the long press.
             mGlicButton.setPressed(false);
             return true;
+        } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
+            return true;
         }
         return false;
     }
@@ -828,19 +837,38 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param y The y coordinate of the hover event.
      */
     public boolean onHoverEvent(float x, float y) {
-        if (mGlicButton == null) return false;
-        boolean isHovered = mGlicButton.checkClickedOrHovered(x, y);
-        if (isHovered != mGlicButton.isHovered()) {
-            mGlicButton.setHovered(isHovered);
+        boolean glicHovered = mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y);
+        boolean actorHovered =
+                mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y);
+        boolean renderNeeded = false;
+
+        if (mGlicButton != null && glicHovered != mGlicButton.isHovered()) {
+            mGlicButton.setHovered(glicHovered);
+            renderNeeded = true;
+        }
+        if (mGlicActorButton != null && actorHovered != mGlicActorButton.isHovered()) {
+            mGlicActorButton.setHovered(actorHovered);
+            renderNeeded = true;
+        }
+
+        if (renderNeeded) {
             mRenderHost.requestRender();
         }
-        return isHovered;
+        return glicHovered || actorHovered;
     }
 
     /** Clears hover states on the trailing buttons. */
     public void onHoverExit() {
+        boolean renderNeeded = false;
         if (mGlicButton != null && mGlicButton.isHovered()) {
             mGlicButton.setHovered(false);
+            renderNeeded = true;
+        }
+        if (mGlicActorButton != null && mGlicActorButton.isHovered()) {
+            mGlicActorButton.setHovered(false);
+            renderNeeded = true;
+        }
+        if (renderNeeded) {
             mRenderHost.requestRender();
         }
     }
@@ -853,7 +881,12 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @return True if the event coordinates hit a trailing button.
      */
     public boolean checkClickedOrHovered(float x, float y) {
-        return mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y);
+        if (mGlicButton != null && mGlicButton.checkClickedOrHovered(x, y)) {
+            return true;
+        } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -865,6 +898,9 @@ public class StripLayoutTrailingButtonsCoordinator {
     public void drag(float x, float y) {
         if (mGlicButton != null) {
             mGlicButton.drag(x, y);
+        }
+        if (mGlicActorButton != null) {
+            mGlicActorButton.drag(x, y);
         }
     }
 
@@ -890,6 +926,11 @@ public class StripLayoutTrailingButtonsCoordinator {
                 }
             } else if (mGlicButton.click(x, y, buttons)) {
                 mGlicButton.handleClick(time, buttons, modifiers);
+                return true;
+            }
+        } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
+            if (mGlicActorButton.click(x, y, buttons)) {
+                mGlicActorButton.handleClick(time, buttons, modifiers);
                 return true;
             }
         }
