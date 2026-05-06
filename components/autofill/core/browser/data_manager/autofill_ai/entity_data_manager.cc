@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -140,6 +141,7 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
             // might asynchronously remove some of the entities, causing
             // `LogStoredEntitiesCount()` to over count.
             LogStoredEntitiesCount(self->entities_);
+            MaybeImportEntitiesForTesting(self->GetWeakPtr());
           }
         }
       },

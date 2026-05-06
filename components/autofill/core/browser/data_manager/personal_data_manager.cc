@@ -119,8 +119,7 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
       address_data_manager_->has_initial_load_finished() &&
       payments_data_manager_->is_payments_data_loaded()) {
     has_initial_load_finished_ = true;
-    // Potentially import addresses and credit cards for testing.
-    MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
+    MaybeImportProfilesAndCardsForTesting(weak_factory_.GetWeakPtr());
   }
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();

@@ -21,9 +21,12 @@
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -31,22 +34,26 @@ namespace autofill {
 
 namespace {
 
-// Util struct for storing the list of profiles and credit cards to be imported.
-// If any of `profiles` or `credit_cards` are std::nullopt, then the data used
-// for import is malformed, and this will cause a crash.
-// When any of `profiles` or `credit_cards` is empty, it means that the JSON
-// file used for import did not include the corresponding key. It'll be treated
-// as valid but won't be imported so that existing data in the PDM isn't
-// cleared without replacement.
-struct AutofillProfilesAndCreditCards {
+// Util struct for storing the list of profiles, credit cards and entities to be
+// imported. If any of `profiles`, `credit_cards` or `entities` are
+// std::nullopt, then the data used for import is malformed, and this will cause
+// an error to be logged. When any of `profiles`, `credit_cards` or `entities`
+// is empty, it means that the JSON file used for import did not include the
+// corresponding key. It'll be treated as valid but won't be imported so that
+// existing data in the data managers isn't cleared without replacement.
+struct AutofillImportData {
   std::optional<std::vector<AutofillProfile>> profiles;
   std::optional<std::vector<CreditCard>> credit_cards;
+  std::optional<std::vector<EntityInstance>> entities;
 };
 
 constexpr std::string_view kKeyProfiles = "profiles";
 constexpr std::string_view kKeyCreditCards = "credit-cards";
+constexpr std::string_view kKeyEntities = "entities";
 constexpr std::string_view kKeyRecordType = "record_type";
 constexpr std::string_view kKeyNickname = "nickname";
+constexpr std::string_view kKeyEntityType = "entity_type";
+constexpr std::string_view kKeyAttributes = "attributes";
 constexpr auto kRecordTypeMapping =
     base::MakeFixedFlatMap<std::string_view, AutofillProfile::RecordType>(
         {{"account", AutofillProfile::RecordType::kAccount},
@@ -162,6 +169,56 @@ std::optional<CreditCard> MakeCard(const base::DictValue& dict) {
   return card;
 }
 
+std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
+  const std::string* entity_type_str = dict.FindString(kKeyEntityType);
+  if (!entity_type_str) {
+    LOG(ERROR) << "Missing " << kKeyEntityType << ".";
+    return std::nullopt;
+  }
+  std::optional<EntityType> entity_type = StringToEntityType(*entity_type_str);
+  if (!entity_type) {
+    LOG(ERROR) << "Invalid entity type: " << *entity_type_str << ".";
+    return std::nullopt;
+  }
+
+  const base::DictValue* attributes_dict = dict.FindDict(kKeyAttributes);
+  if (!attributes_dict) {
+    LOG(ERROR) << "Missing " << kKeyAttributes << ".";
+    return std::nullopt;
+  }
+
+  base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+      attributes;
+  for (const auto [attr_name, attr_value] : *attributes_dict) {
+    std::optional<AttributeType> attribute_type =
+        StringToAttributeType(*entity_type, attr_name);
+    if (!attribute_type) {
+      LOG(ERROR) << "Invalid attribute type: " << attr_name << " for entity "
+                 << *entity_type_str << ".";
+      return std::nullopt;
+    }
+    AttributeInstance attribute(*attribute_type);
+    attribute.SetRawInfo(std::nullopt,
+                         base::UTF8ToUTF16(attr_value.GetString()),
+                         VerificationStatus::kObserved);
+    attribute.FinalizeInfo();
+    attributes.insert(std::move(attribute));
+  }
+
+  if (attributes.empty()) {
+    LOG(ERROR) << "Entity has no attributes.";
+    return std::nullopt;
+  }
+
+  return EntityInstance(
+      *entity_type, std::move(attributes),
+      EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
+      /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
+      /*use_date=*/base::Time(), EntityInstance::RecordType::kLocal,
+      EntityInstance::AreAttributesReadOnly(false),
+      /*frecency_override=*/"");
+}
+
 // Removes all AutofillProfiles from the `adm`. Since `ADM::RemoveProfile()`
 // invalidates the pointers returned by `ADM::GetProfiles()`, this is done by
 // collecting all GUIDs to remove first.
@@ -175,29 +232,41 @@ void RemoveAllExistingProfiles(AddressDataManager& adm) {
 
 // Sets all of the `pdm`'s profiles or credit cards to `profiles` or
 // `credit_cards`, if the `pdm` still exists.
-void SetData(
-    base::WeakPtr<PersonalDataManager> pdm,
-    std::optional<AutofillProfilesAndCreditCards> profiles_or_credit_cards) {
-  if (!profiles_or_credit_cards.has_value() ||
-      !profiles_or_credit_cards->profiles.has_value() ||
-      !profiles_or_credit_cards->credit_cards.has_value()) {
-    LOG(ERROR) << "The provided JSON import data is incorrect.";
+void SetDataForPDM(base::WeakPtr<PersonalDataManager> pdm,
+                   std::optional<AutofillImportData> import_data) {
+  if (!import_data.has_value() || !import_data->profiles.has_value() ||
+      !import_data->credit_cards.has_value()) {
     return;
   }
   if (pdm == nullptr) {
     return;
   }
-  // If a list in `profiles_or_credit_cards` is empty, do not trigger the PDM
+  // If a list in `import_data` is empty, do not trigger the PDM
   // because this will clear all corresponding existing data.
-  if (!profiles_or_credit_cards->profiles->empty()) {
+  if (!import_data->profiles->empty()) {
     RemoveAllExistingProfiles(pdm->address_data_manager());
-    for (const AutofillProfile& profile : *profiles_or_credit_cards->profiles) {
+    for (const AutofillProfile& profile : *import_data->profiles) {
       pdm->address_data_manager().AddProfile(profile);
     }
   }
-  if (!profiles_or_credit_cards->credit_cards->empty()) {
-    pdm->payments_data_manager().SetCreditCards(
-        &*profiles_or_credit_cards->credit_cards);
+  if (!import_data->credit_cards->empty()) {
+    pdm->payments_data_manager().SetCreditCards(&*import_data->credit_cards);
+  }
+}
+
+// Sets all of the `edm`'s entities if the `edm` still exists.
+void SetDataForEDM(base::WeakPtr<EntityDataManager> edm,
+                   std::optional<AutofillImportData> import_data) {
+  if (!import_data.has_value() || !import_data->entities.has_value()) {
+    return;
+  }
+  if (edm == nullptr) {
+    return;
+  }
+  if (!import_data->entities->empty()) {
+    for (const EntityInstance& entity : *import_data->entities) {
+      edm->AddOrUpdateEntityInstance(entity);
+    }
   }
 }
 
@@ -227,9 +296,9 @@ std::optional<std::vector<T>> DataModelsFromJSON(
   return std::move(data_models);
 }
 
-// Parses AutofillProfiles from the JSON `content` string.
+// Parses Autofill data from the JSON `content` string.
 // If parsing fails the error is logged and std::nullopt is returned.
-std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
+std::optional<AutofillImportData> LoadDataFromJSONContent(
     const std::string& file_content) {
   std::optional<base::DictValue> json = base::JSONReader::ReadDict(
       file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -239,18 +308,18 @@ std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
   }
   const base::ListValue* const profiles_json = json->FindList(kKeyProfiles);
   const base::ListValue* const cards_json = json->FindList(kKeyCreditCards);
-  if (!cards_json && !profiles_json) {
-    LOG(ERROR) << "JSON has no " << kKeyProfiles << " or " << kKeyCreditCards
-               << " keys.";
+  const base::ListValue* const entities_json = json->FindList(kKeyEntities);
+  if (!cards_json && !profiles_json && !entities_json) {
+    LOG(ERROR) << "JSON has no " << kKeyProfiles << ", " << kKeyCreditCards
+               << " or " << kKeyEntities << " keys.";
     return std::nullopt;
   }
-  return AutofillProfilesAndCreditCards{
-      .profiles = AutofillProfilesFromJSON(profiles_json),
-      .credit_cards = CreditCardsFromJSON(cards_json)};
+  return AutofillImportData{.profiles = AutofillProfilesFromJSON(profiles_json),
+                            .credit_cards = CreditCardsFromJSON(cards_json),
+                            .entities = EntitiesFromJSON(entities_json)};
 }
 
-std::optional<AutofillProfilesAndCreditCards> LoadDataFromFile(
-    base::FilePath file) {
+std::optional<AutofillImportData> LoadDataFromFile(base::FilePath file) {
   std::string file_content;
   if (!base::ReadFileToString(file, &file_content)) {
     LOG(ERROR) << "Failed to read file " << file.MaybeAsASCII() << ".";
@@ -263,18 +332,24 @@ std::optional<AutofillProfilesAndCreditCards> LoadDataFromFile(
 
 std::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     base::FilePath file) {
-  if (std::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
-          LoadDataFromFile(file)) {
-    return profiles_and_credit_cards->profiles;
+  if (std::optional<AutofillImportData> import_data = LoadDataFromFile(file)) {
+    return import_data->profiles;
   }
   return std::nullopt;
 }
 
 std::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
     base::FilePath file) {
-  if (std::optional<AutofillProfilesAndCreditCards> profiles_and_credit_cards =
-          LoadDataFromFile(file)) {
-    return profiles_and_credit_cards->credit_cards;
+  if (std::optional<AutofillImportData> import_data = LoadDataFromFile(file)) {
+    return import_data->credit_cards;
+  }
+  return std::nullopt;
+}
+
+std::optional<std::vector<EntityInstance>> LoadEntitiesFromFile(
+    base::FilePath file) {
+  if (std::optional<AutofillImportData> import_data = LoadDataFromFile(file)) {
+    return import_data->entities;
   }
   return std::nullopt;
 }
@@ -289,17 +364,39 @@ std::optional<std::vector<CreditCard>> CreditCardsFromJSON(
   return DataModelsFromJSON(cards_json, base::BindRepeating(&MakeCard));
 }
 
-void MaybeImportDataForManualTesting(base::WeakPtr<PersonalDataManager> pdm) {
+std::optional<std::vector<EntityInstance>> EntitiesFromJSON(
+    const base::ListValue* const entities_json) {
+  return DataModelsFromJSON(entities_json, base::BindRepeating(&MakeEntity));
+}
+
+void MaybeImportProfilesAndCardsForTesting(
+    base::WeakPtr<PersonalDataManager> pdm) {
   const auto* kCommandLine = base::CommandLine::ForCurrentProcess();
   if (kCommandLine->HasSwitch(kManualFileImportForTestingFlag)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&LoadDataFromFile, kCommandLine->GetSwitchValuePath(
                                               kManualFileImportForTestingFlag)),
-        base::BindOnce(&SetData, pdm));
+        base::BindOnce(&SetDataForPDM, pdm));
   } else if (kCommandLine->HasSwitch(kManualContentImportForTestingFlag)) {
-    SetData(pdm, LoadDataFromJSONContent(kCommandLine->GetSwitchValueASCII(
-                     kManualContentImportForTestingFlag)));
+    SetDataForPDM(pdm,
+                  LoadDataFromJSONContent(kCommandLine->GetSwitchValueASCII(
+                      kManualContentImportForTestingFlag)));
+  }
+}
+
+void MaybeImportEntitiesForTesting(base::WeakPtr<EntityDataManager> edm) {
+  const auto* kCommandLine = base::CommandLine::ForCurrentProcess();
+  if (kCommandLine->HasSwitch(kManualFileImportForTestingFlag)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&LoadDataFromFile, kCommandLine->GetSwitchValuePath(
+                                              kManualFileImportForTestingFlag)),
+        base::BindOnce(&SetDataForEDM, edm));
+  } else if (kCommandLine->HasSwitch(kManualContentImportForTestingFlag)) {
+    SetDataForEDM(edm,
+                  LoadDataFromJSONContent(kCommandLine->GetSwitchValueASCII(
+                      kManualContentImportForTestingFlag)));
   }
 }
 
