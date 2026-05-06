@@ -4,9 +4,12 @@
 
 source_set("ui") {
   sources = [
+    "gemini_consent_accordion_view.h",
+    "gemini_consent_accordion_view.mm",
     "gemini_consent_mutator.h",
     "gemini_consent_view_controller.h",
     "gemini_consent_view_controller.mm",
+    "gemini_consent_view_controller_delegate.h",
     "gemini_fre_view_controller_protocol.h",
     "gemini_fre_wrapper_view_controller.h",
     "gemini_fre_wrapper_view_controller.mm",
@@ -78,6 +81,7 @@ bundle_data("bwg_lottie_resources") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "gemini_consent_accordion_view_unittest.mm",
     "gemini_consent_view_controller_unittest.mm",
     "gemini_fre_wrapper_view_controller_unittest.mm",
     "gemini_promo_view_controller_unittest.mm",

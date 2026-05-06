@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -37,7 +38,7 @@ const CGFloat kSlideDuration = 1.0;
 const CGFloat kSpringDamping = 0.85;
 
 // Multipliers for the detent height.
-const CGFloat kMaxDetentRatio = 0.95;
+const CGFloat kMaxDetentRatio = 1.0;
 const CGFloat kMinDetentRatio = 0.25;
 
 // Adjustment taking into account the inset between the content and buttons.
@@ -45,7 +46,9 @@ const CGFloat kInsetAdjustment = 20;
 
 }  // namespace
 
-@interface GeminiFREWrapperViewController () <ButtonStackActionDelegate>
+@interface GeminiFREWrapperViewController () <
+    ButtonStackActionDelegate,
+    GeminiConsentViewControllerDelegate>
 
 // Scroll view that contains the horizontal stack view for transitions.
 @property(nonatomic, strong) UIScrollView* horizontalScrollView;
@@ -81,6 +84,8 @@ const CGFloat kInsetAdjustment = 20;
   id<LottieAnimation> _logoAnimation;
   // Content height constraint for the current view.
   NSLayoutConstraint* _contentHeightConstraint;
+  // Whether an accordion item has been expanded at least once.
+  BOOL _hasExpandedAccordion;
 }
 
 - (instancetype)initWithPromo:(BOOL)showPromo
@@ -283,6 +288,7 @@ const CGFloat kInsetAdjustment = 20;
                        FREType:_FREType
                        country:_country];
   _consentViewController.mutator = self.mutator;
+  _consentViewController.delegate = self;
 
   _currentChildViewController =
       _showPromo ? _promoViewController : _consentViewController;
@@ -294,7 +300,18 @@ const CGFloat kInsetAdjustment = 20;
   __weak __typeof(self) weakSelf = self;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    CGFloat height = [weakSelf preferredHeightForContent];
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return 0;
+    }
+
+    CGFloat maxDetentValue = kMaxDetentRatio * context.maximumDetentValue;
+
+    if (strongSelf->_hasExpandedAccordion) {
+      return maxDetentValue;
+    }
+
+    CGFloat height = [strongSelf preferredHeightForContent];
     // Apply adjustment when needed. super.addsContentViewBottomInset adds
     // insets which lead to an overly generous spacing between the content and
     // the buttons stack for non-scrollable iPhone layouts.
@@ -302,7 +319,6 @@ const CGFloat kInsetAdjustment = 20;
         UIUserInterfaceIdiomPad) {
       height -= kInsetAdjustment;
     }
-    CGFloat maxDetentValue = kMaxDetentRatio * context.maximumDetentValue;
     CGFloat minDetentValue = kMinDetentRatio * context.maximumDetentValue;
     return std::clamp(height, minDetentValue, maxDetentValue);
   };
@@ -438,6 +454,17 @@ const CGFloat kInsetAdjustment = 20;
   ButtonStackConfiguration* configuration =
       [GeminiFREWrapperViewController buttonsConfigurationForPromo:onPromo];
   [self updateConfiguration:configuration];
+}
+
+#pragma mark - GeminiConsentViewControllerDelegate
+
+- (void)consentViewControllerDidExpandAccordionItem:
+    (GeminiConsentViewController*)viewController {
+  _hasExpandedAccordion = YES;
+  __weak __typeof(self) weakSelf = self;
+  [self.sheetPresentationController animateChanges:^{
+    [weakSelf updateContentHeightConstraint];
+  }];
 }
 
 @end

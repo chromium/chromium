@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_view_controller_protocol.h"
 
 enum class GeminiFREType;
@@ -31,6 +32,9 @@ enum class GeminiFREType;
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<GeminiConsentMutator> mutator;
+
+// The delegate to handle height changes and accordion toggles.
+@property(nonatomic, weak) id<GeminiConsentViewControllerDelegate> delegate;
 
 @end
 
