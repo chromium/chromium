@@ -806,7 +806,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   // Will swap out the string.
   if (phishing_classifier_) {
     phishing_classifier_->PageCaptured(
-        contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
+        layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
   }
   if (phishing_image_embedder_) {
     phishing_image_embedder_->PageCaptured(

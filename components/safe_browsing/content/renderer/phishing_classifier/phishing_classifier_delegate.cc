@@ -183,9 +183,7 @@ bool PhishingClassifierDelegate::is_ready() {
   return classifier_->is_ready();
 }
 
-void PhishingClassifierDelegate::PageCaptured(
-    scoped_refptr<const base::RefCountedString16> page_text,
-    bool preliminary_capture) {
+void PhishingClassifierDelegate::PageCaptured(bool preliminary_capture) {
   if (!base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
 
@@ -350,10 +348,6 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
   //  5. The load is a new navigation (not a session history navigation).
   //  6. The toplevel URL has not already been classified.
   //
-  // Note that if we determine that this particular navigation should not be
-  // classified at all (as opposed to deferring it until we get an IPC or
-  // the load completes), we discard the page text since it won't be needed.
-
   // We shouldn't hit this ever, but for sanity check, we should return when
   // this hits.
   if (is_classifying_) {
@@ -369,7 +363,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     if (base::FeatureList::IsEnabled(kClientSideDetectionRetryLimit) &&
         is_phishing_detection_running_) {
       // If there's a browser side request and a retry has been submitted, this
-      // is only possible if the PageText has been recaptured. If there's a new
+      // is only possible if the page has been recaptured. If there's a new
       // browser side request, the |awaiting_retry_| and
       // |is_phishing_detection_running_| would have been set to false so we'd
       // retry again on a fresh browser request.
@@ -485,7 +479,7 @@ void PhishingClassifierDelegate::OnScorerChanged() {
   }
 
   // We check |is_classifying_| here because |CancelPendingClassification|
-  // clears the page text, and we do not want that if we are awaiting retry.
+  // clears the request type, and we do not want that if we are awaiting retry.
   if (is_classifying_) {
     CancelPendingClassification(
         CancelClassificationReason::kNewPhishingScorerUpdate);
