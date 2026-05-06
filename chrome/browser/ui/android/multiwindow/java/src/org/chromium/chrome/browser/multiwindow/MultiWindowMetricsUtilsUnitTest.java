@@ -22,6 +22,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
@@ -51,6 +52,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510019356")
     public void testRecordWindowingMode() {
         // Start in fullscreen mode.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
@@ -113,6 +115,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510013948")
     public void recordTimeSpentInWindowingMode_withinCycle() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
@@ -143,6 +146,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510025914")
     public void recordTimeSpentInWindowingMode_cycleBoundary_stoppingModeDurationNotLost() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
@@ -168,6 +172,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510022013")
     public void recordTimeSpentInWindowingMode_cycleBoundary_activeModeHandled() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
         mSharedPreferencesManager.writeLong(
@@ -223,6 +228,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510006428")
     public void recordTimeSpentInWindowingMode_cycleStartTimeUpdated() {
         long t0 = TimeUtils.elapsedRealtimeMillis();
 
@@ -267,6 +273,7 @@ public class MultiWindowMetricsUtilsUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/510010805")
     public void testRecordWindowingMode_duplicateIds() {
         // Start in fullscreen mode with window ID 1.
         MultiWindowMetricsUtils.recordWindowingMode(WindowingMode.FULLSCREEN, 1, true);
