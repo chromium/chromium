@@ -3,4 +3,9 @@ file://components/cronet/CRONET_OWNERS
 per-file android/lint-*.xml=*
 per-file android/dependencies.txt=set noparent
 per-file android/dependencies.txt=file://components/cronet/CRONET_OWNERS
+
+# Only copybara should be allowed to touch breakages.json. Humans should not be
+# allowed to modify it because their changes will get overwritten by copybara.
+per-file android/breakages.json=set noparent
+per-file android/breakages.json=file://ATL_OWNERS
 per-file android/breakages.json=copybara-worker-blackhole@google.com
