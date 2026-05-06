@@ -557,7 +557,7 @@
   {
     "name": "apply-clientside-model-predictions-for-password-types",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 149
+    "expiry_milestone": 156
   },
   {
     "name": "approximate-geolocation-permission",
@@ -4812,7 +4812,7 @@
   {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name": "first-run-desktop-choice-screen-refresh",
