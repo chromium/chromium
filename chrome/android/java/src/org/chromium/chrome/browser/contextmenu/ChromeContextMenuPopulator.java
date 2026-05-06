@@ -697,21 +697,23 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 /* showInProductHelp= */ false,
                                 !mIsDownloadRestrictedByPolicy));
             }
-            if (ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled()) {
-                videoGroup.add(
-                        createListItem(
-                                Item.COPY_VIDEO_FRAME,
-                                /* showInProductHelp= */ false,
-                                /* enabled= */ true));
-            }
-            if (ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled()
-                    && mParams.canSaveMedia()
-                    && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
-                videoGroup.add(
-                        createListItem(
-                                Item.DOWNLOAD_VIDEO_FRAME,
-                                /* showInProductHelp= */ false,
-                                /* enabled= */ !mIsDownloadRestrictedByPolicy));
+            if (!mParams.isEncrypted()) {
+                if (ChromeFeatureList.sContextMenuCopyVideoFrame.isEnabled()) {
+                    videoGroup.add(
+                            createListItem(
+                                    Item.COPY_VIDEO_FRAME,
+                                    /* showInProductHelp= */ false,
+                                    /* enabled= */ true));
+                }
+                if (ChromeFeatureList.sContextMenuDownloadVideoFrame.isEnabled()
+                        && mParams.canSaveMedia()
+                        && UrlUtilities.isDownloadableScheme(mParams.getSrcUrl())) {
+                    videoGroup.add(
+                            createListItem(
+                                    Item.DOWNLOAD_VIDEO_FRAME,
+                                    /* showInProductHelp= */ false,
+                                    /* enabled= */ !mIsDownloadRestrictedByPolicy));
+                }
             }
 
             if (mParams.canPictureInPicture()
