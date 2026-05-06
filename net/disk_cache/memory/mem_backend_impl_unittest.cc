@@ -7,8 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -96,13 +99,16 @@ TEST_F(MemBackendImplTest, EvictionMargin) {
 }
 
 TEST_F(MemBackendImplTest, MemoryConsumer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
   // 1. Fill the cache.
   for (int i = 0; i < kNumEntries; ++i) {
     CreateAndWriteEntry("key" + base::NumberToString(i));
   }
 
   // 2. Simulate moderate memory pressure (50% limit).
-  SimulateMemoryLimitAndRelease(50);
+  SimulateMemoryLimitAndRelease(base::kModerateMemoryPressureThreshold);
 
   // key0 to key4 should be evicted.
   for (int i = 0; i < 5; ++i) {
@@ -123,13 +129,53 @@ TEST_F(MemBackendImplTest, MemoryConsumer) {
   EXPECT_TRUE(EntryExists("key9"));
 
   // 4. Simulate no memory pressure (100% limit).
-  SimulateMemoryLimitAndRelease(100);
+  SimulateMemoryLimitAndRelease(base::kNoMemoryPressureThreshold);
+
+  // Should be able to add new entries.
+  CreateAndWriteEntry("key10");
+}
+
+TEST_F(MemBackendImplTest, MemoryConsumerStateless) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  // 1. Fill the cache.
+  for (int i = 0; i < kNumEntries; ++i) {
+    CreateAndWriteEntry("key" + base::NumberToString(i));
+  }
+
+  // 2. Simulate moderate memory pressure (50% limit).
+  SimulateMemoryLimitAndRelease(base::kModerateMemoryPressureThreshold);
+
+  // key0 to key4 should be evicted.
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_FALSE(EntryExists("key" + base::NumberToString(i)));
+  }
+  // key5 to key9 should remain.
+  for (int i = 5; i < kNumEntries; ++i) {
+    EXPECT_TRUE(EntryExists("key" + base::NumberToString(i)));
+  }
+
+  // 3. Simulate critical memory pressure (0% limit).
+  SimulateMemoryLimitAndRelease(base::kCriticalMemoryPressureThreshold);
+
+  // Only the most recent entry (key9) should remain.
+  for (int i = 0; i < 9; ++i) {
+    EXPECT_FALSE(EntryExists("key" + base::NumberToString(i)));
+  }
+  EXPECT_TRUE(EntryExists("key9"));
+
+  // 4. Simulate no memory pressure (100% limit).
+  SimulateMemoryLimitAndRelease(base::kNoMemoryPressureThreshold);
 
   // Should be able to add new entries.
   CreateAndWriteEntry("key10");
 }
 
 TEST_F(MemBackendImplTest, UpdateMemoryLimitDoesNotEvict) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
   // 1. Fill the cache.
   for (int i = 0; i < kNumEntries; ++i) {
     CreateAndWriteEntry("key" + base::NumberToString(i));
@@ -137,7 +183,7 @@ TEST_F(MemBackendImplTest, UpdateMemoryLimitDoesNotEvict) {
 
   // 2. Notify about the new limit (50%), but DO NOT request memory release.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      50, task_environment_.QuitClosure());
+      base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
   // 3. Verify that no eviction has occurred yet. All entries should still
@@ -159,6 +205,48 @@ TEST_F(MemBackendImplTest, UpdateMemoryLimitDoesNotEvict) {
   for (int i = 5; i < kNumEntries; ++i) {
     EXPECT_TRUE(EntryExists("key" + base::NumberToString(i)));
   }
+}
+
+TEST_F(MemBackendImplTest, StatefulStickiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  // 1. Fill cache.
+  for (int i = 0; i < kNumEntries; ++i) {
+    CreateAndWriteEntry("key" + base::NumberToString(i));
+  }
+
+  // 2. Trigger moderate memory pressure (50%).
+  SimulateMemoryLimitAndRelease(base::kModerateMemoryPressureThreshold);
+
+  // 3. Add a new entry.
+  CreateAndWriteEntry("key10");
+
+  // Sticky: The limit is locked at 5 entries.
+  // Adding a 6th entry must evict the oldest one (key5).
+  EXPECT_FALSE(EntryExists("key5"));
+  EXPECT_TRUE(EntryExists("key10"));
+}
+
+TEST_F(MemBackendImplTest, StatelessStickiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  // 1. Fill cache.
+  for (int i = 0; i < kNumEntries; ++i) {
+    CreateAndWriteEntry("key" + base::NumberToString(i));
+  }
+
+  // 2. Trigger moderate memory pressure (50%).
+  SimulateMemoryLimitAndRelease(base::kModerateMemoryPressureThreshold);
+
+  // 3. Add a new entry.
+  CreateAndWriteEntry("key10");
+
+  // One-shot: The limit reset back to 10 entries.
+  // Adding a 6th entry succeeds without evicting key5.
+  EXPECT_TRUE(EntryExists("key5"));
+  EXPECT_TRUE(EntryExists("key10"));
 }
 
 }  // namespace

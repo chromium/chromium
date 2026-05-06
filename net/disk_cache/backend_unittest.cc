@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -850,6 +851,9 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
 }
 
 TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
   const int kLimit = 16 * 1024;
   const int kEntrySize = 256;
   SetMaxSize(kLimit);
