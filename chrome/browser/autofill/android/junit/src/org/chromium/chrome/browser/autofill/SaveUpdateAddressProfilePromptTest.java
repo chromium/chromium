@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -65,7 +64,6 @@ public class SaveUpdateAddressProfilePromptTest {
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
     @Mock private AddressEditorCoordinator mAddressEditor;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
 
@@ -81,8 +79,7 @@ public class SaveUpdateAddressProfilePromptTest {
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
 
         mActivity = Robolectric.setupActivity(BlankUiTestActivity.class);
 
@@ -102,7 +99,7 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     private void createAndShowPrompt(@SaveUpdateAddressProfilePromptMode int promptMode) {
-        AutofillProfile dummyProfile = AutofillProfile.builder().build();
+        AutofillProfile autofillProfile = AutofillProfile.builder().build();
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mPrompt =
                 new SaveUpdateAddressProfilePrompt(
@@ -110,7 +107,7 @@ public class SaveUpdateAddressProfilePromptTest {
                         mModalDialogManager,
                         mActivity,
                         mProfile,
-                        dummyProfile,
+                        autofillProfile,
                         promptMode);
         mPrompt.setAddressEditorForTesting(mAddressEditor);
         mPrompt.show();
