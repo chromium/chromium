@@ -786,8 +786,6 @@ bool ServiceWorkerTaskQueue::IsStartFailureRetryable(
       return true;
 
     // Registration or version was not found.
-    // TODO(https://crbug.com/444255717): investigate and clean up
-    // if it's not actually transient.
     case blink::ServiceWorkerStatusCode::kErrorNotFound:
       return true;
 
