@@ -294,7 +294,7 @@ WebApp::WebApp(const webapps::ManifestId& manifest_id,
   GURL::Replacements replacements;
   replacements.ClearRef();
   replacements.ClearQuery();
-  scope_ = scope.ReplaceComponents(replacements);
+  scope_ = scope_.ReplaceComponents(replacements);
 
   RunWebAppConstructionValidations(manifest_id, start_url, scope_);
   // Set the correct metadata so that the appropriate fields in the
