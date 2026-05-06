@@ -604,7 +604,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private TabbedModeTabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorBase mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private TabModelSelectorTabObserver mNavigationFinishedObserver;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
     private UndoRefocusHelper mUndoRefocusHelper;
@@ -3640,7 +3640,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mTabModelSelectorTabObserver =
+        mNavigationFinishedObserver =
                 new TabModelSelectorTabObserver(mTabModelSelector) {
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
@@ -4728,9 +4728,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mCallbackController = null;
         }
 
-        if (mTabModelSelectorTabObserver != null) {
-            mTabModelSelectorTabObserver.destroy();
-            mTabModelSelectorTabObserver = null;
+        if (mNavigationFinishedObserver != null) {
+            mNavigationFinishedObserver.destroy();
+            mNavigationFinishedObserver = null;
         }
 
         mTabModelNotificationDotManager.destroy();

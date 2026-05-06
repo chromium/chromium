@@ -940,7 +940,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 incognito -> incognito ? tabCreators.second : tabCreators.first);
 
         OfflinePageUtils.observeTabModelSelector(this, tabModelSelector);
-        if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
 
         mTabModelSelectorTabObserver =
                 new TabModelSelectorTabObserver(tabModelSelector) {
