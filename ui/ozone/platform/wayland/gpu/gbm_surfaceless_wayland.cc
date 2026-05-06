@@ -219,8 +219,9 @@ void GbmSurfacelessWayland::Present(SwapCompletionCallback completion_callback,
 
   fence_wait_task = base::BindOnce(&WaitForGpuFences, std::move(fences));
 
-  base::OnceClosure fence_retired_callback = base::BindOnce(
-      &GbmSurfacelessWayland::FenceRetired, weak_factory_.GetWeakPtr(), frame);
+  base::OnceClosure fence_retired_callback =
+      base::BindOnce(&GbmSurfacelessWayland::FenceRetired,
+                     weak_factory_.GetWeakPtr(), frame->frame_id);
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
@@ -268,7 +269,7 @@ GbmSurfacelessWayland::PendingFrame::~PendingFrame() = default;
 void GbmSurfacelessWayland::MaybeSubmitFrames() {
   while (!unsubmitted_frames_.empty() && unsubmitted_frames_.front()->ready) {
     auto submitted_frame = std::move(unsubmitted_frames_.front());
-    unsubmitted_frames_.erase(unsubmitted_frames_.begin());
+    unsubmitted_frames_.pop_front();
 
     if (!submitted_frame->schedule_planes_succeeded) {
       last_swap_buffers_result_ = false;
@@ -290,9 +291,28 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
   }
 }
 
-void GbmSurfacelessWayland::FenceRetired(PendingFrame* frame) {
-  frame->ready = true;
-  MaybeSubmitFrames();
+// Note: This O(1) lookup relies on frame IDs being monotonically increasing
+// and contiguous within unsubmitted_frames_. The unsigned 32-bit math correctly
+// handles UINT32_MAX wrap-around as long as the queue size is smaller than
+// 2^32.
+void GbmSurfacelessWayland::FenceRetired(uint32_t frame_id) {
+  if (unsubmitted_frames_.empty()) {
+    return;
+  }
+
+  uint32_t first_frame_id = unsubmitted_frames_.front()->frame_id;
+  uint32_t index = frame_id - first_frame_id;
+  if (index < unsubmitted_frames_.size()) {
+    auto& frame = unsubmitted_frames_[index];
+    DCHECK_EQ(frame->frame_id, frame_id);
+    // If the frame doesn't have a completion callback yet, it means it hasn't
+    // been presented yet (it's the sentinel frame at the back).
+    if (!frame->completion_callback) {
+      return;
+    }
+    frame->ready = true;
+    MaybeSubmitFrames();
+  }
 }
 
 void GbmSurfacelessWayland::SetNoGLFlushForTests() {
@@ -314,7 +334,7 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
   TRACE_EVENT("wayland", "GbmSurfacelessWayland::OnSubmission", "frame_id",
               submitted_frame->frame_id);
 
-  submitted_frames_.erase(submitted_frames_.begin());
+  submitted_frames_.pop_front();
   for (auto& buf : submitted_frame->in_flight_color_buffers) {
     // Let the holder mark this buffer as free to reuse.
     solid_color_buffers_holder_->OnSubmission(buf, buffer_manager_);
@@ -354,7 +374,7 @@ void GbmSurfacelessWayland::OnPresentation(
 
   std::move(pending_presentation_frames_.front()->presentation_callback)
       .Run(feedback);
-  pending_presentation_frames_.erase(pending_presentation_frames_.begin());
+  pending_presentation_frames_.pop_front();
 }
 
 EGLDisplay GbmSurfacelessWayland::GetEGLDisplay() {

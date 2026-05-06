@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -152,7 +153,7 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
 
   void MaybeSubmitFrames();
 
-  void FenceRetired(PendingFrame* frame);
+  void FenceRetired(uint32_t frame_id);
 
   // Sets a flag that skips glFlush step in unittests.
   void SetNoGLFlushForTests();
@@ -164,14 +165,15 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
 
   // PendingFrames that are waiting to be submitted. They can be either ready,
   // waiting for gpu fences, or still scheduling overlays.
-  std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
+  base::circular_deque<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
 
   // PendingFrames that are submitted, pending OnSubmission() calls.
-  std::vector<std::unique_ptr<PendingFrame>> submitted_frames_;
+  base::circular_deque<std::unique_ptr<PendingFrame>> submitted_frames_;
 
   // PendingFrames that have received OnSubmission(), pending OnPresentation()
   // calls.
-  std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
+  base::circular_deque<std::unique_ptr<PendingFrame>>
+      pending_presentation_frames_;
   bool last_swap_buffers_result_ = true;
   bool use_egl_fence_sync_ = true;
 
