@@ -49,6 +49,7 @@ void AwNetLogsConnection::stopNetLogs() {
     return;
   }
   aw_net_log_observer_->StopObserving(nullptr, base::OnceClosure());
+  aw_net_log_observer_.reset();
 }
 
 AwNetLogsConnection* GetInstance() {
