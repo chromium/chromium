@@ -8651,7 +8651,7 @@
   {
     "name": "show-tab-group-in-grid-on-start",
     "owners": [ "achara@google.com", "ewannpv@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "show-tab-groups-mac-system-menu",
