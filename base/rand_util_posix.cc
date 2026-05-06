@@ -4,29 +4,17 @@
 
 #include "base/rand_util.h"
 
-#include <errno.h>
 #include <fcntl.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/syscall.h>
-#include <sys/utsname.h>
-#include <unistd.h>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "third_party/lss/linux_syscall_support.h"
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40641285): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
@@ -43,85 +31,15 @@ static constexpr int kOpenFlags = O_RDONLY;
 static constexpr int kOpenFlags = O_RDONLY | O_CLOEXEC;
 #endif
 
-// We keep the file descriptor for /dev/urandom around so we don't need to
-// reopen it (which is expensive), and since we may not even be able to reopen
-// it if we are later put in a sandbox. This class wraps the file descriptor so
-// we can use a static-local variable to handle opening it on the first access.
-class URandomFd {
- public:
-  URandomFd() : fd_(HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
-    CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
-  }
-
-  ~URandomFd() { close(fd_); }
-
-  int fd() const { return fd_; }
-
- private:
-  const int fd_;
-};
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-
-bool KernelSupportsGetRandom() {
-  return base::SysInfo::KernelVersionNumber::Current() >=
-         base::SysInfo::KernelVersionNumber(3, 17);
+int OpenUrandomFd() {
+  int ret = HANDLE_EINTR(open("/dev/urandom", kOpenFlags));
+  CHECK(ret >= 0) << "Cannot open /dev/urandom";
+  return ret;
 }
 
-bool GetRandomSyscall(void* output, size_t output_length) {
-  // We have to call `getrandom` via Linux Syscall Support, rather than through
-  // the libc wrapper, because we might not have an up-to-date libc (e.g. on
-  // some bots).
-  const ssize_t r =
-      HANDLE_EINTR(syscall(__NR_getrandom, output, output_length, 0));
-
-  // Return success only on total success. In case errno == ENOSYS (or any other
-  // error), we'll fall through to reading from urandom below.
-  if (output_length == static_cast<size_t>(r)) {
-    MSAN_UNPOISON(output, output_length);
-    return true;
-  }
-  return false;
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID)
-
-}  // namespace
-
-
-namespace {
-
-void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
-  // The BoringSSL experiment takes priority over everything else.
-  if (!avoid_allocation) {
-    // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
-    (void)RAND_bytes(output.data(), output.size());
-    return;
-  }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // On Android it is mandatory to check that the kernel _version_ has the
-  // support for a syscall before calling. The same check is made on Linux and
-  // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
-  static const bool kernel_has_support = KernelSupportsGetRandom();
-  if (kernel_has_support && GetRandomSyscall(output.data(), output.size())) {
-    return;
-  }
-#elif BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
-  // in its SDK.
-  if (getentropy(output.data(), output.size()) == 0) {
-    return;
-  }
-#endif
-
-  // If the OS-specific mechanisms didn't work, fall through to reading from
-  // urandom.
-  //
-  // TODO(crbug.com/40641285): When we no longer need to support old Linux
-  // kernels, we can get rid of this /dev/urandom branch altogether.
-  const int urandom_fd = GetUrandomFD();
-  const bool success = ReadFromFD(urandom_fd, as_writable_chars(output));
-  CHECK(success);
+double RandomUint64ToRandomDouble(uint64_t value) {
+  // This transformation is explained in rand_util.cc.
+  return (value >> 11) * 0x1.0p-53;
 }
 
 }  // namespace
@@ -130,20 +48,31 @@ namespace internal {
 
 double RandDoubleAvoidAllocation() {
   uint64_t number;
-  RandBytesInternal(byte_span_from_ref(number), /*avoid_allocation=*/true);
-  // This transformation is explained in rand_util.cc.
-  return (number >> 11) * 0x1.0p-53;
+  // TODO(crbug.com/40641285): For Linux and Android use getrandom(2)
+  // after Cronet deprecates Android N. Android O would guarantee
+  // kernel version >= 3.18, which is sufficient for getrandom().
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
+  // in its SDK.
+  if (getentropy(&number, sizeof(number)) == 0) {
+    return RandomUint64ToRandomDouble(number);
+  }
+#endif
+  // Reading from /dev/urandom is the most portable way to avoid allocation.
+  CHECK(ReadFromFD(GetUrandomFD(), as_writable_chars(span_from_ref(number))));
+  return RandomUint64ToRandomDouble(number);
 }
 
 }  // namespace internal
 
 void RandBytes(span<uint8_t> output) {
-  RandBytesInternal(output, /*avoid_allocation=*/false);
+  // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
+  (void)RAND_bytes(output.data(), output.size());
 }
 
 int GetUrandomFD() {
-  static NoDestructor<URandomFd> urandom_fd;
-  return urandom_fd->fd();
+  static const int fd = OpenUrandomFd();
+  return fd;
 }
 
 }  // namespace base
