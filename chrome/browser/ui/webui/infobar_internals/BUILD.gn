@@ -53,7 +53,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/infobar_internals:resources",
     "//chrome/browser/ui/browser_window",
-    "//components/infobars/content:content",
+    "//components/infobars/content",
     "//content/public/browser",
   ]
 
@@ -79,8 +79,10 @@ source_set("impl") {
 
   if (enable_extensions) {
     deps += [
+      "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/debugger",
       "//chrome/browser/extensions/api/messaging",
+      "//chrome/browser/themes",
       "//extensions/browser",
       "//extensions/common",
     ]

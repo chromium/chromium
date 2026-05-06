@@ -37,6 +37,9 @@
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
+#include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #endif
@@ -131,6 +134,15 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "Triggers the startup launch infobar. This infobar can only be "
       "triggered on Windows, and only when LaunchOnStartup feature flag is "
       "enabled."));
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kThemeInstalled, /*name=*/"Theme Installed",
+      /*description=*/
+      "The Theme Installed infobar is shown when a user installs a theme. "
+      "This trigger shows the infobar for the current theme, allowing you "
+      "to 'undo' to the state before this trigger."));
 #endif
 
   std::move(callback).Run(std::move(infobar_list));
@@ -310,6 +322,37 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
         return true;
       }
       return false;
+    }
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    case InfoBarType::kThemeInstalled: {
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+      if (!profile) {
+        return false;
+      }
+
+      ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
+      extensions::ExtensionRegistry* registry =
+          extensions::ExtensionRegistry::Get(profile);
+
+      std::string theme_name = "Default";
+      std::string theme_id = "";
+
+      if (theme_service->UsingExtensionTheme()) {
+        theme_id = theme_service->GetThemeID();
+        const extensions::Extension* extension = registry->GetExtensionById(
+            theme_id, extensions::ExtensionRegistry::EVERYTHING);
+        if (extension) {
+          theme_name = extension->name();
+        }
+      }
+
+      ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+          profile, theme_name, theme_id,
+          theme_service->BuildReinstallerForCurrentTheme());
+      return true;
     }
 #endif
   }

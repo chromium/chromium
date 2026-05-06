@@ -33,6 +33,10 @@ enum InfoBarType {
   // Startup launch infobar. Can only be triggered on Windows.
   [EnableIf=is_win]
   kStartupLaunch,
+
+  // Theme installed infobar.
+  [EnableIf=enable_extensions]
+  kThemeInstalled,
 };
 
 // Metadata describing an individual infobar that can be triggered.
