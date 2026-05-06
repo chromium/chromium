@@ -278,15 +278,6 @@ export declare interface GlicBrowserHost {
   enableDragResize?(enabled: boolean): Promise<void>;
 
   /**
-   * Set the areas of the glic window from which it should be draggable. If
-   * `areas` is empty, a default draggable area will be created.
-   *
-   * Returns a promise that resolves when the browser has updated the draggable
-   * area.
-   */
-  setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
-
-  /**
    * Sets the minimum possible size a user can resize to for the glic window.
    *
    * All provided values will go through sanity checks (e.g. checking min
@@ -2101,18 +2092,6 @@ export declare interface ScrollToNodeSelector {
 
 /** Error type used for scrollTo(). */
 export type ScrollToError = ErrorWithReason<'scrollTo'>;
-
-/**
- * A rectangular area based in the glic window's coordinate system. All
- * coordinate and size values are in DIPs. The coordinate system is based in the
- * panel's view with the origin located in the top-left of the panel.
- */
-export declare interface DraggableArea {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
 
 /**
  * A generic interface for observing a stream of values.

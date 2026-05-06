@@ -1421,19 +1421,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #endif
   }
 
-  void SetPanelDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas,
-      SetPanelDraggableAreasCallback callback) override {
-    if (!draggable_areas.empty()) {
-      host().SetPanelDraggableAreas(page_handler_, draggable_areas);
-    } else {
-      // Default to the top bar area of the panel.
-      // TODO(cuianthony): Define panel dimensions constants in shared location.
-      host().SetPanelDraggableAreas(page_handler_, {{0, 0, 400, 80}});
-    }
-    std::move(callback).Run();
-  }
-
   void SetMinimumPanelSize(const gfx::Size& size) override {
     host().SetMinimumWidgetSize(page_handler_, size);
   }

@@ -385,9 +385,6 @@ class Host : public GlicSharingManagerProvider {
   void AttachPanel(GlicPageHandler* page_handler);
   void DetachPanel(GlicPageHandler* page_handler);
   void ClosePanel(GlicPageHandler* page_handler);
-  // Sets the areas of the view from which it should be draggable.
-  void SetPanelDraggableAreas(GlicPageHandler* page_handler,
-                              const std::vector<gfx::Rect>& draggable_areas);
 
   // Sets the minimum widget size that the widget will allow the user to resize
   // to.

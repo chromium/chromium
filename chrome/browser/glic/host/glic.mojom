@@ -1236,14 +1236,6 @@ interface WebClientHandler {
   // ducked, even if ducking other applications has failed.
   SetAudioDucking(bool enable) => (bool result);
 
-  // Set the areas of the Glic panel from which it should be draggable. If
-  // `draggable_areas` is empty, the panel will use the top bar area by default.
-  // Returns when the browser has updated the draggable area.
-  // Any web elements that are in the draggable area must set "draggable=false"
-  // to avoid conflicting with dragging the Glic panel. Also, elements with text
-  // like <h1> should have style 'user-select: none'.
-  SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
-
   // Sets the minimum possible size that a user can manually resize to for the
   // widget hosting the WebUI.
   SetMinimumPanelSize(gfx.mojom.Size size);

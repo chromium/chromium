@@ -99,7 +99,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SetOnboardingCompleted"/>
   <variant name="SetSyntheticExperimentState"/>
   <variant name="SetTabContextPermissionState"/>
-  <variant name="SetWindowDraggableAreas"/>
   <variant name="ShowBrowseSkillsUi"/>
   <variant name="ShowManageSkillsUi"/>
   <variant name="ShowProfilePicker"/>

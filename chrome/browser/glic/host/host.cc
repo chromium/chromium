@@ -665,12 +665,6 @@ void Host::ClosePanel(GlicPageHandler* page_handler) {
   delegate_->ClosePanel();
 }
 
-void Host::SetPanelDraggableAreas(
-    GlicPageHandler* page_handler,
-    const std::vector<gfx::Rect>& draggable_areas) {
-  // TODO(b:469211337): Remove it from glic api.
-}
-
 void Host::SetMinimumWidgetSize(GlicPageHandler* page_handler,
                                 const gfx::Size& size) {
   if (handler_info_ && handler_info_->page_handler == page_handler) {
