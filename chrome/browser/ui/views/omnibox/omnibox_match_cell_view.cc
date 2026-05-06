@@ -347,6 +347,10 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   }
 }
 
+void OmniboxMatchCellView::OnSecondaryTextVisibilityChanged() {
+  PreferredSizeChanged();
+}
+
 void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
                                    const AutocompleteMatch& match) {
   const bool is_pedal_suggestion_row =
@@ -510,7 +514,9 @@ void OmniboxMatchCellView::Layout(PassKey) {
   }
 
   int content_width = content_view_->GetPreferredSize().width();
-  int description_width = description_view_->GetPreferredSize().width();
+  int description_width = description_view_->GetVisible()
+                              ? description_view_->GetPreferredSize().width()
+                              : 0;
   const gfx::Size separator_size = separator_view_->GetPreferredSize();
   int iph_link_width = iph_link_view_->GetPreferredSize().width();
   ComputeMatchMaxWidths(
@@ -562,7 +568,10 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
             tail_suggest_common_prefix_width_ +
             content_view_->GetPreferredSize().width() +
             iph_link_view_->GetPreferredSize().width();
-    const int description_width = description_view_->GetPreferredSize().width();
+    const int description_width =
+        description_view_->GetVisible()
+            ? description_view_->GetPreferredSize().width()
+            : 0;
     if (description_width > 0) {
       width += separator_view_->GetPreferredSize().width() + description_width;
     }

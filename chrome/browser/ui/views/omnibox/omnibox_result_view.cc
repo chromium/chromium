@@ -381,6 +381,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 
   suggestion_view_->OnMatchUpdate(this, match_);
   UpdateDividerLineVisibility();
+  UpdateSecondaryTextVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   if (match_.IsIphSuggestion()) {
@@ -523,6 +524,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
 void OmniboxResultView::OnSelectionStateChanged() {
   UpdateDividerLineVisibility();
+  UpdateSecondaryTextVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   UpdateAccessibleName();
@@ -695,6 +697,7 @@ gfx::Image OmniboxResultView::GetIcon() const {
 
 void OmniboxResultView::UpdateHoverState() {
   UpdateDividerLineVisibility();
+  UpdateSecondaryTextVisibility();
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   ApplyThemeAndRefreshIcons();
@@ -709,6 +712,20 @@ void OmniboxResultView::UpdateDividerLineVisibility() {
 
   if (old_visibility != new_visibility) {
     InvalidateLayout();
+  }
+}
+
+void OmniboxResultView::UpdateSecondaryTextVisibility() {
+  const bool is_contextual = match_.IsContextualSearchSuggestion();
+
+  const bool show_description =
+      !is_contextual || GetMatchSelected() || IsMouseHovered();
+  if (suggestion_view_->description()->GetVisible() != show_description) {
+    suggestion_view_->description()->SetVisible(show_description);
+    suggestion_view_->separator()->SetVisible(show_description);
+    // Explicitly notify the parent that the preferred size has changed, as
+    // the row's FlexLayout depends on this to allocate space.
+    suggestion_view_->OnSecondaryTextVisibilityChanged();
   }
 }
 

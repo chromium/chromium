@@ -243,7 +243,9 @@
 }
 
 :host([is-contextual-suggestion_]) .container:not(.actions):hover #description,
-:host([is-contextual-suggestion_]) .container:not(.actions):hover #separator {
+:host([is-contextual-suggestion_]) .container:not(.actions):hover #separator,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #description,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-contextual-suggestion_]) #separator {
   display: inline;
 }
 

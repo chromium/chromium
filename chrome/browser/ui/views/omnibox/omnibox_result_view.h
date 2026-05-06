@@ -103,6 +103,7 @@ class OmniboxResultView : public views::View {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxResultViewTest, ContextualSecondaryText);
 
   void OpenIphLink();
 
@@ -113,6 +114,10 @@ class OmniboxResultView : public views::View {
   void UpdateHoverState();
 
   void UpdateDividerLineVisibility();
+
+  // Sets the visibility of the secondary text (description) based on the
+  // current state. Only applies to contextual suggestions.
+  void UpdateSecondaryTextVisibility();
 
   // Sets the visibility of the |thumbs_up_button_| and |thumbs_down_button_|
   // based on the current state.
