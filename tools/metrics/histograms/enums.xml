@@ -23523,11 +23523,6 @@ Called by update_net_error_codes.py.-->
   <int value="89" label="kFormSubmitWhenPrerendering"/>
 </enum>
 
-<enum name="PrimaryButtonRight">
-  <int value="0" label="Right-handed"/>
-  <int value="1" label="Left-handed"/>
-</enum>
-
 <enum name="PrintPreviewFailureType">
 <!-- This must be kept current with PrintPreviewErrorBuckets in
      components/printing/renderer/print_render_frame_helper.h. -->

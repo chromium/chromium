@@ -10236,25 +10236,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mouse.PrimaryButtonRight.Changed" enum="PrimaryButtonRight"
-    expires_after="2024-03-10">
-  <owner>gavinwill@google.com</owner>
-  <owner>cros-device-enablement@chromium.org</owner>
-  <summary>
-    Tracks mouse PrimaryButtonRight setting. Only reported on Chrome OS.
-  </summary>
-</histogram>
-
-<histogram name="Mouse.PrimaryButtonRight.Started" enum="PrimaryButtonRight"
-    expires_after="2024-03-10">
-  <owner>gavinwill@google.com</owner>
-  <owner>cros-device-enablement@chromium.org</owner>
-  <summary>
-    Tracks mouse PrimaryButtonRight setting on startup. Only reported on Chrome
-    OS.
-  </summary>
-</histogram>
-
 <histogram name="Mouse.ScrollAcceleration{PreferenceChangeType}"
     enum="BooleanEnabled" expires_after="2025-12-01">
   <owner>zhangwenyu@google.com</owner>

@@ -1047,8 +1047,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (user_is_active) {
       mouse_settings.SetPrimaryButtonRight(right);
     }
-    ReportBooleanPrefApplication(reason, "Mouse.PrimaryButtonRight.Changed",
-                                 "Mouse.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
       if (local_state_->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight) !=
