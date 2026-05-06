@@ -762,6 +762,8 @@ source_set("no_cfi_icall") {
 source_set("util_test") {
   testonly = true
 
+  configs += [ "../build:flock_always_supported_defines" ]
+
   sources = [
     "file/delimited_file_reader_test.cc",
     "file/directory_reader_test.cc",

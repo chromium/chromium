@@ -53,6 +53,7 @@ bool WriteTestModule(const base::FilePath& module_path,
       Phdr load1;
       Phdr load2;
       Phdr dynamic;
+      Phdr gnu_stack;
     } phdr_table;
     struct {
       Dyn hash;
@@ -172,6 +173,12 @@ bool WriteTestModule(const base::FilePath& module_path,
   module.phdr_table.dynamic.p_memsz = sizeof(module.dynamic_array);
   module.phdr_table.dynamic.p_flags = PF_R | PF_W;
   module.phdr_table.dynamic.p_align = 8;
+
+  // Mark the stack as non-executable so glibc's loader does not try to
+  // enable an executable stack, which modern Linux kernels reject.
+  module.phdr_table.gnu_stack.p_type = PT_GNU_STACK;
+  module.phdr_table.gnu_stack.p_flags = PF_R | PF_W;
+  module.phdr_table.gnu_stack.p_align = 1;
 
   module.dynamic_array.hash.d_tag = DT_HASH;
   module.dynamic_array.hash.d_un.d_ptr =

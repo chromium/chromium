@@ -14,14 +14,15 @@
 
 #include "util/file/file_io.h"
 
+#include <stdint.h>
 #include <stdio.h>
 
+#include <atomic>
 #include <functional>
 #include <iterator>
 #include <limits>
 #include <type_traits>
 
-#include "base/atomicops.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "gmock/gmock.h"
@@ -595,7 +596,7 @@ class LockingTestThread : public Thread {
   void Init(FileHandle file,
             FileLocking lock_type,
             int iterations,
-            base::subtle::Atomic32* actual_iterations) {
+            std::atomic<int32_t>* actual_iterations) {
     ASSERT_NE(file, kInvalidFileHandle);
     file_ = ScopedFileHandle(file);
     lock_type_ = lock_type;
@@ -609,7 +610,7 @@ class LockingTestThread : public Thread {
       EXPECT_EQ(LoggingLockFile(
                     file_.get(), lock_type_, FileLockingBlocking::kBlocking),
                 FileLockingResult::kSuccess);
-      base::subtle::NoBarrier_AtomicIncrement(actual_iterations_, 1);
+      actual_iterations_->fetch_add(1, std::memory_order_relaxed);
       EXPECT_TRUE(LoggingUnlockFile(file_.get()));
     }
   }
@@ -617,7 +618,7 @@ class LockingTestThread : public Thread {
   ScopedFileHandle file_;
   FileLocking lock_type_;
   int iterations_;
-  base::subtle::Atomic32* actual_iterations_;
+  std::atomic<int32_t>* actual_iterations_;
 };
 
 void LockingTest(FileLocking main_lock, FileLocking other_locks) {
@@ -644,7 +645,7 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
       LoggingLockFile(initial.get(), main_lock, FileLockingBlocking::kBlocking),
       FileLockingResult::kSuccess);
 
-  base::subtle::Atomic32 actual_iterations = 0;
+  std::atomic<int32_t> actual_iterations{0};
 
   LockingTestThread threads[20];
   int expected_iterations = 0;
@@ -664,8 +665,7 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
     ASSERT_NO_FATAL_FAILURE(threads[index].Start());
   }
 
-  base::subtle::Atomic32 result =
-      base::subtle::NoBarrier_Load(&actual_iterations);
+  int32_t result = actual_iterations.load(std::memory_order_relaxed);
   EXPECT_EQ(result, 0);
 
   ASSERT_TRUE(LoggingUnlockFile(initial.get()));
@@ -673,7 +673,7 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
   for (auto& t : threads)
     t.Join();
 
-  result = base::subtle::NoBarrier_Load(&actual_iterations);
+  result = actual_iterations.load(std::memory_order_relaxed);
   EXPECT_EQ(result, expected_iterations);
 }
 
