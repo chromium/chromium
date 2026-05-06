@@ -13,6 +13,17 @@
 @protocol SaveCardBottomSheetMutator;
 @protocol SaveCardBottomSheetDelegate;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ScanCardOfferToSaveAction)
+enum class ScanCardOfferToSaveAction {
+  kIgnore = 0,
+  kAccept = 1,
+  kReject = 2,
+  kMaxValue = kReject,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ScanCardOfferToSaveAction)
+
 // View controller for the "Scan and Save" bottom sheet flow.
 // It allows users to scan a card and then edit/confirm the details before
 // saving.

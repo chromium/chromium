@@ -6731,6 +6731,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ScanCardFinished" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the card scan flow was successfully completed (saved) or
+    resulted in an early exit (drop-off). Recorded when the scanner finished
+    scan.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScanCardOfferToSave" enum="ScanCardOfferToSaveAction"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the user action on the scanned card save dialog (Accept, Reject, or
+    Ignore). Recorded when the user taps Save, Cancel, or dismisses the dialog.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchWith.CharSelected" units="characters"
     expires_after="2027-04-01">
   <owner>olivierrobin@chromium.org</owner>

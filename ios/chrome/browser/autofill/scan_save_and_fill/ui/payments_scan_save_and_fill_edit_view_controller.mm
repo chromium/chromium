@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -102,6 +103,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
   // Currently focused item.
   TableViewTextEditItem* _focusedItem;
+
+  // Track if the user action has been logged to avoid duplicate logging.
+  BOOL _actionLogged;
 }
 
 #pragma mark - Initialization
@@ -159,6 +163,7 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
+  [self logScanCardAction:ScanCardOfferToSaveAction::kIgnore];
   [self.delegate onViewDisappeared];
 }
 
@@ -279,15 +284,25 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 - (void)dismissKeyboard {
   [self.view endEditing:YES];
 }
+// Helper method to log the user action in scan card edit view.
+- (void)logScanCardAction:(ScanCardOfferToSaveAction)action {
+  if (_actionLogged) {
+    return;
+  }
+  base::UmaHistogramEnumeration("IOS.ScanCardOfferToSave", action);
+  _actionLogged = YES;
+}
 
 // Triggered when the user taps the save button.
 - (void)didTapSave {
   _saveButton.enabled = NO;
+  [self logScanCardAction:ScanCardOfferToSaveAction::kAccept];
   [self.mutator didTapSave];
 }
 
 // Triggered when the user taps the cancel button.
 - (void)didTapCancel {
+  [self logScanCardAction:ScanCardOfferToSaveAction::kReject];
   [self.mutator didCancel];
 }
 

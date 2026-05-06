@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
@@ -28,6 +29,8 @@
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)item;
 - (void)updateSaveButtonStatus;
 - (void)validateAndReconfigureItems:(NSArray<TableViewItem*>*)items;
+- (void)didTapSave;
+- (void)didTapCancel;
 @end
 
 @interface TableViewTextEditItem (Testing)
@@ -465,4 +468,59 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestSaveButtonState) {
 
   [view_controller_ setSaveButtonEnabled:NO];
   EXPECT_FALSE(saveButton.enabled);
+}
+
+// Tests that the accept action is logged when the save button is tapped.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestMetricsOnSave) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+
+  [view_controller_ didTapSave];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ScanCardOfferToSave",
+      static_cast<int>(ScanCardOfferToSaveAction::kAccept), 1);
+}
+
+// Tests that the reject action is logged when the cancel button is tapped.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestMetricsOnCancel) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+
+  [view_controller_ didTapCancel];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ScanCardOfferToSave",
+      static_cast<int>(ScanCardOfferToSaveAction::kReject), 1);
+}
+
+// Tests that the ignore action is logged when the view disappears without any
+// prior action.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestMetricsOnDismiss) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+
+  [view_controller_ viewDidDisappear:NO];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ScanCardOfferToSave",
+      static_cast<int>(ScanCardOfferToSaveAction::kIgnore), 1);
+}
+
+// Tests that user actions are logged only once.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestMetricsLoggedOnlyOnce) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+
+  [view_controller_ didTapSave];
+  [view_controller_ viewDidDisappear:NO];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ScanCardOfferToSave",
+      static_cast<int>(ScanCardOfferToSaveAction::kAccept), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.ScanCardOfferToSave",
+      static_cast<int>(ScanCardOfferToSaveAction::kIgnore), 0);
 }
