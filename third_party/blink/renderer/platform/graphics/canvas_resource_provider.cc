@@ -249,8 +249,7 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              format,
                              alpha_type,
                              color_space,
-                             delegate),
-      is_accelerated_(is_accelerated) {}
+                             delegate) {}
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     gfx::Size size,
@@ -265,7 +264,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              alpha_type,
                              color_space,
                              delegate),
-      is_accelerated_(false),
       is_software_(true) {}
 
 CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
@@ -2078,6 +2076,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         color_space,
                                         is_accelerated,
                                         delegate),
+      is_accelerated_(is_accelerated),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
@@ -2174,6 +2173,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         color_space,
                                         shared_image_interface_provider,
                                         delegate),
+      is_accelerated_(false),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
@@ -2252,6 +2252,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
+      is_accelerated_(is_accelerated),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -2347,6 +2348,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
+      is_accelerated_(false),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()

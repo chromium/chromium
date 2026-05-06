@@ -405,7 +405,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
-  bool IsAccelerated() const final { return is_accelerated_; }
+  bool IsAccelerated() const override = 0;
   bool IsGpuContextLost() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
@@ -433,8 +433,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
 
   virtual void OnContextLost();
-
-  const bool is_accelerated_;
 
   // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
@@ -522,9 +520,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool HasUnusedResourcesForTesting() const;
   bool IsSingleBuffered() const override;
 
+  bool IsAccelerated() const override { return is_accelerated_; }
+
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
-
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
@@ -614,8 +613,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  const bool is_accelerated_;
 
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
@@ -698,6 +698,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void ClearUnusedResources() override;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool IsSingleBuffered() const override;
+
+  bool IsAccelerated() const override { return is_accelerated_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -814,8 +816,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  const bool is_accelerated_;
 
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
