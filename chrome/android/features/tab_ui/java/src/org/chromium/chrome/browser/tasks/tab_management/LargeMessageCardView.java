@@ -219,16 +219,15 @@ class LargeMessageCardView extends FrameLayout {
      */
     public static void showPriceDropTooltip(View view) {
         ViewRectProvider rectProvider = new ViewRectProvider(view);
-        // TODO(crbug.com/505624919): Replace with Builder pattern.
         TextBubble textBubble =
-                new TextBubble(
-                        view.getContext(),
-                        view,
-                        R.string.price_drop_spotted_lower_price,
-                        R.string.price_drop_spotted_lower_price,
-                        true,
-                        rectProvider,
-                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                new TextBubble.Builder(
+                                view.getContext(),
+                                view,
+                                rectProvider,
+                                R.string.price_drop_spotted_lower_price,
+                                R.string.price_drop_spotted_lower_price,
+                                ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                        .build();
         textBubble.setFocusable(true);
         textBubble.setDismissOnTouchInteraction(true);
         textBubble.show();
