@@ -508,7 +508,7 @@ class PDFiumEngine : public DocumentLoader::Client,
     return ink_modeled_shape_map_;
   }
 
-  const std::map<int, PDFiumPage::ScopedUnloadPreventer>&
+  const std::map<int, PDFiumPage::ScopedPageUnloadPreventer>&
   edited_pages_unload_preventers_for_testing() const {
     return edited_pages_unload_preventers_;
   }
@@ -1383,7 +1383,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Pages with Ink strokes have page references in `ink_stroke_data_`, so these
   // unload preventers ensure those page handles stay valid by keeping the page
   // in memory.  Use one unload preventer per page for simplicity.
-  std::map<int, PDFiumPage::ScopedUnloadPreventer>
+  std::map<int, PDFiumPage::ScopedPageUnloadPreventer>
       edited_pages_unload_preventers_;
 
   struct InkStrokeData {

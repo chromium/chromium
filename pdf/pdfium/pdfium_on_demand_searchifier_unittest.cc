@@ -753,7 +753,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, UpdateWithUnloadLockedPage) {
   PDFiumOnDemandSearchifier* searchifier = engine->GetSearchifierForTesting();
 
   {
-    PDFiumPage::ScopedUnloadPreventer unload_preventer(&page0);
+    PDFiumPage::ScopedPageUnloadPreventer unload_preventer(&page0);
 
     // Wait until searchify is waiting for page availability.
     ASSERT_TRUE(WaitForWaitingForPageAvailabilityState(searchifier));

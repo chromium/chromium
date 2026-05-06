@@ -44,14 +44,14 @@ namespace {
 constexpr uint32_t kMaxImageDimensionForOcr = 2048;
 #endif
 
-TEST(PDFiumPageHelperTest, ScopedUnloadPreventer) {
-  // Should not DCHECK in its dtor due to ScopedUnloadPreventer usage.
+TEST(PDFiumPageHelperTest, ScopedPageUnloadPreventer) {
+  // Should not DCHECK in its dtor due to ScopedPageUnloadPreventer usage.
   PDFiumPage page1(/*engine=*/nullptr, 1u);
   PDFiumPage page2(/*engine=*/nullptr, 2u);
-  PDFiumPage::ScopedUnloadPreventer prevent_unload1(&page1);
-  PDFiumPage::ScopedUnloadPreventer prevent_unload2(&page2);
-  PDFiumPage::ScopedUnloadPreventer prevent_unload3(prevent_unload2);
-  PDFiumPage::ScopedUnloadPreventer prevent_unload4(&page2);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload1(&page1);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload2(&page2);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload3(prevent_unload2);
+  PDFiumPage::ScopedPageUnloadPreventer prevent_unload4(&page2);
   prevent_unload2 = prevent_unload1;
   prevent_unload1 = prevent_unload2;
   prevent_unload1 = prevent_unload4;

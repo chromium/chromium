@@ -441,14 +441,15 @@ PDFiumPage::PDFiumPage(PDFiumEngine* engine, uint32_t i)
 PDFiumPage::PDFiumPage(PDFiumPage&& that) = default;
 
 PDFiumPage::~PDFiumPage() {
-  DCHECK_EQ(0, preventing_unload_count_);
+  DCHECK_EQ(0, preventing_page_unload_count_);
 }
 
 void PDFiumPage::Unload() {
   // Do not unload while in the middle of a load, or if some external source
   // expects `this` to stay loaded.
-  if (preventing_unload_count_)
+  if (preventing_page_unload_count_) {
     return;
+  }
 
   text_page_.reset();
 
@@ -465,7 +466,7 @@ FPDF_PAGE PDFiumPage::GetPage() {
   if (!available_)
     return nullptr;
   if (!page_) {
-    ScopedUnloadPreventer scoped_unload_preventer(this);
+    ScopedPageUnloadPreventer scoped_unload_preventer(this);
     page_.reset(FPDF_LoadPage(engine_->doc(), index_));
     if (page_) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -483,14 +484,14 @@ FPDF_TEXTPAGE PDFiumPage::GetTextPage() {
   if (!available_)
     return nullptr;
   if (!text_page_) {
-    ScopedUnloadPreventer scoped_unload_preventer(this);
+    ScopedPageUnloadPreventer scoped_unload_preventer(this);
     text_page_.reset(FPDFText_LoadPage(GetPage()));
   }
   return text_page();
 }
 
 void PDFiumPage::ReloadTextPage() {
-  CHECK_EQ(preventing_unload_count_, 0);
+  CHECK_EQ(preventing_page_unload_count_, 0);
   text_page_.reset();
   GetTextPage();
 }
@@ -960,7 +961,7 @@ bool PDFiumPage::IsPageSearchified() const {
 }
 
 bool PDFiumPage::PageCanBeUnloaded() const {
-  return preventing_unload_count_ == 0;
+  return preventing_page_unload_count_ == 0;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2100,27 +2101,29 @@ void PDFiumPage::MarkAvailable() {
     std::move(thumbnail_callback_).Run();
 }
 
-PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(PDFiumPage* page)
+PDFiumPage::ScopedPageUnloadPreventer::ScopedPageUnloadPreventer(
+    PDFiumPage* page)
     : page_(page) {
-  page_->preventing_unload_count_++;
+  page_->preventing_page_unload_count_++;
 }
 
-PDFiumPage::ScopedUnloadPreventer::ScopedUnloadPreventer(
-    const ScopedUnloadPreventer& that)
-    : ScopedUnloadPreventer(that.page_) {}
+PDFiumPage::ScopedPageUnloadPreventer::ScopedPageUnloadPreventer(
+    const ScopedPageUnloadPreventer& that)
+    : ScopedPageUnloadPreventer(that.page_) {}
 
-PDFiumPage::ScopedUnloadPreventer& PDFiumPage::ScopedUnloadPreventer::operator=(
-    const ScopedUnloadPreventer& that) {
+PDFiumPage::ScopedPageUnloadPreventer&
+PDFiumPage::ScopedPageUnloadPreventer::operator=(
+    const ScopedPageUnloadPreventer& that) {
   if (page_ != that.page_) {
-    page_->preventing_unload_count_--;
+    page_->preventing_page_unload_count_--;
     page_ = that.page_;
-    page_->preventing_unload_count_++;
+    page_->preventing_page_unload_count_++;
   }
   return *this;
 }
 
-PDFiumPage::ScopedUnloadPreventer::~ScopedUnloadPreventer() {
-  page_->preventing_unload_count_--;
+PDFiumPage::ScopedPageUnloadPreventer::~ScopedPageUnloadPreventer() {
+  page_->preventing_page_unload_count_--;
 }
 
 PDFiumPage::Link::Link() = default;

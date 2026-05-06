@@ -5202,11 +5202,11 @@ void PDFiumEngine::ApplyStroke(int page_index,
   CHECK(inserted);  // Stroke IDs should be unique when added.
 
   // Since there are now page references in `ink_stroke_data_`, ensure that this
-  // page has a ScopedUnloadPreventer so that the references do not become stale
-  // if PDFiumPage::Unload() gets called.
+  // page has a ScopedPageUnloadPreventer so that the references do not become
+  // stale if PDFiumPage::Unload() gets called.
   if (!edited_pages_unload_preventers_.contains(page_index)) {
     edited_pages_unload_preventers_.insert(
-        {page_index, PDFiumPage::ScopedUnloadPreventer(pdfium_page)});
+        {page_index, PDFiumPage::ScopedPageUnloadPreventer(pdfium_page)});
   }
 }
 
@@ -5296,7 +5296,7 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   // will know not to erase the `edited_pages_unload_preventers_` entry.
   if (!page_shape_map.empty()) {
     edited_pages_unload_preventers_.insert(
-        {page_index, PDFiumPage::ScopedUnloadPreventer(page)});
+        {page_index, PDFiumPage::ScopedPageUnloadPreventer(page)});
     pages_with_loaded_v2_ink_shapes_.insert(page_index);
   }
 
