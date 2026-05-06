@@ -660,3 +660,25 @@
     transition: none;
   }
 }
+
+:host([energy-effect-enabled_]) #composebox[animation-state='submitting'] {
+  animation: bump-on-submit 350ms;
+  animation-delay: 50ms;
+  transform-origin: bottom;
+}
+
+@keyframes bump-on-submit {
+  0% {
+    animation-timing-function: cubic-bezier(0, 0, 0, 1);
+    transform: scaleY(1);
+  }
+
+  28.5% {
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scaleY(1.12);
+  }
+
+  100% {
+    transform: scaleY(1);
+  }
+}
