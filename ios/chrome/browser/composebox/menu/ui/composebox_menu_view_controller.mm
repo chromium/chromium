@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_attachment_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_header_view.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_section.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_separator_footer.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
@@ -460,8 +461,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
   UICollectionViewCellRegistration* listCellRegistration =
       [UICollectionViewCellRegistration
-          registrationWithCellClass:[UICollectionViewListCell class]
-               configurationHandler:^(UICollectionViewListCell* cell,
+          registrationWithCellClass:[ComposeboxMenuListCell class]
+               configurationHandler:^(ComposeboxMenuListCell* cell,
                                       NSIndexPath* indexPath,
                                       ComposeboxMenuItem* item) {
                  [weakSelf configureListCell:cell
@@ -572,7 +573,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 #pragma mark - Private Configuration Helpers
 
-- (void)configureListCell:(UICollectionViewListCell*)cell
+- (void)configureListCell:(ComposeboxMenuListCell*)cell
               atIndexPath:(NSIndexPath*)indexPath
                  withItem:(ComposeboxMenuItem*)item {
   UIListContentConfiguration* configuration =
