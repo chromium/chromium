@@ -53,6 +53,7 @@ static_library("site_protection") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

@@ -12,6 +12,8 @@
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/common/constants.h"
 #include "url/origin.h"
@@ -34,6 +36,9 @@ bool IsUrlFamiliarForTesting(const GURL& url) {
 
 }  // anonymous namespace
 
+// This class logs site familiarity determinations using CRSBLOG.
+// These logs can be viewed by first opening chrome://safe-browsing/#tab-log,
+// then navigating to the URL of interest in a separate tab.
 SiteFamiliarityFetcher::SiteFamiliarityFetcher(Profile* profile)
     : profile_(profile) {}
 
@@ -49,6 +54,7 @@ void SiteFamiliarityFetcher::ResetFamiliarUrlsForTesting() {
 
 void SiteFamiliarityFetcher::Start(const GURL& url,
                                    SiteFamiliarityFetcher::Callback callback) {
+  CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << url;
   fetch_url_ = url;
   callback_ = std::move(callback);
   // Clear state in case there are in-progress requests.
@@ -57,6 +63,8 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
   weak_factory_.InvalidateWeakPtrs();
 
   if (IsUrlFamiliarForTesting(fetch_url_)) {
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " is familiar for testing";
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
     return;
   }
@@ -66,6 +74,8 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // cases it won't currently matter how site familiarity is set here, due to
     // https://crbug.com/452135534. Disable v8 optimizers for the remaining
     // cases, such as browser-initiated top-level navigations to data: URLs.
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " is data scheme";
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/false);
     return;
   }
@@ -75,6 +85,8 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // Given that extensions were either explicitly installed by the user or
     // installed via enterprise policy, consider chrome://extension URLs to be
     // familiar.
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " is extension scheme";
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
     return;
   }
@@ -85,6 +97,8 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite().
     // Visits to most web-safe non-http, non-https schemes are not recorded in
     // chrome://history. See CanAddURLToHistory().
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " is not HTTP/HTTPS";
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/false);
     return;
   }
@@ -175,6 +189,13 @@ void SiteFamiliarityFetcher::RunCallbackIfFinished() {
                      has_record_older_than_threshold_ || is_on_sb_list_)
                         ? Verdict::kFamiliar
                         : Verdict::kUnfamiliar;
+  CRSBLOG << "SiteFamiliarityFetcher decision [URL]: " << fetch_url_
+          << " [Verdict]: "
+          << (verdict == Verdict::kFamiliar ? "Familiar" : "Unfamiliar")
+          << " [Engagement>Threshold]: "
+          << has_engagement_score_higher_than_threshold_
+          << " [History>Threshold]: " << has_record_older_than_threshold_
+          << " [OnSBAllowlist]: " << is_on_sb_list_;
   std::move(callback_).Run(verdict);
 }
 
