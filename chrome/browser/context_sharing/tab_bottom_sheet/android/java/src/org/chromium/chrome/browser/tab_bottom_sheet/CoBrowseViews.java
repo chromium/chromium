@@ -107,8 +107,8 @@ public class CoBrowseViews {
      */
     public void attachPeekView(View peekView) {
         ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
+        peekContainer.removeAllViews();
         detachFromParent(peekView);
-        assert peekContainer.getChildCount() == 0;
         mPeekView = peekView;
         peekContainer.addView(mPeekView);
     }
