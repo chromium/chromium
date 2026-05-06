@@ -20898,10 +20898,10 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "background-password-check-interval": "5d",
-                        "password-check-mon-weight": "3",
-                        "password-check-sat-weight": "12",
-                        "password-check-sun-weight": "12"
+                        "background-password-check-interval": "2d",
+                        "password-check-mon-weight": "5",
+                        "password-check-sat-weight": "9",
+                        "password-check-sun-weight": "9"
                     },
                     "enable_features": [
                         "SafetyHub"

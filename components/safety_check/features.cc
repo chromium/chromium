@@ -12,7 +12,7 @@ BASE_FEATURE(kSafetyHub, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
-    &kSafetyHub, "background-password-check-interval", base::Days(30)};
+    &kSafetyHub, "background-password-check-interval", base::Days(10)};
 
 // When the password check didn't run at its scheduled time (e.g. client was
 // offline) it will be scheduled to run within this time frame. Changing the
@@ -25,7 +25,7 @@ const base::FeatureParam<base::TimeDelta> kPasswordCheckOverdueInterval{
 // below will be used to adjust weights, if necessary. Weight to randomly
 // schedule for Mondays.
 const base::FeatureParam<int> kPasswordCheckMonWeight{
-    &kSafetyHub, "password-check-mon-weight", 6};
+    &kSafetyHub, "password-check-mon-weight", 4};
 
 // Weight to randomly schedule for Tuesdays.
 const base::FeatureParam<int> kPasswordCheckTueWeight{
@@ -45,10 +45,10 @@ const base::FeatureParam<int> kPasswordCheckFriWeight{
 
 // Weight to randomly schedule for Saturdays.
 const base::FeatureParam<int> kPasswordCheckSatWeight{
-    &kSafetyHub, "password-check-sat-weight", 6};
+    &kSafetyHub, "password-check-sat-weight", 4};
 
 // Weight to randomly schedule for Sundays.
 const base::FeatureParam<int> kPasswordCheckSunWeight{
-    &kSafetyHub, "password-check-sun-weight", 6};
+    &kSafetyHub, "password-check-sun-weight", 4};
 
 }  // namespace safety_check::features
