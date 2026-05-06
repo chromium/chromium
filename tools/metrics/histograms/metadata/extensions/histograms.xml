@@ -4631,7 +4631,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
-    units="Extension Count" expires_after="2026-05-03">
+    units="Extension Count" expires_after="2027-05-03">
   <owner>evasu@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
