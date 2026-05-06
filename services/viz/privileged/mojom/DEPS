@@ -2,3 +2,9 @@ include_rules = [
   "+components/viz",
   "+ui/gfx/mojom/color_space_mojom_traits.h",
 ]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
+}

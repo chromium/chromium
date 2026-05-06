@@ -34,12 +34,14 @@ source_set("unit_tests") {
   sources = [ "mojom_traits_unittest.cc" ]
 
   deps = [
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//components/viz/common",
     "//media/capture/mojom:video_capture",
     "//services/service_manager/public/cpp",
     "//services/viz/privileged/mojom/compositing",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//ui/gfx:test_support",
   ]
 }
