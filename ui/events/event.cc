@@ -363,8 +363,18 @@ void LocatedEvent::UpdateForRootTransform(
 }
 
 std::string LocatedEvent::ToString() const {
-  return base::StrCat({Event::ToString(), " location=", location_.ToString(),
-                       " root_location=", root_location_.ToString()});
+  return base::StrCat(
+      {Event::ToString(), " location=", location_.ToString(),
+       " root_location=", root_location_.ToString(),
+       " target=", base::StringPrintf("%p", target()),
+#if BUILDFLAG(IS_OZONE)
+       " native=", (native_event() ? native_event()->ToString() : "(nil)")
+#elif BUILDFLAG(IS_WIN)
+       " native={hwnd=", base::StringPrintf("%p", native_event().hwnd), " pt=",
+       base::StringPrintf("%d,%d", native_event().pt.x, native_event().pt.y),
+       "}"
+#endif
+      });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
