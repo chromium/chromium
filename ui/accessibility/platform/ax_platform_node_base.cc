@@ -1905,7 +1905,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   // TODO(crbug.com/40897578): Make sure this doesn't fire then turn the last
   // conditional into a CHECK_GT(endpoint_index_in_common_parent,
   // index_in_common_parent); and remove this code path.
-  DUMP_WILL_BE_NOTREACHED()
+  DCHECK(false)
       << "Was not in descendant, so the endpoint_index_in_common_parent should "
          "be < or > than the index_in_common_parent:\n"
       << "\n* This: " << this << "\n* Endpoint object: " << endpoint_object
