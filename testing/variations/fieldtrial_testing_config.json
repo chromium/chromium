@@ -16061,9 +16061,30 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Reminder_ESB",
                     "params": {
-                        "mobile_promo_on_desktop_notification": "true"
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "2"
+                    },
+                    "enable_features": [
+                        "MobilePromoOnDesktopWithReminder"
+                    ]
+                },
+                {
+                    "name": "Reminder_Passwords",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "3"
+                    },
+                    "enable_features": [
+                        "MobilePromoOnDesktopWithReminder"
+                    ]
+                },
+                {
+                    "name": "Reminder_Passwords_and_ESB",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "2,3"
                     },
                     "enable_features": [
                         "MobilePromoOnDesktopWithReminder"
@@ -16079,6 +16100,39 @@
                 "chromeos"
             ],
             "experiments": [
+                {
+                    "name": "Reminder_ESB",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "2"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "MobilePromoOnDesktopWithReminder"
+                    ]
+                },
+                {
+                    "name": "Reminder_Passwords",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "3"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "MobilePromoOnDesktopWithReminder"
+                    ]
+                },
+                {
+                    "name": "Reminder_Passwords_and_ESB",
+                    "params": {
+                        "mobile_promo_on_desktop_notification": "true",
+                        "mobile_promo_on_desktop_promo_type": "2,3"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "MobilePromoOnDesktopWithReminder"
+                    ]
+                },
                 {
                     "name": "QRCode_ESB",
                     "params": {
