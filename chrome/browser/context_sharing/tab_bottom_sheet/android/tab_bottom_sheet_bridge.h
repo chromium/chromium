@@ -59,11 +59,6 @@ class TabBottomSheetBridge {
   // Sets or updates the WebContents displayed in the bottom sheet.
   void SetWebContents(content::WebContents* web_contents);
 
-  // Resets the touch offset for the given WebContents.
-  // This way, when the WebContents are transferred from a tab to the bottom
-  // sheet, the touch events are correctly aligned sans the toolbar.
-  void ResetTouchOffset(content::WebContents* web_contents);
-
   // Triggers the bottom sheet to display on screen.
   // Returns true if the bottom sheet was successfully shown. It returns early
   // if there is no CoBrowseViews, so the caller should make sure that the

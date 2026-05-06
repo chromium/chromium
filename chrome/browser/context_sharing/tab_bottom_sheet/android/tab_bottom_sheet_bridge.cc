@@ -90,15 +90,6 @@ void TabBottomSheetBridge::SetWebContents(content::WebContents* web_contents) {
                                     web_contents);
 }
 
-void TabBottomSheetBridge::ResetTouchOffset(
-    content::WebContents* web_contents) {
-  if (!java_bridge_) {
-    return;
-  }
-  Java_TabBottomSheetNativeInterface_resetTouchOffset(
-      AttachCurrentThread(), java_bridge_, web_contents);
-}
-
 bool TabBottomSheetBridge::Show(bool animate, bool starts_expanded) {
   if (!co_browse_views_) {
     return false;

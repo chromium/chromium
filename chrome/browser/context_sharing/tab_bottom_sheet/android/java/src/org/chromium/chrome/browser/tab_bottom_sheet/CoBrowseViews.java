@@ -141,6 +141,10 @@ public class CoBrowseViews {
                 webUiContainer.addView(newView);
             }
         }
+        if (webContents != null) {
+            webContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
+            webContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
+        }
     }
 
     @TabBottomSheetClientType

@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.EventForwarder;
 
 /** Unit tests for {@link CoBrowseViews}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +46,7 @@ public class CoBrowseViewsTest {
     @Mock private View mFuseboxView;
     @Mock private View mPeekView;
     @Mock private WebContents mWebContents;
+    @Mock private EventForwarder mEventForwarder;
 
     private Context mContext;
     private CoBrowseViews mCoBrowseViews;
@@ -54,6 +56,7 @@ public class CoBrowseViewsTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mWebUi.getWebUiView()).thenReturn(mWebUiView);
         when(mFusebox.getFuseboxView()).thenReturn(mFuseboxView);
+        when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
 
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         mCoBrowseViews =
