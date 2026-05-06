@@ -102,91 +102,6 @@ MATCHER_P2(HasException,
   return true;
 }
 
-MATCHER_P(MatchNetworkResourceRequest,
-          expected,
-          base::StrCat({"does ", negation ? "not " : "",
-                        "match given network::ResourceRequest"})) {
-  const network::ResourceRequest& src = arg;
-  if (src.url != expected.url) {
-    *result_listener << "mismatched URL: " << src.url;
-    return false;
-  }
-  if (src.request_initiator != expected.request_initiator) {
-    *result_listener << "mismatched request_initiator: "
-                     << *src.request_initiator;
-    return false;
-  }
-  if (src.referrer != expected.referrer) {
-    *result_listener << "mismatched referrer: " << src.referrer;
-    return false;
-  }
-  if (src.referrer_policy != expected.referrer_policy) {
-    *result_listener << "mismatched referrer_policy";
-    return false;
-  }
-  if (src.priority != expected.priority) {
-    *result_listener << "mismatched priority: " << src.priority;
-    return false;
-  }
-  if (src.priority_incremental != expected.priority_incremental) {
-    *result_listener << "mismatched priority_incremental: "
-                     << src.priority_incremental;
-    return false;
-  }
-  if (src.cors_preflight_policy != expected.cors_preflight_policy) {
-    *result_listener << "mismatched cors_preflight_policy: "
-                     << src.cors_preflight_policy;
-    return false;
-  }
-  if (src.mode != expected.mode) {
-    *result_listener << "mismatched mode: " << src.mode;
-    return false;
-  }
-  if (src.destination != expected.destination) {
-    *result_listener << "mismatched destination: " << src.destination;
-    return false;
-  }
-  if (src.credentials_mode != expected.credentials_mode) {
-    *result_listener << "mismatched credentials_mode: " << src.credentials_mode;
-    return false;
-  }
-  if (src.redirect_mode != expected.redirect_mode) {
-    *result_listener << "mismatched redirect_mode: " << src.redirect_mode;
-    return false;
-  }
-  if (src.fetch_integrity != expected.fetch_integrity) {
-    *result_listener << "mismatched fetch_integrity: " << src.fetch_integrity;
-    return false;
-  }
-  if (src.web_bundle_token_params.has_value()) {
-    *result_listener << "unexpected web_bundle_token_params: must not be set";
-    return false;
-  }
-  if (src.is_fetch_like_api != expected.is_fetch_like_api) {
-    *result_listener << "unexpected is_fetch_like_api: "
-                     << src.is_fetch_like_api;
-    return false;
-  }
-  if (src.is_fetch_later_api != expected.is_fetch_later_api) {
-    *result_listener << "unexpected is_fetch_later_api: "
-                     << src.is_fetch_later_api;
-    return false;
-  }
-  if (src.keepalive != expected.keepalive) {
-    *result_listener << "unexpected keepalive: " << src.keepalive;
-    return false;
-  }
-  if (src.fetch_window_id != expected.fetch_window_id) {
-    *result_listener << "unexpected fetch_window_id: " << *src.fetch_window_id;
-    return false;
-  }
-  if (src.is_favicon != expected.is_favicon) {
-    *result_listener << "unexpected is_favicon: " << src.is_favicon;
-    return false;
-  }
-  return true;
-}
-
 }  // namespace
 
 class FetchLaterTestBase : public testing::Test {
@@ -220,28 +135,6 @@ class FetchLaterTestBase : public testing::Test {
     auto* request = Request::Create(scope.GetScriptState(), url, request_init,
                                     scope.GetExceptionState());
 
-    return request;
-  }
-
-  std::unique_ptr<network::ResourceRequest> CreateNetworkResourceRequest(
-      const KURL& url) {
-    auto request = std::make_unique<network::ResourceRequest>();
-    request->url = GURL(url);
-    request->request_initiator =
-        SecurityOrigin::Create(KURL(GetSourcePageURL()))->ToUrlOrigin();
-    request->referrer = WebStringToGURL(GetSourcePageURL());
-    request->referrer_policy = network::ReferrerPolicyForUrlRequest(
-        network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
-    request->priority =
-        WebURLRequest::ConvertToNetPriority(WebURLRequest::Priority::kHigh);
-    request->mode = network::mojom::RequestMode::kCors;
-    request->destination = network::mojom::RequestDestination::kEmpty;
-    request->credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
-    request->redirect_mode = network::mojom::RedirectMode::kFollow;
-    request->is_fetch_like_api = true;
-    request->is_fetch_later_api = true;
-    request->keepalive = true;
-    request->is_favicon = false;
     return request;
   }
 
@@ -280,19 +173,44 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
   auto* request =
       CreateFetchLaterRequest(scope, target_url, controller->signal());
 
-  EXPECT_CALL(
-      Factory(),
-      CreateLoader(_, _, _,
-                   MatchNetworkResourceRequest(*CreateNetworkResourceRequest(
-                       KURL(StrCat({GetSourcePageURL(), target_url})))),
-                   _))
-      .Times(1)
-      .RetiresOnSaturation();
   auto* result = fetch_later_manager->FetchLater(
       scope.GetScriptState(),
       request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), std::nullopt, exception_state);
   Factory().FlushForTesting();
+
+  EXPECT_EQ(Factory().NumberOfCreateLoaderCalls(), 1);
+
+  const network::ResourceRequest& resource_request =
+      Factory().GetCreateLoaderResourceRequest();
+  EXPECT_EQ(resource_request.url,
+            GURL(KURL(StrCat({GetSourcePageURL(), target_url}))));
+  EXPECT_EQ(resource_request.request_initiator,
+            SecurityOrigin::Create(KURL(GetSourcePageURL()))->ToUrlOrigin());
+  EXPECT_EQ(resource_request.referrer, WebStringToGURL(GetSourcePageURL()));
+  EXPECT_EQ(resource_request.referrer_policy,
+            network::ReferrerPolicyForUrlRequest(
+                network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+  EXPECT_EQ(resource_request.priority, WebURLRequest::ConvertToNetPriority(
+                                           WebURLRequest::Priority::kHigh));
+  EXPECT_EQ(resource_request.priority_incremental,
+            net::kDefaultPriorityIncremental);
+  EXPECT_EQ(resource_request.cors_preflight_policy,
+            network::mojom::CorsPreflightPolicy::kConsiderPreflight);
+  EXPECT_EQ(resource_request.mode, network::mojom::RequestMode::kCors);
+  EXPECT_EQ(resource_request.destination,
+            network::mojom::RequestDestination::kEmpty);
+  EXPECT_EQ(resource_request.credentials_mode,
+            network::mojom::CredentialsMode::kSameOrigin);
+  EXPECT_EQ(resource_request.redirect_mode,
+            network::mojom::RedirectMode::kFollow);
+  EXPECT_EQ(resource_request.fetch_integrity, "");
+  EXPECT_FALSE(resource_request.web_bundle_token_params.has_value());
+  EXPECT_EQ(resource_request.is_fetch_like_api, true);
+  EXPECT_EQ(resource_request.is_fetch_later_api, true);
+  EXPECT_EQ(resource_request.keepalive, true);
+  EXPECT_EQ(resource_request.fetch_window_id, std::nullopt);
+  EXPECT_EQ(resource_request.is_favicon, false);
 
   EXPECT_THAT(result, Not(IsNull()));
   EXPECT_FALSE(result->activated());

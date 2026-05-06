@@ -54,23 +54,35 @@ class MockFetchLaterLoaderFactory
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // blink::mojom::FetchLaterLoaderFactory overrides:
-  MOCK_METHOD(void,
-              CreateLoader,
-              (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader>,
-               int32_t,
-               uint32_t,
-               const network::ResourceRequest&,
-               const net::MutableNetworkTrafficAnnotationTag&),
-              (override));
+  // `CreateLoader()` isn't mocked because of the to-be-non-copyable
+  // `ResourceRequest` argument (after https://crbug.com/478888135).
+  void CreateLoader(
+      mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
   MOCK_METHOD(
       void,
       Clone,
       (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>),
       (override));
 
+  int NumberOfCreateLoaderCalls() const { return num_create_loader_calls_; }
+
+  // Returns the `resource_request` argument given to the last `CreateLoader()`
+  // call. Must be called only if `NumberOfCreateLoaderCalls() > 0`.
+  const network::ResourceRequest& GetCreateLoaderResourceRequest() const;
+
  private:
   mojo::AssociatedReceiver<blink::mojom::FetchLaterLoaderFactory> receiver_{
       this};
+
+  // The number of `CreateLoader` calls and its last `resource_request`
+  // argument.
+  int num_create_loader_calls_ = 0;
+  network::ResourceRequest create_loader_resource_request_;
 };
 
 // A fake LocalFrameClient providing non-null ChildURLLoaderFactoryBundle.

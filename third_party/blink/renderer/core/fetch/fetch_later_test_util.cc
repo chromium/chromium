@@ -14,4 +14,21 @@ FetchLaterTestingScope::FetchLaterTestingScope(LocalFrameClient* frame_client,
           /*chrome_client=*/nullptr,
           frame_client)) {}
 
+void MockFetchLaterLoaderFactory::CreateLoader(
+    mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    const network::ResourceRequest& resource_request,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  ++num_create_loader_calls_;
+  // TODO(crbug.com/478888135): Make this `ResourceRequest` copying explicit.
+  create_loader_resource_request_ = resource_request;
+}
+
+const network::ResourceRequest&
+MockFetchLaterLoaderFactory::GetCreateLoaderResourceRequest() const {
+  CHECK_GT(NumberOfCreateLoaderCalls(), 0);
+  return create_loader_resource_request_;
+}
+
 }  // namespace blink
