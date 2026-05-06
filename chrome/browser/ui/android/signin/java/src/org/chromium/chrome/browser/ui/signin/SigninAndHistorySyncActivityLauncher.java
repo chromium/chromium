@@ -51,6 +51,7 @@ public interface SigninAndHistorySyncActivityLauncher {
         SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP,
         SigninAccessPoint.SET_UP_LIST,
         SigninAccessPoint.GLIC_LAUNCH_BUTTON,
+        SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}

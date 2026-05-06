@@ -6,7 +6,15 @@ found in the LICENSE file.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
+
+    <org.chromium.chrome.browser.autofill.settings.SigninPromoPreference
+        android:id="@+id/autofill_and_passwords_signin_promo"
+        android:key="autofill_and_passwords_signin_promo"
+        android:order="0"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false" />
 
     <org.chromium.chrome.browser.password_manager.settings.PasswordsPreference
         android:key="autofill_and_passwords_gpm"

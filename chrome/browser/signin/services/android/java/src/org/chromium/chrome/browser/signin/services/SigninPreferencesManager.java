@@ -27,6 +27,7 @@ public class SigninPreferencesManager {
     /** Suffix strings for promo shown count preference and histograms. */
     // LINT.IfChange(SigninPromoAccessPointId)
     @StringDef({
+        SigninPromoAccessPointId.AUTOFILL_AND_PASSWORDS,
         SigninPromoAccessPointId.BOOKMARKS,
         SigninPromoAccessPointId.HISTORY_PAGE,
         SigninPromoAccessPointId.NTP,
@@ -35,6 +36,7 @@ public class SigninPreferencesManager {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SigninPromoAccessPointId {
+        String AUTOFILL_AND_PASSWORDS = "AutofillAndPasswords";
         String BOOKMARKS = "Bookmarks";
         String HISTORY_PAGE = "HistoryPage";
         String NTP = "Ntp";

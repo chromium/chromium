@@ -945,6 +945,9 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_PROMO_NTP_LAST_SHOWN_TIME =
             "Chrome.SigninPromoNTP.LastShownTime";
 
+    public static final String SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED =
+            "Chrome.SigninPromoAutofillAndPasswords.Dismissed";
+
     /** Personalized signin promo preference. */
     public static final String SIGNIN_PROMO_BOOKMARKS_DECLINED = "signin_promo_bookmarks_declined";
 
@@ -1266,6 +1269,7 @@ public final class ChromePreferenceKeys {
                 SHARING_TABS_WITH_OS,
                 SHOW_HOME_BUTTON_POLICY_STATE,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
+                SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED,
                 SIGNIN_PROMO_NEXT_SHOW_TIME,
                 SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
                 SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,

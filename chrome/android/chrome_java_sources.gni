@@ -201,6 +201,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/settings/HomeOfTransactionsFragment.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/NonCardPaymentMethodsManagementFragment.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelper.java",
+  "java/src/org/chromium/chrome/browser/autofill/settings/SigninPromoPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetContent.java",

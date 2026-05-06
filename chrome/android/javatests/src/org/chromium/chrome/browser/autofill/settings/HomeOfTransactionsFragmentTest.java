@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -14,11 +15,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
@@ -55,20 +59,35 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFac
 import org.chromium.chrome.browser.password_manager.FakeCredentialManagerLauncherFactoryImpl;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.signin_promo.AutofillAndPasswordsPromoDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for {@link HomeOfTransactionsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures({SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 public class HomeOfTransactionsFragmentTest {
-    @Rule
+    @Rule(order = 0)
+    public SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule(order = 1)
     public SettingsActivityTestRule<HomeOfTransactionsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(HomeOfTransactionsFragment.class);
 
@@ -78,6 +97,8 @@ public class HomeOfTransactionsFragmentTest {
     @Mock private Profile mProfileMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
@@ -101,6 +122,30 @@ public class HomeOfTransactionsFragmentTest {
                         PendingIntent.FLAG_IMMUTABLE));
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
+
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(mSigninLauncher);
+
+        // Required for multi-pane tests involving MainSettings.
+        when(mSigninLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAccessPoint.SETTINGS)))
+                .thenReturn(mSigninCoordinator);
+
+        // Dismiss the promo by default.
+        signInPromoDeclined(true);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SigninPromoAccessPointId
+                                        .AUTOFILL_AND_PASSWORDS));
     }
 
     @Test
@@ -116,6 +161,91 @@ public class HomeOfTransactionsFragmentTest {
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.help_context_autofill),
                         /* url= */ null);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testSignInPromoVisible() {
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_title_autofill_and_passwords))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_autofill_and_passwords))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_signin_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testSignInPromoVisibleWithAccount() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_title_autofill_and_passwords))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_autofill_and_passwords))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testSignInPromoDismiss() {
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).perform(click());
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED,
+                                false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testSignInPromoClick() {
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+
+        verify(mSigninLauncher)
+                .createBottomSheetSigninIntentOrShowError(
+                        any(), any(), any(), eq(SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testSignInPromoMaxImpressions() {
+        signInPromoDeclined(false);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SigninPromoAccessPointId
+                                        .AUTOFILL_AND_PASSWORDS),
+                        AutofillAndPasswordsPromoDelegate.MAX_IMPRESSIONS);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
 
     @Test
@@ -192,7 +322,10 @@ public class HomeOfTransactionsFragmentTest {
                             mProfileMock);
                 });
 
-        verifyNoInteractions(mSearchIndexDataMock);
+        verify(mSearchIndexDataMock, only())
+                .removeEntry(
+                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                HomeOfTransactionsFragment.PREF_SIGNIN_PROMO));
     }
 
     @Test
@@ -231,6 +364,11 @@ public class HomeOfTransactionsFragmentTest {
                 .removeEntry(
                         HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 HomeOfTransactionsFragment.PREF_AUTOFILL_TRAVEL));
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                HomeOfTransactionsFragment.PREF_SIGNIN_PROMO));
     }
 
     @Test
@@ -294,5 +432,11 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_travel_opt_in_toggle_label))
                 .check(matches(isDisplayed()));
+    }
+
+    private static void signInPromoDeclined(boolean value) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED, value);
     }
 }

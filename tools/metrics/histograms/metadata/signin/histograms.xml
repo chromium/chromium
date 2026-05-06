@@ -138,6 +138,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SigninPromoAccessPoint) -->
 
 <variants name="SigninPromoAccessPoint">
+  <variant name="AutofillAndPasswords" summary="autofill and passwords page"/>
   <variant name="Bookmarks" summary="bookmark page"/>
   <variant name="HistoryPage" summary="history page"/>
   <variant name="Ntp" summary="new tab page"/>

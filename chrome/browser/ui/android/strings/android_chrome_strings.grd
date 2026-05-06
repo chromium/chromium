@@ -3757,6 +3757,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_BOOKMARKS" desc="This string is the title of a card that appears when the user opens Chrome's bookmarks; the user is signed out of Chrome. The headline above this string is 'Get all your bookmarks'. There's no character limit but try to keep the translation under 120 characters." meaning="This message means that the user can get the bookmarks from their computer on their phone, and their phone's bookmarks on their computer. We want users to read this card and tap the 'Continue' button and sign-in. The tone should be inviting.">
         Sign in to get your bookmarks and more on all your devices
       </message>
+      <message name="IDS_SIGNIN_PROMO_TITLE_AUTOFILL_AND_PASSWORDS" desc="This string is the headline of a card that appears in the Autofill and Passwords settings; the user is signed out of Chrome. The line below this string is 'Sign in to get your passwords and more on all your devices'. [CHAR_LIMIT=70]">
+        Get all your saved info
+      </message>
+      <message name="IDS_SIGNIN_PROMO_DESCRIPTION_AUTOFILL_AND_PASSWORDS" desc="This string is the description of a card that appears in the Autofill and Passwords settings; the user is signed out of Chrome. The headline above this string is 'Get all your saved info'. We want users to read this card and tap the 'Sign-in' button and sign-in. The tone should be inviting.">
+        Sign in to get your passwords and more on all your devices
+      </message>
       <message name="IDS_SIGNIN_PROMO_TITLE_NTP_FEED_TOP_PROMO" desc="This string is the headline of a card that appears when the user visits Chrome's new tab page; the user isn't signed in to Chrome. The line below this string is 'Sign in to get content based on your interests'. [CHAR_LIMIT=70]">
         Get better content
       </message>
