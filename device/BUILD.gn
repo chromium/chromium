@@ -78,6 +78,7 @@ test("device_unittests") {
       "bluetooth/test/mock_bluetooth_cbservice_mac.mm",
       "bluetooth/test/mock_bluetooth_central_manager_mac.h",
       "bluetooth/test/mock_bluetooth_central_manager_mac.mm",
+      "gamepad/game_controller_gamepad_unittest.mm",
     ]
   }
 
@@ -367,7 +368,9 @@ test("device_unittests") {
     ldflags = [ "-ObjC" ]
     frameworks = [
       "CoreBluetooth.framework",
+      "CoreHaptics.framework",
       "Foundation.framework",
+      "GameController.framework",
     ]
   }
 

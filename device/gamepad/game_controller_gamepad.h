@@ -12,11 +12,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
+#include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
 
-class GameControllerGamepad : public AbstractHapticGamepad {
+class DEVICE_GAMEPAD_EXPORT GameControllerGamepad
+    : public AbstractHapticGamepad {
  public:
   explicit GameControllerGamepad(GCController* controller);
   ~GameControllerGamepad() override;
@@ -29,6 +31,12 @@ class GameControllerGamepad : public AbstractHapticGamepad {
   void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   void DoShutdown() override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
+
+  // Test-only methods for injecting mock haptic objects and inspecting state.
+  void SetDefaultHapticEngineForTesting(CHHapticEngine* engine);
+  void SetDefaultHapticPlayerForTesting(id<CHHapticPatternPlayer> player);
+  void SetHapticsStartedForTesting(bool started);
+  bool GetHapticsStartedForTesting() const;
 
  private:
   struct TouchState {

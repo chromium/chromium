@@ -27,7 +27,12 @@ const float kDefaultHapticSharpness = 1.0f;
 constexpr uint16_t kSonyTouchDimensionX = 1920;
 constexpr uint16_t kSonyTouchDimensionY = 942;
 
-// Helper to create a new haptic player for a continuous vibration event.
+// CoreHaptics throws NSExceptions when interacting with a CHHapticEngine that
+// the OS has stopped (e.g., on controller disconnect). Since the engine state
+// is kernel-managed and can change at any instant, all CoreHaptics calls are
+// wrapped in @try/@catch.
+
+// Creates a new haptic player for a continuous vibration event.
 id<CHHapticPatternPlayer> CreateContinuousPlayer(double intensity,
                                                  CHHapticEngine* engine) {
   if (!engine) {
@@ -58,12 +63,17 @@ id<CHHapticPatternPlayer> CreateContinuousPlayer(double intensity,
     return nil;
   }
 
-  id<CHHapticPatternPlayer> player = [engine createPlayerWithPattern:pattern
-                                                               error:&error];
-  if (!player || ![player startAtTime:0 error:&error]) {
+  id<CHHapticPatternPlayer> player = nil;
+  @try {
+    player = [engine createPlayerWithPattern:pattern error:&error];
+    if (player && ![player startAtTime:0 error:&error]) {
+      player = nil;
+    }
+  } @catch (NSException* exception) {
+    LOG(ERROR) << "CoreHaptics exception creating player: "
+               << base::SysNSStringToUTF8(exception.reason);
     return nil;
   }
-
   return player;
 }
 
@@ -78,7 +88,12 @@ void UpdateHapticPlayer(double intensity,
 
   if (float_intensity == 0.0) {
     if (player) {
-      [player stopAtTime:0 error:nil];
+      @try {
+        [player stopAtTime:0 error:nil];
+      } @catch (NSException* exception) {
+        LOG(ERROR) << "CoreHaptics exception stopping player: "
+                   << base::SysNSStringToUTF8(exception.reason);
+      }
       player = nil;
     }
     return;
@@ -97,11 +112,17 @@ void UpdateHapticPlayer(double intensity,
                  relativeTime:0]
     ];
 
-    if ([player sendParameters:params atTime:0 error:&error]) {
-      return;
+    @try {
+      if ([player sendParameters:params atTime:0 error:&error]) {
+        return;
+      }
+      [player stopAtTime:0 error:nil];
+    } @catch (NSException* exception) {
+      LOG(ERROR) << "CoreHaptics exception: "
+                 << base::SysNSStringToUTF8(exception.reason);
     }
-    [player stopAtTime:0 error:nil];
     player = nil;
+    return;
   }
 
   player = CreateContinuousPlayer(intensity, engine);
@@ -141,11 +162,23 @@ GameControllerGamepad::GameControllerGamepad(GCController* controller)
     __weak CHHapticEngine* weak_engine = engine;
     engine.stoppedHandler = ^(CHHapticEngineStoppedReason reason) {
       if (reason != CHHapticEngineStoppedReasonGameControllerDisconnect) {
-        [weak_engine startAndReturnError:nil];
+        @try {
+          [weak_engine startAndReturnError:nil];
+        } @catch (NSException* exception) {
+          // Best-effort restart; haptics will simply be unavailable.
+          LOG(ERROR) << "CoreHaptics exception restarting engine: "
+                     << base::SysNSStringToUTF8(exception.reason);
+        }
       }
     };
     engine.resetHandler = ^{
-      [weak_engine startAndReturnError:nil];
+      @try {
+        [weak_engine startAndReturnError:nil];
+      } @catch (NSException* exception) {
+        // Best-effort restart; haptics will simply be unavailable.
+        LOG(ERROR) << "CoreHaptics exception restarting engine: "
+                   << base::SysNSStringToUTF8(exception.reason);
+      }
     };
 
     return engine;
@@ -281,40 +314,47 @@ void GameControllerGamepad::StartHaptics() {
   }
 
   haptics_started_ = true;
-  NSError* error = nil;
 
-  if (left_haptic_engine_ &&
-      ![left_haptic_engine_ startAndReturnError:&error]) {
-    LOG(ERROR) << "Failed to start left haptic engine: "
-               << base::SysNSStringToUTF16(error.localizedDescription);
-    haptics_started_ = false;
-  }
+  @try {
+    NSError* error = nil;
 
-  if (right_haptic_engine_ &&
-      ![right_haptic_engine_ startAndReturnError:&error]) {
-    LOG(ERROR) << "Failed to start right haptic engine: "
-               << base::SysNSStringToUTF16(error.localizedDescription);
-    haptics_started_ = false;
-  }
+    if (left_haptic_engine_ &&
+        ![left_haptic_engine_ startAndReturnError:&error]) {
+      LOG(ERROR) << "Failed to start left haptic engine: "
+                 << base::SysNSStringToUTF16(error.localizedDescription);
+      haptics_started_ = false;
+    }
 
-  if (left_trigger_haptic_engine_ &&
-      ![left_trigger_haptic_engine_ startAndReturnError:&error]) {
-    LOG(ERROR) << "Failed to start left trigger haptic engine: "
-               << base::SysNSStringToUTF16(error.localizedDescription);
-    haptics_started_ = false;
-  }
+    if (right_haptic_engine_ &&
+        ![right_haptic_engine_ startAndReturnError:&error]) {
+      LOG(ERROR) << "Failed to start right haptic engine: "
+                 << base::SysNSStringToUTF16(error.localizedDescription);
+      haptics_started_ = false;
+    }
 
-  if (right_trigger_haptic_engine_ &&
-      ![right_trigger_haptic_engine_ startAndReturnError:&error]) {
-    LOG(ERROR) << "Failed to start right trigger haptic engine: "
-               << base::SysNSStringToUTF16(error.localizedDescription);
-    haptics_started_ = false;
-  }
+    if (left_trigger_haptic_engine_ &&
+        ![left_trigger_haptic_engine_ startAndReturnError:&error]) {
+      LOG(ERROR) << "Failed to start left trigger haptic engine: "
+                 << base::SysNSStringToUTF16(error.localizedDescription);
+      haptics_started_ = false;
+    }
 
-  if (default_haptic_engine_ &&
-      ![default_haptic_engine_ startAndReturnError:&error]) {
-    LOG(ERROR) << "Failed to start default haptic engine: "
-               << base::SysNSStringToUTF16(error.localizedDescription);
+    if (right_trigger_haptic_engine_ &&
+        ![right_trigger_haptic_engine_ startAndReturnError:&error]) {
+      LOG(ERROR) << "Failed to start right trigger haptic engine: "
+                 << base::SysNSStringToUTF16(error.localizedDescription);
+      haptics_started_ = false;
+    }
+
+    if (default_haptic_engine_ &&
+        ![default_haptic_engine_ startAndReturnError:&error]) {
+      LOG(ERROR) << "Failed to start default haptic engine: "
+                 << base::SysNSStringToUTF16(error.localizedDescription);
+      haptics_started_ = false;
+    }
+  } @catch (NSException* exception) {
+    LOG(ERROR) << "CoreHaptics exception starting engines: "
+               << base::SysNSStringToUTF8(exception.reason);
     haptics_started_ = false;
   }
 }
@@ -379,25 +419,45 @@ void GameControllerGamepad::SetVibration(
 }
 
 void GameControllerGamepad::DoShutdown() {
-  if (left_haptic_engine_) {
-    [left_haptic_engine_ stopWithCompletionHandler:nil];
-  }
-  if (right_haptic_engine_) {
-    [right_haptic_engine_ stopWithCompletionHandler:nil];
-  }
-  if (left_trigger_haptic_engine_) {
-    [left_trigger_haptic_engine_ stopWithCompletionHandler:nil];
-  }
-  if (right_trigger_haptic_engine_) {
-    [right_trigger_haptic_engine_ stopWithCompletionHandler:nil];
-  }
-  if (default_haptic_engine_) {
-    [default_haptic_engine_ stopWithCompletionHandler:nil];
-  }
+  auto stop_engine = [](CHHapticEngine* engine) {
+    if (!engine) {
+      return;
+    }
+    @try {
+      [engine stopWithCompletionHandler:nil];
+    } @catch (NSException* exception) {
+      LOG(ERROR) << "CoreHaptics exception during shutdown: "
+                 << base::SysNSStringToUTF8(exception.reason);
+    }
+  };
+
+  stop_engine(left_haptic_engine_);
+  stop_engine(right_haptic_engine_);
+  stop_engine(left_trigger_haptic_engine_);
+  stop_engine(right_trigger_haptic_engine_);
+  stop_engine(default_haptic_engine_);
 }
 
 base::WeakPtr<AbstractHapticGamepad> GameControllerGamepad::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void GameControllerGamepad::SetDefaultHapticEngineForTesting(
+    CHHapticEngine* engine) {
+  default_haptic_engine_ = engine;
+}
+
+void GameControllerGamepad::SetDefaultHapticPlayerForTesting(
+    id<CHHapticPatternPlayer> player) {
+  default_haptic_player_ = player;
+}
+
+void GameControllerGamepad::SetHapticsStartedForTesting(bool started) {
+  haptics_started_ = started;
+}
+
+bool GameControllerGamepad::GetHapticsStartedForTesting() const {
+  return haptics_started_;
 }
 
 bool GameControllerGamepad::ProcessTouchPoint(
