@@ -138,7 +138,6 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/open_from_clipboard/clipboard_recent_content_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -363,10 +362,6 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-#include "components/on_device_translation/features.h"
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "components/enterprise/platform_auth/platform_auth_features.h"
@@ -10495,14 +10490,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)},
-
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-    {"translation-api-streaming-by-sentence",
-     flag_descriptions::kTranslationAPIStreamingBySentenceName,
-     flag_descriptions::kTranslationAPIStreamingBySentenceDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(on_device_translation::kTranslateStreamingBySentence)},
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
     {"password-form-grouped-affiliations",
      flag_descriptions::kPasswordFormGroupedAffiliationsName,

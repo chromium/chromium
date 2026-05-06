@@ -4484,11 +4484,6 @@ inline constexpr char kTouchTextEditingRedesignName[] =
 inline constexpr char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";
 
-inline constexpr char kTranslationAPIStreamingBySentenceName[] =
-    "Translation API streaming split by sentence";
-inline constexpr char kTranslationAPIStreamingBySentenceDescription[] =
-    "Enables sentence-split streaming for on-device translation API.";
-
 inline constexpr char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 inline constexpr char kTreatInsecureOriginAsSecureDescription[] =
