@@ -282,6 +282,10 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   }
 }
 
+void ContextualCueingHelper::WebContentsDestroyed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void ContextualCueingHelper::OnOptimizationGuideCueingMetadata(
     base::TimeTicks document_available_time,
     optimization_guide::OptimizationGuideDecision decision,
