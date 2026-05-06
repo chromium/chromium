@@ -923,9 +923,10 @@ export class ContextualTasksAppElement extends CrLitElement {
           {opacity: 1},
         ],
         {
-          duration: 150,
-          easing: 'ease-in-out',
-          fill: 'forwards',
+          duration: 300,
+          delay: 100,
+          easing: 'cubic-bezier(0, 0, 0, 1)',
+          fill: 'both',
         });
   }
 
