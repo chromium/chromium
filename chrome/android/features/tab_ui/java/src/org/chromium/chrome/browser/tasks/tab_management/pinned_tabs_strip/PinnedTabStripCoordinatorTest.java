@@ -33,7 +33,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -63,7 +63,7 @@ public class PinnedTabStripCoordinatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
 
-    private final MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+    private final MonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.alwaysNull();
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
@@ -89,7 +89,7 @@ public class PinnedTabStripCoordinatorTest {
                         activity,
                         parentView,
                         mTabListCoordinator,
-                        mTabGroupModelFilterSupplier,
+                        mTabModelSupplier,
                         mTabBookmarkerSupplier,
                         mBottomSheetController,
                         mModalDialogManager,
@@ -102,8 +102,7 @@ public class PinnedTabStripCoordinatorTest {
                             TabListModel tabListModel,
                             TabListModel pinnedTabsModelList,
                             PropertyModel stripPropertyModel,
-                            MonotonicObservableSupplier<TabGroupModelFilter>
-                                    tabGroupModelFilterSupplier,
+                            MonotonicObservableSupplier<TabModel> tabModelSupplier,
                             MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
                             BottomSheetController bottomSheetController,
                             ModalDialogManager modalDialogManager,

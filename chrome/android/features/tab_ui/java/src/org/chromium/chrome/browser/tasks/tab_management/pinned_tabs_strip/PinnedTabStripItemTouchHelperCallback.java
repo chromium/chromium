@@ -19,7 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
@@ -40,8 +39,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
     private final TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
     private final TabListModel mModel;
-    private final MonotonicObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final int mFixedScrollAmount;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
 
@@ -53,7 +51,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
      */
     public PinnedTabStripItemTouchHelperCallback(
             Context context,
-            MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilter,
+            MonotonicObservableSupplier<TabModel> tabModel,
             TabListModel model,
             Supplier<@Nullable RecyclerView> recyclerViewSupplier,
             OnLongPressTabItemEventListener onLongPress) {
@@ -64,7 +62,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
         mFixedScrollAmount =
                 res.getDimensionPixelSize(R.dimen.pinned_tab_strip_out_of_bounds_scroll_amount);
 
-        mCurrentTabGroupModelFilterSupplier = tabGroupModelFilter;
+        mCurrentTabModelSupplier = tabModel;
         mModel = model;
         mTabGridItemLongPressOrchestrator =
                 new TabGridItemLongPressOrchestrator(
@@ -117,10 +115,10 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
                         .get(TabProperties.TAB_ID);
 
         int destinationIndex = toViewHolder.getBindingAdapterPosition();
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        if (filter == null) return false;
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (tabModel == null) return false;
 
-        filter.moveRelatedTabs(currentTabId, destinationIndex);
+        tabModel.moveRelatedTabs(currentTabId, destinationIndex);
         mModel.move(fromViewHolder.getBindingAdapterPosition(), destinationIndex);
         return true;
     }

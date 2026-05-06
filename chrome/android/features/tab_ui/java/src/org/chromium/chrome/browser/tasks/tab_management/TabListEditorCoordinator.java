@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -323,8 +323,7 @@ public class TabListEditorCoordinator {
     private final ViewGroup mRootView;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final TabListEditorLayout mTabListEditorLayout;
     // Make sure the selection delegate starts out with selection mode enabled for 0 items.
     // Otherwise we'll trigger notifyObservers when we enable the selection mode, and that will
@@ -362,7 +361,7 @@ public class TabListEditorCoordinator {
      *     rootView if no custom view is being used, or a sub-view which is then attached to
      *     rootView.
      * @param browserControlsStateProvider Provides the browser controls state.
-     * @param currentTabGroupModelFilterSupplier Supplies the current TabGroupModelFilter.
+     * @param currentTabModelSupplier Supplies the current TabModel.
      * @param tabContentManager Provides thumbnails for tabs.
      * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
@@ -391,7 +390,7 @@ public class TabListEditorCoordinator {
             ViewGroup rootView,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
             @TabListMode int mode,
@@ -414,7 +413,7 @@ public class TabListEditorCoordinator {
             mRootView = rootView;
             mParentView = parentView;
             mBrowserControlsStateProvider = browserControlsStateProvider;
-            mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+            mCurrentTabModelSupplier = currentTabModelSupplier;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             mTabListMode = mode;
             mDisplayGroups = displayGroups;
@@ -443,7 +442,7 @@ public class TabListEditorCoordinator {
             mTabListEditorMediator =
                     new TabListEditorMediator(
                             activity,
-                            mCurrentTabGroupModelFilterSupplier,
+                            mCurrentTabModelSupplier,
                             mModel,
                             mSelectionDelegate,
                             displayGroups,
@@ -575,9 +574,9 @@ public class TabListEditorCoordinator {
     }
 
     private void createTabListCoordinator() {
-        TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(tabGroupModelFilter);
-        Profile profile = tabGroupModelFilter.getTabModel().getProfile();
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        assumeNonNull(tabModel);
+        Profile profile = tabModel.getProfile();
         assumeNonNull(profile);
         Profile regularProfile = profile.getOriginalProfile();
 
@@ -641,7 +640,7 @@ public class TabListEditorCoordinator {
                         mActivity,
                         mBrowserControlsStateProvider,
                         mModalDialogManager,
-                        mCurrentTabGroupModelFilterSupplier,
+                        mCurrentTabModelSupplier,
                         thumbnailProvider,
                         mDisplayGroups,
                         /* dataSharingTabManager= */ null,
@@ -725,7 +724,7 @@ public class TabListEditorCoordinator {
                             mActivity,
                             mBrowserControlsStateProvider,
                             tabContentManager,
-                            mCurrentTabGroupModelFilterSupplier);
+                            mCurrentTabModelSupplier);
             return mMultiThumbnailCardProvider;
         }
         return new TabContentManagerThumbnailProvider(tabContentManager);

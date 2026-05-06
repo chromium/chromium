@@ -54,7 +54,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
@@ -163,7 +162,6 @@ public class TabListEditorMenuTest {
     }
 
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
 
@@ -189,7 +187,6 @@ public class TabListEditorMenuTest {
 
     @Before
     public void setUp() throws Exception {
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(TAB_COUNT);
 
         for (int id = 0; id < TAB_COUNT; id++) {
@@ -265,7 +262,7 @@ public class TabListEditorMenuTest {
                             AppCompatResources.getColorStateList(
                                     sActivity, R.color.default_icon_color_tint_list));
             action.configure(
-                    () -> mTabGroupModelFilter,
+                    () -> mTabModel,
                     mSelectionDelegate,
                     mDelegate,
                     /* editorSupportsActionOnRelatedTabs= */ false);

@@ -73,7 +73,6 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
     @Mock private Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
@@ -100,13 +99,13 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     public void setUp() {
         SuggestionMetricsServiceFactory.setForTesting(mSuggestionMetricsService);
 
-        SettableNonNullObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
-                ObservableSuppliers.createNonNull(mTabGroupModelFilter);
+        SettableNonNullObservableSupplier<TabModel> tabModelSupplier =
+                ObservableSuppliers.createNonNull(mTabModel);
         mTabGroupSuggestionMessageService =
                 spy(
                         new TabGroupSuggestionMessageService(
                                 mContext,
-                                tabGroupModelFilterSupplier,
+                                tabModelSupplier,
                                 mAddOnMessageAfterTabCallback,
                                 mStartMergeAnimation));
         mTabGroupSuggestionMessageService.initialize(mServiceDismissActionProvider);
@@ -126,7 +125,6 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 .thenReturn("Group tabs");
         when(mContext.getString(R.string.no_thanks)).thenReturn("No thanks");
 
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
         when(mTabModel.getTabById(TAB3_ID)).thenReturn(mTab3);
@@ -230,7 +228,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         reviewAction.action();
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         tabs,
                         mTab1,
@@ -257,7 +255,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         reviewAction.action();
 
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
     }
 
@@ -300,7 +298,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                 inOrder(
                         mSuggestionLifecycleObserver,
                         mStartMergeAnimation,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSuggestionMessageService);
 
         // Accept callback is called first.
@@ -311,7 +309,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         inOrder.verify(mStartMergeAnimation)
                 .start(eq(TAB1_ID), eq(shiftedTabIds), onAnimationEndCaptor.capture());
         verify(mTabGroupSuggestionMessageService, never()).dismissMessage(any());
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
 
         // Simulate tab group ID being set.
         doAnswer(
@@ -319,7 +317,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                             when(mTab1.getTabGroupId()).thenReturn(Token.createRandom());
                             return null;
                         })
-                .when(mTabGroupModelFilter)
+                .when(mTabModel)
                 .mergeListOfTabsToGroup(
                         tabs,
                         mTab1,
@@ -329,7 +327,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         onAnimationEndCaptor.getValue().run();
 
         // After animation, tabs are grouped and message is dismissed.
-        inOrder.verify(mTabGroupModelFilter)
+        inOrder.verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         tabs,
                         mTab1,

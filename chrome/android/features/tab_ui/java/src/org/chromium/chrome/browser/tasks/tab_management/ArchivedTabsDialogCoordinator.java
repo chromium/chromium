@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -275,7 +274,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                     syncId,
                                     mTabGroupSyncService,
                                     mTabGroupUiActionHandlerSupplier.get(),
-                                    assumeNonNull(mCurrentTabGroupModelFilterSupplier.get()),
+                                    assumeNonNull(mCurrentTabModelSupplier.get()),
                                     requestOpenTabGroupDialog);
                             RecordUserAction.record("TabGroups.RestoreSingleTabGroup");
                             RecordHistogram.recordCount1000Histogram(
@@ -427,8 +426,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
@@ -459,8 +457,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param tabGroupSyncService The {@link TabGroupSyncService} used for tab group sync.
      * @param paneManagerSupplier Used to switch and communicate with other panes.
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
-     * @param currentTabGroupModelFilterSupplier The supplier of the current {@link
-     *     TabGroupModelFilter}.
+     * @param currentTabModelSupplier The supplier of the current {@link TabModel}.
      */
     public ArchivedTabsDialogCoordinator(
             Activity activity,
@@ -480,7 +477,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             @Nullable TabGroupSyncService tabGroupSyncService,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
+            NullableObservableSupplier<TabModel> currentTabModelSupplier) {
         mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -530,7 +527,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabGroupSyncService = tabGroupSyncService;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
 
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
@@ -815,7 +812,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* parentView= */ mDialogView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
                         assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
-                                .getCurrentTabGroupModelFilterSupplier(),
+                                .getCurrentTabModelSupplier(),
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ CallbackUtils
                                 .emptyCallback(),

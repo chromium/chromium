@@ -36,7 +36,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -71,12 +71,12 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private Canvas mCanvas;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
     @Mock private View mItemView1;
     @Mock private View mItemView2;
 
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
     private ViewHolder mMockViewHolder1;
     private ViewHolder mMockViewHolder2;
     private RecyclerView.ViewHolder mViewHolder;
@@ -85,7 +85,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Before
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabModelSupplier.set(mTabModel);
 
         mViewHolder = spy(new TestViewHolder(new View(context)));
 
@@ -96,7 +96,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mCallback =
                 new PinnedTabStripItemTouchHelperCallback(
                         context,
-                        mTabGroupModelFilterSupplier,
+                        mTabModelSupplier,
                         mTabListModel,
                         mRecyclerViewSupplier,
                         mOnLongPressListener);
@@ -106,7 +106,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     public void testOnMove() {
         mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2);
 
-        verify(mTabGroupModelFilter).moveRelatedTabs(TAB_ID1, POSITION2);
+        verify(mTabModel).moveRelatedTabs(TAB_ID1, POSITION2);
         verify(mTabListModel).move(POSITION1, POSITION2);
     }
 

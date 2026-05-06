@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -99,8 +99,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ObservableSuppliers.createNonNull(false);
 
     private final Activity mActivity;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModalDialogManager mModalDialogManager;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
@@ -128,7 +127,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             BrowserControlsStateProvider browserControlsStateProvider,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             TabContentManager tabContentManager,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -148,7 +147,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             : IN_SWITCHER_COMPONENT_NAME;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mModalDialogManager = modalDialogManager;
-            mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+            mCurrentTabModelSupplier = currentTabModelSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
             mUndoBarThrottle = undoBarThrottle;
@@ -162,12 +161,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             mDialogView.setupScrimManager(scrimManager);
 
-            TabGroupModelFilter currentTabGroupModelFilter =
-                    mCurrentTabGroupModelFilterSupplier.get();
-            assumeNonNull(currentTabGroupModelFilter);
+            TabModel currentTabModel = mCurrentTabModelSupplier.get();
+            assumeNonNull(currentTabModel);
             Profile originalProfile =
-                    assumeNonNull(currentTabGroupModelFilter.getTabModel().getProfile())
-                            .getOriginalProfile();
+                    assumeNonNull(currentTabModel.getProfile()).getOriginalProfile();
 
             CollaborationService collaborationService =
                     CollaborationServiceFactory.getForProfile(originalProfile);
@@ -225,7 +222,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             this,
                             mModel,
-                            currentTabGroupModelFilterSupplier,
+                            currentTabModelSupplier,
                             resetHandler,
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,
@@ -248,7 +245,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
-                            currentTabGroupModelFilterSupplier,
+                            currentTabModelSupplier,
                             new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
                             dataSharingTabManager,
@@ -368,7 +365,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             container,
                             container,
                             mBrowserControlsStateProvider,
-                            mCurrentTabGroupModelFilterSupplier,
+                            mCurrentTabModelSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             TabListMode.GRID,
@@ -417,10 +414,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             // Refresh the TabSwitcher's tab list to reflect the last
                             // selected color in the color picker when it is dismissed. This
                             // call will be invoked for both Grid and List modes on the GTS.
-                            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                            assumeNonNull(filter);
+                            TabModel tabModel = mCurrentTabModelSupplier.get();
+                            assumeNonNull(tabModel);
                             mTabSwitcherResetHandler.resetWithListOfTabs(
-                                    filter.getRepresentativeTabList());
+                                    tabModel.getRepresentativeTabList());
                         }
                     }
                 };

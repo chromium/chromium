@@ -68,7 +68,7 @@ public class TabUiUtils {
     /**
      * Closes a tab group and maybe shows a confirmation dialog.
      *
-     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param tabId The ID of one of the tabs in the tab group.
      * @param tabClosingSource The tab closing source, e.g. the tablet tab strip.
      * @param allowUndo Whether to allow undo of the tab group closure.
@@ -76,20 +76,19 @@ public class TabUiUtils {
      * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             int tabId,
             @TabClosingSource int tabClosingSource,
             boolean allowUndo,
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
-        TabModel tabModel = filter.getTabModel();
         @Nullable Tab tab = tabModel.getTabById(tabId);
         if (tab == null) {
             Callback.runNullSafe(didCloseCallback, false);
             return;
         }
         TabClosureParams.CloseTabsBuilder builder =
-                TabClosureParams.forCloseTabGroup(filter, tab.getTabGroupId());
+                TabClosureParams.forCloseTabGroup(tabModel, tab.getTabGroupId());
         if (builder == null) {
             Callback.runNullSafe(didCloseCallback, false);
             return;
@@ -190,21 +189,20 @@ public class TabUiUtils {
      * Leave or deletes a shared tab group, prompting to user to verify first.
      *
      * @param context Used to load resources.
-     * @param filter Used to pull dependencies from.
+     * @param tabModel Used to pull dependencies from.
      * @param actionConfirmationManager Used to show a confirmation dialog.
      * @param modalDialogManager Used to show error dialogs.
      * @param tabId The local id of the tab being left.
      */
     public static void exitSharedTabGroupWithDialog(
             Context context,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             ActionConfirmationManager actionConfirmationManager,
             ModalDialogManager modalDialogManager,
             int tabId) {
         assert isDataSharingFunctionalityEnabled();
         assert actionConfirmationManager != null;
 
-        TabModel tabModel = filter.getTabModel();
         Profile profile = assumeNonNull(tabModel.getProfile());
         TabGroupSyncService tabGroupSyncService =
                 assumeNonNull(TabGroupSyncServiceFactory.getForProfile(profile));
@@ -258,7 +256,7 @@ public class TabUiUtils {
         Tab tab = tabModel.getTabById(tabId);
         if (tab != null || TextUtils.isEmpty(title)) {
             Token tabGroupId = tab == null ? null : tab.getTabGroupId();
-            title = TabGroupTitleUtils.getDisplayableTitle(context, filter, tabGroupId);
+            title = TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId);
         }
 
         if (memberRole == MemberRole.OWNER) {
@@ -327,7 +325,7 @@ public class TabUiUtils {
      * Create share flows to initiate tab group share.
      *
      * @param activity that contains the current tab group.
-     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabModel The {@link TabModel} to act on.
      * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
      *     UI and DataSharing services.
      * @param tabId The local id of the tab.
@@ -335,12 +333,12 @@ public class TabUiUtils {
      */
     public static void startShareTabGroupFlow(
             Activity activity,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             DataSharingTabManager dataSharingTabManager,
             int tabId,
             String tabGroupDisplayName,
             @CollaborationServiceShareOrManageEntryPoint int entry) {
-        Tab tab = filter.getTabModel().getTabById(tabId);
+        Tab tab = tabModel.getTabById(tabId);
         // The tab may have been closed in parallel with the share starting. Skip if this happens.
         if (tab == null) return;
 

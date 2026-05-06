@@ -35,7 +35,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
@@ -72,7 +71,6 @@ public final class TabListEditorMediatorUnitTest {
     @Mock private ResetHandler mResetHandler;
     @Mock private TabListEditorLayout mTabListEditorLayout;
     @Mock private TabListEditorToolbar mTabListEditorToolbar;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
     @Mock private NavigationProvider mNavigationProvider;
@@ -101,7 +99,7 @@ public final class TabListEditorMediatorUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private TabListEditorMediator mMediator;
-    private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private MonotonicObservableSupplier<TabModel> mTabModelSupplier;
 
     @Captor
     private ArgumentCaptor<SelectionObserver<TabListEditorItemSelectionId>>
@@ -114,10 +112,9 @@ public final class TabListEditorMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mTabGroupModelFilterSupplier = ObservableSuppliers.createNonNull(mTabGroupModelFilter);
+        mTabModelSupplier = ObservableSuppliers.createNonNull(mTabModel);
 
         when(mTabModel.isIncognito()).thenReturn(false);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabListEditorLayout.getToolbar()).thenReturn(mTabListEditorToolbar);
@@ -141,7 +138,7 @@ public final class TabListEditorMediatorUnitTest {
         mMediator =
                 new TabListEditorMediator(
                         mContext,
-                        mTabGroupModelFilterSupplier,
+                        mTabModelSupplier,
                         mModel,
                         mSelectionDelegate,
                         /* actionOnRelatedTabs= */ false,

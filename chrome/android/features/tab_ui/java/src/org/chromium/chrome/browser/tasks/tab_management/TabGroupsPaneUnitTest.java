@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -76,7 +75,6 @@ import java.util.function.DoubleConsumer;
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
@@ -125,7 +123,6 @@ public class TabGroupsPaneUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         // Unused at this level.
@@ -134,7 +131,7 @@ public class TabGroupsPaneUnitTest {
         mTabGroupsPane =
                 new TabGroupsPane(
                         ApplicationProvider.getApplicationContext(),
-                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
+                        LazyOneshotSupplier.fromValue(mTabModel),
                         mOnToolbarAlphaChange,
                         mProfileSupplier,
                         () -> mPaneManager,
@@ -230,6 +227,6 @@ public class TabGroupsPaneUnitTest {
         actionButtonData.onPress(mockView);
 
         verify(mTabCreator).createNewTab(any(), anyInt(), any());
-        verify(mTabGroupModelFilter).createSingleTabGroup(mTab);
+        verify(mTabModel).createSingleTabGroup(mTab);
     }
 }

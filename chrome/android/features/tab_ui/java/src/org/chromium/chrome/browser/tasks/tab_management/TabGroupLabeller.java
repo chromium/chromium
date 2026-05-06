@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
@@ -23,21 +23,21 @@ import java.util.List;
 /** Pushes label updates to UI for tab groups. */
 @NullMarked
 public class TabGroupLabeller extends TabObjectLabeller {
-    private final NullableObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mTabModelSupplier;
 
     public TabGroupLabeller(
             Profile profile,
             TabListNotificationHandler tabListNotificationHandler,
-            NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            NullableObservableSupplier<TabModel> tabModelSupplier) {
         super(profile, tabListNotificationHandler);
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabModelSupplier = tabModelSupplier;
     }
 
     @Override
     protected boolean shouldApply(PersistentMessage message) {
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        return filter != null
-                && !filter.getTabModel().isOffTheRecord()
+        TabModel tabModel = mTabModelSupplier.get();
+        return tabModel != null
+                && !tabModel.isOffTheRecord()
                 && message.type == PersistentNotificationType.DIRTY_TAB_GROUP
                 && getTabId(message) != Tab.INVALID_TAB_ID;
     }
@@ -62,9 +62,9 @@ public class TabGroupLabeller extends TabObjectLabeller {
             // This is a workaround to achieve compatibility. Longer term, TabListMediator needs to
             // be refactored to accept either rootId or even better tabGroupId as the identifier for
             // tab groups. See https://crbug.com/387509285.
-            TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-            assumeNonNull(filter);
-            return filter.getGroupLastShownTabId(tabGroupId);
+            TabModel tabModel = mTabModelSupplier.get();
+            assumeNonNull(tabModel);
+            return tabModel.getGroupLastShownTabId(tabGroupId);
         }
     }
 }

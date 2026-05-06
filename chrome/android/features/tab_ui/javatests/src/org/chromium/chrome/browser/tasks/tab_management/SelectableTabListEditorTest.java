@@ -187,8 +187,7 @@ public class SelectableTabListEditorTest {
                     mSnackbarManager =
                             new SnackbarManager(
                                     cta, rootView, null, null, cta.getModalDialogManager());
-                    var currentTabGroupModelFilterSupplier =
-                            mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
+                    var currentTabModelSupplier = mTabModelSelector.getCurrentTabModelSupplier();
                     mAppHeaderStateProvider =
                             (AppHeaderCoordinator)
                                     mActivityTestRule
@@ -202,7 +201,7 @@ public class SelectableTabListEditorTest {
                                     mParentView,
                                     mParentView,
                                     cta.getBrowserControlsManager(),
-                                    currentTabGroupModelFilterSupplier,
+                                    currentTabModelSupplier,
                                     cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     TabListCoordinator.TabListMode.GRID,

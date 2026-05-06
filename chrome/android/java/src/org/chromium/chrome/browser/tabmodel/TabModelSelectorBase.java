@@ -545,6 +545,7 @@ public abstract class TabModelSelectorBase
         return mCurrentTabGroupModelFilterSupplier.get();
     }
 
+    @Deprecated
     @Override
     public NullableObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier() {
         return mCurrentTabGroupModelFilterSupplier;

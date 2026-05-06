@@ -105,7 +105,7 @@ public class TabListEditorPinAction extends TabListEditorAction {
         assert mState != State.UNSUPPORTED;
 
         boolean shouldPin = mState == State.PIN;
-        TabModel tabModel = getTabGroupModelFilter().getTabModel();
+        TabModel tabModel = getTabModel();
         for (Tab tab : tabs) {
             if (shouldPin) {
                 tabModel.pinTab(tab.getId(), /* showUngroupDialog= */ false);

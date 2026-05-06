@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager.TabGroupCreationDialogManagerFactory;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -33,26 +32,26 @@ public class TabGroupCreationUiDelegate {
     private final Context mContext;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable PaneManager> mPaneManagerSupplier;
-    private final Supplier<@Nullable TabGroupModelFilter> mFilterSupplier;
+    private final Supplier<@Nullable TabModel> mTabModelSupplier;
     private final TabGroupCreationDialogManagerFactory mFactory;
 
     /**
      * @param context The context for this UI flow.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param paneManagerSupplier Supplies the {@link PaneManager}.
-     * @param filterSupplier Supplies the filter used to create tab groups.
+     * @param tabModelSupplier Supplies the tab model used to create tab groups.
      * @param factory Used to create an instance of {@link TabGroupCreationDialogManager}
      */
     public TabGroupCreationUiDelegate(
             Context context,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable PaneManager> paneManagerSupplier,
-            Supplier<@Nullable TabGroupModelFilter> filterSupplier,
+            Supplier<@Nullable TabModel> tabModelSupplier,
             TabGroupCreationDialogManagerFactory factory) {
         mContext = context;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
-        mFilterSupplier = filterSupplier;
+        mTabModelSupplier = tabModelSupplier;
         mFactory = factory;
     }
 
@@ -71,11 +70,11 @@ public class TabGroupCreationUiDelegate {
      * </ul>
      */
     public void newTabGroupFlow() {
-        TabGroupModelFilter filter = mFilterSupplier.get();
-        assumeNonNull(filter);
-        TabCreator tabCreator = filter.getTabModel().getTabCreator();
+        TabModel tabModel = mTabModelSupplier.get();
+        assumeNonNull(tabModel);
+        TabCreator tabCreator = tabModel.getTabCreator();
 
-        Profile profile = filter.getTabModel().getProfile();
+        Profile profile = tabModel.getProfile();
         UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
 
         @Nullable Tab tab =
@@ -84,12 +83,12 @@ public class TabGroupCreationUiDelegate {
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                         null);
         if (tab != null) {
-            filter.createSingleTabGroup(tab);
+            tabModel.createSingleTabGroup(tab);
             @Nullable ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null && modalDialogManager != null) {
                 mFactory.create(mContext, modalDialogManager, () -> openTabGroupUi(tab))
-                        .showDialog(tabGroupId, filter);
+                        .showDialog(tabGroupId, tabModel);
             }
         }
     }
@@ -98,7 +97,7 @@ public class TabGroupCreationUiDelegate {
         @Nullable PaneManager paneManager = mPaneManagerSupplier.get();
         @Nullable Token groupId = tab.getTabGroupId();
 
-        TabModel tabModel = assumeNonNull(mFilterSupplier.get()).getTabModel();
+        TabModel tabModel = assumeNonNull(mTabModelSupplier.get());
         @PaneId
         int tabSwitcher =
                 tabModel.isIncognitoBranded() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER;

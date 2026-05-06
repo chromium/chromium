@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
@@ -96,7 +95,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabModel mArchivedTabModel;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
     @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -119,8 +117,8 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
 
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(INITIAL_TAB_COUNT);
     private final SettableNullableObservableSupplier<TabListCoordinator>
@@ -143,8 +141,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         mTabListCoordinatorSupplier.set(mTabListCoordinator);
 
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mCurrentTabModelSupplier.set(mTabModel);
         when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
     }
 
@@ -170,7 +167,7 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mTabGroupSyncService,
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
-                        mCurrentTabGroupModelFilterSupplier,
+                        mCurrentTabModelSupplier,
                         mLayoutStateProviderSupplier);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);

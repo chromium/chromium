@@ -26,7 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
@@ -49,7 +48,6 @@ public class TabListEditorUngroupActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
-    @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
@@ -66,9 +64,8 @@ public class TabListEditorUngroupActionUnitTest {
                         ButtonType.TEXT,
                         IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mGroupFilter.getTabModel()).thenReturn(mTabModel);
-        when(mGroupFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        mAction.configure(() -> mGroupFilter, mSelectionDelegate, mDelegate, false);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
+        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, false);
     }
 
     @Test
@@ -114,7 +111,7 @@ public class TabListEditorUngroupActionUnitTest {
         for (int id : tabIds) {
             tabs.add(mTabModel.addTab(id));
         }
-        when(mGroupFilter.getRelatedTabList(anyInt())).thenReturn(tabs);
+        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(tabs);
         Set<TabListEditorItemSelectionId> itemIdsSet = new LinkedHashSet<>(itemIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(itemIdsSet);
 

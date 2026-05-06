@@ -255,7 +255,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                         getActivity(),
                         mBrowserControlStateProvider,
                         tabContentManager,
-                        getCurrentTabGroupModelFilterSupplier());
+                        getCurrentTabModelSupplier());
         mMultiThumbnailCardProvider.initWithNative(
                 assumeNonNull(getTabModelSelector().getModel(/* incognito= */ false).getProfile()));
 

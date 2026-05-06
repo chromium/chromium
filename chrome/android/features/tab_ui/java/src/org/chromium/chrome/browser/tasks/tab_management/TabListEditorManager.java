@@ -17,7 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -46,8 +46,7 @@ public class TabListEditorManager {
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final MonotonicObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final TabContentManager mTabContentManager;
     private final TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
@@ -66,8 +65,7 @@ public class TabListEditorManager {
      * @param coordinatorView The overlay view to attach the editor to.
      * @param rootView The root view to attach the snackbar to.
      * @param browserControlsStateProvider The browser controls state provider.
-     * @param currentTabGroupModelFilterSupplier The supplier of the current {@link
-     *     TabGroupModelFilter}.
+     * @param currentTabModelSupplier The supplier of the current {@link TabModel}.
      * @param tabContentManager The {@link TabContentManager} for thumbnails.
      * @param tabListCoordinator The parent {@link TabListCoordinator}.
      * @param mode The {@link TabListMode} of the tab list (grid, list, etc.).
@@ -80,7 +78,7 @@ public class TabListEditorManager {
             ViewGroup coordinatorView,
             ViewGroup rootView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            MonotonicObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabModel> currentTabModelSupplier,
             TabContentManager tabContentManager,
             TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,
@@ -91,7 +89,7 @@ public class TabListEditorManager {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
         mTabListCoordinator = tabListCoordinator;
@@ -137,7 +135,7 @@ public class TabListEditorManager {
                             mCoordinatorView,
                             mCoordinatorView,
                             mBrowserControlsStateProvider,
-                            mCurrentTabGroupModelFilterSupplier,
+                            mCurrentTabModelSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mMode,
@@ -206,10 +204,10 @@ public class TabListEditorManager {
 
         var controller = mControllerSupplier.get();
         assumeNonNull(controller);
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(filter);
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        assumeNonNull(tabModel);
         controller.show(
-                /* tabs= */ filter.getRepresentativeTabList(),
+                /* tabs= */ tabModel.getRepresentativeTabList(),
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);

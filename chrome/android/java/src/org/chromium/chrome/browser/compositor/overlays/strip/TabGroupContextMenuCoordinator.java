@@ -227,7 +227,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             } else if (menuId == R.id.close_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
-                        tabGroupModelFilter,
+                        tabModelSupplier.get(),
                         tabId,
                         TabClosingSource.TABLET_TAB_STRIP,
                         allowUndo,
@@ -237,7 +237,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             } else if (menuId == R.id.delete_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
-                        tabGroupModelFilter,
+                        tabModelSupplier.get(),
                         tabId,
                         TabClosingSource.TABLET_TAB_STRIP,
                         allowUndo,
@@ -247,9 +247,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             } else if (menuId == R.id.open_new_tab_in_group) {
                 UrlConstantResolver resolver =
                         UrlConstantResolverFactory.getForProfile(
-                                tabGroupModelFilter.getTabModel().getProfile());
+                                tabModelSupplier.get().getProfile());
                 TabGroupUtils.openUrlInGroup(
-                        tabGroupModelFilter,
+                        tabModelSupplier.get(),
                         resolver.getNtpUrl(),
                         tabId,
                         TabLaunchType.FROM_TAB_GROUP_UI);

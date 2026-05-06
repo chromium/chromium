@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
@@ -52,7 +51,7 @@ public class PinnedTabStripItemContextMenuCoordinator
         extends TabOverflowMenuCoordinator<@TabId Integer> {
     private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.PinnedTabs.ContextMenu.";
     private final Activity mActivity;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final BookmarkModel mBookmarkModel;
 
     /**
@@ -61,7 +60,7 @@ public class PinnedTabStripItemContextMenuCoordinator
      * @param activity The {@link Activity} context.
      * @param profile The {@link Profile} for the current tab model.
      * @param tabBookmarkerSupplier The supplier for a {@link TabBookmarker} instance.
-     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to get the tab model.
+     * @param tabModel The {@link TabModel} to get the tab model.
      * @param tabGroupListBottomSheetCoordinator The coordinator for the bottom sheet to move tabs.
      * @param tabGroupCreationDialogManager The manager for the dialog to create a new tab group.
      * @param tabGroupSyncService The {@link TabGroupSyncService} to handle tab group sync, may be
@@ -72,7 +71,7 @@ public class PinnedTabStripItemContextMenuCoordinator
             Activity activity,
             Profile profile,
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
@@ -82,16 +81,16 @@ public class PinnedTabStripItemContextMenuCoordinator
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabBookmarkerSupplier,
-                        tabGroupModelFilter,
+                        tabModel,
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager),
-                tabGroupModelFilter::getTabModel,
+                () -> tabModel,
                 /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
                 activity);
         mActivity = activity;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mBookmarkModel = BookmarkModel.getForProfile(profile);
     }
 
@@ -119,7 +118,7 @@ public class PinnedTabStripItemContextMenuCoordinator
     protected void buildMenuActionItems(ModelList itemList, Integer tabId) {
         // TODO(crbug.com/445195867): Refactor to extract common code with
         // TabGridContextMenuCoordinator.
-        @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, tabId);
+        @Nullable Tab tab = getTabById(() -> mTabModel, tabId);
         if (tab == null) return;
         boolean isIncognito = tab.isIncognitoBranded();
 
@@ -136,7 +135,7 @@ public class PinnedTabStripItemContextMenuCoordinator
     }
 
     private ListItem buildGroupItem(Tab tab, boolean isIncognito) {
-        if (mTabGroupModelFilter.getTabGroupCount() == 0) {
+        if (mTabModel.getTabGroupCount() == 0) {
             return new ListItemBuilder()
                     .withTitleRes(R.string.menu_add_tab_to_new_group)
                     .withMenuId(R.id.add_to_new_tab_group)
@@ -206,20 +205,19 @@ public class PinnedTabStripItemContextMenuCoordinator
     @VisibleForTesting
     static OnItemClickedCallback<Integer> getMenuItemClickedCallback(
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator coordinator,
             TabGroupCreationDialogManager dialogManager) {
         return (menuId, tabId, collaborationId, listViewTouchTracker) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
-            TabModel tabModel = tabGroupModelFilter.getTabModel();
             TabBookmarker tabBookmarker = assumeNonNull(tabBookmarkerSupplier.get());
             @Nullable Tab tab = getTabById(() -> tabModel, tabId);
             if (tab == null) return;
 
             if (menuId == R.id.add_to_new_tab_group) {
-                tabGroupModelFilter.createSingleTabGroup(tab);
+                tabModel.createSingleTabGroup(tab);
                 Token groupId = assumeNonNull(tab.getTabGroupId());
-                dialogManager.showDialog(groupId, tabGroupModelFilter);
+                dialogManager.showDialog(groupId, tabModel);
                 recordUserActionWithPrefix("AddToNewGroup");
             } else if (menuId == R.id.add_to_tab_group) {
                 coordinator.showBottomSheet(List.of(tab));
@@ -248,10 +246,10 @@ public class PinnedTabStripItemContextMenuCoordinator
     public static PinnedTabStripItemContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager) {
-        Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
+        Profile profile = assumeNonNull(tabModel.getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
         CollaborationService collaborationService =
@@ -260,7 +258,7 @@ public class PinnedTabStripItemContextMenuCoordinator
                 activity,
                 profile,
                 tabBookmarkerSupplier,
-                tabGroupModelFilter,
+                tabModel,
                 tabGroupListBottomSheetCoordinator,
                 tabGroupCreationDialogManager,
                 tabGroupSyncService,

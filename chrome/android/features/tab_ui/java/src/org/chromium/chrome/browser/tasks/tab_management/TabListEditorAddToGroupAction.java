@@ -117,8 +117,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
-        TabGroupModelFilter filter = getTabGroupModelFilter();
-        TabModel tabModel = filter.getTabModel();
+        TabModel tabModel = getTabModel();
         List<Integer> tabIds = new ArrayList<>();
         for (TabListEditorItemSelectionId itemId : itemIds) {
             assert !itemId.isTabGroupSyncId();
@@ -129,7 +128,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
         int numTabs =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(filter, itemIds)
+                        ? getTabCountIncludingRelatedTabs(tabModel, itemIds)
                         : itemIds.size();
 
         setEnabledAndItemCount(
@@ -144,14 +143,14 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         assert !tabs.isEmpty() : "Add tab to group action should not be enabled for no tabs.";
         BottomSheetController controller = getActionDelegate().getBottomSheetController();
         assumeNonNull(controller);
-        TabGroupModelFilter filter = getTabGroupModelFilter();
+        TabModel tabModel = getTabModel();
 
         Tab destinationTab = tabs.get(0);
         if (hasTabGroups()) {
-            showBottomSheet(tabs, filter, destinationTab.getProfile(), controller);
+            showBottomSheet(tabs, tabModel, destinationTab.getProfile(), controller);
             RecordUserAction.record("TabGroupParity.TabListEditorMenuActions.GroupsExist");
         } else {
-            createNewTabGroup(tabs, filter, destinationTab);
+            createNewTabGroup(tabs, tabModel, destinationTab);
             RecordUserAction.record("TabGroupParity.TabListEditorMenuActions.NoGroupsExist");
         }
 
@@ -165,29 +164,26 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
 
     @Override
     void configure(
-            Supplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            Supplier<@Nullable TabModel> currentTabModelSupplier,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
         super.configure(
-                currentTabGroupModelFilterSupplier,
+                currentTabModelSupplier,
                 selectionDelegate,
                 actionDelegate,
                 editorSupportsActionOnRelatedTabs);
-        TabGroupModelFilter filter = getTabGroupModelFilter();
-        assumeNonNull(filter);
-        filter.addTabGroupObserver(mFilterObserver);
-        filter.getTabModel().addObserver(mTabModelObserver);
+        TabModel tabModel = getTabModel();
+        assumeNonNull(tabModel);
+        tabModel.addTabGroupObserver(mFilterObserver);
+        tabModel.addObserver(mTabModelObserver);
         updateText();
     }
 
     private void showBottomSheet(
-            List<Tab> tabs,
-            TabGroupModelFilter filter,
-            Profile profile,
-            BottomSheetController controller) {
+            List<Tab> tabs, TabModel tabModel, Profile profile, BottomSheetController controller) {
         TabGroupCreationCallback groupCreationCallback =
-                tabGroupId -> mTabGroupCreationDialogManager.showDialog(tabGroupId, filter);
+                tabGroupId -> mTabGroupCreationDialogManager.showDialog(tabGroupId, tabModel);
 
         mTabGroupListBottomSheetCoordinator =
                 mFactory.create(
@@ -195,34 +191,34 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                         profile,
                         groupCreationCallback,
                         /* tabMovedCallback= */ null,
-                        filter,
+                        tabModel,
                         controller,
                         true,
                         true);
         mTabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
     }
 
-    private void createNewTabGroup(List<Tab> tabs, TabGroupModelFilter filter, Tab destinationTab) {
+    private void createNewTabGroup(List<Tab> tabs, TabModel tabModel, Tab destinationTab) {
         if (tabs.size() == 1) {
-            filter.createSingleTabGroup(destinationTab);
+            tabModel.createSingleTabGroup(destinationTab);
         } else {
-            filter.mergeListOfTabsToGroup(
+            tabModel.mergeListOfTabsToGroup(
                     tabs,
                     destinationTab,
                     /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         }
         mTabGroupCreationDialogManager.showDialog(
-                assumeNonNull(destinationTab.getTabGroupId()), filter);
+                assumeNonNull(destinationTab.getTabGroupId()), tabModel);
     }
 
     private void destroy() {
-        TabGroupModelFilter filter = getTabGroupModelFilter();
-        filter.removeTabGroupObserver(mFilterObserver);
-        filter.getTabModel().removeObserver(mTabModelObserver);
+        TabModel tabModel = getTabModel();
+        tabModel.removeTabGroupObserver(mFilterObserver);
+        tabModel.removeObserver(mTabModelObserver);
     }
 
     private boolean hasTabGroups() {
-        return getTabGroupModelFilter().getTabGroupCount() != 0;
+        return getTabModel().getTabGroupCount() != 0;
     }
 
     private void updateText() {

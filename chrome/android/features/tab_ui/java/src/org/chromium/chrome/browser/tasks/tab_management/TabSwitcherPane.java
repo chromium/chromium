@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -103,7 +104,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     private final Callback<Boolean> mScrollingObserver = this::onScrollingChanged;
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
     private final SharedPreferences mSharedPreferences;
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<TabModel> mTabModelSupplier;
     private final TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -116,7 +117,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
      * @param sharedPreferences The app shared preferences.
      * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param tabGroupModelFilterSupplier The supplier of the regular {@link TabGroupModelFilter}.
+     * @param tabModelSupplier The supplier of the regular {@link TabModel}.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
@@ -133,7 +134,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             SharedPreferences sharedPreferences,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabSwitcherPaneCoordinatorFactory factory,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            Supplier<TabModel> tabModelSupplier,
             OnClickListener newTabButtonClickListener,
             TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator,
             DoubleConsumer onToolbarAlphaChange,
@@ -155,7 +156,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 tabGroupCreationUiDelegate,
                 xrSpaceModeObservableSupplier);
         mSharedPreferences = sharedPreferences;
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabModelSupplier = tabModelSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
 
         mTabSwitcherDrawable = tabSwitcherDrawableCoordinator.getTabSwitcherDrawable();
@@ -196,12 +197,12 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
     @Override
     public void showAllTabs() {
-        resetWithListOfTabs(mTabGroupModelFilterSupplier.get().getRepresentativeTabList());
+        resetWithListOfTabs(mTabModelSupplier.get().getRepresentativeTabList());
     }
 
     @Override
     public @Nullable Tab getCurrentTab() {
-        return TabModelUtils.getCurrentTab(mTabGroupModelFilterSupplier.get().getTabModel());
+        return TabModelUtils.getCurrentTab(mTabModelSupplier.get());
     }
 
     @Override
@@ -216,8 +217,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
 
-        @Nullable TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        if (filter == null || !filter.isTabModelRestored()) {
+        @Nullable TabModel tabModel = mTabModelSupplier.get();
+        if (tabModel == null || !tabModel.isTabModelRestored()) {
             // The tab list is trying to show without the filter being ready. This happens when
             // first trying to show a the pane. If this happens an attempt to show will be made
             // when the filter's restoreCompleted() method is invoked in TabSwitcherPaneMediator.
@@ -230,8 +231,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
 
-        boolean isNotVisibleOrSelected =
-                !mIsVisibleSupplier.get() || !filter.getTabModel().isActiveModel();
+        boolean isNotVisibleOrSelected = !mIsVisibleSupplier.get() || !tabModel.isActiveModel();
 
         if (isNotVisibleOrSelected) {
             cancelWaitForTabStateInitializedTimer();
@@ -243,7 +243,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 TabUiUtils.updateViewContentSensitivityForTabs(
-                        filter.getTabModel(),
+                        tabModel,
                         coordinator::setTabSwitcherContentSensitivity,
                         "SensitiveContent.TabSwitching.RegularTabSwitcherPane.Sensitivity");
             }
@@ -307,24 +307,24 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                             || !mIsVisibleSupplier.get()) {
                         return;
                     }
-                    TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+                    TabModel tabModel = mTabModelSupplier.get();
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-                    if (filter.getTabModel().isActiveModel()
-                            && filter.isTabModelRestored()
+                    if (tabModel.isActiveModel()
+                            && tabModel.isTabModelRestored()
                             && coordinator != null) {
-                        coordinator.resetWithListOfTabs(filter.getRepresentativeTabList());
+                        coordinator.resetWithListOfTabs(tabModel.getRepresentativeTabList());
                     }
                 };
         mSharedPreferences.registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
     }
 
     private void onVisibilityChanged(boolean visible) {
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        if (filter == null) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        if (tabModel == null) return;
 
         if (visible) {
-            filter.getTabModel().addObserver(mTabModelObserver);
-            filter.addTabGroupObserver(mFilterObserver);
+            tabModel.addObserver(mTabModelObserver);
+            tabModel.addTabGroupObserver(mFilterObserver);
         } else {
             removeObservers();
         }
@@ -386,15 +386,15 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
 
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        TabModel tabModel = mTabModelSupplier.get();
         @Nullable Pair<Integer, Integer> range = coordinator.getVisibleRange();
         if (range == null) return;
         // Iterate in reverse because when multiple viable groups are on screen, we want to trigger
         // on the most recently added, which should be ordered later.
         for (int viewIndex = range.second; viewIndex >= range.first; --viewIndex) {
             int filterIndex = coordinator.countOfTabCardsOrInvalid(viewIndex);
-            @Nullable Tab tab = filter.getRepresentativeTabAt(filterIndex);
-            if (tab == null || !filter.isTabInTabGroup(tab)) continue;
+            @Nullable Tab tab = tabModel.getRepresentativeTabAt(filterIndex);
+            if (tab == null || !tabModel.isTabInTabGroup(tab)) continue;
 
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (!TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, tabGroupId)) continue;
@@ -416,10 +416,10 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     private void removeObservers() {
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        if (filter != null) {
-            filter.getTabModel().removeObserver(mTabModelObserver);
-            filter.removeTabGroupObserver(mFilterObserver);
+        TabModel tabModel = mTabModelSupplier.get();
+        if (tabModel != null) {
+            tabModel.removeObserver(mTabModelObserver);
+            tabModel.removeTabGroupObserver(mFilterObserver);
         }
     }
 
@@ -442,8 +442,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @Nullable Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
         if (removalReason != DidRemoveTabGroupReason.CLOSE) return;
 
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        if (!filter.isTabGroupHiding(oldTabGroupId)) return;
+        TabModel tabModel = mTabModelSupplier.get();
+        if (!tabModel.isTabGroupHiding(oldTabGroupId)) return;
 
         @Nullable PaneHubController paneHubController = getPaneHubController();
         if (paneHubController == null) return;
@@ -473,7 +473,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                         R.string.tab_switcher_standard_stack_text,
                         tabSwitcherButtonDescRes,
                         mTabSwitcherDrawable,
-                        mTabGroupModelFilterSupplier.get().getTabModel().getCount()));
+                        mTabModelSupplier.get().getCount()));
     }
 
     private @PluralsRes int getTabSwitcherDrawableDescription(TabSwitcherDrawable drawable) {

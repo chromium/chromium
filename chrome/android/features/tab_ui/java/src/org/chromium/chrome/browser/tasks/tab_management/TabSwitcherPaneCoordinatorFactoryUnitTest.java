@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -103,7 +102,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -140,8 +138,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
             ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
@@ -176,15 +174,11 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModel.getTabModel()).thenReturn(mTabModel);
 
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabModelSupplier.set(mTabModel);
         mTabBookmarkerSupplier.set(mTabBookmarker);
 
-        when(mTabModelSelector.getCurrentTabGroupModelFilterSupplier())
-                .thenReturn(mTabGroupModelFilterSupplier);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         when(mTabModel.iterator()).thenAnswer(invocation -> List.of(tab).iterator());
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(tab);
@@ -339,10 +333,10 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     }
 
     @Test
-    public void testCreateTabGroupModelFilterSupplier() {
+    public void testCreateTabModelSupplier() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
-        var supplier = mFactory.createTabGroupModelFilterSupplier(false);
+        var supplier = mFactory.createTabModelSupplier(false);
         assertEquals(mTabModel, supplier.get());
     }
 }

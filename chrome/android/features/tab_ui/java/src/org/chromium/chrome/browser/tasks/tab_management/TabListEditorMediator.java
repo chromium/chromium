@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
@@ -65,10 +65,9 @@ class TabListEditorMediator
                 TabListEditorAction.ActionDelegate,
                 AppHeaderObserver {
     private final Context mContext;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
-            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
+    private final Callback<@Nullable TabModel> mOnTabModelChanged =
+            new ValueChangedCallback<>(this::onTabModelChanged);
     private final PropertyModel mModel;
     private final SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     private final boolean mActionOnRelatedTabs;
@@ -120,7 +119,7 @@ class TabListEditorMediator
 
     TabListEditorMediator(
             Context context,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             PropertyModel model,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             boolean actionOnRelatedTabs,
@@ -132,7 +131,7 @@ class TabListEditorMediator
             @CreationMode int creationMode,
             @Nullable ItemPickerSelectionHandler itemPickerSelectionHandler) {
         mContext = context;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
         mModel = model;
         mSelectionDelegate = selectionDelegate;
         mActionOnRelatedTabs = actionOnRelatedTabs;
@@ -166,8 +165,8 @@ class TabListEditorMediator
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
-                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                        if (filter == null || !filter.isTabModelRestored()) return;
+                        TabModel tabModel = mCurrentTabModelSupplier.get();
+                        if (tabModel == null || !tabModel.isTabModelRestored()) return;
                         // When tab is added due to
                         // 1) multi-window close
                         // 2) moving between multiple windows
@@ -213,8 +212,7 @@ class TabListEditorMediator
                 };
         mSelectionDelegate.addObserver(mSelectionObserver);
 
-        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
-                mOnTabGroupModelFilterChanged);
+        mCurrentTabModelSupplier.addSyncObserverAndCallIfNonNull(mOnTabModelChanged);
 
         mBackPressChangedSupplier.set(isEditorVisible());
         mModel.addObserver(
@@ -302,10 +300,7 @@ class TabListEditorMediator
 
         mModel.set(TabListEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
         mModel.set(TabListEditorProperties.DONE_BUTTON_CLICK_HANDLER, mDoneButtonClickHandler);
-        updateColors(
-                assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
-                        .getTabModel()
-                        .isIncognito());
+        updateColors(assumeNonNull(mCurrentTabModelSupplier.get()).isIncognito());
     }
 
     /** {@link TabListEditorCoordinator.TabListEditorController} implementation. */
@@ -342,10 +337,7 @@ class TabListEditorMediator
                 TabListEditorProperties.DONE_BUTTON_VISIBILITY,
                 mCreationMode == CreationMode.ITEM_PICKER);
 
-        updateColors(
-                assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
-                        .getTabModel()
-                        .isIncognito());
+        updateColors(assumeNonNull(mCurrentTabModelSupplier.get()).isIncognito());
     }
 
     @Override
@@ -370,17 +362,11 @@ class TabListEditorMediator
         mActionListModel.clear();
         for (TabListEditorAction action : actions) {
             action.configure(
-                    mCurrentTabGroupModelFilterSupplier,
-                    mSelectionDelegate,
-                    this,
-                    mActionOnRelatedTabs);
+                    mCurrentTabModelSupplier, mSelectionDelegate, this, mActionOnRelatedTabs);
             mActionListModel.add(action.getPropertyModel());
         }
 
-        updateColors(
-                assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
-                        .getTabModel()
-                        .isIncognito());
+        updateColors(assumeNonNull(mCurrentTabModelSupplier.get()).isIncognito());
     }
 
     @Override
@@ -546,8 +532,8 @@ class TabListEditorMediator
     public void destroy() {
         runListDestroyables();
 
-        removeTabGroupModelFilterObserver(assumeNonNull(mCurrentTabGroupModelFilterSupplier.get()));
-        mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        removeTabModelObserver(assumeNonNull(mCurrentTabModelSupplier.get()));
+        mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
 
         mSelectionDelegate.removeObserver(mSelectionObserver);
 
@@ -571,22 +557,21 @@ class TabListEditorMediator
         }
     }
 
-    private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
-        removeTabGroupModelFilterObserver(oldFilter);
+    private void onTabModelChanged(@Nullable TabModel newTabModel, @Nullable TabModel oldTabModel) {
+        removeTabModelObserver(oldTabModel);
 
-        if (newFilter != null) {
+        if (newTabModel != null) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
             // Non-incognito mode and incognito in both light/dark themes in dark theme all look
             // dark.
-            updateColors(newFilter.getTabModel().isIncognito());
-            newFilter.addObserver(mTabModelObserver);
+            updateColors(newTabModel.isIncognito());
+            newTabModel.addObserver(mTabModelObserver);
         }
     }
 
-    private void removeTabGroupModelFilterObserver(@Nullable TabGroupModelFilter filter) {
-        if (filter != null) {
-            filter.removeObserver(mTabModelObserver);
+    private void removeTabModelObserver(@Nullable TabModel tabModel) {
+        if (tabModel != null) {
+            tabModel.removeObserver(mTabModelObserver);
         }
     }
 }

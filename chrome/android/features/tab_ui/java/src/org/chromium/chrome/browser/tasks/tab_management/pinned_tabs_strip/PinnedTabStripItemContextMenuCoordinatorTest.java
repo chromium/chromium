@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
@@ -66,7 +65,6 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
 
     @Mock private Supplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private TabBookmarker mTabBookmarker;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -89,8 +87,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         mTabGroupId = Token.createRandom();
         when(mTabBookmarkerSupplier.get()).thenReturn(mTabBookmarker);
 
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTab.getTabGroupId()).thenReturn(mTabGroupId);
@@ -105,7 +102,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                         mActivity,
                         mProfile,
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mTabGroupSyncService,
@@ -121,7 +118,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -138,7 +135,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -147,8 +144,8 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                 TAB_ID,
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
-        verify(mTabGroupModelFilter).createSingleTabGroup(mTab);
-        verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabGroupModelFilter);
+        verify(mTabModel).createSingleTabGroup(mTab);
+        verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabModel);
     }
 
     @Test
@@ -156,7 +153,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -173,7 +170,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -190,7 +187,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -207,7 +204,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -229,7 +226,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -247,7 +244,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 PinnedTabStripItemContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager);
 
@@ -290,7 +287,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
     public void testBuildMenuActionItems_noGroups() {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());
@@ -306,7 +303,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
 
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());

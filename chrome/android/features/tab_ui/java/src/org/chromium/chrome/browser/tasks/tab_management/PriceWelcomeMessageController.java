@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
@@ -46,9 +46,8 @@ public class PriceWelcomeMessageController {
             new TabModelObserver() {
                 @Override
                 public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    TabGroupModelFilter tabGroupModelFilter =
-                            mCurrentTabGroupModelFilterSupplier.get();
-                    assumeNonNull(tabGroupModelFilter);
+                    TabModel tabModel = mCurrentTabModelSupplier.get();
+                    assumeNonNull(tabModel);
                     assert mPriceMessageService != null;
                     if (mPriceMessageService.getBindingTabId() == tab.getId()) {
                         removePriceWelcomeMessage();
@@ -57,9 +56,8 @@ public class PriceWelcomeMessageController {
 
                 @Override
                 public void tabClosureUndone(Tab tab) {
-                    TabGroupModelFilter tabGroupModelFilter =
-                            mCurrentTabGroupModelFilterSupplier.get();
-                    assumeNonNull(tabGroupModelFilter);
+                    TabModel tabModel = mCurrentTabModelSupplier.get();
+                    assumeNonNull(tabModel);
                     assert mPriceMessageService != null;
                     if (mPriceMessageService.getBindingTabId() == tab.getId()) {
                         restorePriceWelcomeMessage();
@@ -78,11 +76,10 @@ public class PriceWelcomeMessageController {
             };
 
     private final ObserverList<PriceMessageUpdateObserver> mObservers = new ObserverList<>();
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
-            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
+    private final Callback<@Nullable TabModel> mOnTabModelChanged =
+            new ValueChangedCallback<>(this::onTabModelChanged);
     private final TabSwitcherMessageManager mTabSwitcherMessageManager;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     private final NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
@@ -93,7 +90,7 @@ public class PriceWelcomeMessageController {
     @VisibleForTesting
     PriceWelcomeMessageController(
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
             NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
@@ -101,7 +98,7 @@ public class PriceWelcomeMessageController {
             NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable PriceMessageService priceMessageService) {
         mTabSwitcherMessageManager = tabSwitcherMessageManager;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
         mMessageCardProvider = messageCardProvider;
         mPriceWelcomeMessageReviewActionProviderSupplier =
                 priceWelcomeMessageReviewActionProviderSupplier;
@@ -110,15 +107,14 @@ public class PriceWelcomeMessageController {
         mPriceMessageService = priceMessageService;
 
         if (mPriceMessageService != null) {
-            currentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
-                    mOnTabGroupModelFilterChanged);
+            currentTabModelSupplier.addSyncObserverAndCallIfNonNull(mOnTabModelChanged);
             messageCardProvider.subscribeMessageService(mPriceMessageService);
         }
     }
 
     /**
      * @param tabSwitcherMessageManager Manages messages for the tab switcher.
-     * @param currentTabGroupModelFilterSupplier Supplies the current {@link TabGroupModelFilter}.
+     * @param currentTabModelSupplier Supplies the current {@link TabModel}.
      * @param messageCardProvider To build message cards.
      * @param priceWelcomeMessageReviewActionProviderSupplier Supplier for the review action
      *     provider.
@@ -128,7 +124,7 @@ public class PriceWelcomeMessageController {
     public static PriceWelcomeMessageController build(
             Context context,
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
             NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
@@ -145,7 +141,7 @@ public class PriceWelcomeMessageController {
 
         return new PriceWelcomeMessageController(
                 tabSwitcherMessageManager,
-                currentTabGroupModelFilterSupplier,
+                currentTabModelSupplier,
                 messageCardProvider,
                 priceWelcomeMessageReviewActionProviderSupplier,
                 profile,
@@ -155,7 +151,7 @@ public class PriceWelcomeMessageController {
 
     /** Destroys the controller. */
     public void destroy() {
-        mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
     }
 
     /**
@@ -200,9 +196,9 @@ public class PriceWelcomeMessageController {
             // To make the message card in view when user enters tab switcher, we should scroll to
             // current tab with 0 offset. See {@link
             // TabSwitcherMediator#setInitialScrollIndexOffset} for more details.
-            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-            assumeNonNull(filter);
-            actionProvider.scrollToTab(filter.getCurrentRepresentativeTabIndex());
+            TabModel tabModel = mCurrentTabModelSupplier.get();
+            assumeNonNull(tabModel);
+            actionProvider.scrollToTab(tabModel.getCurrentRepresentativeTabIndex());
         }
         for (PriceMessageUpdateObserver observer : mObservers) {
             observer.onShowPriceWelcomeMessage();
@@ -239,18 +235,17 @@ public class PriceWelcomeMessageController {
         }
     }
 
-    private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
-        removeObserver(oldFilter);
+    private void onTabModelChanged(@Nullable TabModel newTabModel, @Nullable TabModel oldTabModel) {
+        removeObserver(oldTabModel);
 
-        if (newFilter != null) {
-            newFilter.addObserver(mTabModelObserver);
+        if (newTabModel != null) {
+            newTabModel.addObserver(mTabModelObserver);
         }
     }
 
-    private void removeObserver(@Nullable TabGroupModelFilter oldFilter) {
-        if (oldFilter != null) {
-            oldFilter.removeObserver(mTabModelObserver);
+    private void removeObserver(@Nullable TabModel oldTabModel) {
+        if (oldTabModel != null) {
+            oldTabModel.removeObserver(mTabModelObserver);
         }
     }
 }

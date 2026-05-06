@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
@@ -55,7 +54,6 @@ import java.util.stream.Collectors;
 public class TabListEditorCloseActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private TabRemover mTabRemover;
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
@@ -74,11 +72,10 @@ public class TabListEditorCloseActionUnitTest {
                         IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mTabRemover);
-        when(mGroupFilter.getTabModel()).thenReturn(mTabModel);
     }
 
     private void configure(boolean actionOnRelatedTabs) {
-        mAction.configure(() -> mGroupFilter, mSelectionDelegate, mDelegate, actionOnRelatedTabs);
+        mAction.configure(() -> mTabModel, mSelectionDelegate, mDelegate, actionOnRelatedTabs);
     }
 
     @Test
@@ -208,7 +205,6 @@ public class TabListEditorCloseActionUnitTest {
         TabListHolder holder =
                 TabListEditorActionUnitTestHelper.configureTabs(
                         mTabModel,
-                        mGroupFilter,
                         /* tabGroupSyncService= */ null,
                         mSelectionDelegate,
                         tabIdGroups,
@@ -279,7 +275,6 @@ public class TabListEditorCloseActionUnitTest {
         TabListHolder holder =
                 TabListEditorActionUnitTestHelper.configureTabs(
                         mTabModel,
-                        mGroupFilter,
                         /* tabGroupSyncService= */ null,
                         mSelectionDelegate,
                         tabIdGroups,

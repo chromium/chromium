@@ -148,7 +148,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
             @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Share action should not be enabled for no tabs.";
 
-        TabList tabList = getTabGroupModelFilter().getTabModel();
+        TabList tabList = getTabModel();
         List<Tab> sortedTabList = filterTabs(tabs, tabList);
 
         if (sortedTabList.size() == 0) {

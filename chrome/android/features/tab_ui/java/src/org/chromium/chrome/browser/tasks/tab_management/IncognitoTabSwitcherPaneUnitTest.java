@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.actions.button.DisplayButtonData;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
@@ -90,7 +89,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private TabSwitcherPaneCoordinatorFactory mTabSwitcherPaneCoordinatorFactory;
     @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private IncognitoTabModel mIncognitoTabModel;
     @Mock private PaneHubController mPaneHubController;
     @Mock private DoubleConsumer mOnAlphaChange;
@@ -144,9 +142,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         any());
 
         mTabList = List.of(mock(Tab.class));
-        when(mTabGroupModelFilter.getRepresentativeTabList()).thenReturn(mTabList);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
-        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        when(mIncognitoTabModel.getRepresentativeTabList()).thenReturn(mTabList);
+        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
         when(mTabSwitcherPaneCoordinator.getIsRecyclerViewAnimatorRunning())
                 .thenReturn(mIsRecyclerViewAnimatorRunningSupplier);
         when(mTabSwitcherPaneCoordinator.getRecentlySwipedTabIdSupplier())
@@ -158,7 +155,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                 new IncognitoTabSwitcherPane(
                         mContext,
                         mTabSwitcherPaneCoordinatorFactory,
-                        () -> mTabGroupModelFilter,
+                        () -> mIncognitoTabModel,
                         mNewTabButtonClickListener,
                         mIncognitoReauthControllerSupplier,
                         mOnAlphaChange,
@@ -338,7 +335,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
-        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(false);
+        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(false);
 
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
@@ -353,7 +350,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
 
-        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        when(mIncognitoTabModel.isTabModelRestored()).thenReturn(true);
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown");

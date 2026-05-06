@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
@@ -152,7 +151,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final boolean mAllowDragAndDrop;
     private final boolean mAllowDetachingTabsToCreateNewWindows;
     private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
-    private final NullableObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mTabModelSupplier;
     private final ObserverList<DragObserver> mDragObserverList = new ObserverList<>();
     private final TabListHighlighter mTabListHighlighter;
     private final TabListMergeAnimationManager mTabListMergeAnimationManager;
@@ -178,7 +177,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param modalDialogManager Used for managing the modal dialogs.
-     * @param tabGroupModelFilterSupplier The supplier for the current tab model filter.
+     * @param tabModelSupplier The supplier for the current tab model.
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
@@ -212,7 +211,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             ModalDialogManager modalDialogManager,
-            NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> tabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable DataSharingTabManager dataSharingTabManager,
@@ -260,7 +259,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 };
         mAllowDragAndDrop = allowDragAndDrop;
         mTabSwitcherDragHandler = tabSwitcherDragHandler;
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabModelSupplier = tabModelSupplier;
         mAllowDetachingTabsToCreateNewWindows =
                 MultiWindowUtils.isMultiInstanceApi31Enabled()
                         && ChromeFeatureList.isEnabled(
@@ -352,7 +351,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         mModelList,
                         mMode,
                         modalDialogManager,
-                        tabGroupModelFilterSupplier,
+                        tabModelSupplier,
                         thumbnailProvider,
                         mTabListFaviconProvider,
                         actionOnRelatedTabs,
@@ -1169,9 +1168,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 if (selectedIndex != -1) {
                     PropertyModel model = mModelList.get(selectedIndex).model;
                     int tabId = model.get(TabProperties.TAB_ID);
-                    TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-                    assumeNonNull(filter);
-                    Tab tab = filter.getTabModel().getTabById(tabId);
+                    TabModel tabModel = mTabModelSupplier.get();
+                    assumeNonNull(tabModel);
+                    Tab tab = tabModel.getTabById(tabId);
                     assumeNonNull(tab);
                     Token groupToken = tab.getTabGroupId();
 

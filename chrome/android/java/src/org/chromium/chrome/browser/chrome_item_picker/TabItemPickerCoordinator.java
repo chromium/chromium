@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -560,8 +559,8 @@ public class TabItemPickerCoordinator {
         }
     }
 
-    /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
-    private NullableObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
+    /** Creates a TabModel supplier required by the TabListEditorCoordinator. */
+    private NullableObservableSupplier<TabModel> createTabModelSupplier(
             TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
         TabModel curTabModel = tabModelSelector.getModel(isIncognito);
@@ -612,8 +611,7 @@ public class TabItemPickerCoordinator {
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
     @VisibleForTesting
     TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
-        NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
-                createTabGroupModelFilterSupplier(selector);
+        NullableObservableSupplier<TabModel> tabModelSupplier = createTabModelSupplier(selector);
         BrowserControlsStateProvider browserControlStateProvider =
                 new HeadlessBrowserControlsStateProvider();
         TabContentManager tabContentManager =
@@ -638,7 +636,7 @@ public class TabItemPickerCoordinator {
                         mRootView,
                         mContainerView,
                         browserControlStateProvider,
-                        tabGroupModelFilterSupplier,
+                        tabModelSupplier,
                         tabContentManager,
                         CallbackUtils.emptyCallback(),
                         TabListMode.GRID,

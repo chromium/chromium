@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -197,7 +196,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         return new TabSwitcherPaneCoordinator(
                 mActivity,
                 assertNonNull(mProfileProviderSupplier.get()),
-                createTabGroupModelFilterSupplier(isIncognito),
+                createTabModelSupplier(isIncognito),
                 mTabContentManager,
                 mBrowserControlsStateProvider,
                 mScrimManager,
@@ -234,9 +233,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     }
 
     @VisibleForTesting
-    MonotonicObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
-            boolean isIncognito) {
-        SettableMonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
+    MonotonicObservableSupplier<TabModel> createTabModelSupplier(boolean isIncognito) {
+        SettableMonotonicObservableSupplier<TabModel> tabModelSupplier =
                 ObservableSuppliers.createMonotonic();
         // This implementation doesn't wait for isTabStateInitialized because we want to be able to
         // show the TabSwitcherPane before tab state initialization finishes. Tab state
@@ -245,7 +243,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
         TabModelSelector selector = mTabModelSelector;
         if (!selector.getModels().isEmpty()) {
-            tabGroupModelFilterSupplier.set(selector.getModel(isIncognito));
+            tabModelSupplier.set(selector.getModel(isIncognito));
         } else {
             selector.addObserver(
                     new TabModelSelectorObserver() {
@@ -253,11 +251,11 @@ public class TabSwitcherPaneCoordinatorFactory {
                         public void onChange() {
                             assert !selector.getModels().isEmpty();
                             selector.removeObserver(this);
-                            tabGroupModelFilterSupplier.set(selector.getModel(isIncognito));
+                            tabModelSupplier.set(selector.getModel(isIncognito));
                         }
                     });
         }
-        return tabGroupModelFilterSupplier;
+        return tabModelSupplier;
     }
 
     private void onMessageManagerTokenStateChanged() {
@@ -267,7 +265,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                     new TabSwitcherMessageManager(
                             mActivity,
                             mLifecycleDispatcher,
-                            mTabModelSelector.getCurrentTabGroupModelFilterSupplier(),
+                            mTabModelSelector.getCurrentTabModelSupplier(),
                             mMultiWindowModeStateDispatcher,
                             mSnackbarManager,
                             mModalDialogManager,

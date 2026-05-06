@@ -27,7 +27,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
@@ -56,13 +56,13 @@ public class PinnedTabStripCoordinator {
      * @param activity The current activity.
      * @param parentView The parent view to attach the pinned tabs strip to.
      * @param tabListCoordinator The coordinator for the main tab grid.
-     * @param tabGroupModelFilterSupplier The supplier of the current {@link TabGroupModelFilter}.
+     * @param tabModelSupplier The supplier of the current {@link TabModel}.
      */
     public PinnedTabStripCoordinator(
             Activity activity,
             ViewGroup parentView,
             TabListCoordinator tabListCoordinator,
-            MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabModel> tabModelSupplier,
             MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
@@ -114,7 +114,7 @@ public class PinnedTabStripCoordinator {
                         tabListModel,
                         pinnedTabsModelList,
                         pinnedTabStripPropertyModel,
-                        tabGroupModelFilterSupplier,
+                        tabModelSupplier,
                         tabBookmarkerSupplier,
                         bottomSheetController,
                         modalDialogManager,
@@ -123,7 +123,7 @@ public class PinnedTabStripCoordinator {
         PinnedTabStripItemTouchHelperCallback callback =
                 new PinnedTabStripItemTouchHelperCallback(
                         activity,
-                        tabGroupModelFilterSupplier,
+                        tabModelSupplier,
                         pinnedTabsModelList,
                         () -> mPinnedTabsRecyclerView,
                         mMediator::onLongPress);
@@ -164,7 +164,7 @@ public class PinnedTabStripCoordinator {
             TabListModel tabListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabModel> tabModelSupplier,
             MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
@@ -179,7 +179,7 @@ public class PinnedTabStripCoordinator {
                 tabListModel,
                 pinnedTabsModelList,
                 stripPropertyModel,
-                tabGroupModelFilterSupplier,
+                tabModelSupplier,
                 tabBookmarkerSupplier,
                 bottomSheetController,
                 modalDialogManager,

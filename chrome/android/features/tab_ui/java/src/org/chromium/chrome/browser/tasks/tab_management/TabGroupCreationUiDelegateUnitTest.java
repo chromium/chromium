@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -50,7 +49,6 @@ public class TabGroupCreationUiDelegateUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private PaneManager mPaneManager;
-    @Mock private TabGroupModelFilter mFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mTab;
@@ -58,7 +56,7 @@ public class TabGroupCreationUiDelegateUnitTest {
 
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private Supplier<PaneManager> mPaneManagerSupplier;
-    private Supplier<TabGroupModelFilter> mFilterSupplier;
+    private Supplier<TabModel> mTabModelSupplier;
     private TabGroupCreationUiDelegate mTabGroupCreationUiDelegate;
     private Token mToken;
     private Activity mActivity;
@@ -68,9 +66,8 @@ public class TabGroupCreationUiDelegateUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mModalDialogManagerSupplier = () -> mModalDialogManager;
         mPaneManagerSupplier = () -> mPaneManager;
-        mFilterSupplier = () -> mFilter;
+        mTabModelSupplier = () -> mTabModel;
 
-        when(mFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mToken = Token.createRandom();
@@ -82,7 +79,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
-                        mFilterSupplier,
+                        mTabModelSupplier,
                         (a, b, c) -> mTabGroupCreationDialogManager);
 
         when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(mTab);
@@ -91,14 +88,14 @@ public class TabGroupCreationUiDelegateUnitTest {
     @Test
     public void testNewTabGroupFlow() {
         mTabGroupCreationUiDelegate.newTabGroupFlow();
-        verify(mTabGroupCreationDialogManager).showDialog(mToken, mFilter);
+        verify(mTabGroupCreationDialogManager).showDialog(mToken, mTabModel);
     }
 
     @Test
     public void testNewTabGroupFlow_tabCreationFails() {
         when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(null);
         mTabGroupCreationUiDelegate.newTabGroupFlow();
-        verify(mTabGroupCreationDialogManager, never()).showDialog(mToken, mFilter);
+        verify(mTabGroupCreationDialogManager, never()).showDialog(mToken, mTabModel);
     }
 
     @Test
@@ -112,7 +109,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
-                        mFilterSupplier,
+                        mTabModelSupplier,
                         (a, b, openTabGroupUi) -> {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
@@ -134,7 +131,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
-                        mFilterSupplier,
+                        mTabModelSupplier,
                         (a, b, openTabGroupUi) -> {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;
@@ -155,7 +152,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         mActivity,
                         mModalDialogManagerSupplier,
                         mPaneManagerSupplier,
-                        mFilterSupplier,
+                        mTabModelSupplier,
                         (a, b, openTabGroupUi) -> {
                             openTabGroupUiContainer.set(openTabGroupUi);
                             return mTabGroupCreationDialogManager;

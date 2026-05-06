@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
@@ -75,13 +74,11 @@ public class PinnedTabStripMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private TabListCoordinator mTabListCoordinator;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -111,9 +108,7 @@ public class PinnedTabStripMediatorTest {
 
     @Before
     public void setUp() {
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mIncognitoTabGroupModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
         when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
@@ -123,7 +118,7 @@ public class PinnedTabStripMediatorTest {
     }
 
     void onActivity(TestActivity activity) {
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabModelSupplier.set(mTabModel);
         mActivity = activity;
         mTabListModel = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
@@ -141,7 +136,7 @@ public class PinnedTabStripMediatorTest {
                         mTabListModel,
                         mPinnedTabsModelList,
                         mStripPropertyModel,
-                        mTabGroupModelFilterSupplier,
+                        mTabModelSupplier,
                         mTabBookmarkerSupplier,
                         mBottomSheetController,
                         mModalDialogManager,
@@ -154,7 +149,7 @@ public class PinnedTabStripMediatorTest {
         when(mLayoutManager.getSpanCount()).thenReturn(2);
 
         mMediator.setContextMenuCoordinatorForTesting(mMenuCoordinator);
-        verify(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
     }
 
     @Test
@@ -557,19 +552,18 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
-    public void testChangingTabGroupModelFilters() {
-        mTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+    public void testChangingTabModels() {
+        mTabModelSupplier.set(mIncognitoTabModel);
 
-        verify(mTabGroupModelFilter).removeObserver(any());
-        verify(mIncognitoTabGroupModelFilter).addObserver(any());
+        verify(mTabModel).removeObserver(any());
+        verify(mIncognitoTabModel).addObserver(any());
     }
 
     @Test
-    public void testOnTabGroupModelFilterChanged_NullProfile() {
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+    public void testOnTabModelChanged_NullProfile() {
         when(mTabModel.getProfile()).thenReturn(null);
 
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabModelSupplier.set(mTabModel);
 
         // Verify that the downstream dependencies are not created.
         verify(mOnTabGroupCreation, times(0)).run();

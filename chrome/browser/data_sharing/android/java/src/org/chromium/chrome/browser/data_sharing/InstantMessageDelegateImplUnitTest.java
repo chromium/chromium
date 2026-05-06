@@ -51,7 +51,6 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
@@ -103,7 +102,6 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private ManagedMessageDispatcher mManagedMessageDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Callback<Boolean> mSuccessCallback;
@@ -140,9 +138,8 @@ public class InstantMessageDelegateImplUnitTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mIsActiveWindowSupplier.get()).thenReturn(false);
 
@@ -156,7 +153,7 @@ public class InstantMessageDelegateImplUnitTest {
                         mMessagingBackendService, mDataSharingService, mTabGroupSyncService);
         mDelegate.attachWindow(
                 mWindowAndroid,
-                mTabGroupModelFilter,
+                mTabModel,
                 mDataSharingNotificationManager,
                 mDataSharingTabManager,
                 mIsActiveWindowSupplier);
@@ -189,7 +186,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
-        when(mTabGroupModelFilter.tabGroupExists(any())).thenReturn(false);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_REMOVED), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
@@ -212,8 +209,7 @@ public class InstantMessageDelegateImplUnitTest {
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
 
-        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
-                .thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
                 (LoadUrlParams params) ->
@@ -232,8 +228,7 @@ public class InstantMessageDelegateImplUnitTest {
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
 
-        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
-                .thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
         ArgumentMatcher<LoadUrlParams> matcher =
                 (LoadUrlParams params) ->
@@ -252,8 +247,7 @@ public class InstantMessageDelegateImplUnitTest {
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
         PropertyModel propertyModel = mPropertyModelCaptor.getValue();
 
-        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
-                .thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.getRelatedTabList(anyInt())).thenReturn(Arrays.asList(mTab1, mTab2));
         assertEquals(DISMISS_IMMEDIATELY, propertyModel.get(ON_PRIMARY_ACTION).get().intValue());
 
         // Should not trigger any navigation.
@@ -371,7 +365,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved_NoLastFocusedWindow() {
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
 
@@ -380,7 +374,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved_LastFocusedWindow() {
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
         when(mIsActiveWindowSupplier.get()).thenReturn(true);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);

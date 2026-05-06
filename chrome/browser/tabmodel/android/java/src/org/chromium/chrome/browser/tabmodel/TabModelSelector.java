@@ -251,7 +251,12 @@ public interface TabModelSelector {
     @Deprecated
     @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter();
 
-    /** Returns an observable supplier for the current tab model filter. */
+    /**
+     * Returns an observable supplier for the current tab model filter.
+     *
+     * @deprecated Use {@link #getCurrentTabModelSupplier()} instead.
+     */
+    @Deprecated
     NullableObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier();
 
     /** Reset the internal filter list to allow initialization again. */

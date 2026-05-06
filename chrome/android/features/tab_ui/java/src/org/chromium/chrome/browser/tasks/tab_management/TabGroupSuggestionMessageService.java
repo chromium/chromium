@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -106,8 +105,7 @@ public class TabGroupSuggestionMessageService
     }
 
     private final Context mContext;
-    private final NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
 
     private final Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
     private final StartMergeAnimation mStartMergeAnimation;
@@ -115,14 +113,13 @@ public class TabGroupSuggestionMessageService
 
     /**
      * @param context The context for this service.
-     * @param currentTabGroupModelFilterSupplier The supplier for the current {@link
-     *     TabGroupModelFilter}.
+     * @param currentTabModelSupplier The supplier for the current {@link TabModel}.
      * @param onMessageAfterTabCallback A callback to be called to add a message after a tab.
      * @param startMergeAnimation A callback used to start the merge animation.
      */
     public TabGroupSuggestionMessageService(
             Context context,
-            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabModel> currentTabModelSupplier,
             Callback<@TabId Integer> onMessageAfterTabCallback,
             StartMergeAnimation startMergeAnimation) {
         super(
@@ -131,7 +128,7 @@ public class TabGroupSuggestionMessageService
                 R.layout.tab_grid_message_card_item,
                 MessageCardViewBinder::bind);
         mContext = context;
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
         mAddOnMessageAfterTabCallback = onMessageAfterTabCallback;
         mStartMergeAnimation = startMergeAnimation;
     }
@@ -192,15 +189,14 @@ public class TabGroupSuggestionMessageService
     private void groupTabs(List<@TabId Integer> tabIds) {
         assert !tabIds.isEmpty();
 
-        TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(tabGroupModelFilter);
-        TabModel tabModel = tabGroupModelFilter.getTabModel();
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        assumeNonNull(tabModel);
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
 
         // Just dismiss message if there are no tabs to group.
         if (!tabs.isEmpty()) {
             Tab tab = tabs.get(0);
-            tabGroupModelFilter.mergeListOfTabsToGroup(
+            tabModel.mergeListOfTabsToGroup(
                     tabs, tab, /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
             SuggestionMetricsService metricsService =

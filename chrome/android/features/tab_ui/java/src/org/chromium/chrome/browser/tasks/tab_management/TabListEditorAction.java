@@ -21,7 +21,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -127,7 +127,7 @@ public abstract class TabListEditorAction {
 
     private final ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private final PropertyModel mModel;
-    private Supplier<@Nullable TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private Supplier<@Nullable TabModel> mCurrentTabModelSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
@@ -269,7 +269,7 @@ public abstract class TabListEditorAction {
      */
     public boolean perform(@Nullable MotionEventInfo triggeringMotion) {
         assert mActionDelegate != null;
-        assert mCurrentTabGroupModelFilterSupplier != null;
+        assert mCurrentTabModelSupplier != null;
         assert mSelectionDelegate != null;
 
         List<Tab> tabs = getTabsOrTabsAndRelatedTabsFromSelection();
@@ -301,7 +301,7 @@ public abstract class TabListEditorAction {
     /**
      * Called by {@link TabListEditorMediator} to supply additional dependencies.
      *
-     * @param currentTabGroupModelFilterSupplier that this action should act on.
+     * @param currentTabModelSupplier that this action should act on.
      * @param selectionDelegate to get selected tab IDs from.
      * @param actionDelegate to control the TabListEditor.
      * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
@@ -309,11 +309,11 @@ public abstract class TabListEditorAction {
      */
     @Initializer
     void configure(
-            Supplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            Supplier<@Nullable TabModel> currentTabModelSupplier,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
-        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
+        mCurrentTabModelSupplier = currentTabModelSupplier;
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
         mEditorSupportsActionOnRelatedTabs = editorSupportsActionOnRelatedTabs;
@@ -324,10 +324,10 @@ public abstract class TabListEditorAction {
         return mModel;
     }
 
-    protected TabGroupModelFilter getTabGroupModelFilter() {
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assert filter != null;
-        return filter;
+    protected TabModel getTabModel() {
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        assert tabModel != null;
+        return tabModel;
     }
 
     protected ActionDelegate getActionDelegate() {
@@ -346,7 +346,7 @@ public abstract class TabListEditorAction {
             // Only items of type tabId representing a tab are considered. Synced tab groups
             // represented by a syncId will be ignored.
             if (itemId.isTabId()) {
-                Tab tab = getTabGroupModelFilter().getTabModel().getTabById(itemId.getTabId());
+                Tab tab = getTabModel().getTabById(itemId.getTabId());
                 if (tab == null) continue;
 
                 selectedTabs.add(tab);
@@ -356,15 +356,15 @@ public abstract class TabListEditorAction {
     }
 
     private List<Tab> getTabsAndRelatedTabsFromSelection() {
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(filter);
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        assumeNonNull(tabModel);
 
         List<Tab> tabs = new ArrayList<>();
         for (TabListEditorItemSelectionId itemId : mSelectionDelegate.getSelectedItems()) {
             // Only items of type tabId representing a tab are considered. Synced tab groups
             // represented by a syncId will be ignored.
             if (itemId.isTabId()) {
-                tabs.addAll(filter.getRelatedTabList(itemId.getTabId()));
+                tabs.addAll(tabModel.getRelatedTabList(itemId.getTabId()));
             }
         }
         return tabs;
@@ -407,18 +407,18 @@ public abstract class TabListEditorAction {
     }
 
     public static int getTabCountIncludingRelatedTabs(
-            TabGroupModelFilter tabGroupModelFilter, List<TabListEditorItemSelectionId> itemIds) {
+            TabModel tabModel, List<TabListEditorItemSelectionId> itemIds) {
         int tabCount = 0;
         for (TabListEditorItemSelectionId itemId : itemIds) {
             if (itemId.isTabId()) {
-                Tab tab = tabGroupModelFilter.getTabModel().getTabById(itemId.getTabId());
+                Tab tab = tabModel.getTabById(itemId.getTabId());
                 // TODO(crbug.com/41495189): Find out how we can have a tab ID that is no longer
                 // in the tab model here.
                 if (tab == null) continue;
 
                 @Nullable Token tabGroupId = tab.getTabGroupId();
                 if (tabGroupId != null) {
-                    tabCount += tabGroupModelFilter.getTabCountForGroup(tabGroupId);
+                    tabCount += tabModel.getTabCountForGroup(tabGroupId);
                 } else {
                     tabCount++;
                 }

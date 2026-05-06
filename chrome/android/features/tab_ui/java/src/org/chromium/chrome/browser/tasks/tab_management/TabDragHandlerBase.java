@@ -17,8 +17,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDragStateData;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -65,8 +64,7 @@ public abstract class TabDragHandlerBase
     protected final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     protected final DragAndDropDelegate mDragAndDropDelegate;
     private @Nullable TabModelSelector mTabModelSelector;
-    private @Nullable NullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier;
+    private @Nullable MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private @Nullable View mDragSourceView;
     private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -93,8 +91,7 @@ public abstract class TabDragHandlerBase
     /** Sets @{@link TabModelSelector} to retrieve model info. */
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
-        mCurrentTabGroupModelFilterSupplier =
-                mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
+        mCurrentTabModelSupplier = mTabModelSelector.getCurrentTabModelSupplier();
     }
 
     /** Whether a view drag and drop has started. */
@@ -118,10 +115,9 @@ public abstract class TabDragHandlerBase
         return mTabModelSelector;
     }
 
-    protected NullableObservableSupplier<TabGroupModelFilter>
-            getCurrentTabGroupModelFilterSupplier() {
-        assert mCurrentTabGroupModelFilterSupplier != null;
-        return mCurrentTabGroupModelFilterSupplier;
+    protected MonotonicObservableSupplier<TabModel> getCurrentTabModelSupplier() {
+        assert mCurrentTabModelSupplier != null;
+        return mCurrentTabModelSupplier;
     }
 
     protected TabModel getCurrentModel() {

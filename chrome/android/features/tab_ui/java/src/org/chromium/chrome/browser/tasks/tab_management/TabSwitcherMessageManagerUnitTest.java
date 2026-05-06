@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.SuggestionLifecycleObserverHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
@@ -92,7 +91,6 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private SnackbarManager mSnackbarManager;
@@ -119,8 +117,8 @@ public class TabSwitcherMessageManagerUnitTest {
     private ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
             mMultiWindowModeObserverCaptor;
 
-    private final SettableNullableObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<TabModel> mCurrentTabModelSupplier =
+            ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
@@ -145,12 +143,11 @@ public class TabSwitcherMessageManagerUnitTest {
                 .when(mMultiWindowModeStateDispatcher)
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
         doReturn(mTabListHighlighter).when(mTabListCoordinator).getTabListHighlighter();
-        doNothing().when(mTabGroupModelFilter).addObserver(any());
-        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        doNothing().when(mTabModel).addObserver(any());
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mCurrentTabModelSupplier.set(mTabModel);
         when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -165,7 +162,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 new TabSwitcherMessageManager(
                         activity,
                         mActivityLifecycleDispatcher,
-                        mCurrentTabGroupModelFilterSupplier,
+                        mCurrentTabModelSupplier,
                         mMultiWindowModeStateDispatcher,
                         mSnackbarManager,
                         mModalDialogManager,
@@ -189,37 +186,37 @@ public class TabSwitcherMessageManagerUnitTest {
                 mOnTabSelectingListener);
         mMessageManager.addObserver(mMessageUpdateObserver);
         mMessageManager.initWithNative(mProfile, TabListMode.GRID);
-        verify(mTabGroupModelFilter, times(2)).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModel, times(2)).addObserver(mTabModelObserverCaptor.capture());
 
-        assertTrue(mCurrentTabGroupModelFilterSupplier.hasObservers());
+        assertTrue(mCurrentTabModelSupplier.hasObservers());
     }
 
     @After
     public void tearDown() {
         mMessageManager.removeObserver(mMessageUpdateObserver);
         mMessageManager.destroy();
-        assertFalse(mCurrentTabGroupModelFilterSupplier.hasObservers());
+        assertFalse(mCurrentTabModelSupplier.hasObservers());
     }
 
     @Test
     public void testBeforeReset() {
         mMessageManager.beforeReset();
-        verify(mTabGroupModelFilter).removeObserver(any());
+        verify(mTabModel).removeObserver(any());
     }
 
     @Test
     public void testAfterReset() {
-        verify(mTabGroupModelFilter, times(2)).addObserver(any());
+        verify(mTabModel, times(2)).addObserver(any());
 
         mMessageManager.afterReset(0);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
         verify(mMessageUpdateObserver, never()).onAppendedMessage();
-        verify(mTabGroupModelFilter, times(3)).addObserver(any());
+        verify(mTabModel, times(3)).addObserver(any());
 
         mMessageManager.afterReset(1);
         verify(mMessageUpdateObserver, times(2)).onRemoveAllAppendedMessage();
         verify(mMessageUpdateObserver).onAppendedMessage();
-        verify(mTabGroupModelFilter, times(4)).addObserver(any());
+        verify(mTabModel, times(4)).addObserver(any());
     }
 
     @Test

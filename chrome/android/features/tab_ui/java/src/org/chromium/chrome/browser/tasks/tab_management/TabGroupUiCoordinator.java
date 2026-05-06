@@ -164,8 +164,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         ViewGroup containerView = mActivity.findViewById(R.id.coordinator);
         ViewGroup dialogContainer = containerView.findViewById(R.id.tab_group_ui_dialog_container);
 
-        var currentTabGroupModelFilterSupplier =
-                mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
+        var currentTabModelSupplier = mTabModelSelector.getCurrentTabModelSupplier();
         SettableNullableObservableSupplier<View> childViewSupplier =
                 ObservableSuppliers.createNullable();
         mSingleChildViewManager = new SingleChildViewManager(dialogContainer, childViewSupplier);
@@ -175,7 +174,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
                         mDataSharingTabManager,
-                        currentTabGroupModelFilterSupplier,
+                        currentTabModelSupplier,
                         mTabContentManager,
                         null,
                         null,
@@ -191,7 +190,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 event ->
                         onPageKeyEvent(
                                 event,
-                                assumeNonNull(currentTabGroupModelFilterSupplier.get()),
+                                assumeNonNull(currentTabModelSupplier.get()),
                                 /* moveSingleTab= */ true));
         return mTabGridDialogCoordinator;
     }
@@ -205,8 +204,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         SettableMonotonicObservableSupplier<Object> tabStripTokenSupplier =
                 ObservableSuppliers.createMonotonic();
 
-        var currentTabGroupModelFilterSupplier =
-                mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
+        var currentTabModelSupplier = mTabModelSelector.getCurrentTabModelSupplier();
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
             mTabStripCoordinator =
                     new TabListCoordinator(
@@ -214,7 +212,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mActivity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
-                            currentTabGroupModelFilterSupplier,
+                            currentTabModelSupplier,
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,
                             mDataSharingTabManager,

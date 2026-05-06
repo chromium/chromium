@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -114,7 +113,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private PaneManager mPaneManager;
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
-    @Mock private TabGroupModelFilter mCurrentTabGroupModelFilter;
+    @Mock private TabModel mCurrentTabModel;
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -126,8 +125,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {
@@ -152,7 +151,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mTabSwitcherView.addView(recyclerView);
         mPaneManagerSupplier.set(mPaneManager);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
-        mCurrentTabGroupModelFilterSupplier.set(mCurrentTabGroupModelFilter);
+        mCurrentTabModelSupplier.set(mCurrentTabModel);
 
         mCoordinator =
                 new ArchivedTabsDialogCoordinator(
@@ -173,7 +172,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
-                        mCurrentTabGroupModelFilterSupplier);
+                        mCurrentTabModelSupplier);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
         recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
@@ -324,8 +323,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupAfter);
-        when(mCurrentTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
-        when(mCurrentTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        when(mCurrentTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mCurrentTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         when(mTabListEditorController.isVisible()).thenReturn(true);
 
         // Show the dialog.
