@@ -65,24 +65,6 @@ enum class DisplayPosition {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DisplayPosition)
 
-// LINT.IfChange(PercentOverlap)
-enum class PercentOverlap {
-  k0 = 0,
-  k10 = 1,
-  k20 = 2,
-  k30 = 3,
-  k40 = 4,
-  k50 = 5,
-  k60 = 6,
-  k70 = 7,
-  k80 = 8,
-  k90 = 9,
-  k100 = 10,
-  kNoVisibleChromeBrowser = 11,
-  kMaxValue = kNoVisibleChromeBrowser,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PercentOverlap)
-
 // LINT.IfChange(ShareImageResult)
 enum class ShareImageResult {
   kSentImageToClient = 0,
@@ -322,10 +304,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   ChromeRelativePosition GetChromeRelativePositionOfPoint(
       Browser* browser,
       const gfx::Point& glic_center_point);
-  // Returns the percent overlap of the given glic bounds and the given chrome
-  // browser.
-  PercentOverlap GetPercentOverlapWithBrowser(Browser* browser,
-                                              const gfx::Rect& glic_bounds);
 #endif
 
   base::TimeTicks fre_accepted_time_;

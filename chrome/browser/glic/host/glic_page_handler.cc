@@ -1867,19 +1867,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     // TODO(crbug.com/424472586): Pass supported tools to service from web
     // client.
-    host().instance_delegate().FetchZeroStateSuggestions(
-        is_fre.value_or(false),
-        /*supported_tools=*/{},
-        base::BindOnce(
-            [](GetZeroStateSuggestionsForFocusedTabCallback callback,
-               base::TimeTicks start,
-               glic::mojom::ZeroStateSuggestionsPtr suggestions) {
-              base::UmaHistogramTimes(
-                  "Glic.Api.FetchZeroStateSuggestionsLatency",
-                  base::TimeTicks::Now() - start);
-              std::move(callback).Run(std::move(suggestions));
-            },
-            std::move(callback), base::TimeTicks::Now()));
+    host().instance_delegate().FetchZeroStateSuggestions(is_fre.value_or(false),
+                                                         /*supported_tools=*/{},
+                                                         std::move(callback));
   }
 
   void MaybeRefreshUserStatus() override {

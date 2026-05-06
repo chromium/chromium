@@ -324,33 +324,6 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsHotkey, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, PercentOverlapRounding) {
-  base::HistogramTester histogram_tester;
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-
-  // Ensure browser is visible for the IsBrowserVisible() check.
-  browser()->window()->Show();
-
-  gfx::Rect browser_bounds = BrowserView::GetBrowserViewForBrowser(browser())
-                                 ->GetWidget()
-                                 ->GetWindowBoundsInScreen();
-  gfx::Rect glic_bounds = browser_bounds;
-
-  // Shift the bounds so they overlap by exactly 46%.
-  // Without the fix: 10 * 46 / 100 = 4 (integer division) -> 40%
-  // With the fix: 10.0 * 46 / 100 = 4.6 -> round(4.6) = 5 -> 50%
-  int overlap_height = browser_bounds.height() * 46 / 100;
-  int y_offset = browser_bounds.height() - overlap_height;
-  glic_bounds.Offset(0, y_offset);
-
-  glic_service->metrics()->OnGlicWindowClose(browser(), std::nullopt,
-                                             glic_bounds);
-
-  histogram_tester.ExpectUniqueSample("Glic.PercentOverlapWithBrowser.OnClose",
-                                      PercentOverlap::k50, 1);
-}
-
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, ZoomLevel_OnOpen) {
   base::HistogramTester histogram_tester;
 

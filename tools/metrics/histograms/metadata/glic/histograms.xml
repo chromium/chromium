@@ -256,16 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Api.FetchZeroStateSuggestionsLatency" units="ms"
-    expires_after="2026-03-22">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>jeffreycohen@google.com</owner>
-  <summary>
-    Records the latency of fetching zero state suggestions whenever the glic web
-    client requests zero state suggestions from Chrome.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-09-27">
   <owner>carlosk@chromium.org</owner>
@@ -331,17 +321,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Api.TabData.UpdatesPerNavigation" units="count"
-    expires_after="2026-01-15">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    The number of tab data updates sent by TabDataObserver while on each web
-    page. Recorded when a cross-document navigation completes, or when tab data
-    is no longer observed.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Api.UseCounter" enum="GlicWebUseCounter"
     expires_after="2026-10-04">
   <owner>dtapuska@google.com</owner>
@@ -386,7 +365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
-    enum="BooleanEnabled" expires_after="2026-03-22">
+    enum="BooleanEnabled" expires_after="2026-11-04">
   <owner>birnie@google.com</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -1749,18 +1728,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.PageContextFetcher.GetInnerText" units="ms"
-    expires_after="2026-01-15">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a page context gets inner text. Measure the time from start.
-  </summary>
-</histogram>
-
 <histogram name="Glic.PageContextFetcher.GetScreenshot" units="ms"
-    expires_after="2026-01-15">
+    expires_after="2026-11-04">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1779,7 +1748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.PageContextFetcher.Total" units="ms"
-    expires_after="2026-01-15">
+    expires_after="2026-11-04">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1861,26 +1830,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.PanelWebUi.UserResizeStarted.Height" units="DIPs"
-    expires_after="2026-01-15">
-  <owner>fsenra@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>
-    Records the height of the Glic panel in DIP when the user starts resizing
-    the panel.
-  </summary>
-</histogram>
-
-<histogram name="Glic.PanelWebUi.UserResizeStarted.Width" units="DIPs"
-    expires_after="2026-01-15">
-  <owner>fsenra@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>
-    Records the width of the Glic panel in DIP when the user starts resizing the
-    panel.
-  </summary>
-</histogram>
-
 <histogram name="Glic.PanelWebUiState" enum="WebUiState"
     expires_after="2026-09-27">
   <owner>erikchen@chromium.org</owner>
@@ -1913,17 +1862,6 @@ chromium-metrics-reviews@google.com.
     Record the current state when the the panel is closed for multi instance
     supported clients.
   </summary>
-</histogram>
-
-<histogram name="Glic.PercentOverlapWithBrowser.{Event}" enum="PercentOverlap"
-    expires_after="2026-01-15">
-  <owner>andreaxg@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <summary>
-    Record the percent overlap of the Glic panel with the active Chrome window.
-    Rounded to the nearest 10%. Recorded when {Event}.
-  </summary>
-  <token key="Event" variants="PanelEvent"/>
 </histogram>
 
 <histogram name="Glic.PositionOnChrome.{Event}" enum="ChromeRelativePosition"
@@ -2200,27 +2138,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Glic.Response.StopTime{Cause}" units="ms"
-    expires_after="2026-01-15">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Measures the time from a user's submitted input until a response stops.
-    There is no guarantee of correlation with Response.StartTime. This exists
-    for diagnostic purposes only.
-
-    Limited to the following causes: {Cause}
-  </summary>
-  <token key="Cause">
-    <variant name="" summary="All causes"/>
-    <variant name=".ByUser" summary="User stopped the response"/>
-    <variant name=".Other"
-        summary="Other cause (infra) for stopping the response"/>
-    <variant name=".UnknownCause" summary="Unspecified stop reason"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.Response.TabsPinnedForSharingCount" units="tabs"
     expires_after="2026-07-19">
   <owner>wry@chromium.org</owner>
@@ -2427,7 +2344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Sharing.TabPinnedForSharing"
-    enum="GlicTabPinnedForSharingResult" expires_after="2026-03-15">
+    enum="GlicTabPinnedForSharingResult" expires_after="2026-11-04">
   <owner>wry@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -2545,7 +2462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.TabContext.UploadTime" units="ms"
-    expires_after="2026-01-15">
+    expires_after="2026-11-04">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <summary>

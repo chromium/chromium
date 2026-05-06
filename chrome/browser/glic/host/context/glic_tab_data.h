@@ -119,7 +119,6 @@ class TabDataObserver : public content::WebContentsObserver
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
-  void ReportUpdatesPerNavigation();
   void SendRateLimitedUpdate();
   void SendUpdate();
   void ClearObservation();

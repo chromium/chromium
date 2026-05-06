@@ -166,7 +166,6 @@ void TabDataObserver::ClearObservation() {
 #endif
   Observe(nullptr);
   deferred_update_.Stop();
-  ReportUpdatesPerNavigation();
   updates_since_navigation_ = 0;
   tab_detach_subscription_ = {};
   tab_ = nullptr;
@@ -179,7 +178,6 @@ void TabDataObserver::DidFinishNavigation(
     return;
   }
   if (!navigation_handle->IsSameDocument()) {
-    ReportUpdatesPerNavigation();
     change_causes_.Put(TabDataChangeCause::kCrossDocNavigation);
     SendUpdate();
     updates_since_navigation_ = 0;
@@ -189,14 +187,6 @@ void TabDataObserver::DidFinishNavigation(
   // Same document navigations can be made rapidly from javascript.
   change_causes_.Put(TabDataChangeCause::kSameDocNavigation);
   SendRateLimitedUpdate();
-}
-
-void TabDataObserver::ReportUpdatesPerNavigation() {
-  if (updates_since_navigation_ == 0) {
-    return;
-  }
-  base::UmaHistogramCounts100("Glic.Api.TabData.UpdatesPerNavigation",
-                              updates_since_navigation_);
 }
 
 void TabDataObserver::TitleWasSetForMainFrame(
