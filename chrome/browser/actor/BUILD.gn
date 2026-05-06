@@ -473,6 +473,7 @@ source_set("browser_tests") {
       "tools/window_management_tool_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/autofill",
       "//chrome/browser/autofill/actor:test_support",
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//components/autofill/core/browser:test_support",

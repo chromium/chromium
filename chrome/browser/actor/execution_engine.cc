@@ -42,6 +42,8 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
@@ -174,6 +176,9 @@ ExecutionEngine::ExecutionEngine(
       actor_form_filling_service_(
           std::make_unique<autofill::ActorFormFillingServiceImpl>(journal_,
                                                                   task_->id())),
+      actor_one_time_token_filling_service_(
+          std::make_unique<autofill::ActorOneTimeTokenFillingServiceImpl>(
+              task_->GetProfile())),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
 }
@@ -1132,6 +1137,11 @@ actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
 autofill::ActorFormFillingService&
 ExecutionEngine::GetActorFormFillingService() {
   return *actor_form_filling_service_;
+}
+
+autofill::ActorOneTimeTokenFillingService&
+ExecutionEngine::GetActorOneTimeTokenFillingService() {
+  return *actor_one_time_token_filling_service_;
 }
 
 void ExecutionEngine::PromptToSelectCredential(

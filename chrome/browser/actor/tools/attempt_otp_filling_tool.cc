@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -70,8 +72,51 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
                     .Add("for_signin", for_signin_)
                     .Build());
 
-  // TODO(b/500265255): Call the not yet existing actor service for OTP filling.
-  std::move(callback).Run(MakeOkResult());
+  tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
+      GetTargetTab(), trigger_fields_,
+      base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AttemptOtpFillingTool::OnOtpRetrieved(ToolCallback callback,
+                                           std::string otp) {
+  // While this is not wired up to do any filling, let's log if we received
+  // an OTP or not.
+  journal().Log(
+      JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpRetrieved",
+      JournalDetailsBuilder().Add("otp_received", !otp.empty()).Build());
+
+  // TODO(b/502907994): There might be other errors happening, not just a
+  // timeout. If we want to treat them less generically, we need to change the
+  // API of the service to also return more detailed error codes.
+  if (otp.empty()) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kToolTimeout,
+                   /*requires_page_stabilization=*/false,
+                   "Failed to retrieve OTP within timeout."));
+    return;
+  }
+
+  // TODO(b/502907696): Trigger the actual filling, correctly.
+  tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
+      GetTargetTab(), trigger_fields_, otp,
+      base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
+  journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::OnOtpFilled",
+                JournalDetailsBuilder().Add("success", success).Build());
+
+  if (success) {
+    std::move(callback).Run(MakeOkResult());
+  } else {
+    // TODO(b/502907696): This is not the correct error code, we should define
+    // our own.
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kNotImplemented,
+                                       /*requires_page_stabilization=*/false,
+                                       "Failed to fill OTP."));
+  }
 }
 
 void AttemptOtpFillingTool::UpdateTaskBeforeInvoke(

@@ -29,6 +29,7 @@ class ActorLoginService;
 
 namespace autofill {
 class ActorFormFillingService;
+class ActorOneTimeTokenFillingService;
 }  // namespace autofill
 
 namespace favicon {
@@ -62,6 +63,10 @@ class ToolDelegate {
 
   // Returns the form filling service associated with the task.
   virtual autofill::ActorFormFillingService& GetActorFormFillingService() = 0;
+
+  // Returns the OTP filling service associated with the task.
+  virtual autofill::ActorOneTimeTokenFillingService&
+  GetActorOneTimeTokenFillingService() = 0;
 
   // Returns the favicon service for the profile associated with the task.
   virtual favicon::FaviconService* GetFaviconService() = 0;

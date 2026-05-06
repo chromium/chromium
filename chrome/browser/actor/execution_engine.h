@@ -44,6 +44,10 @@ namespace affiliations {
 struct Facet;
 }  // namespace affiliations
 
+namespace autofill {
+class ActorOneTimeTokenFillingService;
+}  // namespace autofill
+
 namespace base {
 class ScopedUmaHistogramTimer;
 }
@@ -191,6 +195,8 @@ class ExecutionEngine : public ToolDelegate,
       const GURL& url,
       DecisionCallbackWithReason callback) override;
   autofill::ActorFormFillingService& GetActorFormFillingService() override;
+  autofill::ActorOneTimeTokenFillingService&
+  GetActorOneTimeTokenFillingService() override;
   actor_login::ActorLoginService& GetActorLoginService() override;
   void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
@@ -427,6 +433,8 @@ class ExecutionEngine : public ToolDelegate,
   std::unique_ptr<actor_login::ActorLoginService> actor_login_service_;
   std::unique_ptr<autofill::ActorFormFillingService>
       actor_form_filling_service_;
+  std::unique_ptr<autofill::ActorOneTimeTokenFillingService>
+      actor_one_time_token_filling_service_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;

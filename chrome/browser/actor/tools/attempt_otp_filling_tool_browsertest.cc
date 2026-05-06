@@ -10,18 +10,28 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/autofill/one_time_token_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/actor/core/shared_types.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace actor {
 
@@ -55,7 +65,31 @@ class TestJournalObserver : public AggregatedJournal::Observer {
   std::vector<std::string> entries_;
 };
 
+// Note: There's a MockOneTimeTokenService for OneTimeTokenService (not -Impl)
+// but that mock does not implement the KeyedService. So we need our own mock
+// of the -Impl with the KeyedService so that we can use the KeyedService
+// factory for injection.
+class MockKeyedOneTimeTokenService
+    : public one_time_tokens::OneTimeTokenServiceImpl {
+ public:
+  MockKeyedOneTimeTokenService() : OneTimeTokenServiceImpl(nullptr, nullptr) {}
+  ~MockKeyedOneTimeTokenService() override = default;
+
+  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
+              GetCachedOneTimeTokens,
+              (),
+              (const, override));
+};
+
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
+ public:
+  AttemptOtpFillingToolBrowserTest() {
+    // Force the factory to instantiate and register with the DependencyManager
+    // before the dependency graph is locked during profile creation. This
+    // avoids a DCHECK failure in DependencyManager.
+    autofill::OneTimeTokenServiceFactory::GetInstance();
+  }
+
  protected:
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
@@ -76,6 +110,39 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
   const std::vector<std::string>& JournalEntries() const {
     return observer_->Entries();
+  }
+
+  static std::unique_ptr<MockKeyedOneTimeTokenService> CreateMockOtpService(
+      content::BrowserContext* context) {
+    return std::make_unique<testing::NiceMock<MockKeyedOneTimeTokenService>>();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    autofill::OneTimeTokenServiceFactory::GetInstance()
+        ->SetTestingSubclassFactoryAndUse<MockKeyedOneTimeTokenService>(
+            context, base::BindOnce(&CreateMockOtpService));
+  }
+
+ protected:
+  void SetExpectedOtp(std::optional<std::string> otp) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    auto* mock_otp_service = static_cast<MockKeyedOneTimeTokenService*>(
+        autofill::OneTimeTokenServiceFactory::GetForProfile(profile));
+
+    CHECK(mock_otp_service);
+
+    if (otp) {
+      EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
+          .WillOnce(testing::Return(std::vector<one_time_tokens::OneTimeToken>{
+              {one_time_tokens::OneTimeTokenType::kGmail, *otp,
+               base::Time::Now()}}));
+    } else {
+      EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
+          .WillOnce(
+              testing::Return(std::vector<one_time_tokens::OneTimeToken>{}));
+    }
   }
 
  private:
@@ -111,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/true);
+  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
@@ -122,6 +190,34 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   EXPECT_THAT(JournalEntries(),
               testing::Contains(testing::ContainsRegex(
                   "AttemptOtpFillingTool::Invoke;.*trigger_fields_count=1")));
+  EXPECT_THAT(
+      JournalEntries(),
+      testing::Contains(testing::ContainsRegex(
+          "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=true")));
+}
+
+// The tool fails with timeout if no OTP is retrieved.
+IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
+                       ToolFailsWhenOtpRetrievalTimesOut) {
+  const GURL url = embedded_https_test_server().GetURL("example.com",
+                                                       "/actor/otp_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_OK_AND_ASSIGN(DomNode otp_field,
+                       GetDomNodeOnPage(*main_frame(), "#otp"));
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<AttemptOtpFillingToolRequest>(
+          active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
+          /*for_signin=*/true);
+  SetExpectedOtp(std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kToolTimeout);
+  EXPECT_THAT(
+      JournalEntries(),
+      testing::Contains(testing::ContainsRegex(
+          "AttemptOtpFillingTool::OnOtpRetrieved;.*otp_received=false")));
 }
 
 // The tool can be created with multiple fields (one per digit) and the
@@ -149,6 +245,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
                                                      trigger_fields,
                                                      /*for_signin=*/true);
+  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
@@ -171,6 +268,8 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
       std::make_unique<AttemptOtpFillingToolRequest>(
           active_tab()->GetHandle(), std::vector<PageTarget>{otp_field},
           /*for_signin=*/false);
+
+  SetExpectedOtp("1234");
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());

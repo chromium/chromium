@@ -60,4 +60,7 @@ specific_include_rules = {
   'tools_test_util\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],
+  'attempt_otp_filling_tool_browsertest\.cc': [
+    "+components/one_time_tokens/core/browser",
+  ],
 }

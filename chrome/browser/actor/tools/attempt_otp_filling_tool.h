@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -47,9 +48,14 @@ class AttemptOtpFillingTool : public Tool {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
+  void OnOtpRetrieved(ToolCallback callback, std::string otp);
+  void OnOtpFilled(ToolCallback callback, bool success);
+
   tabs::TabHandle tab_handle_;
   std::vector<PageTarget> trigger_fields_;
   bool for_signin_;
+
+  base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};
 };
 
 }  // namespace actor
