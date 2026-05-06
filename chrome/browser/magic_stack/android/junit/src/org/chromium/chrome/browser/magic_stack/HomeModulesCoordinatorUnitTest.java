@@ -273,7 +273,6 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.TAB_GROUP_SYNC_PROMO,
                         ModuleType.QUICK_DELETE_PROMO,
                         ModuleType.HISTORY_SYNC_PROMO,
-                        ModuleType.TIPS_NOTIFICATIONS_PROMO,
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,

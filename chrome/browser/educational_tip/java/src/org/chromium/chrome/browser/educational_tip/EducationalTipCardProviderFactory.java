@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.educational_tip.cards.SetupListCelebratoryPro
 import org.chromium.chrome.browser.educational_tip.cards.SignInPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
-import org.chromium.chrome.browser.educational_tip.cards.TipsNotificationsPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 /** A factory interface for building a EducationalTipCardProvider instance. */
@@ -52,9 +51,6 @@ public class EducationalTipCardProviderFactory {
                         callbackController,
                         actionDelegate,
                         removeModuleCallback);
-            case ModuleType.TIPS_NOTIFICATIONS_PROMO:
-                return new TipsNotificationsPromoCoordinator(
-                        onModuleClickedCallback, callbackController, actionDelegate);
             case ModuleType.ENHANCED_SAFE_BROWSING_PROMO:
                 return new EnhancedSafeBrowsingPromoCoordinator(
                         onModuleClickedCallback, actionDelegate);

@@ -15,7 +15,6 @@ found in the LICENSE file.
   <color name="educational_tip_card_logo_color_7">@color/material_primary_60</color>
   <color name="educational_tip_card_logo_color_8">@color/material_secondary_80</color>
   <color name="educational_tip_card_logo_color_9">@color/material_tertiary_80</color>
-  <color name="educational_tip_card_logo_color_10">?attr/colorSurface</color>
   <color name="educational_tip_card_logo_color_11">@color/baseline_primary_40</color>
 
   <!-- Setup List celebratory promo colors -->

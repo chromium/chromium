@@ -34,19 +34,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="6th module"/>
 </enum>
 
+<!-- LINT.IfChange(ModuleType) -->
+
 <enum name="ModuleType">
   <int value="0" label="Single tab module"/>
   <int value="1" label="Price change module"/>
-  <int value="2" label="Tab resumption module"/>
+  <int value="2" label="Deprecated Tab resumption module"/>
   <int value="3" label="Safety hub module"/>
-  <int value="4" label="Educational tip module"/>
+  <int value="4" label="Deprecated Educational tip module"/>
   <int value="5" label="Auxiliary search module"/>
   <int value="6" label="Default Browser Promo Card"/>
   <int value="7" label="Tab Group Promo Card"/>
   <int value="8" label="Tab Group Sync Promo Card"/>
   <int value="9" label="Quick Delete Promo Card"/>
   <int value="10" label="History Sync Promo Card"/>
-  <int value="11" label="Tips Notifications Promo Card"/>
+  <int value="11" label="Deprecated Tips Notifications Promo Card"/>
   <int value="12" label="Enhanced Safe Browsing Promo Card"/>
   <int value="13" label="Address bar placement Promo Card"/>
   <int value="14" label="Settings container Promo Card"/>
@@ -56,6 +58,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Setup List Celebratory Promo Card"/>
   <int value="19" label="Ntp Theme Promo Card"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/magic_stack/android/java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java:HomeModuleTypes) -->
 
 </enums>
 

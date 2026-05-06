@@ -64,9 +64,6 @@ public interface EducationTipModuleActionDelegate {
      */
     void showSignInLegacy();
 
-    /** Opens the settings page for the Tips Notifications channel. */
-    void showTipsNotificationsChannelSettings();
-
     /** Opens the Password Checkup UI. */
     void showPasswordCheckup();
 

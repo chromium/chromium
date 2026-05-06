@@ -3489,11 +3489,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
-            public void showTipsNotificationsChannelSettings() {
-                TipsUtils.launchTipsNotificationsSettings(getContext());
-            }
-
-            @Override
             public void showPasswordCheckup() {
                 Profile profile = getProfileSupplier().get();
                 if (profile == null) return;

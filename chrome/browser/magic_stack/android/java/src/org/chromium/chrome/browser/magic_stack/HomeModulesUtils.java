@@ -22,7 +22,6 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import android.content.Context;
 import android.os.SystemClock;
@@ -77,7 +76,6 @@ public class HomeModulesUtils {
                             TAB_GROUP_SYNC_PROMO,
                             QUICK_DELETE_PROMO,
                             HISTORY_SYNC_PROMO,
-                            TIPS_NOTIFICATIONS_PROMO,
                             ENHANCED_SAFE_BROWSING_PROMO,
                             ADDRESS_BAR_PLACEMENT_PROMO,
                             SIGN_IN_PROMO,
@@ -135,7 +133,6 @@ public class HomeModulesUtils {
             case QUICK_DELETE_PROMO:
             case NTP_THEME_PROMO:
             case HISTORY_SYNC_PROMO:
-            case TIPS_NOTIFICATIONS_PROMO:
             case ENHANCED_SAFE_BROWSING_PROMO:
             case ADDRESS_BAR_PLACEMENT_PROMO:
             case SIGN_IN_PROMO:

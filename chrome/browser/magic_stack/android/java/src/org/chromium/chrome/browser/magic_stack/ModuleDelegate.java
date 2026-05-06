@@ -37,7 +37,7 @@ public interface ModuleDelegate {
         ModuleType.TAB_GROUP_SYNC_PROMO,
         ModuleType.QUICK_DELETE_PROMO,
         ModuleType.HISTORY_SYNC_PROMO,
-        ModuleType.TIPS_NOTIFICATIONS_PROMO,
+        ModuleType.DEPRECATED_TIPS_NOTIFICATIONS_PROMO,
         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
@@ -61,7 +61,7 @@ public interface ModuleDelegate {
         int TAB_GROUP_SYNC_PROMO = 8;
         int QUICK_DELETE_PROMO = 9;
         int HISTORY_SYNC_PROMO = 10;
-        int TIPS_NOTIFICATIONS_PROMO = 11;
+        int DEPRECATED_TIPS_NOTIFICATIONS_PROMO = 11;
         int ENHANCED_SAFE_BROWSING_PROMO = 12;
         int ADDRESS_BAR_PLACEMENT_PROMO = 13;
         int SETUP_LIST_TWO_CELL_CONTAINER = 14;
@@ -73,7 +73,7 @@ public interface ModuleDelegate {
         int NUM_ENTRIES = 20;
     }
 
-    // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes)
+    // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes, //tools/metrics/histograms/metadata/magic_stack/enums.xml:ModuleType, //tools/metrics/histograms/metadata/magic_stack/histograms.xml:ModuleType)
 
     /**
      * Called when a module has a PropertyModel ready. This could be called multiple times from the
