@@ -157,8 +157,9 @@ TEST(OverrideSettingsTest, ParseManifest) {
   ASSERT_TRUE(
       extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
-  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
-      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  const SettingsOverrides* settings_override =
+      static_cast<const SettingsOverrides*>(
+          extension->GetManifestData(manifest_keys::kSettingsOverride));
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
@@ -191,8 +192,9 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
   ASSERT_TRUE(
       extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
-  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
-      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  const SettingsOverrides* settings_override =
+      static_cast<const SettingsOverrides*>(
+          extension->GetManifestData(manifest_keys::kSettingsOverride));
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
@@ -215,8 +217,9 @@ TEST(OverrideSettingsTest, ParseManifestBrokenHomepageButCorrectStartupPages) {
   ASSERT_TRUE(
       extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
-  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
-      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  const SettingsOverrides* settings_override =
+      static_cast<const SettingsOverrides*>(
+          extension->GetManifestData(manifest_keys::kSettingsOverride));
   ASSERT_TRUE(settings_override);
   EXPECT_EQ(std::vector<GURL>(1, GURL("http://www.startup.com")),
             settings_override->startup_pages);
@@ -234,8 +237,9 @@ TEST(OverrideSettingsTest, ParseManifestBrokenStartupPagesButCorrectHomepage) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ASSERT_TRUE(
       extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
-  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
-      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  const SettingsOverrides* settings_override =
+      static_cast<const SettingsOverrides*>(
+          extension->GetManifestData(manifest_keys::kSettingsOverride));
   ASSERT_TRUE(settings_override);
   EXPECT_TRUE(settings_override->startup_pages.empty());
   EXPECT_EQ(GURL("http://www.homepage.com"), *settings_override->homepage);

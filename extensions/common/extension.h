@@ -238,7 +238,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   // Get the manifest data associated with the key, or NULL if there is none.
   // Can only be called after InitFromValue is finished.
-  ManifestData* GetManifestData(std::string_view key) const;
+  const ManifestData* GetManifestData(std::string_view key) const;
 
   // Sets `data` to be associated with the key.
   // Can only be called before InitFromValue is finished. Not thread-safe;

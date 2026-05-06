@@ -118,10 +118,11 @@ bool FileBrowserHandler::HasCreateAccessPermission() const {
 }
 
 // static
-FileBrowserHandler::List*
-FileBrowserHandler::GetHandlers(const extensions::Extension* extension) {
-  FileBrowserHandlerInfo* const info = static_cast<FileBrowserHandlerInfo*>(
-      extension->GetManifestData(keys::kFileBrowserHandlers));
+const FileBrowserHandler::List* FileBrowserHandler::GetHandlers(
+    const extensions::Extension* extension) {
+  const FileBrowserHandlerInfo* const info =
+      static_cast<const FileBrowserHandlerInfo*>(
+          extension->GetManifestData(keys::kFileBrowserHandlers));
   if (!info) {
     return nullptr;
   }

@@ -73,7 +73,7 @@ class FileBrowserHandler {
   bool HasCreateAccessPermission() const;
 
   // Returns the file browser handlers associated with the |extension|.
-  static List* GetHandlers(const extensions::Extension* extension);
+  static const List* GetHandlers(const extensions::Extension* extension);
 
   // Returns file browser handler in |extension| matching |action_id|, or
   // nullptr if not found.

@@ -480,7 +480,7 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   return web_extent().OverlapsWith(origin_only_pattern_list);
 }
 
-Extension::ManifestData* Extension::GetManifestData(
+const Extension::ManifestData* Extension::GetManifestData(
     std::string_view key) const {
   DCHECK(finished_parsing_manifest_ || thread_checker_.CalledOnValidThread());
   auto iter = manifest_data_.find(key);
