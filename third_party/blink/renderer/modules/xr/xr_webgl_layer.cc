@@ -319,15 +319,11 @@ HTMLCanvasElement* XRWebGLLayer::output_canvas() const {
   return nullptr;
 }
 
-std::unique_ptr<SharedImageHolder> XRWebGLLayer::DoneWithSharedBuffer() {
-  std::unique_ptr<SharedImageHolder> image_ref;
-
+void XRWebGLLayer::DoneWithSharedBuffer() {
   if (is_direct_draw_frame) {
-    image_ref = drawing_buffer_->DoneWithSharedBuffer();
+    drawing_buffer_->DoneWithSharedBuffer();
     is_direct_draw_frame = false;
   }
-
-  return image_ref;
 }
 
 void XRWebGLLayer::OnFrameStart() {

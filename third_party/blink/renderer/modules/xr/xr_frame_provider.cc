@@ -673,7 +673,7 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
                                   XrLayerClient* client,
                                   bool was_changed) {
   CHECK(client);
-  std::unique_ptr<SharedImageHolder> image_ref = client->DoneWithSharedBuffer();
+  client->DoneWithSharedBuffer();
 
   CHECK(immersive_session_);
   CHECK(client->session());
@@ -700,18 +700,18 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
   }
 
   if (frame_transport_->DrawingIntoSharedBuffer()) {
-    // Image is written to shared buffer already. The layer now takes
-    // ownership of the SharedImageHolder, which contains the SyncToken.
+    // Image is written to shared buffer already. No need to hold it.
     DVLOG(3) << __func__ << ": FrameSubmit for SharedBuffer mode";
     any_layer_changed_ = true;
-    layers_.emplace_back(layer_id, std::move(image_ref));
+    layers_.emplace_back(layer_id, nullptr);
     return;
   } else {
     CHECK_NE(client->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU)
         << "WebGPU layers only support shared buffer submission modes";
   }
 
-  image_ref = client->TransferToSharedImageHolder();
+  std::unique_ptr<SharedImageHolder> image_ref =
+      client->TransferToSharedImageHolder();
 
   if (!image_ref) {
     return;
