@@ -177,6 +177,35 @@ TEST_F(WebContentsModalDialogManagerTest, WebContentsVisible) {
   native_manager->StopTracking();
 }
 
+// Test that setting a new delegate correctly synchronizes the blocked state
+// if a dialog is currently active. This is crucial for split-view window moves.
+TEST_F(WebContentsModalDialogManagerTest, SetDelegateSyncsBlockedState) {
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  EXPECT_TRUE(manager->IsDialogActive());
+  EXPECT_TRUE(delegate->web_contents_blocked());
+
+  auto new_delegate =
+      std::make_unique<TestWebContentsModalDialogManagerDelegate>();
+  EXPECT_FALSE(new_delegate->web_contents_blocked());
+
+  manager->SetDelegate(new_delegate.get());
+
+  // The new delegate should be updated with the current blocked state.
+  EXPECT_TRUE(new_delegate->web_contents_blocked());
+
+  // Restore the original delegate so new_delegate doesn't dangle after
+  // destruction.
+  manager->SetDelegate(delegate.get());
+
+  native_manager->StopTracking();
+}
+
 // Test that the dialog is not shown immediately when the delegate indicates the
 // web contents is not visible.
 TEST_F(WebContentsModalDialogManagerTest, WebContentsNotVisible) {

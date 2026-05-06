@@ -26,8 +26,22 @@ WebContentsModalDialogManager::~WebContentsModalDialogManager() {
 
 void WebContentsModalDialogManager::SetDelegate(
     WebContentsModalDialogManagerDelegate* d) {
+  // If the delegate hasn't changed, return early avoid redundant
+  // synchronization.
+  if (delegate_ == d) {
+    return;
+  }
   delegate_ = d;
   UpdateDialogHost();
+
+  // Synchronize the web contents blocked state with the new delegate.
+  // This ensures the new window's TabModel correctly reflects an active
+  // dialog after a tab is moved between windows.
+  // Only call this if a dialog is active, to avoid redundant focus changes
+  // when there are no dialogs.
+  if (delegate_ && IsDialogActive()) {
+    delegate_->SetWebContentsBlocked(web_contents(), true);
+  }
 }
 
 // TODO(gbillock): Maybe "ShowBubbleWithManager"?
