@@ -48,8 +48,11 @@ class MODULES_EXPORT LanguageModel final : public EventTarget,
       ExecutionContext* execution_context,
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::blink::AILanguageModelInstanceInfoPtr info);
+      mojom::blink::AILanguageModelInstanceInfoPtr info,
+      bool has_context = false);
   ~LanguageModel() override = default;
+
+  bool has_context() const { return has_context_; }
 
   void Trace(Visitor* visitor) const override;
 
