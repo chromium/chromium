@@ -2990,13 +2990,13 @@
   },
   {
     "name": "enable-bound-session-credentials",
-    "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 150
+    "owners": [ "alexilin@chromium.org", "ahijazi@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 153
   },
   {
     "name": "enable-bound-session-credentials-software-keys-for-manual-testing",
-    "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 150
+    "owners": [ "alexilin@chromium.org", "ahijazi@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 153
   },
   {
     "name": "enable-brightness-control-in-settings",
@@ -3039,7 +3039,7 @@
   {
     "name": "enable-chrome-refresh-token-binding",
     "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "enable-chromeos-isolated-web-app-set-shape",
@@ -3796,12 +3796,12 @@
   {
     "name": "enable-oauth-multilogin-cookies-binding",
     "owners": [ "alexilin@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "enable-oauth-multilogin-cookies-binding-server-experiment",
     "owners": [ "alexilin@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "enable-ongoing-processes",
@@ -4048,28 +4048,18 @@
   },
   {
     "name": "enable-standard-device-bound-session-credentials",
-    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 150
+    "owners": [ "alexilin@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
+    "expiry_milestone": 153
   },
-    {
+  {
     "name": "enable-standard-device-bound-session-credentials-federated-sessions",
     "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "enable-standard-device-bound-session-google",
-    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-standard-device-bound-session-google-experiment-id",
-    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-standard-device-bound-session-persistence",
-    "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 150
+    "owners": [ "alexilin@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
+    "expiry_milestone": 153
   },
   {
     "name": "enable-start-surface-return-time",

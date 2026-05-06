@@ -4401,14 +4401,6 @@ const FeatureEntry::FeatureVariation kMediaIndicatorsAndroidVariations[] = {
      nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags[] = {
-        {"Value", "set_from_flags"}};
-const FeatureEntry::FeatureVariation
-    kDeviceBoundSessionsForRestrictedSitesExperimentIdVariations[] = {
-        {"- set_from_flags",
-         kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags, nullptr}};
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
     kCastStreamingExponentialVideoBitrateAlgorithmDefault[] = {
@@ -9951,11 +9943,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(net::features::kDeviceBoundSessions,
                                     kStandardBoundSessionCredentialsVariations,
                                     "standard-device-bound-sessions")},
-    {"enable-standard-device-bound-session-persistence",
-     flag_descriptions::kEnableStandardBoundSessionPersistenceName,
-     flag_descriptions::kEnableStandardBoundSessionPersistenceDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(net::features::kPersistDeviceBoundSessions)},
     {"enable-standard-device-bound-session-credentials-federated-sessions",
      flag_descriptions::
          kEnableStandardBoundSessionCredentialsFederatedSessionsName,
@@ -9971,15 +9958,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionsGoogleDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsForRestrictedSites)},
-    {"enable-standard-device-bound-session-google-experiment-id",
-     flag_descriptions::kEnableStandardBoundSessionsGoogleExperimentIdName,
-     flag_descriptions::
-         kEnableStandardBoundSessionsGoogleExperimentIdDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         net::features::kDeviceBoundSessionsForRestrictedSitesExperimentId,
-         kDeviceBoundSessionsForRestrictedSitesExperimentIdVariations,
-         "DeviceBoundSessionsForRestrictedSitesExperimentIdVariations")},
 
     {"responsive-iframes", flag_descriptions::kResponsiveIframesName,
      flag_descriptions::kResponsiveIframesDescription, kOsAll,
@@ -10746,7 +10724,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-oauth-multilogin-cookies-binding",
      flag_descriptions::kEnableOAuthMultiloginCookiesBindingName,
      flag_descriptions::kEnableOAuthMultiloginCookiesBindingDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableOAuthMultiloginCookiesBinding)},
 
     {"enable-oauth-multilogin-cookies-binding-server-experiment",
@@ -10754,7 +10732,7 @@ const FeatureEntry kFeatureEntries[] = {
          kEnableOAuthMultiloginCookiesBindingServerExperimentName,
      flag_descriptions::
          kEnableOAuthMultiloginCookiesBindingServerExperimentDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsLinux,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          switches::kEnableOAuthMultiloginCookiesBindingServerExperiment,
          kOAuthMultiloginCookieBindingEnforcementVariations,

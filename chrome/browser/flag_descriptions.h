@@ -8369,11 +8369,6 @@ inline constexpr char kEnableStandardBoundSessionCredentialsName[] =
 inline constexpr char kEnableStandardBoundSessionCredentialsDescription[] =
     "Enables the official version of Device Bound Session Credentials. For "
     "more information see https://github.com/WICG/dbsc.";
-inline constexpr char kEnableStandardBoundSessionPersistenceName[] =
-    "Device Bound Session Credentials (Standard) Persistence";
-inline constexpr char kEnableStandardBoundSessionPersistenceDescription[] =
-    "Enables session persistence for the official version of "
-    "Device Bound Session Credentials.";
 inline constexpr char
     kEnableStandardBoundSessionCredentialsFederatedSessionsName[] =
         "Device Bound Session Credentials (Standard) - Federated Registrations";
@@ -8386,13 +8381,6 @@ inline constexpr char kEnableStandardBoundSessionsGoogleName[] =
 inline constexpr char kEnableStandardBoundSessionsGoogleDescription[] =
     "Enables Device Bound Session Credentials (Standard) to register sessions "
     "on Google sites";
-inline constexpr char kEnableStandardBoundSessionsGoogleExperimentIdName[] =
-    "Experiment ID for Device Bound Session Credentials (Standard) on Google";
-inline constexpr char
-    kEnableStandardBoundSessionsGoogleExperimentIdDescription[] =
-        "Sets the experiment ID sent when Device Bound Session Credentials "
-        "(Standard) registers sessions "
-        "on Google sites";
 
 inline constexpr char kEnableManagementPromotionBannerName[] =
     "Enable Management Promotion Banner";
