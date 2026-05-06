@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -549,6 +550,10 @@ class EnterprisePlatformKeysLoginScreenTest
   void SetUpOnMainThread() override {
     MixinBasedExtensionApiTest::SetUpOnMainThread();
 
+    scoped_geo_override_ =
+        std::make_unique<system_permission_settings::ScopedSettingsForTesting>(
+            ContentSettingsType::GEOLOCATION, /*blocked=*/false);
+
     extension_force_install_mixin_.InitWithDeviceStateMixin(
         GetOriginalSigninProfile(), &device_state_mixin_);
   }
@@ -562,6 +567,8 @@ class EnterprisePlatformKeysLoginScreenTest
   }
 
  private:
+  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
+      scoped_geo_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,

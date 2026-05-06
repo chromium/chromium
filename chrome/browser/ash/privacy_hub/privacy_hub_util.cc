@@ -408,6 +408,20 @@ void OpenSystemSettings(ContentType type) {
       {.sub_page = settings_path});
 }
 
+bool IsPrivacyHubAvailable() {
+  if (!ash::Shell::HasInstance()) {
+    return false;
+  }
+
+  auto* session_controller = ash::Shell::Get()->session_controller();
+  if (!session_controller ||
+      !session_controller->IsActiveUserSessionStarted()) {
+    return false;
+  }
+
+  return true;
+}
+
 ScopedUserPermissionPrefForTest::ScopedUserPermissionPrefForTest(
     ContentType type,
     ScopedUserPermissionPrefForTest::AccessLevel access_level)
