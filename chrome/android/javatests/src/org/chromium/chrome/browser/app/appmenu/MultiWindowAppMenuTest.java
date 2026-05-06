@@ -54,6 +54,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testOpenNewWindow_fromWebPage() {
         doTestOpenNewWindow();
     }
@@ -96,6 +97,7 @@ public class MultiWindowAppMenuTest {
     @Test
     @LargeTest
     @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testOpenAndCloseNewWindow_robustWindowManagementExperimentalEnabled() {
         doTestOpenAndCloseNewWindow();
     }
