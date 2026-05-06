@@ -191,6 +191,9 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       break;
 
     case InstallDialogStep::kSuccessful:
+      if (reparent_closure_) {
+        std::move(reparent_closure_).Run();
+      }
       return true;
   }
 
@@ -211,8 +214,6 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
 
     case InstallDialogStep::kProgress:
       // Trigger the installation.
-      // TODO(b/492657179): Implement the logic to open the newly installed
-      // app in a tab/window.
       // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
       OnAccept();
 
