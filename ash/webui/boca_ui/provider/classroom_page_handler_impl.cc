@@ -122,6 +122,9 @@ void ClassroomPageHandlerImpl::ListStudents(const std::string& course_id,
 void ClassroomPageHandlerImpl::ListAssignments(
     const std::string& course_id,
     ListAssignmentsCallback callback) {
+  if (valid_course_ids_.find(course_id) == valid_course_ids_.end()) {
+    return std::move(callback).Run(AssignmentList());
+  }
   ListAssignmentsHelper(course_id, /*page_token=*/"",
                         std::make_unique<AssignmentList>(),
                         std::move(callback));
