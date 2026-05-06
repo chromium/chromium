@@ -13,8 +13,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Toolbar for the PDF viewer. To handle clicks on the navigation icon, set a listener with {@link
- * #setNavigationOnClickListener(OnClickListener)}.
+ * Toolbar for the PDF viewer. To handle clicks on the navigation icon, set a listener with
+ * {@link #setNavigationOnClickListener(OnClickListener)}.
  */
 @NullMarked
 public class PdfToolbar extends Toolbar {

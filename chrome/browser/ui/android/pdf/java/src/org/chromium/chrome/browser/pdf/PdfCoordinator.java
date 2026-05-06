@@ -56,8 +56,7 @@ import java.util.Set;
  */
 @SuppressLint("NewApi")
 @NullMarked
-public class PdfCoordinator
-        implements PdfCoordinatorInterface, PdfActionsDelegate, PdfToolbarActionsDelegate {
+public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDelegate {
     private static final String TAG = "PdfCoordinator";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
 
@@ -96,7 +95,6 @@ public class PdfCoordinator
     private String mTitle;
     private final String mUrl;
     private final boolean mIsIncognito;
-
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
 
@@ -229,6 +227,7 @@ public class PdfCoordinator
                             }
                         }
                     });
+
             // Add a persistent listener to track page changes.
             capturedView.addOnViewportChangedListener(
                     (firstVisiblePage, visiblePagesCount, pageLocations, zoomLevel) ->
@@ -314,7 +313,6 @@ public class PdfCoordinator
     }
 
     /** Returns the intended view for PdfPage tab. */
-    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public View getView() {
         return mView;
@@ -325,8 +323,7 @@ public class PdfCoordinator
      *
      * @return whether the pdf specific find in page UI is shown.
      */
-    @Override
-    public boolean findInPage() {
+    boolean findInPage() {
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.mIsLoadDocumentSuccess) {
             mChromePdfViewerFragment.setTextSearchActive(true);
             PdfUtils.recordFindInPage(mFindInPageCount++);
@@ -338,9 +335,8 @@ public class PdfCoordinator
     /**
      * Called after a pdf page has been removed from the view hierarchy and will no longer be used.
      */
-    @Override
     @SuppressWarnings({"NullAway"})
-    public void destroy() {
+    void destroy() {
         mPdfSandboxHandle.close();
         mPdfSandboxHandle = null;
         if (mToolbarCoordinator != null) {
@@ -371,16 +367,13 @@ public class PdfCoordinator
      * @param pdfFilePath The filepath of the downloaded pdf document.
      * @param pdfFileName The filename of the downloaded pdf document.
      */
-    @Override
-    public void onDownloadComplete(String pdfFilePath, String pdfFileName) {
+    void onDownloadComplete(String pdfFilePath, String pdfFileName) {
         mTitle = pdfFileName;
         loadPdfFile(pdfFilePath);
     }
 
     /** Returns the filepath of the pdf document. */
-    @Nullable
-    @Override
-    public String getFilepath() {
+    @Nullable String getFilepath() {
         return mPdfFilePath;
     }
 
@@ -404,8 +397,7 @@ public class PdfCoordinator
         loadPdfInternal();
     }
 
-    @Override
-    public void reload() {
+    void reload() {
         if (mUri == null) {
             return;
         }
@@ -465,8 +457,7 @@ public class PdfCoordinator
      *     assistant package is used.
      * @return The URI of the PDF file, or null if the URI is not available.
      */
-    @Override
-    public @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
+    @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
         if (mUri == null) {
             return null;
         }
@@ -484,8 +475,7 @@ public class PdfCoordinator
         return mUri;
     }
 
-    @Override
-    public @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
+    @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
         if (mUri == null) {
             return null;
         }
@@ -496,9 +486,9 @@ public class PdfCoordinator
                             .put(
                                     JSON_KEY_FILE_METADATA,
                                     new JSONObject()
-                                            .put(JSON_KEY_FILE_NAME, filename)
                                             .put(JSON_KEY_FILE_URI, mUri.toString())
                                             .put(JSON_KEY_MIME_TYPE, MimeTypeUtils.PDF_MIME_TYPE)
+                                            .put(JSON_KEY_FILE_NAME, filename)
                                             .put(JSON_KEY_IS_WORK_PROFILE, isWorkProfile))
                             .toString();
         } catch (JSONException e) {
@@ -514,8 +504,7 @@ public class PdfCoordinator
         return structuredData;
     }
 
-    @Override
-    public @Nullable Uri getUri() {
+    @Nullable Uri getUri() {
         return mUri;
     }
 

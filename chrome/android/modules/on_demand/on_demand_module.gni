@@ -9,8 +9,5 @@ on_demand_module_desc = {
   uses_split = "chrome"
   android_manifest =
       "//chrome/android/modules/on_demand/java/AndroidManifest.xml"
-  java_deps = [
-    "//chrome/android/modules/on_demand:impl_java",
-    "//chrome/browser/ui/android/pdf/internal:java",
-  ]
+  java_deps = [ "//chrome/android/modules/on_demand:impl_java" ]
 }

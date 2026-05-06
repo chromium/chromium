@@ -28,13 +28,9 @@ class PdfToolbarViewBinder {
         } else if (PdfToolbarProperties.TOTAL_PAGE_COUNT == key) {
             TextView pageCount = view.findViewById(R.id.page_count);
             pageCount.setText(String.valueOf(model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT)));
-        } else if (PdfToolbarProperties.ZOOM_LEVEL == key) {
+        } else if (PdfToolbarProperties.ZOOM_VALUE == key) {
             TextView zoomValue = view.findViewById(R.id.zoom_value);
-            zoomValue.setText(
-                    String.format(
-                            java.util.Locale.ENGLISH,
-                            "%.0f%%",
-                            model.get(PdfToolbarProperties.ZOOM_LEVEL) * 100));
+            zoomValue.setText(model.get(PdfToolbarProperties.ZOOM_VALUE));
         } else if (PdfToolbarProperties.ON_CLICK_LISTENER == key) {
             View.OnClickListener listener = model.get(PdfToolbarProperties.ON_CLICK_LISTENER);
             view.findViewById(R.id.page_increase_button).setOnClickListener(listener);
