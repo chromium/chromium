@@ -15,10 +15,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/pdf_ink_annotation_mode.h"
+#include "pdf/pdf_ink_text.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 using SkColor = uint32_t;
 
@@ -80,6 +82,22 @@ MATCHER_P6(InkAffineTransformEq,
          Matches(FloatEq(expected_d))(arg.D()) &&
          Matches(FloatEq(expected_e))(arg.E()) &&
          Matches(FloatEq(expected_f))(arg.F());
+}
+
+MATCHER_P8(InkTextBoxAttributesEq,
+           rect,
+           color,
+           css_font_size,
+           typeface,
+           alignment,
+           orientation,
+           is_bold,
+           is_italic,
+           "matches InkTextBoxAttributes") {
+  return arg.rect == rect && arg.color == color &&
+         arg.css_font_size == css_font_size && arg.typeface == typeface &&
+         arg.alignment == alignment && arg.orientation == orientation &&
+         arg.is_bold == is_bold && arg.is_italic == is_italic;
 }
 
 // Generate the path for test files specific to Ink.

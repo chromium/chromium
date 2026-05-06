@@ -236,22 +236,6 @@ MATCHER_P5(InkTextInfoEq,
          arg.is_horizontal == is_horizontal;
 }
 
-MATCHER_P8(InkTextBoxAttributesEq,
-           rect,
-           color,
-           css_font_size,
-           typeface,
-           alignment,
-           orientation,
-           is_bold,
-           is_italic,
-           "matches InkTextBoxAttributes") {
-  return arg.rect == rect && arg.color == color &&
-         arg.css_font_size == css_font_size && arg.typeface == typeface &&
-         arg.alignment == alignment && arg.orientation == orientation &&
-         arg.is_bold == is_bold && arg.is_italic == is_italic;
-}
-
 base::DictValue CreateGetAnnotationBrushMessage(const std::string& brush_type) {
   auto message = base::DictValue()
                      .Set("type", "getAnnotationBrush")
