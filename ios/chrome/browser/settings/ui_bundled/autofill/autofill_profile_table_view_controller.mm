@@ -1676,8 +1676,22 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 }
 
 // Returns whether to show the add menu with addresses and entities.
+// Two notes:
+// 1. "Save and fill addresses" being disabled disables Forms AI.
+// 2. When the default availability flag is on, Autofill AI enterprise policy
+// does not control adding/editing entities.
 - (bool)shouldShowAddMenu {
-  return _entityDataManager != nullptr && [self canModifyEnhancedAutofill];
+  if (!_entityDataManager || ![self isAutofillProfileEnabled]) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+             autofill::features::kAutofillAiAvailableByDefault)
+             ? autofill::CanPerformAutofillAiAction(
+                   _browser->GetProfile(),
+                   autofill::AutofillAiAction::kEnableOrDisable)
+             : autofill::CanPerformAutofillAiAction(
+                   _browser->GetProfile(), autofill::AutofillAiAction::kOptIn);
 }
 
 // Updates the add button in the toolbar based on whether the add menu should be
