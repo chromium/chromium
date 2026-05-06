@@ -16,8 +16,6 @@ FEATURES_H_PATH = "ios/chrome/browser/shared/public/features/features.h"
 FEATURES_MM_PATH = "ios/chrome/browser/shared/public/features/features.mm"
 FLAG_DESCRIPTIONS_H_PATH = ("ios/chrome/browser/flags/"
                             "ios_chrome_flag_descriptions.h")
-FLAG_DESCRIPTIONS_CC_PATH = ("ios/chrome/browser/flags/"
-                             "ios_chrome_flag_descriptions.cc")
 ABOUT_FLAGS_MM_PATH = "ios/chrome/browser/flags/about_flags.mm"
 FLAG_METADATA_JSON_PATH = "chrome/browser/flag-metadata.json"
 CHROME_VERSION_PATH = "chrome/VERSION"
@@ -137,33 +135,14 @@ def update_features_mm(content, feature_name):
 
 
 def update_flag_descriptions_h(content, feature_name):
-    """Adds the feature flag description declarations to
+    """Adds the feature flag description declarations and definitions to
     ios_chrome_flag_descriptions.h."""
     feature_flag_name = f"k{to_camel_case(feature_name)}"
-    name_declaration = f"extern const char {feature_flag_name}Name[];"
-    description_declaration = (
-        f"extern const char {feature_flag_name}Description[];")
-
-    added_code = f"\n{name_declaration}\n{description_declaration}\n"
-
-    namespace_marker = "namespace flag_descriptions {"
-    marker_pos = content.find(namespace_marker)
-    if marker_pos != -1:
-        insertion_point = marker_pos + len(namespace_marker)
-        content = content[:insertion_point] + \
-            added_code + content[insertion_point:]
-
-    return content
-
-
-def update_flag_descriptions_mm(content, feature_name):
-    """Adds the feature flag description definitions to
-    ios_chrome_flag_descriptions.mm."""
-    feature_flag_name = f"k{to_camel_case(feature_name)}"
-    name_definition = (f'const char {feature_flag_name}Name[] = '
+    name_definition = (f'inline constexpr char {feature_flag_name}Name[] = '
                        f'"{to_camel_case(feature_name)}";')
-    description_definition = (f'const char {feature_flag_name}Description[] = '
-                              f'"Enables the {feature_name} feature.";')
+    description_definition = (
+        f'inline constexpr char {feature_flag_name}Description[] = '
+        f'"Enables the {feature_name} feature.";')
 
     added_code = f"\n\n{name_definition}\n{description_definition}"
 
@@ -392,7 +371,6 @@ def main():
     features_h = os.path.join(src_root, features_h_rel_path)
     features_mm = os.path.join(src_root, features_mm_rel_path)
     flag_descriptions_h = os.path.join(src_root, FLAG_DESCRIPTIONS_H_PATH)
-    flag_descriptions_mm = os.path.join(src_root, FLAG_DESCRIPTIONS_CC_PATH)
     about_flags_mm = os.path.join(src_root, ABOUT_FLAGS_MM_PATH)
     flag_metadata_json = os.path.join(src_root, FLAG_METADATA_JSON_PATH)
 
@@ -400,7 +378,6 @@ def main():
         features_h,
         features_mm,
         flag_descriptions_h,
-        flag_descriptions_mm,
         about_flags_mm,
         flag_metadata_json,
     ]
@@ -412,8 +389,6 @@ def main():
     modify_file(features_mm, lambda c: update_features_mm(c, feature_name))
     modify_file(flag_descriptions_h,
                 lambda c: update_flag_descriptions_h(c, feature_name))
-    modify_file(flag_descriptions_mm,
-                lambda c: update_flag_descriptions_mm(c, feature_name))
     modify_file(about_flags_mm,
                 lambda c: update_about_flags_mm(c, feature_name))
     modify_file(

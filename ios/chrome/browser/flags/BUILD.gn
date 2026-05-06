@@ -8,7 +8,6 @@ source_set("flags") {
   sources = [
     "about_flags.h",
     "about_flags.mm",
-    "ios_chrome_flag_descriptions.cc",
     "ios_chrome_flag_descriptions.h",
   ]
 
