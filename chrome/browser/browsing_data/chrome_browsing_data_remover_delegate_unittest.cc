@@ -3348,7 +3348,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin1, ContentSettingsType::GEOLOCATION));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin1, ContentSettingsType::GEOLOCATION));
+        kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
@@ -3372,7 +3372,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
 
     // kOrigin1 should be gone, but kOrigin2 remains.
     EXPECT_EQ(
-        0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::GEOLOCATION));
+        0, tester.GetIgnoreCount(
+               kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_EQ(
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
@@ -3389,7 +3390,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
 
     // Everything should be gone.
     EXPECT_EQ(
-        0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::GEOLOCATION));
+        0, tester.GetIgnoreCount(
+               kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_EQ(
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
@@ -3404,9 +3406,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
   {
     // Test REMOVE_SITE_DATA.
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin1, ContentSettingsType::GEOLOCATION));
+        kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin1, ContentSettingsType::GEOLOCATION));
+        kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
@@ -3423,7 +3425,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
 
     // kOrigin2 should be gone, but kOrigin1 remains.
     EXPECT_EQ(
-        2, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::GEOLOCATION));
+        2, tester.GetIgnoreCount(
+               kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_EQ(
         1, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
@@ -3446,7 +3449,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
 
     // Everything should be gone.
     EXPECT_EQ(
-        0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::GEOLOCATION));
+        0, tester.GetIgnoreCount(
+               kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_EQ(
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
@@ -3467,7 +3471,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionHeuristicData) {
       {});
   constexpr int kHeuristicGrantThreshold = 3;
   auto* history = PermissionActionsHistoryFactory::GetForProfile(GetProfile());
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
 
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_1(
       BrowsingDataFilterBuilder::Create(
