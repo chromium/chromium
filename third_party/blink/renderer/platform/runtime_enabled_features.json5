@@ -2026,7 +2026,7 @@
       //
       // https://drafts.csswg.org/css-values-5/#request-url-modifiers
       name: "CSSURLRequestModifiers",
-      status: "experimental",
+      status: "stable",
     },
     // Support for `user-select:contain`.
     {
