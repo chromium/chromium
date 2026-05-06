@@ -125,4 +125,22 @@ TEST_F(DailyEventTest, TestClosureFired) {
   EXPECT_EQ(DailyEvent::IntervalType::DAY_ELAPSED, observer_->type());
 }
 
+// Regression test mimicking the OOMKillsMonitor singleton pattern where the
+// DailyEvent is owned via unique_ptr and must be destroyed before PrefService.
+TEST(DailyEventDanglingPtrTest, SingletonPatternReset) {
+  base::test::TaskEnvironment env;
+  auto prefs = std::make_unique<TestingPrefServiceSimple>();
+  DailyEvent::RegisterPref(prefs->registry(), kTestPrefName);
+
+  // Simulate singleton: DailyEvent on the heap, outliving PrefService.
+  auto event =
+      std::make_unique<DailyEvent>(prefs.get(), kTestPrefName, kTestMetricName);
+  event->CheckInterval();
+
+  // Reset (destroy) DailyEvent before PrefService destruction prevents
+  // dangling.
+  event.reset();
+  prefs.reset();
+}
+
 }  // namespace metrics

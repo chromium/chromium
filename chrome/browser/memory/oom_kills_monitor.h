@@ -31,6 +31,10 @@ class OOMKillsMonitor {
 
   void Initialize(PrefService* pref_service);
 
+  // Stops timers and clears the PrefService pointer. Must be called before
+  // the PrefService is destroyed (e.g., during browser shutdown).
+  void Shutdown();
+
   void LogArcOOMKill(unsigned long current_oom_kills);
 
   // The following items are public for testing.
@@ -102,7 +106,12 @@ class OOMKillsMonitor {
   static const char kDailyEventHistogramName[];
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
+  // Cleared by Shutdown().
+  raw_ptr<PrefService> pref_service_;
+
+  // Set to true after Shutdown() is called. Used to guard against post-shutdown
+  // calls rather than relying on pref_service_ null checks.
+  bool is_shutdown_ = false;
 };
 
 }  // namespace memory

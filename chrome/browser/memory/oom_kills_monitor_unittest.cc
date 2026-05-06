@@ -120,6 +120,7 @@ TEST_F(OOMKillsMonitorTest, TestHistograms) {
     EXPECT_EQ(1, daily_samples->GetCount(4));
     EXPECT_EQ(1, daily_samples->GetCount(5));
   }
+  monitor_instance.Shutdown();
 }
 
 }  // namespace memory

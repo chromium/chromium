@@ -88,10 +88,10 @@ class DailyEvent {
   // Handles an interval elapsing because of |type|.
   void OnInterval(base::Time now, IntervalType type);
 
-  // A weak pointer to the PrefService object to read and write preferences
+  // Non-owning pointer to the PrefService object to read and write preferences
   // from. Calling code should ensure this object continues to exist for the
   // lifetime of the DailyEvent object.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // The name of the preference to store the last fired time in.
   // Calling code should ensure this outlives the DailyEvent.

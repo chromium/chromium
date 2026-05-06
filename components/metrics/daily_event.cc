@@ -100,6 +100,7 @@ void DailyEvent::CheckInterval() {
 
 void DailyEvent::OnInterval(base::Time now, IntervalType type) {
   DCHECK(!now.is_null());
+  DCHECK(pref_service_);
   last_fired_ = now;
   pref_service_->SetInt64(pref_name_,
                           last_fired_.since_origin().InMicroseconds());

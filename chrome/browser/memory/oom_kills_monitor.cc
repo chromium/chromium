@@ -117,6 +117,23 @@ void OOMKillsMonitor::Initialize(PrefService* pref_service) {
                            &::metrics::DailyEvent::CheckInterval);
 }
 
+void OOMKillsMonitor::Shutdown() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!is_shutdown_);
+
+  if (!monitoring_started_) {
+    return;
+  }
+  is_shutdown_ = true;
+
+  checking_timer_.Stop();
+  daily_event_timer_.Stop();
+
+  daily_event_.reset();
+
+  pref_service_ = nullptr;
+}
+
 // Both host and guest(ARCVM) oom kills are logged to the same histogram
 // Memory.OOMKills.Count.
 //
@@ -168,6 +185,9 @@ void OOMKillsMonitor::CheckOOMKillImpl(unsigned long current_oom_kills) {
 }
 
 void OOMKillsMonitor::ReportOOMKills(unsigned long oom_kills_delta) {
+  if (is_shutdown_) {
+    return;
+  }
   for (size_t i = 0; i < oom_kills_delta; ++i) {
     ++oom_kills_count_;
 
