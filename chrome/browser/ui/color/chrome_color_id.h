@@ -412,6 +412,7 @@
   E_CPONLY(kColorOmniboxComposeboxFileThumbnailOverlayIcon) \
   E_CPONLY(kColorOmniboxComposeboxPrimaryAction) \
   E_CPONLY(kColorOmniboxComposeboxSubmitButtonBackground) \
+  E_CPONLY(kColorOmniboxComposeboxSubmitButtonEnergy) \
   E_CPONLY(kColorOmniboxComposeboxSubmitButtonIcon) \
   E_CPONLY(kColorOmniboxContextEntrypointHoverBackground) \
   E_CPONLY(kColorOmniboxContextEntrypointText) \
