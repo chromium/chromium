@@ -41,8 +41,8 @@ import * as Sources from 'devtools/panels/sources/sources.js';
           Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
           watchExpressionsUpdated);
       const watches = [];
-      function watchExpressionsUpdated(result, exceptionDetails) {
-        if (result !== undefined || exceptionDetails !== undefined) {
+      async function watchExpressionsUpdated(result, exceptionDetails) {
+        if (await result !== undefined || exceptionDetails !== undefined) {
           watches.push(this.element.deepTextContent().trim());
           if (watches.length === 2) {
             watches.sort().forEach(TestRunner.addResult);
