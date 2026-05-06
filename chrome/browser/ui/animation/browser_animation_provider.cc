@@ -6,15 +6,45 @@
 
 #include <compare>
 #include <optional>
+#include <sstream>
+#include <string>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/animation/browser_animation_provider_internal.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
+
+BrowserAnimationProvider::HistogramPrefix::HistogramPrefix() = default;
+BrowserAnimationProvider::HistogramPrefix::HistogramPrefix(
+    HistogramPrefix&&) noexcept = default;
+BrowserAnimationProvider::HistogramPrefix&
+BrowserAnimationProvider::HistogramPrefix::operator=(
+    HistogramPrefix&&) noexcept = default;
+BrowserAnimationProvider::HistogramPrefix::~HistogramPrefix() = default;
+
+std::string BrowserAnimationProvider::HistogramPrefix::GetFullPrefix() const {
+  CHECK(group_name);
+  CHECK(motion_name);
+  if (group_name->empty()) {
+    return *motion_name;
+  }
+  if (motion_name->empty()) {
+    return *group_name;
+  }
+  return base::StringPrintf("%s.%s", group_name->c_str(), motion_name->c_str());
+}
+
+std::string BrowserAnimationProvider::HistogramPrefix::ToString() const {
+  std::ostringstream oss;
+  oss << "HistogramPrefix{ group_name = " << group_name.value_or("[none]")
+      << " motion_name = " << motion_name.value_or("[none]") << " }";
+  return oss.str();
+}
 
 std::optional<BrowserAnimationProvider::MotionSpecification>
 BrowserAnimationProvider::GetMotionSpecification(
@@ -56,6 +86,13 @@ BrowserAnimationProvider::GetSequenceParams(
 BrowserAnimationProvider::SequenceParamsLookup
 BrowserAnimationProvider::GetAllSequenceParams(
     BrowserAnimationGroup group) const {
+  return {};
+}
+
+BrowserAnimationProvider::HistogramPrefix
+BrowserAnimationProvider::GetHistogramPrefix(
+    BrowserAnimationGroup group,
+    BrowserAnimationMotion motion) const {
   return {};
 }
 
@@ -128,6 +165,40 @@ CachingBrowserAnimationProvider::GetAllSequenceParams(
     return *result;
   }
   return {};
+}
+
+BrowserAnimationProvider::HistogramPrefix
+CachingBrowserAnimationProvider::GetHistogramPrefix(
+    BrowserAnimationGroup group,
+    BrowserAnimationMotion motion) const {
+  HistogramPrefix prefix;
+  if (const auto* const group_prefix =
+          base::FindOrNull(group_histogram_names_, group)) {
+    prefix.group_name = *group_prefix;
+  }
+  if (const auto* const motion_infix =
+          base::FindOrNull(motion_histogram_names_, motion)) {
+    prefix.motion_name = *motion_infix;
+  }
+  return prefix;
+}
+
+void CachingBrowserAnimationProvider::SetHistogramName(
+    BrowserAnimationGroup group,
+    std::string_view group_prefix) {
+  CHECK(group);
+  CHECK(!group_prefix.starts_with('.'));
+  CHECK(!group_prefix.ends_with('.'));
+  group_histogram_names_[group] = group_prefix;
+}
+
+void CachingBrowserAnimationProvider::SetHistogramName(
+    BrowserAnimationMotion motion,
+    std::string_view motion_infix) {
+  CHECK(motion);
+  CHECK(!motion_infix.starts_with('.'));
+  CHECK(!motion_infix.ends_with('.'));
+  motion_histogram_names_[motion] = motion_infix;
 }
 
 void CachingBrowserAnimationProvider::UpdateSequenceParams(

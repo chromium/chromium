@@ -7,7 +7,9 @@ panel show/hide, etc.
 It provides an interface for declaratively specifying animations, including
 using (but not limited to) syntax similar to CSS.
 
-It also allows for smooth redirection of animations, even mid-animation.
+It allows for smooth redirection of animations, even mid-animation.
+
+Finally, it allows for automatic logging of performance data to histograms.
 
 ## Motivation
 
@@ -744,6 +746,130 @@ generate a _cancel_ event if a different motion is playing, and will generate
 an _ended_ event if the target motion is valid. During the _ended_ event, all
 sequence values will be the final values of the motion.
 
+## Automatic Logging to Histograms
+
+There are two automatic histograms that can be emitted for each motion:
+ - Frames per second
+ - Longest frame time in milliseconds
+
+In order to have these histograms output you need to do the following:
+ 1. Generate the names for the relevant group and motion in your
+    `BrowserAnimationProvider`.
+ 2. Add the histograms to a `histograms.xml` file. You can use variants for your
+    group and/or motion names to simplify the declarations.
+
+### Generating Histogram Names
+
+As always, we recommend using `CachingBrowserAnimationProvider`. In your
+constructor, call `SetHistogramName()` for your groups and motions:
+
+```cpp
+
+MyAnimations::MyAnimations() {
+  // SetSequenceParams(...);
+
+  // LINT.IfChange(MyFeatureHistogramsNames)
+
+  // Name group histogram prefixes:
+  SetHistogramName(kPanelGroup, "MyFeature.PanelAnimations");
+  SetHistogramName(kFlyoverGroup, "MyFeature.FlyoverAnimations");
+
+  // Name motion histogram infixes:
+  SetHistogramName(kExpandMotion, "Expand");
+  SetHistogramName(kCollapseMotion, "Collapse");
+  SetHistogramName(kExpandMotion, "FadeIn");
+  SetHistogramName(kCollapseMotion, "FadeOut");
+
+  // LINT.ThenChange(MyFeatureHistogramsDeclarations)
+}
+
+```
+
+Some notes:
+ - The name of a group or motion may contain a dot. In this case, the
+   histogram names for a panel expand motion would be:
+   - `MyFeature.PanelAnimations.Expand.AnimationFPS`
+   - `MyFeature.PanelAnimations.Expand.TimeOfLongestAnimationStep`
+- If no name has been specified for either the group, motion, or both, no
+  histogram will be emitted.
+- If a name is specified but empty, a dot will not be inserted:
+  - "", "MyMotion" -> "MyMotion.AnimationFPS"
+  - "MyGroup", "" -> "MyGroup.AnimationFPS"
+  - "", "" -> _illegal; will generate an error_
+- Always use linter directives to avoid getting out of sync with histogram
+  declarations.
+
+#### Specifying/Overriding Histogram Names
+
+You can specify or override the histogram name of either the group or motion
+(or both) when starting an animation. This may cause a histogram to be emitted
+where it might not otherwise be. Example:
+
+```cpp
+  // This will cause the following performance histograms to be emitted:
+  //  - AlternativeGroupPrefix.AlternativeMotionInfix.AnimationFPS
+  //  - AlternativeGroupPrefix.AlternativeMotionInfix.TimeOfLongestAnimationStep
+  //
+  // It does not matter if the provider registered histograms for this group or
+  // motion previously.
+  controller->Start(
+      kPanelGroup, kExpandMotion,
+      "AlternativeGroupPrefix",
+      "AlternativeMotionInfix");
+```
+
+### Declaring Histograms
+
+It is currently best practice to declare your histograms so that the
+prefix/first term is the histogram prefix for your feature. This prevents
+multiplying prefixes, which is against best practices.
+
+```xml
+
+<!-- LINT.IfChange(MyFeatureHistogramsDeclarations) -->
+
+<variants name="MyFeatureAnimationGroups">
+  <variant name="PanelAnimations" summary="..."/>
+  <variant name="FlyoverAnimations" summary="..."/>
+</variants>
+
+<variants name="MyFeatureAnimationMotions">
+  <variant name="Expand" summary="..."/>
+  <variant name="Collapse" summary="..."/>
+  <variant name="FadeIn" summary="..."/>
+  <variant name="FadeOut" summary="..."/>
+</variants>
+
+<!-- LINT.ThenChange(MyFeatureHistogramNames) -->
+
+<histogram
+    name="MyFeature.{MyFeatureAnimationGroups}.{MyFeatureAnimationMotions}.AnimationFPS"
+    units="fps"
+    expires_after="2099-01-01">
+  <owner>email@chromium.org</owner>
+  <summary>
+    Records the frames per second for MyFeature animations.
+    Recorded when an animation completes.
+  </summary>
+  <token key="MyFeatureAnimationGroups" variants="MyFeatureAnimationGroups"/>
+  <token key="MyFeatureAnimationMotions" variants="MyFeatureAnimationMotions"/>
+</histogram>
+
+<histogram
+    name="MyFeature.{MyFeatureAnimationGroups}.{MyFeatureAnimationMotions}.TimeOfLongestAnimationStep"
+    units="ms"
+    expires_after="2099-01-01">
+  <owner>email@chromium.org</owner>
+  <summary>
+    Records the longest frame in an animation in ms.
+    Recorded when an animation completes.
+  </summary>
+  <token key="MyFeatureAnimationGroups" variants="MyFeatureAnimationGroups"/>
+  <token key="MyFeatureAnimationMotions" variants="MyFeatureAnimationMotions"/>
+</histogram>
+
+```
+
 ## Best Practices
 
 Persist all values that make sense to. This will make animations smoother.
@@ -768,3 +894,5 @@ tab strip start or end at the collapsed state.
   - Each state can be modified in response to e.g. user preference or window
     geometry changes.
 - Allow more complicated math when computing keyframe values.
+- Create a common, default histogram prefix for animation performance
+  histograms.

@@ -8,6 +8,8 @@
 #include <concepts>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -17,16 +19,21 @@
 #include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/animation/browser_animation_provider.h"
 #include "chrome/browser/ui/animation/browser_animation_provider_internal.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -62,6 +69,79 @@ class SequenceParamsLookup {
 
  private:
   internal::BrowserAnimationSequenceParamsLookup lookup_;
+};
+
+// Class that records an FPS histogram with name starting with `prefix` for an
+// animation if it completes successfully.
+class Logger : public ui::CompositorObserver {
+ public:
+  Logger(views::Widget* widget,
+         base::TimeDelta animation_length,
+         std::string_view prefix)
+      : animation_length_(animation_length),
+        prefix_(prefix),
+        last_frame_(base::Time::Now()) {
+    if (widget && widget->GetCompositor()) {
+      CHECK(animation_length_.is_positive());
+      CHECK(!prefix.empty());
+      compositor_observation_.Observe(widget->GetCompositor());
+    }
+  }
+  Logger(const Logger&) = delete;
+  void operator=(const Logger&) = delete;
+  ~Logger() override = default;
+
+  void MaybeLog() {
+    if (!compositor_observation_.IsObserving()) {
+      return;
+    }
+
+    // On very slow machines, it is possible for an animation to have zero
+    // frames presented. We need to record these (very bad) results. So if there
+    // have been zero frames, assume that there will be a frame soon after and
+    // count this call as a frame..
+    //
+    // This does result in the FPS bottoming out at `1 / animation_length_`, and
+    // the longest frame at `animation_length_`, but those are already worst-
+    // case scenarios.
+    if (frames_presented_ == 0U) {
+      frames_presented_ = 1U;
+      longest_frame_ =
+          std::max(longest_frame_, base::Time::Now() - last_frame_);
+    }
+
+    compositor_observation_.Reset();
+    const int animation_fps =
+        base::ClampRound(frames_presented_ / animation_length_.InSecondsF());
+    base::UmaHistogramCounts100(
+        prefix_ + BrowserAnimationController::kFramesPerSecondHistogramSuffix,
+        animation_fps);
+    base::UmaHistogramTimes(
+        prefix_ + BrowserAnimationController::kLongestFrameHistogramSuffix,
+        longest_frame_);
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidPresentCompositorFrame(ui::Compositor*,
+                                   uint32_t,
+                                   const gfx::PresentationFeedback&) override {
+    ++frames_presented_;
+    const auto now = base::Time::Now();
+    longest_frame_ = std::max(longest_frame_, now - last_frame_);
+    last_frame_ = now;
+  }
+  void OnCompositingShuttingDown(ui::Compositor* compositor) override {
+    compositor_observation_.Reset();
+  }
+
+  const base::TimeDelta animation_length_;
+  const std::string prefix_;
+  size_t frames_presented_ = 0U;
+  base::Time last_frame_;
+  base::TimeDelta longest_frame_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
+      compositor_observation_{this};
 };
 
 // Class that creates an on-demand views::AnimationDelegateViews.
@@ -391,6 +471,7 @@ struct BrowserAnimationController::MotionInfo {
 
   internal::BrowserAnimationMotionSpecification motion;
   base::TimeDelta duration;
+  BrowserAnimationProvider::HistogramPrefix histogram_prefix;
 };
 
 // Tracks the current motion and progress for a particular animation group.
@@ -412,6 +493,7 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
     UpdateCurrentValues(base::Milliseconds(0), 0.0, params);
     if (gfx::Animation::ShouldRenderRichAnimation()) {
       MaybeCreateAnimator();
+      MaybeStartLogger();
       animator_->Start(current_motion_info_.duration);
       Notify(BrowserAnimationUpdate::kStarted);
     } else {
@@ -495,12 +577,25 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
         CHECK_IS_TEST()
             << "Can only attempt to start animations without a view in tests.";
       }
-      animator_ = std::make_unique<Animator>(*this, view);
+      animator_.emplace(*this, view);
     }
   }
 
   SequenceParamsLookup GetParamsLookup() const {
     return SequenceParamsLookup(controller_->GetAllSequenceParams(group_));
+  }
+
+  // Starts the logger for the current motion if it is nonzero duration, has a
+  // log prefix/name, and there is a widget to get the compositor from.
+  void MaybeStartLogger() {
+    CHECK(current_motion_);
+    if (current_motion_info_.histogram_prefix.is_specified() &&
+        current_motion_info_.duration.is_positive()) {
+      if (auto* const widget = controller_->browser_view_->GetWidget()) {
+        logger_.emplace(widget, current_motion_info_.duration,
+                        current_motion_info_.histogram_prefix.GetFullPrefix());
+      }
+    }
   }
 
   // Does the work of progressing the animation. Values are updated and then
@@ -519,6 +614,10 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
   // animation active at 100% before the animation is cleaned up.
   void OnAnimationEnded(const SequenceParamsLookup& params) {
     UpdateCurrentValues(current_motion_info_.duration, 1.0, params);
+    if (logger_) {
+      logger_->MaybeLog();
+      logger_.reset();
+    }
     Notify(BrowserAnimationUpdate::kEnded);
     current_motion_ = BrowserAnimationMotion();
     PersistCurrentValues(params);
@@ -530,6 +629,7 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
       return false;
     }
     PersistCurrentValues(params);
+    logger_.reset();
     animator_->Stop();
     Notify(BrowserAnimationUpdate::kCanceled);
     current_motion_ = BrowserAnimationMotion();
@@ -543,6 +643,7 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
     if (!current_motion_) {
       return false;
     }
+    logger_.reset();
     animator_->Stop();
     Notify(BrowserAnimationUpdate::kCanceled);
     current_motion_ = BrowserAnimationMotion();
@@ -604,7 +705,8 @@ class BrowserAnimationController::GroupData : public gfx::AnimationDelegate {
   ValueLookup current_values_;
   BrowserAnimationMotion current_motion_;
   MotionInfo current_motion_info_;
-  std::unique_ptr<Animator> animator_;
+  std::optional<Animator> animator_;
+  std::optional<Logger> logger_;
 
   // The list of listeners. Note that this is destroyed before the animation,
   // so no messages are sent on teardown. This severs any potentially unsafe
@@ -650,10 +752,19 @@ base::TimeDelta BrowserAnimationController::GetMotionDuration(
   return GetGroupData(group).GetMotionDuration();
 }
 
-void BrowserAnimationController::Start(BrowserAnimationGroup group,
-                                       BrowserAnimationMotion motion) {
+void BrowserAnimationController::Start(
+    BrowserAnimationGroup group,
+    BrowserAnimationMotion motion,
+    std::optional<std::string_view> group_histogram_override,
+    std::optional<std::string_view> motion_histogram_override) {
   auto motion_info = GetMotionInfo(group, motion);
   CHECK(motion_info.has_value());
+  if (group_histogram_override) {
+    motion_info->histogram_prefix.group_name = *group_histogram_override;
+  }
+  if (motion_histogram_override) {
+    motion_info->histogram_prefix.motion_name = *motion_histogram_override;
+  }
   GetGroupData(group).Start(motion, std::move(*motion_info));
 }
 
@@ -667,7 +778,6 @@ void BrowserAnimationController::Reset(BrowserAnimationGroup group,
     }
   }
   auto motion_info = GetMotionInfo(group, motion);
-  CHECK(motion_info.has_value());
   group_data.Reset(motion, std::move(*motion_info));
 }
 
@@ -705,6 +815,7 @@ BrowserAnimationController::GetMotionInfo(BrowserAnimationGroup group,
     if (spec) {
       result.motion = std::move(*spec);
       result.duration = result.motion.GetDuration();
+      result.histogram_prefix = provider->GetHistogramPrefix(group, motion);
       return result;
     }
   }

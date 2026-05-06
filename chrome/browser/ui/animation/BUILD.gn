@@ -47,3 +47,24 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "browser_animation_controller_browsertest.cc" ]
+
+  deps = [
+    ":animation",
+    "//base/test:test_support",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/interaction:test_support",
+    "//ui/gfx:test_support",
+  ]
+}

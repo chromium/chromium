@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <optional>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -68,6 +69,33 @@ class BrowserAnimationProvider : public ui::FrameworkSpecificImplementation {
   // nothing.
   virtual SequenceParamsLookup GetAllSequenceParams(
       BrowserAnimationGroup group) const;
+
+  // Returns the histogram prefix to use to log performance metrics for `group`
+  // and `motion`. If empty (default) no logging is performed.
+  struct HistogramPrefix {
+    HistogramPrefix();
+    HistogramPrefix(HistogramPrefix&&) noexcept;
+    HistogramPrefix& operator=(HistogramPrefix&&) noexcept;
+    ~HistogramPrefix();
+
+    std::optional<std::string> group_name;
+    std::optional<std::string> motion_name;
+
+    bool is_specified() const {
+      return group_name.has_value() && motion_name.has_value();
+    }
+
+    // Gets the fully-formatted prefix. Must be specified an in a correct
+    // format.
+    std::string GetFullPrefix() const;
+
+    // Returns a string representation of this object for debugging, which can
+    // be in any state.
+    std::string ToString() const;
+  };
+  virtual HistogramPrefix GetHistogramPrefix(
+      BrowserAnimationGroup group,
+      BrowserAnimationMotion motion) const;
 
  protected:
   // Implementation of `GetMotionSpecification()` that just retrieves the
@@ -401,6 +429,9 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
       BrowserAnimationSequence sequence) const override;
   SequenceParamsLookup GetAllSequenceParams(
       BrowserAnimationGroup group) const override;
+  HistogramPrefix GetHistogramPrefix(
+      BrowserAnimationGroup group,
+      BrowserAnimationMotion motion) const override;
 
   // Update or clear the sequence params associated with `sequence` in `group`.
   void UpdateSequenceParams(BrowserAnimationGroup group,
@@ -448,6 +479,16 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
     (AddSequenceParams(params, sequence_params), ...);
     sequence_params_[group] = std::move(params);
   }
+
+  // Sets the histogram prefix components for a group or motion.
+  //
+  // When an animation is played where both the group and motion have values
+  // set, histograms are recorded in the form:
+  //   group_prefix.motion_infix.performance_metric
+  void SetHistogramName(BrowserAnimationGroup group,
+                        std::string_view group_prefix);
+  void SetHistogramName(BrowserAnimationMotion motion,
+                        std::string_view motion_infix);
 
   // Creates a list of groups.
   // Syntax is `Groups(Group(...), Group(...), ...)`
@@ -532,6 +573,8 @@ class CachingBrowserAnimationProvider : public BrowserAnimationProvider {
   // Mutable because lazily-generated.
   mutable GroupInfos cached_infos_;
   base::flat_map<BrowserAnimationGroup, SequenceParamsLookup> sequence_params_;
+  base::flat_map<BrowserAnimationGroup, std::string> group_histogram_names_;
+  base::flat_map<BrowserAnimationMotion, std::string> motion_histogram_names_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANIMATION_BROWSER_ANIMATION_PROVIDER_H_

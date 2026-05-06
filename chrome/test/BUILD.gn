@@ -5377,6 +5377,7 @@ if (!is_android) {
         "//chrome/browser/page_info",
         "//chrome/browser/ui/actions",
         "//chrome/browser/ui/actions:actions_headers",
+        "//chrome/browser/ui/animation:browser_tests",
         "//chrome/browser/ui/autofill:test_support",
         "//chrome/browser/ui/commerce",
         "//chrome/browser/ui/commerce:test_support",

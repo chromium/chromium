@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -51,6 +52,10 @@ class View;
 class BrowserAnimationController {
  public:
   DECLARE_USER_DATA(BrowserAnimationController);
+
+  static constexpr char kFramesPerSecondHistogramSuffix[] = ".AnimationFPS";
+  static constexpr char kLongestFrameHistogramSuffix[] =
+      ".TimeOfLongestAnimationStep";
 
   explicit BrowserAnimationController(BrowserWindowInterface& browser);
   BrowserAnimationController(const BrowserAnimationController&) = delete;
@@ -118,7 +123,15 @@ class BrowserAnimationController {
   //
   // There will be a cancel event for the current motion and a start event for
   // `motion`.
-  void Start(BrowserAnimationGroup group, BrowserAnimationMotion motion);
+  //
+  // If you do not wish to use the default group or motion histogram components,
+  // you can override them. See documentation in `BrowserAnimationProvider` and
+  // the README file for more info.
+  void Start(
+      BrowserAnimationGroup group,
+      BrowserAnimationMotion motion,
+      std::optional<std::string_view> group_histogram_override = std::nullopt,
+      std::optional<std::string_view> motion_histogram_override = std::nullopt);
 
   // Resets the current state of `group` to the end of `motion`, regardless of
   // what is currently happening. If `motion` is not specified then the current
