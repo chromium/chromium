@@ -20,90 +20,49 @@
 
 namespace blink {
 
-namespace {
-static constexpr char kInjectedScriptManager[] = "injectedScriptManager";
-}  // namespace
-
 InspectorInjectedScriptManager::InspectorInjectedScriptManager(
-    InspectedFrames* inspected_frames,
-    v8_inspector::V8InspectorSession* v8_session,
-    InspectorPageAgent::Client* client)
-    : inspected_frames_(inspected_frames),
-      v8_session_(v8_session),
-      client_(client),
-      agent_state_(kInjectedScriptManager),
-      scripts_to_evaluate_on_load_(&agent_state_, String()),
-      worlds_to_evaluate_on_load_(&agent_state_, String()),
-      include_command_line_api_for_scripts_to_evaluate_on_load_(&agent_state_,
-                                                                false) {}
-
-void InspectorInjectedScriptManager::InitFrom(
-    InspectorSessionState* session_state) {
-  agent_state_.InitFrom(session_state);
-}
+    InspectedFrames* inspected_frames)
+    : inspected_frames_(inspected_frames) {}
 
 void InspectorInjectedScriptManager::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
 }
 
-void InspectorInjectedScriptManager::Dispose() {
-  v8_session_ = nullptr;
+void InspectorInjectedScriptManager::SetV8Session(
+    v8_inspector::V8InspectorSession* v8_session) {
+  v8_session_ = v8_session;
 }
 
-String InspectorInjectedScriptManager::AddScriptToEvaluateOnNewDocument(
-    const String& source,
-    std::optional<String> world_name,
-    std::optional<bool> include_command_line_api,
-    std::optional<bool> runImmediately) {
-  String identifier;
-  {
-    const auto& keys = scripts_to_evaluate_on_load_.Keys();
-    auto result = std::max_element(
-        keys.begin(), keys.end(), [](const String& a, const String& b) {
-          return Decimal::FromString(a) < Decimal::FromString(b);
-        });
-    if (result == keys.end()) {
-      identifier = String::Number(1);
-    } else {
-      identifier = String::Number(Decimal::FromString(*result).ToDouble() + 1);
-    }
-  }
+void InspectorInjectedScriptManager::AddScriptToEvaluateOnNewDocument(
+    const String& identifier,
+    mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
+    bool run_immediately) {
+  scripts_.Set(identifier, std::move(script));
 
-  scripts_to_evaluate_on_load_.Set(identifier, source);
-  worlds_to_evaluate_on_load_.Set(identifier, world_name.value_or(""));
-  include_command_line_api_for_scripts_to_evaluate_on_load_.Set(
-      identifier, include_command_line_api.value_or(false));
-
-  if (client_->IsPausedForNewWindow() || runImmediately.value_or(false)) {
-    // client_->IsPausedForNewWindow(): When opening a new popup,
-    // Page.addScriptToEvaluateOnNewDocument could be called after
-    // Runtime.enable that forces main context creation. In this case, we would
-    // not normally evaluate the script, but we should.
+  if (run_immediately) {
     for (LocalFrame* frame : *inspected_frames_) {
-      // Don't evaluate scripts on provisional frames:
-      // https://crbug.com/390710982
       if (!frame->IsProvisional()) {
         EvaluateScriptOnNewDocument(*frame, identifier);
       }
     }
   }
-
-  return identifier;
 }
 
 bool InspectorInjectedScriptManager::RemoveScriptToEvaluateOnNewDocument(
     const String& identifier) {
-  if (scripts_to_evaluate_on_load_.Get(identifier).IsNull()) {
+  auto it = scripts_.find(identifier);
+  if (it == scripts_.end()) {
     return false;
   }
-  scripts_to_evaluate_on_load_.Clear(identifier);
-  worlds_to_evaluate_on_load_.Clear(identifier);
-  include_command_line_api_for_scripts_to_evaluate_on_load_.Clear(identifier);
+  scripts_.erase(it);
   return true;
 }
 
 void InspectorInjectedScriptManager::InjectScripts(LocalFrame* frame) {
-  Vector<String> keys(scripts_to_evaluate_on_load_.Keys());
+  Vector<String> keys;
+  for (const auto& key : scripts_.Keys()) {
+    keys.push_back(key);
+  }
   std::sort(keys.begin(), keys.end(), [](const String& a, const String& b) {
     return Decimal::FromString(a) < Decimal::FromString(b);
   });
@@ -116,11 +75,17 @@ void InspectorInjectedScriptManager::InjectScripts(LocalFrame* frame) {
 void InspectorInjectedScriptManager::EvaluateScriptOnNewDocument(
     LocalFrame& frame,
     const String& script_identifier) {
+  auto it = scripts_.find(script_identifier);
+  if (it == scripts_.end()) {
+    return;
+  }
+  const auto& script = it->value;
+
   auto* window = frame.DomWindow();
   v8::HandleScope handle_scope(window->GetIsolate());
 
   ScriptState* script_state = nullptr;
-  const String world_name = worlds_to_evaluate_on_load_.Get(script_identifier);
+  const String world_name = script->world_name;
   if (world_name.empty()) {
     script_state = ToScriptStateForMainWorld(window->GetFrame());
   } else if (DOMWrapperWorld* world = EnsureDOMWrapperWorld(
@@ -134,12 +99,9 @@ void InspectorInjectedScriptManager::EvaluateScriptOnNewDocument(
     return;
   }
 
-  v8_session_->evaluate(
-      script_state->GetContext(),
-      ToV8InspectorStringView(
-          scripts_to_evaluate_on_load_.Get(script_identifier)),
-      include_command_line_api_for_scripts_to_evaluate_on_load_.Get(
-          script_identifier));
+  v8_session_->evaluate(script_state->GetContext(),
+                        ToV8InspectorStringView(script->source),
+                        script->include_command_line_api);
   // Note v8_session_ may be null here as the session may have been disposed
   // during the execution of the injected script.
 }

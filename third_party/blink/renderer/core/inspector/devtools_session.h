@@ -47,6 +47,7 @@ class InspectorLogAgent;
 class InspectorNetworkAgent;
 class InspectorOverlayAgent;
 class InspectorPageAgent;
+class InspectorInjectedScriptManager;
 class InspectorPerformanceAgent;
 class InspectorWebAudioAgent;
 class InspectorWebMCPAgent;
@@ -102,6 +103,10 @@ class CORE_EXPORT DevToolsSession
 
   const String& script_to_evaluate_on_load() const {
     return script_to_evaluate_on_load_;
+  }
+
+  InspectorInjectedScriptManager* InjectedScriptManager() const {
+    return injected_script_manager_.Get();
   }
 
  private:
@@ -196,6 +201,7 @@ class CORE_EXPORT DevToolsSession
   // This is only relevant until the initial attach to v8 and is never reset
   // once the session stops waiting.
   const bool session_waits_for_debugger_;
+  Member<InspectorInjectedScriptManager> injected_script_manager_;
 };
 
 }  // namespace blink

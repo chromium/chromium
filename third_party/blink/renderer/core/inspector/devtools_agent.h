@@ -48,6 +48,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
     virtual void InspectElement(const gfx::Point&) = 0;
     virtual void DebuggerTaskStarted() = 0;
     virtual void DebuggerTaskFinished() = 0;
+    virtual bool IsPausedForNewWindow() { return false; }
   };
 
   static std::unique_ptr<WorkerDevToolsParams> WorkerThreadCreated(

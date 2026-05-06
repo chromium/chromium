@@ -491,7 +491,8 @@ InspectorPageAgent::InspectorPageAgent(
     Client* client,
     InspectorResourceContentLoader* resource_content_loader,
     v8_inspector::V8InspectorSession* v8_session,
-    const String& script_to_evaluate_on_load)
+    const String& script_to_evaluate_on_load,
+    InspectorInjectedScriptManager* injected_script_manager)
     : inspected_frames_(inspected_frames),
       v8_session_(v8_session),
       client_(client),
@@ -510,17 +511,7 @@ InspectorPageAgent::InspectorPageAgent(
       fixed_font_size_(&agent_state_, /*default_value=*/0),
       script_font_families_cbor_(&agent_state_, std::vector<uint8_t>()),
       pending_script_injection_on_load_(script_to_evaluate_on_load),
-      injected_script_manager_(
-          MakeGarbageCollected<InspectorInjectedScriptManager>(inspected_frames,
-                                                               v8_session,
-                                                               client)) {}
-
-void InspectorPageAgent::Init(CoreProbeSink* instrumenting_agents,
-                              protocol::UberDispatcher* dispatcher,
-                              InspectorSessionState* session_state) {
-  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, session_state);
-  injected_script_manager_->InitFrom(session_state);
-}
+      injected_script_manager_(injected_script_manager) {}
 
 void InspectorPageAgent::Restore() {
   if (enabled_.Get()) {
@@ -576,43 +567,6 @@ protocol::Response InspectorPageAgent::disable() {
   frame_ad_script_ancestry_.clear();
   stopScreencast();
 
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
-    const String& source,
-    std::optional<String> world_name,
-    std::optional<bool> include_command_line_api,
-    std::optional<bool> runImmediately,
-    String* identifier) {
-  *identifier = injected_script_manager_->AddScriptToEvaluateOnNewDocument(
-      source, world_name, include_command_line_api, runImmediately);
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorPageAgent::removeScriptToEvaluateOnNewDocument(
-    const String& identifier) {
-  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
-          identifier)) {
-    return protocol::Response::ServerError("Script not found");
-  }
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorPageAgent::addScriptToEvaluateOnLoad(
-    const String& source,
-    String* identifier) {
-  *identifier = injected_script_manager_->AddScriptToEvaluateOnNewDocument(
-      source, std::optional<String>(""), false, false);
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorPageAgent::removeScriptToEvaluateOnLoad(
-    const String& identifier) {
-  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
-          identifier)) {
-    return protocol::Response::ServerError("Script not found");
-  }
   return protocol::Response::Success();
 }
 
@@ -1982,7 +1936,6 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
 
 void InspectorPageAgent::Dispose() {
   InspectorBaseAgent::Dispose();
-  injected_script_manager_->Dispose();
   injected_script_manager_ = nullptr;
   v8_session_ = nullptr;
 }

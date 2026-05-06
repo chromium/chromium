@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_INJECTED_SCRIPT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_INJECTED_SCRIPT_MANAGER_H_
 
-#include <optional>
-
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
-#include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -27,9 +26,7 @@ class DOMWrapperWorld;
 class CORE_EXPORT InspectorInjectedScriptManager final
     : public GarbageCollected<InspectorInjectedScriptManager> {
  public:
-  InspectorInjectedScriptManager(InspectedFrames* inspected_frames,
-                                 v8_inspector::V8InspectorSession* v8_session,
-                                 InspectorPageAgent::Client* client);
+  explicit InspectorInjectedScriptManager(InspectedFrames* inspected_frames);
 
   InspectorInjectedScriptManager(const InspectorInjectedScriptManager&) =
       delete;
@@ -38,14 +35,12 @@ class CORE_EXPORT InspectorInjectedScriptManager final
   ~InspectorInjectedScriptManager() = default;
 
   void Trace(Visitor* visitor) const;
-  void Dispose();
-  void InitFrom(InspectorSessionState* session_state);
+  void SetV8Session(v8_inspector::V8InspectorSession* v8_session);
 
-  String AddScriptToEvaluateOnNewDocument(
-      const String& source,
-      std::optional<String> world_name,
-      std::optional<bool> include_command_line_api,
-      std::optional<bool> runImmediately);
+  void AddScriptToEvaluateOnNewDocument(
+      const String& identifier,
+      mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
+      bool run_immediately);
 
   bool RemoveScriptToEvaluateOnNewDocument(const String& identifier);
 
@@ -61,13 +56,8 @@ class CORE_EXPORT InspectorInjectedScriptManager final
 
   Member<InspectedFrames> inspected_frames_;
   v8_inspector::V8InspectorSession* v8_session_;
-  InspectorPageAgent::Client* const client_;
 
-  InspectorAgentState agent_state_;
-  InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
-  InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
-  InspectorAgentState::BooleanMap
-      include_command_line_api_for_scripts_to_evaluate_on_load_;
+  HashMap<String, mojom::blink::ScriptToEvaluateOnNewDocumentPtr> scripts_;
 };
 
 }  // namespace blink

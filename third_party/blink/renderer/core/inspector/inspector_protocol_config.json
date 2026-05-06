@@ -88,7 +88,8 @@
             {
                 "domain": "Page",
                 "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
-                            "getAppManifest", "getAnnotatedPageContent", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed"],
+                            "getAppManifest", "getAnnotatedPageContent", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed",
+                            "addScriptToEvaluateOnNewDocument", "removeScriptToEvaluateOnNewDocument", "addScriptToEvaluateOnLoad", "removeScriptToEvaluateOnLoad"],
                 "async": ["getResourceContent", "searchInResource", "createIsolatedWorld"],
                 "exclude_events": ["screencastFrame", "screencastVisibilityChanged", "colorPicked", "interstitialShown", "interstitialHidden",
                                    "javascriptDialogOpening", "javascriptDialogClosed", "navigationRequested", "frameStartedLoading", "frameStoppedLoading"]

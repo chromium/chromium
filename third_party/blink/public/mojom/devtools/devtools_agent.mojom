@@ -181,7 +181,9 @@ interface DevToolsSession {
   // Disables all breakpoints and terminates script currently executing.
   UnpauseAndTerminate();
 
-  // Adds a script to be evaluated on new documents.
+  // Adds a script to be evaluated on new documents. It is up to the caller to
+  // ensure no attempt is made to add a script that already exists. See also
+  // `BrowserOriginatingSessionState` below.
   AddScriptToEvaluateOnNewDocument(string identifier, ScriptToEvaluateOnNewDocument script, bool run_immediately) => ();
 
   // Removes a script to be evaluated on new documents.
@@ -215,7 +217,10 @@ interface DevToolsSessionHost {
 // (i.e. "handlers") and is only ever sent from the browser to renderer.
 // Unlike the renderer originating session state, it is intended to be strongly typed.
 struct BrowserOriginatingSessionState {
-  // empty for now
+  // scriptId is an opaque string uniquely identifying the script in case it
+  // needs to be removed (see also
+  // DevToolsSession::{add,remove}ScriptToEvaluateOnNewDocument above).
+  map<string /* scriptId */, ScriptToEvaluateOnNewDocument> scripts_to_evaluate_on_new_document;
 };
 
 // The renderer originating session state is a mapping from keys to either values

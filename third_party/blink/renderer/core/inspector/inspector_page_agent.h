@@ -113,30 +113,15 @@ class CORE_EXPORT InspectorPageAgent final
                      Client*,
                      InspectorResourceContentLoader*,
                      v8_inspector::V8InspectorSession*,
-                     const String& script_to_evaluate_on_load);
+                     const String& script_to_evaluate_on_load,
+                     InspectorInjectedScriptManager* injected_script_manager);
   InspectorPageAgent(const InspectorPageAgent&) = delete;
   InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
-
-  void Init(CoreProbeSink*,
-            protocol::UberDispatcher*,
-            InspectorSessionState*) override;
 
   // Page API for frontend
   protocol::Response enable(
       std::optional<bool> enable_file_chooser_opened_event) override;
   protocol::Response disable() override;
-  protocol::Response addScriptToEvaluateOnLoad(const String& script_source,
-                                               String* identifier) override;
-  protocol::Response removeScriptToEvaluateOnLoad(
-      const String& identifier) override;
-  protocol::Response addScriptToEvaluateOnNewDocument(
-      const String& source,
-      std::optional<String> world_name,
-      std::optional<bool> include_command_line_api,
-      std::optional<bool> runImmediately,
-      String* identifier) override;
-  protocol::Response removeScriptToEvaluateOnNewDocument(
-      const String& identifier) override;
   protocol::Response setLifecycleEventsEnabled(bool) override;
   protocol::Response reload(std::optional<bool> bypass_cache,
                             std::optional<String> script_to_evaluate_on_load,

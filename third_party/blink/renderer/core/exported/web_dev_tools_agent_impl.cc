@@ -365,7 +365,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   auto* page_agent = session->CreateAndAppend<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),
-      session->V8Session(), session->script_to_evaluate_on_load());
+      session->V8Session(), session->script_to_evaluate_on_load(),
+      session->InjectedScriptManager());
 
   session->CreateAndAppend<InspectorLogAgent>(
       &inspected_frames->Root()->GetPage()->GetConsoleMessageStorage(),
