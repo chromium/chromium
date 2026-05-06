@@ -23,7 +23,6 @@
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
-#include "content/services/auction_worklet/text_conversion_helpers.h"
 #include "v8/include/v8-context.h"
 
 namespace auction_worklet {
@@ -115,13 +114,6 @@ void ContextRecycler::AddSharedStorageBindings(
       v8_helper_, shared_storage_host, source_auction_worklet_function,
       shared_storage_permissions_policy_allowed);
   AddBindings(shared_storage_bindings_.get());
-}
-
-void ContextRecycler::AddTextConversionHelpers() {
-  DCHECK(!text_conversion_helpers_);
-  text_conversion_helpers_ =
-      std::make_unique<TextConversionHelpers>(v8_helper_);
-  AddBindings(text_conversion_helpers_.get());
 }
 
 void ContextRecycler::AddInterestGroupLazyFiller() {

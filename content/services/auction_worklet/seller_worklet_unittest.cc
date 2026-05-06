@@ -242,8 +242,7 @@ class SellerWorkletTest : public testing::Test,
       : task_environment_(time_mode) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::
-                                  kFledgeTrustedSignalsKVv1CreativeScanning,
-                              features::kFledgeTextConversionHelpers},
+                                  kFledgeTrustedSignalsKVv1CreativeScanning},
         /*disabled_features=*/{});
     SetDefaultParameters();
   }
@@ -1026,16 +1025,6 @@ class SellerWorkletTest : public testing::Test,
 class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
  private:
   size_t NumThreads() override { return 2u; }
-};
-
-class SellerWorkletNoTextConversionsTest : public SellerWorkletTest {
- public:
-  SellerWorkletNoTextConversionsTest() {
-    feature_list_.InitAndDisableFeature(features::kFledgeTextConversionHelpers);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class SellerWorkletMultiThreadingTest
@@ -1966,24 +1955,6 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.adComponentsCreativeScanningMetadata[2] ===
          "3rd" ? 3 : 0)",
-      3);
-}
-
-TEST_F(SellerWorkletNoTextConversionsTest, ScoreAdTextConversions) {
-  RunScoreAdWithReturnValueExpectingResult(
-      R"('protectedAudience' in globalThis? 3 : 2)", 2);
-}
-
-TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
-  RunScoreAdWithReturnValueExpectingResult(
-      R"('encodeUtf8' in protectedAudience? 3 : 2)", 3);
-  RunScoreAdWithReturnValueExpectingResult(
-      R"('decodeUtf8' in protectedAudience? 3 : 2)", 3);
-
-  RunScoreAdWithReturnValueExpectingResult(
-      "protectedAudience.encodeUtf8('A')[0]", 65);
-  RunScoreAdWithReturnValueExpectingResult(
-      "protectedAudience.decodeUtf8(new Uint8Array([65, 68])) === 'AD' ? 3 : 2",
       3);
 }
 
@@ -3562,24 +3533,6 @@ TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
   RunReportResultCreatedScriptExpectingResult(
       "1", kScript,
       /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
-}
-
-TEST_F(SellerWorkletNoTextConversionsTest, ReportResultTextConversions) {
-  RunReportResultCreatedScriptExpectingResult(
-      "('protectedAudience' in globalThis) ? 2 : 1",
-      /*extra_code=*/std::string(), "1",
-      /*expected_report_url=*/std::nullopt);
-}
-
-TEST_F(SellerWorkletTest, ReportResultTextConversions) {
-  RunReportResultCreatedScriptExpectingResult(
-      "('encodeUtf8' in protectedAudience) ? 2 : 1",
-      /*extra_code=*/std::string(), "2",
-      /*expected_report_url=*/std::nullopt);
-  RunReportResultCreatedScriptExpectingResult(
-      "('decodeUtf8' in protectedAudience) ? 2 : 1",
-      /*extra_code=*/std::string(), "2",
-      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultNoGlobalStomp) {

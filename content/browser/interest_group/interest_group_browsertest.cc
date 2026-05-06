@@ -795,7 +795,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
          {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}},
          {blink::features::kFledgeTrustedSignalsKVv2ContextualData, {}},
-         {features::kFledgeTextConversionHelpers, {}},
          {network::features::kAdAuctionEventRegistration, {}},
          {blink::features::kFledgeClickiness, {}},
          {network::features::kPopulatePermissionsPolicyOnRequest, {}}},

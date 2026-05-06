@@ -87,6 +87,4 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFledgeTextConversionHelpers, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features

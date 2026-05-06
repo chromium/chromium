@@ -925,10 +925,6 @@ SellerWorklet::V8State::CreateContextRecyclerAndRunTopLevel(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "get_seller_context"
 
-  // We want this before RunScript, both because it's meant to be visible
-  // to globals, and because we don't want to overwrite existing globals.
-  context_recycler->AddTextConversionHelpers();
-
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(v8_helper_->isolate());
 
@@ -1760,10 +1756,6 @@ void SellerWorklet::V8State::ReportResult(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
   AuctionV8Logger v8_logger(v8_helper_.get(), context);
-
-  // We want this before RunScript, both because it's meant to be visible
-  // to globals, and because we don't want to overwrite existing globals.
-  context_recycler.AddTextConversionHelpers();
 
   v8::LocalVector<v8::Value> args(isolate);
 

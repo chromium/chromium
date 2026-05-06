@@ -78,9 +78,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // that it does not get batched.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime);
 
-// Provide encodeUtf8/decodeUtf8 helpers.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeTextConversionHelpers);
-
 }  // namespace features
 
 #endif  // CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_WORKLET_FEATURES_H_

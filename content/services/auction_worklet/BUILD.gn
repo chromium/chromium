@@ -92,8 +92,6 @@ source_set("auction_worklet") {
     "set_priority_signals_override_bindings.h",
     "shared_storage_bindings.cc",
     "shared_storage_bindings.h",
-    "text_conversion_helpers.cc",
-    "text_conversion_helpers.h",
     "trusted_kvv2_signals.cc",
     "trusted_kvv2_signals.h",
     "trusted_signals.cc",

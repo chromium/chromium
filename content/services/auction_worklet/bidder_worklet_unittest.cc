@@ -343,7 +343,6 @@ class BidderWorkletTest : public testing::Test {
     SetDefaultParameters();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kInterestGroupUpdateIfOlderThan,
-                              features::kFledgeTextConversionHelpers,
                               blink::features::
                                   kFledgeTrustedSignalsKVv1CreativeScanning},
         /*disabled_features=*/{});
@@ -1292,16 +1291,6 @@ class BidderWorkletMultiBidDisabledTest : public BidderWorkletTest {
  public:
   BidderWorkletMultiBidDisabledTest() {
     feature_list_.InitAndDisableFeature(blink::features::kFledgeMultiBid);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class BidderWorkletNoTextConversionsTest : public BidderWorkletTest {
- public:
-  BidderWorkletNoTextConversionsTest() {
-    feature_list_.InitAndDisableFeature(features::kFledgeTextConversionHelpers);
   }
 
  protected:
@@ -5018,23 +5007,6 @@ TEST_F(BidderWorkletNoCreativeScanningTest,
       R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
 }
 
-TEST_F(BidderWorkletNoTextConversionsTest, GenerateBidTextConversions) {
-  RunGenerateBidExpectingExpressionIsTrue(
-      R"(!('protectedAudience' in globalThis))");
-}
-
-TEST_F(BidderWorkletTest, GenerateBidTextConversions) {
-  RunGenerateBidExpectingExpressionIsTrue(
-      R"('encodeUtf8' in protectedAudience)");
-  RunGenerateBidExpectingExpressionIsTrue(
-      R"('decodeUtf8' in protectedAudience)");
-
-  RunGenerateBidExpectingExpressionIsTrue(
-      "protectedAudience.encodeUtf8('A')[0] === 65");
-  RunGenerateBidExpectingExpressionIsTrue(
-      "protectedAudience.decodeUtf8(new Uint8Array([65, 32, 68])) === 'A D'");
-}
-
 // Make sure we don't stomp over an existing user protectedAudience
 TEST_F(BidderWorkletTest, GenerateBidNoGlobalStomp) {
   const char kScript[] = R"(
@@ -8072,21 +8044,6 @@ TEST_F(BidderWorkletTest, ReportWinTopLevelTimeout) {
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ top-level execution timed out."});
-}
-
-TEST_F(BidderWorkletNoTextConversionsTest, ReportWinTextConversions) {
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('protectedAudience' in globalThis))",
-      GURL("https://foo.test/?false"));
-}
-
-TEST_F(BidderWorkletTest, ReportWinTextConversions) {
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('encodeUtf8' in protectedAudience))",
-      GURL("https://foo.test/?true"));
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo('https://foo.test?' + ('decodeUtf8' in protectedAudience))",
-      GURL("https://foo.test/?true"));
 }
 
 // Make sure we don't stomp over an existing user protectedAudience object.
