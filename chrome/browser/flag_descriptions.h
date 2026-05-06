@@ -4847,10 +4847,6 @@ inline constexpr char kZeroCopyName[] = "Zero-copy rasterizer";
 inline constexpr char kZeroCopyDescription[] =
     "Raster threads write directly to GPU memory associated with tiles.";
 
-inline constexpr char kZeroCopyVideoEncodingName[] = "Zero copy video encoding";
-inline constexpr char kZeroCopyVideoEncodingDescription[] =
-    "Enables zero-copy video encoding via GL rendering on the input surface.";
-
 inline constexpr char kEnableVulkanName[] = "Vulkan";
 inline constexpr char kEnableVulkanDescription[] =
     "Use vulkan as the graphics backend.";

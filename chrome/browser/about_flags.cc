@@ -5171,9 +5171,6 @@ const FeatureEntry kFeatureEntries[] = {
     },
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_ANDROID)
-    {"zero-copy-video-encoding", flag_descriptions::kZeroCopyVideoEncodingName,
-     flag_descriptions::kZeroCopyVideoEncodingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(media::kSurfaceInputForAndroidVEA)},
     {"zero-copy-video-capture", flag_descriptions::kZeroCopyVideoCaptureName,
      flag_descriptions::kZeroCopyVideoCaptureDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(media::kAndroidZeroCopyVideoCapture)},
