@@ -5,7 +5,7 @@
     "  - the bad gerrit changeId ie the gerrit change that introduced the breakage.",
     "  - the good changeId ie the commit that fixed the breakage, typically a revert or fix forward.",
     "  - NOTE: `good_change_ids` should be a list of IDs. The checker will pass if it",
-    "    detects any of these IDs in the history. This accommodates multiple fixes",
+    "    detects any one of these IDs in the history. This accommodates multiple fixes",
     "    across different branches (e.g., one on main and another on a release branch).",
     "  - the bug associated with the breakage",
     "  - a comment with a short description of the breakage",
@@ -13,7 +13,7 @@
     "the release and may not have the root causes yet.",
     "** Note:",
     "- Add new breakages to the top of the list."
-    ],
+  ],
   "breakages": [
     {
       "bad_change_id": "I15c6d62b30a956900fd705d8354df79006b1b4c8",
@@ -54,9 +54,7 @@
     {
       "bad_change_id": "I47f011c59d7a238e738c18bf5b5d7e9c15676ee2",
       "good_change_ids": ["Iac5a6430580e1d83aeac11bb84766027819d2895"],
-      "bugs": [
-        "b/373373506"
-      ],
+      "bugs": ["b/373373506"],
       "comment": "Global state mutation through a local (allow_server_migration) which can cause undefined behavior."
     },
     {
@@ -74,7 +72,7 @@
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
       "good_change_ids": ["Iab6e97af48769ee45fb5bb48d71453d08f542532"],
-      "bugs": ["b/329601514","b/330325607","b/331164502","b/331160704"],
+      "bugs": ["b/329601514", "b/330325607", "b/331164502", "b/331160704"],
       "comment": "Errors due to the telemetry related change, crrev.com/c/5171800."
     },
     {
