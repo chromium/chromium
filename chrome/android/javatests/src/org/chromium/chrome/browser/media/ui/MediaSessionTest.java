@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.content.Intent;
@@ -19,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,6 +37,7 @@ import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.media.MediaFeatureList;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
+import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -160,8 +161,9 @@ public class MediaSessionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent i = new Intent(Intent.ACTION_SCREEN_OFF);
-                    ScreenStateReceiver.getInstance()
-                            .onReceive(ApplicationProvider.getApplicationContext(), i);
+                    assumeNonNull(MediaSessionHelper.sInstanceForTesting)
+                            .getScreenStateObserverForTesting()
+                            .onScreenOff(ApplicationProvider.getApplicationContext(), i);
                 });
     }
 
@@ -169,8 +171,9 @@ public class MediaSessionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent i = new Intent(Intent.ACTION_SCREEN_ON);
-                    ScreenStateReceiver.getInstance()
-                            .onReceive(ApplicationProvider.getApplicationContext(), i);
+                    assumeNonNull(MediaSessionHelper.sInstanceForTesting)
+                            .getScreenStateObserverForTesting()
+                            .onScreenOn(ApplicationProvider.getApplicationContext(), i);
                 });
     }
 

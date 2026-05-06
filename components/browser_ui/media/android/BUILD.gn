@@ -32,6 +32,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/browser_ui/notifications/android:java",
     "//components/cached_flags:java",
     "//components/favicon/android:java",

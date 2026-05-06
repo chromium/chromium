@@ -20,9 +20,11 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ScreenStateReceiver;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -89,6 +91,12 @@ public class MediaSessionHelper implements MediaImageCallback {
     // Used to override the MediaSession object get from WebContents. This is to work around the
     // static getter {@link MediaSession#fromWebContents()}.
     @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
+
+    public static @Nullable MediaSessionHelper sInstanceForTesting;
+
+    public ScreenStateReceiver.ScreenStateObserver getScreenStateObserverForTesting() {
+        return mScreenStateObserver;
+    }
 
     // To track deep sleep duration between screen off and screen on.
     private long mDeepSleepTimeAtScreenOffMs = INVALID_DEEP_SLEEP_TIME;
@@ -497,6 +505,11 @@ public class MediaSessionHelper implements MediaImageCallback {
         }
 
         ScreenStateReceiver.addObserver(mScreenStateObserver);
+
+        if (BuildConfig.IS_FOR_TEST) {
+            sInstanceForTesting = this;
+            ResettersForTesting.register(() -> sInstanceForTesting = null);
+        }
     }
 
     /**
