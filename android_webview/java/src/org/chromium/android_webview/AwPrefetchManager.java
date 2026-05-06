@@ -27,6 +27,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -116,6 +118,12 @@ public class AwPrefetchManager {
 
     public static boolean isSecPurposeForPrefetch(String secPurposeHeaderValue) {
         return AwPrefetchManagerJni.get().isSecPurposeForPrefetch(secPurposeHeaderValue);
+    }
+
+    /** Returns whether starting prefetch requests off the main thread is enabled. */
+    public static boolean isWebViewPrefetchOffTheMainThreadEnabled() {
+        return AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD)
+                && ContentFeatureMap.isEnabled(ContentFeatureList.PREFETCH_OFF_THE_MAIN_THREAD);
     }
 
     @Nullable
@@ -220,7 +228,7 @@ public class AwPrefetchManager {
             @NonNull Consumer<Integer> prefetchKeyListener) {
         assert !ThreadUtils.runningOnUiThread();
 
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD)) {
+        if (isWebViewPrefetchOffTheMainThreadEnabled()) {
             Exception error = getStartPrefetchErrorOrNull(url, prefetchParameters);
             if (error != null) {
                 callbackExecutor.execute(() -> callback.onError(error));

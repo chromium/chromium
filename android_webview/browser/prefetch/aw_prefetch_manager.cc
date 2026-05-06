@@ -195,8 +195,7 @@ std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(
 AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
     : browser_context_(*browser_context),
       aw_pre_prefetch_service_(
-          base::FeatureList::IsEnabled(
-              features::kWebViewPrefetchOffTheMainThread)
+          IsWebViewPrefetchOffTheMainThreadEnabled()
               ? CreatePrePrefetchService(browser_context,
                                          ReadLatestPrefetchInfoFromPref(),
                                          aw_prefetch_manager_data_)
@@ -291,8 +290,7 @@ int AwPrefetchManager::StartPrePrefetchRequest(
     const base::android::JavaRef<jobject>& callback_executor) {
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("android_webview", "AwPrefetchManager::StartPrePrefetchRequest");
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
 
   return StartRequest(env, url, /*is_pre_prefetch=*/true,
                       /*preload_pipeline_info=*/nullptr, prefetch_params,
@@ -305,8 +303,7 @@ int AwPrefetchManager::StartPrefetchFromPrePrefetch(JNIEnv* env,
   TRACE_EVENT0("android_webview",
                "AwPrefetchManager::StartPrefetchFromPrePrefetch");
 
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
 
   std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle =
       aw_prefetch_manager_data_.TakePrePrefetchHandleForConsume(prefetch_key);
@@ -384,8 +381,7 @@ int AwPrefetchManager::StartRequest(
   // purpose of deduping prefetch requests on the application's behalf.
   // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
   // just WebView).
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
+  if (IsWebViewPrefetchOffTheMainThreadEnabled()) {
     key = aw_prefetch_manager_data_.ReservePrefetchHandleWrapper(
         pf_url, expected_no_vary_search);
     if (key == NO_PREFETCH_KEY) {
@@ -423,8 +419,7 @@ int AwPrefetchManager::StartRequest(
 
   if (is_pre_prefetch) {
     DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-    CHECK(base::FeatureList::IsEnabled(
-        features::kWebViewPrefetchOffTheMainThread));
+    CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
     CHECK(aw_pre_prefetch_service_);
     pre_prefetch_handle = aw_pre_prefetch_service_->StartPrePrefetchRequest(
         pf_url, AW_PREFETCH_METRICS_SUFFIX, javascript_enabled,
@@ -457,8 +452,7 @@ int AwPrefetchManager::StartRequest(
         should_bypass_http_cache);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
+  if (IsWebViewPrefetchOffTheMainThreadEnabled()) {
     url::Origin pf_origin = url::Origin::Create(pf_url);
     if (pf_origin.opaque()) {
       // This is theoretically possible where
@@ -488,8 +482,7 @@ int AwPrefetchManager::StartRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
+  if (IsWebViewPrefetchOffTheMainThreadEnabled()) {
     if (pre_prefetch_handle) {
       aw_prefetch_manager_data_.CommitInitialPrePrefetchHandle(
           key, std::move(pre_prefetch_handle));
@@ -529,8 +522,7 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
 
 PrefService* AwPrefetchManager::GetPrefService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
 
   if (g_pref_service_for_testing) {
     return g_pref_service_for_testing;
@@ -546,8 +538,7 @@ AwPrefetchManager::ReadLatestPrefetchInfoFromPref() {
   TRACE_EVENT("android_webview",
               "AwPrefetchManager::ReadLatestPrefetchInfoFromPref");
 
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
 
   PrefService* pref_service = GetPrefService();
   if (!pref_service) {
@@ -573,8 +564,7 @@ void AwPrefetchManager::WriteLatestPrefetchInfoToPref(
   TRACE_EVENT("android_webview",
               "AwPrefetchManager::WriteLatestPrefetchInfoToPref");
 
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
 
   // This should always be true. the origin started for prefetch
   // is already checked to be non-opaque.

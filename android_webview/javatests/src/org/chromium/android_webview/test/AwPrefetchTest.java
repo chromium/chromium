@@ -31,8 +31,6 @@ import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchManager;
 import org.chromium.android_webview.AwPrefetchParameters;
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.AwPrefetchTestUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -979,8 +977,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             String url, AwPrefetchParameters parameters, AwPrefetchManager prefetchManager)
             throws Exception {
 
-        boolean omtEnabled =
-                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_OFF_THE_MAIN_THREAD);
+        boolean omtEnabled = AwPrefetchManager.isWebViewPrefetchOffTheMainThreadEnabled();
 
         HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
         if (omtEnabled) {

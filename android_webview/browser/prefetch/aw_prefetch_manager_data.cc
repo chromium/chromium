@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 
+#include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -12,8 +13,7 @@ namespace android_webview {
 using content::BrowserThread;
 
 AwPrefetchManagerData::AwPrefetchManagerData()
-    : lock_(base::FeatureList::IsEnabled(
-                features::kWebViewPrefetchOffTheMainThread)
+    : lock_(IsWebViewPrefetchOffTheMainThreadEnabled()
                 ? std::make_unique<base::Lock>()
                 : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -25,8 +25,7 @@ AwPrefetchManagerData::~AwPrefetchManagerData() {
 
 AwPrefetchKey AwPrefetchManagerData::AddNewPrefetchHandleWrapper(
     std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper) {
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kWebViewPrefetchOffTheMainThread));
+  CHECK(!IsWebViewPrefetchOffTheMainThreadEnabled());
   int32_t new_prefetch_key;
 
   base::AutoLockMaybe auto_lock(lock_.get());
@@ -47,8 +46,7 @@ AwPrefetchKey AwPrefetchManagerData::AddNewPrefetchHandleWrapper(
 AwPrefetchKey AwPrefetchManagerData::ReservePrefetchHandleWrapper(
     const GURL& url,
     const std::optional<net::HttpNoVarySearchData>& expected_no_vary_search) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
   std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
       old_prefetch_handle_wrappers;
   AwPrefetchKey new_prefetch_key;
@@ -81,8 +79,7 @@ AwPrefetchKey AwPrefetchManagerData::ReservePrefetchHandleWrapper(
 void AwPrefetchManagerData::CommitInitialPrePrefetchHandle(
     AwPrefetchKey prefetch_key,
     std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
   base::AutoLockMaybe auto_lock(lock_.get());
 
   auto it = all_prefetches_map_.find(prefetch_key);
@@ -94,8 +91,7 @@ void AwPrefetchManagerData::CommitInitialPrePrefetchHandle(
 void AwPrefetchManagerData::CommitInitialPrefetchHandle(
     AwPrefetchKey prefetch_key,
     std::unique_ptr<content::PrefetchHandle> prefetch_handle) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
   base::AutoLockMaybe auto_lock(lock_.get());
 
   auto it = all_prefetches_map_.find(prefetch_key);
@@ -196,8 +192,7 @@ void AwPrefetchManagerData::CancelPrefetch(AwPrefetchKey prefetch_key) {
 bool AwPrefetchManagerData::UpdateLatestPrefetchInfo(
     const AwPrefetchLatestInfoPref& info) {
   base::AutoLockMaybe auto_lock(lock_.get());
-  CHECK(
-      base::FeatureList::IsEnabled(features::kWebViewPrefetchOffTheMainThread));
+  CHECK(IsWebViewPrefetchOffTheMainThreadEnabled());
   if (prefetch_latest_info_ == info) {
     return false;
   }
