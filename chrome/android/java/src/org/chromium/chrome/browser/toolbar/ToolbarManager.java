@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.status.SiteControlsIphController;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -337,6 +338,7 @@ public class ToolbarManager
     private final ValueChangedCallback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
             new ValueChangedCallback<>(this::setBookmarkModel);
     private final ToolbarIphController mIphController;
+    private @Nullable SiteControlsIphController mSiteControlsIphController;
     private @MonotonicNonNull TemplateUrlService mTemplateUrlService;
     private @MonotonicNonNull TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
@@ -1369,6 +1371,17 @@ public class ToolbarManager
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
+            locationBarCoordinator.setOnStatusViewHiddenForPageInfoRemoval(
+                    () -> {
+                        if (mSiteControlsIphController == null) {
+                            mSiteControlsIphController =
+                                    new SiteControlsIphController(
+                                            mUserEducationHelper,
+                                            getMenuButtonView(),
+                                            appMenuCoordinatorSupplier.get().getAppMenuHandler());
+                        }
+                        mSiteControlsIphController.showIph();
+                    });
         }
 
         var omnibox = mLocationBar.getOmniboxStub();

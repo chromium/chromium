@@ -38,7 +38,10 @@ public class SiteControlsIphController {
         mAppMenuHandler = appMenuHandler;
     }
 
-    /** Shows the IPH bubble pointing to the app menu and prepares the highlight. */
+    /**
+     * Shows the IPH bubble pointing to the app menu and prepares the highlight for the "Site
+     * controls" item.
+     */
     public void showIph() {
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(

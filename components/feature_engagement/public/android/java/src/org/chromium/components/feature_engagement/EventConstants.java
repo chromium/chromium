@@ -239,6 +239,9 @@ public final class EventConstants {
     public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
             "shopping_list_track_price_from_menu";
 
+    /** The user clicked the site controls item in the app menu. */
+    public static final String SITE_CONTROLS_MENU_ITEM_CLICKED = "site_controls_menu_item_clicked";
+
     /** Reengagement events. */
     public static final String STARTED_FROM_MAIN_INTENT = "started_from_main_intent";
 

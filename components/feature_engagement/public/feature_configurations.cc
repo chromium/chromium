@@ -912,6 +912,18 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHSiteControlsFeature.name == feature->name) {
+    // A config that allows the site controls IPH to be shown at most once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("site_controls_iph_trigger",
+                                 Comparator(LESS_THAN, 1), 360, 360);
+    config.used = EventConfig("site_controls_menu_item_clicked",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
   if (kIPHBottomToolbarTipFeature.name == feature->name) {
     // A config that allows the Bottom Toolbar IPH to be shown once
     // a week, up to 3 times, unless the user interacts with Bottom Toolbar
