@@ -271,14 +271,17 @@ public class HomeOfTransactionsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
     public void testClickIdentityDocsLaunchesIdentityDocs() {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.autofill_identity_docs_title)).perform(click());
 
         onView(withText(R.string.autofill_identity_docs_opt_in_toggle_label))
-               .check(matches(isDisplayed()));
+                .check(matches(isDisplayed()));
     }
 
     @Test
