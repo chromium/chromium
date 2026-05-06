@@ -114,9 +114,6 @@
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 crbug.com/426232297 [ mac intel-0x3e9b angle-metal asan ] HardwareAcceleratedFeature_2d_canvas_accelerated [ Slow ]
 
-# Flaky DFM issues on Pixel 2 devices caused by loading chrome://gpu.
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] HardwareAcceleratedFeature_2d_canvas_accelerated [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] HardwareAcceleratedFeature_webgl_accelerated [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
