@@ -200,6 +200,10 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
             result.height() +
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().height()));
+        // Reserve enough width to uncollapse the tabstrip even if it's
+        // collapsed, or else uncollapsing the tabstrip will break the browser.
+        result.set_width(std::max(
+            result.width(), VerticalTabStripRegionView::kUncollapsedMinWidth));
       } else {
         result.set_width(std::max(
             result.width(),
