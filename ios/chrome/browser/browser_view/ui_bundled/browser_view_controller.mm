@@ -1645,11 +1645,7 @@ bool IsFullscreenNextIAEnabled() {
   // toolbar.
   BOOL useTopViewEdge = NO;
   if (IsChromeNextIaEnabled()) {
-    /// TODO(crbug.com/508170459): Implement toolbar visibility logic in split
-    /// toolbar mode and update this to allow using view edges when in split
-    /// toolbar mode.
-    useTopViewEdge =
-        !canShowTabStrip && !isSplitToolbarMode && !_isOffTheRecord;
+    useTopViewEdge = !canShowTabStrip && !_isOffTheRecord;
   } else {
     useTopViewEdge = !canShowTabStrip && isSplitToolbarMode && !_isOffTheRecord;
   }
