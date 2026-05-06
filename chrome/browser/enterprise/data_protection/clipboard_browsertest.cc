@@ -11,34 +11,39 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
-#include "chrome/browser/printing/print_preview_dialog_controller.h"
-#include "chrome/browser/printing/print_test_utils.h"
-#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "printing/buildflags/buildflags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/views/test/widget_activation_waiter.h"
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/print_test_utils.h"
+#include "chrome/browser/printing/test_print_preview_observer.h"
+#include "printing/buildflags/buildflags.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
 namespace enterprise_data_protection {
 
 namespace {
 
-// Browser tests that test data protection integration with Chrome's clipboard
-// logic. If a browser test you're adding is specific to a single
-// function/class, consider using a browsertest.cc file specific to that code.
-class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
+// Interactive Browser tests that test data protection integration with Chrome's
+// clipboard logic. Since this test class deals with browser focus, subclass
+// from InteractiveBrowserTest to for sequential tests and avoid flakes. If a
+// test you're adding is specific to a single function/class, consider using a
+// browsertest.cc file specific to that code.
+class DataProtectionClipboardBrowserTest : public InteractiveBrowserTest {
  public:
   DataProtectionClipboardBrowserTest() = default;
 
@@ -77,7 +82,9 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
     }
     web_contents->Focus();
     views::test::WaitForWidgetActive(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(), true);
+        views::Widget::GetWidgetForNativeWindow(
+            web_contents->GetTopLevelNativeWindow()),
+        true);
   }
 
   void WriteTextToClipboard(const std::string& text,
@@ -365,15 +372,8 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/452329561) fix flaky focus on macOS.
-#define MAYBE_ChromePrintReportsInitiator DISABLED_ChromePrintReportsInitiator
-#else
-#define MAYBE_ChromePrintReportsInitiator ChromePrintReportsInitiator
-#endif  // BUILDFLAG(IS_MAC)
-
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
-                       MAYBE_ChromePrintReportsInitiator) {
+                       ChromePrintReportsInitiator) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["http://127.0.0.1"] },
                     "restrictions": [
@@ -401,18 +401,8 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   EXPECT_TRUE(future.Get().empty());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/452329561) fix flaky focus on macOS.
-#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
-  DISABLED_ChromePrintReportsPrimaryMainFrameURLWithinSubframe
-#else
-#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
-  ChromePrintReportsPrimaryMainFrameURLWithinSubframe
-#endif  // BUILDFLAG(IS_MAC)
-
-IN_PROC_BROWSER_TEST_F(
-    DataProtectionClipboardBrowserTest,
-    MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe) {
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       ChromePrintReportsPrimaryMainFrameURLWithinSubframe) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "sources": { "urls": ["a.com"] },
                     "restrictions": [

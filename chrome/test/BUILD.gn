@@ -6237,7 +6237,6 @@ if (!is_android) {
 
     if (enterprise_data_controls) {
       sources += [
-        "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller_browsertest.cc",
       ]
@@ -12298,10 +12297,26 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enterprise_data_controls) {
+      sources += [
+        "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc",
+      ]
+
       deps += [
         "//chrome/browser/enterprise/data_controls:test_support",
         "//components/enterprise/data_controls/core/browser",
       ]
+
+      if (enable_print_preview) {
+        sources += [
+          "../browser/printing/test_print_preview_observer.cc",
+          "../browser/printing/test_print_preview_observer.h",
+        ]
+
+        deps += [
+          ":print_preview_test_support",
+          "//printing:test_support",
+        ]
+      }
     }
 
     if (enable_compose) {
