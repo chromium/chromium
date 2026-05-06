@@ -219,6 +219,8 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
     raw_mock_session_handle_ = pending_mock_session_handle_.get();
     ON_CALL(*pending_mock_session_handle_, GetController())
         .WillByDefault(Return(mock_context_controller));
+    ON_CALL(*pending_mock_session_handle_, CreateContextToken())
+        .WillByDefault(Return(base::UnguessableToken::Create()));
     pending_mock_session_handle_->CheckSearchContentSharingSettings(
         profile->GetPrefs());
     viewport_screenshot_.allocN32Pixels(10, 10);
@@ -1217,6 +1219,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = lens::ImageCrop();
   expected_request_info->aim_entry_point =
       omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Create expectation to call CreateSearchUrl. We also expect a call
   // to open the side panel, but that is harder to mock, so we omit it for now.
@@ -1391,6 +1394,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = lens::ImageCrop();
   expected_request_info->aim_entry_point =
       omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect CreateSearchUrl to be called immediately.
   EXPECT_CALL(
@@ -1472,6 +1476,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = std::nullopt;
   expected_request_info->aim_entry_point =
       omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
@@ -1654,6 +1659,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = std::nullopt;
   expected_request_info->aim_entry_point =
       omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
@@ -1744,6 +1750,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_request_info->image_crop = lens::ImageCrop();
   expected_request_info->aim_entry_point =
       omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+  expected_request_info->file_tokens.push_back(file_token);
 
   // Assert: Expect NotifyResultsPanelOpened to be called.
   EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
