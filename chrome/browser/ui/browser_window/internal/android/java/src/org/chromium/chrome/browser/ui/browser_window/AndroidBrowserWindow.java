@@ -70,10 +70,10 @@ final class AndroidBrowserWindow {
     /**
      * Returns the address of the native {@code AndroidBrowserWindow}.
      *
-     * <p>This method assumes the native object has been created.
+     * <p>This method returns 0 if the native {@code AndroidBrowserWindow}
+     * hasn't been created.
      */
     long getNativePtr() {
-        assert mNativeAndroidBrowserWindow != 0 : "Native object has not been created.";
         return mNativeAndroidBrowserWindow;
     }
 
@@ -101,10 +101,6 @@ final class AndroidBrowserWindow {
     @VisibleForTesting
     boolean isDeleteScheduled() {
         return mIsDeleteScheduled;
-    }
-
-    long getNativePtrForTesting() {
-        return mNativeAndroidBrowserWindow;
     }
 
     long getNativeBaseWindowPtrForTesting() {

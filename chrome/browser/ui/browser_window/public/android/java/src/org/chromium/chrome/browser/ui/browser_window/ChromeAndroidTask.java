@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
 
@@ -220,6 +221,17 @@ public interface ChromeAndroidTask {
      * @param profile The profile associated with the browser window.
      */
     long getOrCreateNativeBrowserWindowPtr(Profile profile);
+
+    /**
+     * Returns the address of the native {@code BrowserWindowInterface} if it exists this should be
+     * uniquely identifiable via the {@link Profile} and {@link Activity}.
+     *
+     * <p>If the native object hasn't been created, this method will return 0.
+     *
+     * @param profile The profile associated with the browser window.
+     * @param activity The activity associated with the browser window.
+     */
+    long getNativeBrowserWindowPtr(Profile profile, Activity activity);
 
     /**
      * Returns an array of the all native {@code BrowserWindowInterface} addresses.

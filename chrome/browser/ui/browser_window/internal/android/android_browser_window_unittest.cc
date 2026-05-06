@@ -66,12 +66,6 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
             AttachCurrentThread(), java_test_support_));
   }
 
-  AndroidBrowserWindow* InvokeJavaGetNativePtrForTesting() const {
-    return reinterpret_cast<AndroidBrowserWindow*>(
-        Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetNativePtrForTesting(
-            AttachCurrentThread(), java_test_support_));
-  }
-
   AndroidBaseWindow* InvokeJavaGetNativeBaseWindowPtrForTesting() const {
     return reinterpret_cast<AndroidBaseWindow*>(
         Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetNativeBaseWindowPtrForTesting(
@@ -140,11 +134,6 @@ TEST_F(AndroidBrowserWindowUnitTest, JavaGetNativePtrMethodReturnsCreatedPtr) {
 }
 
 TEST_F(AndroidBrowserWindowUnitTest,
-       JavaGetNativePtrMethodCrashesIfNoPtrWasCreated) {
-  EXPECT_DEATH(InvokeJavaGetNativePtr(), "");
-}
-
-TEST_F(AndroidBrowserWindowUnitTest,
        JavaDestroyMethodMarksWindowAsScheduledForDeletion) {
   // Arrange.
   InvokeJavaGetOrCreateNativePtr();
@@ -165,8 +154,7 @@ TEST_F(AndroidBrowserWindowUnitTest,
   InvokeJavaResetAndDestroy();
 
   // Assert: the native pointers on the Java side should be set to null.
-  AndroidBrowserWindow* android_browser_window =
-      InvokeJavaGetNativePtrForTesting();
+  AndroidBrowserWindow* android_browser_window = InvokeJavaGetNativePtr();
   AndroidBaseWindow* android_base_window =
       InvokeJavaGetNativeBaseWindowPtrForTesting();
   EXPECT_EQ(nullptr, android_browser_window);
