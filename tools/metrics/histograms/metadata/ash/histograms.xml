@@ -7868,17 +7868,6 @@ chromium-metrics-reviews@google.com.
   <token key="SearchType" variants="DriveFsSearchType"/>
 </histogram>
 
-<histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshellMode}" units="ms"
-    expires_after="2023-10-01">
-  <owner>yulunwu@google.com</owner>
-  <owner>tbarzic@google.com</owner>
-  <summary>
-    Records the time interval between user-initiated search model updates after
-    the user starts a search query. Used to record how quickly users update the
-    search model in {TabletOrClamshellMode} after the first keystroke.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.ServerBasedSpeechRecognition.AudioLengthLeftWhenAudioCaptureEnd"
     units="ms" expires_after="2026-09-27">

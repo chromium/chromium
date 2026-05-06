@@ -334,11 +334,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   raw_ptr<ResultSelectionController, DanglingUntriaged>
       result_selection_controller_ = nullptr;
 
-  // The timestamp taken when the search box model's query is updated by the
-  // user. Used in metrics. Metrics are only recorded for search model updates
-  // that occur after a search has been initiated.
-  base::TimeTicks user_initiated_model_update_time_;
-
   // If true, `SelectPlaceholderText()` always returns a fixed placeholder text
   // instead of the one picked randomly.
   bool use_fixed_placeholder_text_for_test_ = false;

@@ -51,7 +51,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -650,12 +649,8 @@ void SearchBoxView::HandleQueryChange(std::u16string_view query,
     ResetHighlightRange();
 
   if (initiated_by_user) {
-    const base::TimeTicks current_time = base::TimeTicks::Now();
     if (current_query_.empty() && !query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_SearchQueryStarted"));
-      // Set 'user_initiated_model_update_time_' when initiating a new query.
-      user_initiated_model_update_time_ = current_time;
-
       if (features::IsWelcomeTourEnabled()) {
         welcome_tour_metrics::RecordInteraction(
             user_education_util::GetLastActiveUserPrefService(),
@@ -663,18 +658,6 @@ void SearchBoxView::HandleQueryChange(std::u16string_view query,
       }
     } else if (!current_query_.empty() && query.empty()) {
       base::RecordAction(base::UserMetricsAction("AppList_LeaveSearch"));
-      // Reset 'user_initiated_model_update_time_' when clearing the search_box.
-      user_initiated_model_update_time_ = base::TimeTicks();
-    } else if (query != current_query_ &&
-               !user_initiated_model_update_time_.is_null()) {
-      if (is_app_list_bubble_) {
-        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.ClamshellMode",
-                            current_time - user_initiated_model_update_time_);
-      } else {
-        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.TabletMode",
-                            current_time - user_initiated_model_update_time_);
-      }
-      user_initiated_model_update_time_ = current_time;
     }
   }
 
