@@ -235,7 +235,7 @@ void WidgetAXManager::OnWidgetCreated(Widget* widget) {
 }
 
 void WidgetAXManager::OnWidgetDestroyed(Widget* widget) {
-  DCHECK_EQ(widget_, widget);
+  CHECK_EQ(widget_, widget);
   widget_observation_.Reset();
 }
 
@@ -688,15 +688,13 @@ void WidgetAXManager::SendPendingUpdate() {
     return;
   }
 
-#if DCHECK_IS_ON()
   for (const auto& update : tree_updates) {
     for (const auto& node : update.nodes) {
-      DCHECK(cache_->Get(node.id))
+      CHECK(cache_->Get(node.id))
           << "Unknown serialized node. All nodes we serialize should be known "
              "to the WidgetAXManager.";
     }
   }
-#endif  // DCHECK_IS_ON()
 
   maybe_updates_and_events.emplace();
   maybe_updates_and_events->ax_tree_id = ax_tree_id_;
