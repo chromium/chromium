@@ -167,6 +167,13 @@ class BASE_EXPORT SysInfo {
   // empty string on other platforms.
   static std::string SocManufacturer();
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the hardware manufacturer name of the current machine
+  // synchronously. This is only supported on Android as Windows and Linux
+  // would require IO operations and other platforms are static.
+  static std::string HardwareManufacturer();
+#endif
+
 #if BUILDFLAG(IS_MAC)
   struct HardwareModelNameSplit {
     std::string category;

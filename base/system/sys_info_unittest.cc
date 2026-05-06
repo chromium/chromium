@@ -16,6 +16,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
@@ -313,6 +314,14 @@ TEST_F(SysInfoTest, GetHardwareInfo) {
   EXPECT_EQ(hardware_info->manufacturer.empty(), empty_result_expected);
   EXPECT_EQ(hardware_info->model.empty(), empty_result_expected);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SysInfoTest, HardwareManufacturer) {
+  std::string manufacturer = SysInfo::HardwareManufacturer();
+  EXPECT_TRUE(IsStringUTF8(manufacturer));
+  EXPECT_FALSE(manufacturer.empty());
+}
+#endif
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(SysInfoTest, GetHardwareInfoWMIMatchRegistry) {
