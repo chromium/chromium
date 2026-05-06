@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <string_view>
 
 namespace chromecast {
 
 // Calculates the AppID associated with |id| and returns it, or
 // |kAppUnknownFallback| if no such AppID exists.
-uint32_t MapLegacyAppId(const std::string& id);
+uint32_t MapLegacyAppId(std::string_view id);
 
 }  // namespace chromecast
 

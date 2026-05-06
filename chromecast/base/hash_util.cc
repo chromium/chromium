@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -29,31 +31,32 @@ const size_t kAppIdV2StrLen = 8;
 
 }  // namespace
 
-uint64_t HashToUInt64(const std::string& value) {
+uint64_t HashToUInt64(std::string_view value) {
   const std::string sha1hash = base::SHA1HashString(value);
   DCHECK_GE(sha1hash.size(), sizeof(uint64_t));
   return base::U64FromLittleEndian(
       base::as_byte_span(sha1hash).first<sizeof(uint64_t)>());
 }
 
-uint32_t HashToUInt32(const std::string& value) {
+uint32_t HashToUInt32(std::string_view value) {
   const std::string sha1hash = base::SHA1HashString(value);
   DCHECK_GE(sha1hash.size(), sizeof(uint32_t));
   return base::U32FromLittleEndian(
       base::as_byte_span(sha1hash).first<sizeof(uint32_t)>());
 }
 
-uint64_t HashGUID64(const std::string& guid) {
+uint64_t HashGUID64(std::string_view guid) {
   std::string hex;
   base::RemoveChars(guid, "-", &hex);
   uint64_t output;
   DCHECK_EQ(hex.size(), 32u);
-  if (base::HexStringToUInt64(hex.substr(0, 16), &output))
+  if (base::HexStringToUInt64(std::string_view(hex).substr(0, 16), &output)) {
     return output;
+  }
   NOTREACHED();
 }
 
-uint32_t HashAppId32(const std::string& app_id) {
+uint32_t HashAppId32(std::string_view app_id) {
   uint32_t output;
   if (app_id.size() == kAppIdV2StrLen &&
       base::HexStringToUInt(app_id, &output)) {
@@ -63,10 +66,10 @@ uint32_t HashAppId32(const std::string& app_id) {
   return MapLegacyAppId(app_id);
 }
 
-uint64_t HashCastBuildNumber64(const std::string& build_number) {
+uint64_t HashCastBuildNumber64(std::string_view build_number) {
   uint64_t return_value = 0;
-  std::vector<std::string> tokens(base::SplitString(
-      build_number, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      build_number, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   const size_t tsize = tokens.size();
   if (tsize < 1 || tsize > 4)
     return static_cast<uint64_t>(-1);
@@ -91,19 +94,19 @@ uint64_t HashCastBuildNumber64(const std::string& build_number) {
   return return_value;
 }
 
-uint64_t HashSessionId64(const std::string& session_id) {
+uint64_t HashSessionId64(std::string_view session_id) {
   return HashGUID64(session_id);
 }
 
-uint64_t HashSdkVersion64(const std::string& sdk_version) {
+uint64_t HashSdkVersion64(std::string_view sdk_version) {
   if (sdk_version.empty())
     return 0;
 
   // Sdk version is usually in "X.Y.Z(.minor)" format.
   // Following code is a little bit relaxed to accept all sub-fields optional.
   uint64_t return_value = 0;
-  std::vector<std::string> tokens(base::SplitString(
-      sdk_version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      sdk_version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t i = 0; i < 4; ++i) {
     return_value <<= 16;
     if (tokens.size() > i) {
@@ -120,7 +123,7 @@ uint64_t HashSdkVersion64(const std::string& sdk_version) {
   return return_value;
 }
 
-uint32_t HashSocketId32(const std::string& socket_id) {
+uint32_t HashSocketId32(std::string_view socket_id) {
   uint32_t output;
   // socket id is usually just numerical.
   if (base::StringToUint(socket_id, &output)) {
@@ -130,11 +133,11 @@ uint32_t HashSocketId32(const std::string& socket_id) {
   }
 }
 
-uint32_t HashConnectionId32(const std::string& connection_id) {
+uint32_t HashConnectionId32(std::string_view connection_id) {
   return HashToUInt32(connection_id);
 }
 
-uint64_t HashAndroidBuildNumber64(const std::string& build_id) {
+uint64_t HashAndroidBuildNumber64(std::string_view build_id) {
   if (build_id.length() == 0) {
     return static_cast<uint64_t>(-1);
   }

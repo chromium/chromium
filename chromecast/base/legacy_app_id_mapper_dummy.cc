@@ -12,7 +12,7 @@ constexpr uint32_t kAppUnknownFallback = 0x0;
 
 }  // namespace
 
-uint32_t MapLegacyAppId(const std::string& id) {
+uint32_t MapLegacyAppId(std::string_view id) {
   return kAppUnknownFallback;
 }
 
