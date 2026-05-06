@@ -4839,7 +4839,6 @@ static_library("browser") {
       "//chrome/browser/spellchecker",
       "//chrome/browser/spellchecker:impl",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/spellchecker:impl" ]
   }
 
   if (enable_vr) {

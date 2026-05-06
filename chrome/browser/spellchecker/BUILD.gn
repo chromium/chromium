@@ -4,102 +4,102 @@
 
 import("//components/spellcheck/spellcheck_build_features.gni")
 
-if (enable_spellcheck) {
-  source_set("spellchecker") {
-    public = [
-      "spell_check_host_chrome_impl.h",
-      "spell_check_initialization_host_impl.h",
-      "spellcheck_custom_dictionary.h",
-      "spellcheck_factory.h",
-      "spellcheck_hunspell_dictionary.h",
-      "spellcheck_service.h",
-    ]
+assert(enable_spellcheck)
 
-    if (use_browser_spellchecker && enable_spelling_service) {
-      public += [ "spelling_request.h" ]
-    }
+source_set("spellchecker") {
+  public = [
+    "spell_check_host_chrome_impl.h",
+    "spell_check_initialization_host_impl.h",
+    "spellcheck_custom_dictionary.h",
+    "spellcheck_factory.h",
+    "spellcheck_hunspell_dictionary.h",
+    "spellcheck_service.h",
+  ]
 
-    if (is_win || is_linux || is_chromeos) {
-      public += [
-        "spellcheck_language_blocklist_policy_handler.h",
-        "spellcheck_language_policy_handler.h",
-      ]
-    }
-
-    if (has_spellcheck_panel) {
-      public += [ "spell_check_panel_host_impl.h" ]
-    }
-
-    public_deps = [
-      "//base",
-      "//chrome/browser/profiles",
-      "//components/keyed_service/core",
-      "//components/prefs",
-      "//components/spellcheck/browser",
-      "//components/spellcheck/common",
-      "//components/sync/model",
-      "//content/public/browser",
-      "//mojo/public/cpp/bindings",
-      "//services/network/public/cpp",
-    ]
-
-    if (is_win || is_linux || is_chromeos) {
-      public_deps += [ "//components/policy/core/browser" ]
-    }
+  if (use_browser_spellchecker && enable_spelling_service) {
+    public += [ "spelling_request.h" ]
   }
 
-  source_set("impl") {
-    sources = [
-      "spell_check_host_chrome_impl.cc",
-      "spell_check_initialization_host_impl.cc",
-      "spellcheck_custom_dictionary.cc",
-      "spellcheck_factory.cc",
-      "spellcheck_hunspell_dictionary.cc",
-      "spellcheck_service.cc",
+  if (is_win || is_linux || is_chromeos) {
+    public += [
+      "spellcheck_language_blocklist_policy_handler.h",
+      "spellcheck_language_policy_handler.h",
     ]
+  }
 
-    if (use_browser_spellchecker && enable_spelling_service) {
-      sources += [ "spelling_request.cc" ]
-    }
+  if (has_spellcheck_panel) {
+    public += [ "spell_check_panel_host_impl.h" ]
+  }
 
-    if (is_win || is_linux || is_chromeos) {
-      sources += [
-        "spellcheck_language_blocklist_policy_handler.cc",
-        "spellcheck_language_policy_handler.cc",
-      ]
-    }
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/spellcheck/browser",
+    "//components/spellcheck/common",
+    "//components/sync/model",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+  ]
 
-    if (has_spellcheck_panel) {
-      sources += [ "spell_check_panel_host_impl.cc" ]
-    }
+  if (is_win || is_linux || is_chromeos) {
+    public_deps += [ "//components/policy/core/browser" ]
+  }
+}
 
-    public_deps = [ ":spellchecker" ]
+source_set("impl") {
+  sources = [
+    "spell_check_host_chrome_impl.cc",
+    "spell_check_initialization_host_impl.cc",
+    "spellcheck_custom_dictionary.cc",
+    "spellcheck_factory.cc",
+    "spellcheck_hunspell_dictionary.cc",
+    "spellcheck_service.cc",
+  ]
 
-    deps = [
-      "//chrome/app/resources:locale_settings",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//components/language/core/browser",
-      "//components/policy:generated",
-      "//components/pref_registry",
-      "//components/strings:components_strings",
-      "//components/sync/base",
-      "//components/sync/protocol",
-      "//components/user_prefs",
-      "//crypto",
-      "//net",
-      "//services/network/public/mojom",
-      "//third_party/abseil-cpp:absl",
-      "//ui/base",
-      "//url",
+  if (use_browser_spellchecker && enable_spelling_service) {
+    sources += [ "spelling_request.cc" ]
+  }
+
+  if (is_win || is_linux || is_chromeos) {
+    sources += [
+      "spellcheck_language_blocklist_policy_handler.cc",
+      "spellcheck_language_policy_handler.cc",
     ]
+  }
 
-    if (!is_android) {
-      deps += [ "//third_party/hunspell" ]
-    }
+  if (has_spellcheck_panel) {
+    sources += [ "spell_check_panel_host_impl.cc" ]
+  }
 
-    if (is_chromeos) {
-      deps += [ "//ash/constants" ]
-    }
+  public_deps = [ ":spellchecker" ]
+
+  deps = [
+    "//chrome/app/resources:locale_settings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/language/core/browser",
+    "//components/policy:generated",
+    "//components/pref_registry",
+    "//components/strings:components_strings",
+    "//components/sync/base",
+    "//components/sync/protocol",
+    "//components/user_prefs",
+    "//crypto",
+    "//net",
+    "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (!is_android) {
+    deps += [ "//third_party/hunspell" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
   }
 }
