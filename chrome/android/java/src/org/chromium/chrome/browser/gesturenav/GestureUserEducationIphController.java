@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.Keyframe;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
@@ -46,9 +50,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class GestureUserEducationIphController {
     public static final int PAGE_HISTORY_MIN_OFFSET = -3;
-    // TODO(crbug.com/493307156): Confirm animation durations.
-    private static final int SLIDE_ANIMATION_DURATION_MS = 750;
-    private static final int ANIMATION_DELAY_MS = 750;
+    private static final int SLIDE_ANIMATION_DURATION_MS = 2000;
     private static final float ANIMATION_X_TRANSLATION = 24;
 
     private final ViewGroup mAnchorView;
@@ -70,10 +72,11 @@ public class GestureUserEducationIphController {
     private @Nullable GestureDetector mDetector;
     private @Nullable View mGestureUserEducationIphLayout;
     private @Nullable LottieAnimationView mBackArrowAnimation;
-    private @Nullable ViewPropertyAnimator mTextBubbleAnimation;
+    private @Nullable ObjectAnimator mTextBubbleAnimation;
     private @Nullable Profile mProfile;
     private boolean mIsIphShowing;
     private boolean mIsGestureNavModeForTesting;
+    private boolean mDisableAnimationsForTesting;
     private @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     /**
@@ -205,23 +208,42 @@ public class GestureUserEducationIphController {
 
             View iphBubble = mGestureUserEducationIphLayout.findViewById(R.id.iph_bubble);
             float density = iphBubble.getResources().getDisplayMetrics().density;
-            mTextBubbleAnimation =
-                    iphBubble
-                            .animate()
-                            .translationX(rtlSign * ANIMATION_X_TRANSLATION * density)
-                            .setInterpolator(Interpolators.STANDARD_INTERPOLATOR)
-                            .setDuration(SLIDE_ANIMATION_DURATION_MS)
-                            .withEndAction(
-                                    () -> {
-                                        iphBubble
-                                                .animate()
-                                                .setStartDelay(ANIMATION_DELAY_MS)
-                                                .translationX(0)
-                                                .setDuration(SLIDE_ANIMATION_DURATION_MS)
-                                                .setInterpolator(
-                                                        Interpolators.STANDARD_INTERPOLATOR)
-                                                .start();
-                                    });
+
+            float startValue = 0f;
+            float endValue = rtlSign * ANIMATION_X_TRANSLATION * density;
+
+            // Define Keyframes based on the back arrow animation timings (120 frames total).
+            float f1 = 45f / 120f;
+            float f2 = 110f / 120f;
+
+            Keyframe t0 = Keyframe.ofFloat(0f, startValue);
+            Keyframe t1 = Keyframe.ofFloat(f1, endValue);
+            Keyframe t2 = Keyframe.ofFloat(f2, endValue);
+            Keyframe t3 = Keyframe.ofFloat(1f, startValue);
+
+            PropertyValuesHolder pvhX =
+                    PropertyValuesHolder.ofKeyframe(View.TRANSLATION_X, t0, t1, t2, t3);
+
+            mTextBubbleAnimation = ObjectAnimator.ofPropertyValuesHolder(iphBubble, pvhX);
+            mTextBubbleAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+            mTextBubbleAnimation.setDuration(SLIDE_ANIMATION_DURATION_MS);
+
+            // Keep back arrow lottie animation in sync.
+            mTextBubbleAnimation.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (mTextBubbleAnimation != null && mBackArrowAnimation != null) {
+                                mTextBubbleAnimation.start();
+                                mBackArrowAnimation.playAnimation();
+                            }
+                        }
+                    });
+
+            if (mDisableAnimationsForTesting) {
+                return;
+            }
+
             mTextBubbleAnimation.start();
             mBackArrowAnimation.playAnimation();
         }
@@ -241,11 +263,11 @@ public class GestureUserEducationIphController {
         }
 
         if (mScrimPropertyModel != null) {
-            mScrimManager.hideScrim(mScrimPropertyModel, false);
+            mScrimManager.hideScrim(mScrimPropertyModel, true);
         }
 
         if (mTextBubbleAnimation != null) {
-            mTextBubbleAnimation.setListener(null);
+            mTextBubbleAnimation.removeAllListeners();
             mTextBubbleAnimation.cancel();
         }
 
@@ -302,5 +324,9 @@ public class GestureUserEducationIphController {
 
     void setWebContentsAccessibilityForTesting(WebContentsAccessibility webContentsAccessibility) {
         mWebContentsAccessibility = webContentsAccessibility;
+    }
+
+    void setDisableAnimationsForTesting(boolean disableAnimationsForTesting) {
+        mDisableAnimationsForTesting = disableAnimationsForTesting;
     }
 }
