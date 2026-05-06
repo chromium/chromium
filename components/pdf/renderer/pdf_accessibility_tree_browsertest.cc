@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
@@ -1917,24 +1917,18 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
-    UNSAFE_TODO({
-      for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
-        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                  listbox_child_nodes[i]->GetRole());
-        EXPECT_NE(ax::mojom::Restriction::kReadOnly,
-                  listbox_child_nodes[i]->data().GetRestriction());
-        EXPECT_EQ(kExpectedOptions[0][i].name,
-                  listbox_child_nodes[i]->GetStringAttribute(
-                      ax::mojom::StringAttribute::kName));
-        EXPECT_EQ(kExpectedOptions[0][i].is_selected,
-                  listbox_child_nodes[i]->GetBoolAttribute(
-                      ax::mojom::BoolAttribute::kSelected));
-        EXPECT_TRUE(
-            listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-        EXPECT_EQ(kExpectedBounds[0],
-                  listbox_child_nodes[i]->data().relative_bounds.bounds);
-      }
-    });
+    for (const auto [expected, node] :
+         base::zip(kExpectedOptions[0], listbox_child_nodes)) {
+      EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
+      EXPECT_NE(ax::mojom::Restriction::kReadOnly,
+                node->data().GetRestriction());
+      EXPECT_EQ(expected.name,
+                node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+      EXPECT_EQ(expected.is_selected,
+                node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      EXPECT_TRUE(node->HasState(ax::mojom::State::kFocusable));
+      EXPECT_EQ(kExpectedBounds[0], node->data().relative_bounds.bounds);
+    }
   }
 
   {
@@ -1951,24 +1945,18 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
-    UNSAFE_TODO({
-      for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
-        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                  listbox_child_nodes[i]->GetRole());
-        EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
-                  listbox_child_nodes[i]->data().GetRestriction());
-        EXPECT_EQ(kExpectedOptions[1][i].name,
-                  listbox_child_nodes[i]->GetStringAttribute(
-                      ax::mojom::StringAttribute::kName));
-        EXPECT_EQ(kExpectedOptions[1][i].is_selected,
-                  listbox_child_nodes[i]->GetBoolAttribute(
-                      ax::mojom::BoolAttribute::kSelected));
-        EXPECT_TRUE(
-            listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-        EXPECT_EQ(kExpectedBounds[1],
-                  listbox_child_nodes[i]->data().relative_bounds.bounds);
-      }
-    });
+    for (const auto [expected, node] :
+         base::zip(kExpectedOptions[1], listbox_child_nodes)) {
+      EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
+      EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
+                node->data().GetRestriction());
+      EXPECT_EQ(expected.name,
+                node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+      EXPECT_EQ(expected.is_selected,
+                node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      EXPECT_TRUE(node->HasState(ax::mojom::State::kFocusable));
+      EXPECT_EQ(kExpectedBounds[1], node->data().relative_bounds.bounds);
+    }
   }
 }
 
@@ -2138,24 +2126,18 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
-    UNSAFE_TODO({
-      for (size_t i = 0; i < popup_child_nodes.size(); i++) {
-        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                  popup_child_nodes[i]->GetRole());
-        EXPECT_NE(ax::mojom::Restriction::kReadOnly,
-                  popup_child_nodes[i]->data().GetRestriction());
-        EXPECT_EQ(kExpectedOptions[0][i].name,
-                  popup_child_nodes[i]->GetStringAttribute(
-                      ax::mojom::StringAttribute::kName));
-        EXPECT_EQ(kExpectedOptions[0][i].is_selected,
-                  popup_child_nodes[i]->GetBoolAttribute(
-                      ax::mojom::BoolAttribute::kSelected));
-        EXPECT_TRUE(
-            popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-        EXPECT_EQ(kExpectedBounds[0],
-                  popup_child_nodes[i]->data().relative_bounds.bounds);
-      }
-    });
+    for (const auto [expected, node] :
+         base::zip(kExpectedOptions[0], popup_child_nodes)) {
+      EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
+      EXPECT_NE(ax::mojom::Restriction::kReadOnly,
+                node->data().GetRestriction());
+      EXPECT_EQ(expected.name,
+                node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+      EXPECT_EQ(expected.is_selected,
+                node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      EXPECT_TRUE(node->HasState(ax::mojom::State::kFocusable));
+      EXPECT_EQ(kExpectedBounds[0], node->data().relative_bounds.bounds);
+    }
     EXPECT_EQ(popup_child_nodes[1]->data().id,
               combobox_input_node->GetIntAttribute(
                   ax::mojom::IntAttribute::kActivedescendantId));
@@ -2200,24 +2182,18 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
-    UNSAFE_TODO({
-      for (size_t i = 0; i < popup_child_nodes.size(); i++) {
-        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                  popup_child_nodes[i]->GetRole());
-        EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
-                  popup_child_nodes[i]->data().GetRestriction());
-        EXPECT_EQ(kExpectedOptions[1][i].name,
-                  popup_child_nodes[i]->GetStringAttribute(
-                      ax::mojom::StringAttribute::kName));
-        EXPECT_EQ(kExpectedOptions[1][i].is_selected,
-                  popup_child_nodes[i]->GetBoolAttribute(
-                      ax::mojom::BoolAttribute::kSelected));
-        EXPECT_TRUE(
-            popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-        EXPECT_EQ(kExpectedBounds[1],
-                  popup_child_nodes[i]->data().relative_bounds.bounds);
-      }
-    });
+    for (const auto [expected, node] :
+         base::zip(kExpectedOptions[1], popup_child_nodes)) {
+      EXPECT_EQ(ax::mojom::Role::kListBoxOption, node->GetRole());
+      EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
+                node->data().GetRestriction());
+      EXPECT_EQ(expected.name,
+                node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+      EXPECT_EQ(expected.is_selected,
+                node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+      EXPECT_TRUE(node->HasState(ax::mojom::State::kFocusable));
+      EXPECT_EQ(kExpectedBounds[1], node->data().relative_bounds.bounds);
+    }
     EXPECT_EQ(popup_child_nodes[1]->data().id,
               combobox_input_node->GetIntAttribute(
                   ax::mojom::IntAttribute::kActivedescendantId));
