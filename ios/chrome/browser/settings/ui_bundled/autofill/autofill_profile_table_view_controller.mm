@@ -376,8 +376,13 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       autofill::features::kAutofillAiWithDataSchema);
   if (isEnhancedAutofillEnabled) {
     [model addSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
-    if (_browser->GetProfile()->GetPrefs()->IsManagedPreference(
-            autofill::prefs::kAutofillProfileEnabled)) {
+    BOOL addressManagedAndDisabled = autofill::prefs::IsAutofillProfileManaged(
+                                         _browser->GetProfile()->GetPrefs()) &&
+                                     !autofill::prefs::IsAutofillProfileEnabled(
+                                         _browser->GetProfile()->GetPrefs());
+    if (addressManagedAndDisabled ||
+        autofill::IsAutofillAiDisabledByEnterprisePolicy(
+            _browser->GetProfile()->GetPrefs())) {
       [model addItem:[self managedEnhancedAutofillItem]
           toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
     } else {
