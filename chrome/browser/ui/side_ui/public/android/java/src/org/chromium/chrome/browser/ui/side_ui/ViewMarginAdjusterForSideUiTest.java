@@ -25,9 +25,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 
-/** Tests for {@link MarginContainerSideUiObserver}. */
+/** Tests for {@link ViewMarginAdjusterForSideUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class MarginContainerSideUiObserverTest {
+public class ViewMarginAdjusterForSideUiTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock View mView;
@@ -43,7 +43,7 @@ public class MarginContainerSideUiObserverTest {
 
     @Test
     public void testOnSideUiSpecsChanged_noBaseMargin() {
-        SideUiObserver marginContainerObserver = new MarginContainerSideUiObserver(mView);
+        SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // End margin
         marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(0, 200));
@@ -69,7 +69,7 @@ public class MarginContainerSideUiObserverTest {
         mMarginLayoutParams.setMarginStart(20);
         mMarginLayoutParams.setMarginEnd(35);
 
-        SideUiObserver marginContainerObserver = new MarginContainerSideUiObserver(mView);
+        SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
         // End margin
         marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(0, 200));

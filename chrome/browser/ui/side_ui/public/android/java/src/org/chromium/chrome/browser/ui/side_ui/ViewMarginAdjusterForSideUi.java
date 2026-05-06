@@ -18,7 +18,7 @@ import org.chromium.build.annotations.Nullable;
  * XML) but will not account for padding applied programmatically after construction.
  */
 @NullMarked
-public class MarginContainerSideUiObserver implements SideUiObserver {
+public class ViewMarginAdjusterForSideUi implements SideUiObserver {
     private final View mView;
     private final int mBaseStartMargin;
     private final int mBaseEndMargin;
@@ -28,7 +28,7 @@ public class MarginContainerSideUiObserver implements SideUiObserver {
      *
      * @param view The view to which margins should be applied.
      */
-    public MarginContainerSideUiObserver(View view) {
+    public ViewMarginAdjusterForSideUi(View view) {
         mView = view;
 
         // Save the existing, base margins for the container view. Margins added to account for side

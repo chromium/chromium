@@ -209,9 +209,9 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.ui.side_ui.MarginContainerSideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -1888,7 +1888,7 @@ public class ToolbarManager
                     }
                 };
         mSideUiStateProvider.addObserver(mSideUiObserver);
-        mControlContainerSideUiObserver = new MarginContainerSideUiObserver(mControlContainer);
+        mControlContainerSideUiObserver = new ViewMarginAdjusterForSideUi(mControlContainer);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
     }
 

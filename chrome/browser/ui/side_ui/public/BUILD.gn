@@ -13,11 +13,11 @@ android_resources("java_resources") {
 # Public Java interfaces
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/ui/side_ui/MarginContainerSideUiObserver.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiContainer.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiObserver.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiStateProvider.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_ui/ViewMarginAdjusterForSideUi.java",
   ]
   deps = [
     "//build/android:build_java",
@@ -35,7 +35,7 @@ android_library_factory("factory_java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/MarginContainerSideUiObserverTest.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/ViewMarginAdjusterForSideUiTest.java" ]
   deps = [
     ":java",
     "//base:base_junit_test_support",
