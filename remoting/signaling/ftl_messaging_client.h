@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/message_tracker.h"
@@ -74,7 +75,14 @@ class FtlMessagingClient {
       const MessageCallback& callback);
 
   // Sends |message| to |destination_address| and then calls |on_done| with the
-  // result of the operation.
+  // result of the operation. If non-null, |retry_policy| controls retries.
+  virtual void SendMessage(
+      const SignalingAddress& destination_address,
+      ftl::ChromotingMessage&& message,
+      DoneCallback on_done,
+      scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy);
+
+  // Helper function that calls SendMessage() with retries disabled.
   virtual void SendMessage(const SignalingAddress& destination_address,
                            ftl::ChromotingMessage&& message,
                            DoneCallback on_done);
@@ -104,12 +112,13 @@ class FtlMessagingClient {
                      std::unique_ptr<FtlMessageChannelStrategy> strategy);
 
   template <typename CallbackFunctor>
-  void ExecuteRequest(const net::NetworkTrafficAnnotationTag& tag,
-                      const std::string& path,
-                      bool enable_retries,
-                      std::unique_ptr<google::protobuf::MessageLite> request,
-                      CallbackFunctor callback_functor,
-                      DoneCallback on_done);
+  void ExecuteRequest(
+      const net::NetworkTrafficAnnotationTag& tag,
+      const std::string& path,
+      std::unique_ptr<google::protobuf::MessageLite> request,
+      CallbackFunctor callback_functor,
+      DoneCallback on_done,
+      scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy);
 
   void OnSendMessageResponse(DoneCallback on_done,
                              const remoting::HttpStatus& status,

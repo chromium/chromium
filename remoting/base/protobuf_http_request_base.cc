@@ -24,7 +24,8 @@ namespace remoting {
 struct ProtobufHttpRequestBase::RetryEntry {
   explicit RetryEntry(
       const ProtobufHttpRequestConfig::RetryPolicy& retry_policy)
-      : backoff_entry(retry_policy.backoff_policy) {
+      : backoff_entry(retry_policy.backoff_policy),
+        retriable_error_codes(retry_policy.retriable_error_codes) {
     retry_deadline = base::TimeTicks::Now() + retry_policy.retry_timeout;
   }
 
@@ -33,6 +34,7 @@ struct ProtobufHttpRequestBase::RetryEntry {
   net::BackoffEntry backoff_entry;
   base::OneShotTimer retry_timer;
   base::TimeTicks retry_deadline;
+  base::flat_set<HttpStatus::Code> retriable_error_codes;
 };
 
 ProtobufHttpRequestBase::ProtobufHttpRequestBase(
@@ -78,13 +80,7 @@ bool ProtobufHttpRequestBase::HandleRetry(HttpStatus::Code code) {
   // SimpleURLLoader supports retries, but it doesn't support retrying on
   // network error, and uses max retries rather than an absolute deadline for
   // setting the limit. Hence we use our own retry logic.
-
-  static constexpr auto kRetriableErrorCodes =
-      base::MakeFixedFlatSet<HttpStatus::Code>(
-          {HttpStatus::Code::ABORTED, HttpStatus::Code::UNAVAILABLE,
-           HttpStatus::Code::NETWORK_ERROR});
-
-  if (!retry_entry_ || !kRetriableErrorCodes.contains(code)) {
+  if (!retry_entry_ || !retry_entry_->retriable_error_codes.contains(code)) {
     return false;
   }
   retry_entry_->backoff_entry.InformOfRequest(false);

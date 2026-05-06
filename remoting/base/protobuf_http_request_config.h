@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,10 +39,15 @@ struct ProtobufHttpRequestConfig {
     // after which the request will no longer be retried.
     base::TimeDelta retry_timeout;
 
+    // The list of error codes that trigger a retry.
+    base::flat_set<HttpStatus::Code> retriable_error_codes = {
+        HttpStatus::Code::ABORTED, HttpStatus::Code::UNAVAILABLE,
+        HttpStatus::Code::NETWORK_ERROR};
+
    private:
     friend class base::RefCountedThreadSafe<RetryPolicy>;
 
-    ~RetryPolicy() = default;
+    ~RetryPolicy();
   };
 
   // Returns a simple RetryPolicy that retries for up to ~1 minute (counted
