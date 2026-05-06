@@ -232,7 +232,7 @@
   --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --text-input-inline-start-spacing: 20px;
-  --text-input-top-spacing: 16px;
+  --text-input-top-spacing: 12px;
   --composebox-context-menu-entrypoint-button-color:
       var(--color-composebox-voice-lens-button);
   --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start: 0;
