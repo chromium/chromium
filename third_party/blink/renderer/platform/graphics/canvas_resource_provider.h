@@ -389,7 +389,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       viz::SharedImageFormat,
       SkAlphaType,
       const gfx::ColorSpace&,
-      bool is_accelerated,
       Delegate*);
   CanvasResourceProviderSharedImage(gfx::Size,
                                     viz::SharedImageFormat,

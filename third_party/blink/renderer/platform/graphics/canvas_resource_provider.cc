@@ -242,7 +242,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    bool is_accelerated,
     Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
@@ -2069,7 +2068,6 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         format,
                                         alpha_type,
                                         color_space,
-                                        is_accelerated,
                                         delegate),
       is_accelerated_(is_accelerated),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
@@ -2242,7 +2240,6 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         format,
                                         alpha_type,
                                         color_space,
-                                        is_accelerated,
                                         delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
