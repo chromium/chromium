@@ -118,6 +118,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -4134,6 +4135,18 @@ bool BrowserView::ExecuteWindowsCommand(int command_id) {
   int command_id_from_app_command = GetCommandIDForAppCommandID(command_id);
   if (command_id_from_app_command != -1) {
     command_id = command_id_from_app_command;
+  }
+
+  // Because Windows does not go through the SystemMenuModelDelegate's
+  // ExecuteCommand, we intercept the execution here.
+  if (command_id == IDC_TOGGLE_VERTICAL_TABS) {
+    auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+    if (controller) {
+      // State is flipped because controller has not been updated yet.
+      const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
+      tabs::RecordVerticalTabStripModeChanged(
+          is_vertical, tabs::VerticalTabStripEntryPoint::kSystemContextMenu);
+    }
   }
 
   return chrome::ExecuteCommand(browser_.get(), command_id);
