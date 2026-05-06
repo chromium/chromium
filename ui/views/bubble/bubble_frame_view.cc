@@ -59,6 +59,10 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -995,10 +999,23 @@ gfx::Insets BubbleFrameView::GetClientViewInsets() const {
 
 gfx::Rect BubbleFrameView::GetAvailableScreenBounds(
     const gfx::Rect& rect) const {
+  gfx::Rect work_area = display::Screen::Get()
+                            ->GetDisplayNearestPoint(rect.CenterPoint())
+                            .work_area();
+#if BUILDFLAG(IS_OZONE)
+  // When global screen coordinates aren't supported, shift the work area to
+  // (0,0). If two displays are offset, the work area coordinates may not start
+  // at 0 which results in invalid comparisons when positioning bubbles.
+  // TODO(crbug.com/510418617): Consider moving this logic to the display level
+  // in the future rather than hosting it in Views.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    work_area.set_origin(gfx::Point(0, 0));
+  }
+#endif
   // The bubble attempts to fit within the current screen bounds.
-  return display::Screen::Get()
-      ->GetDisplayNearestPoint(rect.CenterPoint())
-      .work_area();
+  return work_area;
 }
 
 gfx::Rect BubbleFrameView::GetAvailableAnchorWindowBounds() const {
