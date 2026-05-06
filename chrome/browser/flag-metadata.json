@@ -9322,17 +9322,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "use-android-buffered-input-dispatch",
-    "owners": [
-      "woa-performance-team@google.com",
-      "petrcermak@chromium.org",
-      "jonross@chromium.org",
-      "kartarsingh@google.com",
-      "amanvr@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "use-android-staging-smds",
     "owners": [
       "cros-device-enablement@google.com",

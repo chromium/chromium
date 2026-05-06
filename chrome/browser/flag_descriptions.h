@@ -4532,12 +4532,6 @@ inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
     "Enables an experimental UX  on Desktop that replaces the [Site settings]"
     "button on web push notifications with an [Unsubscribe] button.";
 
-inline constexpr char kUseAndroidBufferedInputDispatchName[] =
-    "Use Android buffered input dispatch";
-inline constexpr char kUseAndroidBufferedInputDispatchDescription[] =
-    "Enables using Android's buffered input dispatch, which will generally "
-    "deliver batched resampled input events to Chrome once per VSync.";
-
 inline constexpr char kVcBackgroundReplaceName[] =
     "Enable vc background replacement";
 inline constexpr char kVcBackgroundReplaceDescription[] =
