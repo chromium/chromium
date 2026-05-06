@@ -52,6 +52,7 @@ class FuseboxPopup {
     /* package */ final List<TextView> mHeaders;
 
     private final DynamicRectProvider mDynamicRectProvider;
+    private @PopupState int mCurrentState = PopupState.HIDDEN;
 
     FuseboxPopup(
             Context context,
@@ -62,6 +63,16 @@ class FuseboxPopup {
         mPopupWindow = popupWindow;
         mDynamicRectProvider = dynamicRectProvider;
         mViewGroup = contentView.findViewById(R.id.fusebox_view_group);
+        mViewGroup.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (bottom - top != oldBottom - oldTop) {
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    updateLayout();
+                                });
+                    }
+                });
 
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);
         stub.setLayoutResource(
@@ -140,6 +151,7 @@ class FuseboxPopup {
      * @param state The target state of the popup.
      */
     void setPopupState(@PopupState int state) {
+        mCurrentState = state;
         if (state == FuseboxProperties.PopupState.BOTTOM) {
             mPopupWindow.setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
         } else {
@@ -155,11 +167,18 @@ class FuseboxPopup {
             return;
         }
 
-        int width =
-                mDynamicRectProvider.getPopupWidth(state, mViewGroup.getContext().getResources());
-
-        mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
+        updateLayout();
         show();
+    }
+
+    /**
+     * Update the layout of the popup if it is showing. This is useful when contents change
+     * visibility.
+     */
+    void updateLayout() {
+        if (!isShowing() || mCurrentState == PopupState.HIDDEN) return;
+        int width = mDynamicRectProvider.getPopupWidth(mCurrentState, mViewGroup.getResources());
+        mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
     }
 
     private void initializeItem(View item, int textRes, int iconRes, int a11yRes) {

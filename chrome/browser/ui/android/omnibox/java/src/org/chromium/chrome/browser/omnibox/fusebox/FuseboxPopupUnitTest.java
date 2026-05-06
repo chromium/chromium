@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -121,6 +126,7 @@ public class FuseboxPopupUnitTest {
     @Test
     public void testSetPopupState_Floating() {
         mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.FLOATING);
         verify(mPopupWindow).show();
     }
@@ -184,5 +190,20 @@ public class FuseboxPopupUnitTest {
         assertNotNull(mFuseboxPopup.mCameraButton);
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
+    }
+
+    @Test
+    public void testUpdateLayout() {
+        doReturn(100)
+                .when(mDynamicRectProvider)
+                .getPopupWidth(eq(FuseboxProperties.PopupState.FLOATING), any());
+
+        doReturn(true).when(mPopupWindow).isShowing();
+
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mPopupWindow, atLeastOnce()).updateDesiredContentSize(100, 0, true);
     }
 }
