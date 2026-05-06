@@ -94,6 +94,10 @@ public class ExtensionsMenuItemViewBinder {
         } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT) {
             TextView button = view.findViewById(R.id.extensions_menu_item_site_permissions_button);
             button.setText(model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TEXT));
+        } else if (key == ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TOOLTIP) {
+            View layout = view.findViewById(R.id.extensions_menu_item_site_permissions_layout);
+            layout.setTooltipText(
+                    model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TOOLTIP));
         } else if (key == ExtensionsMenuItemProperties.IS_ENTERPRISE) {
             boolean isEnterprise = model.get(ExtensionsMenuItemProperties.IS_ENTERPRISE);
             View icon = view.findViewById(R.id.extensions_menu_item_site_permissions_icon);

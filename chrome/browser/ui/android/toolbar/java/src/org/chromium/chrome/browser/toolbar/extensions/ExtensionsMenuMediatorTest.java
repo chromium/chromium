@@ -1071,6 +1071,9 @@ public class ExtensionsMenuMediatorTest {
         assertEquals(
                 "Always on all sites. Select to change site permissions",
                 model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME));
+        assertEquals(
+                "Change site permissions",
+                model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TOOLTIP));
 
         // Update the item to have an enabled site permissions button.
         sitePermissionsButtonState =

@@ -55,6 +55,9 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_TOOLTIP =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_ACCESSIBLE_NAME =
             new WritableObjectPropertyKey<>();
 
@@ -76,6 +79,7 @@ public class ExtensionsMenuItemProperties {
                 SITE_PERMISSIONS_BUTTON_ON_CLICK,
                 SITE_PERMISSIONS_BUTTON_STATUS,
                 SITE_PERMISSIONS_BUTTON_TEXT,
+                SITE_PERMISSIONS_BUTTON_TOOLTIP,
                 IS_ENTERPRISE
             };
 }
