@@ -3858,5 +3858,454 @@ TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   EXPECT_FALSE(did_prepare_tiles_);
 }
 
+class BlendStateCheckLayer : public LayerImpl {
+ public:
+  static std::unique_ptr<BlendStateCheckLayer> Create(
+      LayerTreeImpl* tree_impl,
+      int id,
+      viz::ClientResourceProvider* resource_provider) {
+    return base::WrapUnique(
+        new BlendStateCheckLayer(tree_impl, id, resource_provider));
+  }
+
+  BlendStateCheckLayer(LayerTreeImpl* tree_impl,
+                       int id,
+                       viz::ClientResourceProvider* resource_provider)
+      : LayerImpl(tree_impl, id),
+        resource_provider_(resource_provider),
+        comparison_layer_(nullptr),
+        quad_rect_(5, 5, 5, 5),
+        quad_visible_rect_(5, 5, 5, 5),
+        shared_image_interface_(
+            base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
+    auto shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {viz::SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1),
+             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "BlendStateCheckLayerTest"});
+    auto sync_token = shared_image_interface_->GenUnverifiedSyncToken();
+    viz::TransferableResource resource = viz::TransferableResource::Make(
+        shared_image,
+        viz::TransferableResource::ResourceSource::kTileRasterTask, sync_token);
+
+    resource_id_ = resource_provider_->ImportResource(std::move(resource),
+                                                      base::DoNothing());
+    SetBounds(gfx::Size(10, 10));
+    SetDrawsContent(true);
+  }
+
+  void ReleaseResources() override {
+    resource_provider_->RemoveImportedResource(resource_id_);
+  }
+
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
+                   AppendQuadsData* append_quads_data) override {
+    quads_appended_ = true;
+
+    gfx::Rect opaque_rect;
+    if (contents_opaque()) {
+      opaque_rect = quad_rect_;
+    } else {
+      opaque_rect = opaque_content_rect_;
+    }
+    gfx::Rect visible_quad_rect = quad_visible_rect_;
+    bool needs_blending = !opaque_rect.Contains(visible_quad_rect);
+
+    viz::SharedQuadState* shared_quad_state =
+        render_pass->CreateAndAppendSharedQuadState();
+    PopulateSharedQuadState(shared_quad_state, contents_opaque());
+
+    auto* test_blending_draw_quad =
+        render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+    test_blending_draw_quad->SetNew(
+        shared_quad_state, quad_rect_, visible_quad_rect, needs_blending,
+        resource_id_, gfx::RectF(0, 0, 1, 1), false, false);
+
+    EXPECT_EQ(blend_, test_blending_draw_quad->ShouldDrawWithBlending());
+    EXPECT_EQ(has_render_surface_,
+              GetRenderSurface(this) != GetRenderSurface(comparison_layer_));
+  }
+
+  void SetExpectation(bool blend,
+                      bool has_render_surface,
+                      LayerImpl* comparison_layer) {
+    blend_ = blend;
+    has_render_surface_ = has_render_surface;
+    comparison_layer_ = comparison_layer;
+    quads_appended_ = false;
+  }
+
+  bool quads_appended() const { return quads_appended_; }
+
+  void SetQuadRect(const gfx::Rect& rect) { quad_rect_ = rect; }
+  void SetQuadVisibleRect(const gfx::Rect& rect) { quad_visible_rect_ = rect; }
+  void SetOpaqueContentRect(const gfx::Rect& rect) {
+    opaque_content_rect_ = rect;
+  }
+
+ private:
+  raw_ptr<viz::ClientResourceProvider> resource_provider_;
+  bool blend_ = false;
+  bool has_render_surface_ = false;
+  raw_ptr<LayerImpl> comparison_layer_;
+  bool quads_appended_ = false;
+  gfx::Rect quad_rect_;
+  gfx::Rect opaque_content_rect_;
+  gfx::Rect quad_visible_rect_;
+  viz::ResourceId resource_id_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
+};
+
+class LayerTreeHostImplViewportCoveredTest
+    : public ClientModeLayerTreeHostImplTest {
+ protected:
+  LayerTreeHostImplViewportCoveredTest() : child_(nullptr) {}
+
+  std::unique_ptr<LayerTreeFrameSink> CreateFakeLayerTreeFrameSink(
+      bool software) {
+    if (software) {
+      return FakeLayerTreeFrameSink::CreateSoftware();
+    }
+    return FakeLayerTreeFrameSink::Create3d();
+  }
+
+  void SetupActiveTreeLayers() {
+    host_impl_->active_tree()->set_background_color(SkColors::kGray);
+    LayerImpl* root = SetupDefaultRootLayer(viewport_size_);
+    child_ = AddLayer<BlendStateCheckLayer>(host_impl_->active_tree(),
+                                            host_impl_->resource_provider());
+    child_->SetExpectation(false, false, root);
+    child_->SetContentsOpaque(true);
+    CopyProperties(root, child_);
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
+  void SetLayerGeometry(const gfx::Rect& layer_rect) {
+    child_->SetBounds(layer_rect.size());
+    child_->SetQuadRect(gfx::Rect(layer_rect.size()));
+    child_->SetQuadVisibleRect(gfx::Rect(layer_rect.size()));
+    child_->SetOffsetToTransformParent(
+        gfx::Vector2dF(layer_rect.OffsetFromOrigin()));
+  }
+
+  // Expect no gutter rects.
+  void TestLayerCoversFullViewport() {
+    SetLayerGeometry(gfx::Rect(viewport_size_));
+
+    TestFrameData frame;
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
+    ASSERT_EQ(1u, frame.render_passes.size());
+
+    EXPECT_EQ(0u, CountGutterQuads(frame.render_passes[0]->quad_list));
+    EXPECT_EQ(1u, frame.render_passes[0]->quad_list.size());
+    ValidateTextureDrawQuads(frame.render_passes[0]->quad_list);
+
+    VerifyQuadsExactlyCoverViewport(frame.render_passes[0]->quad_list);
+    host_impl_->DidDrawAllLayers(frame);
+  }
+
+  // Expect fullscreen gutter rect.
+  void SetUpEmptylayer() { SetLayerGeometry(gfx::Rect()); }
+
+  void VerifyEmptyLayerRenderPasses(
+      const viz::CompositorRenderPassList& render_passes) {
+    ASSERT_EQ(1u, render_passes.size());
+
+    EXPECT_EQ(1u, CountGutterQuads(render_passes[0]->quad_list));
+    EXPECT_EQ(1u, render_passes[0]->quad_list.size());
+    ValidateTextureDrawQuads(render_passes[0]->quad_list);
+
+    VerifyQuadsExactlyCoverViewport(render_passes[0]->quad_list);
+  }
+
+  void TestEmptyLayer() {
+    SetUpEmptylayer();
+    DrawFrame();
+  }
+
+  void TestEmptyLayerWithOnDraw() {
+    SetUpEmptylayer();
+    gfx::Transform identity;
+    gfx::Rect viewport(viewport_size_);
+    bool resourceless_software_draw = true;
+    host_impl_->OnDraw(identity, viewport, resourceless_software_draw, false);
+    VerifyEmptyLayerRenderPasses(last_on_draw_render_passes_);
+  }
+
+  // Expect four surrounding gutter rects.
+  void SetUpLayerInMiddleOfViewport() {
+    SetLayerGeometry(gfx::Rect(500, 500, 200, 200));
+  }
+
+  void VerifyLayerInMiddleOfViewport(
+      const viz::CompositorRenderPassList& render_passes) {
+    ASSERT_EQ(1u, render_passes.size());
+
+    EXPECT_EQ(4u, CountGutterQuads(render_passes[0]->quad_list));
+    EXPECT_EQ(5u, render_passes[0]->quad_list.size());
+    ValidateTextureDrawQuads(render_passes[0]->quad_list);
+
+    VerifyQuadsExactlyCoverViewport(render_passes[0]->quad_list);
+  }
+
+  void TestLayerInMiddleOfViewport() {
+    SetUpLayerInMiddleOfViewport();
+    DrawFrame();
+  }
+
+  void TestLayerInMiddleOfViewportWithOnDraw() {
+    SetUpLayerInMiddleOfViewport();
+    gfx::Transform identity;
+    gfx::Rect viewport(viewport_size_);
+    bool resourceless_software_draw = true;
+    host_impl_->OnDraw(identity, viewport, resourceless_software_draw, false);
+    VerifyLayerInMiddleOfViewport(last_on_draw_render_passes_);
+  }
+
+  // Expect no gutter rects.
+  void SetUpLayerIsLargerThanViewport() {
+    SetLayerGeometry(
+        gfx::Rect(viewport_size_.width() + 10, viewport_size_.height() + 10));
+  }
+
+  void VerifyLayerIsLargerThanViewport(
+      const viz::CompositorRenderPassList& render_passes) {
+    ASSERT_EQ(1u, render_passes.size());
+
+    EXPECT_EQ(0u, CountGutterQuads(render_passes[0]->quad_list));
+    EXPECT_EQ(1u, render_passes[0]->quad_list.size());
+    ValidateTextureDrawQuads(render_passes[0]->quad_list);
+  }
+
+  void TestLayerIsLargerThanViewport() {
+    SetUpLayerIsLargerThanViewport();
+    DrawFrame();
+  }
+
+  void TestLayerIsLargerThanViewportWithOnDraw() {
+    SetUpLayerIsLargerThanViewport();
+    gfx::Transform identity;
+    gfx::Rect viewport(viewport_size_);
+    bool resourceless_software_draw = true;
+    host_impl_->OnDraw(identity, viewport, resourceless_software_draw, false);
+    VerifyLayerIsLargerThanViewport(last_on_draw_render_passes_);
+  }
+
+  void DidActivateSyncTree() override {
+    LayerTreeHostImplTest::DidActivateSyncTree();
+    did_activate_pending_tree_ = true;
+  }
+
+  void set_gutter_quad_material(viz::DrawQuad::Material material) {
+    gutter_quad_material_ = material;
+  }
+  void set_gutter_texture_size(const gfx::Size& gutter_texture_size) {
+    gutter_texture_size_ = gutter_texture_size;
+  }
+
+ protected:
+  size_t CountGutterQuads(const viz::QuadList& quad_list) {
+    size_t num_gutter_quads = 0;
+    for (auto* quad : quad_list) {
+      num_gutter_quads += (quad->material == gutter_quad_material_) ? 1 : 0;
+    }
+    return num_gutter_quads;
+  }
+
+  void VerifyQuadsExactlyCoverViewport(const viz::QuadList& quad_list) {
+    VerifyQuadsExactlyCoverRect(quad_list,
+                                gfx::Rect(DipSizeToPixelSize(viewport_size_)));
+  }
+
+  // Make sure that the texture coordinates match their expectations.
+  void ValidateTextureDrawQuads(const viz::QuadList& quad_list) {
+    for (auto* quad : quad_list) {
+      if (quad->material != viz::DrawQuad::Material::kTextureContent) {
+        continue;
+      }
+      const viz::TextureDrawQuad* texture_quad =
+          viz::TextureDrawQuad::MaterialCast(quad);
+      gfx::SizeF gutter_texture_size_pixels =
+          gfx::ScaleSize(gfx::SizeF(gutter_texture_size_),
+                         host_impl_->active_tree()->device_scale_factor());
+      const gfx::RectF texture_quad_tex_coords(
+          texture_quad->GetNormalizedTexCoords(
+              gfx::ToRoundedSize(gutter_texture_size_pixels)));
+      EXPECT_EQ(texture_quad_tex_coords.x(),
+                texture_quad->rect.x() / gutter_texture_size_pixels.width());
+      EXPECT_EQ(texture_quad_tex_coords.y(),
+                texture_quad->rect.y() / gutter_texture_size_pixels.height());
+      EXPECT_EQ(
+          texture_quad_tex_coords.right(),
+          texture_quad->rect.right() / gutter_texture_size_pixels.width());
+      EXPECT_EQ(
+          texture_quad_tex_coords.bottom(),
+          texture_quad->rect.bottom() / gutter_texture_size_pixels.height());
+    }
+  }
+
+  viz::DrawQuad::Material gutter_quad_material_ =
+      viz::DrawQuad::Material::kSolidColor;
+  gfx::Size gutter_texture_size_;
+  gfx::Size viewport_size_;
+  raw_ptr<BlendStateCheckLayer> child_;
+  bool did_activate_pending_tree_ = false;
+};
+
+// These tests are only relevant for CommitToPendingTree since they are checking
+// conditions that would need to be queried from the Viz process.
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(LayerTreeHostImplViewportCoveredTest,
+                                       CommitToPendingTree);
+
+TEST_P(LayerTreeHostImplViewportCoveredTest, ViewportCovered) {
+  viewport_size_ = gfx::Size(1000, 1000);
+
+  bool software = false;
+  CreateHostImpl(DefaultSettings(), CreateFakeLayerTreeFrameSink(software));
+  SetupActiveTreeLayers();
+  EXPECT_SCOPED(TestLayerCoversFullViewport());
+  EXPECT_SCOPED(TestEmptyLayer());
+  EXPECT_SCOPED(TestLayerInMiddleOfViewport());
+  EXPECT_SCOPED(TestLayerIsLargerThanViewport());
+}
+
+TEST_P(LayerTreeHostImplViewportCoveredTest, ViewportCoveredScaled) {
+  viewport_size_ = gfx::Size(1000, 1000);
+
+  bool software = false;
+  CreateHostImpl(DefaultSettings(), CreateFakeLayerTreeFrameSink(software));
+
+  host_impl_->active_tree()->SetDeviceScaleFactor(2);
+  SetupActiveTreeLayers();
+  EXPECT_SCOPED(TestLayerCoversFullViewport());
+  EXPECT_SCOPED(TestEmptyLayer());
+  EXPECT_SCOPED(TestLayerInMiddleOfViewport());
+  EXPECT_SCOPED(TestLayerIsLargerThanViewport());
+}
+
+TEST_P(LayerTreeHostImplViewportCoveredTest, ActiveTreeGrowViewportInvalid) {
+  viewport_size_ = gfx::Size(1000, 1000);
+
+  bool software = true;
+  CreateHostImpl(DefaultSettings(), CreateFakeLayerTreeFrameSink(software));
+
+  // Pending tree to force active_tree size invalid. Not used otherwise.
+  CreatePendingTree();
+
+  SetupActiveTreeLayers();
+  EXPECT_SCOPED(TestEmptyLayerWithOnDraw());
+  EXPECT_SCOPED(TestLayerInMiddleOfViewportWithOnDraw());
+  EXPECT_SCOPED(TestLayerIsLargerThanViewportWithOnDraw());
+}
+
+TEST_P(LayerTreeHostImplViewportCoveredTest, ActiveTreeShrinkViewportInvalid) {
+  viewport_size_ = gfx::Size(1000, 1000);
+
+  bool software = true;
+  CreateHostImpl(DefaultSettings(), CreateFakeLayerTreeFrameSink(software));
+
+  // Set larger viewport and activate it to active tree.
+  CreatePendingTree();
+  gfx::Size larger_viewport(viewport_size_.width() + 100,
+                            viewport_size_.height() + 100);
+  host_impl_->active_tree()->SetDeviceViewportRect(
+      gfx::Rect(DipSizeToPixelSize(larger_viewport)));
+  host_impl_->ActivateSyncTree();
+  EXPECT_TRUE(did_activate_pending_tree_);
+
+  // Shrink pending tree viewport without activating.
+  CreatePendingTree();
+  host_impl_->active_tree()->SetDeviceViewportRect(
+      gfx::Rect(DipSizeToPixelSize(viewport_size_)));
+
+  SetupActiveTreeLayers();
+  EXPECT_SCOPED(TestEmptyLayerWithOnDraw());
+  EXPECT_SCOPED(TestLayerInMiddleOfViewportWithOnDraw());
+  EXPECT_SCOPED(TestLayerIsLargerThanViewportWithOnDraw());
+}
+
+// Test that TotalFrameCounter resets itself under certain conditions
+TEST_P(ClientModeLayerTreeHostImplTest, FrameCounterReset) {
+  FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  FrameInfo frame_info;
+  frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
+
+  auto interval = base::Milliseconds(16);
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto deadline = now + interval;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 2u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+
+  frame_sorter->AddNewFrame(args);
+  // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+  frame_sorter->AddFrameResult(
+      args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
+  // FCP not received, so the total_smoothness_dropped_ won't increase.
+  EXPECT_EQ(frame_sorter->total_dropped(), 0u);
+
+  BeginMainFrameMetrics begin_frame_metrics;
+  begin_frame_metrics.should_measure_smoothness = true;
+  {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
+  frame_sorter->AddNewFrame(args);
+  // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
+  frame_sorter->AddFrameResult(
+      args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
+  {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->SetActiveURL(GURL(), 1u);
+  }
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  EXPECT_EQ(frame_sorter->total_dropped(), 0u);
+}
+
+// Test that TotalFrameCounter does not reset itself under certain conditions
+TEST_P(ClientModeLayerTreeHostImplTest, FrameCounterNotReset) {
+  FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+
+  auto interval = base::Milliseconds(16);
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto deadline = now + interval;
+  viz::BeginFrameArgs arg1 = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 1u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+  BeginMainFrameMetrics begin_frame_metrics;
+  begin_frame_metrics.should_measure_smoothness = true;
+  {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
+  EXPECT_EQ(frame_sorter->total_frames(), 0u);
+  FrameInfo frame_info;
+  frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  frame_sorter->AddFrameInfoToBuffer(frame_info);
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
+
+  now = deadline;
+  deadline = now + interval;
+  viz::BeginFrameArgs arg2 = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 2u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+  // Consecutive BeginFrameMetrics with the same |should_measure_smoothness|
+  // flag should not reset the counter.
+  {
+    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
+        ->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
+                        &begin_frame_metrics, /*commit_timeout=*/false);
+  }
+  EXPECT_EQ(frame_sorter->total_frames(), 1u);
+}
+
 }  // namespace
 }  // namespace cc
