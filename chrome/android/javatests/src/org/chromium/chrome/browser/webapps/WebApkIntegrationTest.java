@@ -175,7 +175,7 @@ public class WebApkIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/362218524
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/362218524
     public void testWebApkServiceIntegration() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 

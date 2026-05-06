@@ -259,6 +259,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testRenderGrid_Incognito() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         // Prepare some incognito tabs and enter tab switcher.
@@ -833,6 +834,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testRenderGrid_TabGroupColor_Incognito_2TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ true,
@@ -853,6 +855,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testRenderGrid_TabGroupColor_Incognito_5TabsInGroup() throws IOException {
         doTestRenderGrid_TabGroupColor_Parameterized(
                 /* isIncognito= */ true,

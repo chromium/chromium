@@ -13,10 +13,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -58,6 +60,7 @@ public class WebappDisplayCutoutTest {
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.MINIMAL_UI)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testViewportFitWebapp_MinimalUi() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 

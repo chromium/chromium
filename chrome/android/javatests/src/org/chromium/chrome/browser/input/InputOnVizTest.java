@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,6 +39,7 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.TransferInputToVizResult;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
@@ -138,6 +140,7 @@ public class InputOnVizTest {
     }
 
     @Test
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void handlesOverscrollsWithInputVizard() throws Exception {
         TabLoadObserver observer = new TabLoadObserver(mActivityTestRule.getActivityTab());
         observer.fullyLoadUrl(mLongHtmlTestPageUri);

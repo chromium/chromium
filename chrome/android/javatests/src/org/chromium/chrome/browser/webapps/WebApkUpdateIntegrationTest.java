@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -40,6 +41,7 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -187,6 +189,7 @@ public class WebApkUpdateIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testStoreUpdateRequestToFile() throws Exception {
         String pageUrl = mTestServer.getURL(WEBAPK_START_URL);
         HistogramWatcher histogramWatcher =

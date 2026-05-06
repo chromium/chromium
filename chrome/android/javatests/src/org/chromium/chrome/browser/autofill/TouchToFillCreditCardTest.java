@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -47,6 +48,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.concurrent.TimeoutException;
@@ -119,6 +121,7 @@ public class TouchToFillCreditCardTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
         DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);

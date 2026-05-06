@@ -63,6 +63,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testOpenTypeDelete_fromWebPage() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         var omniboxAndKeyboard = mBlankPage.openOmnibox(sFakeSuggestions);
@@ -74,6 +75,7 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testOpenTypeDelete_fromNtp() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         RegularNewTabPageStation ntp = mBlankPage.openNewTabFast();
