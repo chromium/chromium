@@ -34,6 +34,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
@@ -43,6 +44,10 @@ using ::testing::NotNull;
 using ::testing::Return;
 
 namespace autofill {
+
+namespace {
+constexpr float kDisabledBnplOpacity = 0.38f;
+}
 
 class PopupRowFactoryUtilsTest : public ChromeViewsTestBase {
  public:
@@ -216,7 +221,28 @@ TEST_F(BnplPopupRowViewTest, LinkedPill_Deactivated) {
       payments::BnplLinkedIssuerPill::kBnplLinkedPillElementId);
   ASSERT_THAT(pill, NotNull());
   EXPECT_FALSE(pill->GetEnabled());
-  EXPECT_FLOAT_EQ(0.38f, pill->layer()->opacity());
+  EXPECT_FLOAT_EQ(kDisabledBnplOpacity, pill->layer()->opacity());
+}
+
+TEST_F(BnplPopupRowViewTest, Deactivated_IconOpacity) {
+  Suggestion suggestion(u"Bnpl", SuggestionType::kBnplEntry);
+  suggestion.icon = Suggestion::Icon::kBnplGeneric;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+
+  ShowSuggestion(suggestion);
+
+  views::ImageView* icon_view = nullptr;
+  for (const auto& child : row_view().GetContentView().children()) {
+    if (auto* img = views::AsViewClass<views::ImageView>(child.get())) {
+      icon_view = img;
+      break;
+    }
+  }
+
+  ASSERT_THAT(icon_view, NotNull());
+  EXPECT_TRUE(icon_view->layer());
+  EXPECT_FLOAT_EQ(kDisabledBnplOpacity, icon_view->layer()->opacity());
 }
 
 TEST_F(BnplPopupRowViewTest, UnlinkedIssuer_NoLinkedPill) {
