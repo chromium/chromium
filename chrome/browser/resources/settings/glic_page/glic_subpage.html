@@ -59,7 +59,7 @@
           sub-label="$i18n{glicTabstripButtonToggleSublabel}"
           on-settings-boolean-control-change="onTabstripButtonToggleChange_">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="launcherToggle" pref="{{prefs.glic.launcher_enabled}}"
           label="$i18n{glicOsWidgetToggle}"
           sub-label="$i18n{glicOsWidgetToggleSublabel}"
@@ -97,7 +97,7 @@
               on-shortcut-updated="onShortcutUpdated_">
           </cr-shortcut-input>
         </div>
-        <div class="cr-row keyboard-shortcut-setting"
+        <div class="hr cr-row keyboard-shortcut-setting"
             hidden="[[!glicSelectionFeatureEnabled_]]"
             id="selectionShortcutSetting">
           <div class="flex cr-padded-text">
@@ -125,7 +125,7 @@
           </cr-shortcut-input>
         </div>
       </cr-collapse>
-      <div class="cr-row keyboard-shortcut-setting"
+      <div class="hr cr-row keyboard-shortcut-setting"
            id="focusToggleShortcutSetting">
         <div class="flex cr-padded-text">
           <div class="shortcut-label" aria-hidden>
@@ -178,32 +178,32 @@
           label="$i18n{glicLocationToggle}"
           sub-label="[[locationSubLabel_]]">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="microphoneToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicMicrophoneToggle}"
           sub-label="[[microphoneSubLabel_]]">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="tabAccessToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicTabAccessToggle}"
           sub-label="[[tabAccessSubLabel_]]"
           hidden="[[showGlicDefaultTabContextSetting_]]">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="defaultTabAccessToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicDefaultTabAccessToggle}"
           sub-label-with-link="[[defaultTabAccessSubLabel_]]"
           on-sub-label-link-clicked="onDefaultTabAccessToggleLearnMoreClick_"
           hidden="[[!showGlicDefaultTabContextSetting_]]">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="webActuationToggleDisabled" pref="[[fakePref_]]" disabled
           label="$i18n{glicWebActuationToggle}"
           sub-label-with-link="[[webActuationSubLabel_]]"
           on-sub-label-link-clicked="onWebActuationToggleLearnMoreClick_"
           hidden="[[!webActuationFeatureEnabled_]]">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="keepSidepanelOpenOnNewTabsToggle" pref="[[fakePref_]]" disabled
           label="$i18n{glicKeepSidepanelOpenOnNewTabsToggle}"
           hidden="[[!showGlicKeepSidepanelOpenOnNewTabsSetting_]]">
@@ -220,7 +220,7 @@
           on-learn-more-clicked="onLocationToggleLearnMoreClick_"
           on-settings-boolean-control-change="onGeolocationToggleChange_">
       </settings-toggle-button>
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
           label="$i18n{glicMicrophoneToggle}"
           sub-label="[[microphoneSubLabel_]]"
@@ -228,7 +228,7 @@
           on-settings-boolean-control-change="onMicrophoneToggleChange_">
       </settings-toggle-button>
       <div hidden="[[showGlicDefaultTabContextSetting_]]">
-      <settings-toggle-button
+      <settings-toggle-button class="hr"
           id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
           label="$i18n{glicTabAccessToggle}"
           sub-label="[[tabAccessSubLabel_]]"
@@ -296,7 +296,7 @@
         </cr-collapse>
       </div>
       <div hidden="[[!showGlicDefaultTabContextSetting_]]">
-        <settings-toggle-button
+        <settings-toggle-button class="hr"
             id="defaultTabAccessToggle"
             pref="{{prefs.glic.default_tab_context_enabled}}"
             label="$i18n{glicDefaultTabAccessToggle}"
@@ -384,7 +384,7 @@
       <div hidden="[[!webActuationFeatureEnabled_]]">
         <template is="dom-if"
                   if="[[!isWebActuationDisabledForEnterprise_]]" restamp>
-          <settings-toggle-button
+          <settings-toggle-button class="hr"
               id="webActuationToggle"
               pref="{{webActuationEnabledPref_}}"
               no-set-pref
@@ -406,7 +406,7 @@
         </template>
         <template is="dom-if"
                   if="[[isWebActuationDisabledForEnterprise_]]" restamp>
-          <settings-toggle-button disabled
+          <settings-toggle-button disabled class="hr"
               id="webActuationToggle"
               pref="[[webActuationDisabledForEnterprisePref_]]"
               label="$i18n{glicWebActuationToggle}"
@@ -483,7 +483,7 @@
         </cr-collapse>
       </div>
       <template is="dom-if" if="[[showGlicExperimentalTriggering_]]">
-        <settings-toggle-button id="glicExperimentalTriggeringToggle"
+        <settings-toggle-button id="glicExperimentalTriggeringToggle" class="hr"
             pref="{{experimentalTriggeringEnabledPref_}}"
             no-set-pref
             label="$i18n{glicExperimentalTriggering}"
@@ -493,29 +493,29 @@
       </template>
       <template is="dom-if" if="[[actorLoginFederatedLoginSupportEnabled_]]"
           restamp>
-        <cr-link-row id="actorLoginPermissionsButton"
+        <cr-link-row id="actorLoginPermissionsButton" class="hr"
             on-click="onActorLoginPermissionsRowClick_"
             label="$i18n{glicActorLoginPermissionsSectionTitle}"
             sub-label="$i18n{glicActorLoginPermissionsSectionSublabel}">
         </cr-link-row>
       </template>
-      <cr-link-row id="activityButton" on-click="onActivityRowClick_"
+      <cr-link-row id="activityButton" class="hr" on-click="onActivityRowClick_"
           label="$i18n{glicActivityButton}"
           sub-label="$i18n{glicActivityButtonSublabel}" external>
       </cr-link-row>
-      <cr-link-row id="extensionsButton"
+      <cr-link-row id="extensionsButton" class="hr"
           hidden="[[!glicExtensionsFeatureEnabled_]]"
           on-click="onExtensionsRowClick_"
           label="$i18n{glicExtensionsButton}"
           sub-label="$i18n{glicExtensionsButtonSublabel}" external>
       </cr-link-row>
-      <cr-link-row id="geminiPersonalContextLink"
+      <cr-link-row id="geminiPersonalContextLink" class="hr"
           hidden="[[!showGlicPersonalContextLink_]]"
           on-click="onGeminiPersonalContextClick_"
           label="$i18n{glicPersonalContextSettingButton}"
           sub-label="$i18n{glicPersonalContextSettingSublabel}" external>
       </cr-link-row>
-      <cr-link-row id="InstructionLink"
+      <cr-link-row id="InstructionLink" class="hr"
           hidden="[[!showGlicInstructionLink_]]"
           on-click="onGeminiPersonalContextClick_"
           label="$i18n{glicInstructionsSettingButton}"
