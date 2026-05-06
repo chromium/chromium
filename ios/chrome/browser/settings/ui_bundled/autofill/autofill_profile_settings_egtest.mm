@@ -60,6 +60,12 @@ NSString* const kPassportNameAttributeName = @"Name";
 NSString* const kPassportNumber = @"LR1234567";
 NSString* const kPassportName = @"John Doe";
 
+// Constants for testing the edit button by adding an redress entity.
+NSString* const kFirstRedressName = @"Entity 1";
+NSString* const kSecondRedressName = @"Entity 2";
+NSString* const kFirstRedressNumber = @"111";
+NSString* const kSecondRedressNumber = @"222";
+
 // Return the edit button from the navigation bar.
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
@@ -144,7 +150,9 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   if ([self isRunningTest:@selector(testToggleEnhancedAutofillSwitch)] ||
       [self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
       [self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)]) {
+      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)] ||
+      [self isRunningTest:@selector(testEditButtonEnablesOnAddingEntity)] ||
+      [self isRunningTest:@selector(testAutoExitEditModeOnDeletion)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiCreateEntityDataManager);
     config.features_enabled.push_back(
@@ -547,6 +555,67 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   // mode.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that adding a new entity (Redress) will enable the edit button.
+- (void)testEditButtonEnablesOnAddingEntity {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self openAutofillProfilesSettings];
+  // Verify the Edit button is initially disabled.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_not(grey_interactable())];
+
+  NSString* uuid = [AutofillAppInterface
+      saveRedressNumberEntityWithName:kFirstRedressName
+                               number:kFirstRedressNumber];
+  // Verify the Edit button is now enabled.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clean up the created entity.
+  [AutofillAppInterface removeEntityWithUUID:uuid];
+}
+
+// Tests that the editing mode is exited upon deletion of an entity.
+- (void)testAutoExitEditModeOnDeletion {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self openAutofillProfilesSettings];
+
+  // Add 2 entities so that 1 remains after deletion.
+  NSString* firstEntityUuid = [AutofillAppInterface
+      saveRedressNumberEntityWithName:kFirstRedressName
+                               number:kFirstRedressNumber];
+  NSString* secondEntityUuid = [AutofillAppInterface
+      saveRedressNumberEntityWithName:kSecondRedressName
+                               number:kSecondRedressNumber];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Scroll to the bottom of the page to make sure that both entities are
+  // visible.
+  [self
+      scrollDownWithMatcher:grey_accessibilityID(kAutofillProfileTableViewID)];
+
+  // Delete one entity.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(kFirstRedressName)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_DELETE_ACTION_TITLE)] performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+
+  // Verify that we automatically exited edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clean up the created entities.
+  [AutofillAppInterface removeEntityWithUUID:firstEntityUuid];
+  [AutofillAppInterface removeEntityWithUUID:secondEntityUuid];
 }
 
 // Checks that the confirmation action sheet is shown when an autofill profile
