@@ -74,6 +74,9 @@ class HeadlessVariationsServiceClient
 
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override {}
+
+  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override {}
 };
 
 }  // namespace

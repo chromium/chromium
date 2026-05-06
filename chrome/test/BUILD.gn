@@ -7346,6 +7346,7 @@ test("unit_tests") {
     "//components/embedder_support",
     "//components/encrypted_messages",
     "//components/encrypted_messages:encrypted_message_proto",
+    "//components/enterprise/browser/groups:prefs",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",

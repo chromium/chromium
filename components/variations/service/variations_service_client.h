@@ -89,6 +89,13 @@ class VariationsServiceClient {
   virtual void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) = 0;
 
+  // Removes stored enterprise groups variations information for deleted
+  // profiles. Must be called at startup, prior to the variations enterprise
+  // groups being read.
+  // This is a no-op on platforms that do not support multiple profiles.
+  virtual void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) = 0;
+
  private:
   // Gets the channel of the embedder. But all variations callers should use
   // |GetChannelForVariations()| instead.

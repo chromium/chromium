@@ -1,6 +1,7 @@
 include_rules = [
   "+components/country_codes",
   "+components/encrypted_messages",
+  "+components/enterprise/browser/groups",
   "+components/language/core/browser",
   "+components/metrics",
   "+components/network_time",

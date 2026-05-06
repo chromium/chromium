@@ -36,6 +36,8 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   bool IsEnterprise() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
+  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override;
   version_info::Channel GetChannel() override;
 };
 

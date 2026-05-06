@@ -16,11 +16,13 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "components/variations/synthetic_trials.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -112,27 +114,17 @@ bool ChromeVariationsServiceClient::IsEnterprise() {
 // ProfileAttributesStorage source-of-truth.
 void ChromeVariationsServiceClient::
     RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {
-  // Get the list of profiles in attribute storage.
-  base::flat_set<std::string> profile_keys =
-      ProfileAttributesStorage::GetAllProfilesKeys(local_state);
+  variations::RemovePrefsForDeletedProfiles(
+      local_state, variations::prefs::kVariationsGoogleGroups,
+      ProfileAttributesStorage::GetAllProfilesKeys(local_state));
+}
 
-  // Get the current value of the local state dict.
-  const base::DictValue& cached_profiles =
-      local_state->GetDict(variations::prefs::kVariationsGoogleGroups);
-  std::vector<std::string> variations_profiles_to_delete;
-  for (std::pair<const std::string&, const base::Value&> profile :
-       cached_profiles) {
-    if (!profile_keys.contains(profile.first)) {
-      variations_profiles_to_delete.push_back(profile.first);
-    }
-  }
-
-  ScopedDictPrefUpdate variations_prefs_update(
-      local_state, variations::prefs::kVariationsGoogleGroups);
-  base::DictValue& variations_prefs_dict = variations_prefs_update.Get();
-  for (const auto& profile : variations_profiles_to_delete) {
-    variations_prefs_dict.Remove(profile);
-  }
+void ChromeVariationsServiceClient::
+    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+        PrefService* local_state) {
+  variations::RemovePrefsForDeletedProfiles(
+      local_state, enterprise_groups::kEnterpriseGroupsProfilePref,
+      ProfileAttributesStorage::GetAllProfilesKeys(local_state));
 }
 
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {

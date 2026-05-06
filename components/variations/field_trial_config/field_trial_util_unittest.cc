@@ -87,6 +87,8 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   bool IsEnterprise() override { return false; }
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override {}
+  void RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override {}
 
  private:
   // VariationsServiceClient:

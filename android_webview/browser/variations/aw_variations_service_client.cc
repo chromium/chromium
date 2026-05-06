@@ -44,6 +44,11 @@ bool AwVariationsServiceClient::IsEnterprise() {
 void AwVariationsServiceClient::RemoveGoogleGroupsFromPrefsForDeletedProfiles(
     PrefService* local_state) {}
 
+// WebView is not supported since it doesn't support Chrome Enterprise Core.
+void AwVariationsServiceClient::
+    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+        PrefService* local_state) {}
+
 Channel AwVariationsServiceClient::GetChannel() {
   return version_info::android::GetChannel();
 }

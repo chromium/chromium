@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -20,6 +21,7 @@ class ChromeVariationsServiceClientTest : public ::testing::Test {
     ProfileAttributesStorage::RegisterPrefs(local_state_.registry());
     metrics::CleanExitBeacon::RegisterPrefs(local_state_.registry());
     variations::VariationsService::RegisterPrefs(local_state_.registry());
+    enterprise_groups::RegisterLocalStatePrefs(local_state_.registry());
   }
 
  protected:
@@ -31,6 +33,15 @@ class ChromeVariationsServiceClientTest : public ::testing::Test {
 
     // Just set an empty list of groups as the code under test is agnostic to
     // the value of the entry.
+    base::ListValue groups;
+    variations_prefs.Set(profile_key, std::move(groups));
+  }
+
+  // Adds an entry to the variations Enterprise Groups preference.
+  void AddVariationsEnterpriseEntry(const std::string& profile_key) {
+    ScopedDictPrefUpdate variations_prefs_update(
+        &local_state_, enterprise_groups::kEnterpriseGroupsProfilePref);
+    base::DictValue& variations_prefs = variations_prefs_update.Get();
     base::ListValue groups;
     variations_prefs.Set(profile_key, std::move(groups));
   }
@@ -110,6 +121,69 @@ TEST_F(ChromeVariationsServiceClientTest,
 
   const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
+  ASSERT_EQ(cached_profiles.size(), 1UL);
+  ASSERT_TRUE(cached_profiles.Find(profile_key));
+}
+
+TEST_F(ChromeVariationsServiceClientTest,
+       RemoveEnterpriseGroupsFromPrefsForDeletedProfiles_NoPrefNoProfile) {
+  variations_service_client_.RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      &local_state_);
+
+  const base::DictValue& cached_profiles =
+      local_state_.GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
+  ASSERT_EQ(cached_profiles.size(), 0UL);
+}
+
+TEST_F(ChromeVariationsServiceClientTest,
+       RemoveEnterpriseGroupsFromPrefsForDeletedProfiles_PrefNoProfile) {
+  AddVariationsEnterpriseEntry("Profile 1");
+
+  variations_service_client_.RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      &local_state_);
+
+  const base::DictValue& cached_profiles =
+      local_state_.GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
+  ASSERT_EQ(cached_profiles.size(), 0UL);
+}
+
+TEST_F(ChromeVariationsServiceClientTest,
+       RemoveEnterpriseGroupsFromPrefsForDeletedProfiles_NoPrefProfile) {
+  AddProfileAttributesStorageEntry("Profile 1");
+
+  variations_service_client_.RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      &local_state_);
+
+  const base::DictValue& cached_profiles =
+      local_state_.GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
+  ASSERT_EQ(cached_profiles.size(), 0UL);
+}
+
+TEST_F(
+    ChromeVariationsServiceClientTest,
+    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles_PrefAndDifferentProfile) {
+  AddVariationsEnterpriseEntry("Profile 1");
+  AddProfileAttributesStorageEntry("Profile 2");
+
+  variations_service_client_.RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      &local_state_);
+
+  const base::DictValue& cached_profiles =
+      local_state_.GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
+  ASSERT_EQ(cached_profiles.size(), 0UL);
+}
+
+TEST_F(ChromeVariationsServiceClientTest,
+       RemoveEnterpriseGroupsFromPrefsForDeletedProfiles_PrefAndSameProfile) {
+  std::string profile_key = "Profile 1";
+  AddVariationsEnterpriseEntry(profile_key);
+  AddProfileAttributesStorageEntry(profile_key);
+
+  variations_service_client_.RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+      &local_state_);
+
+  const base::DictValue& cached_profiles =
+      local_state_.GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
   ASSERT_EQ(cached_profiles.size(), 1UL);
   ASSERT_TRUE(cached_profiles.Find(profile_key));
 }

@@ -70,6 +70,11 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
 void IOSChromeVariationsServiceClient::
     RemoveGoogleGroupsFromPrefsForDeletedProfiles(PrefService* local_state) {}
 
+// TODO(crbug.com/496199013): Implement this.
+void IOSChromeVariationsServiceClient::
+    RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(
+        PrefService* local_state) {}
+
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {
   return ::GetChannel();
 }

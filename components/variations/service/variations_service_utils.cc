@@ -5,10 +5,16 @@
 #include "components/variations/service/variations_service_utils.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/build_time.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/service/variations_service.h"
 
 namespace variations {
@@ -54,6 +60,28 @@ std::string GetCurrentCountryCode(const VariationsService* variations) {
   return country.empty()
              ? std::string(country_codes::GetCurrentCountryID().CountryCode())
              : country;
+}
+
+void RemovePrefsForDeletedProfiles(
+    PrefService* local_state,
+    std::string_view pref_name,
+    const base::flat_set<std::string>& existing_profiles) {
+  // Get the current value of the local state dict.
+  const base::DictValue& cached_variations_profiles =
+      local_state->GetDict(pref_name);
+  std::vector<std::string> variations_profiles_to_delete;
+  for (std::pair<const std::string&, const base::Value&> profile :
+       cached_variations_profiles) {
+    if (!existing_profiles.contains(profile.first)) {
+      variations_profiles_to_delete.push_back(profile.first);
+    }
+  }
+
+  ScopedDictPrefUpdate variations_prefs_update(local_state, pref_name);
+  std::ranges::for_each(variations_profiles_to_delete,
+                        [&variations_prefs_update](const std::string& profile) {
+                          variations_prefs_update->Remove(profile);
+                        });
 }
 
 }  // namespace variations
