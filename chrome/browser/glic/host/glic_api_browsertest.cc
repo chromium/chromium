@@ -2750,7 +2750,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsWhileClosing) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsWithTwoTabs) {
+// TODO(crbug.com/469060213): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_testPinTabsWithTwoTabs DISABLED_testPinTabsWithTwoTabs
+#else
+#define MAYBE_testPinTabsWithTwoTabs testPinTabsWithTwoTabs
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testPinTabsWithTwoTabs) {
   NavigateTabAndOpenGlicFloating();
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
   ExecuteJsTest();
