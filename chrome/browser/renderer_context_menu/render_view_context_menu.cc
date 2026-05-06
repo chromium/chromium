@@ -2458,7 +2458,7 @@ void RenderViewContextMenu::AppendTranslateItem() {
       l10n_util::GetStringFUTF16(
           IDS_CONTENT_CONTEXT_TRANSLATE,
           GetTargetLanguageDisplayName(/*is_full_page_translation=*/true)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kGTranslateIcon,
                                      ui::kColorMenuIcon, kTabMenuIconSize));
 }
 

@@ -211,7 +211,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowLensOverlayResults;
     case kActionShowTranslate:
-      CHECK_EQ(icon, &kTranslateIcon);
+      CHECK_EQ(icon, &vector_icons::kGTranslateIcon);
       return toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
     case kActionQrCodeGenerator:
       CHECK_EQ(icon, &kQrCodeChromeRefreshIcon);

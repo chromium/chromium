@@ -563,7 +563,7 @@ void MediaDialogView::InitializeLiveTranslateSection() {
 
   auto live_translate_image = std::make_unique<views::ImageView>();
   live_translate_image->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kTranslateIcon, ui::kColorIcon, kImageWidthDip));
+      vector_icons::kGTranslateIcon, ui::kColorIcon, kImageWidthDip));
   live_translate_container->AddChildView(std::move(live_translate_image));
 
   auto live_translate_label_wrapper = std::make_unique<View>();

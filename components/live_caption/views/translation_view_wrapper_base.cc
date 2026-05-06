@@ -220,9 +220,11 @@ void TranslationViewWrapperBase::SetTextColor(
   }
   translation_header_text_->SetEnabledColor(header_color);
   translate_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kTranslateIcon, header_color, kLiveTranslateImageWidthDip));
+      vector_icons::kGTranslateIcon, header_color,
+      kLiveTranslateImageWidthDip));
   translate_arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kTranslateIcon, header_color, kLiveTranslateImageWidthDip));
+      vector_icons::kGTranslateIcon, header_color,
+      kLiveTranslateImageWidthDip));
   translate_arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kArrowRightAltIcon, header_color,
       kLiveTranslateImageWidthDip));

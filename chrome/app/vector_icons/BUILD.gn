@@ -106,6 +106,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "help_menu.icon",
     "history.icon",
     "hourglass.icon",
+    "image.icon",
     "incognito.icon",
     "incognito_refresh_menu.icon",
     "info.icon",

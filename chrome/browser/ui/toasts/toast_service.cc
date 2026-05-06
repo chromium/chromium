@@ -401,7 +401,7 @@ void ToastService::RegisterToasts(
   if (base::FeatureList::IsEnabled(toast_features::kTranslateToast)) {
     toast_registry_->RegisterToast(
         ToastId::kTranslate,
-        ToastSpecification::Builder(vector_icons::kTranslateIcon,
+        ToastSpecification::Builder(vector_icons::kGTranslateIcon,
                                     IDS_TRANSLATE_TOAST_BODY)
             .AddActionButton(
                 IDS_TRANSLATE_TOAST_UNDO_BUTTON,

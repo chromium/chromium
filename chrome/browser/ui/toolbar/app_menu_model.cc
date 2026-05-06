@@ -2108,7 +2108,7 @@ void AppMenuModel::Build() {
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,
-                                   kTranslateIcon);
+                                   vector_icons::kGTranslateIcon);
 
   CreateFindAndEditSubMenu();
 

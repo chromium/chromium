@@ -988,7 +988,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi),
           kActionShowTranslate, IDS_SHOW_TRANSLATE, IDS_TOOLTIP_TRANSLATE,
-          kTranslateIcon)
+          vector_icons::kGTranslateIcon)
           .Build());
 
   root_action_item_->AddChild(
