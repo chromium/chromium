@@ -505,7 +505,14 @@ TEST_F(ActorUiTabControllerTest, From_RecordsHistogramWhenTabDoesNotExist) {
       ActorUiTabControllerError::kRequestedForNonExistentTab, 1);
 }
 
-TEST_F(ActorUiTabControllerTest, RegisterNullCallbackDeathTest) {
+// TODO(crbug.com/489697430): Test times out flakily under Asan and UBSan.
+#if defined(ADDRESS_SANITIZER) || defined(UNDEFINED_SANITIZER)
+#define MAYBE_RegisterNullCallbackDeathTest \
+  DISABLED_RegisterNullCallbackDeathTest
+#else
+#define MAYBE_RegisterNullCallbackDeathTest RegisterNullCallbackDeathTest
+#endif
+TEST_F(ActorUiTabControllerTest, MAYBE_RegisterNullCallbackDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(
       (void)tab_controller()->RegisterActorOverlayStateChange(
           ActorUiTabControllerInterface::ActorOverlayStateChangeCallback()),
@@ -522,7 +529,16 @@ TEST_F(ActorUiTabControllerTest, RegisterNullCallbackDeathTest) {
       "");
 }
 
-TEST_F(ActorUiTabControllerTest, RegisterCallbackWhileRegisteredDeathTest) {
+// TODO(crbug.com/489701578): Test times out flakily under Asan and UBSan.
+#if defined(ADDRESS_SANITIZER) || defined(UNDEFINED_SANITIZER)
+#define MAYBE_RegisterCallbackWhileRegisteredDeathTest \
+  DISABLED_RegisterCallbackWhileRegisteredDeathTest
+#else
+#define MAYBE_RegisterCallbackWhileRegisteredDeathTest \
+  RegisterCallbackWhileRegisteredDeathTest
+#endif
+TEST_F(ActorUiTabControllerTest,
+       MAYBE_RegisterCallbackWhileRegisteredDeathTest) {
   auto valid_overlay_state_cb =
       base::BindRepeating([](bool, ActorOverlayState, base::OnceClosure) {});
   auto valid_overlay_bg_cb = base::BindRepeating([](bool) {});
