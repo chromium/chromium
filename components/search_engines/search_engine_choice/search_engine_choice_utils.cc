@@ -132,16 +132,6 @@ std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
   std::optional<int> parsed_selected_engine_index =
       dict.FindInt(kDisplayStateSelectedEngineIndexKey);
 
-  if (dict.FindBool("list_is_modified_by_current_default").value_or(false)) {
-    // We stopped writing this field, as we totally stopped including the
-    // current default in the list. If we find old persisted data where
-    // this is `true`, just consider it invalid, as we wouldn't log anything
-    // for it anyway.
-    // TODO(crbug.com/343915066): Entries older than 14 days are considered
-    // expired, we can remove this code branch and the dictionary key in M130+
-    return std::nullopt;
-  }
-
   if (!parsed_country_id.has_value() || !parsed_search_engines) {
     return std::nullopt;
   }
