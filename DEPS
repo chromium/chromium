@@ -3550,12 +3550,6 @@ deps = {
       'condition': 'checkout_glic_e2e_tests',
   },
 
-  'src/chrome/browser/indigo/resources/internal': {
-      'url': Var('chrome_git') + '/chrome/browser/indigo/resources/internal.git' + '@' +
-        '479448b27ddf2e1667d5e5d637e5228b5915b464',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/chrome/browser/google/linkdoctor_internal': {
       'url': Var('chrome_git') + '/chrome/linkdoctor.git' + '@' +
         'fe28a8f90c5471f20f8fee9ff7f6c6f8b8d02bed', # from svn revision 32577

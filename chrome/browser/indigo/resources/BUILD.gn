@@ -4,14 +4,10 @@
 
 import("//tools/grit/grit_rule.gni")
 
-assert(!is_android)
-
 grit("grit") {
-  if (is_chrome_branded) {
-    source = "internal/browser_resources.grd"
-  } else {
-    source = "browser_resources.grd"
-  }
+  # TODO(b/505475053): Add conditions to use either the external or internal grd
+  # files based on whether the build is branded.
+  source = "browser_resources.grd"
 
   use_brotli = true
   outputs = [
