@@ -67,6 +67,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .clearAllInputsWhenSubmittingQuery="${true}"
           .showVoiceSearch="${true}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+          .isZeroState="${this.isZeroState}"
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
           @open-file-upload="${this.onOpenFileUpload_}"

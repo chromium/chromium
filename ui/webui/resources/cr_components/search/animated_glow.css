@@ -7,6 +7,18 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+@property --gradient-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --mask-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
 :host {
   --color-dragging-opaque-frost-backup_: rgba(240, 242, 245, 1);
   --color-drag-placeholder-font: rgba(86, 89, 94, 1);
@@ -60,6 +72,15 @@
   --start-angle-submit_: 200deg;
   --start-angle-listen_: 35deg;
   border-radius: inherit;
+
+  /* Gradient burst duration */
+  --gradient-burst-duration: 650ms;
+
+  /* Gradient burst rotation angles. */
+  --gradient-angle-start: 170deg;
+  --gradient-angle-end: 225deg;
+  --mask-angle-start: -90deg;
+  --mask-angle-end: 200deg;
 }
 
 #dragDropPlaceholder {
@@ -199,7 +220,8 @@
     var(--search-animated-glow-gradient-curve) forwards;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) {
+:host([animation-state='dragging'][energy-effect-animation-enabled]),
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) {
   --dragging-glow-gradient: conic-gradient(
     #3186ff 34%,
     #9378ff 37%,
@@ -228,8 +250,10 @@
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient::before,
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient::before {
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   opacity: 1;
@@ -450,7 +474,8 @@
   filter: blur(8px);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(8px);
@@ -459,7 +484,62 @@
   position: absolute;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper {
+  animation:
+    animateOpacity var(--gradient-burst-duration) both,
+    animateAngles var(--gradient-burst-duration)
+      var(--standard-decelerate-curve) both,
+    animateBlur var(--gradient-burst-duration) linear both;
+}
+
+@keyframes animateOpacity {
+  0% {
+    animation-timing-function: var(--standard-decelerate-curve);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  50% {
+    animation-timing-function: var(--emphasized-accelerate-curve);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes animateAngles {
+  0% {
+    --gradient-angle: var(--gradient-angle-start);
+    --mask-angle: var(--mask-angle-start);
+  }
+  100% {
+    --gradient-angle: var(--gradient-angle-end);
+    --mask-angle: var(--mask-angle-end);
+  }
+}
+
+@keyframes animateBlur {
+  0% {
+    filter: blur(1px);
+  }
+  15% {
+    filter: blur(20px);
+  }
+  25% {
+    filter: blur(5px);
+  }
+  45% {
+    filter: blur(7px);
+  }
+  100% {
+    filter: blur(1px);
+  }
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(2px);
@@ -468,7 +548,15 @@
   position: absolute;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper {
+  animation:
+    animateOpacity var(--gradient-burst-duration) both,
+    animateAngles var(--gradient-burst-duration)
+      var(--standard-decelerate-curve) both;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -490,7 +578,8 @@
   );
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient {
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .double-gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -512,13 +601,17 @@
   inset: 0;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient::before {
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   filter: none;
   opacity: 1;
   rotate: var(--gradient-angle, 0deg);
   scale: 1.2;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
@@ -529,7 +622,8 @@
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .background,
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .background {
   /*
   * Remove transparent border and inset by 2px so background covers
   * the center up to the composebox border, letting the gradient
@@ -542,6 +636,9 @@
   border-width: 0;
   inset: 1px;
   pointer-events: none;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 

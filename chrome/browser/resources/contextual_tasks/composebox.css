@@ -71,6 +71,7 @@
   --file-thumbnail-border-radius: 6px;
   --file-chip-border-radius: 12px;
   --icon-menu-button-size: 36px;
+  --box-shadow-animation-duration: 650ms;
 }
 
 @media (prefers-color-scheme: light) {
@@ -177,6 +178,34 @@
   opacity: 0;
 }
 
+:host([energy-effect-enabled_]) #composebox[animation-state='expanding']::after {
+  animation: animateBorder var(--box-shadow-animation-duration) both;
+}
+
+:host([energy-effect-enabled_]) #composebox[animation-state='dragging']::after {
+  display: none;
+}
+
+@keyframes animateBorder {
+  0% {
+    opacity: 1;
+    animation-timing-function: var(--standard-decelerate-curve);
+  }
+  9.8% {
+    opacity: 0;
+  }
+  19.7% {
+    animation-timing-function: var(--emphasized-accelerate-curve);
+    opacity: 0;
+  }
+  39.4% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 #composebox {
   --cr-composebox-font-size: 16px;
   --expanded-border-radius: var(--composebox-border-radius);
@@ -215,6 +244,34 @@
 
 :host([energy-effect-enabled_]) #composebox::part(composebox) {
   box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
+}
+
+:host([energy-effect-enabled_]) #composebox[animation-state='expanding']::part(composebox) {
+  animation: animateShadow var(--box-shadow-animation-duration) both;
+}
+
+:host([energy-effect-enabled_]) #composebox[animation-state='dragging']::part(composebox) {
+  box-shadow: none;
+}
+
+@keyframes animateShadow {
+  0% {
+    box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
+    animation-timing-function: var(--standard-decelerate-curve);
+  }
+  9.8% {
+    box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0);
+  }
+  19.7% {
+    animation-timing-function: var(--emphasized-accelerate-curve);
+    box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0);
+  }
+  39.4% {
+    box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
+  }
+  100% {
+    box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
+  }
 }
 
 #composebox::part(thumbnail) {
@@ -643,6 +700,24 @@
   padding-inline-end: 10px;
 }
 
+:host([is-zero-state][energy-effect-animation-enabled_]) #contextualTasksSuggestionsContainer {
+  animation: zero-state-recommendations-enter 600ms
+    var(--emphasized-decelerate-curve) forwards;
+}
+
+@keyframes zero-state-recommendations-enter {
+  0% {
+    opacity: 0;
+    transform: translate(0, 60px);
+  }
+  15% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-focus-indicator) {
   /* 'Important' is used to override all higher-specificity

@@ -138,10 +138,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
         reflect: true,
       },
+      isZeroState: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor energyEffectAnimationEnabled: boolean = false;
+  accessor isZeroState: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
