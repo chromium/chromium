@@ -304,6 +304,9 @@ PageContextFetcher::RedactScreenshotOnWorkerThread(
     const SkBitmap& bitmap,
     const std::vector<gfx::Rect>& visible_bounding_boxes_for_redaction,
     SkColor4f redaction_color) {
+  base::UmaHistogramBoolean("Glic.PageContextFetcher.ScreenshotRedacted",
+                            !visible_bounding_boxes_for_redaction.empty());
+
   if (visible_bounding_boxes_for_redaction.empty()) {
     return bitmap;
   }

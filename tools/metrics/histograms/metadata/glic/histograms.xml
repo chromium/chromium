@@ -1756,6 +1756,17 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a page gets screenshot error from Viz.</summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.ScreenshotRedacted" enum="Boolean"
+    expires_after="2026-11-05">
+  <owner>linnan@google.com</owner>
+  <owner>shivanisha@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded when a screenshot is processed for Glic. Records true if any part
+    of the screenshot was redacted client-side, and false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.Total" units="ms"
     expires_after="2026-11-04">
   <owner>carlosk@chromium.org</owner>

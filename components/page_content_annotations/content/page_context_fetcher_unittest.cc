@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -16,6 +17,7 @@
 namespace page_content_annotations {
 
 TEST(PageContextFetcherTest, RedactScreenshotOnWorkerThread) {
+  base::HistogramTester histograms;
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseColor(SK_ColorBLUE);
@@ -38,9 +40,13 @@ TEST(PageContextFetcherTest, RedactScreenshotOnWorkerThread) {
   // Check a pixel that SHOULD be redacted (becomes red).
   EXPECT_EQ(redacted->getColor(15, 15), SK_ColorRED);
   EXPECT_EQ(redacted->getColor(25, 25), SK_ColorRED);
+
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
 }
 
 TEST(PageContextFetcherTest, RedactScreenshotOnWorkerThreadNoRedaction) {
+  base::HistogramTester histograms;
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseColor(SK_ColorBLUE);
@@ -57,6 +63,9 @@ TEST(PageContextFetcherTest, RedactScreenshotOnWorkerThreadNoRedaction) {
   // Verify the optimization: the original bitmap should be returned without
   // unnecessary copies when no redaction is performed.
   EXPECT_EQ(bitmap.getPixels(), redacted->getPixels());
+
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                false, 1);
 }
 
 }  // namespace page_content_annotations
