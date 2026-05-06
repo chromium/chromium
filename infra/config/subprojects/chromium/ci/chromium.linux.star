@@ -464,6 +464,11 @@ ci.builder(
                     shards = 24,
                 ),
             ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -475,7 +480,7 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 9 * time.hour,
 )
 
 ci.builder(

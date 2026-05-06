@@ -119,7 +119,7 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 9 * time.hour,
 )
 
 try_.builder(
