@@ -166,11 +166,6 @@ crbug.com/504644655 [ chromeos ] GpuProcess_vulkan_vma_race [ Skip ]
 # Samsung flake that seems to signal visibility too many times
 crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
 
-# Flaky DFM issues on Pixel 2 devices caused by loading chrome://gpu.
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_disabling_workarounds_works [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_driver_bug_workarounds_in_gpu_process [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_one_extra_workaround [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_readback_webgl_gpu_process [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
