@@ -18,12 +18,17 @@ DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations,
                                       kOpenWithContentTransition);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kClose);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kPanelWidth);
-DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kMainAreaPadding);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kMainAreaShadow);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentTop);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentLeft);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentBottom);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentWidth);
+
+SidePanelAnimations::SidePanelAnimations() {
+  SetSequenceParams(kSidePanel, Persist(kPanelWidth), Persist(kMainAreaShadow));
+}
+
+SidePanelAnimations::~SidePanelAnimations() = default;
 
 SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
     const {

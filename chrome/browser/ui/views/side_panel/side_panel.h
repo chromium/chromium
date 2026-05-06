@@ -191,11 +191,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Cache of recent animation values.
   std::map<BrowserAnimationSequence, double> last_animation_values_;
-
-  // Starting point for opening animations. This is updated any time the side
-  // panel animates other than during the open animation, so that if a close is
-  // interrupted, the open animation starts from there.
-  double open_starting_point_ = 0.0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
