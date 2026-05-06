@@ -52,6 +52,8 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
   explicit AtomicViewAXTreeManager(ViewAXPlatformNodeDelegate* delegate,
                                    const ui::AXNodeData& node_data);
 
+  void RefreshRootDataFromDelegate() const;
+
   raw_ptr<ViewAXPlatformNodeDelegate> delegate_;
 };
 

@@ -103,4 +103,25 @@ TEST_F(AtomicViewAXTreeManagerTest, GetNode) {
           ->data());
 }
 
+TEST_F(AtomicViewAXTreeManagerTest, GetRootPreservesNodeIdAfterWidgetRemoval) {
+  AtomicViewAXTreeManager* manager =
+      delegate_->GetAtomicViewAXTreeManagerForTesting();
+  const ui::AXNodeID root_id = manager->GetRoot()->id();
+
+  std::unique_ptr<Textfield> textfield =
+      widget_->GetContentsView()->RemoveChildViewT(textfield_.get());
+  ASSERT_FALSE(textfield->GetWidget());
+
+  EXPECT_EQ(ui::kInvalidAXNodeID, delegate_->GetData().id);
+
+  const ui::AXNodeData& root_data = manager->GetRoot()->data();
+  EXPECT_EQ(root_id, root_data.id);
+  EXPECT_EQ(ax::mojom::Role::kUnknown, root_data.role);
+  EXPECT_EQ(ax::mojom::Restriction::kDisabled, root_data.GetRestriction());
+  EXPECT_EQ(root_id, manager->GetNode(root_id)->id());
+
+  delegate_ = nullptr;
+  textfield_ = nullptr;
+}
+
 }  // namespace views

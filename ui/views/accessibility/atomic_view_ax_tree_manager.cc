@@ -56,10 +56,9 @@ bool AtomicViewAXTreeManager::IsView() const {
 }
 
 ui::AXNode* AtomicViewAXTreeManager::GetNode(ui::AXNodeID node_id) const {
-  // This here is the key to the whole thing. The AtomicViewAXTreeManager is
-  // fetching and updating the AXNodeData from the View itself whenever this
-  // function gets called.
-  ax_tree_->root()->SetData(delegate_->GetData());
+  // Fetch and update the AXNodeData from the View itself whenever this function
+  // gets called.
+  RefreshRootDataFromDelegate();
   DCHECK_EQ(node_id, ax_tree_->root()->id())
       << "The AtomicViewAXTreeManager should only allow callers to get the "
          "root node as it is the only managed node.";
@@ -75,7 +74,7 @@ ui::AXNode* AtomicViewAXTreeManager::GetRoot() const {
     return nullptr;
   }
 
-  ax_tree_->root()->SetData(delegate_->GetData());
+  RefreshRootDataFromDelegate();
   return AXTreeManager::GetRoot();
 }
 
@@ -99,6 +98,15 @@ ui::AXPlatformNodeDelegate* AtomicViewAXTreeManager::RootDelegate() const {
 
 void AtomicViewAXTreeManager::ClearComputedRootData() {
   return ax_tree_->root()->ClearComputedNodeData();
+}
+
+void AtomicViewAXTreeManager::RefreshRootDataFromDelegate() const {
+  ui::AXNodeData data = delegate_->GetData();
+  // The delegate can return fallback data with kInvalidAXNodeID after the view
+  // has detached from its widget during teardown. Preserve the root id so the
+  // node remains reachable through AXTree::id_map_ when the tree is destroyed.
+  data.id = ax_tree_->root()->id();
+  ax_tree_->root()->SetData(data);
 }
 
 }  // namespace views
