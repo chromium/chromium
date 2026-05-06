@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 #include <array>
+#include <sstream>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -156,8 +157,9 @@ TEST(AffineTransformTest, ValidRangedMatrix) {
     };
 
     auto test = [&](const AffineTransform& m) {
-      SCOPED_TRACE(UNSAFE_TODO(String::Format(
-          "m: %s factor: %lg", m.ToString().Utf8().data(), factor)));
+      std::stringstream ss;
+      ss << "m: " << m << " factor: " << factor;
+      SCOPED_TRACE(ss.str());
       auto p = m.MapPoint(gfx::PointF(factor, factor));
       EXPECT_TRUE(is_valid_point(p)) << p.ToString();
       auto r = m.MapRect(gfx::RectF(factor, factor, factor, factor));
