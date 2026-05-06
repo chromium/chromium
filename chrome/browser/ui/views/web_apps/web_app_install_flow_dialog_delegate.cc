@@ -196,8 +196,17 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
   // Actions based on the new current_step_
   switch (current_step_) {
     case InstallDialogStep::kInstallDialog:
-    case InstallDialogStep::kInstallerOptions:
       break;
+
+    case InstallDialogStep::kInstallerOptions: {
+      ui::DialogModel::Button* ok_button =
+          dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
+      if (ok_button) {
+        dialog_model()->SetButtonLabel(ok_button,
+                                       l10n_util::GetStringUTF16(IDS_INSTALL));
+      }
+      break;
+    }
 
     case InstallDialogStep::kProgress:
       // Trigger the installation.
@@ -216,7 +225,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       dialog_model()->SetVisible(kCancelButtonId, false);
       break;
 
-    case InstallDialogStep::kSuccessful:
+    case InstallDialogStep::kSuccessful: {
       ui::DialogModel::Button* ok_button =
           dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
       if (ok_button) {
@@ -233,6 +242,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       dialog_model()->SetVisible(kPwaInstallDialogInstallButton, true);
       dialog_model()->SetVisible(kCancelButtonId, true);
       break;
+    }
   }
 
   if (flow_view_) {
@@ -464,9 +474,13 @@ void WebAppInstallFlowDialogDelegate::Show(
                 return delegate ? delegate->AdvanceToNextStepOrClose() : true;
               },
               delegate_weak_ptr),
-          // TODO(crbug.com/503767931): Localize this text.
-          ui::DialogModel::Button::Params().SetLabel(u"Next").SetId(
-              WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
+          ui::DialogModel::Button::Params()
+              // TODO: Change hardcoded string "next" to a localized string.
+              .SetLabel(os_type == InstallOsType::kOther
+                            ? l10n_util::GetStringUTF16(IDS_INSTALL)
+                            : u"Next")
+              .SetId(
+                  WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
       .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
                                       delegate_weak_ptr),
                        ui::DialogModel::Button::Params().SetId(kCancelButtonId))
