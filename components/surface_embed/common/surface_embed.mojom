@@ -25,6 +25,9 @@ interface SurfaceEmbed {
   // Called when the browser detects that the renderer process hosting the
   // child this is embedding has crashed.
   ChildProcessGone();
+
+  // Requests focus for the <embed> element.
+  RequestFocus();
 };
 
 // Implemented by SurfaceEmbedHost in the browser process.

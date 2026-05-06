@@ -10577,6 +10577,12 @@ void WebContentsImpl::FocusOwningWebContents(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::FocusOwningWebContents",
                         "render_widget_host", render_widget_host);
+
+  if (surface_embed_connector_) {
+    // Requests focus for the embedding element in the parent page.
+    surface_embed_connector_->GetDelegate()->RequestFocus();
+  }
+
   RenderWidgetHostImpl* main_frame_widget_host =
       GetPrimaryMainFrame()->GetRenderWidgetHost();
   RenderWidgetHostImpl* focused_widget =

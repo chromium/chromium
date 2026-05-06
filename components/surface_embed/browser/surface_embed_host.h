@@ -63,6 +63,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
       const viz::LocalSurfaceId& local_surface_id) override;
   void ChildProcessGone() override;
   void DetachedByHost() override;
+  void RequestFocus() override;
   bool IsAttachedForTesting() const override;
 
   // TODO: Update surface_embed.mojom so that this is an override of a virtual

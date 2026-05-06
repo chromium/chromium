@@ -90,6 +90,7 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
   void ChildProcessGone() override;
+  void RequestFocus() override;
 
   // cc::ContentLayerClient, used only if we're painting a sad plugin.
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;

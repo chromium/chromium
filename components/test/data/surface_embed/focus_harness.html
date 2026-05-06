@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<script>
+  function createEmbed(contentId, embedId) {
+    const embed = document.createElement('embed');
+    embed.setAttribute('data-content-id', contentId);
+    embed.setAttribute('type', 'application/x-chromium-surface-embed');
+    embed.style.position = 'absolute';
+    embed.style.left = '10px';
+    embed.style.top = '50px';
+    embed.style.width = '100px';
+    embed.style.height = '100px';
+    if (embedId !== undefined) {
+      embed.id = embedId;
+    }
+
+    const outer2 = document.getElementById('outer2');
+    document.body.insertBefore(embed, outer2);
+  }
+</script>
+</head>
+<body>
+  <input id="outer1" style="position: absolute; top: 10px; left: 10px;">
+  <input id="outer2" style="position: absolute; top: 170px; left: 10px;">
+</body>
+</html>

@@ -5645,6 +5645,7 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
     void DetachedByHost() override {}
     bool IsAttachedForTesting() const override { return false; }
     void ChildProcessGone() override {}
+    void RequestFocus() override {}
   };
 
   content::test::PrerenderTestHelper prerender_helper_;

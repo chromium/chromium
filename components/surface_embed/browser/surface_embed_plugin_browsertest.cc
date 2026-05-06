@@ -41,6 +41,9 @@ constexpr std::string_view kAttachHarnessUrl =
 constexpr std::string_view kBlueBoxUrl = "/surface_embed/blue_box.html";
 
 constexpr std::string_view kRedBoxUrl = "/surface_embed/red_box.html";
+constexpr std::string_view kFocusHarnessUrl =
+    "/surface_embed/focus_harness.html";
+constexpr std::string_view kInnerPageUrl = "/surface_embed/inner_page.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
 
@@ -627,6 +630,38 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
 
   // We can just verify that it still renders the red box.
   VerifyRedPixelInBounds(embed_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByClick) {
+  NavigateToTestUrl(kFocusHarnessUrl);
+
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kInnerPageUrl);
+  content::ReadyForInputObserver(web_contents()).Wait();
+
+  AttachChildToEmbedWithId(child_contents.get(), "my_embed");
+
+  // Click to focus outer1 in the outer page.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "outer1");
+
+  EXPECT_EQ(true, content::EvalJsAfterLifecycleUpdate(web_contents(), "",
+                                                      "document.hasFocus()"));
+  EXPECT_EQ("outer1", content::EvalJsAfterLifecycleUpdate(
+                          web_contents(), "", "document.activeElement.id"));
+
+  // Click an <input id="inner"> in the inner page. This should change focus to
+  // the embed element in the outer page.
+  content::SimulateMouseClickOrTapElementWithId(child_contents.get(), "inner");
+
+  EXPECT_EQ(true, content::EvalJsAfterLifecycleUpdate(web_contents(), "",
+                                                      "document.hasFocus()"));
+  EXPECT_EQ("my_embed", content::EvalJsAfterLifecycleUpdate(
+                            web_contents(), "", "document.activeElement.id"));
+  // TODO(crbug.com/508638062): add expectations for the following behavior.
+  //   1. the inner page should has page focus.
+  //   2. the inner page's "inner" element should be the active element.
+  //   3. the child WebContents should be the focused WebContents, and should
+  //      receive keyboard events.
 }
 
 }  // namespace surface_embed

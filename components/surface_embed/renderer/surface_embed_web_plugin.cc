@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -355,6 +356,12 @@ void SurfaceEmbedWebPlugin::ChildProcessGone() {
   crashed_layer_->SetIsDrawable(true);
   container_->SetCcLayer(crashed_layer_.get());
   container_->ScheduleAnimation();
+}
+
+void SurfaceEmbedWebPlugin::RequestFocus() {
+  if (container_) {
+    container_->GetElement().Focus();
+  }
 }
 
 scoped_refptr<cc::DisplayItemList>

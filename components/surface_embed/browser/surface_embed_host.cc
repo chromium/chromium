@@ -207,6 +207,12 @@ void SurfaceEmbedHost::DetachedByHost() {
   DetachConnector();
 }
 
+void SurfaceEmbedHost::RequestFocus() {
+  if (surface_embed_) {
+    surface_embed_->RequestFocus();
+  }
+}
+
 bool SurfaceEmbedHost::IsAttachedForTesting() const {
   return child_contents_ != nullptr;
 }
