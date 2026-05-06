@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -481,6 +484,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testOpenArchivedTabFromHubSearch_Incognito() {
         finishLoading();
         String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);

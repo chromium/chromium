@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
@@ -149,6 +152,7 @@ public class MostVisitedTilesLayoutTest {
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTilesLayoutAppearance_DisableMvtCustomization(boolean nightModeEnabled)
             throws Exception {
         doTilesLayoutAppearanceTest(nightModeEnabled, "");
@@ -159,6 +163,7 @@ public class MostVisitedTilesLayoutTest {
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTilesLayoutAppearance_EnableMvtCustomization(boolean nightModeEnabled)
             throws Exception {
         doTilesLayoutAppearanceTest(nightModeEnabled, "_with_add_new_button");
@@ -177,6 +182,7 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testModernTilesLayoutAppearance_Full_DisableMvtCustomization()
             throws IOException, InterruptedException {
         doModernTilesLayoutAppearanceTest_Full("");
@@ -186,6 +192,7 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testModernTilesLayoutAppearance_Full_EnableMvtCustomization()
             throws IOException, InterruptedException {
         doModernTilesLayoutAppearanceTest_Full("_with_add_new_button");
@@ -222,6 +229,7 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

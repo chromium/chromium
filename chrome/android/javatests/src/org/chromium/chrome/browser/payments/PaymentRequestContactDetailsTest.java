@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -35,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 /** A payment integration test for a merchant that requests contact details. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class PaymentRequestContactDetailsTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =

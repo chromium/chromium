@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.junit.Assert.assertEquals;
@@ -230,6 +233,7 @@ public class BrowsingDataBridgeTest {
     /** Test deleting all browsing data. (Except bookmarks, they are deleted in Java code) */
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testClearingAll() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

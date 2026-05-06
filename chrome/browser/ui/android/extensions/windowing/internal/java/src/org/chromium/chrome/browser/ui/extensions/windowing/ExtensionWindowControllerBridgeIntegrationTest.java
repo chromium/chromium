@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.extensions.windowing;
 
+import org.chromium.base.test.util.DisableIf;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -149,6 +151,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void startChromeTabbedActivity_openNewWindow_notifyExtensionInternalsOfWindowCreation() {
         // Arrange:
         // (1) Launch ChromeTabbedActivity (the first window).
@@ -186,6 +189,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void
             openIncognitoWindow_destroyIncognitoTabModel_notifyExtensionInternalsOfWindowDestruction() {
         // Arrange:
@@ -363,6 +367,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void startChromeTabbedActivity_triggerTaskFocusChange_notifyExtensionWindowController() {
         // Arrange:
         // (1) Launch ChromeTabbedActivity (the first window).

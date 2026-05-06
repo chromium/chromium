@@ -122,6 +122,7 @@ android_library("javatests") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//ui/android:ui_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",

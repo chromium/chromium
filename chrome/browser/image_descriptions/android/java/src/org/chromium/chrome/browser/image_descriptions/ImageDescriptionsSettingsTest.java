@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -265,6 +268,7 @@ public class ImageDescriptionsSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testUserTogglesSwitch_Off() {
         // When we toggle switch to Off, it should disable radio buttons and descriptions
         ThreadUtils.runOnUiThreadBlocking(

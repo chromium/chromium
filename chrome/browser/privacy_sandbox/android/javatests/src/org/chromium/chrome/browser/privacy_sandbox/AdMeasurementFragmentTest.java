@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -170,6 +173,7 @@ public final class AdMeasurementFragmentTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTurnAdMeasurementOn() {
         setAdMeasurementPrefEnabled(false);
         startAdMeasuremenSettings();
@@ -183,6 +187,7 @@ public final class AdMeasurementFragmentTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testTurnAdMeasurementOff() {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();
