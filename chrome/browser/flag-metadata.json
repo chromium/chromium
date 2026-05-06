@@ -2320,7 +2320,7 @@
   {
     "name": "devtools-live-edit",
     "owners": [ "bmeurer@chromium.org", "szuend@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "devtools-project-settings",
