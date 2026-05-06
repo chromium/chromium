@@ -270,8 +270,16 @@ webview {
   display: none;
 }
 
+#guestPanel.show-header {
+  display: flex;
+  flex-direction: column;
+}
+
 #guestPanel.show-header #webviewHeader {
   display: block;
+  position: relative;
+  width: 100%;
+  order: -1;
 }
 
 #webviewContainer {
@@ -281,11 +289,10 @@ webview {
 }
 
 #guestPanel.show-header #webviewContainer {
-  position: absolute;
+  position: relative;
   width: 100%;
-  /* If showing a login page, the window height will always be 800px */
-  height: 752px;
-  bottom: 0;
+  height: auto;
+  flex: 1;
 }
 
 .tonal-button {
