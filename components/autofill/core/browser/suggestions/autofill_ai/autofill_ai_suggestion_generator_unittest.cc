@@ -626,6 +626,50 @@ TEST_F(
               SuggestionsAre(HasMainText(GetPassportName(passport_local))));
 }
 
+// Test that if a ServerWallet, Local, and AccessibilityAnnotator entity have
+// the same data, they are prioritized correctly:
+// ServerWallet > Local > AccessibilityAnnotator.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_DedupeSuggestions_FavorServerOverLocalAndAccessibilityAnnotator) {
+  EntityInstance passport_server =
+      MaskEntityInstance(GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jon Doe",
+           .number = u"12345",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  EntityInstance passport_local = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"12345",
+       .record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance passport_aa = GetPassportEntityInstanceWithRandomGuid(
+      {.name = u"Jon Doe",
+       .number = u"12345",
+       .record_type = EntityInstance::RecordType::kAccessibilityAnnotator});
+
+  SetEntities({passport_server, passport_local, passport_aa});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
+
+  // Set frecency: AccessibilityAnnotator > Local > ServerWallet
+  base::Time now = base::Time::Now();
+  edm().RecordEntityUsed(passport_aa.guid(), now);
+  edm().RecordEntityUsed(passport_local.guid(), now - base::Minutes(1));
+  edm().RecordEntityUsed(passport_server.guid(), now - base::Minutes(2));
+  webdata_helper().WaitUntilIdle();
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+
+  // There should be only one suggestion (excluding separator and footer),
+  // and it should be the ServerWallet one because it has the highest priority.
+  ASSERT_EQ(suggestions.size(), 3u);
+  const Suggestion::AutofillAiPayload* payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+  ASSERT_TRUE(payload);
+  EXPECT_EQ(payload->guid, passport_server.guid());
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasMainText(GetPassportName(passport_server))));
+}
+
 // Test that if a server entity is a subset of a local one, we do not favor it.
 // Instead we delete it.
 TEST_F(
