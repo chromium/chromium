@@ -924,37 +924,36 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   [self initShareMenu];
 }
 
-- (BOOL)tryToTerminateApplication:(NSApplication*)app {
+- (void)tryToTerminateApplication {
+  // If termination is already underway (and this is a redundant attempt to
+  // quit) then there's nothing to be done.
+  if (browser_shutdown::IsTryingToQuit()) {
+    return;
+  }
+
   // Reset this now that we've received the call to terminate.
   BOOL isPoweringOff = _isPoweringOff;
   _isPoweringOff = NO;
 
   // Stop the browser from re-opening when we close Chrome while
   // in the first run experience.
-  if (auto* profile = [self lastProfileIfLoaded]) {
-    if (auto* fre_service =
+  if (auto* profile = self.lastProfileIfLoaded) {
+    if (auto* freService =
             FirstRunServiceFactory::GetForBrowserContextIfExists(profile)) {
-      fre_service->FinishFirstRunWithoutResumeTask();
+      freService->FinishFirstRunWithoutResumeTask();
     }
   }
 
   // Check for in-process downloads, and prompt the user if they really want
-  // to quit (and thus cancel downloads). Only check if we're not already
-  // shutting down, else the user might be prompted multiple times if the
-  // download isn't stopped before terminate is called again.
-  if (!browser_shutdown::IsTryingToQuit() &&
-      ![self shouldQuitWithInProgressDownloads])
-    return NO;
-
-  // TODO(viettrungluu): Remove Apple Event handlers here? (It's safe to leave
-  // them in, but I'm not sure about UX; we'd also want to disable other things
-  // though.) http://crbug.com/40381772
+  // to quit (and thus cancel downloads).
+  if (![self shouldQuitWithInProgressDownloads]) {
+    return;
+  }
 
   // Check for active apps. If quitting is prevented, only close browsers and
   // sessions.
-  if (!browser_shutdown::IsTryingToQuit() && !isPoweringOff &&
-      _quitWithAppsController.get() && !_quitWithAppsController->ShouldQuit()) {
-
+  if (!isPoweringOff && _quitWithAppsController.get() &&
+      !_quitWithAppsController->ShouldQuit()) {
     chrome::OnClosingAllBrowsers(true);
     // This will close all browser sessions.
     chrome::CloseAllBrowsers();
@@ -965,31 +964,20 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     DownloadCoreService::CancelAllDownloads(
         DownloadCoreService::CancelDownloadsTrigger::kShutdown);
 
-    return NO;
+    return;
   }
 
-  const BOOL should_terminate =
-      !KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-          KeepAliveOrigin::BROWSER);
-
-  // Initiate a shutdown (via chrome::CloseAllBrowsersAndQuit()) if we aren't
-  // already shutting down.
-  if (!browser_shutdown::IsTryingToQuit()) {
-    chrome::OnClosingAllBrowsers(true);
-    chrome::CloseAllBrowsersAndQuit();
-  }
-
-  return should_terminate;
+  // Initiate the shutdown.
+  chrome::OnClosingAllBrowsers(true);
+  chrome::CloseAllBrowsersAndQuit();
 }
 
-- (void)stopTryingToTerminateApplication:(NSApplication*)app {
+- (void)stopTryingToTerminateApplication {
   if (browser_shutdown::IsTryingToQuit()) {
     // Reset the "trying to quit" state, so that closing all browser windows
     // will no longer lead to termination.
     browser_shutdown::SetTryingToQuit(false);
-    [[ConfirmQuitPanelController sharedController] cancel];
-    // TODO(viettrungluu): Were we to remove Apple Event handlers above, we
-    // would have to reinstall them here. http://crbug.com/40381772
+    [ConfirmQuitPanelController.sharedController cancel];
   }
 }
 
@@ -1023,14 +1011,18 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       runConfirmQuitLoopWithEvent:event];
 }
 
-// Called when the app is shutting down. Clean-up as appropriate.
+// Handles the NSApplicationWillTerminateNotification notification. (Note to
+// reader: this notification was posted from application_lifetime_mac.mm in
+// HandleAppExitingForPlatform(), not from within AppKit!) At this point,
+// termination will happen, so tear everything down.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
   // There better be no browser windows left at this point.
   CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::BROWSER));
 
-  // Reset the keep-alive to keep the browser process alive. Once all the
-  // browsers get dealloc'd, it will stop the RunLoop and fall back into main().
+  // Reset the keep-alive that has been keeping the browser process alive. Once
+  // all the browsers get dealloc'd, it will stop the RunLoop and fall back into
+  // main().
   _keepAlive.reset();
 
   // Stop observing NSRunningApplication.
@@ -1045,7 +1037,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   _isShuttingDown = true;
 
-  // `_historyMenuBridge` has a dependency on `_lastProfile`, so that’s why it’s
+  // `_historyMenuBridge` has a dependency on `_lastProfile`, so that's why it's
   // deleted first.
   _historyMenuBridge.reset();
 
