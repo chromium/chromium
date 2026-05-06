@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
+#include "crypto/keypair.h"
 
 class HybridEncryptionKey {
  public:
@@ -45,7 +45,7 @@ class HybridEncryptionKey {
 
   std::vector<uint8_t> GetPublicKey() const;
 
-  bssl::ScopedEVP_HPKE_KEY key_;
+  crypto::keypair::PrivateKey private_key_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_HYBRID_ENCRYPTION_KEY_H_

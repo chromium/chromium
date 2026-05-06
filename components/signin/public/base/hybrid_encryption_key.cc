@@ -4,53 +4,29 @@
 
 #include "components/signin/public/base/hybrid_encryption_key.h"
 
+#include "base/check_is_test.h"
+#include "base/containers/to_vector.h"
 #include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/tink_key.pb.h"
+#include "crypto/hpke.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace {
-constexpr size_t kEncapsulatedKeySize = 32;
 
-const EVP_HPKE_KEM* GetKem() {
-  return EVP_hpke_x25519_hkdf_sha256();
-}
+constexpr crypto::hpke::HpkeParams kHpkeParams = {
+    .kem = crypto::hpke::KemType::kX25519HkdfSha256,
+    .kdf = crypto::hpke::KdfType::kHkdfSha256,
+    .aead = crypto::hpke::AeadType::kAes128Gcm};
 
-tink::HpkeKem GetKemType(const EVP_HPKE_KEM* kem) {
-  if (EVP_HPKE_KEM_id(kem) == EVP_HPKE_DHKEM_X25519_HKDF_SHA256) {
-    return tink::HpkeKem::DHKEM_X25519_HKDF_SHA256;
-  } else {
-    return tink::HpkeKem::KEM_UNKNOWN;
-  }
-}
+// These must match the params given above.
+constexpr auto kTinkKem = tink::HpkeKem::DHKEM_X25519_HKDF_SHA256;
+constexpr auto kTinkHkdf = tink::HpkeKdf::HKDF_SHA256;
+constexpr auto kTinkAead = tink::HpkeAead::AES_128_GCM;
 
-const EVP_HPKE_KDF* GetKdf() {
-  return EVP_hpke_hkdf_sha256();
-}
-
-tink::HpkeKdf GetKdfType(const EVP_HPKE_KDF* kdf) {
-  if (EVP_HPKE_KDF_id(kdf) == EVP_HPKE_HKDF_SHA256) {
-    return tink::HpkeKdf::HKDF_SHA256;
-  } else {
-    return tink::HpkeKdf::KDF_UNKNOWN;
-  }
-}
-
-const EVP_HPKE_AEAD* GetAead() {
-  return EVP_hpke_aes_128_gcm();
-}
-
-tink::HpkeAead GetAeadType(const EVP_HPKE_AEAD* aead) {
-  if (EVP_HPKE_AEAD_id(aead) == EVP_HPKE_AES_128_GCM) {
-    return tink::HpkeAead::AES_128_GCM;
-  } else {
-    return tink::HpkeAead::AEAD_UNKNOWN;
-  }
-}
 }  // namespace
 
-HybridEncryptionKey::HybridEncryptionKey() {
-  // `EVP_HPKE_KEY_generate` should never fail for the provided KEM (x25519).
-  CHECK(EVP_HPKE_KEY_generate(key_.get(), GetKem()));
-}
+HybridEncryptionKey::HybridEncryptionKey()
+    : private_key_(crypto::keypair::PrivateKey::GenerateX25519()) {}
 
 HybridEncryptionKey::~HybridEncryptionKey() = default;
 
@@ -61,39 +37,17 @@ HybridEncryptionKey& HybridEncryptionKey::operator=(
 
 std::optional<std::vector<uint8_t>> HybridEncryptionKey::Decrypt(
     base::span<const uint8_t> encrypted_data) const {
-  if (encrypted_data.size() < kEncapsulatedKeySize) {
-    return std::nullopt;
-  }
-  auto encapsulated_key = encrypted_data.first<kEncapsulatedKeySize>();
-
-  bssl::ScopedEVP_HPKE_CTX recipient_context;
-  if (!EVP_HPKE_CTX_setup_recipient(
-          recipient_context.get(), key_.get(), GetKdf(), GetAead(),
-          encapsulated_key.data(), encapsulated_key.size(), nullptr, 0)) {
-    return std::nullopt;
-  }
-
-  base::span<const uint8_t> ciphertext =
-      encrypted_data.subspan(kEncapsulatedKeySize);
-  std::vector<uint8_t> plaintext(ciphertext.size());
-  size_t plaintext_len;
-
-  if (!EVP_HPKE_CTX_open(recipient_context.get(), plaintext.data(),
-                         &plaintext_len, plaintext.size(), ciphertext.data(),
-                         ciphertext.size(), nullptr, 0)) {
-    return std::nullopt;
-  }
-  plaintext.resize(plaintext_len);
-  return plaintext;
+  return crypto::hpke::Open(kHpkeParams, private_key_, encrypted_data,
+                            /*info=*/{}, /*ad=*/{});
 }
 
 std::string HybridEncryptionKey::ExportPublicKey() const {
   tink::HpkePublicKey hpke_public_key;
   hpke_public_key.set_version(0);
   tink::HpkeParams* params = hpke_public_key.mutable_params();
-  params->set_kem(GetKemType(GetKem()));
-  params->set_kdf(GetKdfType(GetKdf()));
-  params->set_aead(GetAeadType(GetAead()));
+  params->set_kem(kTinkKem);
+  params->set_kdf(kTinkHkdf);
+  params->set_aead(kTinkAead);
   std::vector<uint8_t> public_key = GetPublicKey();
   hpke_public_key.set_public_key(
       std::string(public_key.begin(), public_key.end()));
@@ -115,49 +69,21 @@ std::string HybridEncryptionKey::ExportPublicKey() const {
 
 std::vector<uint8_t> HybridEncryptionKey::EncryptForTesting(
     base::span<const uint8_t> plaintext) const {
-  std::vector<uint8_t> public_key = GetPublicKey();
-  // This vector will hold the encapsulated key followed by the ciphertext.
-  std::vector<uint8_t> encrypted_data(kEncapsulatedKeySize);
-  size_t encapsulated_key_len;
-
-  bssl::ScopedEVP_HPKE_CTX sender_context;
-  if (!EVP_HPKE_CTX_setup_sender(
-          sender_context.get(), encrypted_data.data(), &encapsulated_key_len,
-          encrypted_data.size(), GetKem(), GetKdf(), GetAead(),
-          public_key.data(), public_key.size(), nullptr, 0)) {
-    return {};
-  }
-
-  encrypted_data.resize(kEncapsulatedKeySize + plaintext.size() +
-                        EVP_HPKE_CTX_max_overhead(sender_context.get()));
-
-  base::span<uint8_t> ciphertext =
-      base::span(encrypted_data).subspan<kEncapsulatedKeySize>();
-  size_t ciphertext_len;
-
-  if (!EVP_HPKE_CTX_seal(sender_context.get(), ciphertext.data(),
-                         &ciphertext_len, ciphertext.size(), plaintext.data(),
-                         plaintext.size(), nullptr, 0)) {
-    return {};
-  }
-  // Reset `ciphertext` before changing the underlying container size as a
-  // safety precaution.
-  ciphertext = base::span<uint8_t>();
-  encrypted_data.resize(kEncapsulatedKeySize + ciphertext_len);
-  return encrypted_data;
+  crypto::keypair::PublicKey pub =
+      crypto::keypair::PublicKey::FromPrivateKey(private_key_);
+  auto result =
+      crypto::hpke::Seal(kHpkeParams, pub, plaintext, /*info=*/{}, /*ad=*/{});
+  return result.value_or({});
 }
 
-HybridEncryptionKey::HybridEncryptionKey(
-    base::span<const uint8_t> private_key) {
-  CHECK(EVP_HPKE_KEY_init(key_.get(), GetKem(), private_key.data(),
-                          private_key.size()));
+HybridEncryptionKey::HybridEncryptionKey(base::span<const uint8_t> private_key)
+    : private_key_(crypto::keypair::PrivateKey::FromX25519PrivateKey(
+          base::span<const uint8_t, X25519_PRIVATE_KEY_LEN>(private_key))) {
+  CHECK_IS_TEST();
 }
 
 std::vector<uint8_t> HybridEncryptionKey::GetPublicKey() const {
-  std::vector<uint8_t> public_key(EVP_HPKE_MAX_PUBLIC_KEY_LENGTH);
-  size_t public_key_len;
-  EVP_HPKE_KEY_public_key(key_.get(), public_key.data(), &public_key_len,
-                          public_key.size());
-  public_key.resize(public_key_len);
-  return public_key;
+  auto pub = crypto::keypair::PublicKey::FromPrivateKey(private_key_)
+                 .ToX25519PublicKey();
+  return base::ToVector(pub);
 }
