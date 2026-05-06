@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -277,18 +278,20 @@ TEST_P(PhishingClassifierDelegateTest, Navigation) {
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
-  // Now load a new toplevel page, which should trigger another classification.
+  // Now load a new toplevel page, which is completely different to the browser
+  // side request URL.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
   GURL new_url("http://host2.com");
   LoadHTMLWithUrlOverride("dummy2", new_url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
 
-  OnStartPhishingDetection(new_url);
-
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*classifier_, BeginClassification(_))
         .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    delegate_->PageCaptured(false);
+    // Satisfy condition to start classification from both browser and renderer.
+    OnStartPhishingDetection(new_url);
     delegate_->PageCaptured(false);
     run_loop.Run();
     Mock::VerifyAndClearExpectations(classifier_);
@@ -763,6 +766,33 @@ TEST_P(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   verdict.set_client_score(0.8f);
   verdict.set_is_phishing(false);  // Send IPC even if site is not phishing.
   RunAndVerifyClassificationDone(verdict);
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_P(PhishingClassifierDelegateTest,
+       NewPageLoadWhileBrowserRequestWaitsForLoad) {
+  base::HistogramTester histograms;
+  SetScorer(/*model_version=*/1);
+  ASSERT_TRUE(classifier_->is_ready());
+  GURL url("http://host.test/index.html");
+
+  // 1. Start phishing detection (browser request).
+  OnStartPhishingDetection(url);
+
+  // 2. Navigate away before PageCaptured is called (renderer_layout_finished_
+  // is false). Simulate navigation to a new page.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+  GURL new_url("http://host2.test");
+  LoadHTMLWithUrlOverride("<html><body>new page</body></html>",
+                          new_url.spec().c_str());
+
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.Classifier.Event",
+      static_cast<int>(SBPhishingClassifierEvent::
+                           kNewPageLoadWhileBrowserRequestWaitsForLoad),
+      1);
 
   // The delegate will cancel pending classification on destruction.
   EXPECT_CALL(*classifier_, CancelPendingClassification());

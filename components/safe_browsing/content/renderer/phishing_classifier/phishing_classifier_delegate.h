@@ -59,7 +59,10 @@ enum class SBPhishingClassifierEvent {
   // There is an ongoing classification at the time of classification start
   // request.
   kOngoingClassificationAtAnotherClassificationRequest = 12,
-  kMaxValue = kOngoingClassificationAtAnotherClassificationRequest,
+  // A new page has loaded while the browser request has been waiting for page
+  // to finish loading in order to start classification.
+  kNewPageLoadWhileBrowserRequestWaitsForLoad = 13,
+  kMaxValue = kNewPageLoadWhileBrowserRequestWaitsForLoad,
 };
 
 class PhishingClassifierDelegate : public content::RenderFrameObserver,

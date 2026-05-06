@@ -516,6 +516,9 @@ chromium-metrics-reviews@google.com.
   <int value="12"
       label="Classification is ongoing when another classification request
              comes in"/>
+  <int value="13"
+      label="A new page load comes in while old detection request was waiting
+             on an old page load"/>
 </enum>
 
 <enum name="TailoredWarningType">
