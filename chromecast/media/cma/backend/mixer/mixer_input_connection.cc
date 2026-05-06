@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -461,8 +462,17 @@ void MixerInputConnection::CreateBufferPool(int frame_count) {
   DCHECK_GT(frame_count, 0);
   buffer_pool_frames_ = frame_count;
 
-  int converted_buffer_size =
-      kAudioMessageHeaderSize + num_channels_ * sizeof(float) * frame_count;
+  base::CheckedNumeric<int> size(frame_count);
+  size *= sizeof(float);
+  size *= num_channels_;
+  size += kAudioMessageHeaderSize;
+
+  if (!size.IsValid()) {
+    LOG(ERROR) << "Buffer size is invalid.";
+    OnConnectionError();
+    return;
+  }
+  int converted_buffer_size = size.ValueOrDie();
   buffer_pool_ = base::MakeRefCounted<IOBufferPool>(
       converted_buffer_size, std::numeric_limits<size_t>::max(),
       true /* threadsafe */);
