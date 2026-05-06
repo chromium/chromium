@@ -638,7 +638,8 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView);
 
         if (mScreenStateReceiver != null) {
-            mScreenStateReceiver.maybeResetCompositorSurfaceManager();
+            ThreadUtils.postOnUiThread(
+                    () -> mScreenStateReceiver.maybeResetCompositorSurfaceManager());
         }
         if (InputUtils.isTransferInputToVizSupported() && mSurfaceId != null) {
             SurfaceInputTransferHandlerMap.remove(mSurfaceId);
@@ -884,6 +885,7 @@ public class CompositorView extends FrameLayout
     }
 
     private void createCompositorSurfaceManager() {
+        if (mNativeCompositorView == 0) return;
         mCompositorSurfaceManager = new CompositorSurfaceManagerImpl(this, this);
         mCompositorSurfaceManager.requestSurface(getSurfacePixelFormat());
         CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
