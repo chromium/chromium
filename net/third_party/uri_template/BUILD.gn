@@ -38,5 +38,8 @@ fuzzer_test("net_uri_template_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
+  if (is_android) {
+    deps += [ "//third_party/icu:icu_assets" ]
+  }
   dict = "//net/data/fuzzer_dictionaries/net_uri_template_fuzzer.dict"
 }
