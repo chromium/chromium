@@ -125,7 +125,9 @@ class SCTAuditingReporterTest : public testing::Test {
     configuration->traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     return SCTAuditingReporter(
-        network_context_.get(), net::HashValue(), std::move(report),
+        network_context_.get(),
+        net::HashValue(net::HASH_VALUE_SHA256, net::SHA256HashValue()),
+        std::move(report),
         /*is_hashdance=*/true, std::move(metadata), std::move(configuration),
         &url_loader_factory_, base::DoNothing(), base::DoNothing(),
         /*backoff_entry=*/nullptr);

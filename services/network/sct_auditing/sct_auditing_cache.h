@@ -55,7 +55,8 @@ class NetworkContext;
 class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
  public:
   struct COMPONENT_EXPORT(NETWORK_SERVICE) ReportEntry {
-    ReportEntry();
+    ReportEntry(net::HashValue key,
+                std::unique_ptr<sct_auditing::SCTClientReport> report);
     ~ReportEntry();
     ReportEntry(const ReportEntry&) = delete;
     ReportEntry operator==(const ReportEntry&) = delete;

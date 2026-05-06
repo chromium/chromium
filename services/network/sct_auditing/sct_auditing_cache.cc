@@ -61,7 +61,10 @@ void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
 
 }  // namespace
 
-SCTAuditingCache::ReportEntry::ReportEntry() = default;
+SCTAuditingCache::ReportEntry::ReportEntry(
+    net::HashValue key,
+    std::unique_ptr<sct_auditing::SCTClientReport> report)
+    : key(std::move(key)), report(std::move(report)) {}
 SCTAuditingCache::ReportEntry::ReportEntry(ReportEntry&& other) = default;
 SCTAuditingCache::ReportEntry::~ReportEntry() = default;
 
@@ -171,10 +174,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   if (dedupe_cache_.size() > dedupe_cache_size_hwm_)
     dedupe_cache_size_hwm_ = dedupe_cache_.size();
 
-  ReportEntry report_entry;
-  report_entry.key = std::move(cache_key);
-  report_entry.report = std::move(report);
-  return report_entry;
+  return ReportEntry(std::move(cache_key), std::move(report));
 }
 
 bool SCTAuditingCache::IsPopularSCT(base::span<const uint8_t> sct_leaf_hash) {
