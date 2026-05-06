@@ -136,8 +136,12 @@ const DAMPING = 0.62;
 // Value to simply increase the raw volume level in the animation (output).
 const VOLUME_MULTIPLIER = 2.2;
 
-// Minimum volume level (0-1):
+// Minimum volume level scaling (0-1):
 const MINIMUM_VOLUME_LEVEL = 0.1;
+
+// Represents in px the height of each volume bar that starts
+// off at. They start as balls, not bars.
+const DEFAULT_STARTING_HEIGHT = 8;
 
 // ======Smaller parameters for fine tuning of shadows/color======:
 // Color changes from right to mid to left.
@@ -226,6 +230,32 @@ export class RecordingWaveElement extends CrLitElement {
       if (this.isListening) {
         AudioProcessor.startMonitoringLevels();
         this.barsData_ = [];
+        // Reset container in case of dirty initial state.
+        this.$.barsContainer.replaceChildren();
+
+        for (let i = 0; i < MAX_BARS; i++) {
+          this.barsData_.push({
+            level: MINIMUM_VOLUME_LEVEL,
+            // Is uninitialized.
+            isUnspawned: true,
+            // Is not in process of spawning (having just
+            // been 'turned on').
+            isSpawning: false,
+            initialScale: 1,
+            currentScale: 0,
+            velocity: 0,
+            jitterFactor: 0,
+            targetHeightPx: DEFAULT_STARTING_HEIGHT,
+          });
+
+          const pill = document.createElement('div');
+          pill.style.width = `${BAR_WIDTH}px`;
+          pill.className = 'bar-pill is-unspawned';
+
+          // Append to the end of the container to match array order
+          this.$.barsContainer.append(pill);
+        }
+
         this.lastDrawTimestamp_ = performance.now();
         this.lastFrameTime_ = performance.now();
         if (this.animationFrameId_ === null) {
@@ -287,7 +317,7 @@ export class RecordingWaveElement extends CrLitElement {
         currentScale: 0,
         velocity: 0,
         jitterFactor: jitterFactor,
-        targetHeightPx: 8,
+        targetHeightPx: DEFAULT_STARTING_HEIGHT,
       });
 
       // Create the 'uninitialized'/'inactive'/unspawned pill (looks like a
