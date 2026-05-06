@@ -77,6 +77,7 @@ source_set("java_script_feature") {
     "java_script_feature.mm",
     "java_script_feature_manager.mm",
     "script_message.mm",
+    "script_message_value_impl.mm",
   ]
 }
 
@@ -216,6 +217,7 @@ source_set("unittests") {
     "java_script_feature_unittest.mm",
     "page_script_util_unittest.mm",
     "scoped_wk_script_message_handler_unittest.mm",
+    "script_message_value_impl_unittest.mm",
     "web_frame_impl_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
     "web_frames_manager_java_script_feature_unittest.mm",
