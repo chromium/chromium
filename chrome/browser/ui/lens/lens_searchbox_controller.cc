@@ -74,8 +74,7 @@ void LensSearchboxController::ResetSidePanelSearchboxHandler() {
 }
 
 void LensSearchboxController::SetSearchboxInputText(const std::string& text) {
-  if (side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
+  if (side_panel_searchbox_handler_) {
     init_data_->text_query = text;
     side_panel_searchbox_handler_->SetInputText(text);
   } else {
@@ -96,15 +95,13 @@ void LensSearchboxController::SetSearchboxThumbnail(
   // Store the thumbnail.
   init_data_->thumbnail_uri = thumbnail_uri;
 
-  if (side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
+  if (side_panel_searchbox_handler_) {
     side_panel_searchbox_handler_->SetThumbnail(
         init_data_->show_side_panel_thumbnail ? thumbnail_uri : "",
         /*is_deletable=*/!IsContextualSearchbox());
   }
 
-  if (overlay_searchbox_handler_ &&
-      overlay_searchbox_handler_->IsRemoteBound()) {
+  if (overlay_searchbox_handler_) {
     overlay_searchbox_handler_->SetThumbnail(
         thumbnail_uri, /*is_deletable=*/!IsContextualSearchbox());
   }
@@ -117,8 +114,7 @@ void LensSearchboxController::SetShowSidePanelSearchboxThumbnail(bool shown) {
 
   init_data_->show_side_panel_thumbnail = shown;
 
-  if (side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
+  if (side_panel_searchbox_handler_) {
     side_panel_searchbox_handler_->SetThumbnail(
         shown ? init_data_->thumbnail_uri : "",
         /*is_deletable=*/!IsContextualSearchbox());
@@ -258,8 +254,7 @@ void LensSearchboxController::OnFocusChanged(bool focused) {
 
 void LensSearchboxController::OnPageBound() {
   // Send any pending inputs for the searchbox.
-  if (pending_text_query_.has_value() && side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
+  if (pending_text_query_.has_value() && side_panel_searchbox_handler_) {
     side_panel_searchbox_handler_->SetInputText(*pending_text_query_);
     pending_text_query_.reset();
   }

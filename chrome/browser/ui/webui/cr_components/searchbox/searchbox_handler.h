@@ -76,9 +76,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   virtual std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon) const;
 
-  // Returns true if the page remote is bound and ready to receive calls.
-  bool IsRemoteBound() const;
-
   // Adds file context to the searchbox from the browser.
   void AddFileContextFromBrowser(
       base::UnguessableToken token,
@@ -165,10 +162,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void GetPageClassification(GetPageClassificationCallback callback) override;
 
-  // Stores `callback` to be run when the page remote is bound and ready to
-  // receive calls. Runs `callback` immediately if the remote is already bound.
-  void set_page_is_bound_callback_for_testing(base::OnceClosure callback);
-
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
@@ -206,7 +199,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
-  base::OnceClosure page_is_bound_callback_for_testing_;
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       const std::u16string& input,

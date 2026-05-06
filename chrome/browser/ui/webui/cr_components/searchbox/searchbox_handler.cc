@@ -956,9 +956,6 @@ SearchboxHandler::SearchboxHandler(
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
   controller_ = owned_controller_.get();
-  if (page_is_bound_callback_for_testing_) {
-    std::move(page_is_bound_callback_for_testing_).Run();
-  }
 }
 
 SearchboxHandler::~SearchboxHandler() {
@@ -966,28 +963,17 @@ SearchboxHandler::~SearchboxHandler() {
   controller_ = nullptr;
 }
 
-// TODO(crbug.com/500739761): Remove this check since searchbox.mojom uses
-// factory pattern for instantiation making the remote and receiver bound
-// at the same time.
-bool SearchboxHandler::IsRemoteBound() const {
-  return page_.is_bound();
-}
-
 void SearchboxHandler::AddFileContextFromBrowser(
     base::UnguessableToken token,
     searchbox::mojom::SelectedFileInfoPtr file_info) {
-  if (page_ && IsRemoteBound()) {
-    page_->AddFileContext(token, std::move(file_info));
-  }
+  page_->AddFileContext(token, std::move(file_info));
 }
 
 void SearchboxHandler::OnContextualInputStatusChanged(
     base::UnguessableToken token,
     contextual_search::ContextUploadStatus status,
     std::optional<contextual_search::ContextUploadErrorType> error_type) {
-  if (page_ && IsRemoteBound()) {
-    page_->OnContextualInputStatusChanged(token, status, error_type);
-  }
+  page_->OnContextualInputStatusChanged(token, status, error_type);
 }
 
 void SearchboxHandler::OnFocusChanged(bool focused) {
@@ -1439,15 +1425,6 @@ OmniboxController* SearchboxHandler::omnibox_controller() const {
 
 AutocompleteController* SearchboxHandler::autocomplete_controller() const {
   return omnibox_controller()->autocomplete_controller();
-}
-
-void SearchboxHandler::set_page_is_bound_callback_for_testing(
-    base::OnceClosure callback) {
-  if (page_.is_bound() && callback) {
-    std::move(callback).Run();
-    return;
-  }
-  page_is_bound_callback_for_testing_ = std::move(callback);
 }
 
 OmniboxEditModel* SearchboxHandler::edit_model() const {
