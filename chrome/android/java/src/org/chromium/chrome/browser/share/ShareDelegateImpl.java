@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -369,6 +371,10 @@ public class ShareDelegateImpl implements ShareDelegate {
     @VisibleForTesting
     static String getUrlToShare(GURL visibleUrl, @Nullable GURL canonicalUrl) {
         if (PdfUtils.isDownloadedPdf(visibleUrl.getSpec())) return "";
+        if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)) {
+            return visibleUrl.getSpec();
+        }
         if (canonicalUrl == null || canonicalUrl.isEmpty()) {
             return visibleUrl.getSpec();
         }

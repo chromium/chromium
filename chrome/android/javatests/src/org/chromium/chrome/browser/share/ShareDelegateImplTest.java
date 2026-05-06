@@ -15,6 +15,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -71,6 +74,7 @@ public class ShareDelegateImplTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
     public void testGetUrlToShare() {
         Assert.assertEquals("", ShareDelegateImpl.getUrlToShare(GURL.emptyGURL(), null));
 
@@ -100,6 +104,30 @@ public class ShareDelegateImplTest {
         // HTTPS Display URL, Content URL -> HTTPS Display URL
         Assert.assertEquals(
                 httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, contentUrl));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
+    public void testGetUrlToShare_AndroidShareFullLinkEnabled() {
+        final GURL httpsUrl = new GURL("https://blah.com");
+        final GURL otherHttpsUrl = new GURL("https://eek.com");
+
+        // HTTPS Display URL, HTTPS Canonical URL -> HTTPS Display URL
+        Assert.assertEquals(
+                httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, otherHttpsUrl));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
+    public void testGetUrlToShare_AndroidShareFullLinkDisabled() {
+        final GURL httpsUrl = new GURL("https://blah.com");
+        final GURL otherHttpsUrl = new GURL("https://eek.com");
+
+        // HTTPS Display URL, HTTPS Canonical URL -> HTTPS Canonical URL
+        Assert.assertEquals(
+                otherHttpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, otherHttpsUrl));
     }
 
     private static class MockUrlTab extends MockTab {
