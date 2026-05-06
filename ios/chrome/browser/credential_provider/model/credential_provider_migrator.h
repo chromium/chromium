@@ -38,6 +38,7 @@ typedef enum : NSInteger {
 - (instancetype)
     initWithUserDefaults:(NSUserDefaults*)userDefaults
                      key:(NSString*)key
+                    gaia:(NSString*)gaiaID
            passwordStore:
                (scoped_refptr<password_manager::PasswordStoreInterface>)
                    passwordStore

@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
@@ -24,9 +24,10 @@ namespace {
 
 constexpr int64_t kJan1st2024 = 1704085200;
 
+NSString* const kMatchingGaia = @"123456";
+NSString* const kMismatchingGaia = @"654321";
+
 using ::base::SysNSStringToUTF8;
-using ::base::test::ios::kWaitForFileOperationTimeout;
-using ::base::test::ios::WaitUntilConditionOrTimeout;
 using ::password_manager::MockPasswordStoreInterface;
 using ::password_manager::PasswordForm;
 using ::testing::_;
@@ -39,14 +40,14 @@ NSData* StringToData(std::string str) {
   return [NSData dataWithBytes:str.data() length:str.length()];
 }
 
-ArchivableCredential* TestPasswordCredential() {
+ArchivableCredential* TestPasswordCredential(NSString* gaia = nil) {
   NSString* username = @"username_value";
   NSString* password = @"qwerty123";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
   NSString* recordIdentifier = @"recordIdentifier";
   NSString* note = @"note";
   return [[ArchivableCredential alloc] initWithFavicon:nil
-                                                  gaia:nil
+                                                  gaia:gaia
                                               password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
@@ -58,17 +59,17 @@ ArchivableCredential* TestPasswordCredential() {
                                           lastUsedTime:0];
 }
 
-ArchivableCredential* TestPasskeyCredential(bool valid = true) {
+ArchivableCredential* TestPasskeyCredential(NSString* rpId, NSString* gaia) {
   return [[ArchivableCredential alloc]
        initWithFavicon:nil
-                  gaia:nil
+                  gaia:gaia
       recordIdentifier:@"recordIdentifier"
                 syncId:StringToData("syncIdOfLength16")
               username:@"username"
        userDisplayName:@"userDisplayName"
                 userId:StringToData("userId")
           credentialId:StringToData("credentialId_16_")
-                  rpId:valid ? @"rpId" : nil
+                  rpId:rpId
             privateKey:StringToData("privateKey")
              encrypted:StringToData("encrypted")
           creationTime:kJan1st2024
@@ -94,7 +95,7 @@ class CredentialProviderMigratorTest : public PlatformTest {
   // Mocking time is required for password notes since they are created with the
   // creation_date metadata, which is compared in AddLogin() call expectations.
   base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
@@ -116,6 +117,7 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   CredentialProviderMigrator* migrator =
       [[CredentialProviderMigrator alloc] initWithUserDefaults:user_defaults_
                                                            key:store_key_
+                                                          gaia:nil
                                                  passwordStore:mock_store_
                                                   passkeyStore:nil];
   ASSERT_TRUE(migrator);
@@ -123,16 +125,15 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   // Start migration.
   PasswordForm expected = PasswordFormFromCredential(credential);
   EXPECT_CALL(*mock_store_, AddLogin(expected, _));
-  __block BOOL blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
 
   // Reload temp store.
   store =
@@ -148,7 +149,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
-  id<Credential> credential = TestPasskeyCredential();
+  id<Credential> credential = TestPasskeyCredential(@"rpId", kMatchingGaia);
   [store addCredential:credential];
   [store saveDataWithCompletion:^(NSError* error) {
     EXPECT_TRUE(error == nil)
@@ -160,6 +161,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
@@ -170,16 +172,15 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   // Start migration.
   sync_pb::WebauthnCredentialSpecifics expected =
       PasskeyFromCredential(credential);
-  __block BOOL blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 1);
@@ -217,23 +218,23 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 0);
 
-  blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> update_future;
+  auto* update_future_ptr = &update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    update_future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [update_success, update_error] = update_future.Take();
+  EXPECT_TRUE(update_success);
+  EXPECT_TRUE(update_error == nil)
+      << SysNSStringToUTF8([update_error localizedDescription]);
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 1);
@@ -260,7 +261,8 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
-  id<Credential> invalidCredential = TestPasskeyCredential(/*valid=*/false);
+  id<Credential> invalidCredential =
+      TestPasskeyCredential(/*rpId=*/nil, kMatchingGaia);
 
   [store addCredential:invalidCredential];
   [store saveDataWithCompletion:^(NSError* error) {
@@ -273,6 +275,7 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
   CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
@@ -281,16 +284,15 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 0);
 
   // Start migration.
-  __block BOOL blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 1);
@@ -326,7 +328,8 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
                                                             key:store_key_];
 
   // `TestPasskeyCredential()` is created with hidden = NO.
-  ArchivableCredential* credential = TestPasskeyCredential();
+  ArchivableCredential* credential =
+      TestPasskeyCredential(@"rpId", kMatchingGaia);
   [store addCredential:credential];
   [store saveDataWithCompletion:^(NSError* error) {
     EXPECT_TRUE(error == nil)
@@ -338,21 +341,21 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
 
   // Start initial migration.
-  __block BOOL blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
 
   // Verify the passkey was migrated and is not hidden.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
@@ -377,23 +380,23 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   EXPECT_EQ(store.credentials.count, 1u);
 
   // Start migration again.
-  blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> update_future;
+  auto* update_future_ptr = &update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    update_future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [update_success, update_error] = update_future.Take();
+  EXPECT_TRUE(update_success);
+  EXPECT_TRUE(update_error == nil)
+      << SysNSStringToUTF8([update_error localizedDescription]);
 
   // Verify temporal store is empty again.
   store =
@@ -414,7 +417,8 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
-  ArchivableCredential* credential = TestPasskeyCredential();
+  ArchivableCredential* credential =
+      TestPasskeyCredential(@"rpId", kMatchingGaia);
   [store addCredential:credential];
   [store saveDataWithCompletion:^(NSError* error) {
     EXPECT_TRUE(error == nil)
@@ -426,19 +430,19 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
-  __block BOOL blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
 
   // Verify the passkey was migrated and has the initial names.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
@@ -463,23 +467,23 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   EXPECT_EQ(store.credentials.count, 1u);
 
   // Start migration again.
-  blockWaitCompleted = false;
+  base::test::TestFuture<BOOL, NSError*> update_future;
+  auto* update_future_ptr = &update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
                        key:store_key_
+                      gaia:kMatchingGaia
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    EXPECT_TRUE(success);
-    EXPECT_TRUE(error == nil)
-        << SysNSStringToUTF8([error localizedDescription]);
-    blockWaitCompleted = true;
+    update_future_ptr->SetValue(success, error);
   }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
-    return blockWaitCompleted;
-  }));
+  auto [update_success, update_error] = update_future.Take();
+  EXPECT_TRUE(update_success);
+  EXPECT_TRUE(update_error == nil)
+      << SysNSStringToUTF8([update_error localizedDescription]);
 
   // Verify temporal store is empty again.
   store =
@@ -494,6 +498,97 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].user_name(), "newUsername");
   EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");
+}
+
+// Tests that credentials with a mismatching GAIA ID are ignored.
+TEST_F(CredentialProviderMigratorTest, MigrationFiltersByGaiaID) {
+  // Create temp store and add 2 credentials: 1 matching, 1 mismatching.
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  id<Credential> matchingCredential = TestPasswordCredential(kMatchingGaia);
+  // Use unique identifiers for the mismatching credential.
+  id<Credential> mismatchingCredential = [[ArchivableCredential alloc]
+               initWithFavicon:nil
+                          gaia:kMismatchingGaia
+                      password:@"password"
+                          rank:1
+              recordIdentifier:@"recordIdentifier2"
+             serviceIdentifier:@"http://www.beta.example.com"
+                   serviceName:nil
+      registryControlledDomain:nil
+                      username:@"username2"
+                          note:nil
+                  lastUsedTime:0];
+  [store addCredential:matchingCredential];
+  [store addCredential:mismatchingCredential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil);
+  }];
+  EXPECT_EQ(store.credentials.count, 2u);
+
+  // Create the migrator with the matching GAIA ID.
+  CredentialProviderMigrator* migrator =
+      [[CredentialProviderMigrator alloc] initWithUserDefaults:user_defaults_
+                                                           key:store_key_
+                                                          gaia:kMatchingGaia
+                                                 passwordStore:mock_store_
+                                                  passkeyStore:nil];
+
+  // Start migration. Only the matching one should be migrated.
+  PasswordForm expected = PasswordFormFromCredential(matchingCredential);
+  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+
+  // Reload temp store.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  // Verify only 1 credential remains (the mismatching one).
+  EXPECT_EQ(store.credentials.count, 1u);
+  EXPECT_NSEQ(store.credentials[0].gaia, kMismatchingGaia);
+}
+
+// Tests that credentials with a nil GAIA ID are migrated if the migrator's
+// GAIA ID is also nil.
+TEST_F(CredentialProviderMigratorTest, MigrationAllowsNilGaiaID) {
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  id<Credential> credential = TestPasswordCredential(nil);
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  CredentialProviderMigrator* migrator =
+      [[CredentialProviderMigrator alloc] initWithUserDefaults:user_defaults_
+                                                           key:store_key_
+                                                          gaia:nil
+                                                 passwordStore:mock_store_
+                                                  passkeyStore:nil];
+
+  PasswordForm expected = PasswordFormFromCredential(credential);
+  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
 }
 
 }  // namespace

@@ -49,12 +49,16 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 @property(nonatomic, assign) scoped_refptr<PasswordStoreInterface>
     passwordStore;
 
+// The GAIA ID of the profile undergoing migration.
+@property(nonatomic, copy) NSString* gaiaID;
+
 @end
 
 @implementation CredentialProviderMigrator
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
                                  key:(NSString*)key
+                                gaia:(NSString*)gaiaID
                        passwordStore:
                            (scoped_refptr<PasswordStoreInterface>)passwordStore
                         passkeyStore:(webauthn::PasskeyModel*)passkeyStore {
@@ -64,6 +68,7 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
     _userDefaults = userDefaults;
     _passwordStore = passwordStore;
     _passkeyStore = passkeyStore;
+    _gaiaID = gaiaID;
     if (_passkeyStore) {
       _passkeyModelObserverBridge =
           std::make_unique<PasskeyModelObserverBridge>(self, _passkeyStore);
@@ -96,6 +101,14 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
   for (id<Credential> credential in credentials) {
     if (credential.isPasskey) {
+      // For passkeys, gaiaID cannot be nil as passkeys require a user to be
+      // signed in. Also, the account's gaiaID must match the credential's
+      // gaiaID, otherwise the passkey belongs to a different account.
+      if (credential.gaia == nil || self.gaiaID == nil ||
+          ![credential.gaia isEqualToString:self.gaiaID]) {
+        continue;
+      }
+
       // If this happens too early (before the passkey store is ready), the
       // migration will be re-triggered later for that passkey store by
       // CredentialProviderMigratorAppAgent.
@@ -164,6 +177,17 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         }
       }
     } else {
+      // For passwords, either the password is a local password not associated
+      // with a user account, which means that the gaiaID is nil and the
+      // password is being imported locally OR the password is associated with a
+      // user account, which means that the password's gaiaID must match the
+      // current account's gaiaID.
+      bool validLocalPassword = credential.gaia == nil && self.gaiaID == nil;
+      bool validAccountPassword = [credential.gaia isEqualToString:self.gaiaID];
+      if (!validLocalPassword && !validAccountPassword) {
+        continue;
+      }
+
       password_manager::PasswordForm form =
           PasswordFormFromCredential(credential);
       self.passwordStore->AddLogin(form);
