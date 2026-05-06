@@ -46,7 +46,7 @@ enum class TabGridSetupMode {
 
 // Feature flag to control Tab Grid setup mode.
 BASE_DECLARE_FEATURE(kTabGridSetupMode);
-extern const base::FeatureParam<int> kTabGridSetupModeParam;
+extern const base::FeatureParam<std::string> kTabGridSetupModeParam;
 extern const char kTabGridSetupModeParamName[];
 TabGridSetupMode GetTabGridSetupMode();
 

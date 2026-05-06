@@ -393,9 +393,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled_and_params.push_back(
-      {kTabGridSetupMode,
-       {{kTabGridSetupModeParamName, base::NumberToString(static_cast<int>(
-                                         TabGridSetupMode::kDeferred))}}});
+      {kTabGridSetupMode, {{kTabGridSetupModeParamName, "deferred"}}});
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // The web page should be visible.
@@ -440,9 +438,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled_and_params.push_back(
-      {kTabGridSetupMode,
-       {{kTabGridSetupModeParamName, base::NumberToString(static_cast<int>(
-                                         TabGridSetupMode::kDeferred))}}});
+      {kTabGridSetupMode, {{kTabGridSetupModeParamName, "deferred"}}});
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Wait until the deferred BestEffort task has executed and set up the child
@@ -484,10 +480,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled_and_params.push_back(
-      {kTabGridSetupMode,
-       {{kTabGridSetupModeParamName,
-         base::NumberToString(
-             static_cast<int>(TabGridSetupMode::kLazy_ForTesting))}}});
+      {kTabGridSetupMode, {{kTabGridSetupModeParamName, "lazy_for_testing"}}});
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -515,10 +508,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled_and_params.push_back(
-      {kTabGridSetupMode,
-       {{kTabGridSetupModeParamName,
-         base::NumberToString(
-             static_cast<int>(TabGridSetupMode::kLazy_ForTesting))}}});
+      {kTabGridSetupMode, {{kTabGridSetupModeParamName, "lazy_for_testing"}}});
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

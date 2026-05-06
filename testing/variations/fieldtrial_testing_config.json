@@ -8341,7 +8341,7 @@
                 {
                     "name": "Enabled_20260427",
                     "params": {
-                        "mode": "1"
+                        "tab_grid_setup_mode": "deferred"
                     },
                     "enable_features": [
                         "TabGridSetupMode"
