@@ -70,7 +70,6 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "show_promo_in_page_browsertest.cc",
     "start_tutorial_in_page_browsertest.cc",
     "user_education_configuration_provider_browsertest.cc",
   ]
