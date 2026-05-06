@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
 
   // Add an observer to wait for language pack installation.
-  base::RunLoop install_run_loop;
-  TestObserver observer(LanguagePackKey::kEn_Ja, install_run_loop.QuitClosure(),
+  base::RunLoop run_loop;
+  TestObserver observer(LanguagePackKey::kEn_Ja, run_loop.QuitClosure(),
                         base::DoNothing());
   fake_installer_->AddObserver(&observer);
 
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   EXPECT_FALSE(EvalJs("window._testPromiseResolved").ExtractBool());
 
   // Wait until the language pack is "installed".
-  install_run_loop.Run();
+  run_loop.Run();
 
   // Translate "hello" to Japanese.
   EXPECT_EQ(EvalJsCatchingError(
@@ -813,12 +813,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
 // Tests the behavior of failing to load the library
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryLoadFailed) {
-  fake_installer_->InitNow(base::DoNothing());
-  WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
-  ServiceControllerManagerFactory::GetInstance()
-      ->Get(browser()->profile())
-      ->SetInstallerForTesting(&*fake_installer_);
-
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallEmptyMockComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
   NavigateToEmptyPage();
 
   auto console_observer =
@@ -1236,9 +1236,12 @@ IN_PROC_BROWSER_TEST_F(
     OnDeviceTranslationBrowserTest,
     TranslatorAvailabilityNotMasked_EnglishAndPreferredLanguages) {
   SetSelectedLanguages("fr");
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Fr);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
+
+  // The language pack for the preferred language is installed already.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
 
   // When the required language packs are installed for translation
   // between English and a preferred language, `availability()` is not masked
@@ -1251,8 +1254,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        TranslatorAvailabilityMasked_ForNonPreferredLanguages) {
   SetSelectedLanguages("fr");
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Fr);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
   NavigateToEmptyPage();
 
   // Translation is not available for unsupported languages.
@@ -1265,8 +1269,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   // After installing the en-ja language pack, `availability()` is still masked
   // as "downloadable", because Japanese is not one of the preferred languages,
   // and the site has not yet initialized a translator for that specific pair.
-  WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
-  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestTranslationAvailable(browser(), "en", "ja", "downloadable");
 
   // `availability()` is no longer masked as "downloadable" after creating an
@@ -1287,9 +1290,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateRequiresUserActivationWhenDownloadedButMasked) {
   SetSelectedLanguages("es");
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
+
+  // Simulate the download of an additional language pack (Japanese) by another
+  // site.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
   ASSERT_EQ(
       EvalJsCatchingError(R"(
@@ -1322,8 +1329,9 @@ class OnDeviceTranslationCrashingLangBrowserTest
 // Tests the behavior of the crash of calling create().
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
                        CrashWhileCallingCreateTranslator) {
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
   NavigateToEmptyPage();
 
   MockTranslationManagerImpl manager(
@@ -1357,9 +1365,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   MockComponentManager mock_component_manager(GetTempDir());
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
       .Times(0);
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
-
+  mock_component_manager.InstallMockTranslateKitComponent();
   NavigateToEmptyPage();
 
   MockTranslationManagerImpl manager(
@@ -1376,8 +1382,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
 
   NavigateToEmptyPage();
 
@@ -1396,8 +1404,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
 // fails.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorAcceptLanguagesCheckFailed) {
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
 
   NavigateToEmptyPage();
 
@@ -1576,8 +1585,11 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test the behavior of availability() when the language pack is ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
-  SetupFakeInstaller(browser()->profile(), *fake_installer_,
-                     LanguagePackKey::kEn_Ja);
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(0);
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
   // Despite being ready, the availability will be masked since the site hasn't
   // created a translator for this language pair yet.
@@ -1592,15 +1604,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CanTranslateReadily) {
 // Test the behavior of availability() when the language pack is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLanguagePackNotReady) {
-  fake_installer_->InitNow(base::DoNothing());
-  {
-    base::ScopedAllowBlockingForTesting allow_io;
-    CHECK(base::CopyFile(GetMockLibraryPath(),
-                         fake_installer_->GetLibraryPath()));
-  }
-  ServiceControllerManagerFactory::GetInstance()
-      ->Get(browser()->profile())
-      ->SetInstallerForTesting(&*fake_installer_);
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(0);
+  mock_component_manager.InstallMockTranslateKitComponent();
   TestCanTranslateResult(
       "en", "ja",
       CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady);
@@ -1611,9 +1618,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     OnDeviceTranslationBrowserTest,
     CanTranslateAfterDownloadLibraryAndLanguagePackNotReady) {
-  ServiceControllerManagerFactory::GetInstance()
-      ->Get(browser()->profile())
-      ->SetInstallerForTesting(&*fake_installer_);
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(0);
   TestCanTranslateResult(
       "en", "ja",
       CanCreateTranslatorResult::kAfterDownloadLibraryAndLanguagePackNotReady);
@@ -1623,11 +1630,10 @@ IN_PROC_BROWSER_TEST_F(
 // library is not ready.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CanTranslateAfterDownloadLibraryNotReady) {
-  WriteMockLanguagePackFiles(*fake_installer_, LanguagePackKey::kEn_Ja);
-  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Ja);
-  ServiceControllerManagerFactory::GetInstance()
-      ->Get(browser()->profile())
-      ->SetInstallerForTesting(&*fake_installer_);
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(0);
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
   TestCanTranslateResult(
       "en", "ja", CanCreateTranslatorResult::kAfterDownloadLibraryNotReady);
 }
