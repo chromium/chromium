@@ -26371,6 +26371,36 @@
             ]
         }
     ],
+    "WebViewSurfaceControlV2": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewSurfaceControl"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewSurfaceControlV2ForTV": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewSurfaceControlForTV"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewTestNonembeddedLowEntropySource": [
         {
             "platforms": [
