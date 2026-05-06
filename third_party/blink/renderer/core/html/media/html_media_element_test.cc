@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/time/time_override.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
@@ -129,7 +131,9 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(Duration, double());
   MOCK_CONST_METHOD0(CurrentTime, double());
   MOCK_CONST_METHOD0(IsEnded, bool());
+  MOCK_METHOD0(DidLoadingProgress, bool());
   MOCK_CONST_METHOD0(GetNetworkState, NetworkState());
+  MOCK_CONST_METHOD0(GetReadyState, ReadyState());
   MOCK_CONST_METHOD0(WouldTaintOrigin, bool());
   MOCK_METHOD1(SetLatencyHint, void(double));
   MOCK_METHOD1(SetWasPlayedWithUserActivationAndHighMediaEngagement,
@@ -430,13 +434,17 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool ShouldDelayLoadEvent() { return Media()->should_delay_load_event_; }
 
+  void SetNetworkState(WebMediaPlayer::NetworkState state) {
+    Media()->SetNetworkState(state);
+  }
+
+  void NetworkStateChanged() { Media()->NetworkStateChanged(); }
+
   void SetReadyState(HTMLMediaElement::ReadyState state) {
     Media()->SetReadyState(state);
   }
 
-  void SetNetworkState(WebMediaPlayer::NetworkState state) {
-    Media()->SetNetworkState(state);
-  }
+  void ReadyStateChanged() { Media()->ReadyStateChanged(); }
 
   bool MediaIsPlaying() const { return Media()->playing_; }
 
@@ -510,6 +518,12 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   void ClearMediaPlayer() { Media()->ClearMediaPlayer(); }
+
+  void SetPreviousProgressTime() {
+    Media()->previous_progress_time_ = base::ElapsedTimer();
+  }
+
+  void CallProgressEventTimerFired() { Media()->ProgressEventTimerFired(); }
 
   void SetMediaSourceAttachment(
       scoped_refptr<MediaSourceAttachment> attachment) {
@@ -2769,6 +2783,250 @@ TEST_P(HTMLMediaElementTest, AddTrackCrash) {
         "video1", media::MediaTrack::VideoKind::kMain, "label\x80", "lang\x80",
         true, 0));
   }
+}
+
+TEST_P(HTMLMediaElementTest, PlayingAndPausedPseudo) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  // Initially paused.
+  EXPECT_TRUE(Media()->matches(AtomicString(":paused")));
+  EXPECT_FALSE(Media()->matches(AtomicString(":playing")));
+
+  // Play.
+  Media()->Play();
+  EXPECT_FALSE(Media()->matches(AtomicString(":paused")));
+  EXPECT_TRUE(Media()->matches(AtomicString(":playing")));
+
+  // Pause.
+  Media()->pause();
+  EXPECT_TRUE(Media()->matches(AtomicString(":paused")));
+  EXPECT_FALSE(Media()->matches(AtomicString(":playing")));
+}
+
+TEST_P(HTMLMediaElementTest, SeekingPseudo) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  // Set the element up to be seekable to 0.5.
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveMetadata);
+  WebTimeRanges seekable;
+  seekable.Add(0, 1.0);
+  EXPECT_CALL(*MockMediaPlayer(), Seekable()).WillRepeatedly(Return(seekable));
+
+  // Start seek.
+  EXPECT_FALSE(Media()->matches(AtomicString(":seeking")));
+  Media()->setCurrentTime(0.5);
+  EXPECT_TRUE(Media()->matches(AtomicString(":seeking")));
+
+  // Finish seek.
+  SetReadyState(HTMLMediaElement::kHaveCurrentData);
+  TimeChanged();
+  EXPECT_FALSE(Media()->matches(AtomicString(":seeking")));
+}
+
+TEST_P(HTMLMediaElementTest, BufferingAndStalledPseudoTransitions) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  // Insert the element and some style so that there's a need to recalculate
+  // style.
+  Media()->GetDocument().body()->AppendChild(Media());
+  Media()->GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(
+      "<style>:buffering { outline: 1px solid blue } "
+      ":stalled { outline: 1px solid green }</style>");
+  UpdateLifecyclePhases();
+
+  // Initially neither pseudo-class matches as none of the conditions hold.
+  ASSERT_TRUE(Media()->paused());
+  ASSERT_EQ(Media()->getNetworkState(), HTMLMediaElement::kNetworkEmpty);
+  ASSERT_EQ(Media()->getReadyState(), HTMLMediaElement::kHaveNothing);
+  EXPECT_FALSE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+
+  // Loading a source and playing makes :buffering match, but not :stalled.
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+  WaitForPlayer();
+  ASSERT_FALSE(Media()->paused());
+  ASSERT_EQ(Media()->getNetworkState(), HTMLMediaElement::kNetworkLoading);
+  ASSERT_EQ(Media()->getReadyState(), HTMLMediaElement::kHaveNothing);
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+
+  // Pin networkState to NETWORK_LOADING to prevent it from going to
+  // NETWORK_IDLE when the underlying source is fully loaded.
+  EXPECT_CALL(*MockMediaPlayer(), GetNetworkState())
+      .WillRepeatedly(Return(WebMediaPlayer::kNetworkStateLoading));
+
+  // Advancing readyState to HAVE_CURRENT_DATA and :buffering still matches,
+  // with all three conditions at the edge condition.
+  EXPECT_CALL(*MockMediaPlayer(), GetReadyState())
+      .WillRepeatedly(Return(WebMediaPlayer::kReadyStateHaveCurrentData));
+  ReadyStateChanged();
+  ASSERT_FALSE(Media()->paused());
+  ASSERT_EQ(Media()->getNetworkState(), HTMLMediaElement::kNetworkLoading);
+  ASSERT_EQ(Media()->getReadyState(), HTMLMediaElement::kHaveCurrentData);
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+
+  // Trigger :stalled by reporting no loading progress during 10 seconds.
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  {
+    static thread_local base::TimeTicks mock_time_ticks;
+    mock_time_ticks = base::TimeTicks::Now();
+    base::subtle::ScopedTimeClockOverrides time_override(
+        nullptr, []() { return mock_time_ticks; }, nullptr);
+
+    SetPreviousProgressTime();
+    EXPECT_CALL(*MockMediaPlayer(), DidLoadingProgress())
+        .WillRepeatedly(Return(false));
+    mock_time_ticks += base::Seconds(10);
+    CallProgressEventTimerFired();
+  }
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_TRUE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+
+  // Invalidate :buffering and :stalled through paused state.
+  Media()->pause();
+  EXPECT_FALSE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+  // Restore paused state.
+  Media()->Play();
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_TRUE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+
+  // Invalidate :buffering and :stalled through networkState.
+  EXPECT_CALL(*MockMediaPlayer(), GetNetworkState())
+      .WillRepeatedly(Return(WebMediaPlayer::kNetworkStateIdle));
+  NetworkStateChanged();
+  EXPECT_FALSE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+  // Restore networkState.
+  EXPECT_CALL(*MockMediaPlayer(), GetNetworkState())
+      .WillRepeatedly(Return(WebMediaPlayer::kNetworkStateLoading));
+  NetworkStateChanged();
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_TRUE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+
+  // Invalidate :buffering and :stalled through readyState.
+  EXPECT_CALL(*MockMediaPlayer(), GetReadyState())
+      .WillRepeatedly(Return(WebMediaPlayer::kReadyStateHaveFutureData));
+  ReadyStateChanged();
+  EXPECT_FALSE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+  // Restore readyState.
+  EXPECT_CALL(*MockMediaPlayer(), GetReadyState())
+      .WillRepeatedly(Return(WebMediaPlayer::kReadyStateHaveCurrentData));
+  ReadyStateChanged();
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_TRUE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+
+  // Make :stalled no longer match by reporting loading progress.
+  {
+    static thread_local base::TimeTicks mock_time_ticks;
+    mock_time_ticks = base::TimeTicks::Now();
+    base::subtle::ScopedTimeClockOverrides time_override(
+        nullptr, []() { return mock_time_ticks; }, nullptr);
+
+    EXPECT_CALL(*MockMediaPlayer(), DidLoadingProgress())
+        .WillRepeatedly(Return(true));
+    CallProgressEventTimerFired();
+  }
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  UpdateLifecyclePhases();
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+}
+
+TEST_P(HTMLMediaElementTest, BufferingAndStalledPseudoClearedByLoad) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  // Insert the element and some style so that there's a need to recalculate
+  // style.
+  Media()->GetDocument().body()->AppendChild(Media());
+  Media()->GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(
+      "<style>:buffering { outline: 1px solid blue } "
+      ":stalled { outline: 1px solid green }</style>");
+  UpdateLifecyclePhases();
+
+  // Set the states that make :buffering match.
+  WaitForPlayer();
+  EXPECT_CALL(*MockMediaPlayer(), GetNetworkState())
+      .WillRepeatedly(Return(WebMediaPlayer::kNetworkStateLoading));
+  EXPECT_CALL(*MockMediaPlayer(), GetReadyState())
+      .WillRepeatedly(Return(WebMediaPlayer::kReadyStateHaveCurrentData));
+  NetworkStateChanged();
+  ReadyStateChanged();
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  UpdateLifecyclePhases();
+
+  // Trigger :stalled by reporting no loading progress during 10 seconds.
+  {
+    static thread_local base::TimeTicks mock_time_ticks;
+    mock_time_ticks = base::TimeTicks::Now();
+    base::subtle::ScopedTimeClockOverrides time_override(
+        nullptr, []() { return mock_time_ticks; }, nullptr);
+
+    SetPreviousProgressTime();
+    EXPECT_CALL(*MockMediaPlayer(), DidLoadingProgress())
+        .WillRepeatedly(Return(false));
+    mock_time_ticks += base::Seconds(10);
+    CallProgressEventTimerFired();
+  }
+  EXPECT_TRUE(Media()->MatchesBufferingPseudo());
+  EXPECT_TRUE(Media()->MatchesStalledPseudo());
+  UpdateLifecyclePhases();
+
+  // Invoke the load algorithm and confirm style is invalidated and :buffering
+  // and :stalled don't match.
+  EXPECT_FALSE(Media()->NeedsStyleRecalc());
+  Media()->load();
+  EXPECT_TRUE(Media()->NeedsStyleRecalc());
+  EXPECT_FALSE(Media()->MatchesBufferingPseudo());
+  EXPECT_FALSE(Media()->MatchesStalledPseudo());
+}
+
+TEST_P(HTMLMediaElementTest, MutedPseudo) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  EXPECT_FALSE(Media()->matches(AtomicString(":muted")));
+
+  Media()->setMuted(true);
+  EXPECT_TRUE(Media()->matches(AtomicString(":muted")));
+
+  Media()->setMuted(false);
+  EXPECT_FALSE(Media()->matches(AtomicString(":muted")));
+}
+
+TEST_P(HTMLMediaElementTest, VolumeLockedPseudo) {
+  ScopedCSSMediaElementPseudosForTest scoped_pseudos(true);
+
+  // :volume-locked never matches so this test isn't very interesting:
+  EXPECT_FALSE(Media()->matches(AtomicString(":volume-locked")));
 }
 
 TEST_P(HTMLMediaElementTest, MediaShouldBeOpaque_MSE) {

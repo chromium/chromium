@@ -1703,9 +1703,16 @@
       name: "CSSMarkerNestedPseudoElement",
       status: "stable",
     },
-    // https://drafts.csswg.org/css-values-5/#progress
-    // media-progress()
     {
+      // Pseudo-classes :playing, :paused, :seeking, :buffering, :stalled,
+      // :muted, and :volume-locked for media elements.
+      // https://drafts.csswg.org/selectors/#resource-pseudos
+      name: "CSSMediaElementPseudos",
+      status: "experimental",
+    },
+    {
+      // https://drafts.csswg.org/css-values-5/#progress
+      // media-progress()
       name: "CSSMediaProgressNotation",
       status: "experimental",
     },
@@ -1775,13 +1782,6 @@
       // https://chromestatus.com/feature/5134941143433216
       name: "CSSPseudoHasSlotted",
       status: "experimental",
-    },
-    {
-      // When an audio, video, or similar resource is "playing"
-      // or "paused".
-      // https://www.w3.org/TR/selectors-4/#video-state
-      name: "CSSPseudoPlayingPaused",
-      status: "test",
     },
     {
       // For ::scroll-up-button and ::scroll-down-button pseudo-elements for Carousel.

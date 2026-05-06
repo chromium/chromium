@@ -240,12 +240,14 @@ class CORE_EXPORT HTMLMediaElement
   };
   ReadyState getReadyState() const;
   bool seeking() const;
+  void SetSeeking(bool);
 
   // playback state
   double currentTime() const;
   void setCurrentTime(double);
   double duration() const;
   bool paused() const;
+  void SetPaused(bool);
   double defaultPlaybackRate() const;
   void setDefaultPlaybackRate(double);
   double playbackRate() const;
@@ -378,6 +380,12 @@ class CORE_EXPORT HTMLMediaElement
   // [SpecialWrapFor] IDL attribute usage.)
   virtual bool IsHTMLAudioElement() const { return false; }
   virtual bool IsHTMLVideoElement() const { return false; }
+
+  // Predicates for CSS pseudo-classes that have non-trivial conditions or that
+  // aren't exposed by any other method. (Simple pseudos like :paused don't have
+  // dedicated helpers.)
+  bool MatchesBufferingPseudo() const;
+  bool MatchesStalledPseudo() const;
 
   void VideoWillBeDrawnToCanvas() const;
 

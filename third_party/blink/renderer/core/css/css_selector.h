@@ -352,9 +352,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoFullscreen,
     kPseudoInRange,
     kPseudoOutOfRange,
-    kPseudoPaused,
     kPseudoPictureInPicture,
-    kPseudoPlaying,
     kPseudoXrOverlay,
     // Pseudo-elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
@@ -420,6 +418,16 @@ class CORE_EXPORT CSSSelector {
     // :link-to(<link-condition>)
     kPseudoLinkTo,
 
+    // https://drafts.csswg.org/selectors/#video-state
+    kPseudoPlaying,
+    kPseudoPaused,
+    kPseudoSeeking,
+    // https://drafts.csswg.org/selectors/#media-loading-state
+    kPseudoBuffering,
+    kPseudoStalled,
+    // https://drafts.csswg.org/selectors/#sound-state
+    kPseudoMuted,
+    kPseudoVolumeLocked,
   };
 
   enum class AttributeMatchType : int {

@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -708,6 +709,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoAutofillSelected:
     case CSSSelector::kPseudoBackdrop:
     case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoBuffering:
     case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoChecked:
     case CSSSelector::kPseudoCornerPresent:
@@ -750,6 +752,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoLink:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoModal:
+    case CSSSelector::kPseudoMuted:
     case CSSSelector::kPseudoNoButton:
     case CSSSelector::kPseudoNthChild:
     case CSSSelector::kPseudoNthLastChild:
@@ -825,9 +828,11 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoRelativeAnchor:
+    case CSSSelector::kPseudoSeeking:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoSpatialNavigationFocus:
     case CSSSelector::kPseudoSpellingError:
+    case CSSSelector::kPseudoStalled:
     case CSSSelector::kPseudoTargetText:
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -843,6 +848,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionNew:
     case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoVolumeLocked:
     case CSSSelector::kPseudoScrollMarker:
     case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoScrollButton:
@@ -2969,11 +2975,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return Fullscreen::IsFullscreenFlagSetFor(element);
     case CSSSelector::kPseudoFullScreenAncestor:
       return element.ContainsFullScreenElement();
-    case CSSSelector::kPseudoPaused: {
-      DCHECK(RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled());
-      auto* media_element = DynamicTo<HTMLMediaElement>(element);
-      return media_element && media_element->paused();
-    }
     case CSSSelector::kPseudoPermissionGranted: {
       CHECK(RuntimeEnabledFeatures::GeolocationElementEnabled(
                 element.GetExecutionContext()) ||
@@ -2987,10 +2988,41 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoPictureInPicture:
       return PictureInPictureController::IsElementInPictureInPicture(&element);
     case CSSSelector::kPseudoPlaying: {
-      DCHECK(RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled());
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
       auto* media_element = DynamicTo<HTMLMediaElement>(element);
       return media_element && !media_element->paused();
     }
+    case CSSSelector::kPseudoPaused: {
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      auto* media_element = DynamicTo<HTMLMediaElement>(element);
+      return media_element && media_element->paused();
+    }
+    case CSSSelector::kPseudoSeeking: {
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      auto* media_element = DynamicTo<HTMLMediaElement>(element);
+      return media_element && media_element->seeking();
+    }
+    case CSSSelector::kPseudoBuffering: {
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      auto* media_element = DynamicTo<HTMLMediaElement>(element);
+      return media_element && media_element->MatchesBufferingPseudo();
+    }
+    case CSSSelector::kPseudoStalled: {
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      auto* media_element = DynamicTo<HTMLMediaElement>(element);
+      return media_element && media_element->MatchesStalledPseudo();
+    }
+    case CSSSelector::kPseudoMuted: {
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      auto* media_element = DynamicTo<HTMLMediaElement>(element);
+      return media_element && media_element->muted();
+    }
+    case CSSSelector::kPseudoVolumeLocked:
+      DCHECK(RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled());
+      // :volume-locked never matches, but is supported so that it's possible to
+      // write cross-browser styles without guarding use of :volume-locked with
+      // @supports selector(:volume-locked) or other feature detection.
+      return false;
     case CSSSelector::kPseudoVideoPersistent: {
       DCHECK(is_ua_rule_);
       auto* video_element = DynamicTo<HTMLVideoElement>(element);

@@ -2646,6 +2646,15 @@ static void RecordUsageAndDeprecationsOneSelector(
         feature = WebFeature::kCSSPseudoParentInScope;
       }
       break;
+    case CSSSelector::kPseudoPlaying:
+    case CSSSelector::kPseudoPaused:
+    case CSSSelector::kPseudoSeeking:
+    case CSSSelector::kPseudoBuffering:
+    case CSSSelector::kPseudoStalled:
+    case CSSSelector::kPseudoMuted:
+    case CSSSelector::kPseudoVolumeLocked:
+      webdx_feature = WebDXFeature::kMediaPseudos;
+      break;
     default:
       break;
   }

@@ -419,6 +419,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoBlinkInternalElement:
+    case kPseudoBuffering:
     case kPseudoChecked:
     case kPseudoCornerPresent:
     case kPseudoCue:
@@ -473,6 +474,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMultiSelectFocus:
+    case kPseudoMuted:
     case kPseudoNoButton:
     case kPseudoNot:
     case kPseudoNthChild:
@@ -502,10 +504,12 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSeeking:
     case kPseudoSelectHasSlottedButton:
     case kPseudoSingleButton:
     case kPseudoSlotted:
     case kPseudoSpatialNavigationFocus:
+    case kPseudoStalled:
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
@@ -524,6 +528,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
     case kPseudoVisited:
+    case kPseudoVolumeLocked:
     case kPseudoWebKitAutofill:
     case kPseudoWebKitCustomElement:
     case kPseudoWebkitAnyLink:
@@ -619,6 +624,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"autofill", CSSSelector::kPseudoAutofill},
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
+    {"buffering", CSSSelector::kPseudoBuffering},
     {"checked", CSSSelector::kPseudoChecked},
     {"checkmark", CSSSelector::kPseudoCheckMark},
     {"column", CSSSelector::kPseudoColumn},
@@ -666,6 +672,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"link", CSSSelector::kPseudoLink},
     {"marker", CSSSelector::kPseudoMarker},
     {"modal", CSSSelector::kPseudoModal},
+    {"muted", CSSSelector::kPseudoMuted},
     {"no-button", CSSSelector::kPseudoNoButton},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
@@ -690,9 +697,11 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
     {"search-text", CSSSelector::kPseudoSearchText},
+    {"seeking", CSSSelector::kPseudoSeeking},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
+    {"stalled", CSSSelector::kPseudoStalled},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-after", CSSSelector::kPseudoTargetAfter},
@@ -707,6 +716,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"vertical", CSSSelector::kPseudoVertical},
     {"view-transition", CSSSelector::kPseudoViewTransition},
     {"visited", CSSSelector::kPseudoVisited},
+    {"volume-locked", CSSSelector::kPseudoVolumeLocked},
     {"window-inactive", CSSSelector::kPseudoWindowInactive},
     {"xr-overlay", CSSSelector::kPseudoXrOverlay},
 };
@@ -788,13 +798,14 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoPaused &&
-      !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoPlaying &&
-      !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled()) {
+  if ((match->type == CSSSelector::kPseudoPlaying ||
+       match->type == CSSSelector::kPseudoPaused ||
+       match->type == CSSSelector::kPseudoSeeking ||
+       match->type == CSSSelector::kPseudoBuffering ||
+       match->type == CSSSelector::kPseudoStalled ||
+       match->type == CSSSelector::kPseudoMuted ||
+       match->type == CSSSelector::kPseudoVolumeLocked) &&
+      !RuntimeEnabledFeatures::CSSMediaElementPseudosEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -1024,6 +1035,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoAutofill:
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
+    case kPseudoBuffering:
     case kPseudoChecked:
     case kPseudoCornerPresent:
     case kPseudoCurrent:
@@ -1070,6 +1082,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoMenulistPopoverWithMenubarAnchor:
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
+    case kPseudoMuted:
     case kPseudoNoButton:
     case kPseudoNot:
     case kPseudoNthChild:
@@ -1097,8 +1110,10 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoRequired:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSeeking:
     case kPseudoSelectHasSlottedButton:
     case kPseudoSingleButton:
+    case kPseudoStalled:
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
@@ -1113,6 +1128,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoValid:
     case kPseudoVertical:
     case kPseudoVisited:
+    case kPseudoVolumeLocked:
     case kPseudoWebKitAutofill:
     case kPseudoWebkitAnyLink:
     case kPseudoWhere:
@@ -1816,6 +1832,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
     case kPseudoAnyLink:
+    case kPseudoBuffering:
     case kPseudoChecked:
     case kPseudoDefault:
     case kPseudoDialogInTopLayer:
@@ -1839,6 +1856,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoMenulistPopoverWithMenubarAnchor:
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
+    case kPseudoMuted:
     case kPseudoOptional:
     case kPseudoOverscrollTarget:
     case kPseudoPermissionGranted:
@@ -1846,13 +1864,16 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRequired:
+    case kPseudoSeeking:
     case kPseudoSelectHasSlottedButton:
+    case kPseudoStalled:
     case kPseudoState:
     case kPseudoTarget:
     case kPseudoUserInvalid:
     case kPseudoUserValid:
     case kPseudoValid:
     case kPseudoVisited:
+    case kPseudoVolumeLocked:
     case kPseudoWebkitAnyLink:
     case kPseudoWindowInactive:
     case kPseudoFullScreen:
@@ -2171,6 +2192,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoAutofill:
     case CSSSelector::kPseudoAutofillPreviewed:
     case CSSSelector::kPseudoAutofillSelected:
+    case CSSSelector::kPseudoBuffering:
     case CSSSelector::kPseudoChecked:
     case CSSSelector::kPseudoDefault:
     case CSSSelector::kPseudoDefined:
@@ -2205,6 +2227,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoModal:
     case CSSSelector::kPseudoMultiSelectFocus:
+    case CSSSelector::kPseudoMuted:
     case CSSSelector::kPseudoNthChild:
     case CSSSelector::kPseudoNthLastChild:
     case CSSSelector::kPseudoNthLastOfType:
@@ -2224,8 +2247,10 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoReadOnly:
     case CSSSelector::kPseudoReadWrite:
     case CSSSelector::kPseudoRequired:
+    case CSSSelector::kPseudoSeeking:
     case CSSSelector::kPseudoSelectHasSlottedButton:
     case CSSSelector::kPseudoSelection:
+    case CSSSelector::kPseudoStalled:
     case CSSSelector::kPseudoState:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoTargetAfter:

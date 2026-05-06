@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test :stalled timing relative to waiting and timeupdate events
-  assert_implements: :stalled is not supported undefined
-Harness: the test ran to completion.
-
