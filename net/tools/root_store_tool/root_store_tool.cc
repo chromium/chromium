@@ -346,6 +346,12 @@ bool WriteRootCppFile(const RootStore& root_store,
     } else {
       base::StringAppendF(&string_to_write, ", kChromeRootTrustAnchorID%d", i);
     }
+
+    if (anchor.has_crs_root_id()) {
+      base::StringAppendF(&string_to_write, ", %d", anchor.crs_root_id());
+    } else {
+      string_to_write += ", std::nullopt";
+    }
     string_to_write += "},\n";
   }
   // Append additional_certs as TLS trust anchors, if they are marked as such.
@@ -371,6 +377,12 @@ bool WriteRootCppFile(const RootStore& root_store,
       string_to_write += ", {}";
     } else {
       base::StringAppendF(&string_to_write, ", kAdditionalTrustAnchorID%d", i);
+    }
+
+    if (anchor.has_crs_root_id()) {
+      base::StringAppendF(&string_to_write, ", %d", anchor.crs_root_id());
+    } else {
+      string_to_write += ", std::nullopt";
     }
     string_to_write += "},\n";
   }
@@ -422,6 +434,11 @@ bool WriteRootCppFile(const RootStore& root_store,
       base::StringAppendF(&string_to_write, ", kMtcAnchorConstraints%d", i);
     } else {
       string_to_write += ", {}";
+    }
+    if (anchor.has_crs_root_id()) {
+      base::StringAppendF(&string_to_write, ", %d", anchor.crs_root_id());
+    } else {
+      string_to_write += ", std::nullopt";
     }
     string_to_write += "},\n";
   }

@@ -86,21 +86,23 @@ ChromeRootCertConstraints& ChromeRootCertConstraints::operator=(
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints)
-    : ChromeRootStoreData::Anchor::Anchor(
-          certificate,
-          constraints,
-          /*enforce_anchor_expiry=*/false,
-          /*enforce_anchor_constraints=*/false) {}
+    : ChromeRootStoreData::Anchor::Anchor(certificate,
+                                          constraints,
+                                          /*enforce_anchor_expiry=*/false,
+                                          /*enforce_anchor_constraints=*/false,
+                                          /*crs_root_id=*/std::nullopt) {}
 
 ChromeRootStoreData::Anchor::Anchor(
     std::shared_ptr<const bssl::ParsedCertificate> certificate,
     std::vector<ChromeRootCertConstraints> constraints,
     bool enforce_anchor_expiry,
-    bool enforce_anchor_constraints)
+    bool enforce_anchor_constraints,
+    std::optional<int32_t> crs_root_id)
     : certificate(std::move(certificate)),
       constraints(std::move(constraints)),
       enforce_anchor_expiry(enforce_anchor_expiry),
-      enforce_anchor_constraints(enforce_anchor_constraints) {}
+      enforce_anchor_constraints(enforce_anchor_constraints),
+      crs_root_id(crs_root_id) {}
 ChromeRootStoreData::Anchor::~Anchor() = default;
 
 ChromeRootStoreData::Anchor::Anchor(const Anchor& other) = default;
@@ -112,8 +114,11 @@ ChromeRootStoreData::Anchor& ChromeRootStoreData::Anchor::operator=(
 
 ChromeRootStoreData::MtcAnchor::MtcAnchor(
     std::vector<uint8_t> log_id,
-    std::vector<ChromeRootCertConstraints> constraints)
-    : log_id(std::move(log_id)), constraints(std::move(constraints)) {}
+    std::vector<ChromeRootCertConstraints> constraints,
+    std::optional<int32_t> crs_root_id)
+    : log_id(std::move(log_id)),
+      constraints(std::move(constraints)),
+      crs_root_id(crs_root_id) {}
 ChromeRootStoreData::MtcAnchor::~MtcAnchor() = default;
 
 ChromeRootStoreData::MtcAnchor::MtcAnchor(const MtcAnchor& other) = default;
@@ -213,9 +218,11 @@ std::optional<ChromeRootStoreData::Anchor> CreateChromeRootStoreDataAnchor(
     return std::nullopt;
   }
 
-  return ChromeRootStoreData::Anchor(std::move(parsed), *std::move(constraints),
-                                     anchor.enforce_anchor_expiry(),
-                                     anchor.enforce_anchor_constraints());
+  return ChromeRootStoreData::Anchor(
+      std::move(parsed), *std::move(constraints),
+      anchor.enforce_anchor_expiry(), anchor.enforce_anchor_constraints(),
+      anchor.has_crs_root_id() ? std::make_optional(anchor.crs_root_id())
+                               : std::nullopt);
 }
 
 std::optional<ChromeRootStoreData::MtcAnchor>
@@ -234,7 +241,10 @@ CreateChromeRootStoreDataMtcAnchor(
 
   return ChromeRootStoreData::MtcAnchor(
       base::ToVector(base::as_byte_span(mtc_anchor.log_id())),
-      *std::move(constraints));
+      *std::move(constraints),
+      mtc_anchor.has_crs_root_id()
+          ? std::make_optional(mtc_anchor.crs_root_id())
+          : std::nullopt);
 }
 
 }  // namespace
@@ -351,7 +361,8 @@ ChromeRootStoreData::ChromeRootStoreData(
     }
     trust_anchors_.emplace_back(std::move(parsed), std::move(cert_constraints),
                                 cert_info.enforce_anchor_expiry,
-                                cert_info.enforce_anchor_constraints);
+                                cert_info.enforce_anchor_constraints,
+                                cert_info.crs_root_id);
   }
 
   for (const auto& cert_bytes : eutl_certs) {
@@ -365,6 +376,10 @@ ChromeRootStoreData::ChromeRootStoreData(
     auto parsed = bssl::ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     CHECK(parsed);
+    // crs_root_id is not populated for eutl certs, since it isn't quite the
+    // same thing. If we want to add an eutl usage histogram, we'd need to
+    // consider if we want to use crs_root_id for that anyway, or add an
+    // alternate id for eutl certs.
     eutl_certs_.emplace_back(std::move(parsed),
                              std::vector<ChromeRootCertConstraints>());
   }
@@ -376,10 +391,23 @@ ChromeRootStoreData::ChromeRootStoreData(
         cert_constraints.emplace_back(constraint);
       }
       mtc_trust_anchors_.emplace_back(base::ToVector(mtc_anchor_info.log_id),
-                                      std::move(cert_constraints));
+                                      std::move(cert_constraints),
+                                      mtc_anchor_info.crs_root_id);
     }
   }
 }
+
+TrustStoreChrome::AnchorExtraData::AnchorExtraData() = default;
+TrustStoreChrome::AnchorExtraData::~AnchorExtraData() = default;
+
+TrustStoreChrome::AnchorExtraData::AnchorExtraData(
+    const TrustStoreChrome::AnchorExtraData& other) = default;
+TrustStoreChrome::AnchorExtraData::AnchorExtraData(
+    TrustStoreChrome::AnchorExtraData&& other) = default;
+TrustStoreChrome::AnchorExtraData& TrustStoreChrome::AnchorExtraData::operator=(
+    const TrustStoreChrome::AnchorExtraData& other) = default;
+TrustStoreChrome::AnchorExtraData& TrustStoreChrome::AnchorExtraData::operator=(
+    TrustStoreChrome::AnchorExtraData&& other) = default;
 
 TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData() = default;
 TrustStoreChrome::MtcAnchorExtraData::~MtcAnchorExtraData() = default;
@@ -414,15 +442,14 @@ TrustStoreChrome::TrustStoreChrome(
     const ChromeRootStoreMtcMetadata* mtc_metadata,
     ConstraintOverrideMap override_constraints)
     : override_constraints_(std::move(override_constraints)) {
-  std::vector<
-      std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
-      constraints;
 
   for (const auto& anchor : root_store_data.trust_anchors()) {
-    if (!anchor.constraints.empty()) {
-      constraints.emplace_back(
-          base::as_string_view(anchor.certificate->der_cert()),
-          anchor.constraints);
+    if (anchor.crs_root_id || !anchor.constraints.empty()) {
+      TrustStoreChrome::AnchorExtraData trust_store_anchor_data;
+      trust_store_anchor_data.crs_root_id = anchor.crs_root_id;
+      trust_store_anchor_data.constraints = anchor.constraints;
+      anchor_extra_data_[base::as_string_view(anchor.certificate->der_cert())] =
+          std::move(trust_store_anchor_data);
     }
 
     // If the anchor is configured to enforce expiry and/or X.509 constraints,
@@ -459,11 +486,10 @@ TrustStoreChrome::TrustStoreChrome(
             mtc_anchor.log_id, mtc_anchor_data.trusted_subtrees);
         CHECK(trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor)));
 
-        if (!mtc_anchor.constraints.empty() ||
+        if (mtc_anchor.crs_root_id || !mtc_anchor.constraints.empty() ||
             !mtc_anchor_data.revoked_indices.empty()) {
           TrustStoreChrome::MtcAnchorExtraData trust_store_anchor_data;
-          // TODO(crbug.com/452986180): enforce MTC anchor constraints in the
-          // verifier.
+          trust_store_anchor_data.crs_root_id = mtc_anchor.crs_root_id;
           trust_store_anchor_data.constraints = mtc_anchor.constraints;
           trust_store_anchor_data.revoked_indices =
               mtc_anchor_data.revoked_indices;
@@ -475,7 +501,6 @@ TrustStoreChrome::TrustStoreChrome(
     mtc_metadata_update_time_ = mtc_metadata->update_time();
   }
 
-  constraints_ = base::flat_map(std::move(constraints));
   version_ = root_store_data.version();
 }
 
@@ -596,6 +621,38 @@ bool TrustStoreChrome::ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const {
   return trust_store_.ContainsMTCAnchor(anchor);
 }
 
+std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForMTC(
+    const bssl::MTCAnchor* mtc_anchor) const {
+  const MtcAnchorExtraData* anchor_data =
+      GetMTCAnchorData(mtc_anchor->log_id());
+  if (!anchor_data) {
+    return {};
+  }
+
+  return anchor_data->crs_root_id;
+}
+
+std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForClassicalCert(
+    const bssl::ParsedCertificate* cert) const {
+  const AnchorExtraData* anchor_data = GetAnchorData(cert);
+  if (!anchor_data) {
+    return {};
+  }
+
+  return anchor_data->crs_root_id;
+}
+
+std::optional<int32_t> TrustStoreChrome::GetCrsRootIdForCert(
+    const bssl::CertPathBuilderResultPath* path) const {
+  if (std::shared_ptr<const bssl::MTCAnchor> mtc_anchor =
+          path->trust_anchor.MTCAnchor();
+      mtc_anchor) {
+    return GetCrsRootIdForMTC(mtc_anchor.get());
+  } else {
+    return GetCrsRootIdForClassicalCert(path->certs.back().get());
+  }
+}
+
 base::span<const ChromeRootCertConstraints>
 TrustStoreChrome::GetConstraintsForMTC(
     const bssl::MTCAnchor* mtc_anchor) const {
@@ -622,9 +679,9 @@ TrustStoreChrome::GetConstraintsForClassicalCert(
     }
   }
 
-  auto it = constraints_.find(base::as_string_view(cert->der_cert()));
-  if (it != constraints_.end()) {
-    return it->second;
+  const AnchorExtraData* anchor_data = GetAnchorData(cert);
+  if (anchor_data) {
+    return anchor_data->constraints;
   }
   return {};
 }
@@ -639,6 +696,15 @@ TrustStoreChrome::GetConstraintsForCert(
   } else {
     return GetConstraintsForClassicalCert(path->certs.back().get());
   }
+}
+
+const TrustStoreChrome::AnchorExtraData* TrustStoreChrome::GetAnchorData(
+    const bssl::ParsedCertificate* cert) const {
+  auto it = anchor_extra_data_.find(base::as_string_view(cert->der_cert()));
+  if (it == anchor_extra_data_.end()) {
+    return nullptr;
+  }
+  return &it->second;
 }
 
 const TrustStoreChrome::MtcAnchorExtraData* TrustStoreChrome::GetMTCAnchorData(

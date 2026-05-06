@@ -4,6 +4,7 @@
 
 #include "net/cert/internal/trust_store_chrome.h"
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
@@ -106,7 +107,7 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   CertificateList certs = CreateCertificateListFromFile(
       GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_EQ(certs.size(), 6u);
+  ASSERT_EQ(certs.size(), 7u);
 
   size_t eutl_certs = 0;
   for (const auto& cert : certs) {
@@ -631,6 +632,237 @@ TEST(TrustStoreChromeTestNoFixture,
               expected_trust.enforce_anchor_constraints);
   }
   EXPECT_EQ(4u, certs_with_tai);
+}
+
+TEST(TrustStoreChromeTestNoFixture, CrsRootIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+  std::map<std::string /* SHA-256 hash of certificate */,
+           std::optional<int32_t>>
+      tests = {
+          // basic trust_anchor case:
+          {"568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5",
+           4},
+          // trust_anchor that also is an eutl:
+          {"55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066",
+           3},
+          // trust_anchor with constraints:
+          {"6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6",
+           7},
+          // trust_anchor without crs_root_id:
+          {"68b9c761219a5b1f0131784474665db61bbdb109e00f05ca9f74244ee5f5f52b",
+           std::nullopt},
+          // trust_anchor and trusted additional_cert with same crs_root_id:
+          {"d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf",
+           21},
+          {"e6fe22bf45e4f0d3b85c59e02c0f495418e1eb8d3210f788d48cd5e1cb547cd4",
+           21},
+          // trusted additional_cert without crs_root_id:
+          {"973a41276ffd01e027a2aad49e34c37846d3e976ff6a620b6712e33832041aa6",
+           std::nullopt},
+          // additional cert that is untrusted and not in eutl with an id gets
+          // discarded:
+          {"7e0e16c0056f41a9f4c61f571503c3bcf079e2bddb228bf2219ac31200496b5c",
+           std::nullopt},
+      };
+  std::map<std::vector<uint8_t> /* log id */, std::optional<int32_t>>
+      mtc_tests = {
+          // mtc anchor
+          {{9, 1, 3, 4}, 10},
+          // mtc anchor without crs_root_id
+          {{8, 3, 2, 1}, std::nullopt},
+          // mtc anchor with constraints and id
+          {{8, 4, 5, 6}, 16},
+          // mtc_anchor with id but that doesn't have tls_trust_anchor set gets
+          // discarded:
+          {{9, 2, 3, 4}, std::nullopt},
+      };
+
+  // MtcMetadata matching the test anchors must be present, or the mtc anchors
+  // won't be added to TrustStoreChrome. The test doesn't otherwise use the
+  // MtcMetadata.
+  chrome_root_store::MtcMetadata mtc_metadata_proto;
+  mtc_metadata_proto.set_update_time_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  for (const auto& test : mtc_tests) {
+    MtcLogBuilder mtc_log_builder(test.first);
+    mtc_log_builder.AddUnusedEntries(1);
+    mtc_log_builder.AdvanceLandmark();
+    mtc_log_builder.FillMtcMetadataAnchorProto(
+        mtc_metadata_proto.add_mtc_anchor_data());
+  }
+  auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+      mtc_metadata_proto);
+  ASSERT_TRUE(mtc_metadata);
+
+  ChromeRootStoreData root_store_data = ChromeRootStoreData::CreateForTesting(
+      kChromeRootCertList, kEutlRootCertList, kChromeTrustedMtcAnchorList,
+      /*version=*/1);
+  TrustStoreChrome trust_store_chrome(&root_store_data, &*mtc_metadata);
+
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
+      "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  base::Extend(
+      certs,
+      CreateCertificateListFromFile(
+          GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
+          "test_additional.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE));
+
+  for (const auto& test : tests) {
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        FindParsedCertificateInCertificateList(test.first, certs);
+
+    EXPECT_EQ(test.second, trust_store_chrome.GetCrsRootIdForCert(
+                               MakeTestPathForRootCert(cert).get()));
+  }
+
+  for (const auto& test : mtc_tests) {
+    auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+        test.first, bssl::Span<const bssl::TrustedSubtree>());
+    EXPECT_EQ(test.second, trust_store_chrome.GetCrsRootIdForCert(
+                               MakeTestPathForMtcAnchor(mtc_anchor).get()));
+  }
+}
+
+TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+  chrome_root_store::RootStore root_store;
+
+  scoped_refptr<X509Certificate> root_with_id_5 = MakeTestRoot();
+  {
+    chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
+    anchor->set_der(net::x509_util::CryptoBufferAsStringPiece(
+        root_with_id_5->cert_buffer()));
+    anchor->set_crs_root_id(5);
+  }
+
+  scoped_refptr<X509Certificate> root_with_no_id = MakeTestRoot();
+  {
+    chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
+    anchor->set_der(net::x509_util::CryptoBufferAsStringPiece(
+        root_with_no_id->cert_buffer()));
+  }
+
+  scoped_refptr<X509Certificate> trusted_additional_cert_with_id_7 =
+      MakeTestRoot();
+  {
+    chrome_root_store::TrustAnchor* anchor = root_store.add_additional_certs();
+    anchor->set_der(net::x509_util::CryptoBufferAsStringPiece(
+        trusted_additional_cert_with_id_7->cert_buffer()));
+    anchor->set_tls_trust_anchor(true);
+    anchor->set_crs_root_id(7);
+  }
+
+  scoped_refptr<X509Certificate> untrusted_additional_cert_with_id =
+      MakeTestRoot();
+  {
+    chrome_root_store::TrustAnchor* anchor = root_store.add_additional_certs();
+    anchor->set_der(net::x509_util::CryptoBufferAsStringPiece(
+        untrusted_additional_cert_with_id->cert_buffer()));
+    anchor->set_tls_trust_anchor(false);
+    anchor->set_crs_root_id(9);
+  }
+
+  // MtcMetadata matching the test mtc anchors must be present, or the mtc
+  // anchors won't be added to TrustStoreChrome. The test doesn't otherwise use
+  // the MtcMetadata.
+  chrome_root_store::MtcMetadata mtc_metadata_proto;
+  mtc_metadata_proto.set_update_time_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_with_id_11;
+  {
+    MtcLogBuilder mtc_log_builder({0x01, 0x05});
+    mtc_log_builder.AddUnusedEntries(1);
+    mtc_log_builder.AdvanceLandmark();
+    mtc_log_builder.FillMtcMetadataAnchorProto(
+        mtc_metadata_proto.add_mtc_anchor_data());
+
+    chrome_root_store::MtcAnchor* anchor = root_store.add_mtc_anchors();
+    anchor->set_log_id(base::as_string_view(mtc_log_builder.log_id()));
+    anchor->set_tls_trust_anchor(true);
+    anchor->set_crs_root_id(11);
+
+    mtc_anchor_with_id_11 = std::make_shared<const bssl::MTCAnchor>(
+        mtc_log_builder.log_id(), mtc_log_builder.GetLandmarkSubtreeHashes());
+  }
+
+  std::shared_ptr<const bssl::MTCAnchor> mtc_anchor_with_no_id;
+  {
+    MtcLogBuilder mtc_log_builder({0x01, 0x06});
+    mtc_log_builder.AddUnusedEntries(1);
+    mtc_log_builder.AdvanceLandmark();
+    mtc_log_builder.FillMtcMetadataAnchorProto(
+        mtc_metadata_proto.add_mtc_anchor_data());
+
+    chrome_root_store::MtcAnchor* anchor = root_store.add_mtc_anchors();
+    anchor->set_log_id(base::as_string_view(mtc_log_builder.log_id()));
+    anchor->set_tls_trust_anchor(true);
+
+    mtc_anchor_with_no_id = std::make_shared<const bssl::MTCAnchor>(
+        mtc_log_builder.log_id(), mtc_log_builder.GetLandmarkSubtreeHashes());
+  }
+
+  std::shared_ptr<const bssl::MTCAnchor> untrusted_mtc_anchor_with_id;
+  {
+    MtcLogBuilder mtc_log_builder({0x01, 0x07});
+    mtc_log_builder.AddUnusedEntries(1);
+    mtc_log_builder.AdvanceLandmark();
+    mtc_log_builder.FillMtcMetadataAnchorProto(
+        mtc_metadata_proto.add_mtc_anchor_data());
+
+    chrome_root_store::MtcAnchor* anchor = root_store.add_mtc_anchors();
+    anchor->set_log_id(base::as_string_view(mtc_log_builder.log_id()));
+    anchor->set_tls_trust_anchor(false);
+    anchor->set_crs_root_id(13);
+
+    untrusted_mtc_anchor_with_id = std::make_shared<const bssl::MTCAnchor>(
+        mtc_log_builder.log_id(), mtc_log_builder.GetLandmarkSubtreeHashes());
+  }
+
+  std::optional<ChromeRootStoreData> root_store_data =
+      ChromeRootStoreData::CreateFromRootStoreProto(root_store);
+  ASSERT_TRUE(root_store_data);
+  auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+      mtc_metadata_proto);
+  ASSERT_TRUE(mtc_metadata);
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                      &mtc_metadata.value());
+
+  EXPECT_EQ(
+      5,
+      trust_store_chrome.GetCrsRootIdForCert(
+          MakeTestPathForRootCert(ToParsedCertificate(*root_with_id_5)).get()));
+  EXPECT_EQ(std::nullopt,
+            trust_store_chrome.GetCrsRootIdForCert(
+                MakeTestPathForRootCert(ToParsedCertificate(*root_with_no_id))
+                    .get()));
+  EXPECT_EQ(7, trust_store_chrome.GetCrsRootIdForCert(
+                   MakeTestPathForRootCert(
+                       ToParsedCertificate(*trusted_additional_cert_with_id_7))
+                       .get()));
+  EXPECT_EQ(std::nullopt,
+            trust_store_chrome.GetCrsRootIdForCert(
+                MakeTestPathForRootCert(
+                    ToParsedCertificate(*untrusted_additional_cert_with_id))
+                    .get()));
+
+  EXPECT_EQ(11, trust_store_chrome.GetCrsRootIdForCert(
+                    MakeTestPathForMtcAnchor(mtc_anchor_with_id_11).get()));
+
+  EXPECT_EQ(std::nullopt,
+            trust_store_chrome.GetCrsRootIdForCert(
+                MakeTestPathForMtcAnchor(mtc_anchor_with_no_id).get()));
+
+  EXPECT_EQ(std::nullopt,
+            trust_store_chrome.GetCrsRootIdForCert(
+                MakeTestPathForMtcAnchor(untrusted_mtc_anchor_with_id).get()));
 }
 
 // Tests that, for a compiled-in root store, certificates in |additional_certs|

@@ -10,6 +10,7 @@
 # Starfield Services Root Certificate Authority - G2
 trust_anchors {
   sha256_hex: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5"
+  crs_root_id: 4
 }
 
 # OISTE WISeKey Global Root GB CA
@@ -28,6 +29,7 @@ trust_anchors {
   constraints: {
     permitted_dns_names: "baz.example.com"
   }
+  crs_root_id: 7
 }
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
@@ -36,6 +38,7 @@ trust_anchors {
   sha256_hex: "55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066"
   ev_policy_oids: "2.23.140.1.1"
   eutl: true
+  crs_root_id: 3
 }
 
 # Anchors for testing combinations of |enforce_anchor_expiry| and
@@ -61,15 +64,23 @@ trust_anchors {
   trust_anchor_id: "\x05\x05\x05"
 }
 
+# GTS Root R1
+trust_anchors {
+  sha256_hex: "d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf"
+  crs_root_id: 21
+}
+
 mtc_anchors {
   log_id: "\x09\x01\x03\x04"
   tls_trust_anchor: true
+  crs_root_id: 10
 }
 
 # mtc anchor that doesn't have tls_trust_anchor set. Should be ignored.
 mtc_anchors {
   log_id: "\x09\x02\x03\x04"
   tls_trust_anchor: false
+  crs_root_id: 15
 }
 
 mtc_anchors {
@@ -93,6 +104,7 @@ mtc_anchors {
   constraints: {
     permitted_dns_names: "mtc.example.com"
   }
+  crs_root_id: 16
 }
 
 # "CN=Qualified e-Szigno TLS CA 2018,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937"
@@ -115,6 +127,8 @@ additional_certs {
   enforce_anchor_constraints: true
   trust_anchor_id: "\x03\x03\x03\x03"
   tls_trust_anchor: true
+  # Same crs_root_id as GTS Root R1, which is the issuer of this cert.
+  crs_root_id: 21
 }
 
 # Go Daddy Secure Certificate Authority - G2
@@ -132,6 +146,7 @@ additional_certs {
 additional_certs {
   sha256_hex: "7e0e16c0056f41a9f4c61f571503c3bcf079e2bddb228bf2219ac31200496b5c"
   trust_anchor_id: "\x01\x02\x03\x03"
+  crs_root_id: 25
 }
 
 # Anchor for testing that a tls_trust_anchor cert is trusted even if it doesn't have an associated Trust Anchor ID.

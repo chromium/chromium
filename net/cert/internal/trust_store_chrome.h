@@ -60,11 +60,13 @@ struct ChromeRootCertInfo {
   // binary representation. If empty, this anchor has no associated Trust Anchor
   // ID.
   base::span<const uint8_t> trust_anchor_id;
+  std::optional<int32_t> crs_root_id;
 };
 
 struct ChromeMtcAnchorInfo {
   base::span<const uint8_t> log_id;
   base::span<const StaticChromeRootCertConstraints> constraints;
+  std::optional<int32_t> crs_root_id;
   // Does not contain `tls_trust_anchor`, as MtcAnchors without that set to
   // true are simply ignored.
 };
@@ -113,7 +115,8 @@ class NET_EXPORT ChromeRootStoreData {
     Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
            std::vector<ChromeRootCertConstraints> constraints,
            bool enforce_anchor_expiry,
-           bool enforce_anchor_constraints);
+           bool enforce_anchor_constraints,
+           std::optional<int32_t> crs_root_id);
     ~Anchor();
 
     Anchor(const Anchor& other);
@@ -127,11 +130,13 @@ class NET_EXPORT ChromeRootStoreData {
     // True if the certificate verifier should enforce X.509 constraints encoded
     // in the certificate.
     bool enforce_anchor_constraints;
+    std::optional<int32_t> crs_root_id;
   };
 
   struct NET_EXPORT MtcAnchor {
     MtcAnchor(std::vector<uint8_t> log_id,
-              std::vector<ChromeRootCertConstraints> constraints);
+              std::vector<ChromeRootCertConstraints> constraints,
+              std::optional<int32_t> crs_root_id);
     ~MtcAnchor();
 
     MtcAnchor(const MtcAnchor& other);
@@ -141,6 +146,7 @@ class NET_EXPORT ChromeRootStoreData {
 
     std::vector<uint8_t> log_id;
     std::vector<ChromeRootCertConstraints> constraints;
+    std::optional<int32_t> crs_root_id;
   };
 
   // CreateFromRootStoreProto converts |proto| into a usable
@@ -251,6 +257,21 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       base::flat_map<std::array<uint8_t, crypto::kSHA256Length>,
                      std::vector<ChromeRootCertConstraints>>;
 
+  // Additional data about classical anchors that isn't represented in
+  // bssl::TrustAnchor.
+  struct NET_EXPORT AnchorExtraData {
+    AnchorExtraData();
+    ~AnchorExtraData();
+    AnchorExtraData(const AnchorExtraData& other);
+    AnchorExtraData(AnchorExtraData&& other);
+    AnchorExtraData& operator=(const AnchorExtraData& other);
+    AnchorExtraData& operator=(AnchorExtraData&& other);
+
+    std::optional<int32_t> crs_root_id;
+
+    std::vector<ChromeRootCertConstraints> constraints;
+  };
+
   // Additional data about MTC anchors that isn't represented in
   // bssl::MTCAnchor.
   struct NET_EXPORT MtcAnchorExtraData {
@@ -260,6 +281,8 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
     MtcAnchorExtraData(MtcAnchorExtraData&& other);
     MtcAnchorExtraData& operator=(const MtcAnchorExtraData& other);
     MtcAnchorExtraData& operator=(MtcAnchorExtraData&& other);
+
+    std::optional<int32_t> crs_root_id;
 
     // The revocation map key is the end index (exclusive) and the value is the
     // start index (inclusive).
@@ -342,6 +365,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   bool Contains(const bssl::ParsedCertificate* cert) const;
   bool ContainsMTCAnchor(const bssl::MTCAnchor* anchor) const;
 
+  // Returns the crs_root_id for `path`, or nullopt if unknown.
+  std::optional<int32_t> GetCrsRootIdForCert(
+      const bssl::CertPathBuilderResultPath* path) const;
+
   // Returns the root store constraints for `path`, or an empty span if the
   // certificate is not constrained.
   base::span<const ChromeRootCertConstraints> GetConstraintsForCert(
@@ -370,9 +397,18 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
                    ConstraintOverrideMap override_constraints);
 
   static ConstraintOverrideMap InitializeConstraintsOverrides();
+  std::optional<int32_t> GetCrsRootIdForMTC(
+      const bssl::MTCAnchor* mtc_anchor) const;
+  std::optional<int32_t> GetCrsRootIdForClassicalCert(
+      const bssl::ParsedCertificate* cert) const;
   base::span<const ChromeRootCertConstraints> GetConstraintsForMTC(
       const bssl::MTCAnchor* mtc_anchor) const;
   base::span<const ChromeRootCertConstraints> GetConstraintsForClassicalCert(
+      const bssl::ParsedCertificate* cert) const;
+
+  // Returns additional data about the classic anchor with certificate `cert`,
+  // or null if the anchor isn't known or has no additional data.
+  const AnchorExtraData* GetAnchorData(
       const bssl::ParsedCertificate* cert) const;
 
   bssl::TrustStoreInMemory trust_store_;
@@ -390,12 +426,11 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
                       std::ranges::equal_to>
       mtc_anchor_extra_data_;
 
-  // Map from certificate DER bytes to additional constraints (if any) for that
+  // Map from certificate DER bytes to additional data (if any) for that
   // certificate. The DER bytes of the key are owned by the ParsedCertificate
   // stored in `trust_store_`, so this must be below `trust_store_` in the
   // member list.
-  base::flat_map<std::string_view, std::vector<ChromeRootCertConstraints>>
-      constraints_;
+  base::flat_map<std::string_view, AnchorExtraData> anchor_extra_data_;
 
   // Map from certificate SHA256 hash to constraints. If a certificate has an
   // entry in this map, it will override the entry in `constraints_` (if any).
