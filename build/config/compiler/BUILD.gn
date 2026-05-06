@@ -1063,13 +1063,7 @@ config("linker") {
         linker_path = _wrapper
       }
 
-      ldflags += [
-        # Required to tell driver the "linker flavor" (bfd / gold / lld).
-        # AFAICT, it's used only to determine if it's lld, and only to know
-        # whether to run with --reproduce when it crashes.
-        "-fuse-ld=bfd",
-        "--ld-path=" + rebase_path(linker_path, root_build_dir),
-      ]
+      ldflags += [ "--ld-path=" + rebase_path(linker_path, root_build_dir) ]
     } else if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
       if (lld_path != "") {
