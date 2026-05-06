@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/features.h"
 
@@ -18,16 +21,19 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h), and must be
 // replicated in the same order in PageInfoFeatures.java.
-const base::Feature* const kFeaturesExposedToJava[] = {
+constexpr const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kUserBypassUI,
     &content_settings::features::kUserBypassUxSimplification,
 };
 
+constexpr base::span<const base::Feature* const> kFeaturesExposedToJavaSpan(
+    kFeaturesExposedToJava);
+
 }  // namespace
 
 static int64_t JNI_PageInfoFeatures_GetFeature(JNIEnv* env, int32_t ordinal) {
-  return reinterpret_cast<int64_t>(
-      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+  // base::span provides automatic bounds checking.
+  return reinterpret_cast<int64_t>(kFeaturesExposedToJavaSpan[ordinal]);
 }
 
 }  // namespace page_info
