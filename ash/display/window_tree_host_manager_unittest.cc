@@ -1077,9 +1077,11 @@ class HostWindowObserver : aura::WindowObserver {
 
   bool removed_from_host() const { return removed_from_host_; }
 
+  void reset() { host_window_ = nullptr; }
+
  private:
   bool removed_from_host_ = false;
-  raw_ptr<const aura::Window, DanglingUntriaged> host_window_ = nullptr;
+  raw_ptr<const aura::Window> host_window_;
 };
 
 // Tests that RoundedDisplayProvider and its host window are correctly deleted
@@ -1105,6 +1107,7 @@ TEST_F(WindowTreeHostManagerRoundedDisplayTest,
   // Since the primary display was removed and it was the only display,
   // the primary window tree was temporarily stored and then attached to the new
   // display.
+  observer.reset();
   display_manager()->OnNativeDisplaysChanged(
       {display::ManagedDisplayInfo::CreateFromSpec("1+1-300x200")});
 
