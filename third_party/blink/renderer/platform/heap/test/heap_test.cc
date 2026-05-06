@@ -31,6 +31,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -2140,8 +2141,7 @@ TEST_F(HeapTest, RefCountedGarbageCollected) {
 
 TEST_F(HeapTest, CollectionNesting) {
   ClearOutOldGarbage();
-  int k;
-  int* key = &k;
+  std::array<int, 101> dummy_keys;
   IntWrapper::destructor_calls_ = 0;
   typedef GCedHeapVector<Member<IntWrapper>> IntVector;
   typedef GCedHeapDeque<Member<IntWrapper>> IntDeque;
@@ -2153,6 +2153,8 @@ TEST_F(HeapTest, CollectionNesting) {
                 "Failed to recognize HeapVector as traceable");
   static_assert(IsTraceableV<IntDeque>,
                 "Failed to recognize HeapDeque as traceable");
+
+  void* key = &dummy_keys[0];
 
   map->insert(key, MakeGarbageCollected<IntVector>());
   map2->insert(key, MakeGarbageCollected<IntDeque>());
@@ -2172,9 +2174,9 @@ TEST_F(HeapTest, CollectionNesting) {
   Persistent<GCedHeapHashMap<void*, Member<IntVector>>> keep_alive(map);
   Persistent<GCedHeapHashMap<void*, Member<IntDeque>>> keep_alive2(map2);
 
-  for (int i = 0; i < 100; i++) {
-    map->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntVector>());
-    map2->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntDeque>());
+  for (int& dummy_key : base::span(dummy_keys).subspan(1u)) {
+    map->insert(&dummy_key, MakeGarbageCollected<IntVector>());
+    map2->insert(&dummy_key, MakeGarbageCollected<IntDeque>());
   }
 
   PreciselyCollectGarbage();
