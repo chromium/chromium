@@ -9786,3 +9786,6 @@ crbug.com/509675206 [ Debug Linux ] webaudio/OfflineAudioContext/onstatechange.h
 crbug.com/448806999 [ Mac12 ] external/wpt/content-security-policy/report-hash/reportonly-script-src-none.https.window.html [ Failure ]
 crbug.com/466779939 [ Debug Linux ] http/tests/inspector-protocol/tracing/user-marks.js [ Failure Pass ]
 
+# Gardener 2026-05-06
+crbug.com/510085315 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced-nested-iframe.https.html [ Failure ]
+
