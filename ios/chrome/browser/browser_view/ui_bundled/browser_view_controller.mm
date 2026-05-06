@@ -1682,13 +1682,15 @@ bool IsFullscreenNextIAEnabled() {
                         : self.toolbarCoordinator.secondaryToolbarViewController
                               .view.topAnchor;
 
+  UIView* primaryToolbarView =
+      self.toolbarCoordinator.primaryToolbarViewController.view;
   _NTPConstraints = @[
     [NTPViewController.view.topAnchor constraintEqualToAnchor:topAnchor],
     [NTPViewController.view.bottomAnchor constraintEqualToAnchor:bottomAnchor],
     [NTPViewController.view.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:primaryToolbarView.leadingAnchor],
     [NTPViewController.view.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:primaryToolbarView.trailingAnchor],
   ];
   [NSLayoutConstraint activateConstraints:_NTPConstraints];
 }
