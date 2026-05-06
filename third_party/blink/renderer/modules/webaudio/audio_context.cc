@@ -321,10 +321,11 @@ void AudioContext::SetSinkIdResolver::HandleOutputDeviceStatus(
   switch (status) {
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK:
       if (audio_context_ && !audio_context_->IsContextCleared()) {
-        // Update AudioContext's sink ID and fire the 'onsinkchange' event
-        audio_context_->NotifySetSinkIdIsDone(sink_descriptor_);
+        // Update AudioContext's sink ID, resolve the promise, and queue the
+        // 'onsinkchange' event
+        audio_context_->NotifySetSinkIdIsDone(sink_descriptor_, script_state,
+                                              this);
       }
-      Resolve();
       return;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
       Reject(V8ThrowDOMException::CreateOrEmpty(
@@ -1664,25 +1665,54 @@ void AudioContext::NotifySetSinkIdBegins() {
 }
 
 void AudioContext::NotifySetSinkIdIsDone(
-    WebAudioSinkDescriptor pending_sink_descriptor) {
+    WebAudioSinkDescriptor pending_sink_descriptor,
+    ScriptState* script_state,
+    SetSinkIdResolver* resolver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
   sink_descriptor_ = pending_sink_descriptor;
 
-  // This performs steps 11 and 12 from the second part of the setSinkId()
-  // algorithm:
-  // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid
-  UpdateV8SinkId();
-  DispatchEvent(*Event::Create(event_type_names::kSinkchange));
   if (sink_transition_flag_was_running_) {
     destination()->GetAudioDestinationHandler().StartRendering();
-    SetContextState(V8AudioContextState::Enum::kRunning);
-    sink_transition_flag_was_running_ = false;
   }
 
   // The sink ID was given and has been accepted; it will be used as an output
   // audio device.
   is_sink_id_given_ = true;
+
+  // This performs steps 11 and 12 from the second part of the setSinkId()
+  // algorithm:
+  // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid
+  UpdateV8SinkId();
+
+  DCHECK(resolver);
+  resolver->Resolve();
+
+  // Dispatch the sinkchange event in a separate task to allow the microtasks
+  // queued by the promise resolution above to execute first.
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+  execution_context->GetTaskRunner(TaskType::kMediaElementEvent)
+      ->PostTask(FROM_HERE,
+                 blink::BindOnce(&AudioContext::DispatchSinkChangeEvent,
+                                 WrapWeakPersistent(this),
+                                 WrapPersistent(script_state)));
+}
+
+void AudioContext::DispatchSinkChangeEvent(ScriptState* script_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  if (IsContextCleared() || !script_state->ContextIsValid()) {
+    return;
+  }
+
+  ScriptState::Scope scope(script_state);
+
+  DispatchEvent(*Event::Create(event_type_names::kSinkchange));
+
+  if (sink_transition_flag_was_running_) {
+    SetContextState(V8AudioContextState::Enum::kRunning);
+    sink_transition_flag_was_running_ = false;
+  }
 }
 
 void AudioContext::InitializeMediaDeviceService() {

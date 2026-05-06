@@ -232,7 +232,9 @@ class MODULES_EXPORT AudioContext final
   WebAudioSinkDescriptor GetSinkDescriptor() const { return sink_descriptor_; }
 
   void NotifySetSinkIdBegins();
-  void NotifySetSinkIdIsDone(WebAudioSinkDescriptor);
+  void NotifySetSinkIdIsDone(WebAudioSinkDescriptor,
+                             ScriptState*,
+                             SetSinkIdResolver*);
 
   HeapDeque<Member<SetSinkIdResolver>>& GetSetSinkIdResolver() {
     return set_sink_id_resolvers_;
@@ -263,6 +265,10 @@ class MODULES_EXPORT AudioContext final
   void set_clock_for_testing(const base::TickClock* clock);
 
  private:
+  // Dispatches the `sinkchange` event in a separate task. This is necessary to
+  // ensure that the microtasks queued by the setSinkId() promise resolution
+  // execute *before* the synchronous event dispatch, as required by the spec.
+  void DispatchSinkChangeEvent(ScriptState* script_state);
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
   friend class AudioContextStatsTest;
