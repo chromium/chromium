@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -499,12 +498,12 @@ public class SearchEngineAdapter extends BaseAdapter
             view = mLayoutInflater.inflate(layoutId, parent, false);
         }
 
+        View containerView = view.findViewById(R.id.container);
+
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
             boolean isTop = position == 0 || getItemViewType(position - 1) == ViewType.DIVIDER;
             boolean isBottom =
                     position == getCount() - 1 || getItemViewType(position + 1) == ViewType.DIVIDER;
-
-            View containerView = view.findViewById(R.id.container);
 
             ContainerStyle containerStyle =
                     mContainmentItemController
@@ -547,25 +546,16 @@ public class SearchEngineAdapter extends BaseAdapter
 
         updateLogo(logoView, templateUrl, faviconUrl);
 
-        // To improve the explore-by-touch experience, the radio button is hidden from accessibility
-        // and instead, "checked" or "not checked" is read along with the search engine's name, e.g.
-        // "google.com checked" or "google.com not checked".
         radioButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        description.setAccessibilityDelegate(
-                new AccessibilityDelegate() {
-                    @Override
-                    public void onInitializeAccessibilityEvent(
-                            View host, AccessibilityEvent event) {
-                        super.onInitializeAccessibilityEvent(host, event);
-                        event.setChecked(selected);
-                    }
+        containerView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
+        view.setAccessibilityDelegate(
+                new AccessibilityDelegate() {
                     @Override
                     public void onInitializeAccessibilityNodeInfo(
                             View host, AccessibilityNodeInfo info) {
                         super.onInitializeAccessibilityNodeInfo(host, info);
-                        info.setCheckable(true);
-                        info.setChecked(selected);
+                        info.setSelected(selected);
                     }
                 });
 
