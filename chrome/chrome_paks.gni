@@ -310,6 +310,10 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/inline_login_resources.pak" ]
     }
 
+    if (is_win) {
+      sources += [ "$root_gen_dir/chrome/conflicts_resources.pak" ]
+    }
+
     if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",

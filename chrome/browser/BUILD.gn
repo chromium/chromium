@@ -5367,10 +5367,6 @@ grit("resources") {
 
   deps = []
 
-  if (is_win) {
-    deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [ "//services/resource_coordinator/public/mojom:mojom_js" ]
   }

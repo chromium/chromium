@@ -159,7 +159,10 @@ group("resources") {
   }
 
   if (is_win) {
-    public_deps += [ "inline_login:resources" ]
+    public_deps += [
+      "conflicts:resources",
+      "inline_login:resources",
+    ]
   }
 
   if (enable_dice_support) {
