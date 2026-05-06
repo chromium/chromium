@@ -133,7 +133,7 @@ uint32_t GetDevicePropertySize(AudioObjectID device_id,
   return size;
 }
 
-std::optional<std::vector<AudioObjectID>> GetAudioObjectIDs(
+std::vector<AudioObjectID> GetAudioObjectIDs(
     AudioObjectID audio_object_id,
     AudioObjectPropertySelector property_selector,
     const LogCallback& log_callback = LogCallback()) {
@@ -150,13 +150,13 @@ std::optional<std::vector<AudioObjectID>> GetAudioObjectIDs(
     OSSTATUS_DLOG(WARNING, result)
         << "Failed to read size of property " << property_selector
         << " for device/object " << audio_object_id;
-    return std::nullopt;
+    return {};
   }
 
   if (size == 0) {
     SendLog(log_callback, __func__, "Size is 0 for property ",
             property_selector, audio_object_id);
-    return std::vector<AudioObjectID>();
+    return {};
   }
 
   size_t device_count = size / sizeof(AudioObjectID);
@@ -172,7 +172,7 @@ std::optional<std::vector<AudioObjectID>> GetAudioObjectIDs(
     OSSTATUS_DLOG(WARNING, result)
         << "Failed to read object IDs from property " << property_selector
         << " for device/object " << audio_object_id;
-    return std::nullopt;
+    return {};
   }
 
   SendLog(
@@ -302,8 +302,7 @@ CoreAudioUtilMac::CoreAudioUtilMac(LogCallback log_callback)
 
 CoreAudioUtilMac::~CoreAudioUtilMac() = default;
 
-std::optional<std::vector<AudioObjectID>>
-CoreAudioUtilMac::GetAllAudioDeviceIDs() const {
+std::vector<AudioObjectID> CoreAudioUtilMac::GetAllAudioDeviceIDs() const {
   return GetAudioObjectIDs(kAudioObjectSystemObject,
                            kAudioHardwarePropertyDevices, log_callback_);
 }
@@ -311,8 +310,7 @@ CoreAudioUtilMac::GetAllAudioDeviceIDs() const {
 std::vector<AudioObjectID> CoreAudioUtilMac::GetRelatedDeviceIDs(
     AudioObjectID device_id) const {
   return GetAudioObjectIDs(device_id, kAudioDevicePropertyRelatedDevices,
-                           log_callback_)
-      .value_or({});
+                           log_callback_);
 }
 
 std::optional<std::string> CoreAudioUtilMac::GetDeviceUniqueID(
@@ -439,8 +437,7 @@ bool CoreAudioUtilMac::IsPrivateAggregateDevice(AudioObjectID device_id) const {
 
 bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
   std::vector<AudioObjectID> streams =
-      GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams, log_callback_)
-          .value_or({});
+      GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams, log_callback_);
 
   int num_voice_processing_input_streams = 0;
   int num_undefined_input_streams = 0;

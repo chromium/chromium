@@ -28,9 +28,9 @@ class CoreAudioUtilMac {
 
   ~CoreAudioUtilMac();
 
-  // Returns an optional vector with the IDs of all audio devices in the system.
-  // If there is an error in retrieving the devices, the optional will be empty.
-  std::optional<std::vector<AudioObjectID>> GetAllAudioDeviceIDs() const;
+  // Returns a vector with the IDs of all audio devices in the system.
+  // The vector is empty if there are no devices or if there is an error.
+  std::vector<AudioObjectID> GetAllAudioDeviceIDs() const;
 
   // Returns a vector with the IDs of all devices related to the given
   // |device_id|. The vector is empty if there are no related devices or

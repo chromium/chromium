@@ -155,7 +155,7 @@ class MockAudioManager : public AudioManagerPlatform {
 
   ~MockAudioManager() override = default;
 
-  bool GetAudioInputDeviceNames(
+  void GetAudioInputDeviceNames(
       media::AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
 
@@ -168,11 +168,9 @@ class MockAudioManager : public AudioManagerPlatform {
           /*device_name=*/GetAudioInputDeviceName(i),
           /*unique_id=*/GetAudioInputDeviceId(i));
     }
-
-    return true;
   }
 
-  bool GetAudioOutputDeviceNames(
+  void GetAudioOutputDeviceNames(
       media::AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
 
@@ -187,8 +185,6 @@ class MockAudioManager : public AudioManagerPlatform {
           /*unique_id=*/std::string(kFakeDeviceIdPrefix) +
               base::NumberToString(i));
     }
-
-    return true;
   }
 
   media::AudioParameters GetOutputStreamParameters(

@@ -2260,23 +2260,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.{Direction}DeviceEnumerationOutcome"
-    enum="AudioDeviceEnumerationOutcome" expires_after="2027-05-01">
-  <owner>frederikh@google.com</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Tracks the success and failure outcomes of platform-specific audio
-    {Direction} device enumerations (e.g., WASAPI, CoreAudio). Helps detect if
-    OS errors are causing the browser to cache incomplete or empty device lists.
-    Recorded when the browser requests the list of audio {Direction} devices
-    from the OS (e.g. during enumerateDevices).
-  </summary>
-  <token key="Direction">
-    <variant name="Input" summary="input"/>
-    <variant name="Output" summary="output"/>
-  </token>
-</histogram>
-
 <histogram name="Media.Audio.{Type}.EarlyGlitchDetected" enum="BooleanDetected"
     expires_after="2026-10-27">
   <owner>olka@chromium.org</owner>

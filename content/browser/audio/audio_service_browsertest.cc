@@ -120,10 +120,9 @@ class LocalMockAudioManager : public media::FakeAudioManager {
     return std::make_unique<NiceMock<MockAudioLog>>();
   }
 
-  bool GetAudioInputDeviceNames(
+  void GetAudioInputDeviceNames(
       media::AudioDeviceNames* device_names) override {
     device_names->push_back(media::AudioDeviceName::CreateDefault());
-    return true;
   }
 
   media::AudioInputStream* MakeLowLatencyInputStream(

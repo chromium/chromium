@@ -155,20 +155,12 @@ static std::string GetAudioDeviceNameFromDeviceId(AudioDeviceID device_id,
 
 // Retrieves information on audio devices, and prepends the default
 // device to the list if the list is non-empty.
-static bool GetAudioDeviceInfo(bool is_input,
+static void GetAudioDeviceInfo(bool is_input,
                                media::AudioDeviceNames* device_names,
                                const AudioManager::LogCallback& log_callback) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   CoreAudioUtilMac core_audio_mac(log_callback);
-  std::optional<std::vector<AudioObjectID>> device_ids_opt =
-      core_audio_mac.GetAllAudioDeviceIDs();
-  if (!device_ids_opt.has_value()) {
-    return false;
-  }
-
-  std::vector<AudioObjectID>& device_ids = *device_ids_opt;
-  bool had_error = false;
-
+  std::vector<AudioObjectID> device_ids = core_audio_mac.GetAllAudioDeviceIDs();
   for (AudioObjectID device_id : device_ids) {
     const bool is_valid_for_direction =
         (is_input ? core_audio_mac.IsInputDevice(device_id)
@@ -181,14 +173,12 @@ static bool GetAudioDeviceInfo(bool is_input,
     std::optional<std::string> unique_id =
         core_audio_mac.GetDeviceUniqueID(device_id);
     if (!unique_id) {
-      had_error = true;
       continue;
     }
 
     std::optional<std::string> label =
         core_audio_mac.GetDeviceLabel(device_id, is_input);
     if (!label) {
-      had_error = true;
       continue;
     }
 
@@ -207,8 +197,6 @@ static bool GetAudioDeviceInfo(bool is_input,
     // counting here since the default device has been abstracted out before.
     device_names->push_front(media::AudioDeviceName::CreateDefault());
   }
-
-  return !had_error;
 }
 
 AudioDeviceID AudioManagerMac::GetAudioDeviceIdByUId(
@@ -629,8 +617,7 @@ void AudioManagerMac::ShutdownOnAudioThread() {
   AudioManagerBase::ShutdownOnAudioThread();
 }
 
-std::optional<std::vector<AudioObjectID>>
-AudioManagerMac::GetAllAudioDeviceIDs() {
+std::vector<AudioObjectID> AudioManagerMac::GetAllAudioDeviceIDs() {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   return core_audio_mac_->GetAllAudioDeviceIDs();
 }
@@ -667,12 +654,7 @@ std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
 
   // Iterate through all device IDs and match the unique IDs base to find the
   // related devices.
-  auto all_device_ids_opt = GetAllAudioDeviceIDs();
-  if (!all_device_ids_opt) {
-    return result_ids;
-  }
-
-  for (const auto& id : *all_device_ids_opt) {
+  for (const auto& id : GetAllAudioDeviceIDs()) {
     std::optional<std::string> unique_id = GetDeviceUniqueID(id);
     if (!unique_id) {
       continue;
@@ -690,7 +672,6 @@ std::vector<AudioObjectID> AudioManagerMac::GetRelatedBluetoothDeviceIDs(
       result_ids.push_back(id);
     }
   }
-
   return result_ids;
 }
 
@@ -724,16 +705,16 @@ bool AudioManagerMac::HasAudioInputDevices() {
   return HasAudioHardware(kAudioHardwarePropertyDefaultInputDevice);
 }
 
-bool AudioManagerMac::GetAudioInputDeviceNames(
+void AudioManagerMac::GetAudioInputDeviceNames(
     media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  return GetAudioDeviceInfo(true, device_names, GetEnumerationLogCallback());
+  GetAudioDeviceInfo(true, device_names, GetEnumerationLogCallback());
 }
 
-bool AudioManagerMac::GetAudioOutputDeviceNames(
+void AudioManagerMac::GetAudioOutputDeviceNames(
     media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
-  return GetAudioDeviceInfo(false, device_names, GetEnumerationLogCallback());
+  GetAudioDeviceInfo(false, device_names, GetEnumerationLogCallback());
 }
 
 AudioParameters AudioManagerMac::GetInputStreamParameters(

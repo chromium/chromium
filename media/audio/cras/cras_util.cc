@@ -231,11 +231,12 @@ bool CrasUtil::CacheEffects() {
   return true;
 }
 
-std::optional<std::vector<CrasDevice>> CrasUtil::CrasGetAudioDevices(
-    DeviceType type) {
+std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
+  std::vector<CrasDevice> devices;
+
   libcras_client* client = CrasConnect();
   if (!client) {
-    return std::nullopt;
+    return devices;
   }
 
   int rc;
@@ -254,10 +255,9 @@ std::optional<std::vector<CrasDevice>> CrasUtil::CrasGetAudioDevices(
   if (rc < 0) {
     LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
     CrasDisconnect(&client);
-    return std::nullopt;
+    return devices;
   }
 
-  std::vector<CrasDevice> devices;
   for (size_t i = 0; i < num_nodes; i++) {
     auto new_dev = CrasDevice(UNSAFE_TODO(nodes[i]), type);
     if (!new_dev.plugged || !IsForSimpleUsage(new_dev.node_type)) {

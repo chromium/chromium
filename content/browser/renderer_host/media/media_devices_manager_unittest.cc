@@ -123,7 +123,7 @@ class MockAudioManager : public media::FakeAudioManager {
     return communications_device_id_;
   }
 
-  bool GetAudioInputDeviceNames(
+  void GetAudioInputDeviceNames(
       media::AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
     if (default_device_id_ != std::string()) {
@@ -154,11 +154,9 @@ class MockAudioManager : public media::FakeAudioManager {
     if (bogus_invalidation_closure_) {
       bogus_invalidation_closure_.Run();
     }
-
-    return true;
   }
 
-  bool GetAudioOutputDeviceNames(
+  void GetAudioOutputDeviceNames(
       media::AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
     for (size_t i = 0; i < num_output_devices_; i++) {
@@ -167,8 +165,6 @@ class MockAudioManager : public media::FakeAudioManager {
           std::string("fake_device_id_") + base::NumberToString(i)));
     }
     MockGetAudioOutputDeviceNames(device_names);
-
-    return true;
   }
 
   media::AudioParameters GetOutputStreamParameters(

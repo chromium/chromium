@@ -26,7 +26,7 @@ namespace {
 
 class MockCrasUtil : public CrasUtil {
  public:
-  MOCK_METHOD(std::optional<std::vector<CrasDevice>>,
+  MOCK_METHOD(std::vector<CrasDevice>,
               CrasGetAudioDevices,
               (DeviceType type),
               (override));

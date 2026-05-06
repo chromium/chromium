@@ -8,7 +8,6 @@
 #include <cras_client.h>
 
 #include <cstdint>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -55,8 +54,7 @@ class MEDIA_EXPORT CrasUtil {
 
   // Enumerates all devices of |type|.
   // Virtual for testing.
-  virtual std::optional<std::vector<CrasDevice>> CrasGetAudioDevices(
-      DeviceType type);
+  virtual std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
   // Returns if system AEC is supported in CRAS.
   // Virtual for testing.

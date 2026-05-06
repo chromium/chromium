@@ -421,13 +421,13 @@ bool AudioManagerAndroid::HasAudioInputDevices() {
   return true;
 }
 
-bool AudioManagerAndroid::GetAudioInputDeviceNames(
+void AudioManagerAndroid::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   if (UseAAudioPerStreamDeviceSelection()) {
     GetDeviceNames(device_names, AudioDeviceDirection::kInput);
-    return true;
+    return;
   }
 
   // Android devices in general do not have robust support for specifying
@@ -451,16 +451,15 @@ bool AudioManagerAndroid::GetAudioInputDeviceNames(
   // but each one can be controlled via appropriate Android API calls, e.g.
   // AudioManager#startBluetoothSco() for Bluetooth.
   GetCommunicationDeviceNames(device_names);
-  return true;
 }
 
-bool AudioManagerAndroid::GetAudioOutputDeviceNames(
+void AudioManagerAndroid::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   if (UseAAudioPerStreamDeviceSelection()) {
     GetDeviceNames(device_names, AudioDeviceDirection::kOutput);
-    return true;
+    return;
   }
 
   // Android devices in general do not have robust support for specifying
@@ -479,7 +478,6 @@ bool AudioManagerAndroid::GetAudioOutputDeviceNames(
   // which an input device is automatically chosen, it could be more
   // appropriate to invert the input and output device lists.
   AddDefaultDevice(device_names);
-  return true;
 }
 
 void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
