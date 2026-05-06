@@ -601,6 +601,8 @@ if (is_android) {
     deps = [
       ":leak_canary_test_resources",
       "//base:base_java_test_support",
+      "//base:command_line_java",
+      "//base:log_java",
       "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_core_java",
       "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_instrumentation_java",
       "//third_party/android_deps:com_squareup_leakcanary_leakcanary_android_java",

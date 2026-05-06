@@ -15,6 +15,8 @@ import shark.ReferencePattern.InstanceFieldPattern;
 import shark.ReferencePattern.JavaLocalPattern;
 import shark.ReferencePattern.StaticFieldPattern;
 
+import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner.AfterCleanupCheck;
 import org.chromium.build.annotations.ServiceImpl;
 
@@ -31,10 +33,27 @@ import java.util.ServiceLoader;
 
 @ServiceImpl(AfterCleanupCheck.class)
 public class LeakCanaryChecker implements AfterCleanupCheck {
+    private static final String TAG = "LeakCanaryChecker";
+
     @Override
     public void onAfterTestClass(Class<?> testClass) {
-        if (testClass.getAnnotation(EnableLeakChecks.class) != null) {
-            checkLeaks();
+        boolean enabledByAnnotation = testClass.getAnnotation(EnableLeakChecks.class) != null;
+        boolean enabledByFlag = CommandLine.getInstance().hasSwitch("enable-leak-checks");
+        boolean disabledByAnnotation = testClass.getAnnotation(DisableLeakCheck.class) != null;
+
+        if (enabledByAnnotation && disabledByAnnotation) {
+            throw new IllegalStateException(
+                    "Both @EnableLeakChecks and @DisableLeakCheck are specified on "
+                            + testClass.getName());
+        }
+
+        if (enabledByAnnotation || enabledByFlag) {
+            if (disabledByAnnotation) {
+                Log.w(TAG, "Leak check skipped by @DisableLeakCheck");
+            } else {
+                Log.i(TAG, "Running LeakCanary assertion");
+                checkLeaks();
+            }
         }
     }
 
@@ -43,6 +62,12 @@ public class LeakCanaryChecker implements AfterCleanupCheck {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface EnableLeakChecks {}
+
+    // Annotate a test class with this to disable LeakCanary checks, even if
+    // @EnableLeakChecks is present or the --enable-leak-checks flag is used.
+    @Target({ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface DisableLeakCheck {}
 
     /**
      * Interface for providing leak patterns to LeakCanaryChecker. Implement this interface and
@@ -140,6 +165,6 @@ public class LeakCanaryChecker implements AfterCleanupCheck {
     private static void checkLeaks() {
         // Ensure LazyHolder is initialized, which sets up LeakCanary.
         var unused = LazyHolder.sInstanceLeaks;
-        LeakAssertions.INSTANCE.assertNoLeaks("LeakCanaryChecker");
+        LeakAssertions.INSTANCE.assertNoLeaks(TAG);
     }
 }
