@@ -1091,7 +1091,7 @@ BASE_FEATURE(kYourSavedInfoPolicyAndExtentionToggleIndicators,
 
 // Defines if the "Your Saved Info" page is eligible to be shown in Chrome
 // settings.
-BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Defines if the shipping and order data is included in the "Your Saved Info"
 // settings page.
