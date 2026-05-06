@@ -127,10 +127,6 @@ class SystemIdentityManager {
   using FetchCapabilitiesCallback =
       base::OnceCallback<void(std::map<std::string, CapabilityResult>)>;
 
-  // Callback invoked when the `CanSigninToChrome()` capability is fetched.
-  using FetchCanSigninToChromeCallback =
-      base::OnceCallback<void(CapabilityResult)>;
-
   // Callback invoked when `HandleMDMNotification` completes. Is is invoked
   // with a boolean indicating whether the device is blocked or not.
   using HandleMDMCallback = base::OnceCallback<void(bool)>;
@@ -278,11 +274,6 @@ class SystemIdentityManager {
   virtual void FetchCapabilities(id<SystemIdentity> identity,
                                  const std::vector<std::string>& names,
                                  FetchCapabilitiesCallback callback) = 0;
-
-  // Asynchronously returns the `CanSigninToChrome` capability for `identity`.
-  // TODO(crbug.com/507833087): Remove and use account capabilities instead.
-  virtual void FetchCanSigninToChrome(id<SystemIdentity> identity,
-                                      FetchCanSigninToChromeCallback callback);
 
   // Registers the provider for building external privacy context.
   virtual void RegisterExternalPrivacyContextProvider(

@@ -6,20 +6,11 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "google_apis/gaia/gaia_id.h"
 
 namespace {
 
-using CapabilityResult = SystemIdentityManager::CapabilityResult;
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
-
-// Helper function used to extract the capability from `capabilities` map.
-CapabilityResult FetchCapabilityCompleted(
-    std::map<std::string, CapabilityResult> capabilities) {
-  DCHECK_EQ(capabilities.size(), 1u);
-  return capabilities.begin()->second;
-}
 
 }  // anonymous namespace
 
@@ -132,13 +123,4 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
 bool SystemIdentityManager::IsScopeLimitedError(
     id<RefreshAccessTokenError> error) {
   return false;
-}
-
-void SystemIdentityManager::FetchCanSigninToChrome(
-    id<SystemIdentity> identity,
-    FetchCanSigninToChromeCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FetchCapabilities(
-      identity, {kCanSignInToChromeCapabilityName},
-      base::BindOnce(&FetchCapabilityCompleted).Then(std::move(callback)));
 }
