@@ -226,6 +226,35 @@ public class TopInsetCoordinatorUnitTest {
     }
 
     @Test
+    public void testConstructor_RetriggerOnApplyWindowInsets() {
+        // 1. Verify it's not called if background type is DEFAULT.
+        mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
+        mTabSupplier.set(mNtpTab);
+        clearInvocations(mInsetObserver);
+        new TopInsetCoordinator(
+                mContext, mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+
+        // 2. Verify it IS called if background type is NOT DEFAULT and tab is NTP.
+        mNtpCustomizationConfigManager.setBackgroundTypeForTesting(
+                NtpBackgroundType.IMAGE_FROM_DISK);
+        mTabSupplier.set(mNtpTab);
+        clearInvocations(mInsetObserver);
+        new TopInsetCoordinator(
+                mContext, mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+
+        // 3. Verify it's NOT called if background type is NOT DEFAULT but tab is NOT NTP.
+        mNtpCustomizationConfigManager.setBackgroundTypeForTesting(
+                NtpBackgroundType.IMAGE_FROM_DISK);
+        mTabSupplier.set(mNonNtpTab1);
+        clearInvocations(mInsetObserver);
+        new TopInsetCoordinator(
+                mContext, mTabSupplier, mInsetObserver, mLayoutStateProviderSupplier);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
     public void testDestroy() {
         clearInvocations(mLayoutStateProvider);
         setCurrentTab(mNonNtpTab1);
