@@ -1679,6 +1679,31 @@ TEST_F(ElementTest, ShadowRootAdoptedStyleSheetsUseCounter) {
       GetDocument().IsUseCounted(WebFeature::kShadowRootAdoptedStyleSheets));
 }
 
+TEST_F(ElementTest, AttributeChangedWithInvalidationsIncrementsDOMTreeVersion) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(<div id="target"></div>)HTML");
+  Element* target = document.getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+
+  // Adding an attribute should increment DomTreeVersion.
+  uint64_t version_before = document.DomTreeVersion();
+  target->setAttribute(html_names::kClassAttr, AtomicString("foo"));
+  EXPECT_EQ(document.DomTreeVersion(), version_before + 1)
+      << "setAttribute (add) should increment DomTreeVersion.";
+
+  // Modifying an attribute should increment DomTreeVersion.
+  version_before = document.DomTreeVersion();
+  target->setAttribute(html_names::kClassAttr, AtomicString("bar"));
+  EXPECT_EQ(document.DomTreeVersion(), version_before + 1)
+      << "setAttribute (modify) should increment DomTreeVersion.";
+
+  // Removing an attribute should increment DomTreeVersion.
+  version_before = document.DomTreeVersion();
+  target->removeAttribute(html_names::kClassAttr);
+  EXPECT_EQ(document.DomTreeVersion(), version_before + 1)
+      << "removeAttribute should increment DomTreeVersion.";
+}
+
 // Provide assertion-prettify function for gtest.
 namespace focusgroup {
 void PrintTo(FocusgroupFlags flags, std::ostream* os) {

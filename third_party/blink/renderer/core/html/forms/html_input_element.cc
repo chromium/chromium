@@ -593,17 +593,17 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
     DCHECK(HasElementData());
     AttributeCollection attributes = AttributesWithoutUpdate();
     if (const Attribute* height = attributes.Find(html_names::kHeightAttr)) {
-      TextControlElement::AttributeChanged(AttributeModificationParams(
+      AttributeChangedWithInvalidations(AttributeModificationParams(
           html_names::kHeightAttr, height->Value(), height->Value(),
           AttributeModificationReason::kDirectly));
     }
     if (const Attribute* width = attributes.Find(html_names::kWidthAttr)) {
-      TextControlElement::AttributeChanged(AttributeModificationParams(
+      AttributeChangedWithInvalidations(AttributeModificationParams(
           html_names::kWidthAttr, width->Value(), width->Value(),
           AttributeModificationReason::kDirectly));
     }
     if (const Attribute* align = attributes.Find(html_names::kAlignAttr)) {
-      TextControlElement::AttributeChanged(AttributeModificationParams(
+      AttributeChangedWithInvalidations(AttributeModificationParams(
           html_names::kAlignAttr, align->Value(), align->Value(),
           AttributeModificationReason::kDirectly));
     }

@@ -3784,10 +3784,6 @@ DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   ParseAttribute(params);
 
-  GetDocument().IncDOMTreeVersion();
-  GetDocument().NotifyAttributeChanged(*this, params.name, params.old_value,
-                                       params.new_value);
-
   const QualifiedName& name = params.name;
   if (name == html_names::kIdAttr) {
     AtomicString lowercase_id;
@@ -3924,13 +3920,19 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       }
     }
   }
+}
 
-  InvalidateNodeListCachesInAncestors(&name, this, nullptr);
-
+void Element::AttributeChangedWithInvalidations(
+    const AttributeModificationParams& params) {
+  AttributeChanged(params);
+  GetDocument().IncDOMTreeVersion();
+  GetDocument().NotifyAttributeChanged(*this, params.name, params.old_value,
+                                       params.new_value);
+  InvalidateNodeListCachesInAncestors(&params.name, this, nullptr);
   if (isConnected()) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       if (params.old_value != params.new_value) {
-        cache->HandleAttributeChanged(name, this);
+        cache->HandleAttributeChanged(params.name, this);
       }
     }
   }
@@ -4136,6 +4138,10 @@ void Element::ParserSetAttributes(
     AttributeChanged(AttributeModificationParams(
         attribute.GetName(), g_null_atom, attribute.Value(),
         AttributeModificationReason::kByParser));
+  }
+
+  if (!attribute_vector.empty()) {
+    GetDocument().IncDOMTreeVersion();
   }
 }
 
@@ -11655,7 +11661,7 @@ void Element::WillModifyAttribute(const QualifiedName& name,
 DISABLE_CFI_PERF
 void Element::DidAddAttribute(const QualifiedName& name,
                               const AtomicString& value) {
-  AttributeChanged(AttributeModificationParams(
+  AttributeChangedWithInvalidations(AttributeModificationParams(
       name, g_null_atom, value, AttributeModificationReason::kDirectly));
   if (name == html_names::kIdAttr) {
     UpdateId(g_null_atom, value);
@@ -11670,7 +11676,7 @@ void Element::DidModifyAttribute(const QualifiedName& name,
   if (name == html_names::kIdAttr) {
     UpdateId(old_value, new_value);
   }
-  AttributeChanged(
+  AttributeChangedWithInvalidations(
       AttributeModificationParams(name, old_value, new_value, reason));
   probe::DidModifyDOMAttr(this, name, new_value);
   // Do not dispatch a DOMSubtreeModified event here; see bug 81141.
@@ -11681,7 +11687,7 @@ void Element::DidRemoveAttribute(const QualifiedName& name,
   if (name == html_names::kIdAttr) {
     UpdateId(old_value, g_null_atom);
   }
-  AttributeChanged(AttributeModificationParams(
+  AttributeChangedWithInvalidations(AttributeModificationParams(
       name, old_value, g_null_atom, AttributeModificationReason::kDirectly));
   probe::DidRemoveDOMAttr(this, name);
 }
@@ -11943,7 +11949,7 @@ void Element::CloneAttributesFrom(const Element& other) {
   for (wtf_size_t i = 0; i < element_data_->Attributes().size(); ++i) {
     const Attribute& attr = element_data_->Attributes().at(i);
     attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
-    AttributeChanged(
+    AttributeChangedWithInvalidations(
         AttributeModificationParams(attr.GetName(), g_null_atom, attr.Value(),
                                     AttributeModificationReason::kByCloning));
   }
