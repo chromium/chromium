@@ -123,9 +123,8 @@ class WebNNTensorImplBackendTest : public testing::Test {
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 void WebNNTensorImplBackendTest::TearDown() {
-  base::RunLoop().RunUntilIdle();
   // Give WebNNContext a chance to disconnect.
-  webnn_provider_remote_.reset();
+  webnn_test_environment_.RunUntilIdle();
 }
 
 base::expected<CreateContextSuccess, webnn::mojom::Error::Code>

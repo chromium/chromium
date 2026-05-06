@@ -120,9 +120,6 @@ void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
 
 WebNNContextImpl::~WebNNContextImpl() {
   for (auto impl : tensor_impls_) {
-    // Close all tensor pipes explicitly so no response callbacks are pending as
-    // Mojo forbids callbacks that are pending during destruction.
-    impl->ResetMojoReceiver();
     // Delete non-interop tensor instances from the tracker as they can't
     // unregister themselves since they're ref-counted and might outlive the
     // context.
@@ -147,6 +144,20 @@ void WebNNContextImpl::RecordContextBackendUma(ContextBackendUma backend_uma) {
 }
 
 void WebNNContextImpl::OnDisconnect() {
+  // Explicitly reset all tensor and graph receivers before destruction since
+  // destroying bound receivers can cause Mojo to DCHECK due to pending
+  // callbacks or if destruction occurs on a different runner than the bound
+  // runner.
+  for (auto impl : tensor_impls_) {
+    impl->ResetMojoReceiver();
+  }
+
+  for (auto impl : graph_impls_) {
+    impl->ResetMojoReceiver();
+  }
+
+  ResetMojoReceiver();
+
   base::OnceClosure remove_task;
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
   if (is_tflite_context_provider_) {
@@ -506,13 +517,9 @@ const mojom::CreateContextOptions& WebNNContextImpl::options() const {
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  RunOrScheduleTaskWithThisContext(base::BindOnce(
-      [](const std::string& reason, WebNNContextImpl& self) {
-        self.GetMojoReceiver().ResetWithReason(
-            /*custom_reason_code=*/0, reason);
-        self.OnDisconnect();
-      },
-      reason));
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  ResetMojoReceiver(reason);
+  OnDisconnect();
 }
 
 void WebNNContextImpl::RunOrScheduleTaskWithThisContext(

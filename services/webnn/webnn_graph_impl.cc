@@ -110,6 +110,7 @@ WebNNGraphImpl::WebNNGraphImpl(
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
 void WebNNGraphImpl::OnDisconnect() {
+  ResetMojoReceiver();
   context_->RemoveWebNNGraphImpl(handle());
 }
 

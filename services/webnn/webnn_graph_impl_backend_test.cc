@@ -443,10 +443,9 @@ void WebNNGraphImplBackendTest::SetUpBase() {
 }
 
 void WebNNGraphImplBackendTest::TearDown() {
-  webnn_context_.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
   // Give WebNNContext a chance to run disconnect.
-  provider_remote_.reset();
+  webnn_context_.reset();
+  webnn_test_environment_.RunUntilIdle();
 }
 
 mojo::AssociatedRemote<mojom::WebNNGraphBuilder>

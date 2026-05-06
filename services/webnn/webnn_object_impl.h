@@ -50,7 +50,13 @@ class WebNNObjectBase : public MojoInterface {
   // responses.
   void ResetMojoReceiver() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    mojo_receiver_.reset();
+    GetMojoReceiver().reset();
+  }
+
+  // Similar to the method above, but also specifies a disconnect reason.
+  void ResetMojoReceiver(std::string_view description) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    GetMojoReceiver().ResetWithReason(/*custom_reason_code=*/0, description);
   }
 
  protected:
@@ -58,30 +64,39 @@ class WebNNObjectBase : public MojoInterface {
   template <typename MojoPendingReceiverType>
   WebNNObjectBase(MojoPendingReceiverType pending_receiver,
                   scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : mojo_receiver_(this,
-                       std::move(pending_receiver),
-                       std::move(task_runner)) {
+      : task_runner_(std::move(task_runner)),
+        mojo_receiver_(this, std::move(pending_receiver), task_runner_) {
     mojo_receiver_.set_disconnect_handler(base::BindOnce(
         &WebNNObjectType::OnDisconnect, weak_factory_.GetWeakPtr()));
   }
 
   ~WebNNObjectBase() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // The receiver must be explicitly reset via ResetMojoReceiver() on
+    // `task_runner_` before destruction. Implicitly destroying a bound
+    // receiver may DCHECK in Mojo if destruction occurs on a different runner.
+    DCHECK(!mojo_receiver_.is_bound())
+        << "Receiver must be reset before destruction.";
   }
 
   // Returns the AssociatedReceiver bound to this implementation.
-  // Only legal to call from within the stack frame of a message dispatch.
   MojoReceiverType& GetMojoReceiver() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(task_runner_);
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     return mojo_receiver_;
   }
 
  protected:
   // This SequenceChecker is bound to the sequence where WebNNObjectBase is
-  // constructed. All messages dispatches must occur on this sequence.
+  // constructed. All message dispatches must occur on this sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
   const WebNNTokenType handle_;
+
+  // The task runner on which the Mojo receiver is bound and must be used to
+  // reset.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   MojoReceiverType mojo_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
 

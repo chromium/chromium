@@ -1366,10 +1366,9 @@ void WebNNGraphImplFuzzerBase::SetUp() {
 }
 
 void WebNNGraphImplFuzzerBase::TearDown() {
-  context_.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
   // Give WebNNContext a chance to run disconnect.
-  provider_remote_.reset();
+  context_.reset();
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
 
 mojo::AssociatedRemote<mojom::WebNNGraphBuilder>

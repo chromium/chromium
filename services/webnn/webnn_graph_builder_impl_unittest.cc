@@ -245,6 +245,10 @@ class WebNNGraphBuilderImplTest : public testing::Test {
         graph_builder_remote_.BindNewEndpointAndPassReceiver());
   }
   void TearDown() override {
+    // Give WebNNContext a chance to disconnect.
+    webnn_context_.reset();
+    webnn_test_environment_.RunUntilIdle();
+
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }
 

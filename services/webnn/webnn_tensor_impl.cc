@@ -227,6 +227,7 @@ void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
 }
 
 void WebNNTensorImpl::OnDisconnect() {
+  ResetMojoReceiver();
   context_->RemoveWebNNTensorImpl(handle());
 }
 
