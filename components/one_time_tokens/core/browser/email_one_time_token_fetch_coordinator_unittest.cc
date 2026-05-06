@@ -132,10 +132,12 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest,
   const EncryptedMessageReference reference("test_reference");
   const OneTimeTokenBackendNotification notification1(
       reference, base::Time::FromTimeT(100), base::Time::FromTimeT(100),
-      base::Time::FromTimeT(100), base::TimeTicks::Now());
+      base::Time::FromTimeT(100), base::Time::FromTimeT(100),
+      base::TimeTicks::Now());
   const OneTimeTokenBackendNotification notification2(
       reference, base::Time::FromTimeT(200), base::Time::FromTimeT(200),
-      base::Time::FromTimeT(200), base::TimeTicks::Now());
+      base::Time::FromTimeT(200), base::Time::FromTimeT(200),
+      base::TimeTicks::Now());
 
   // Only 1 request lifecycle should be started.
   EXPECT_CALL(
