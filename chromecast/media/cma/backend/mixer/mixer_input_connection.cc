@@ -421,6 +421,18 @@ MixerInputConnection::MixerInputConnection(
   DCHECK(socket_);
   CHECK_GT(num_channels_, 0);
   CHECK_GT(input_samples_per_second_, 0);
+  if (channel_layout_ != ::media::CHANNEL_LAYOUT_DISCRETE &&
+      ::media::ChannelLayoutToChannelCount(channel_layout_) != num_channels_) {
+    LOG(ERROR) << "Invalid channel layout/count: " << channel_layout_ << " / "
+               << num_channels_;
+    // Setting state_ to kRemoved or setting a flag might be needed.
+    // Instead we can just CHECK, but it might be untrusted renderer input.
+    // However, since it's a constructor, we can just let it fail gracefully
+    // later or here we just set a flag. Or we can just CHECK to fail safe if
+    // the renderer is compromised anyway.
+    CHECK_EQ(::media::ChannelLayoutToChannelCount(channel_layout_),
+             num_channels_);
+  }
   DCHECK_LE(start_threshold_frames_, max_queued_frames_);
 
   socket_->SetDelegate(this);
