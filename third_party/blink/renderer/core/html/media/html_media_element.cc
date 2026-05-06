@@ -695,7 +695,25 @@ void HTMLMediaElement::AttachToNewFrame() {
   // NOTE: |media_player_host_remote_| is also coupled to |old_document|'s
   // frame.
   ResetMojoState();
-  InvokeLoadAlgorithm();
+
+  // Only restart the load when the element was actively loading in the old
+  // document (NETWORK_LOADING or NETWORK_IDLE). The underlying media player
+  // holds frame-specific resources and must be recreated, which requires
+  // running the load algorithm again. When the element has already finished or
+  // failed loading (NETWORK_NO_SOURCE, NETWORK_EMPTY), moving to a new
+  // document should not invoke the resource selection algorithm — per the HTML
+  // spec, a document move does not constitute a new load trigger. In that case
+  // we still destroy the player to release old-frame references.
+  switch (network_state_) {
+    case kNetworkLoading:
+    case kNetworkIdle:
+      InvokeLoadAlgorithm();
+      break;
+    case kNetworkEmpty:
+    case kNetworkNoSource:
+      ResetMediaPlayerAndMediaSource();
+      break;
+  }
 }
 
 void HTMLMediaElement::ResetMojoState() {
@@ -845,6 +863,9 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
 
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
+    // Cancel any pending removed-from-document timer: the element has been
+    // (re-)inserted into a document, so it should not be paused by that timer.
+    removed_from_document_timer_.Stop();
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementInDocument);
     // If the element was deferred due to lazy loading while disconnected,
     // start IntersectionObserver monitoring now that it's in the document.
@@ -1022,6 +1043,13 @@ void HTMLMediaElement::load() {
 void HTMLMediaElement::InvokeLoadAlgorithm() {
   DVLOG(3) << "invokeLoadAlgorithm(" << *this << ")";
 
+  // Capture the user-visible playback position now, before the player is torn
+  // down. ResetMediaPlayerAndMediaSource() nulls web_media_player_, after which
+  // CurrentPlaybackPosition() returns 0 regardless of where the element was.
+  // currentTime() also returns last_seek_time_ when seeking_ is true, covering
+  // the in-flight seek case — seeking_ is cleared later at step 4.7.
+  const double old_playback_position = currentTime();
+
   // Perform the cleanup required for the resource load algorithm to run.
   StopPeriodicTimers();
   load_timer_.Stop();
@@ -1122,7 +1150,9 @@ void HTMLMediaElement::InvokeLoadAlgorithm() {
     //       to fire a simple event named timeupdate at the media element.
     // 4.9 - Set the initial playback position to 0.
     SetOfficialPlaybackPosition(0);
-    ScheduleTimeupdateEvent(false);
+    if (old_playback_position != 0) {
+      ScheduleTimeupdateEvent(false);
+    }
     GetCueTimeline().OnReadyStateReset();
 
     // 4.10 - Set the timeline offset to Not-a-Number (NaN).
