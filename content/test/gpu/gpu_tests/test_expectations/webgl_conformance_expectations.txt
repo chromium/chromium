@@ -468,8 +468,6 @@ crbug.com/402989074 [ win amd-0x7480 angle-d3d9 passthrough ] conformance/unifor
 # crbug.com/402989074 [ win amd-0x1900 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 # crbug.com/402989074 [ win amd-0x150e angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 
-## win10 / angle-d3d11 / Passthrough command decoder failures ##
-crbug.com/40167934 [ angle-d3d11 arch-x86_64 debug-x64 no-clang-coverage nvidia passthrough target-cpu-64 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
@@ -524,7 +522,6 @@ crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-arr
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/420455918 [ amd-0x7340 angle-opengl asan mac release ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/420455918 [ amd-0x7340 angle-opengl debug mac no-asan ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
@@ -626,7 +623,6 @@ crbug.com/396176034 [ android android-sm-a137f ] conformance/offscreencanvas/con
 
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
@@ -634,8 +630,6 @@ crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/con
 # Android Desktop failures #
 ############################
 
-# Brya failures
-crbug.com/416483574 [ android android-brya ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
 
 
 
