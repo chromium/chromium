@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "testing/platform_test.h"
 
@@ -410,4 +411,18 @@ TEST_F(GeminiMetricsTest, RecordGeminiPageAvailability) {
   histogram_tester_.ExpectBucketCount(kGeminiPageAvailabilityHistogram,
                                       IOSGeminiPageAvailability::kUnavailable,
                                       1);
+}
+
+TEST_F(GeminiMetricsTest, RecordGeminiGlicContextualCueDecision) {
+  RecordGeminiGlicContextualCueDecision(
+      optimization_guide::OptimizationGuideDecision::kTrue);
+  histogram_tester_.ExpectBucketCount(
+      kGlicContextualCueDecisionHistogram,
+      optimization_guide::OptimizationGuideDecision::kTrue, 1);
+
+  RecordGeminiGlicContextualCueDecision(
+      optimization_guide::OptimizationGuideDecision::kFalse);
+  histogram_tester_.ExpectBucketCount(
+      kGlicContextualCueDecisionHistogram,
+      optimization_guide::OptimizationGuideDecision::kFalse, 1);
 }

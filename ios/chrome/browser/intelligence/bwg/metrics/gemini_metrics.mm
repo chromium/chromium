@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
@@ -201,6 +202,9 @@ const char kCameraFlowCameraPickerResultHistogram[] =
 
 const char kEditMenuSelectedTextLengthHistogram[] =
     "IOS.Gemini.EditMenuPrompt.SelectedText.Length";
+
+const char kGlicContextualCueDecisionHistogram[] =
+    "IOS.Gemini.GlicContextualCue.Decision";
 
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
@@ -650,4 +654,9 @@ void RecordGeminiInputPlateAttachmentOptionTapped(
 
 void RecordGeminiEditMenuSelectedTextLength(int length) {
   base::UmaHistogramCounts1000(kEditMenuSelectedTextLengthHistogram, length);
+}
+
+void RecordGeminiGlicContextualCueDecision(
+    optimization_guide::OptimizationGuideDecision decision) {
+  base::UmaHistogramEnumeration(kGlicContextualCueDecisionHistogram, decision);
 }

@@ -9,6 +9,7 @@ source_set("metrics") {
   ]
   deps = [
     "//base",
+    "//components/optimization_guide/core",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
   ]
@@ -20,6 +21,7 @@ source_set("unit_tests") {
   deps = [
     ":metrics",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
   ]
 }

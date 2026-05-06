@@ -621,6 +621,10 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   CHECK(IsAskGeminiChipEnabled());
+
+  // Record every decision before checking if the url changed.
+  RecordGeminiGlicContextualCueDecision(decision);
+
   // The URL has changed so the metadata is obsolete.
   if (previous_main_frame_url_ != main_frame_url) {
     return;

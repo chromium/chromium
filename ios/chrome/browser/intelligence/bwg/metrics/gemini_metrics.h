@@ -14,6 +14,10 @@ class TimeDelta;
 class TimeTicks;
 }  // namespace base
 
+namespace optimization_guide {
+enum class OptimizationGuideDecision;
+}  // namespace optimization_guide
+
 namespace gemini {
 enum class EntryPoint;
 enum class FloatyUpdateSource;
@@ -249,6 +253,9 @@ extern const char kResponseLatencyWithoutGeneratedImageHistogram[];
 
 // UMA histogram key for IOS.Gemini.EditMenuPrompt.SelectedText.Length.
 extern const char kEditMenuSelectedTextLengthHistogram[];
+
+// UMA histogram key for IOS.Gemini.GlicContextualCue.Decision.
+extern const char kGlicContextualCueDecisionHistogram[];
 
 // Represents the completed Gemini session types.
 enum class IOSGeminiSessionType {
@@ -573,5 +580,9 @@ void RecordGeminiCameraFlowCameraPickerResult(
 
 // Records the length of the selected text in the edit menu.
 void RecordGeminiEditMenuSelectedTextLength(int length);
+
+// Records the glic contextual cue decision for Gemini.
+void RecordGeminiGlicContextualCueDecision(
+    optimization_guide::OptimizationGuideDecision decision);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

@@ -2674,6 +2674,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.GlicContextualCue.Decision"
+    enum="OptimizationGuideOptimizationGuideDecision"
+    expires_after="2027-05-01">
+  <owner>ogallant@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the optimization guide decision for Gemini contextual cueing. Logged
+    when a response is received from the optimization guide service following a
+    navigation.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.ImageActionButton"
     enum="IOSGeminiImageActionButtonType" expires_after="2027-02-02">
   <owner>joepeplowski@google.com</owner>
