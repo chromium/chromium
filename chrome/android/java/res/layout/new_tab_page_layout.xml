@@ -27,7 +27,10 @@ found in the LICENSE file.
         android:layout="@layout/logo_view_layout" />
 
     <!-- Search box -->
-    <include layout="@layout/fake_search_box_layout"/>
+    <ViewStub
+        android:id="@+id/search_box_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <!-- Composeplate / "AI Mode" -->
     <ViewStub

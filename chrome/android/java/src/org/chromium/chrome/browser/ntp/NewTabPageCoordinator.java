@@ -333,10 +333,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mUiConfig.updateDisplayStyle();
         }
 
+        ViewStub searchBoxStub = mNewTabPageLayout.findViewById(R.id.search_box_stub);
         mNtpSearchBox =
                 NtpSearchBoxFactory.createSearchBox(
                         mActivity,
-                        mNewTabPageLayout,
+                        searchBoxStub,
                         mIsTablet,
                         lifecycleDispatcher,
                         mProfile.isOffTheRecord(),

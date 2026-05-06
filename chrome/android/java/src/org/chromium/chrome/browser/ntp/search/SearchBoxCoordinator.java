@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,7 +47,7 @@ public class SearchBoxCoordinator implements NtpSearchBox {
 
     public SearchBoxCoordinator(
             Context context,
-            ViewGroup parent,
+            ViewStub viewStub,
             boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
@@ -53,7 +55,7 @@ public class SearchBoxCoordinator implements NtpSearchBox {
             NewTabPageManager newTabPageManager,
             Profile profile) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
-        mView = (SearchBoxContainerView) parent.findViewById(R.id.search_box);
+        mView = ViewUtils.replace(viewStub, R.layout.fake_search_box_layout);
         mMediator =
                 new SearchBoxMediator(
                         context,

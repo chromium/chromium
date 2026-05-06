@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
-import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,7 +18,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class NtpSearchBoxFactory {
     public static NtpSearchBox createSearchBox(
             Context context,
-            ViewGroup parent,
+            ViewStub viewStub,
             boolean isTablet,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             boolean isIncognito,
@@ -27,7 +27,7 @@ public class NtpSearchBoxFactory {
             Profile profile) {
         return new SearchBoxCoordinator(
                 context,
-                parent,
+                viewStub,
                 isTablet,
                 activityLifecycleDispatcher,
                 isIncognito,
