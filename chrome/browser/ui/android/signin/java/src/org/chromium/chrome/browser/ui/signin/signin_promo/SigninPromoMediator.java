@@ -119,7 +119,9 @@ final class SigninPromoMediator
         }
 
         mIdentityManager.addObserver(this);
-        mSyncService.addSyncStateChangedListener(this);
+        if (mSyncService != null) {
+            mSyncService.addSyncStateChangedListener(this);
+        }
         mAccountManagerFacade.addObserver(this);
         mProfileDataCache.addObserver(this);
     }
@@ -127,7 +129,9 @@ final class SigninPromoMediator
     void destroy() {
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
-        mSyncService.removeSyncStateChangedListener(this);
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(this);
+        }
         mIdentityManager.removeObserver(this);
     }
 

@@ -253,7 +253,6 @@ final class SigninButtonMediator
             return;
         }
 
-        // TODO(crbug.com/89655527): Add mediator unit test case to cover this possibility.
         mIdentityError =
                 mSyncService == null
                         ? UserActionableError.NONE

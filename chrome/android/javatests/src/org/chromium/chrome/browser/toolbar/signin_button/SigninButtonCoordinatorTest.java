@@ -289,6 +289,32 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
+    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
+    // is the min version that supports split stores UPM backend, to avoid
+    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    public void testSigninButtonWithNullSyncService() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncServiceFactory.setInstanceForTesting(null);
+                });
+
+        // SigninButton may have already been initialized with a real SyncService. As such,
+        // recreating the activity in order to ensure the null SyncService override is used.
+        mActivityTestRule.recreateActivity();
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Avatar should update to a personalized disc with a name and email in its description.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.avatar_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testSigninButtonHiddenOnNavigationOnPhone() {
         // Initially visible on NTP.
