@@ -6,29 +6,13 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import type {
-  CrCheckboxElement} from
-    'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {
-  CrDialogElement} from
-    'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {
-  createRef,
-  css,
-  html,
-  LitElement,
-  nothing,
-  ref,
-} from 'chrome://resources/mwc/lit/index.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {createRef, css, html, LitElement, nothing, ref} from 'chrome://resources/mwc/lit/index.js';
 
 import {assertExists} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
-import {
-  getCloudDestination,
-  getI18nMessage,
-  isCloudDestination,
-  isCloudDestinationOnedrive,
-} from '../../models/load_time_data.js';
+import {getCloudDestination, getI18nMessage, isCloudDestination, isCloudDestinationOnedrive} from '../../models/load_time_data.js';
 import * as localStorage from '../../models/local_storage.js';
 import {LocalStorageKey} from '../../type.js';
 import {DEFAULT_STYLE} from '../styles.js';

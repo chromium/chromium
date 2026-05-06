@@ -4,14 +4,7 @@
 
 import {assertInstanceof} from './assert.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import {
-  EmptyThumbnailError,
-  ImageFormat,
-  LoadError,
-  MimeType,
-  PlayError,
-  PlayMalformedError,
-} from './type.js';
+import {EmptyThumbnailError, ImageFormat, LoadError, MimeType, PlayError, PlayMalformedError} from './type.js';
 import {canvasToImageBlob, newDrawingCanvas} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 

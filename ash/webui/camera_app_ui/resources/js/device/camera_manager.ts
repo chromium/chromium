@@ -12,17 +12,8 @@ import {LidState, ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
-import type {
-  Facing, PhotoResolutionLevel, PreviewVideo, VideoResolutionLevel} from
-  '../type.js';
-import {
-  AspectRatioSet,
-  CameraSuspendError,
-  Mode,
-  PerfEvent,
-  Resolution,
-  ViewName,
-} from '../type.js';
+import type {Facing, PhotoResolutionLevel, PreviewVideo, VideoResolutionLevel} from '../type.js';
+import {AspectRatioSet, CameraSuspendError, Mode, PerfEvent, Resolution, ViewName} from '../type.js';
 import * as util from '../util.js';
 import {WarningType} from '../views/warning.js';
 import {WaitableEvent} from '../waitable_event.js';
@@ -33,10 +24,7 @@ import {OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
 import {Preview} from './preview.js';
 import type {PtzController} from './ptz_controller.js';
-import type {
-  CameraConfig, CameraInfo, CameraUi, CameraViewUi, ModeConstraints,
-  PhotoAspectRatioOptionListener, PhotoResolutionOptionListener,
-  VideoResolutionOptionListener} from './type.js';
+import type {CameraConfig, CameraInfo, CameraUi, CameraViewUi, ModeConstraints, PhotoAspectRatioOptionListener, PhotoResolutionOptionListener, VideoResolutionOptionListener} from './type.js';
 
 class ResumeStateWatchdog {
   // This is definitely assigned in this.start() in the first statement of the

@@ -4,9 +4,7 @@
 
 import {assertNotReached} from '../assert.js';
 import type {VideoType} from '../type.js';
-import {
-  MimeType,
-} from '../type.js';
+import {MimeType} from '../type.js';
 
 export const IMAGE_PREFIX = 'IMG_';
 

@@ -5,13 +5,7 @@
 import './super-res-loading-indicator.js';
 
 import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
-import {
-  classMap,
-  css,
-  html,
-  LitElement,
-  styleMap,
-} from 'chrome://resources/mwc/lit/index.js';
+import {classMap, css, html, LitElement, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import type {CoverPhoto} from '../../cover_photo.js';
 import {I18nString} from '../../i18n_string.js';

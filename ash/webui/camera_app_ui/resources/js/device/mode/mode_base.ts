@@ -6,11 +6,7 @@ import {assertInstanceof} from '../../assert.js';
 import * as error from '../../error.js';
 import {CrosImageCapture} from '../../mojo/image_capture.js';
 import type {Facing, PreviewVideo, Resolution} from '../../type.js';
-import {
-  CanceledError,
-  ErrorLevel,
-  ErrorType,
-} from '../../type.js';
+import {CanceledError, ErrorLevel, ErrorType} from '../../type.js';
 import type {StreamConstraints} from '../stream_constraints.js';
 
 /**

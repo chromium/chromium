@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertEnumVariant,
-  assertExists,
-  assertInstanceof,
-} from '../assert.js';
+import {assert, assertEnumVariant, assertExists, assertInstanceof} from '../assert.js';
 import {queuedAsyncCallback} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
@@ -16,51 +11,21 @@ import {FaceOverlay} from '../face.js';
 import {Point} from '../geometry.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
 import type {CameraMetadata, CameraMetadataEntry} from '../mojo/type.js';
-import {
-  AndroidControlAeAntibandingMode,
-  AndroidControlAeMode,
-  AndroidControlAeState,
-  AndroidControlAfMode,
-  AndroidControlAfState,
-  AndroidControlAwbMode,
-  AndroidControlAwbState,
-  AndroidStatisticsFaceDetectMode,
-  CameraMetadataTag,
-  StreamType,
-} from '../mojo/type.js';
+import {AndroidControlAeAntibandingMode, AndroidControlAeMode, AndroidControlAeState, AndroidControlAfMode, AndroidControlAfState, AndroidControlAwbMode, AndroidControlAwbState, AndroidStatisticsFaceDetectMode, CameraMetadataTag, StreamType} from '../mojo/type.js';
 import type {MojoEndpoint} from '../mojo/util.js';
-import {
-  closeEndpoint,
-} from '../mojo/util.js';
+import {closeEndpoint} from '../mojo/util.js';
 import * as nav from '../nav.js';
 import type {PhotoModeAutoScanner} from '../photo_mode_auto_scanner.js';
-import {
-  createInstance as createPhotoModeAutoScanner,
-} from '../photo_mode_auto_scanner.js';
+import {createInstance as createPhotoModeAutoScanner} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  Facing,
-  getVideoTrackSettings,
-  Mode,
-  PreviewVideo,
-  Resolution,
-  ViewName,
-} from '../type.js';
+import {ErrorLevel, ErrorType, Facing, getVideoTrackSettings, Mode, PreviewVideo, Resolution, ViewName} from '../type.js';
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import type {PtzController, StrictPtzSettings} from './ptz_controller.js';
-import {
-  assertStrictPtzSettings,
-  DigitalZoomPtzController,
-  MediaStreamPtzController,
-} from './ptz_controller.js';
+import {assertStrictPtzSettings, DigitalZoomPtzController, MediaStreamPtzController} from './ptz_controller.js';
 import type {StreamConstraints} from './stream_constraints.js';
-import {
-  toMediaStreamConstraints,
-} from './stream_constraints.js';
+import {toMediaStreamConstraints} from './stream_constraints.js';
 
 /**
  * Creates a controller for the video preview of Camera view.

@@ -9,15 +9,9 @@ import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator, parseMetadata} from './device_operator.js';
 import type {CameraMetadata} from './type.js';
-import {
-  CameraMetadataTag,
-  Effect,
-  StreamType,
-} from './type.js';
+import {CameraMetadataTag, Effect, StreamType} from './type.js';
 import type {MojoEndpoint} from './util.js';
-import {
-  closeEndpoint,
-} from './util.js';
+import {closeEndpoint} from './util.js';
 
 export interface TakePhotoResult {
   pendingBlob: Promise<Blob>;

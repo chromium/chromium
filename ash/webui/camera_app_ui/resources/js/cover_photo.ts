@@ -7,11 +7,7 @@ import {reportError} from './error.js';
 import type {FileAccessEntry} from './models/file_system_access_entry.js';
 import {extractImageFromBlob} from './thumbnailer.js';
 import type {ImageFormat} from './type.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  MimeType,
-} from './type.js';
+import {ErrorLevel, ErrorType, MimeType} from './type.js';
 
 /**
  * Cover photo of gallery button.

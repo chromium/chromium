@@ -10,9 +10,7 @@ import type {StreamConstraints} from '../stream_constraints.js';
 import type {ModeBase} from './mode_base.js';
 import {ModeFactory} from './mode_base.js';
 import type {PhotoHandler, PhotoResult} from './photo.js';
-import {
-  Photo,
-} from './photo.js';
+import {Photo} from './photo.js';
 
 /**
  * @param size Size of image to be cropped document from.

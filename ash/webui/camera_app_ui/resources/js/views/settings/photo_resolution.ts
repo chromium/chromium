@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import type {CameraManager} from '../../device/index.js';
-import type {
-  PhotoResolutionOption, PhotoResolutionOptionGroup} from
-  '../../device/type.js';
+import type {PhotoResolutionOption, PhotoResolutionOptionGroup} from '../../device/type.js';
 import * as dom from '../../dom.js';
 import * as expert from '../../expert.js';
 import {I18nString} from '../../i18n_string.js';

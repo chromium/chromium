@@ -7,11 +7,7 @@ import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import * as expert from '../../expert.js';
 import * as h264 from '../../h264.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  Resolution,
-} from '../../type.js';
+import {ErrorLevel, ErrorType, Resolution} from '../../type.js';
 import * as util from '../../util.js';
 
 /**

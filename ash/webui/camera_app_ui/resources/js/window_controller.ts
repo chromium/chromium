@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from './assert.js';
-import {
-  WindowStateControllerRemote,
-  WindowStateMonitorCallbackRouter,
-  WindowStateType,
-} from './mojo/type.js';
+import {WindowStateControllerRemote, WindowStateMonitorCallbackRouter, WindowStateType} from './mojo/type.js';
 import {wrapEndpoint} from './mojo/util.js';
 
 type WindowStateChangedEventListener = (states: WindowStateType[]) => void;

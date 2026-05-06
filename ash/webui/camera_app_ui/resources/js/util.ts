@@ -10,11 +10,7 @@ import * as localDev from './local_dev.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import type {FpsRange, Resolution} from './type.js';
-import {
-  AspectRatioSet,
-  Facing,
-  ImageFormat,
-} from './type.js';
+import {AspectRatioSet, Facing, ImageFormat} from './type.js';
 
 /**
  * Creates a canvas element for 2D drawing.

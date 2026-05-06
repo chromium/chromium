@@ -6,12 +6,7 @@ import type {AppWindow} from './app_window.js';
 import * as comlink from './lib/comlink.js';
 import type {TestBridge} from './test_bridge.js';
 import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
-import {
-  createUntrustedIframe,
-  injectUntrustedJSModule,
-  setGaHelper,
-  setVideoProcessorHelper,
-} from './untrusted_scripts.js';
+import {createUntrustedIframe, injectUntrustedJSModule, setGaHelper, setVideoProcessorHelper} from './untrusted_scripts.js';
 import {expandPath} from './util.js';
 
 

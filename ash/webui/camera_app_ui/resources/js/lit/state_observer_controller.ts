@@ -1,9 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import type {
-  ReactiveController, ReactiveControllerHost} from
-  'chrome://resources/mwc/lit/index.js';
+import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 
 import {assert} from '../assert.js';
 import * as state from '../state.js';

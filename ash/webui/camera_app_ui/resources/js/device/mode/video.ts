@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertInstanceof,
-} from '../../assert.js';
+import {assert, assertInstanceof} from '../../assert.js';
 import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
@@ -14,12 +11,8 @@ import {I18nString} from '../../i18n_string.js';
 import {LowStorageActionType, sendLowStorageEvent} from '../../metrics.js';
 import {Filenamer} from '../../models/file_namer.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import type {
-  TimeLapseEncoderArgs, TimeLapseSaver, VideoSaver} from
-  '../../models/video_saver.js';
-import {
-  GifSaver,
-} from '../../models/video_saver.js';
+import type {TimeLapseEncoderArgs, TimeLapseSaver, VideoSaver} from '../../models/video_saver.js';
+import {GifSaver} from '../../models/video_saver.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../mojo/image_capture.js';
@@ -29,18 +22,7 @@ import * as sound from '../../sound.js';
 import * as state from '../../state.js';
 import * as toast from '../../toast.js';
 import type {Facing, Metadata, PreviewVideo} from '../../type.js';
-import {
-  CanceledError,
-  ErrorLevel,
-  ErrorType,
-  getVideoTrackSettings,
-  LowStorageError,
-  NoChunkError,
-  NoFrameError,
-  PerfEvent,
-  Resolution,
-  VideoType,
-} from '../../type.js';
+import {CanceledError, ErrorLevel, ErrorType, getVideoTrackSettings, LowStorageError, NoChunkError, NoFrameError, PerfEvent, Resolution, VideoType} from '../../type.js';
 import {getFpsRangeFromConstraints, sleep} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import type {StreamConstraints} from '../stream_constraints.js';

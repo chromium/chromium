@@ -4,30 +4,10 @@
 
 import {assertNotReached} from '../assert.js';
 import {SessionBehavior} from '../memory_usage.js';
-import {
-  BarcodeContentType,
-  DocScanActionType,
-  DocScanFixType,
-  DocScanResultActionType,
-  GifResultType,
-  IntentResultType,
-  LaunchType,
-  LowStorageActionType,
-  OcrEventType,
-  RecordType,
-  ShutterType,
-} from '../metrics.js';
+import {BarcodeContentType, DocScanActionType, DocScanFixType, DocScanResultActionType, GifResultType, IntentResultType, LaunchType, LowStorageActionType, OcrEventType, RecordType, ShutterType} from '../metrics.js';
 import {SupportedWifiSecurityType} from '../scanner_chip.js';
 import {State} from '../state.js';
-import {
-  AspectRatioSet,
-  Facing,
-  Mode,
-  PerfEvent,
-  PhotoResolutionLevel,
-  Pressure,
-  VideoResolutionLevel,
-} from '../type.js';
+import {AspectRatioSet, Facing, Mode, PerfEvent, PhotoResolutionLevel, Pressure, VideoResolutionLevel} from '../type.js';
 
 import * as mojoType from './type.js';
 

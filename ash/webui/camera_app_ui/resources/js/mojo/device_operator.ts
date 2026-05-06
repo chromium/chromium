@@ -8,41 +8,14 @@ import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import * as state from '../state.js';
-import type {
-  CropRegionRect, FpsRangeList, ResolutionList, VideoConfig} from '../type.js';
-import {
-  CameraSuspendError,
-  ErrorLevel,
-  ErrorType,
-  Facing,
-  PortraitErrorNoFaceDetected,
-  Resolution,
-} from '../type.js';
+import type {CropRegionRect, FpsRangeList, ResolutionList, VideoConfig} from '../type.js';
+import {CameraSuspendError, ErrorLevel, ErrorType, Facing, PortraitErrorNoFaceDetected, Resolution} from '../type.js';
 import {CancelableEvent} from '../waitable_event.js';
 
-import type {
-  CameraAppDeviceRemote, CameraInfo, CameraMetadata, CameraMetadataEntry,
-  CaptureIntent, MojoBlob, PointF, StreamType} from './type.js';
-import {
-  AndroidInfoSupportedHardwareLevel,
-  CameraAppDeviceProvider,
-  CameraEventObserverCallbackRouter,
-  CameraFacing,
-  CameraInfoObserverCallbackRouter,
-  CameraMetadataTag,
-  DocumentCornersObserverCallbackRouter,
-  Effect,
-  EntryType,
-  GetCameraAppDeviceStatus,
-  PortraitModeSegResult,
-  ResultMetadataObserverCallbackRouter,
-  StillCaptureResultObserverCallbackRouter,
-} from './type.js';
+import type {CameraAppDeviceRemote, CameraInfo, CameraMetadata, CameraMetadataEntry, CaptureIntent, MojoBlob, PointF, StreamType} from './type.js';
+import {AndroidInfoSupportedHardwareLevel, CameraAppDeviceProvider, CameraEventObserverCallbackRouter, CameraFacing, CameraInfoObserverCallbackRouter, CameraMetadataTag, DocumentCornersObserverCallbackRouter, Effect, EntryType, GetCameraAppDeviceStatus, PortraitModeSegResult, ResultMetadataObserverCallbackRouter, StillCaptureResultObserverCallbackRouter} from './type.js';
 import type {MojoEndpoint} from './util.js';
-import {
-  closeEndpoint,
-  wrapEndpoint,
-} from './util.js';
+import {closeEndpoint, wrapEndpoint} from './util.js';
 
 /**
  * Parse the entry data according to its type.

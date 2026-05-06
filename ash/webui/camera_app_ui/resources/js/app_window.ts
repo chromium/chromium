@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 import type {ErrorInfo, PerfEntry} from './type.js';
-import {
-  PerfEvent,
-  Resolution,
-} from './type.js';
+import {PerfEvent, Resolution} from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
 const TOP_BAR_HEIGHT = 32;

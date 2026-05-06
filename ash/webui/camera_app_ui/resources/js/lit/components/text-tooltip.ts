@@ -3,12 +3,7 @@
 // found in the LICENSE file.
 
 import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
-import {
-  classMap,
-  css,
-  html,
-  LitElement,
-} from 'chrome://resources/mwc/lit/index.js';
+import {classMap, css, html, LitElement} from 'chrome://resources/mwc/lit/index.js';
 
 import {checkInstanceof} from '../../assert.js';
 import {DEFAULT_STYLE} from '../styles.js';

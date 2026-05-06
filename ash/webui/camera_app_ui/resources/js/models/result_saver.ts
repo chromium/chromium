@@ -10,19 +10,12 @@ import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {FileType} from '../mojo/type.js';
 import type {Awaitable, Metadata} from '../type.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  ImageFormat,
-  MimeType,
-  VideoType,
-} from '../type.js';
+import {ErrorLevel, ErrorType, ImageFormat, MimeType, VideoType} from '../type.js';
 import {sleep} from '../util.js';
 
 import {Filenamer} from './file_namer.js';
 import * as filesystem from './file_system.js';
-import type {
-  DirectoryAccessEntry, FileAccessEntry} from './file_system_access_entry.js';
+import type {DirectoryAccessEntry, FileAccessEntry} from './file_system_access_entry.js';
 import {isCloudDestination} from './load_time_data.js';
 
 /**

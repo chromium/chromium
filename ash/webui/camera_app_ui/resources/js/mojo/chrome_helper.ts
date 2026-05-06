@@ -7,32 +7,11 @@ import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import * as localDev from '../local_dev.js';
 import {getCanUseBigBuffer} from '../models/load_time_data.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  MimeType,
-} from '../type.js';
+import {ErrorLevel, ErrorType, MimeType} from '../type.js';
 import {windowController} from '../window_controller.js';
 
-import type {
-  AspectRatio, BigBuffer, CameraAppHelperRemote, CaptureDestination,
-  CloudUpload, EventsSenderRemote, FileType, LidState, LocalFile, OcrResult,
-  ScreenState, WifiConfig} from './type.js';
-import {
-  CameraAppHelper,
-  CameraIntentAction,
-  ExternalScreenMonitorCallbackRouter,
-  FileMonitorResult,
-  LidStateMonitorCallbackRouter,
-  PdfBuilderRemote,
-  Rotation,
-  ScreenLockedMonitorCallbackRouter,
-  ScreenStateMonitorCallbackRouter,
-  StorageMonitorCallbackRouter,
-  StorageMonitorStatus,
-  SWPrivacySwitchMonitorCallbackRouter,
-  TabletModeMonitorCallbackRouter,
-} from './type.js';
+import type {AspectRatio, BigBuffer, CameraAppHelperRemote, CaptureDestination, CloudUpload, EventsSenderRemote, FileType, LidState, LocalFile, OcrResult, ScreenState, WifiConfig} from './type.js';
+import {CameraAppHelper, CameraIntentAction, ExternalScreenMonitorCallbackRouter, FileMonitorResult, LidStateMonitorCallbackRouter, PdfBuilderRemote, Rotation, ScreenLockedMonitorCallbackRouter, ScreenStateMonitorCallbackRouter, StorageMonitorCallbackRouter, StorageMonitorStatus, SWPrivacySwitchMonitorCallbackRouter, TabletModeMonitorCallbackRouter} from './type.js';
 import {wrapEndpoint} from './util.js';
 
 /**

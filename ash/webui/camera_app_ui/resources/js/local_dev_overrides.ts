@@ -14,15 +14,8 @@ import type {Point} from './geometry.js';
 import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
-import type {
-  EventsSenderRemote, FileType, OcrResult, PdfBuilderRemote, WifiConfig} from
-  './mojo/type.js';
-import {
-  AspectRatio,
-  LidState,
-  ScreenState,
-  StorageMonitorStatus,
-} from './mojo/type.js';
+import type {EventsSenderRemote, FileType, OcrResult, PdfBuilderRemote, WifiConfig} from './mojo/type.js';
+import {AspectRatio, LidState, ScreenState, StorageMonitorStatus} from './mojo/type.js';
 import {fakeEndpoint} from './mojo/util.js';
 import {expandPath} from './util.js';
 

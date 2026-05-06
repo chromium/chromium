@@ -5,11 +5,7 @@
 import {assert} from './assert.js';
 import {ExpertOption} from './expert.js';
 import type {PerfInformation} from './type.js';
-import {
-  Mode,
-  PerfEvent,
-  ViewName,
-} from './type.js';
+import {Mode, PerfEvent, ViewName} from './type.js';
 import type {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {

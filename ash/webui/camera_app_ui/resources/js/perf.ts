@@ -9,12 +9,7 @@ import * as metrics from './metrics.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
 import type {PerfEntry, PerfInformation} from './type.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  PerfEvent,
-  Pressure,
-} from './type.js';
+import {ErrorLevel, ErrorType, PerfEvent, Pressure} from './type.js';
 
 type PerfEventListener = (perfEntry: PerfEntry) => void;
 

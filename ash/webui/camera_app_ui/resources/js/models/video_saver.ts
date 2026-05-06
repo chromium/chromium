@@ -12,13 +12,8 @@ import {lazySingleton} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {AsyncWriter} from './async_writer.js';
-import type {
-  VideoProcessor, VideoProcessorConstructor} from './ffmpeg/video_processor.js';
-import {
-  createGifArgs,
-  createMp4Args,
-  createTimeLapseArgs,
-} from './ffmpeg/video_processor_args.js';
+import type {VideoProcessor, VideoProcessorConstructor} from './ffmpeg/video_processor.js';
+import {createGifArgs, createMp4Args, createTimeLapseArgs} from './ffmpeg/video_processor_args.js';
 import {createPrivateTempVideoFile} from './file_system.js';
 import type {FileAccessEntry} from './file_system_access_entry.js';
 

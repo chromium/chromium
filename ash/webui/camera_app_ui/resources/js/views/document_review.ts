@@ -2,50 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertExists,
-  assertInstanceof,
-  assertNotReached,
-} from '../assert.js';
+import {assert, assertExists, assertInstanceof, assertNotReached} from '../assert.js';
 import * as dom from '../dom.js';
 import type {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
-import {
-  DocScanActionType,
-  DocScanFixType,
-  DocScanResultActionType,
-  sendDocScanEvent,
-  sendDocScanResultEvent,
-} from '../metrics.js';
+import {DocScanActionType, DocScanFixType, DocScanResultActionType, sendDocScanEvent, sendDocScanResultEvent} from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import type {ResultSaver} from '../models/result_saver.js';
-import {
-  ChromeHelper,
-  createBigBufferFromBlob,
-  createNumArrayFromBlob,
-  handleBigBufferError,
-  shouldUseBigBuffer,
-} from '../mojo/chrome_helper.js';
+import {ChromeHelper, createBigBufferFromBlob, createNumArrayFromBlob, handleBigBufferError, shouldUseBigBuffer} from '../mojo/chrome_helper.js';
 import type {BigBuffer, PdfBuilderRemote} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
 import type {Rotation} from '../type.js';
-import {
-  MimeType,
-  PerfEvent,
-  ViewName,
-} from '../type.js';
+import {MimeType, PerfEvent, ViewName} from '../type.js';
 import type {KeyboardShortcut} from '../util.js';
-import {
-  getKeyboardShortcut,
-  instantiateTemplate,
-  loadImage,
-  share,
-} from '../util.js';
+import {getKeyboardShortcut, instantiateTemplate, loadImage, share} from '../util.js';
 
 import {DocumentFixMode} from './document_fix_mode.js';
 import {DocumentPreviewMode} from './document_preview_mode.js';

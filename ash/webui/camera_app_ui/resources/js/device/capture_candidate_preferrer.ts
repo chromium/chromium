@@ -6,30 +6,14 @@ import {getAspectRatioOrder} from '../aspect_ratio_order.js';
 import {assert, assertNotReached} from '../assert.js';
 import * as expert from '../expert.js';
 import * as localStorage from '../models/local_storage.js';
-import {
-  AspectRatioSet,
-  LocalStorageKey,
-  Mode,
-  PhotoResolutionLevel,
-  Resolution,
-  VideoResolutionLevel,
-} from '../type.js';
+import {AspectRatioSet, LocalStorageKey, Mode, PhotoResolutionLevel, Resolution, VideoResolutionLevel} from '../type.js';
 import {toAspectRatioSet} from '../util.js';
 
-import type {
-  Camera3DeviceInfo, CapturePreviewPairs} from './camera3_device_info.js';
+import type {Camera3DeviceInfo, CapturePreviewPairs} from './camera3_device_info.js';
 import type {CaptureCandidate} from './capture_candidate.js';
-import {
-  PhotoCaptureCandidate,
-  VideoCaptureCandidate,
-} from './capture_candidate.js';
-import type {
-  CameraConfig, PhotoAspectRatioOptionListener, PhotoResolutionOption,
-  PhotoResolutionOptionGroup, PhotoResolutionOptionListener, VideoFpsOption,
-  VideoResolutionOption, VideoResolutionOptionListener} from './type.js';
-import {
-  SUPPORTED_CONSTANT_FPS,
-} from './type.js';
+import {PhotoCaptureCandidate, VideoCaptureCandidate} from './capture_candidate.js';
+import type {CameraConfig, PhotoAspectRatioOptionListener, PhotoResolutionOption, PhotoResolutionOptionGroup, PhotoResolutionOptionListener, VideoFpsOption, VideoResolutionOption, VideoResolutionOptionListener} from './type.js';
+import {SUPPORTED_CONSTANT_FPS} from './type.js';
 
 interface VideoLevelResolution {
   level: VideoResolutionLevel;

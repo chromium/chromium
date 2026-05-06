@@ -12,19 +12,10 @@ import type * as mojoType from './mojo/type.js';
 import * as mojoTypeUtils from './mojo/type_utils.js';
 import * as state from './state.js';
 import {State} from './state.js';
-import type {
-  AspectRatioSet, Facing, PerfEvent, PerfInformation, PhotoResolutionLevel,
-  Resolution, VideoResolutionLevel} from './type.js';
-import {
-  LocalStorageKey,
-  Mode,
-} from './type.js';
-import type {
-  Ga4EventParams, MemoryUsageEventDimension} from './untrusted_scripts.js';
-import {
-  Ga4MetricDimension,
-  getGaHelper,
-} from './untrusted_scripts.js';
+import type {AspectRatioSet, Facing, PerfEvent, PerfInformation, PhotoResolutionLevel, Resolution, VideoResolutionLevel} from './type.js';
+import {LocalStorageKey, Mode} from './type.js';
+import type {Ga4EventParams, MemoryUsageEventDimension} from './untrusted_scripts.js';
+import {Ga4MetricDimension, getGaHelper} from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**

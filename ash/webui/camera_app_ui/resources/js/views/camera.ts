@@ -3,21 +3,10 @@
 // found in the LICENSE file.
 
 import * as animate from '../animation.js';
-import {
-  assert,
-  assertEnumVariant,
-  assertExists,
-  assertInstanceof,
-  assertNotReached,
-} from '../assert.js';
+import {assert, assertEnumVariant, assertExists, assertInstanceof, assertNotReached} from '../assert.js';
 import {AsyncJobQueue, queuedAsyncCallback} from '../async_job_queue.js';
-import type {
-  CameraConfig, CameraManager, CameraViewUi, GifResult, PhotoResult,
-  VideoResult} from '../device/index.js';
-import {
-  getDefaultScanCorners,
-  setAvc1Parameters,
-} from '../device/index.js';
+import type {CameraConfig, CameraManager, CameraViewUi, GifResult, PhotoResult, VideoResult} from '../device/index.js';
+import {getDefaultScanCorners, setAvc1Parameters} from '../device/index.js';
 import type {TimeLapseResult} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
@@ -29,10 +18,7 @@ import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import type {ResultSaver} from '../models/result_saver.js';
 import type {TimeLapseEncoderArgs} from '../models/video_saver.js';
-import {
-  TimeLapseSaver,
-  VideoSaver,
-} from '../models/video_saver.js';
+import {TimeLapseSaver, VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
@@ -41,22 +27,7 @@ import * as sound from '../sound.js';
 import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
-import {
-  CameraSuspendError,
-  CanceledError,
-  ErrorLevel,
-  ErrorType,
-  Facing,
-  LowStorageDialogType,
-  LowStorageError,
-  MimeType,
-  Mode,
-  PerfEvent,
-  PortraitErrorNoFaceDetected,
-  Resolution,
-  Rotation,
-  ViewName,
-} from '../type.js';
+import {CameraSuspendError, CanceledError, ErrorLevel, ErrorType, Facing, LowStorageDialogType, LowStorageError, MimeType, Mode, PerfEvent, PortraitErrorNoFaceDetected, Resolution, Rotation, ViewName} from '../type.js';
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -67,9 +38,7 @@ import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {Dialog} from './dialog.js';
 import type {DocumentReview} from './document_review.js';
-import {
-  initializeInstance as initializeDocumentReview,
-} from './document_review.js';
+import {initializeInstance as initializeDocumentReview} from './document_review.js';
 import {Flash} from './flash.js';
 import {OptionPanel} from './option_panel.js';
 import {PtzPanel} from './ptz_panel.js';

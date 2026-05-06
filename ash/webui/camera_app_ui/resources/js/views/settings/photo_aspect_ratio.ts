@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import type {CameraManager} from '../../device/index.js';
-import type {
-  PhotoAspectRatioOption, PhotoAspectRatioOptionGroup} from
-  '../../device/type.js';
+import type {PhotoAspectRatioOption, PhotoAspectRatioOptionGroup} from '../../device/type.js';
 import * as dom from '../../dom.js';
 import * as loadTimeData from '../../models/load_time_data.js';
 import type {Facing} from '../../type.js';

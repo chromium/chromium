@@ -5,10 +5,7 @@
 import {assertInstanceof} from './assert.js';
 import * as metrics from './metrics.js';
 import {isLocalDev} from './models/load_time_data.js';
-import {
-  ErrorLevel,
-  ErrorType,
-} from './type.js';
+import {ErrorLevel, ErrorType} from './type.js';
 
 /**
  * Code location of stack frame.

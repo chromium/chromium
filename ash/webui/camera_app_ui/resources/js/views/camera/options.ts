@@ -4,9 +4,7 @@
 
 import * as animate from '../../animation.js';
 import {assert, assertExists} from '../../assert.js';
-import type {
-  CameraConfig, CameraInfo, CameraManager, CameraUi} from
-  '../../device/index.js';
+import type {CameraConfig, CameraInfo, CameraManager, CameraUi} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';

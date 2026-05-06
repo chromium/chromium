@@ -9,19 +9,13 @@ import {Effect} from '../../mojo/type.js';
 import {PerfLogger} from '../../perf.js';
 import * as toast from '../../toast.js';
 import type {Facing, PreviewVideo} from '../../type.js';
-import {
-  PerfEvent,
-  Resolution,
-} from '../../type.js';
+import {PerfEvent, Resolution} from '../../type.js';
 import * as util from '../../util.js';
 import type {StreamConstraints} from '../stream_constraints.js';
 
 import type {ModeBase} from './mode_base.js';
 import type {PhotoHandler, PhotoResult} from './photo.js';
-import {
-  Photo,
-  PhotoFactory,
-} from './photo.js';
+import {Photo, PhotoFactory} from './photo.js';
 
 /**
  * Provides external dependency functions used by portrait mode and handles the

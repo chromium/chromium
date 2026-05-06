@@ -4,9 +4,7 @@
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import type {
-  AspectRatioSet, Facing, Mode, PhotoResolutionLevel, Resolution,
-  VideoResolutionLevel} from '../type.js';
+import type {AspectRatioSet, Facing, Mode, PhotoResolutionLevel, Resolution, VideoResolutionLevel} from '../type.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import type {CaptureCandidate} from './capture_candidate.js';

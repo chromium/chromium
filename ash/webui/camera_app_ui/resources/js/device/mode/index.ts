@@ -2,37 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertExists,
-  assertInstanceof,
-} from '../../assert.js';
+import {assert, assertExists, assertInstanceof} from '../../assert.js';
 import * as expert from '../../expert.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CaptureIntent} from '../../mojo/type.js';
 import * as state from '../../state.js';
-import {
-  Mode,
-  Resolution,
-} from '../../type.js';
+import {Mode, Resolution} from '../../type.js';
 import {getFpsRangeFromConstraints} from '../../util.js';
 import type {StreamConstraints} from '../stream_constraints.js';
 
 import type {ModeBase, ModeFactory} from './mode_base.js';
 import type {PhotoHandler} from './photo.js';
-import {
-  PhotoFactory,
-} from './photo.js';
+import {PhotoFactory} from './photo.js';
 import type {PortraitHandler} from './portrait.js';
 import {PortraitFactory} from './portrait.js';
 import type {ScanHandler} from './scan.js';
-import {
-  ScanFactory,
-} from './scan.js';
+import {ScanFactory} from './scan.js';
 import type {VideoHandler} from './video.js';
-import {
-  VideoFactory,
-} from './video.js';
+import {VideoFactory} from './video.js';
 
 export type{PhotoHandler, PhotoResult} from './photo.js';
 export {getDefaultScanCorners} from './scan.js';

@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  css,
-} from 'chrome://resources/mwc/lit/index.js';
+import {css} from 'chrome://resources/mwc/lit/index.js';
 
 // Using :where selector here so the default style always have 0 specificity and
 // can be overridden by each component.

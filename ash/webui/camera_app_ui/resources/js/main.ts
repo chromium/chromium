@@ -4,22 +4,11 @@
 
 import './lit/components/index.js';
 
-import {
-  ColorChangeUpdater,
-} from
-    'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {
-  getDefaultWindowSize,
-} from './app_window.js';
+import {getDefaultWindowSize} from './app_window.js';
 import {setup as setupAspectRatioOrder} from './aspect_ratio_order.js';
-import {
-  assert,
-  assertEnumVariant,
-  assertExists,
-  assertInstanceof,
-  checkEnumVariant,
-} from './assert.js';
+import {assert, assertEnumVariant, assertExists, assertInstanceof, checkEnumVariant} from './assert.js';
 import * as customEffect from './custom_effect.js';
 import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
@@ -46,15 +35,7 @@ import * as state from './state.js';
 import * as toast from './toast.js';
 import * as tooltip from './tooltip.js';
 import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
-import {
-  ErrorLevel,
-  ErrorType,
-  Facing,
-  LocalStorageKey,
-  Mode,
-  PerfEvent,
-  ViewName,
-} from './type.js';
+import {ErrorLevel, ErrorType, Facing, LocalStorageKey, Mode, PerfEvent, ViewName} from './type.js';
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';

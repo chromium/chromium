@@ -3,19 +3,9 @@
 // found in the LICENSE file.
 
 import type {PropertyDeclarations} from 'chrome://resources/mwc/lit/index.js';
-import {
-  classMap,
-  css,
-  html,
-  LitElement,
-  repeat,
-} from 'chrome://resources/mwc/lit/index.js';
+import {classMap, css, html, LitElement, repeat} from 'chrome://resources/mwc/lit/index.js';
 
-import {
-  assertExists,
-  checkEnumVariant,
-  checkInstanceof,
-} from '../../assert.js';
+import {assertExists, checkEnumVariant, checkInstanceof} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
 import {getI18nMessage} from '../../models/load_time_data.js';
 import {Mode} from '../../type.js';

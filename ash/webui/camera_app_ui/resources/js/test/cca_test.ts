@@ -2,46 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertEnumVariant,
-  assertExists,
-  assertInstanceof,
-} from '../assert.js';
+import {assert, assertEnumVariant, assertExists, assertInstanceof} from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import {Preview} from '../device/preview.js';
-import type {
-  PtzCapabilities, StrictPtzSettings} from '../device/ptz_controller.js';
-import {
-  DIGITAL_ZOOM_CAPABILITIES,
-} from '../device/ptz_controller.js';
+import type {PtzCapabilities, StrictPtzSettings} from '../device/ptz_controller.js';
+import {DIGITAL_ZOOM_CAPABILITIES} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ModeSelector} from '../lit/components/mode-selector.js';
 import * as localStorage from '../models/local_storage.js';
-import {
-  TIME_LAPSE_MAX_DURATION,
-  TimeLapseSaver,
-} from '../models/video_saver.js';
+import {TIME_LAPSE_MAX_DURATION, TimeLapseSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
-import {
-  getInstanceForTest as getPhotoModeAutoScanner,
-} from '../photo_mode_auto_scanner.js';
+import {getInstanceForTest as getPhotoModeAutoScanner} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
 import {FpsObserver, sleep} from '../util.js';
-import {
-  getInstanceForTest as getDocumentReview,
-} from '../views/document_review.js';
+import {getInstanceForTest as getDocumentReview} from '../views/document_review.js';
 import {windowController} from '../window_controller.js';
 
 import type {SettingMenu, SettingOption, UiComponent} from './cca_type.js';
-import {
-  SELECTOR_MAP,
-  SETTING_MENU_MAP,
-  SETTING_OPTION_MAP,
-} from './cca_type.js';
+import {SELECTOR_MAP, SETTING_MENU_MAP, SETTING_OPTION_MAP} from './cca_type.js';
 
 interface Coordinate {
   x: number;

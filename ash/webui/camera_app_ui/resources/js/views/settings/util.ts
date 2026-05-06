@@ -6,12 +6,7 @@ import {assertNotReached} from '../../assert.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
-import {
-  AspectRatioSet,
-  Facing,
-  PhotoResolutionLevel,
-  VideoResolutionLevel,
-} from '../../type.js';
+import {AspectRatioSet, Facing, PhotoResolutionLevel, VideoResolutionLevel} from '../../type.js';
 import * as util from '../../util.js';
 
 /**

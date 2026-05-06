@@ -5,11 +5,7 @@
 import {assert} from '../../assert.js';
 import {PerfLogger} from '../../perf.js';
 import type {Facing, Metadata, PreviewVideo} from '../../type.js';
-import {
-  CanceledError,
-  PerfEvent,
-  Resolution,
-} from '../../type.js';
+import {CanceledError, PerfEvent, Resolution} from '../../type.js';
 import * as util from '../../util.js';
 import {CancelableEvent, WaitableEvent} from '../../waitable_event.js';
 import type {StreamConstraints} from '../stream_constraints.js';
