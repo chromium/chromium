@@ -58,6 +58,7 @@ shared_library("chrome_elf") {
   deps = [
     ":chrome_elf_manifest",
     ":chrome_elf_resources",
+    ":crash",
     ":security",
     ":third_party_dlls",
     "//chrome/install_static:install_static_util",
@@ -171,9 +172,17 @@ source_set("sha1") {
 
 source_set("third_party_dlls") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  friend = [
+    ":chrome_elf",
+    ":chrome_elf_unittests",
+    ":third_party_dlls_test_exe",
+  ]
+  public = [
+    "third_party_dlls/beacon.h",
+    "third_party_dlls/main.h",
+  ]
   sources = [
     "third_party_dlls/beacon.cc",
-    "third_party_dlls/beacon.h",
     "third_party_dlls/hardcoded_blocklist.cc",
     "third_party_dlls/hardcoded_blocklist.h",
     "third_party_dlls/hook.cc",
@@ -181,24 +190,21 @@ source_set("third_party_dlls") {
     "third_party_dlls/logs.cc",
     "third_party_dlls/logs.h",
     "third_party_dlls/main.cc",
-    "third_party_dlls/main.h",
     "third_party_dlls/packed_list_file.cc",
     "third_party_dlls/packed_list_file.h",
   ]
   deps = [
-    "//base:base_static",
-    "//sandbox/win:service_resolver",
-  ]
-  public_deps = [
     ":constants",
     ":crash",
     ":nt_registry",
     ":pe_image_safe",
     ":sha1",
-    ":third_party_shared_defines",
+    "//base:base_static",
     "//chrome/install_static:install_static_util",
     "//sandbox/policy:win_hook_util",
+    "//sandbox/win:service_resolver",
   ]
+  public_deps = [ ":third_party_shared_defines" ]
 }
 
 # This source_set defines third-party-related structures and APIs used from
