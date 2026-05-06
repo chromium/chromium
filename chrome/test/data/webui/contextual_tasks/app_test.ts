@@ -386,7 +386,7 @@ suite('ContextualTasksAppTest', function() {
         /*setupProxy=*/ undefined,
         /*waitForInitialLoadStart=*/ false);
 
-    assertTrue(appElement.hasAttribute('is-ai-page_'));
+    assertFalse(appElement.hasAttribute('is-ai-page_'));
 
     proxy.callbackRouterRemote.onAiPageStatusChanged(false);
     await proxy.callbackRouterRemote.$.flushForTesting();
