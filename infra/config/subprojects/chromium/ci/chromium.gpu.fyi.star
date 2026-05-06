@@ -2372,26 +2372,12 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_mac_release_gtests",
-            "gpu_fyi_only_mac_release_telemetry_tests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
         ],
         per_test_modifications = {
-            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 2,
-                    ),
-                ),
-            ),
-            "pixel_skia_gold_metal_passthrough_ganesh_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 2,
-                    ),
-                ),
-            ),
             "pixel_skia_gold_metal_passthrough_graphite_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     swarming = targets.swarming(
