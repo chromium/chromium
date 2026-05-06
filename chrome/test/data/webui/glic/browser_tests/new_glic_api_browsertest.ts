@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource} from '/glic/glic_api/glic_api.js';
-import type {ExperimentalTriggeringUpdate, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -716,8 +716,41 @@ class SkillsApiTests extends ApiTests {
   }
 }
 
+class ContextCapturingClient extends WebClient {
+  capturedContext: AdditionalContext[] = [];
+
+  override async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
+    await super.initialize(glicBrowserHost);
+    glicBrowserHost.getAdditionalContext!
+        ().subscribe((context: AdditionalContext) => {
+          this.capturedContext.push(context);
+        });
+  }
+}
+
+class AdditionalContextQueuedTest extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new ContextCapturingClient();
+  }
+
+  async testAdditionalContextQueued() {
+    const client = this.client as ContextCapturingClient;
+    await runUntil(() => client.capturedContext.length > 0);
+    const context = client.capturedContext[0];
+    assertDefined(context);
+    assertEquals(context.name, 'queued part');
+    assertEquals(context.parts.length, 1);
+    const part1 = context.parts[0]!;
+    assertDefined(part1.data);
+    assertEquals(part1.data!.type, 'text/plain');
+    const data1 = new Uint8Array(await part1.data!.arrayBuffer());
+    assertEquals(new TextDecoder().decode(data1), 'queued');
+  }
+}
+
 const TEST_FIXTURES = [
   ApiTests,
+  AdditionalContextQueuedTest,
   FaviconTest,
   FaviconOmittedTest,
   InvokeTest,

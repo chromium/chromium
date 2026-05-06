@@ -140,7 +140,7 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   if (glic_keyed_service_) {
     panel_state_subscription_ =
         glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
-            base::BindRepeating(&GlicSelectionObserver::OnPanelStateChanged,
+            base::BindRepeating(&GlicSelectionObserver::OnGlobalPanelShowHide,
                                 weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -771,47 +771,11 @@ void GlicSelectionObserver::CopyLinkToHighlight(
   }
 }
 
-void GlicSelectionObserver::OnPanelStateChanged() {
+void GlicSelectionObserver::OnGlobalPanelShowHide() {
   if (last_selected_text_.empty()) {
     return;
   }
 
-  auto* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-  if (!tab_interface || !glic_keyed_service_) {
-    return;
-  }
-
-  auto* bwi = tab_interface->GetBrowserWindowInterface();
-  if (!bwi) {
-    return;
-  }
-
-  bool panel_showing = glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
-
-  auto* instance = glic_keyed_service_->GetInstanceForTab(tab_interface);
-  if (!instance || !panel_showing) {
-    host_observation_.Reset();
-    UpdateSelectionState(last_selected_text_);
-    return;
-  }
-
-  if (instance->host().IsWebClientConnected()) {
-    host_observation_.Reset();
-    UpdateSelectionState(last_selected_text_);
-  } else {
-    if (!host_observation_.IsObservingSource(&instance->host())) {
-      host_observation_.Reset();
-      host_observation_.Observe(&instance->host());
-    }
-  }
-}
-
-void GlicSelectionObserver::WebClientConnected() {
-  host_observation_.Reset();
-  if (last_selected_text_.empty()) {
-    return;
-  }
   UpdateSelectionState(last_selected_text_);
 }
 

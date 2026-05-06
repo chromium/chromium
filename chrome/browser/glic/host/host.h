@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -509,6 +510,8 @@ class Host : public GlicSharingManagerProvider {
   bool is_manually_resizing_ = false;
   std::optional<PanelWillOpenOptions> pending_panel_open_options_;
   std::vector<mojom::SkillPreviewPtr> pending_contextual_skills_;
+  base::flat_map<mojom::AdditionalContextSource, mojom::AdditionalContextPtr>
+      pending_additional_contexts_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   std::optional<mojom::PanelState> pending_panel_state_;
 

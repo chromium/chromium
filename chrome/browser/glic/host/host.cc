@@ -433,6 +433,11 @@ void Host::SetWebClient(GlicWebClientAccess* web_client) {
     pending_contextual_skills_.clear();
   }
 
+  for (auto& [source, context] : pending_additional_contexts_) {
+    web_client->NotifyAdditionalContext(std::move(context));
+  }
+  pending_additional_contexts_.clear();
+
   if (is_manually_resizing_) {
     web_client->ManualResizeChanged(true);
   }
@@ -615,6 +620,8 @@ void Host::NotifyInstanceActivationChanged(bool is_active) {
 void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
   if (auto* client = GetPrimaryWebClient()) {
     client->NotifyAdditionalContext(std::move(context));
+  } else {
+    pending_additional_contexts_[context->source] = std::move(context);
   }
 }
 
