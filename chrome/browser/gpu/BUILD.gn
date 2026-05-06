@@ -3,9 +3,14 @@
 # found in the LICENSE file.
 
 source_set("gpu") {
-  sources = [
+  public = [
     "chrome_browser_main_extra_parts_gpu.h",
     "gpu_mode_manager.h",
+  ]
+
+  sources = [
+    "chrome_browser_main_extra_parts_gpu.cc",
+    "gpu_mode_manager.cc",
   ]
 
   public_deps = [
@@ -13,15 +18,6 @@ source_set("gpu") {
     "//components/prefs",
     "//content/public/browser",
   ]
-}
-
-source_set("impl") {
-  sources = [
-    "chrome_browser_main_extra_parts_gpu.cc",
-    "gpu_mode_manager.cc",
-  ]
-
-  public_deps = [ ":gpu" ]
 
   deps = [
     "//base",

@@ -293,9 +293,6 @@ static_library("browser") {
   # Any circular includes must depend on the target
   # "browser_public_dependencies".
   allow_circular_includes_from = [
-    # TODO(crbug.com/503408628): Remove this circular dependency.
-    "//chrome/browser/first_run:impl",
-
     "//chrome/browser/browsing_data:impl",
     "//chrome/browser/accessibility:impl",
 
@@ -781,7 +778,6 @@ static_library("browser") {
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/glic/suggestions:impl",
     "//chrome/browser/gpu",
-    "//chrome/browser/gpu:impl",
     "//chrome/browser/hang_monitor",
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",
@@ -4094,6 +4090,12 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/taskbar",
       "//chrome/browser/win:impl",
+    ]
+
+    allow_circular_includes_from += [
+      # TODO(crbug.com/503408628): Remove this circular dependency when
+      # c/b/chrome_process_singleton.h gets componentized.
+      "//chrome/browser/first_run:impl",
     ]
 
     public_deps += [
