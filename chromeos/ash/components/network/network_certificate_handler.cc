@@ -20,8 +20,9 @@ NetworkCertificateHandler::Certificate GetCertificate(
   CERTCertificate* cert = network_cert.cert();
   NetworkCertificateHandler::Certificate result;
 
-  result.hash =
-      net::HashValue(net::x509_util::CalculateFingerprint256(cert)).ToString();
+  result.hash = net::HashValue(net::HashValueTag::HASH_VALUE_SHA256,
+                               net::x509_util::CalculateFingerprint256(cert))
+                    .ToString();
 
   result.issued_by = certificate::GetIssuerDisplayName(cert);
 
