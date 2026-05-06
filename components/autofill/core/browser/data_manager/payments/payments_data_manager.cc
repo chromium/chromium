@@ -254,10 +254,10 @@ PaymentsDataManager::PaymentsDataManager(
     if (IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
           IsPaymentCvcStorageEnabled());
-#if !BUILDFLAG(IS_IOS)
-      autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
-          prefs::IsPaymentCardBenefitsEnabled(pref_service_));
-#endif  // !BUILDFLAG(IS_IOS)
+      if (IsCardBenefitsSyncEnabled()) {
+        autofill_metrics::LogIsCreditCardBenefitsEnabledAtStartup(
+            prefs::IsPaymentCardBenefitsEnabled(pref_service_));
+      }
     } else {
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtStartup(
           *pref_service_);
