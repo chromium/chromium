@@ -164,6 +164,10 @@ void LensComposeboxHandler::HandleFileUpload(bool is_image) {
   mojo::ReportBadMessage("File upload is not implemented in Lens");
 }
 
+void LensComposeboxHandler::OnContextMenuOpened() {
+  // Ignore, intentionally unimplemented for Lens.
+}
+
 void LensComposeboxHandler::NavigateUrl(const GURL& url) {
   // Intentionally unimplemented for Lens, URL navigation is not yet
   // implemented in Lens.

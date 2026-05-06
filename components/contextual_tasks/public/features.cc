@@ -109,6 +109,10 @@ BASE_FEATURE(kContextualTasksVideoCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksPdfCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables lazy fetching of cluster info for multimodal queries.
+BASE_FEATURE(kContextualTasksLazyFetchClusterInfo,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables custom UI for NLM.
 BASE_FEATURE(kContextualTasksCustomNlmUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -118,6 +122,10 @@ bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
 
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
+}
+
+bool GetIsContextualTasksLazyFetchClusterInfoEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksLazyFetchClusterInfo);
 }
 
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(

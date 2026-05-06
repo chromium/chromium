@@ -82,9 +82,14 @@ BASE_DECLARE_FEATURE(kContextualTasksVideoCitations);
 // navigating.
 BASE_DECLARE_FEATURE(kContextualTasksPdfCitations);
 
+// Enables lazy fetching of cluster info for multimodal queries.
+BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
 
 bool GetIsContextualTasksPdfCitationsEnabled();
+
+bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {

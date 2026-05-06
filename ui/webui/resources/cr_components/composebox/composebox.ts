@@ -940,6 +940,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.browserTabContextAdded_ = false;
     this.contextMenuOpened = true;
     this.refreshTabSuggestions();
+    this.getPageHandler().onContextMenuOpened();
 
     if (this.inputState) {
       const {allowedInputTypes, disabledInputTypes} = this.inputState;

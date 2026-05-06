@@ -19,6 +19,7 @@
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_features.h"
@@ -153,6 +154,10 @@ class ComposeboxQueryControllerTest
     } else {
       disabled_features.push_back(lens::features::kLensSendRawFileMediaTypes);
     }
+    // TODO(crbug.com/503732217): Fix tests to support lazy fetching of cluster
+    // info and enable this feature by default in tests.
+    disabled_features.push_back(
+        contextual_tasks::kContextualTasksLazyFetchClusterInfo);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     // Create the config params.
@@ -576,7 +581,27 @@ class ComposeboxQueryControllerTest
 };
 
 TEST_F(ComposeboxQueryControllerTest,
-       InitializeIfNeededIssuesClusterInfoRequest) {
+       InitializeIfNeededDoesNotIssueClusterInfoRequest) {
+  // Arrange: Enable the lazy fetch feature.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksLazyFetchClusterInfo);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: No cluster info request is made.
+  EXPECT_TRUE(controller_state_future_.IsEmpty());
+  EXPECT_EQ(QueryControllerState::kOff, controller().query_controller_state());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       InitializeIfNeededIssuesClusterInfoRequestWhenLazyFetchDisabled) {
+  // Arrange: Disable the lazy fetch feature.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      contextual_tasks::kContextualTasksLazyFetchClusterInfo);
+
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -584,18 +609,19 @@ TEST_F(ComposeboxQueryControllerTest,
   WaitForClusterInfo();
 }
 
-TEST_F(ComposeboxQueryControllerTest, InitializeIfNeededSecondTimeDoesNothing) {
-  // Act: Start the session.
-  controller().InitializeIfNeeded();
+TEST_F(ComposeboxQueryControllerTest,
+       StartFileUploadFlowIssuesClusterInfoRequestIfOff) {
+  // Arrange: Enable the lazy fetch feature.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksLazyFetchClusterInfo);
+
+  // Act: Start file upload flow without calling InitializeIfNeeded.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
 
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo();
-
-  // Act: Start the session again.
-  controller().InitializeIfNeeded();
-
-  // Assert: No cluster info request is made.
-  EXPECT_TRUE(controller_state_future_.IsEmpty());
 }
 
 TEST_F(ComposeboxQueryControllerTest,

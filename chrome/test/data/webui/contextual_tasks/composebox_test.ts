@@ -1186,4 +1186,24 @@ suite('ContextualTasksComposeboxTest', () => {
     // Reference should be exactly the same (no re-allocation or modification)
     assertEquals(updatedFile, files[0]);
   });
+
+  test('ContextMenuOpenedFiresMojo', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const crComposebox = $$(contextualComposebox, '#composebox');
+    assertTrue(!!crComposebox);
+    const entrypointAndMenu =
+        $$(crComposebox, 'cr-composebox-contextual-entrypoint-and-menu');
+    assertTrue(!!entrypointAndMenu);
+
+    mockComposeboxPageHandler.reset();
+
+    entrypointAndMenu.dispatchEvent(new CustomEvent('context-menu-opened', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    await mockComposeboxPageHandler.whenCalled('onContextMenuOpened');
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('onContextMenuOpened'));
+  });
 });

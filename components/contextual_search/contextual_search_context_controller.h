@@ -184,6 +184,9 @@ class ContextualSearchContextController {
   // Called when a UI is associated with the context controller.
   virtual void InitializeIfNeeded() = 0;
 
+  // Triggers a fetch for the sticky cluster info if needed.
+  virtual void TriggerFetchClusterInfo() = 0;
+
   // Set whether or not the context controller is backgrounded.
   virtual void SetIsBackgrounded(bool backgrounded) = 0;
 

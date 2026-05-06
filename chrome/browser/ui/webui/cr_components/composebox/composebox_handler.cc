@@ -186,6 +186,15 @@ void ComposeboxHandler::HandleFileUpload(bool is_image) {
   // Ignore, intentionally unimplemented for NTP.
 }
 
+void ComposeboxHandler::OnContextMenuOpened() {
+  if (contextual_tasks::GetIsContextualTasksLazyFetchClusterInfoEnabled()) {
+    auto* session_handle = GetContextualSessionHandle();
+    if (session_handle && session_handle->GetController()) {
+      session_handle->GetController()->TriggerFetchClusterInfo();
+    }
+  }
+}
+
 void ComposeboxHandler::NavigateUrl(const GURL& url) {
   if (!url.is_valid()) {
     return;
