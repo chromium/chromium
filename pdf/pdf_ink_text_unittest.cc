@@ -64,41 +64,28 @@ TEST(PdfInkTextTest, SplitTypefaceRuns) {
   ASSERT_THAT(ink_info, SizeIs(5));
 
   EXPECT_THAT(ink_info[0].glyphs, ElementsAre(1, 2, 3, 4, 5));
-  EXPECT_THAT(
-      ink_info[0].glyph_positions,
-      ElementsAre(gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(1.0f, 0.0f),
-                  gfx::Vector2dF(2.0f, 0.0f), gfx::Vector2dF(3.0f, 0.0f),
-                  gfx::Vector2dF(4.0f, 0.0f)));
+  EXPECT_THAT(ink_info[0].glyph_positions,
+              ElementsAre(0.0f, 1.0f, 2.0f, 3.0f, 4.0f));
   EXPECT_EQ(ink_info[0].location, gfx::RectF(10.0f, 10.0f, 5.0f, 2.0f));
   EXPECT_TRUE(ink_info[0].is_horizontal);
 
   EXPECT_THAT(ink_info[1].glyphs, ElementsAre(101, 102));
-  EXPECT_THAT(
-      ink_info[1].glyph_positions,
-      ElementsAre(gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(1.0f, 0.0f)));
+  EXPECT_THAT(ink_info[1].glyph_positions, ElementsAre(0.0f, 1.0f));
   EXPECT_EQ(ink_info[1].location, gfx::RectF(15.0f, 10.0f, 2.0f, 2.0f));
   EXPECT_TRUE(ink_info[1].is_horizontal);
 
   EXPECT_THAT(ink_info[2].glyphs, ElementsAre(1, 2, 3));
-  EXPECT_THAT(
-      ink_info[2].glyph_positions,
-      ElementsAre(gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(1.0f, 0.0f),
-                  gfx::Vector2dF(2.0f, 0.0f)));
+  EXPECT_THAT(ink_info[2].glyph_positions, ElementsAre(0.0f, 1.0f, 2.0f));
   EXPECT_EQ(ink_info[2].location, gfx::RectF(10.0f, 20.0f, 3.0f, 2.0f));
   EXPECT_TRUE(ink_info[2].is_horizontal);
 
   EXPECT_THAT(ink_info[3].glyphs, ElementsAre(101, 102));
-  EXPECT_THAT(
-      ink_info[3].glyph_positions,
-      ElementsAre(gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(1.0f, 0.0f)));
+  EXPECT_THAT(ink_info[3].glyph_positions, ElementsAre(0.0f, 1.0f));
   EXPECT_EQ(ink_info[3].location, gfx::RectF(13.0f, 20.0f, 2.0f, 2.0f));
   EXPECT_TRUE(ink_info[3].is_horizontal);
 
   EXPECT_THAT(ink_info[4].glyphs, ElementsAre(1, 2, 3));
-  EXPECT_THAT(
-      ink_info[4].glyph_positions,
-      ElementsAre(gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(1.0f, 0.0f),
-                  gfx::Vector2dF(2.0f, 0.0f)));
+  EXPECT_THAT(ink_info[4].glyph_positions, ElementsAre(0.0f, 1.0f, 2.0f));
   EXPECT_EQ(ink_info[4].location, gfx::RectF(10.0f, 20.0f, 4.0f, 2.0f));
   EXPECT_TRUE(ink_info[4].is_horizontal);
 }

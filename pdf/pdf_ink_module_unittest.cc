@@ -1013,7 +1013,7 @@ class PdfInkModuleTextTest : public testing::Test {
   static Matcher<const InkTextInfo&> SampleInkTextInfoMatcher(
       FontId typeface_id) {
     return InkTextInfoEq(typeface_id, /*glyphs=*/std::vector<uint32_t>{4, 5},
-                         /*glyph_positions=*/std::vector<gfx::Vector2dF>(2),
+                         /*glyph_positions=*/std::vector<float>(2),
                          /*location=*/gfx::RectF(10.0f, 20.0f, 30.0f, 40.0f),
                          /*is_horizontal=*/true);
   }

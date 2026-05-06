@@ -58,11 +58,11 @@ struct InkTextBoxAttributes {
 };
 
 struct InkTextInfo {
-  InkTextInfo(FontId,
-              std::vector<uint32_t>,
-              std::vector<gfx::Vector2dF>,
-              gfx::RectF,
-              bool);
+  InkTextInfo(FontId font_id,
+              std::vector<uint32_t> glyphs,
+              std::vector<float> glyph_positions,
+              gfx::RectF location,
+              bool is_horizontal);
   InkTextInfo(InkTextInfo&&) noexcept;
   InkTextInfo& operator=(InkTextInfo&&) noexcept;
   ~InkTextInfo();
@@ -73,7 +73,10 @@ struct InkTextInfo {
 
   FontId font_id;
   std::vector<uint32_t> glyphs;
-  std::vector<gfx::Vector2dF> glyph_positions;
+  // Positions relative to the origin of the `location` rect in CSS pixels.
+  // if is_horizontal is true, x-axis, if false, y-axis.
+  std::vector<float> glyph_positions;
+  // In CSS pixels. Based on top left of screen origin.
   gfx::RectF location;
   bool is_horizontal;
 };

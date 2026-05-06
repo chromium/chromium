@@ -3087,11 +3087,10 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
   // Draw some text.
   engine->DrawText(
       kPageIndex, InkTextId(0),
-      {InkTextInfo(
-          font_id, glyphs,
-          /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
-          /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
-          /*is_horizontal=*/true)},
+      {InkTextInfo(font_id, glyphs,
+                   /*glyph_positions=*/std::vector<float>(glyphs.size()),
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
 
   // Verify the rendering of text for in-memory PDF.
@@ -3123,11 +3122,10 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawOrangeText) {
   attribute.color = SkColorSetRGB(0xFF, 0x63, 0x0C);
   engine->DrawText(
       kPageIndex, InkTextId(0),
-      {InkTextInfo(
-          font_id, glyphs,
-          /*glyph_positions=*/std::vector<gfx::Vector2dF>(glyphs.size()),
-          /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
-          /*is_horizontal=*/true)},
+      {InkTextInfo(font_id, glyphs,
+                   /*glyph_positions=*/std::vector<float>(glyphs.size()),
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true)},
       /*pdf_zoom=*/1.0, attribute);
 
   // Verify the rendering of orange text for in-memory PDF.
@@ -3158,14 +3156,13 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   // Draw some text with two runs to force multiple text objects.
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
   attribute.is_bold = true;
-  engine->DrawText(kPageIndex, InkTextId(1),
-                   {InkTextInfo(font_id, glyphs1,
-                                std::vector<gfx::Vector2dF>(glyphs1.size()),
-                                gfx::RectF(0.0f, 0.0f, 80.0f, 20.0f), true),
-                    InkTextInfo(font_id, glyphs2,
-                                std::vector<gfx::Vector2dF>(glyphs2.size()),
-                                gfx::RectF(80.0f, 0.0f, 20.0f, 20.0f), true)},
-                   /*pdf_zoom=*/1.0, attribute);
+  engine->DrawText(
+      kPageIndex, InkTextId(1),
+      {InkTextInfo(font_id, glyphs1, std::vector<float>(glyphs1.size()),
+                   gfx::RectF(0.0f, 0.0f, 80.0f, 20.0f), true),
+       InkTextInfo(font_id, glyphs2, std::vector<float>(glyphs2.size()),
+                   gfx::RectF(80.0f, 0.0f, 20.0f, 20.0f), true)},
+      /*pdf_zoom=*/1.0, attribute);
 
   FPDF_PAGE pdf_page = page.GetPage();
   int obj_count = FPDFPage_CountObjects(pdf_page);
