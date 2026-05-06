@@ -191,33 +191,21 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
                 action:^{
-                  [weakSelf dismissActionSheetCoordinator];
-                  BookmarksEditorCoordinator* strongSelf = weakSelf;
-                  if (strongSelf != nil) {
-                    [strongSelf->_viewController save];
-                  }
+                  [weakSelf dismissSaveChangeAction];
                 }
                  style:UIAlertActionStyleDefault];
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
                 action:^{
-                  [weakSelf dismissActionSheetCoordinator];
-                  BookmarksEditorCoordinator* strongSelf = weakSelf;
-                  if (strongSelf != nil) {
-                    [strongSelf->_viewController cancel];
-                  }
+                  [weakSelf dismissDiscardAction];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
                 action:^{
-                  [weakSelf dismissActionSheetCoordinator];
-                  BookmarksEditorCoordinator* strongSelf = weakSelf;
-                  if (strongSelf != nil) {
-                    [strongSelf->_viewController setNavigationItemsEnabled:YES];
-                  }
+                  [weakSelf dismissCancelAction];
                 }
                  style:UIAlertActionStyleCancel];
 
@@ -242,6 +230,23 @@
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
   return [self canDismiss];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate helper
+
+- (void)dismissSaveChangeAction {
+  [self dismissActionSheetCoordinator];
+  [_viewController save];
+}
+
+- (void)dismissDiscardAction {
+  [self dismissActionSheetCoordinator];
+  [_viewController cancel];
+}
+
+- (void)dismissCancelAction {
+  [self dismissActionSheetCoordinator];
+  [_viewController setNavigationItemsEnabled:YES];
 }
 
 #pragma mark - BookmarksEditorMediatorDelegate
