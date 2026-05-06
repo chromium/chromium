@@ -320,8 +320,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   static const bool kServiceRedirectedInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  // Checks if |MayHaveProxies()| has changed from false to true, and resets
-  // URLLoaderFactories if so.
+  // Checks if |MayHaveProxies()| has changed, and resets URLLoaderFactories
+  // if so.
   void UpdateMayHaveProxies();
 
   void ResetURLLoaderFactories();

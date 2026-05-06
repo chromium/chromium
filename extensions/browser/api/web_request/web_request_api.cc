@@ -1009,7 +1009,7 @@ void WebRequestAPI::ResetURLLoaderFactories() {
 
 void WebRequestAPI::UpdateMayHaveProxies() {
   bool may_have_proxies = MayHaveProxies();
-  if (!may_have_proxies_ && may_have_proxies) {
+  if (may_have_proxies_ != may_have_proxies) {
     ResetURLLoaderFactories();
   }
   may_have_proxies_ = may_have_proxies;

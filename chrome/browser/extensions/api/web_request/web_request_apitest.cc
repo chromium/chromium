@@ -8604,11 +8604,15 @@ class URLLoaderFactoriesResetWaiter : public WebRequestAPI::TestObserver {
     url_loader_factory_reset_runloop_.Run();
   }
 
+  int reset_count() const { return reset_count_; }
+
  private:
   void OnDidResetURLLoaderFactories() override {
+    ++reset_count_;
     url_loader_factory_reset_runloop_.Quit();
   }
 
+  int reset_count_ = 0;
   base::RunLoop url_loader_factory_reset_runloop_;
 };
 
@@ -8706,6 +8710,62 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   will_receive_listener.Reply("go");
   url_loader_factories_reset_waiter.WaitForResetURLLoaderFactoriesCalled();
   registration_observer.WaitForRegistrationStored();
+}
+
+// Tests that URLLoaderFactories are reset only on transitions of
+// MayHaveProxies(): when the first relevant extension loads and when the last
+// one unloads, but not on intermediate load/unload events.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       ResetURLLoaderFactoriesOnMayHaveProxiesTransitions) {
+  // Skip if the proxy is forced since factories won't be reset in that case.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    return;
+  }
+
+  auto make_extension_dir = [](const char* name) {
+    static constexpr char kManifestTemplate[] =
+        R"({
+             "name": "%s",
+             "manifest_version": 3,
+             "version": "0.1",
+             "permissions": ["webRequest"],
+             "background": {"service_worker": "background.js"}
+           })";
+    auto dir = std::make_unique<TestExtensionDir>();
+    dir->WriteManifest(base::StringPrintf(kManifestTemplate, name));
+    dir->WriteFile(FILE_PATH_LITERAL("background.js"), "");
+    return dir;
+  };
+
+  std::unique_ptr<TestExtensionDir> dir_a = make_extension_dir("ExtensionA");
+  std::unique_ptr<TestExtensionDir> dir_b = make_extension_dir("ExtensionB");
+
+  URLLoaderFactoriesResetWaiter waiter;
+
+  // Loading the first extension transitions MayHaveProxies() from false to
+  // true, triggering a reset.
+  const Extension* extension_a = LoadExtension(dir_a->UnpackedPath());
+  ASSERT_TRUE(extension_a);
+  ExtensionId id_a = extension_a->id();
+  EXPECT_EQ(1, waiter.reset_count());
+
+  // Loading a second extension keeps MayHaveProxies() true, so no reset.
+  const Extension* extension_b = LoadExtension(dir_b->UnpackedPath());
+  ASSERT_TRUE(extension_b);
+  ExtensionId id_b = extension_b->id();
+  EXPECT_EQ(1, waiter.reset_count());
+
+  // Unloading one of two relevant extensions keeps MayHaveProxies() true, so
+  // no reset.
+  UninstallExtension(id_a);
+  EXPECT_EQ(1, waiter.reset_count());
+
+  // Unloading the last relevant extension transitions MayHaveProxies() from
+  // true to false, which must also trigger a reset so stale proxying
+  // factories are torn down.
+  UninstallExtension(id_b);
+  EXPECT_EQ(2, waiter.reset_count());
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
