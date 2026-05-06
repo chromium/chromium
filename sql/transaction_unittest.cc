@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/drive_error_test_vfs.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -378,6 +380,25 @@ TEST_F(SQLTransactionTest, CommitOnDestroyedDb) {
   EXPECT_TRUE(db->HasActiveTransactions());
   db.reset();
   ASSERT_FALSE(transaction.Commit());
+}
+
+TEST_F(SQLTransactionTest, CloseDbInTransactionCommitErrorCallback) {
+  test::DriveErrorTestVfs test_vfs;
+  Database db(test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  db.set_error_callback(base::BindLambdaForTesting(
+      [&](int sqlite_error, sql::Statement* statement) {
+        db.RazeAndPoison();
+      }));
+
+  ASSERT_TRUE(db.Execute("CREATE TABLE rows(id)"));
+  Transaction transaction(&db);
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db.Execute("INSERT INTO rows(id) VALUES(1)"));
+  test_vfs.set_drive_full(true);
+  EXPECT_FALSE(transaction.Commit());
+  ASSERT_FALSE(db.is_open());
 }
 
 }  // namespace
