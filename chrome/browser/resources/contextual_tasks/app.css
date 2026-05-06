@@ -26,12 +26,13 @@
   --color-composebox-file-image-overlay: rgba(0, 0, 0, 0.6);
   --color-composebox-file-image-overlay-icon-color:
       var(--color-file-chip-remove-button-fill);
-  --color-composebox-font: rgba(86, 89, 94, 1);
+  --color-composebox-font: rgba(10, 10, 10, 1);
   --color-composebox-font-dark: rgba(10, 10, 10, 1);
   /* Used in matches + textbox input (but textbox input overridden
    * for co-browsing to be color-composebox-font.
    */
   --color-composebox-font-light: rgba(31, 31, 31, 1);
+  --color-composebox-hint-text: rgba(86, 89, 94, 1);
   --color-composebox-hover: rgba(233, 235, 240, 1);
   --color-composebox-input-plate-outline: rgba(220, 223, 229, 1);
   --color-composebox-loading-end: rgba(236, 237, 239, 1);
@@ -226,6 +227,7 @@
   --color-composebox-font: rgba(230, 232, 240, 1);
   --color-composebox-font-dark: rgba(230, 232, 240, 1);
   --color-composebox-font-light: rgba(230, 232, 240, 1);
+  --color-composebox-hint-text: rgba(160, 162, 171, 1);
   --color-composebox-hover: rgba(62, 63, 67, 1);
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
   --color-composebox-input-plate-outline: rgba(45, 47, 56, 1);

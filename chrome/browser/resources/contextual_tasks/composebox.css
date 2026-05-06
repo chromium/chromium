@@ -391,7 +391,7 @@
 }
 
 #composebox::part(input)::placeholder {
-  color: revert;
+  color: var(--color-composebox-hint-text);
 }
 
 #composebox::part(context-menu-entrypoint-icon) {
