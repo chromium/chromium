@@ -13,6 +13,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer.h"
 
 namespace blink {
 
@@ -94,6 +99,51 @@ TEST_F(OfflineAudioContextTest, RenderSizeHint) {
 
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "WebAudioConfigurableRenderQuantum", false);
+}
+
+TEST_F(OfflineAudioContextTest, OfflineRenderingThreadSafetyAndNoLeak) {
+  V8TestingScope scope;
+
+  // Synchronously collect any uncollected garbage from previous tests to
+  // establish a clean baseline. Since InstanceCounters is a process-wide
+  // global counter, this GC run isolates our leak check and guarantees
+  // that the starting count is stable. This follows Chrome's official
+  // automated leak detector pattern (blink_leak_detector.cc), which
+  // queries kAudioHandlerCounter to find leaks.
+  WebHeap::CollectAllGarbageForTesting();
+
+  int initial_handler_count =
+      InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter);
+
+  {
+    OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+    options->setNumberOfChannels(1);
+    // Render 10 render quanta (1280 frames) to fully exercise the background
+    // thread rendering loop.
+    options->setLength(1280);
+    options->setSampleRate(44100.0);
+
+    OfflineAudioContext* context = OfflineAudioContext::Create(
+        GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+    ScriptPromise<AudioBuffer> promise = context->startOfflineRendering(
+        scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+
+    EXPECT_TRUE(tester.IsFulfilled());
+  }
+
+  // Force complete garbage collection of both Blink Oilpan and V8 heaps
+  // immediately. When it returns, all unreferenced contexts and nodes are
+  // guaranteed to have been destroyed.
+  WebHeap::CollectAllGarbageForTesting();
+
+  // Verify that the count of active AudioHandlers returns to our baseline.
+  int final_handler_count =
+      InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter);
+  EXPECT_EQ(final_handler_count, initial_handler_count);
 }
 
 }  // namespace blink

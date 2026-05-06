@@ -177,9 +177,6 @@ crbug.com/457967584 [ Linux ] external/wpt/css/css-anchor-position/anchored-tran
 # Gardener 2025-12-23
 crbug.com/471103692 [ Linux ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-from-context-with-different-rate.https.html [ Pass Timeout ]
 
-# Gardener 2026-02-24
-crbug.com/459235322 [ Linux ] webaudio/OfflineAudioContext/offlineaudiocontext-promise-basic.html [ Pass Timeout ]
-
 # Times out under MSan, similar to crbug.com/459235322.
 crbug.com/480249475 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Timeout ]
 
