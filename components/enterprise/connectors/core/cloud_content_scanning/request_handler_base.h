@@ -64,6 +64,7 @@ class RequestHandlerBase {
 
   base::TimeTicks upload_start_time() const;
   DeepScanAccessPoint access_point() const;
+  std::string access_point_string() const;
   ContentAnalysisInfoBase* content_analysis_info() const;
 
  private:

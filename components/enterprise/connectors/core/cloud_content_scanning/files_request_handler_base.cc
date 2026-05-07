@@ -5,9 +5,12 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -52,19 +55,6 @@ std::string AccessPointToUmaHistogramPrefix(DeepScanAccessPoint access_point) {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:FileUploadEvent)
 
-std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
-  switch (AccessPointToEnterpriseConnector(access_point)) {
-    case enterprise_connectors::FILE_TRANSFER:
-      return kFileTransferDataTransferEventTrigger;
-    case enterprise_connectors::FILE_ATTACHED:
-      return kFileUploadDataTransferEventTrigger;
-    case enterprise_connectors::FILE_DOWNLOADED:
-      return kFileDownloadDataTransferEventTrigger;
-    default:
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 FilesRequestHandlerBase::FileInfo::FileInfo() = default;
@@ -94,6 +84,7 @@ FilesRequestHandlerBase::~FilesRequestHandlerBase() {
     return;
   }
 
+  MaybeTrackCancellation();
   delegate_->MaybeCancelAndReport();
 }
 
@@ -108,8 +99,7 @@ void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
       delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
-      file_info.mime_type, AccessPointToTriggerString(access_point_),
-      content_transfer_method_,
+      file_info.mime_type, access_point_string(), content_transfer_method_,
       content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
       ScanRequestUploadResult::kUserCancelled,
       enterprise_connectors::ContentAnalysisResponse(), EventResult::CANCELLED);
@@ -118,7 +108,7 @@ void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
 void FilesRequestHandlerBase::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   delegate_->ReportWarningBypass(user_justification, *content_analysis_info_,
-                                 AccessPointToTriggerString(access_point_),
+                                 access_point_string(),
                                  content_transfer_method_);
 }
 
@@ -132,6 +122,13 @@ bool FilesRequestHandlerBase::UploadDataImpl() {
   if (file_count != 0) {
     IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_UPLOADS, file_count);
   }
+
+  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+      !prefix.empty()) {
+    base::UmaHistogramCustomCounts(prefix + ".FileCount", file_count, 1, 1000,
+                                   100);
+  }
+
   return delegate_->UploadDataImpl();
 }
 
@@ -163,7 +160,18 @@ void FilesRequestHandlerBase::OnGotFileInfo(
     size_t index,
     ScanRequestUploadResult result,
     BinaryUploadRequest::Data data) {
-  delegate_->UpdateFileInfo(index, data, request.get());
+  FileInfo& file_info = delegate_->GetMutableFileInfo(index);
+  file_info.sha256_or_cb = data.hash;
+  if (data.hash.empty() && request && request->register_on_got_hash_callback_) {
+    request->register_on_got_hash_callback_.Run(
+        /* call_last= */ false,
+        base::BindOnce(&FilesRequestHandlerBase::OnGotHash, GetWeakPtr(),
+                       index));
+    file_info.sha256_or_cb = base::BindRepeating(
+        request->register_on_got_hash_callback_, /* call_last= */ false);
+  }
+  file_info.size = data.size;
+  file_info.mime_type = data.mime_type;
 
   const auto& analysis_settings = content_analysis_info_->settings();
   bool is_cloud = analysis_settings.cloud_or_local_settings.is_cloud_analysis();
@@ -196,6 +204,25 @@ void FilesRequestHandlerBase::OnGotFileInfo(
 
   UploadFileForDeepScanning(result, delegate_->GetPath(index),
                             std::move(request));
+}
+
+void FilesRequestHandlerBase::OnGotHash(size_t index, std::string hash) {
+  delegate_->GetMutableFileInfo(index).sha256_or_cb = hash;
+}
+
+void FilesRequestHandlerBase::MaybeTrackCancellation() {
+  if (file_result_count_ >= delegate_->GetFileCount()) {
+    return;
+  }
+
+  if (auto prefix = AccessPointToUmaHistogramPrefix(access_point_);
+      !prefix.empty()) {
+    base::UmaHistogramMediumTimes(base::StrCat({prefix, ".Cancelled.Duration"}),
+                                  base::TimeTicks::Now() - upload_start_time_);
+    base::UmaHistogramCustomCounts(
+        base::StrCat({prefix, ".Cancelled.BatchSize"}),
+        delegate_->GetFileCount(), 1, 1000, 100);
+  }
 }
 
 void FilesRequestHandlerBase::FinishRequestEarly(
@@ -279,8 +306,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
       delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
       delegate_->GetSource(), delegate_->GetDestination(),
       delegate_->GetPath(index).AsUTF8Unsafe(), file_info.sha256_or_cb,
-      file_info.mime_type, AccessPointToTriggerString(access_point_),
-      content_transfer_method_,
+      file_info.mime_type, access_point_string(), content_transfer_method_,
       content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
       upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,

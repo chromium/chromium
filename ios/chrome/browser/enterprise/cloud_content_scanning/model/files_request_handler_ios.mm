@@ -71,28 +71,6 @@ bool FilesRequestHandlerIOS::UploadDataImpl() {
   return true;
 }
 
-void FilesRequestHandlerIOS::UpdateFileInfo(size_t index,
-                                            BinaryUploadRequest::Data data,
-                                            BinaryUploadRequest* request) {
-  file_info_.sha256_or_cb = data.hash;
-  if (data.hash.empty() && request && request->register_on_got_hash_callback_) {
-    request->register_on_got_hash_callback_.Run(
-        /* call_last= */ false,
-        base::BindOnce(&FilesRequestHandlerIOS::OnGotHash,
-                       weak_ptr_factory_.GetWeakPtr(), index));
-    file_info_.sha256_or_cb = base::BindRepeating(
-        request->register_on_got_hash_callback_, /* call_last= */ false);
-  }
-  file_info_.size = data.size;
-  file_info_.mime_type = data.mime_type;
-}
-
-void FilesRequestHandlerIOS::OnGotHash(size_t index, std::string hash) {
-  // The BinaryUploadRequest will soon be destroyed, so overwrite the callback
-  // to that object with the actual hash.
-  file_info_.sha256_or_cb = hash;
-}
-
 void FilesRequestHandlerIOS::UpdateRequestHandlerResult(
     size_t index,
     RequestHandlerResult result,
@@ -114,6 +92,11 @@ const base::FilePath& FilesRequestHandlerIOS::GetPath(size_t index) const {
 }
 
 const FilesRequestHandlerBase::FileInfo& FilesRequestHandlerIOS::GetFileInfo(
+    size_t index) {
+  return file_info_;
+}
+
+FilesRequestHandlerBase::FileInfo& FilesRequestHandlerIOS::GetMutableFileInfo(
     size_t index) {
   return file_info_;
 }

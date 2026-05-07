@@ -206,16 +206,17 @@ TEST_F(FilesRequestHandlerIOSTest, GettersAndSetters) {
   EXPECT_EQ(delegate->GetSource(), "");
   EXPECT_EQ(delegate->GetDestination(), "");
 
-  BinaryUploadRequest::Data data;
-  data.hash = "test_hash";
-  data.size = 1234;
-  data.mime_type = "text/plain";
+  FilesRequestHandlerBase::FileInfo& file_info =
+      delegate->GetMutableFileInfo(0);
+  file_info.sha256_or_cb = "test_hash";
+  file_info.size = 1234;
+  file_info.mime_type = "text/plain";
 
-  delegate->UpdateFileInfo(0, data, nullptr);
-  const FilesRequestHandlerBase::FileInfo& file_info = delegate->GetFileInfo(0);
-  EXPECT_EQ(std::get<std::string>(file_info.sha256_or_cb), "test_hash");
-  EXPECT_EQ(file_info.size, 1234u);
-  EXPECT_EQ(file_info.mime_type, "text/plain");
+  const FilesRequestHandlerBase::FileInfo& file_info_const =
+      delegate->GetFileInfo(0);
+  EXPECT_EQ(std::get<std::string>(file_info_const.sha256_or_cb), "test_hash");
+  EXPECT_EQ(file_info_const.size, 1234u);
+  EXPECT_EQ(file_info_const.mime_type, "text/plain");
 }
 
 // Tests that UpdateRequestHandlerResult correctly stores the scan result and

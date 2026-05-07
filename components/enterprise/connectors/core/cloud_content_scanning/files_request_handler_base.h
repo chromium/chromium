@@ -68,14 +68,6 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     // delegate.
     virtual bool UploadDataImpl() = 0;
 
-    // Updates the file_info for a given `index`.
-    virtual void UpdateFileInfo(size_t index,
-                                BinaryUploadRequest::Data data,
-                                BinaryUploadRequest* request) = 0;
-
-    // Called when the hash for the file at `index` is obtained.
-    virtual void OnGotHash(size_t index, std::string hash) = 0;
-
     // Updates the `RequestHandlerResult` in `result_` for a scanning request
     // corresponding to the given `index`, and update the file_warnings_
     // accordingly based on the `result.final_result`.
@@ -89,6 +81,9 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
 
     // Returns the file_info for the given index.
     virtual const FileInfo& GetFileInfo(size_t index) = 0;
+
+    // Returns a mutable reference to the file_info for the given index.
+    virtual FileInfo& GetMutableFileInfo(size_t index) = 0;
 
     // Returns the number of files to be scanned.
     virtual size_t GetFileCount() const = 0;
@@ -184,6 +179,10 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
                      size_t index,
                      ScanRequestUploadResult result,
                      BinaryUploadRequest::Data data);
+
+  void OnGotHash(size_t index, std::string hash);
+
+  void MaybeTrackCancellation();
 
   // Called when a request is finished early without uploading it.
   // This is, e.g., called for encrypted files and responsible for posting the

@@ -45,48 +45,6 @@ FilesRequestHandler::Factory* GetFactoryStorage() {
   return factory.get();
 }
 
-AnalysisConnector AccessPointToEnterpriseConnector(
-    DeepScanAccessPoint access_point) {
-  switch (access_point) {
-    case DeepScanAccessPoint::FILE_TRANSFER:
-      return enterprise_connectors::FILE_TRANSFER;
-    case DeepScanAccessPoint::UPLOAD:
-    case DeepScanAccessPoint::DRAG_AND_DROP:
-    case DeepScanAccessPoint::PASTE:
-    case DeepScanAccessPoint::ACTOR:
-      // A file can be uploaded to a website by either a normal file picker, a
-      // dragNdrop event, using copy+paste, or an agent action.
-      return enterprise_connectors::FILE_ATTACHED;
-    case DeepScanAccessPoint::DOWNLOAD:
-    case DeepScanAccessPoint::PRINT:
-  }
-  NOTREACHED();
-}
-
-// LINT.IfChange(AccessPointToUmaHistogramPrefix)
-std::string AccessPointToUmaHistogramPrefix(DeepScanAccessPoint access_point) {
-  switch (AccessPointToEnterpriseConnector(access_point)) {
-    case enterprise_connectors::FILE_TRANSFER:
-      return "Enterprise.OnFileTransfer";
-    case enterprise_connectors::FILE_ATTACHED:
-      return "Enterprise.OnFileAttach";
-    default:
-  }
-  NOTREACHED();
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:FileUploadEvent)
-
-std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
-  switch (AccessPointToEnterpriseConnector(access_point)) {
-    case enterprise_connectors::FILE_TRANSFER:
-      return kFileTransferDataTransferEventTrigger;
-    case enterprise_connectors::FILE_ATTACHED:
-      return kFileUploadDataTransferEventTrigger;
-    default:
-  }
-  NOTREACHED();
-}
-
 struct UnreportedFileInfo {
   base::FilePath path;
   FilesRequestHandlerBase::FileInfo file_info;
@@ -194,24 +152,7 @@ void FilesRequestHandler::ResetFactoryForTesting() {
 }
 
 FilesRequestHandler::~FilesRequestHandler() {
-  MaybeTrackCancellation();
   MaybeCancelAndReport();
-}
-
-void FilesRequestHandler::MaybeTrackCancellation() {
-  if (handler_->file_result_count() >= paths_.size()) {
-    return;
-  }
-
-  if (auto prefix = AccessPointToUmaHistogramPrefix(handler_->access_point());
-      !prefix.empty()) {
-    base::UmaHistogramMediumTimes(
-        base::StrCat({prefix, ".Cancelled.Duration"}),
-        base::TimeTicks::Now() - handler_->upload_start_time());
-    base::UmaHistogramCustomCounts(
-        base::StrCat({prefix, ".Cancelled.BatchSize"}), paths_.size(), 1, 1000,
-        100);
-  }
 }
 
 void FilesRequestHandler::MaybeCancelAndReport() {
@@ -247,8 +188,7 @@ void FilesRequestHandler::MaybeCancelAndReport() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&FetchFileSizes, std::move(unreported_files)),
       base::BindOnce(&ReportCancellationsOnUIThread, profile_->GetWeakPtr(),
-                     source_, destination_,
-                     AccessPointToTriggerString(handler_->access_point()),
+                     source_, destination_, handler_->access_point_string(),
                      handler_->content_transfer_method(),
                      GURL(handler_->content_analysis_info()->url()),
                      handler_->content_analysis_info()->tab_url(),
@@ -286,12 +226,6 @@ bool FilesRequestHandler::UploadDataImpl() {
         base::BindOnce(&FilesRequestHandler::CreateFileOpeningJob,
                        weak_ptr_factory_.GetWeakPtr(), std::move(tasks)));
 
-    if (auto prefix = AccessPointToUmaHistogramPrefix(handler_->access_point());
-        !prefix.empty()) {
-      base::UmaHistogramCustomCounts(prefix + ".FileCount", paths_.size(), 1,
-                                     1000, 100);
-    }
-
     return true;
   }
 
@@ -319,29 +253,6 @@ std::unique_ptr<FileAnalysisRequestBase> FilesRequestHandler::CreateFileRequest(
       /* force_sync_hash_computation */ false);
 }
 
-void FilesRequestHandler::UpdateFileInfo(size_t index,
-                                         BinaryUploadRequest::Data data,
-                                         BinaryUploadRequest* request) {
-  DCHECK_LT(index, paths_.size());
-  file_info_[index].sha256_or_cb = data.hash;
-  if (data.hash.empty() && request->register_on_got_hash_callback_) {
-    request->register_on_got_hash_callback_.Run(
-        /* call_last= */ false,
-        base::BindOnce(&FilesRequestHandler::OnGotHash,
-                       weak_ptr_factory_.GetWeakPtr(), index));
-    file_info_[index].sha256_or_cb = base::BindRepeating(
-        request->register_on_got_hash_callback_, /* call_last= */ false);
-  }
-  file_info_[index].size = data.size;
-  file_info_[index].mime_type = data.mime_type;
-}
-
-void FilesRequestHandler::OnGotHash(size_t index, std::string hash) {
-  // The FileAnalysisRequest will soon be destroyed, so overwrite the callback
-  // to that object with the actual hash.
-  file_info_[index].sha256_or_cb = hash;
-}
-
 void FilesRequestHandler::UpdateRequestHandlerResult(
     size_t index,
     RequestHandlerResult result,
@@ -359,6 +270,12 @@ const base::FilePath& FilesRequestHandler::GetPath(size_t index) const {
 }
 
 const FilesRequestHandlerBase::FileInfo& FilesRequestHandler::GetFileInfo(
+    size_t index) {
+  DCHECK_LT(index, paths_.size());
+  return file_info_[index];
+}
+
+FilesRequestHandlerBase::FileInfo& FilesRequestHandler::GetMutableFileInfo(
     size_t index) {
   DCHECK_LT(index, paths_.size());
   return file_info_[index];
