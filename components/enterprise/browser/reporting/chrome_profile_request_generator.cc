@@ -108,10 +108,13 @@ void ChromeProfileRequestGenerator::Generate(
   request->GetChromeProfileReportRequest().set_report_type(
       GetReportTypeFromSignalsMode(generation_config.security_signals_mode));
 
-  bool policies_enabled =
-      enterprise_signals::features::IsPolicyDataCollectionEnabled();
+  bool is_signals_only = generation_config.security_signals_mode ==
+                         SecuritySignalsMode::kSignalsOnly;
 
-  profile_report_generator_.set_policies_enabled(policies_enabled);
+  if (is_signals_only) {
+    profile_report_generator_.set_policies_enabled(
+        enterprise_signals::features::IsPolicyDataCollectionEnabled());
+  }
 
   auto barrier_callback = base::BarrierCallback<
       std::variant<std::unique_ptr<em::BrowserReport>,
@@ -122,8 +125,7 @@ void ChromeProfileRequestGenerator::Generate(
                             weak_ptr_factory_.GetWeakPtr(), std::move(request),
                             std::move(callback), generation_config)));
 
-  if (generation_config.security_signals_mode ==
-      SecuritySignalsMode::kSignalsOnly) {
+  if (is_signals_only) {
     barrier_callback.Run(std::make_unique<em::BrowserReport>());
   } else {
     browser_report_generator_.Generate(
