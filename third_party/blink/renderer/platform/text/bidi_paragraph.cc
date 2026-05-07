@@ -32,7 +32,7 @@ bool BidiParagraph::SetParagraph(const String& text,
     para_level = UBIDI_DEFAULT_LTR;
   }
 
-  ICUError error;
+  IcuError error;
   ubidi_setPara(ubidi_.get(), text.Span16().data(), text.length(), para_level,
                 nullptr, &error);
   if (U_FAILURE(error)) {

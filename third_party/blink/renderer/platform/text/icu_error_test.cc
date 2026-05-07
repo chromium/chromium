@@ -10,14 +10,14 @@ namespace blink {
 
 const UErrorCode kTestErrorCode = U_INVALID_FORMAT_ERROR;
 
-void CauseICUError(UErrorCode& err) {
+void CauseIcuError(UErrorCode& err) {
   err = kTestErrorCode;
 }
 
-TEST(ICUErrorTest, assignToAutomaticReference) {
-  ICUError icu_error;
+TEST(IcuErrorTest, assignToAutomaticReference) {
+  IcuError icu_error;
   EXPECT_EQ(icu_error, U_ZERO_ERROR);
-  CauseICUError(icu_error);
+  CauseIcuError(icu_error);
   EXPECT_EQ(icu_error, kTestErrorCode);
 }
 

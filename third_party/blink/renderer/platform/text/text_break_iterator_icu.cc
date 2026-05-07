@@ -837,7 +837,7 @@ class CharacterBreakIterator::Pool {
       return iterator;
     }
 
-    ICUError error_code;
+    IcuError error_code;
     PooledIterator iterator(icu::BreakIterator::createCharacterInstance(
         CurrentTextBreakIcuLocale(), error_code));
     DCHECK(U_SUCCESS(error_code) && iterator)

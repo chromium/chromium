@@ -399,7 +399,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
     }
 
     bool SetKeywordValue(const char* keyword_name, const char* value) {
-      ICUError status;
+      IcuError status;
       int32_t length_needed = uloc_setKeywordValue(
           keyword_name, value, buffer_.data(), buffer_.size(), &status);
       if (U_SUCCESS(status)) {

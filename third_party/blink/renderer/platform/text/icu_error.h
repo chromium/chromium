@@ -11,12 +11,12 @@
 
 namespace blink {
 
-// ICUError provides the unified way to handle ICU errors in Blink.
-class PLATFORM_EXPORT ICUError {
+// IcuError provides the unified way to handle ICU errors in Blink.
+class PLATFORM_EXPORT IcuError {
   STACK_ALLOCATED();
 
  public:
-  ~ICUError() { CrashIfCritical(); }
+  ~IcuError() { CrashIfCritical(); }
 
   UErrorCode* operator&() { return &error_; }
   operator UErrorCode() const { return error_; }
@@ -33,7 +33,7 @@ class PLATFORM_EXPORT ICUError {
   void HandleFailure();
 };
 
-inline void ICUError::CrashIfCritical() {
+inline void IcuError::CrashIfCritical() {
   if (U_FAILURE(error_))
     HandleFailure();
 }

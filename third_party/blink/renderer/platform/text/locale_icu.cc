@@ -46,10 +46,10 @@
 namespace blink {
 
 std::unique_ptr<Locale> Locale::Create(const String& locale) {
-  return std::make_unique<LocaleICU>(locale.Utf8());
+  return std::make_unique<LocaleIcu>(locale.Utf8());
 }
 
-LocaleICU::LocaleICU(const std::string& locale)
+LocaleIcu::LocaleIcu(const std::string& locale)
     : locale_(locale),
       number_format_(nullptr),
       short_date_format_(nullptr),
@@ -59,14 +59,14 @@ LocaleICU::LocaleICU(const std::string& locale)
       short_time_format_(nullptr),
       did_create_time_format_(false) {}
 
-LocaleICU::~LocaleICU() {
+LocaleIcu::~LocaleIcu() {
   unum_close(number_format_);
   udat_close(short_date_format_);
   udat_close(medium_time_format_);
   udat_close(short_time_format_);
 }
 
-String LocaleICU::DecimalSymbol(UNumberFormatSymbol symbol) {
+String LocaleIcu::DecimalSymbol(UNumberFormatSymbol symbol) {
   UErrorCode status = U_ZERO_ERROR;
   int32_t buffer_length =
       unum_getSymbol(number_format_, symbol, nullptr, 0, &status);
@@ -82,7 +82,7 @@ String LocaleICU::DecimalSymbol(UNumberFormatSymbol symbol) {
   return String::Adopt(buffer);
 }
 
-String LocaleICU::DecimalTextAttribute(UNumberFormatTextAttribute tag) {
+String LocaleIcu::DecimalTextAttribute(UNumberFormatTextAttribute tag) {
   UErrorCode status = U_ZERO_ERROR;
   int32_t buffer_length =
       unum_getTextAttribute(number_format_, tag, nullptr, 0, &status);
@@ -99,7 +99,7 @@ String LocaleICU::DecimalTextAttribute(UNumberFormatTextAttribute tag) {
   return String::Adopt(buffer);
 }
 
-void LocaleICU::InitializeLocaleData() {
+void LocaleIcu::InitializeLocaleData() {
   if (did_create_decimal_format_)
     return;
   did_create_decimal_format_ = true;
@@ -129,7 +129,7 @@ void LocaleICU::InitializeLocaleData() {
                 DecimalTextAttribute(UNUM_NEGATIVE_SUFFIX));
 }
 
-bool LocaleICU::InitializeShortDateFormat() {
+bool LocaleIcu::InitializeShortDateFormat() {
   if (did_create_short_date_format_)
     return short_date_format_;
   short_date_format_ = OpenDateFormat(UDAT_NONE, UDAT_SHORT);
@@ -137,7 +137,7 @@ bool LocaleICU::InitializeShortDateFormat() {
   return short_date_format_;
 }
 
-UDateFormat* LocaleICU::OpenDateFormat(UDateFormatStyle time_style,
+UDateFormat* LocaleIcu::OpenDateFormat(UDateFormatStyle time_style,
                                        UDateFormatStyle date_style) const {
   const UChar kGmtTimezone[3] = {'G', 'M', 'T'};
   UErrorCode status = U_ZERO_ERROR;
@@ -150,7 +150,7 @@ UDateFormat* LocaleICU::OpenDateFormat(UDateFormatStyle time_style,
 // we have to format dates with patterns "LLLL" or "LLL" and set the
 // display context to 'standalone'. See
 // http://bugs.icu-project.org/trac/ticket/11552
-UDateFormat* LocaleICU::OpenDateFormatForStandAloneMonthLabels(
+UDateFormat* LocaleIcu::OpenDateFormatForStandAloneMonthLabels(
     bool is_short) const {
   const UChar kMonthPattern[4] = {'L', 'L', 'L', 'L'};
   UErrorCode status = U_ZERO_ERROR;
@@ -179,7 +179,7 @@ static String GetDateFormatPattern(const UDateFormat* date_format) {
   return String::Adopt(buffer);
 }
 
-Vector<String> LocaleICU::CreateLabelVector(const UDateFormat* date_format,
+Vector<String> LocaleIcu::CreateLabelVector(const UDateFormat* date_format,
                                             UDateFormatSymbolType type,
                                             int32_t start_index,
                                             int32_t size) {
@@ -227,7 +227,7 @@ Vector<String> LocaleICU::CreateLabelVector(const UDateFormat* date_format,
   return labels;
 }
 
-const Vector<String>& LocaleICU::MonthLabels() {
+const Vector<String>& LocaleIcu::MonthLabels() {
   if (month_labels_.empty()) {
     if (InitializeShortDateFormat()) {
       month_labels_ =
@@ -241,7 +241,7 @@ const Vector<String>& LocaleICU::MonthLabels() {
   return month_labels_;
 }
 
-const Vector<String>& LocaleICU::WeekDayShortLabels() {
+const Vector<String>& LocaleIcu::WeekDayShortLabels() {
   if (week_day_short_labels_.empty()) {
     if (InitializeShortDateFormat()) {
       week_day_short_labels_ = CreateLabelVector(
@@ -256,7 +256,7 @@ const Vector<String>& LocaleICU::WeekDayShortLabels() {
   return week_day_short_labels_;
 }
 
-unsigned LocaleICU::FirstDayOfWeek() {
+unsigned LocaleIcu::FirstDayOfWeek() {
   if (!first_day_of_week_.has_value()) {
     first_day_of_week_ =
         InitializeShortDateFormat()
@@ -268,13 +268,13 @@ unsigned LocaleICU::FirstDayOfWeek() {
   return first_day_of_week_.value();
 }
 
-bool LocaleICU::IsRTL() {
+bool LocaleIcu::IsRTL() {
   UErrorCode status = U_ZERO_ERROR;
   return uloc_getCharacterOrientation(locale_.c_str(), &status) ==
          ULOC_LAYOUT_RTL;
 }
 
-void LocaleICU::InitializeDateTimeFormat() {
+void LocaleIcu::InitializeDateTimeFormat() {
   if (did_create_time_format_)
     return;
 
@@ -308,7 +308,7 @@ void LocaleICU::InitializeDateTimeFormat() {
   did_create_time_format_ = true;
 }
 
-String LocaleICU::DateFormat() {
+String LocaleIcu::DateFormat() {
   if (!date_format_.IsNull())
     return date_format_;
   if (!InitializeShortDateFormat())
@@ -343,7 +343,7 @@ static String GetFormatForSkeleton(const char* locale, const String& skeleton) {
   return format;
 }
 
-String LocaleICU::MonthFormat() {
+String LocaleIcu::MonthFormat() {
   if (!month_format_.IsNull())
     return month_format_;
   // Gets a format for "MMMM" because Windows API always provides formats for
@@ -352,34 +352,34 @@ String LocaleICU::MonthFormat() {
   return month_format_;
 }
 
-String LocaleICU::ShortMonthFormat() {
+String LocaleIcu::ShortMonthFormat() {
   if (!short_month_format_.IsNull())
     return short_month_format_;
   short_month_format_ = GetFormatForSkeleton(locale_.c_str(), "yyyyMMM");
   return short_month_format_;
 }
 
-String LocaleICU::TimeFormat() {
+String LocaleIcu::TimeFormat() {
   InitializeDateTimeFormat();
   return time_format_with_seconds_;
 }
 
-String LocaleICU::ShortTimeFormat() {
+String LocaleIcu::ShortTimeFormat() {
   InitializeDateTimeFormat();
   return time_format_without_seconds_;
 }
 
-String LocaleICU::DateTimeFormatWithSeconds() {
+String LocaleIcu::DateTimeFormatWithSeconds() {
   InitializeDateTimeFormat();
   return date_time_format_with_seconds_;
 }
 
-String LocaleICU::DateTimeFormatWithoutSeconds() {
+String LocaleIcu::DateTimeFormatWithoutSeconds() {
   InitializeDateTimeFormat();
   return date_time_format_without_seconds_;
 }
 
-const Vector<String>& LocaleICU::ShortMonthLabels() {
+const Vector<String>& LocaleIcu::ShortMonthLabels() {
   if (short_month_labels_.empty()) {
     if (InitializeShortDateFormat()) {
       short_month_labels_ = CreateLabelVector(
@@ -394,7 +394,7 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
   return short_month_labels_;
 }
 
-const Vector<String>& LocaleICU::StandAloneMonthLabels() {
+const Vector<String>& LocaleIcu::StandAloneMonthLabels() {
   if (stand_alone_month_labels_.empty()) {
     UDateFormat* month_formatter =
         OpenDateFormatForStandAloneMonthLabels(false);
@@ -410,7 +410,7 @@ const Vector<String>& LocaleICU::StandAloneMonthLabels() {
   return stand_alone_month_labels_;
 }
 
-const Vector<String>& LocaleICU::ShortStandAloneMonthLabels() {
+const Vector<String>& LocaleIcu::ShortStandAloneMonthLabels() {
   if (short_stand_alone_month_labels_.empty()) {
     UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(true);
     if (month_formatter) {
@@ -425,7 +425,7 @@ const Vector<String>& LocaleICU::ShortStandAloneMonthLabels() {
   return short_stand_alone_month_labels_;
 }
 
-const Vector<String>& LocaleICU::TimeAMPMLabels() {
+const Vector<String>& LocaleIcu::TimeAMPMLabels() {
   InitializeDateTimeFormat();
   return time_ampm_labels_;
 }

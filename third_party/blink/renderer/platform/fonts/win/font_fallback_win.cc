@@ -320,7 +320,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
 }
 
 UScriptCode GetScript(int ucs4) {
-  ICUError err;
+  IcuError err;
   UScriptCode script = uscript_getScript(ucs4, &err);
   // If script is invalid, common or inherited or there's an error,
   // infer a script based on the unicode block of a character.

@@ -37,7 +37,7 @@
 
 namespace blink {
 
-class LocaleICUTest : public testing::Test {
+class LocaleIcuTest : public testing::Test {
  public:
   // Labels class is used for printing results in EXPECT_EQ macro.
   class Labels {
@@ -82,65 +82,65 @@ class LocaleICUTest : public testing::Test {
   }
 
   String MonthFormat(const char* locale_string) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->MonthFormat();
   }
 
   String LocalizedDateFormatText(const char* locale_string) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->TimeFormat();
   }
 
   String LocalizedShortDateFormatText(const char* locale_string) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->ShortTimeFormat();
   }
 
   String ShortMonthLabel(const char* locale_string, unsigned index) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->ShortMonthLabels()[index];
   }
 
   String ShortStandAloneMonthLabel(const char* locale_string, unsigned index) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->ShortStandAloneMonthLabels()[index];
   }
 
   String StandAloneMonthLabel(const char* locale_string, unsigned index) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->StandAloneMonthLabels()[index];
   }
 
   Labels TimeAMPMLabels(const char* locale_string) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return Labels(locale->TimeAMPMLabels());
   }
 
   bool IsRTL(const char* locale_string) {
-    auto locale = std::make_unique<LocaleICU>(locale_string);
+    auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->IsRTL();
   }
 };
 
 std::ostream& operator<<(std::ostream& os,
-                         const LocaleICUTest::Labels& labels) {
+                         const LocaleIcuTest::Labels& labels) {
   return os << labels.ToString();
 }
 
-TEST_F(LocaleICUTest, isRTL) {
+TEST_F(LocaleIcuTest, isRTL) {
   EXPECT_TRUE(IsRTL("ar-EG"));
   EXPECT_FALSE(IsRTL("en-us"));
   EXPECT_FALSE(IsRTL("ja-jp"));
   EXPECT_FALSE(IsRTL("**invalid**"));
 }
 
-TEST_F(LocaleICUTest, monthFormat) {
+TEST_F(LocaleIcuTest, monthFormat) {
   EXPECT_EQ("MMMM yyyy", MonthFormat("en_US"));
   EXPECT_EQ("MMMM yyyy", MonthFormat("fr"));
   EXPECT_EQ("yyyy\xE5\xB9\xB4M\xE6\x9C\x88", MonthFormat("ja").Utf8());
 }
 
-TEST_F(LocaleICUTest, localizedDateFormatText) {
+TEST_F(LocaleIcuTest, localizedDateFormatText) {
   // Note: EXPECT_EQ(String, String) doesn't print result as string.
   EXPECT_EQ(
       "h:mm:ss\xE2\x80\xAF"
@@ -150,7 +150,7 @@ TEST_F(LocaleICUTest, localizedDateFormatText) {
   EXPECT_EQ("H:mm:ss", LocalizedDateFormatText("ja"));
 }
 
-TEST_F(LocaleICUTest, localizedShortDateFormatText) {
+TEST_F(LocaleIcuTest, localizedShortDateFormatText) {
   EXPECT_EQ(
       "h:mm\xE2\x80\xAF"
       "a",
@@ -159,7 +159,7 @@ TEST_F(LocaleICUTest, localizedShortDateFormatText) {
   EXPECT_EQ("H:mm", LocalizedShortDateFormatText("ja"));
 }
 
-TEST_F(LocaleICUTest, standAloneMonthLabels) {
+TEST_F(LocaleIcuTest, standAloneMonthLabels) {
   EXPECT_EQ("January", StandAloneMonthLabel("en_US", 0));
   EXPECT_EQ("June", StandAloneMonthLabel("en_US", 5));
   EXPECT_EQ("December", StandAloneMonthLabel("en_US", 11));
@@ -190,7 +190,7 @@ TEST_F(LocaleICUTest, standAloneMonthLabels) {
             StandAloneMonthLabel("ru_RU", 4).Utf8());
 }
 
-TEST_F(LocaleICUTest, shortMonthLabels) {
+TEST_F(LocaleIcuTest, shortMonthLabels) {
   EXPECT_EQ("Jan", ShortMonthLabel("en_US", 0));
   EXPECT_EQ("Jan", ShortStandAloneMonthLabel("en_US", 0));
   EXPECT_EQ("Dec", ShortMonthLabel("en_US", 11));
@@ -233,7 +233,7 @@ TEST_F(LocaleICUTest, shortMonthLabels) {
             ShortStandAloneMonthLabel("ru_RU", 4).Utf8());
 }
 
-TEST_F(LocaleICUTest, timeAMPMLabels) {
+TEST_F(LocaleIcuTest, timeAMPMLabels) {
   EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAMPMLabels("en_US"));
   EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAMPMLabels("fr"));
 
@@ -248,7 +248,7 @@ static String TestDecimalSeparator(const AtomicString& locale_identifier) {
   return locale->LocalizedDecimalSeparator();
 }
 
-TEST_F(LocaleICUTest, localizedDecimalSeparator) {
+TEST_F(LocaleIcuTest, localizedDecimalSeparator) {
   EXPECT_EQ(String("."), TestDecimalSeparator(AtomicString("en_US")));
   EXPECT_EQ(String(","), TestDecimalSeparator(AtomicString("fr")));
 }
@@ -272,7 +272,7 @@ void TestNumbers(const char* locale) {
   TestNumberIsReversible(locale_string, "-0.456");
 }
 
-TEST_F(LocaleICUTest, reversible) {
+TEST_F(LocaleIcuTest, reversible) {
   AtomicString en_us_locale("en_US");
   TestNumberIsReversible(en_us_locale, "123456789012345678901234567890");
   TestNumberIsReversible(en_us_locale, "-123.456", ".");
