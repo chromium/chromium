@@ -43,7 +43,7 @@
         });
 
         const sameOriginImg = await preloadImage("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/green-100x100.png");
-        const crossOriginImg = await preloadImage("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png");
+        const crossOriginImg = await preloadImage("https://{{hosts[alt][www]}}:{{ports[https][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png");
 
         const innerSame = document.getElementById('inner-same');
         const innerCross = document.getElementById('inner-cross');
