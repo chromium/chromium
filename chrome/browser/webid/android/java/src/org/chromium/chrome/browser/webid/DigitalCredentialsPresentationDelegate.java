@@ -51,12 +51,23 @@ public class DigitalCredentialsPresentationDelegate {
     public static final String BUNDLE_KEY_PROVIDER_DATA =
             "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
 
+    private static final String EXTRA_LARGE_PAYLOAD_RESULT_RECEIVER =
+            "androidx.credentials.provider.EXTRA_LARGE_PAYLOAD_RESULT_RECEIVER";
+
+    @VisibleForTesting
+    public static final String EXTRA_PASS_IT_BY_RESULT_RECEIVER =
+            "androidx.credentials.provider.EXTRA_PASS_IT_BY_RESULT_RECEIVER";
+
+    @VisibleForTesting public static final String RESULT_DATA = "RESULT_DATA";
+
     private static final String TYPE_USER_CANCELED =
             "android.credentials.GetCredentialException.TYPE_USER_CANCELED";
     private static final String TYPE_NO_CREDENTIAL =
             "android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL";
     private static final String TYPE_INTERRUPTED =
             "android.credentials.GetCredentialException.TYPE_INTERRUPTED";
+
+    private Bundle mLargeResultData = Bundle.EMPTY;
 
     @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(
@@ -75,54 +86,38 @@ public class DigitalCredentialsPresentationDelegate {
 
         final Promise<DigitalCredential> result = new Promise<>();
 
+        final ResultReceiver largePayloadResultReceiver =
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        mLargeResultData = resultData;
+                    }
+                };
+
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int code, Bundle data) {
-                        if (!result.isPending()) {
-                            return;
-                        }
-                        Log.d(TAG, "Received a response");
                         try {
-                            Intent providerData =
-                                    data == null
-                                            ? null
-                                            : IntentUtils.safeGetParcelable(
-                                                    data, BUNDLE_KEY_PROVIDER_DATA);
-                            if (code != Activity.RESULT_OK) {
-                                androidx.credentials.exceptions.GetCredentialException exception =
-                                        providerData != null
-                                                ? PendingIntentHandler
-                                                        .retrieveGetCredentialException(
-                                                                providerData)
-                                                : null;
-                                handleGetCredentialException(code, exception, result);
-                                return;
-                            }
-                            var credential = extractDigitalCredentialFromIntent(providerData);
-                            if (credential == null) {
-                                result.reject(
-                                        new GetCredentialUnknownException(
-                                                "Response does not contain a credential"));
-                            } else {
-                                result.fulfill(credential);
-                            }
-                        } catch (androidx.credentials.exceptions.GetCredentialException e) {
-                            handleGetCredentialException(code, e, result);
-                        } catch (Exception e) {
-                            Log.e(TAG, e.toString());
-                            result.reject(new GetCredentialUnknownException(e.getMessage()));
+                            handleOnReceiveResult(code, data, result, mLargeResultData);
+                        } finally {
+                            mLargeResultData = Bundle.EMPTY; // release the reference
                         }
                     }
                 };
 
         GetDigitalCredentialOption option = new GetDigitalCredentialOption(request);
+        Bundle requestData = option.getRequestData();
+        requestData.putParcelable(
+                EXTRA_LARGE_PAYLOAD_RESULT_RECEIVER,
+                toIpcFriendlyResultReceiver(largePayloadResultReceiver));
+
         client.getCredential(
                         new GetCredentialRequest(
                                 Arrays.asList(
                                         new CredentialOption(
                                                 option.getType(),
-                                                option.getRequestData(),
+                                                requestData,
                                                 option.getCandidateQueryData(),
                                                 request,
                                                 "",
@@ -199,6 +194,67 @@ public class DigitalCredentialsPresentationDelegate {
                         });
 
         return result;
+    }
+
+    private <T extends ResultReceiver> @Nullable ResultReceiver toIpcFriendlyResultReceiver(
+            @Nullable T resultReceiver) {
+        if (resultReceiver == null) {
+            return null;
+        }
+        android.os.Parcel parcel = android.os.Parcel.obtain();
+        try {
+            resultReceiver.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            return ResultReceiver.CREATOR.createFromParcel(parcel);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            parcel.recycle();
+        }
+    }
+
+    @VisibleForTesting
+    public void handleOnReceiveResult(
+            int code,
+            @Nullable Bundle data,
+            Promise<DigitalCredential> result,
+            Bundle largeResultData) {
+        if (!result.isPending()) {
+            return;
+        }
+        Log.d(TAG, "Received a response");
+        try {
+            Intent providerData =
+                    data == null
+                            ? null
+                            : IntentUtils.safeGetParcelable(data, BUNDLE_KEY_PROVIDER_DATA);
+
+            if (providerData != null && providerData.hasExtra(EXTRA_PASS_IT_BY_RESULT_RECEIVER)) {
+                providerData = IntentUtils.safeGetParcelable(largeResultData, RESULT_DATA);
+            }
+
+            if (code != Activity.RESULT_OK) {
+                androidx.credentials.exceptions.GetCredentialException exception =
+                        providerData != null
+                                ? PendingIntentHandler.retrieveGetCredentialException(providerData)
+                                : null;
+                handleGetCredentialException(code, exception, result);
+                return;
+            }
+            var credential = extractDigitalCredentialFromIntent(providerData);
+            if (credential == null) {
+                result.reject(
+                        new GetCredentialUnknownException(
+                                "Response does not contain a credential"));
+            } else {
+                result.fulfill(credential);
+            }
+        } catch (androidx.credentials.exceptions.GetCredentialException e) {
+            handleGetCredentialException(code, e, result);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            result.reject(new GetCredentialUnknownException(e.getMessage()));
+        }
     }
 
     /**

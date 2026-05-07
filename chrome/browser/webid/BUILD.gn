@@ -51,6 +51,7 @@ if (is_android) {
       ":java",
       "$google_play_services_package:google_play_services_identity_credentials_java",
       "//base:base_junit_test_support",
+      "//base:promise_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_credentials_credentials_java",
       "//third_party/junit",

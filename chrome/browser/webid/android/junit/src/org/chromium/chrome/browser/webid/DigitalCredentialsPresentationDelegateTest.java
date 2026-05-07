@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.exceptions.GetCredentialException;
@@ -21,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 
@@ -81,5 +84,34 @@ public class DigitalCredentialsPresentationDelegateTest {
                 () ->
                         DigitalCredentialsPresentationDelegate.extractDigitalCredentialFromIntent(
                                 intent));
+    }
+
+    @Test
+    public void testHandleOnReceiveResult_LargePayload()
+            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate();
+        Promise<DigitalCredential> promise = new Promise<>();
+
+        Bundle data = new Bundle();
+        Intent providerData = new Intent();
+        providerData.putExtra(
+                DigitalCredentialsPresentationDelegate.EXTRA_PASS_IT_BY_RESULT_RECEIVER, true);
+        data.putParcelable(
+                DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA, providerData);
+
+        Bundle largeResultData = new Bundle();
+        Intent realProviderData = new Intent();
+        packageResponseJson(JSON_WITH_PROTOCOL, realProviderData);
+        largeResultData.putParcelable(
+                DigitalCredentialsPresentationDelegate.RESULT_DATA, realProviderData);
+
+        delegate.handleOnReceiveResult(Activity.RESULT_OK, data, promise, largeResultData);
+
+        org.junit.Assert.assertTrue(promise.isFulfilled());
+        DigitalCredential credential = promise.getResult();
+        org.junit.Assert.assertNotNull(credential);
+        org.junit.Assert.assertEquals(JSON_PROTOCOL, credential.mProtocol);
+        org.junit.Assert.assertEquals(JSON_DATA, credential.mData);
     }
 }
