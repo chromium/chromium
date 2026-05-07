@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -319,30 +320,6 @@ class MEDIA_EXPORT AudioBus {
     return data.size() / channels;
   }
 
-  template <typename T>
-  static base::span<T> cast_span(base::span<uint8_t> data) {
-    if constexpr (std::is_same_v<T, uint8_t>) {
-      return data;
-    } else {
-      CHECK_EQ(data.size() % sizeof(T), 0u);
-      CHECK(base::IsAligned(data.data(), alignof(T)));
-      return UNSAFE_TODO(base::span<T>(reinterpret_cast<T*>(data.data()),
-                                       data.size() / sizeof(T)));
-    }
-  }
-
-  template <typename T>
-  static base::span<const T> cast_const_span(base::span<const uint8_t> data) {
-    if constexpr (std::is_same_v<T, uint8_t>) {
-      return data;
-    } else {
-      CHECK_EQ(data.size() % sizeof(T), 0u);
-      CHECK(base::IsAligned(data.data(), alignof(T)));
-      return UNSAFE_TODO(base::span<const T>(
-          reinterpret_cast<const T*>(data.data()), data.size() / sizeof(T)));
-    }
-  }
-
   // Contiguous block of channel memory.
   base::AlignedHeapArray<float> data_;
 
@@ -562,26 +539,30 @@ template <class SourceSampleTypeTraits>
 void AudioBus::FromInterleavedBytes(base::span<const uint8_t> source,
                                     bool zero_remaining_frames) {
   FromInterleaved<SourceSampleTypeTraits>(
-      cast_const_span<typename SourceSampleTypeTraits::ValueType>(source),
+      base::subtle::reinterpret_span<
+          const typename SourceSampleTypeTraits::ValueType>(source),
       zero_remaining_frames);
 }
 template <class SourceSampleTypeTraits>
 void AudioBus::FromInterleavedBytesPartial(base::span<const uint8_t> source,
                                            size_t write_offset) {
   FromInterleavedPartial<SourceSampleTypeTraits>(
-      cast_const_span<typename SourceSampleTypeTraits::ValueType>(source),
+      base::subtle::reinterpret_span<
+          const typename SourceSampleTypeTraits::ValueType>(source),
       write_offset);
 }
 template <class TargetSampleTypeTraits>
 void AudioBus::ToInterleavedBytes(base::span<uint8_t> dest) const {
   ToInterleaved<TargetSampleTypeTraits>(
-      cast_span<typename TargetSampleTypeTraits::ValueType>(dest));
+      base::subtle::reinterpret_span<
+          typename TargetSampleTypeTraits::ValueType>(dest));
 }
 template <class TargetSampleTypeTraits>
 void AudioBus::ToInterleavedBytesPartial(size_t read_offset,
                                          base::span<uint8_t> dest) const {
   ToInterleavedPartial<TargetSampleTypeTraits>(
-      read_offset, cast_span<typename TargetSampleTypeTraits::ValueType>(dest));
+      read_offset, base::subtle::reinterpret_span<
+                       typename TargetSampleTypeTraits::ValueType>(dest));
 }
 
 }  // namespace media
