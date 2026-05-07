@@ -448,12 +448,17 @@ class WPTManifest:
                           url_base: str = '/',
                           test_paths: Optional[List[str]] = None):
         """Generates MANIFEST.json on the specified directory."""
-        wpt_exec_path = PathFinder(
-            port.host.filesystem).path_from_chromium_base(
-                'third_party', 'wpt_tools', 'wpt', 'wpt')
+        fs = port.host.filesystem
+        wpt_tools_dir = PathFinder(fs).path_from_chromium_base(
+            'third_party', 'wpt_tools', 'wpt')
         cmd = [
             port.python3_command(),
-            wpt_exec_path,
+            fs.join(wpt_tools_dir, 'wpt'),
+            # Third-party packages are vended through vpython instead of plain
+            # virtualenv. We still need to specify `wpt --venv`, which doubles
+            # as a gitignored scratch directory.
+            f'--venv={fs.join(wpt_tools_dir, "_venv3")}',
+            '--skip-venv-setup',
             'manifest',
             '-v',
             '--no-download',

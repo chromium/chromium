@@ -40,6 +40,8 @@ MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
     'python3',
     '/mock-checkout/third_party/wpt_tools/wpt/wpt',
+    '--venv=/mock-checkout/third_party/wpt_tools/wpt/_venv3',
+    '--skip-venv-setup',
     'manifest',
     '-v',
     '--no-download',
