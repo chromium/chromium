@@ -8,6 +8,7 @@
 
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -210,6 +211,47 @@ TEST_F(TableManagementHelpersTest,
             "VALUES (?, ?)");
 }
 
+// Tests that the `CachedInsertBuilder()` function correctly initializes the
+// statement with the correct schema and placeholders when `or_replace` is false
+// by default.
+TEST_F(TableManagementHelpersTest, CachedInsertBuilderCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER, text_column TEXT);"));
+
+  Statement statement;
+  CachedInsertBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      /*column_names=*/
+                      {
+                          "integer_column",
+                          "text_column",
+                      });
+
+  EXPECT_EQ(
+      statement.GetSQLStatement(),
+      "INSERT INTO test_table (integer_column, text_column) VALUES (?, ?)");
+}
+
+// Tests that the `CachedInsertBuilder()` function correctly initializes the
+// statement with the correct schema and placeholders when `or_replace` is true.
+TEST_F(TableManagementHelpersTest,
+       CachedInsertBuilderWithOrReplaceCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER, text_column TEXT);"));
+
+  Statement statement;
+  CachedInsertBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      /*column_names=*/
+                      {
+                          "integer_column",
+                          "text_column",
+                      },
+                      /*or_replace=*/true);
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "INSERT OR REPLACE INTO test_table (integer_column, text_column) "
+            "VALUES (?, ?)");
+}
+
 // Tests that the `RenameTable()` function correctly renames the table.
 TEST_F(TableManagementHelpersTest, RenameTableReturnsTrueOnSuccess) {
   ASSERT_TRUE(db_.ExecuteScriptForTesting(
@@ -337,6 +379,32 @@ TEST_F(TableManagementHelpersTest,
   Statement statement;
   DeleteBuilder(db_, statement, "test_table",
                 /*where_clause=*/"integer_column = ?");
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "DELETE FROM test_table WHERE integer_column = ?");
+}
+
+// Tests that the `CachedDeleteBuilder()` function correctly initializes the
+// statement.
+TEST_F(TableManagementHelpersTest, CachedDeleteBuilderCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER);"));
+  Statement statement;
+  CachedDeleteBuilder(SQL_FROM_HERE, db_, statement, "test_table");
+
+  EXPECT_EQ(statement.GetSQLStatement(), "DELETE FROM test_table");
+}
+
+// Tests that the `CachedDeleteBuilder()` function correctly initializes the
+// statement when a `where_clause` is specified.
+TEST_F(TableManagementHelpersTest,
+       CachedDeleteBuilderWithWhereClauseCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER);"));
+
+  Statement statement;
+  CachedDeleteBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      /*where_clause=*/"integer_column = ?");
 
   EXPECT_EQ(statement.GetSQLStatement(),
             "DELETE FROM test_table WHERE integer_column = ?");
@@ -488,6 +556,43 @@ TEST_F(TableManagementHelpersTest,
             "integer_column = 1");
 }
 
+// Tests that the `CachedUpdateBuilder()` function correctly initializes the
+// statement with the correct schema and placeholders.
+TEST_F(TableManagementHelpersTest, CachedUpdateBuilderCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER, text_column TEXT);"));
+
+  Statement statement;
+  CachedUpdateBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      /*column_names=*/
+                      {
+                          "integer_column",
+                          "text_column",
+                      });
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "UPDATE test_table SET integer_column = ?, text_column = ?");
+}
+
+// Tests that the `CachedUpdateBuilder()` function correctly initializes the
+// statement with the correct schema and placeholders when a `where_clause` is
+// specified.
+TEST_F(TableManagementHelpersTest,
+       CachedUpdateBuilderWithWhereClauseCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table "
+      "(integer_column INTEGER, text_column TEXT, blob_column BLOB);"));
+
+  Statement statement;
+  CachedUpdateBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      {"text_column", "blob_column"},
+                      /*where_clause=*/"integer_column = 1");
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "UPDATE test_table SET text_column = ?, blob_column = ? WHERE "
+            "integer_column = 1");
+}
+
 // Tests that the `SelectBuilder()` function correctly initializes the statement
 // with the correct schema.
 TEST_F(TableManagementHelpersTest, SelectBuilderCreatesCorrectStatement) {
@@ -517,6 +622,42 @@ TEST_F(TableManagementHelpersTest,
   Statement statement;
   SelectBuilder(db_, statement, "test_table", {"text_column", "blob_column"},
                 /*modifiers=*/"WHERE integer_column = 1");
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "SELECT text_column, blob_column FROM test_table WHERE "
+            "integer_column = 1");
+}
+
+// Tests that the `CachedSelectBuilder()` function correctly initializes the
+// statement with the correct schema.
+TEST_F(TableManagementHelpersTest, CachedSelectBuilderCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table (integer_column INTEGER, text_column TEXT);"));
+
+  Statement statement;
+  CachedSelectBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      /*columns=*/
+                      {
+                          "integer_column",
+                          "text_column",
+                      });
+
+  EXPECT_EQ(statement.GetSQLStatement(),
+            "SELECT integer_column, text_column FROM test_table ");
+}
+
+// Tests that the `CachedSelectBuilder()` function correctly initializes the
+// statement with the correct schema when `modifiers` is specified.
+TEST_F(TableManagementHelpersTest,
+       CachedSelectBuilderWithWhereClauseCreatesCorrectStatement) {
+  ASSERT_TRUE(db_.ExecuteScriptForTesting(
+      "CREATE TABLE test_table "
+      "(integer_column INTEGER, text_column TEXT, blob_column BLOB);"));
+
+  Statement statement;
+  CachedSelectBuilder(SQL_FROM_HERE, db_, statement, "test_table",
+                      {"text_column", "blob_column"},
+                      /*modifiers=*/"WHERE integer_column = 1");
 
   EXPECT_EQ(statement.GetSQLStatement(),
             "SELECT text_column, blob_column FROM test_table WHERE "

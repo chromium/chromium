@@ -12,11 +12,15 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "sql/statement_id.h"
 
 namespace sql {
 
 class Database;
 class Statement;
+
+// Placeholder for SQL statements, used in builder functions.
+inline constexpr std::string_view kPlaceholder = "?";
 
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
@@ -32,7 +36,7 @@ class Statement;
 // Returns true if successful.
 COMPONENT_EXPORT(SQL)
 bool CreateTable(
-    sql::Database& db,
+    Database& db,
     std::string_view table_name,
     base::span<const std::pair<const std::string_view, const std::string_view>>
         column_names_and_types,
@@ -42,28 +46,44 @@ bool CreateTable(
 // The index is named after the table and columns, separated by '_'.
 // Returns true if successful.
 COMPONENT_EXPORT(SQL)
-bool CreateIndex(sql::Database& db,
+bool CreateIndex(Database& db,
                  std::string_view table_name,
                  base::span<const std::string_view> columns);
 
 // Initializes `statement` with INSERT INTO `table_name`, with placeholders for
-// all `column_names`.
-// By setting `or_replace`, INSERT OR REPLACE INTO is used instead.
+// all `column_names`. By setting `or_replace`, INSERT OR REPLACE INTO is used
+// instead.
 COMPONENT_EXPORT(SQL)
-void InsertBuilder(sql::Database& db,
-                   sql::Statement& statement,
+void InsertBuilder(Database& db,
+                   Statement& statement,
                    std::string_view table_name,
                    base::span<const std::string_view> column_names,
                    bool or_replace = false);
 
+// Initializes `statement` with INSERT INTO `table_name`, with placeholders for
+// all `column_names`. By setting `or_replace`, INSERT OR REPLACE INTO is used
+// instead.
+//
+// This statement builder uses the statement cache, where `id` should be
+// constructed using `SQL_FROM_HERE`, which is based on the source file name and
+// line number. For statements which will only be executed once or rarely, use
+// `InsertBuilder()` instead.
+COMPONENT_EXPORT(SQL)
+void CachedInsertBuilder(StatementID id,
+                         Database& db,
+                         Statement& statement,
+                         std::string_view table_name,
+                         base::span<const std::string_view> column_names,
+                         bool or_replace = false);
+
 // Renames the table `from` into `to` and returns true if successful.
 COMPONENT_EXPORT(SQL)
-bool RenameTable(sql::Database& db, std::string_view from, std::string_view to);
+bool RenameTable(Database& db, std::string_view from, std::string_view to);
 
 // Adds a column named `column_name` of `type` to `table_name` and returns true
 // if successful.
 COMPONENT_EXPORT(SQL)
-bool AddColumn(sql::Database& db,
+bool AddColumn(Database& db,
                std::string_view table_name,
                std::string_view column_name,
                std::string_view type);
@@ -71,28 +91,42 @@ bool AddColumn(sql::Database& db,
 // Drops the column named `column_name` from `table_name` and returns true if
 // successful.
 COMPONENT_EXPORT(SQL)
-bool DropColumn(sql::Database& db,
+bool DropColumn(Database& db,
                 std::string_view table_name,
                 std::string_view column_name);
 
 // Initializes `statement` with DELETE FROM `table_name`. A WHERE clause
 // can optionally be specified in `where_clause`.
 COMPONENT_EXPORT(SQL)
-void DeleteBuilder(sql::Database& db,
-                   sql::Statement& statement,
+void DeleteBuilder(Database& db,
+                   Statement& statement,
                    std::string_view table_name,
                    std::string_view where_clause = "");
 
+// Initializes `statement` with DELETE FROM `table_name`. A WHERE clause
+// can optionally be specified in `where_clause`.
+//
+// This statement builder uses the statement cache, where `id` should be
+// constructed using `SQL_FROM_HERE`, which is based on the source file name and
+// line number. For statements which will only be executed once or rarely, use
+// `DeleteBuilder()` instead.
+COMPONENT_EXPORT(SQL)
+void CachedDeleteBuilder(StatementID id,
+                         Database& db,
+                         Statement& statement,
+                         std::string_view table_name,
+                         std::string_view where_clause = "");
+
 // Deletes all rows from `table_name` and returns true if it was successful.
 COMPONENT_EXPORT(SQL)
-bool DeleteAllRows(sql::Database& db, std::string_view table_name);
+bool DeleteAllRows(Database& db, std::string_view table_name);
 
 // Like `DeleteBuilder()`, but runs the statement and returns true if it was
 // successful. The `where_clause` must be a static string. If you need to
 // insert unsafe values, use `DeleteBuilder()` with `Bind()` calls or
 // `DeleteWhereColumnEq()`.
 COMPONENT_EXPORT(SQL)
-bool DeleteFromTable(sql::Database& db,
+bool DeleteFromTable(Database& db,
                      std::string_view table_name,
                      std::string_view where_clause);
 
@@ -100,7 +134,7 @@ bool DeleteFromTable(sql::Database& db,
 // `column` = `value`.
 // Runs the statement and returns true if it was successful.
 COMPONENT_EXPORT(SQL)
-bool DeleteWhereColumnEq(sql::Database& db,
+bool DeleteWhereColumnEq(Database& db,
                          std::string_view table_name,
                          std::string_view column,
                          std::string_view value);
@@ -109,7 +143,7 @@ bool DeleteWhereColumnEq(sql::Database& db,
 // `column` = `value` for int64_t type.
 // Runs the statement and returns true if it was successful.
 COMPONENT_EXPORT(SQL)
-bool DeleteWhereColumnEq(sql::Database& db,
+bool DeleteWhereColumnEq(Database& db,
                          std::string_view table_name,
                          std::string_view column,
                          int64_t value);
@@ -118,20 +152,51 @@ bool DeleteWhereColumnEq(sql::Database& db,
 // a placeholder for every `column_names`. A WHERE clause can optionally be
 // specified in `where_clause`.
 COMPONENT_EXPORT(SQL)
-void UpdateBuilder(sql::Database& db,
-                   sql::Statement& statement,
+void UpdateBuilder(Database& db,
+                   Statement& statement,
                    std::string_view table_name,
                    base::span<const std::string_view> column_names,
                    std::string_view where_clause = "");
 
+// Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
+// a placeholder for every `column_names`. A WHERE clause can optionally be
+// specified in `where_clause`.
+//
+// This statement builder uses the statement cache, where `id` should be
+// constructed using `SQL_FROM_HERE`, which is based on the source file name and
+// line number. For statements which will only be executed once or rarely, use
+// `UpdateBuilder()` instead.
+COMPONENT_EXPORT(SQL)
+void CachedUpdateBuilder(StatementID id,
+                         Database& db,
+                         Statement& statement,
+                         std::string_view table_name,
+                         base::span<const std::string_view> column_names,
+                         std::string_view where_clause = "");
+
 // Initializes `statement` with SELECT `columns` FROM `table_name` and
 // optionally further `modifiers`, such as WHERE, ORDER BY, etc.
 COMPONENT_EXPORT(SQL)
-void SelectBuilder(sql::Database& db,
-                   sql::Statement& statement,
+void SelectBuilder(Database& db,
+                   Statement& statement,
                    std::string_view table_name,
                    base::span<const std::string_view> columns,
                    std::string_view modifiers = "");
+
+// Initializes `statement` with SELECT `columns` FROM `table_name` and
+// optionally further `modifiers`, such as WHERE, ORDER BY, etc.
+//
+// This statement builder uses the statement cache, where `id` should be
+// constructed using `SQL_FROM_HERE`, which is based on the source file name and
+// line number. For statements which will only be executed once or rarely, use
+// `SelectBuilder()` instead.
+COMPONENT_EXPORT(SQL)
+void CachedSelectBuilder(StatementID id,
+                         Database& db,
+                         Statement& statement,
+                         std::string_view table_name,
+                         base::span<const std::string_view> columns,
+                         std::string_view modifiers = "");
 
 }  // namespace sql
 
