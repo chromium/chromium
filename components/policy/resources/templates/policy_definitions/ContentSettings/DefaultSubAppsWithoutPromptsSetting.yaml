@@ -1,0 +1,42 @@
+caption: Control use of the Sub Apps Add API
+default: null
+desc: |-
+  The policy controls whether Isolated Web Apps (IWAs) will by default be able to add Sub Apps.
+
+  Setting the policy to 1 allows IWA origins to add Sub Apps and bypass user gesture or user confirmation requirements.
+
+  Setting the policy to 2 blocks IWA origins from adding Sub Apps.
+
+  Setting the policy to 3 or leaving it unset allows Isolated Web App origins to add Sub Apps upon user confirmation.
+
+  This policy can be overridden for specific Isolated Web App origins using the <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME">SubAppsWithoutPromptsAllowedForOrigins</ph> and <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME">SubAppsWithoutPromptsBlockedorOrigins</ph> policies.
+
+example_value: 3
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome_os:150-
+future_on:
+- chrome.*
+items:
+- caption: Allow Isolated Web App origins to add Sub Apps without user prompt
+  name: AllowSubApps
+  value: 1
+- caption: Block Isolated Web App origins from adding Sub Apps
+  name: BlockSubApps
+  value: 2
+- caption: Allow Isolated Web App origins to add Sub Apps but require user prompt
+  name: AskSubApps
+  value: 3
+owners:
+  - file://chrome/browser/web_applications/OWNERS
+  - file://components/webapps/isolated_web_apps/PLATFORM_OWNERS
+schema:
+  enum:
+  - 1
+  - 2
+  - 3
+  type: integer
+tags: []
+type: int-enum

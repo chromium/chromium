@@ -1,0 +1,27 @@
+caption: Allow Isolated Web Apps to use Sub Apps Add API without user prompt
+desc: |-
+  By default, Isolated Web Apps (IWAs) can add Sub Apps provided the user confirms the prompt interactively.
+
+  This policy controls which IWA origins will be able to add Sub Apps without having the user prompted.
+
+  This policy overrides the behavior of <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME">DefaultSubAppsWithoutPromptsSetting</ph> and is overridden by <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME">SubAppsWithoutPromptsBlockedForOrigins</ph>.
+
+example_value:
+- isolated-app://egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic
+- isolated-app://anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome_os:150-
+future_on:
+- chrome.*
+owners:
+- file://chrome/browser/web_applications/OWNERS
+- file://components/webapps/isolated_web_apps/PLATFORM_OWNERS
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

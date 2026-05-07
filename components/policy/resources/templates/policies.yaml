@@ -1446,6 +1446,9 @@ policies:
   1445: KioskPinchToZoomAllowed
   1446: SecuritySignalsClientCertificatesSelectors
   1447: AllowSocketPoolSizeRandomizationForProxies
+  1448: DefaultSubAppsWithoutPromptsSetting
+  1449: SubAppsWithoutPromptsAllowedForOrigins
+  1450: SubAppsWithoutPromptsBlockedForOrigins
 
 atomic_groups:
   1: Homepage
@@ -1511,3 +1514,4 @@ atomic_groups:
   61: LegacyCookieScopeSettings
   62: GeolocationSettings
   63: SocketPoolSizeSettings
+  64: SubAppsWithoutPromptsSettings

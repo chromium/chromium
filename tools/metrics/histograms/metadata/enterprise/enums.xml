@@ -2426,6 +2426,9 @@ chromium-metrics-reviews@google.com.
   <int value="1445" label="KioskPinchToZoomAllowed"/>
   <int value="1446" label="SecuritySignalsClientCertificatesSelectors"/>
   <int value="1447" label="AllowSocketPoolSizeRandomizationForProxies"/>
+  <int value="1448" label="DefaultSubAppsWithoutPromptsSetting"/>
+  <int value="1449" label="SubAppsWithoutPromptsAllowedForOrigins"/>
+  <int value="1450" label="SubAppsWithoutPromptsBlockedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

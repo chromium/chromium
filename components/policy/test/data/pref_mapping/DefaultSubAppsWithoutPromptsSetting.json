@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.sub_apps_without_prompts",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2,
+        3
+      ]
+    }
+  }
+]

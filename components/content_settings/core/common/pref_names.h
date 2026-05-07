@@ -75,6 +75,8 @@ inline constexpr char kManagedDefaultDirectSocketsSetting[] =
 inline constexpr char
     kManagedDefaultDirectSocketsPrivateNetworkAccessSetting[] =
         "profile.managed_default_content_settings.direct_sockets_pna";
+inline constexpr char kManagedDefaultSubAppsWithoutPromptsSetting[] =
+    "profile.managed_default_content_settings.sub_apps_without_prompts";
 inline constexpr char kManagedDefaultLegacyCookieScope[] =
     "profile.managed_default_content_settings.legacy_cookie_scope";
 inline constexpr char kManagedDefaultControlledFrameSetting[] =
@@ -194,6 +196,10 @@ inline constexpr char
 inline constexpr char
     kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls[] =
         "profile.managed_direct_sockets_pna_blocked_for_urls";
+inline constexpr char kManagedSubAppsWithoutPromptsAllowedForOrigins[] =
+    "profile.managed_sub_apps_without_prompts_allowed_for_origins";
+inline constexpr char kManagedSubAppsWithoutPromptsBlockedForOrigins[] =
+    "profile.managed_sub_apps_without_prompts_blocked_for_origins";
 inline constexpr char kManagedLegacyCookieScopeForDomains[] =
     "profile.managed_legacy_cookie_scope_for_domains";
 #if BUILDFLAG(IS_CHROMEOS)
