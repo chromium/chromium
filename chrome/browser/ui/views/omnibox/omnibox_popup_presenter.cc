@@ -29,13 +29,31 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
       this, this->location_bar(), controller,
       /*include_location_bar_cutout=*/!full_popup,
       /*wants_focus=*/full_popup));
+
+  // By initializing `content_height_` to 1, we ensure the widget starts 1px
+  // taller than the location bar on first show. This creates a tiny visible
+  // area that forces the renderer to run layout and submit a frame (carrying
+  // size metadata) instead of skipping it. This ensures auto-resizes are
+  // triggered reliably.
+  // Only needed if `kOmniboxWebUIDeferShowUntilVisualStateReady` is disabled,
+  // as waiting for the visual state callback fixes the issue.
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady)) {
+    content_height_ = 1;
+  }
 }
 
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
 
 void OmniboxPopupPresenter::Hide() {
   OmniboxPopupPresenterBase::Hide();
-  content_height_ = 1;
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady)) {
+    // Reset the cached height to force a layout update when the popup is
+    // reshown. This prevents the popup from temporarily using a stale size
+    // from its previous state.
+    content_height_ = 1;
+  }
 }
 
 std::string_view OmniboxPopupPresenter::GetPopupMetricPrefix() const {

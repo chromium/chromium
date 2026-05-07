@@ -146,6 +146,12 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
 
   OnAimPopupEligibilityChanged();
   OnContentSharingPolicyChanged();
+
+  // Ensure the page receives the current autocomplete state on startup.
+  // This handles the case where results are generated before the remote is
+  // bound and the handler is created and starts observing the
+  // AutocompleteController.
+  OnResultChanged(controller_->autocomplete_controller(), false);
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;

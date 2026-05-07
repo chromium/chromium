@@ -578,6 +578,8 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
         std::make_unique<FakeOmniboxPopupView>(omnibox_controller_.get());
     omnibox_controller_->edit_model()->set_popup_view(popup_view_.get());
 
+    EXPECT_CALL(page_, AutocompleteResultChanged(testing::_)).Times(1);
+
     handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(),
