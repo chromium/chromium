@@ -262,4 +262,6 @@ constexpr base::FeatureParam<bool> kEnableRecentTabsTip{
     &kAndroidTipsNotificationsV2, "enable_recent_tabs_tip",
     /*default_value=*/true};
 
+BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace segmentation_platform::features
