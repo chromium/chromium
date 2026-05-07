@@ -113,11 +113,10 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     }
 
     /**
-     * @param tab The {@link Tab} on which the toolbar scene layer color is used.
-     * @return The toolbar (or browser controls) color used in the compositor scene layer. Note that
-     *     this is primarily used for compositor animation, and doesn't affect the Android view.
+     * @param tab The {@link Tab} on which the toolbar background color is used.
+     * @return Returns the toolbar background color.
      */
-    public @ColorInt int getSceneLayerBackground(Tab tab) {
+    public @ColorInt int getToolbarBackgroundColor(Tab tab) {
         NativePage nativePage = tab.getNativePage();
         @ColorInt int defaultColor = calculateColor(tab, tab.getThemeColor());
         return nativePage != null
@@ -132,7 +131,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @param themeColor Initial color to calculate the theme color with.
      * @return Final theme color for a given tab, with other signals taken into account.
      */
-    public @ColorInt int calculateColor(Tab tab, @ColorInt int themeColor) {
+    protected @ColorInt int calculateColor(Tab tab, @ColorInt int themeColor) {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
         if (!isUsingTabThemeColor(tab, themeColor)) {

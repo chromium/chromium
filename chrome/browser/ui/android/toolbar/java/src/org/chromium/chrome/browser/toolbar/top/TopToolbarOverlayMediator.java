@@ -444,7 +444,7 @@ public class TopToolbarOverlayMediator {
      */
     private @ColorInt int getToolbarBackgroundColor(Tab tab) {
         if (sToolbarBackgroundColorForTesting != null) return sToolbarBackgroundColorForTesting;
-        return mTopUiThemeColorProvider.getSceneLayerBackground(tab);
+        return mTopUiThemeColorProvider.getToolbarBackgroundColor(tab);
     }
 
     /**

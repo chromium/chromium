@@ -28,7 +28,6 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario.ActivityAction;
@@ -145,12 +144,12 @@ public class BookmarkBarCoordinatorTest {
         onActivity(this::createCoordinator);
     }
 
-    private @NonNull BookmarkId addItemToDesktopFolder(@NonNull String title) {
+    private BookmarkId addItemToDesktopFolder(String title) {
         final int index = mModel.getChildCount(mDesktopFolderId);
         return mModel.addBookmark(mDesktopFolderId, index, title, GURL.emptyGURL());
     }
 
-    private void assertItemRenderedAtIndex(@NonNull BookmarkId itemId, int index) {
+    private void assertItemRenderedAtIndex(BookmarkId itemId, int index) {
         final var item = mModel.getBookmarkById(itemId);
         assertNotNull(item);
 
@@ -164,7 +163,7 @@ public class BookmarkBarCoordinatorTest {
         Criteria.checkThat(mItemsContainer.getChildCount(), equalTo(count));
     }
 
-    private void createCoordinator(@NonNull Activity activity) {
+    private void createCoordinator(Activity activity) {
         final var contentView = new CoordinatorLayoutForPointer(activity, /* attrs= */ null);
         activity.setContentView(contentView);
 
@@ -206,19 +205,19 @@ public class BookmarkBarCoordinatorTest {
         assertNotNull("Verify overflow button existence.", mOverflowButton);
     }
 
-    private void moveItemToDesktopFolderAtIndex(@NonNull BookmarkId itemId, int index) {
+    private void moveItemToDesktopFolderAtIndex(BookmarkId itemId, int index) {
         mModel.moveBookmark(itemId, mDesktopFolderId, index);
     }
 
-    private void removeItem(@NonNull BookmarkId itemId) {
+    private void removeItem(BookmarkId itemId) {
         mModel.deleteBookmark(itemId);
     }
 
-    private void setItemTitle(@NonNull BookmarkId itemId, @Nullable String title) {
+    private void setItemTitle(BookmarkId itemId, @Nullable String title) {
         mModel.setBookmarkTitle(itemId, title);
     }
 
-    private @NonNull List<BookmarkId> setItemsWithinDesktopFolder(@NonNull List<String> titles) {
+    private List<BookmarkId> setItemsWithinDesktopFolder(List<String> titles) {
         final List<BookmarkId> itemIds = new ArrayList<>();
         mModel.performExtensiveBookmarkChanges(
                 () -> {
@@ -228,7 +227,7 @@ public class BookmarkBarCoordinatorTest {
         return itemIds;
     }
 
-    private void onActivity(@NonNull ActivityAction<TestActivity> callback) {
+    private void onActivity(ActivityAction<TestActivity> callback) {
         mActivityScenarioRule.getScenario().onActivity(callback);
     }
 
@@ -537,7 +536,8 @@ public class BookmarkBarCoordinatorTest {
         PropertyModel bookmarBarModel = mCoordinator.getModelForTesting();
 
         when(mCurrentTab.isIncognito()).thenReturn(true);
-        when(mTopUiThemeColorProvider.getSceneLayerBackground(mCurrentTab)).thenReturn(Color.BLACK);
+        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(mCurrentTab))
+                .thenReturn(Color.BLACK);
 
         // The expected colors in incognito.
         @ColorInt
@@ -572,7 +572,8 @@ public class BookmarkBarCoordinatorTest {
 
         // Simulate being on a regular light theme tab (BrandedColorScheme.APP_DEFAULT).
         when(mCurrentTab.isIncognito()).thenReturn(false);
-        when(mTopUiThemeColorProvider.getSceneLayerBackground(mCurrentTab)).thenReturn(Color.WHITE);
+        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(mCurrentTab))
+                .thenReturn(Color.WHITE);
 
         // The expected colors for the regular light theme.
         @ColorInt

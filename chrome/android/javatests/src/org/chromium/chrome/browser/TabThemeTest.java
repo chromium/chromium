@@ -197,7 +197,7 @@ public class TabThemeTest {
                     Assert.assertNotSame(
                             "Theme color should never be 0 or TRANSPARENT!",
                             Color.TRANSPARENT,
-                            colorProvider.getSceneLayerBackground(tab));
+                            colorProvider.getToolbarBackgroundColor(tab));
                 };
 
         ThreadUtils.runOnUiThreadBlocking(() -> colorProvider.addThemeColorObserver(colorObserver));
@@ -243,7 +243,7 @@ public class TabThemeTest {
                     Assert.assertNotSame(
                             "Theme color should never be 0 or TRANSPARENT!",
                             Color.TRANSPARENT,
-                            colorProvider.getSceneLayerBackground(tab));
+                            colorProvider.getToolbarBackgroundColor(tab));
                 });
     }
 }

@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.blink.mojom.DisplayMode;
@@ -90,7 +89,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     private final TabObserverRegistrar.CustomTabTabObserver mTabObserver =
             new TabObserverRegistrar.CustomTabTabObserver() {
                 @Override
-                protected void onObservingDifferentTab(@NonNull Tab tab) {
+                protected void onObservingDifferentTab(Tab tab) {
                     updateTheme();
                 }
 
@@ -243,7 +242,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
 
     private @ColorInt int getTabThemeColor(@Nullable Tab tab) {
         assert tab != null;
-        return mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor());
+        return mTopUiThemeColorProvider.getToolbarBackgroundColor(tab);
     }
 
     private @ColorInt int getDefaultChromeColor() {

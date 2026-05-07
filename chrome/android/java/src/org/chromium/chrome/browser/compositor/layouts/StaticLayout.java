@@ -412,7 +412,7 @@ public class StaticLayout extends Layout {
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
-        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
+        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getToolbarBackgroundColor(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);
     }
@@ -423,9 +423,7 @@ public class StaticLayout extends Layout {
         }
 
         return ThemeUtils.getTextBoxColorForToolbarBackground(
-                mContext,
-                tab,
-                mTopUiThemeColorProvider.get().calculateColor(tab, tab.getThemeColor()));
+                mContext, tab, mTopUiThemeColorProvider.get().getToolbarBackgroundColor(tab));
     }
 
     void setTextBoxBackgroundColorForTesting(Integer color) {

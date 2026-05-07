@@ -232,8 +232,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
     public void testLightColorTabTheme_TabColorWithLightScheme() {
         // emulate not incognito tab with page theme
         when(tab.getThemeColor()).thenReturn(LIGHT_COLOR);
-        when(mTopUiThemeColorProvider.calculateColor(eq(tab), eq(LIGHT_COLOR)))
-                .thenReturn(LIGHT_COLOR);
+        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(LIGHT_COLOR);
         var intentDataProvider =
                 buildCctIntentDataProvider(
                         COLOR_SCHEME_LIGHT,
@@ -255,8 +254,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
     public void testDarkColorTabTheme_TabColorWithDarkScheme() {
         // emulate not incognito tab with page theme
         when(tab.getThemeColor()).thenReturn(DARK_COLOR);
-        when(mTopUiThemeColorProvider.calculateColor(eq(tab), eq(DARK_COLOR)))
-                .thenReturn(DARK_COLOR);
+        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(DARK_COLOR);
         var intentDataProvider =
                 buildCctIntentDataProvider(
                         COLOR_SCHEME_LIGHT,

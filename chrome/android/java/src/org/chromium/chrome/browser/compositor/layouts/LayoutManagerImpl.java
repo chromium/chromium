@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -1020,12 +1021,13 @@ public class LayoutManagerImpl
                         && !tab.isHidden();
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
+        @ColorInt int toolbarBackgroundColor = topUiTheme.getToolbarBackgroundColor(tab);
         layoutTab.initFromHost(
                 ThemeUtils.getBackgroundColor(tab),
                 canUseLiveTexture,
-                topUiTheme.getSceneLayerBackground(tab),
+                toolbarBackgroundColor,
                 ThemeUtils.getTextBoxColorForToolbarBackground(
-                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())));
+                        mContext, tab, toolbarBackgroundColor));
 
         mHost.requestRender();
     }

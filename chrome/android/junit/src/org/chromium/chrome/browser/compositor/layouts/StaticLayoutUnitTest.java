@@ -184,7 +184,7 @@ public class StaticLayoutUnitTest {
 
         doReturn(TOOLBAR_BACKGROUND_COLOR)
                 .when(mTopUiThemeColorProvider)
-                .getSceneLayerBackground(any());
+                .getToolbarBackgroundColor(any());
         mStaticLayout.setTextBoxBackgroundColorForTesting(TEXT_BOX_BACKGROUND_COLOR);
 
         initAndAssertAllDependencies();

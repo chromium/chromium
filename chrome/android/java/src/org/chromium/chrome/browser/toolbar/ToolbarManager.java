@@ -3404,7 +3404,7 @@ public class ToolbarManager
                     ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
             int primaryColor =
                     tab != null
-                            ? mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor())
+                            ? mTopUiThemeColorProvider.getToolbarBackgroundColor(tab)
                             : defaultPrimaryColor;
             // TODO(jinsukkim): Let TopUiThemeColorProvider handle this by updating the theme color.
             onThemeColorChanged(primaryColor, false);

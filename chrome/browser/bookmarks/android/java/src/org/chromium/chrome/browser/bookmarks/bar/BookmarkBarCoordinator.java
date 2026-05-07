@@ -657,7 +657,7 @@ public class BookmarkBarCoordinator
         // background, the layer will show whatever is remaining in the buffer from the previous
         // snapshot, so we also set the Android widget background. Using the background color, we
         // can use the ThemeUtils to get the hairline background color as well.
-        @ColorInt int color = mTopUiThemeColorProvider.getSceneLayerBackground(tab);
+        @ColorInt int color = mTopUiThemeColorProvider.getToolbarBackgroundColor(tab);
         mView.setBackgroundColor(color);
         mViewResourceFrameLayout.setBackgroundColor(color);
         mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.BACKGROUND_COLOR, color);
