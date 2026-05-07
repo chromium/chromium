@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace glic {
 class GlicCookieSynchronizer;
 
@@ -56,14 +60,10 @@ class AuthController : public signin::IdentityManager::Observer {
   // Called when the client reports that it has encountered a transient error.
   void OnClientTransientError(mojo_base::mojom::AbslStatusCode status_code);
 
-  // Show the sign-in page. `after_signin` will be called after the user has
-  // signed in. It will not be called if the user cancels the sign-in, or the
-  // sign-in doesn't happen before:
-  // * ShowReauthForAccount is called again
-  // * The AuthController is destroyed
-  // * Too much time has passed (5 minutes).
+  // Show the sign-in page. `web_contents` is used on Android to find the
+  // activity to display the sign-in sheet.
   // TODO(crbug.com/406529330): Track sign-in flow correctly.
-  void ShowReauthForAccount(base::OnceClosure after_signin);
+  void ShowReauthForAccount(content::WebContents* web_contents);
 
   void SetCookieSynchronizerForTesting(
       std::unique_ptr<GlicCookieSynchronizer> synchronizer);
@@ -102,8 +102,6 @@ class AuthController : public signin::IdentityManager::Observer {
       bool sync_success);
 
   raw_ptr<Profile> profile_;
-  base::OnceClosure after_signin_callback_;
-  base::TimeTicks after_signin_callback_expiration_time_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<GlicCookieSynchronizer> cookie_synchronizer_;
   base::ScopedObservation<signin::IdentityManager,

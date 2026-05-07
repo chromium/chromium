@@ -5,7 +5,7 @@
 #include "chrome/browser/glic/glic_settings_util.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/glic/android/glic_settings_navigation_android.h"
+#include "chrome/browser/glic/android/glic_navigation_utils_android.h"
 
 namespace glic {
 

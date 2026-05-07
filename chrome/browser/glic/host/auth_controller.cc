@@ -21,6 +21,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/android/glic_navigation_utils_android.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -159,12 +163,6 @@ void AuthController::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
-  if (after_signin_callback_ &&
-      after_signin_callback_expiration_time_ > base::TimeTicks::Now()) {
-    if (GetTokenState() == TokenState::kOk) {
-      std::move(after_signin_callback_).Run();
-    }
-  }
 }
 
 void AuthController::OnRefreshTokenUpdatedForAccount(
@@ -217,17 +215,15 @@ void AuthController::CookieSyncDone(base::OnceCallback<void(bool)> callback,
   std::move(callback).Run(sync_success);
 }
 
-void AuthController::ShowReauthForAccount(base::OnceClosure after_signin) {
-  after_signin_callback_ = std::move(after_signin);
-  // TODO(crbug.com/396500584): Check what timeout is appropriate.
-  after_signin_callback_expiration_time_ =
-      base::TimeTicks::Now() + base::Minutes(5);
+void AuthController::ShowReauthForAccount(content::WebContents* web_contents) {
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_ANDROID)  // TODO(b/477997050): Implement for android
+#if !BUILDFLAG(IS_ANDROID)
   signin_ui_util::ShowReauthForAccount(
       profile_, primary_account_info.email,
       signin_metrics::AccessPoint::kGlicLaunchButton);
+#else
+  glic::ShowSignIn(profile_, web_contents);
 #endif
 }
 

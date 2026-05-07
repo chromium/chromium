@@ -125,8 +125,8 @@ source_set("android") {
     "glic_keyed_service_android.cc",
     "glic_keyed_service_android.h",
     "glic_keyed_service_factory_android.cc",
-    "glic_settings_navigation_android.cc",
-    "glic_settings_navigation_android.h",
+    "glic_navigation_utils_android.cc",
+    "glic_navigation_utils_android.h",
   ]
   public_deps = [ ":jni_headers" ]
   deps = [

@@ -2594,8 +2594,7 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
-  GetGlicService()->GetAuthController().ShowReauthForAccount(base::DoNothing());
-  host().ClosePanel(this);
+  GetGlicService()->GetAuthController().ShowReauthForAccount(webui_contents_);
 }
 
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,
