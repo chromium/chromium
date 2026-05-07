@@ -287,6 +287,9 @@ bool IsServiceWorkerSyntheticResponseEnabled(
 bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
     const PageLoadMetricsObserverDelegate& delegate);
 
+// Buckets for recording PaintTiming_LargestContentfulPaintBPP; see
+// also BitsPerPixelExponential enum in //tools/metrics/histograms/enums.xml.
+int64_t CalculateLCPEntropyBucket(double bpp);
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_

@@ -244,6 +244,22 @@ TEST_F(PageLoadMetricsUtilTest, CorrectEventAsNavigationOrActivationOrigined) {
   }
 }
 
+TEST_F(PageLoadMetricsUtilTest, CalculateLCPEntropyBucket) {
+  EXPECT_EQ(0, CalculateLCPEntropyBucket(0));
+  EXPECT_EQ(1, CalculateLCPEntropyBucket(0.000005));
+  EXPECT_EQ(17, CalculateLCPEntropyBucket(0.42));
+  EXPECT_EQ(35, CalculateLCPEntropyBucket(42.0));
+  EXPECT_EQ(42, CalculateLCPEntropyBucket(4200.0));
+  EXPECT_EQ(43, CalculateLCPEntropyBucket(42000.0));
+  EXPECT_EQ(43, CalculateLCPEntropyBucket(42000000.0));
+  // These are not expected, we're just testing them for robustness.
+  EXPECT_EQ(0, CalculateLCPEntropyBucket(-1));
+  EXPECT_EQ(43,
+            CalculateLCPEntropyBucket(std::numeric_limits<double>::infinity()));
+  EXPECT_EQ(
+      0, CalculateLCPEntropyBucket(std::numeric_limits<double>::quiet_NaN()));
+}
+
 // A type to support parameterized testing for the category of the request.
 struct UrlCategoryTestCase {
   std::string test_case;
