@@ -33,6 +33,7 @@ source_set("ui") {
     "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui:ui_util",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

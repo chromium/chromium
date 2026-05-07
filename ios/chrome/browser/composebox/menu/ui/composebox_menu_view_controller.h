@@ -10,12 +10,26 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_consumer.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_mutator.h"
 
+@class ComposeboxMenuViewController;
+
+// Delegate for a menu.
+@protocol ComposeboxMenuViewControllerDelegate
+
+// Called when the menu requests closing.
+- (void)composeboxMenuViewControllerDidRequestClose:
+    (ComposeboxMenuViewController*)composeboxMenuViewController;
+
+@end
+
 // View controller for the composebox menu.
 @interface ComposeboxMenuViewController
     : UIViewController <ComposeboxMenuConsumer>
 
 // The mutator for this menu UI.
 @property(nonatomic, weak) id<ComposeboxMenuMutator> mutator;
+
+// The delegate for this menu UI.
+@property(nonatomic, weak) id<ComposeboxMenuViewControllerDelegate> delegate;
 
 @end
 

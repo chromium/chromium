@@ -45,6 +45,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 }  // namespace
 
 @interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
+                                         ComposeboxMenuViewControllerDelegate,
                                          ComposeboxPickerPresenterDelegate,
                                          ComposeboxPickerPresenterDataSource,
                                          UISheetPresentationControllerDelegate>
@@ -101,6 +102,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)start {
   _viewController = [[ComposeboxMenuViewController alloc] init];
+  _viewController.delegate = self;
 
   if (_isStandaloneMenu) {
     ProfileIOS* profile = self.browser->GetProfile();
@@ -412,6 +414,14 @@ CGFloat const kSheetTopPadding = 40.0f;
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   params.metricsRecorder = _metricsRecorder;
   [commands showComposeboxWithParams:params];
+}
+
+#pragma mark - ComposeboxMenuViewControllerDelegate
+
+- (void)composeboxMenuViewControllerDidRequestClose:
+    (ComposeboxMenuViewController*)composeboxMenuViewController {
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
 }
 
 @end
