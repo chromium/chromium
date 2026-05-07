@@ -891,6 +891,21 @@
             ]
         }
     ],
+    "AndroidDesktopAimGate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopAimGate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopStyleScrollbars": [
         {
             "platforms": [
@@ -17221,7 +17236,6 @@
                         "compact_fusebox": "true"
                     },
                     "enable_features": [
-                        "AndroidDesktopAimGate",
                         "ComposeboxUsesChromeComposeClient",
                         "OmniboxMultilineEditField",
                         "OmniboxMultimodalInput"
