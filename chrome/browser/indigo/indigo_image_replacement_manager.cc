@@ -59,6 +59,10 @@ IndigoImageReplacementManager::GetImageReplacementForFrame(
   return nullptr;
 }
 
+void IndigoImageReplacementManager::ResetAllReplacements() {
+  receivers_.Clear();
+}
+
 void IndigoImageReplacementManager::ReplacementFrameAttached(
     const blink::LocalFrameToken& replacement_frame_token,
     const gfx::QuadF& quad,

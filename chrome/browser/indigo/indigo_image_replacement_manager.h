@@ -35,6 +35,7 @@ class IndigoImageReplacementManager
       mojo::PendingRemote<blink::mojom::ImageReplacement> image_replacement);
   IndigoImageReplacement* GetImageReplacementForFrame(
       const content::RenderFrameHost& rfh);
+  void ResetAllReplacements();
 
   // blink::mojom::ImageReplacementHost implementation:
   void ReplacementFrameAttached(
