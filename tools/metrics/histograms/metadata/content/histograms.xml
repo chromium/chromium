@@ -1612,20 +1612,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime"
-    units="microseconds" expires_after="2023-03-01">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time spent by the renderer main thread to collect and send back
-    to the browser process a list of RSS/Atom links embedded in a web page. This
-    is recorded every time the renderer fulfills a request for these links,
-    currently only requested by the web feeds system. This histogram is only
-    logged in platforms with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
     enum="FeedVideoInitializationError" expires_after="2023-07-23">
   <owner>jianli@chromium.org</owner>

@@ -16,7 +16,6 @@
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
-#include "components/feed/core/v2/public/unread_content_observer.h"
 #include "url/gurl.h"
 
 namespace feedui {
@@ -61,13 +60,6 @@ class FeedApi {
   virtual void UpdateUserProfileOnLinkClick(
       const GURL& url,
       const std::vector<int64_t>& entity_mids) = 0;
-
-  // Begin/stop observing a stream type. An observer instance should not be
-  // added twice without first being removed.
-  virtual void AddUnreadContentObserver(const StreamType& stream_type,
-                                        UnreadContentObserver* observer) = 0;
-  virtual void RemoveUnreadContentObserver(const StreamType& stream_type,
-                                           UnreadContentObserver* observer) = 0;
 
   virtual bool IsArticlesListVisible() = 0;
 

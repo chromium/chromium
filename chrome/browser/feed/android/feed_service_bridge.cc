@@ -70,21 +70,6 @@ static int64_t JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
 }
 
-// TODO(crbug.com/407797637): remove unread content observer
-static int64_t JNI_FeedServiceBridge_AddUnreadContentObserver(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_observer,
-    int32_t stream_kind) {
-  FeedApi* api = GetFeedApi();
-  if (!api)
-    return 0;
-  JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
-      base::android::ScopedJavaGlobalRef<jobject>(j_observer));
-  api->AddUnreadContentObserver(
-      StreamType(static_cast<StreamKind>(stream_kind)), observer);
-  return reinterpret_cast<int64_t>(observer);
-}
-
 static void JNI_FeedServiceBridge_ReportOtherUserActionForStream(
     JNIEnv* env,
     int32_t stream_kind,
@@ -157,23 +142,6 @@ uint64_t FeedServiceBridge::GetReliabilityLoggingId() {
 // static
 bool FeedServiceBridge::IsSignedIn() {
   return GetFeedService()->IsSignedIn();
-}
-
-JavaUnreadContentObserver::JavaUnreadContentObserver(
-    base::android::ScopedJavaGlobalRef<jobject> j_observer)
-    : obj_(j_observer) {}
-
-feed::JavaUnreadContentObserver::~JavaUnreadContentObserver() = default;
-
-void JavaUnreadContentObserver::HasUnreadContentChanged(
-    bool has_unread_content) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_UnreadContentObserver_hasUnreadContentChanged(env, obj_,
-                                                     has_unread_content);
-}
-
-void JavaUnreadContentObserver::Destroy(JNIEnv*) {
-  delete this;
 }
 
 }  // namespace feed

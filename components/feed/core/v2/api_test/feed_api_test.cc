@@ -161,13 +161,6 @@ std::string DatastoreEntryToString(std::string_view key,
   return static_cast<std::string>(value);
 }
 
-TestUnreadContentObserver::TestUnreadContentObserver() = default;
-TestUnreadContentObserver::~TestUnreadContentObserver() = default;
-void TestUnreadContentObserver::HasUnreadContentChanged(
-    bool has_unread_content) {
-  calls.push_back(has_unread_content);
-}
-
 TestSurfaceBase::TestSurfaceBase(const StreamType& stream_type,
                                  FeedStream* stream)
     : stream_type_(stream_type) {

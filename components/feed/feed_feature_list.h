@@ -15,11 +15,6 @@
 
 namespace feed {
 
-namespace switches {
-// Specifies whether RssLinkReader is enabled.
-inline constexpr char kEnableRssLinkReader[] = "enable-rss-link-reader";
-}
-
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kInterestFeedV2);
 

@@ -195,7 +195,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #include "chrome/renderer/wallet/boarding_pass_extractor.h"
-#include "components/feed/content/renderer/rss_link_reader.h"
 #include "components/feed/feed_feature_list.h"
 #else
 #include "chrome/renderer/indigo/indigo_agent.h"
@@ -754,13 +753,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
   new SpellCheckPanel(render_frame, registry, this);
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(feed::switches::kEnableRssLinkReader) &&
-      render_frame->IsMainFrame()) {
-    new feed::RssLinkReader(render_frame, registry);
-  }
 #endif
 
 #if BUILDFLAG(IS_WIN)

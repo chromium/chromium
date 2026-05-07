@@ -38,7 +38,6 @@
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/info_card_tracker.h"
 #include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
-#include "components/feed/core/v2/stream/unread_content_notifier.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
@@ -54,9 +53,6 @@
 class PrefService;
 
 namespace feed {
-namespace feed_stream {
-class UnreadContentNotifier;
-}
 class FeedNetwork;
 class FeedStore;
 class ImageFetcher;
@@ -119,10 +115,6 @@ class FeedStream : public FeedApi,
   void UpdateUserProfileOnLinkClick(
       const GURL& url,
       const std::vector<int64_t>& entity_mids) override;
-  void AddUnreadContentObserver(const StreamType& stream_type,
-                                UnreadContentObserver* observer) override;
-  void RemoveUnreadContentObserver(const StreamType& stream_type,
-                                   UnreadContentObserver* observer) override;
   bool IsArticlesListVisible() override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override;
   ImageFetchId FetchImage(
@@ -354,8 +346,6 @@ class FeedStream : public FeedApi,
   }
 
  private:
-  using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
-
   struct Stream {
     explicit Stream(const StreamType& stream_type);
     ~Stream();
@@ -373,7 +363,6 @@ class FeedStream : public FeedApi,
     std::unique_ptr<StreamModel> model;
     int unload_on_detach_sequence_number = 0;
     ContentHashSet content_ids;
-    std::vector<UnreadContentNotifier> unread_content_notifiers;
     std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
     std::vector<base::OnceCallback<void(bool)>> refresh_complete_callbacks;
     bool is_activity_logging_enabled = false;
@@ -489,8 +478,6 @@ class FeedStream : public FeedApi,
   // State loaded at startup:
   feedstore::Metadata metadata_;
   bool metadata_populated_ = false;
-
-  base::ObserverList<UnreadContentObserver> unread_content_observers_;
 
   // To allow tests to wait on task queue idle.
   base::RepeatingClosure idle_callback_;

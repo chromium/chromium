@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "components/feed/core/v2/public/types.h"
-#include "components/feed/core/v2/public/unread_content_observer.h"
 #include "url/gurl.h"
 
 namespace feed {
@@ -24,19 +23,6 @@ class FeedServiceBridge {
   static void PrefetchImage(const GURL& url);
   static uint64_t GetReliabilityLoggingId();
   static bool IsSignedIn();
-};
-
-class JavaUnreadContentObserver : public UnreadContentObserver {
- public:
-  JavaUnreadContentObserver(
-      base::android::ScopedJavaGlobalRef<jobject> j_observer);
-  ~JavaUnreadContentObserver() override;
-
-  void HasUnreadContentChanged(bool has_unread_content) override;
-  void Destroy(JNIEnv*);
-
- private:
-  base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 
 }  // namespace feed

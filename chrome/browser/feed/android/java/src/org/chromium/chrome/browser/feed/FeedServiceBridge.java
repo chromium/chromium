@@ -10,7 +10,6 @@ import android.util.DisplayMetrics;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -108,30 +107,6 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().isSignedIn();
     }
 
-    // TODO(crbug.com/407797637) Remove UnreadContentObserver entirely.
-    /** Observes whether or not the Feed stream contains unread content */
-    public static class UnreadContentObserver {
-        private long mNativePtr;
-
-        /** Begins observing. */
-        public UnreadContentObserver(@StreamKind int streamKind) {
-            mNativePtr = FeedServiceBridgeJni.get().addUnreadContentObserver(this, streamKind);
-        }
-
-        /** Stops observing. Must be called when this observer is no longer needed */
-        public void destroy() {
-            FeedServiceBridgeJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
-        }
-
-        /**
-         * Called to signal whether unread content is available. Called once after the observer is
-         * initialized, and after that, called each time unread content status changes.
-         */
-        @CalledByNative
-        public void hasUnreadContentChanged(boolean hasUnreadContent) {}
-    }
-
     @NativeMethods
     public interface Natives {
         boolean isEnabled();
@@ -149,11 +124,6 @@ public final class FeedServiceBridge {
 
         void reportOtherUserAction(@FeedUserActionType int userAction);
 
-        long addUnreadContentObserver(UnreadContentObserver observer, int streamKind);
-
         boolean isSignedIn();
-
-        @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
-        void destroy(long nativePtr);
     }
 }

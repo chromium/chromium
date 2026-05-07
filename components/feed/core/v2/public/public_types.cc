@@ -55,19 +55,12 @@ void WebFeedPageInformation::SetCanonicalUrl(const GURL& url) {
   clear_ref.ClearRef();
   canonical_url_ = url.ReplaceComponents(clear_ref);
 }
-void WebFeedPageInformation::SetRssUrls(const std::vector<GURL>& rss_urls) {
-  rss_urls_ = rss_urls;
-}
 
 std::ostream& operator<<(std::ostream& os,
                          const WebFeedPageInformation& value) {
   os << "{ " << value.url() << " ";
   if (value.canonical_url().is_valid()) {
     os << "canonical=" << value.canonical_url() << ' ';
-  }
-  os << "RSS:\n";
-  for (const GURL& url : value.GetRssUrls()) {
-    os << url << '\n';
   }
   os << "}";
   return os;

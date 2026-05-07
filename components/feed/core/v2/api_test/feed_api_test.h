@@ -220,15 +220,6 @@ class TestImageFetcher : public ImageFetcher {
   ImageFetchId::Generator id_generator_;
 };
 
-class TestUnreadContentObserver : public UnreadContentObserver {
- public:
-  TestUnreadContentObserver();
-  ~TestUnreadContentObserver() override;
-  void HasUnreadContentChanged(bool has_unread_content) override;
-
-  std::vector<bool> calls;
-};
-
 class TestFeedNetwork : public FeedNetwork {
  public:
   TestFeedNetwork();

@@ -47,9 +47,7 @@
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
-#include "components/feed/core/v2/public/unread_content_observer.h"
 #include "components/feed/core/v2/scheduling.h"
-#include "components/feed/core/v2/stream/unread_content_notifier.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/surface_updater.h"
 #include "components/feed/core/v2/tasks/clear_all_task.h"
@@ -285,14 +283,6 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
       IsFeedEnabledByEnterprisePolicy(), IsArticlesListVisible(), IsSignedIn(),
       IsFeedEnabled(), metadata_);
 
-  for (const feedstore::StreamData& stream_data :
-       result.startup_data.stream_data) {
-    StreamType stream_type =
-        feedstore::StreamTypeFromKey(stream_data.stream_key());
-    if (stream_type.IsValid())
-      MaybeNotifyHasUnreadContent(stream_type);
-  }
-
   if (!IsEnabledAndVisible() && has_stored_data_.GetValue()) {
     ClearAll();
   }
@@ -494,23 +484,6 @@ void FeedStream::DetachSurface(SurfaceId surface_id) {
   metrics_reporter_->SurfaceClosed(surface_id);
   stream->surfaces.SurfaceRemoved(surface_id);
   ScheduleModelUnloadIfNoSurfacesAttached(stream->type);
-}
-
-void FeedStream::AddUnreadContentObserver(const StreamType& stream_type,
-                                          UnreadContentObserver* observer) {
-  GetStream(stream_type)
-      .unread_content_notifiers.emplace_back(observer->GetWeakPtr());
-  MaybeNotifyHasUnreadContent(stream_type);
-}
-
-void FeedStream::RemoveUnreadContentObserver(const StreamType& stream_type,
-                                             UnreadContentObserver* observer) {
-  Stream& stream = GetStream(stream_type);
-  auto predicate = [&](const UnreadContentNotifier& notifier) {
-    UnreadContentObserver* ptr = notifier.observer().get();
-    return ptr == nullptr || observer == ptr;
-  };
-  std::erase_if(stream.unread_content_notifiers, predicate);
 }
 
 void FeedStream::ScheduleModelUnloadIfNoSurfacesAttached(
@@ -1295,8 +1268,6 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
       CheckDuplicatedContentsOnRefresh();
     }
   }
-
-  MaybeNotifyHasUnreadContent(result.stream_type);
 }
 
 bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
@@ -1386,7 +1357,6 @@ void FeedStream::LoadModel(const StreamType& stream_type,
   stream.content_ids = stream.model->GetContentIds();
   stream.surface_updater->SetModel(stream.model.get());
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
-  MaybeNotifyHasUnreadContent(stream_type);
 }
 
 void FeedStream::SetRequestSchedule(const StreamType& stream_type,
@@ -1503,22 +1473,6 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
   }
 }
 
-// Notifies observers if 'HasUnreadContent' has changed for `stream_type`.
-// Stream content has been seen if StreamData::content_hash ==
-// Metadata::StreamMetadata::view_content_hash. This should be called:
-// when initial metadata is loaded, when the model is loaded, when a refresh is
-// attempted, and when content is viewed.
-void FeedStream::MaybeNotifyHasUnreadContent(const StreamType& stream_type) {
-  Stream& stream = GetStream(stream_type);
-  if (!metadata_populated_ || stream.model_loading_in_progress)
-    return;
-
-  const bool has_new_content = HasUnreadContent(stream_type);
-  for (auto& o : stream.unread_content_notifiers) {
-    o.NotifyIfValueChanged(has_new_content);
-  }
-}
-
 void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   metrics_reporter_->FeedViewed(surface_id);
   Stream* stream = FindStream(surface_id);
@@ -1527,7 +1481,6 @@ void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   }
 
   stream->surfaces.FeedViewed(surface_id);
-  MaybeNotifyHasUnreadContent(stream->type);
 }
 
 void FeedStream::ReportPageLoaded(SurfaceId /*surface_id*/) {

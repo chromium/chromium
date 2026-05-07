@@ -1373,21 +1373,6 @@ public class FeedStream implements Stream {
         }
     }
 
-    @VisibleForTesting
-    static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
-        SettableNonNullObservableSupplier<Boolean> mHasUnreadContent =
-                ObservableSuppliers.createNonNull(false);
-
-        UnreadContentObserver(@StreamKind int streamKind) {
-            super(streamKind);
-        }
-
-        @Override
-        public void hasUnreadContentChanged(boolean hasUnreadContent) {
-            mHasUnreadContent.set(hasUnreadContent);
-        }
-    }
-
     private int getLateralPaddingsPx() {
         return mActivity
                 .getResources()

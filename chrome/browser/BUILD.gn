@@ -2251,7 +2251,6 @@ static_library("browser") {
       "//components/favicon/core:database",
       "//components/feed:feature_list",
       "//components/feed/core/v2:feed_core_v2",
-      "//components/feed/mojom:mojo_bindings",
       "//components/image_fetcher:android",
       "//components/image_fetcher/core:metrics",
       "//components/infobars/android",

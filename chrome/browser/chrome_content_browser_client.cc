@@ -3154,13 +3154,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-  // Communicating to renderer for starting the reader for web feed.
-  if (feed::IsWebFeedEnabledForLocale(feed::FeedServiceFactory::GetCountry())) {
-    command_line->AppendSwitch(feed::switches::kEnableRssLinkReader);
-  }
-#endif
 }
 
 std::string

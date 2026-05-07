@@ -155,7 +155,6 @@ static_library("renderer") {
     "//components/country_codes",
     "//components/dom_distiller/content/renderer",
     "//components/feed:feature_list",
-    "//components/feed/content/renderer:feed_renderer",
     "//components/google/core/common",
     "//components/guest_view/buildflags",
     "//components/heap_profiling/in_process",
@@ -343,10 +342,7 @@ static_library("renderer") {
       "wallet/boarding_pass_extractor.cc",
       "wallet/boarding_pass_extractor.h",
     ]
-    deps += [
-      "//chrome/common/wallet:mojo_bindings",
-      "//components/feed/content/renderer:feed_renderer",
-    ]
+    deps += [ "//chrome/common/wallet:mojo_bindings" ]
   } else {
     sources += [
       "accessibility/ax_tree_distiller.cc",

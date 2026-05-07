@@ -1157,122 +1157,6 @@ TEST_F(FeedApiTest, ReportOpenInNewTabInGroupAction) {
                    "ContentSuggestions.Feed.CardAction.OpenInNewTabInGroup"));
 }
 
-TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromNetwork) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-  TestForYouSurface surface(stream_.get());
-
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({false, true}), observer.calls);
-}
-
-TEST_F(FeedApiTest, HasUnreadContentInitially) {
-  // Prime the feed with new content.
-  {
-    response_translator_.InjectResponse(MakeTypicalInitialModelState());
-    TestForYouSurface surface(stream_.get());
-    WaitForIdleTaskQueue();
-  }
-
-  // Reload FeedStream. Add an observer before initialization completes.
-  // After initialization, the observer will be informed about unread content.
-  CreateStream(/*wait_for_initialization*/ false);
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
-}
-
-TEST_F(FeedApiTest, NetworkFetchWithNoNewContentDoesNotProvideUnreadContent) {
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-  // Load content from the network, and view it.
-  {
-    response_translator_.InjectResponse(MakeTypicalInitialModelState());
-    TestForYouSurface surface(stream_.get());
-    WaitForIdleTaskQueue();
-
-    stream_->ReportFeedViewed(surface.GetSurfaceId());
-    stream_->ReportSliceViewed(
-        surface.GetSurfaceId(),
-        surface.initial_state->updated_slices(1).slice().slice_id());
-  }
-  // Wait until the feed content is stale.
-
-  task_environment_.FastForwardBy(base::Hours(100));
-
-  // Load content from the network again. This time there is no new content.
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({false, true, false}), observer.calls);
-}
-
-TEST_F(FeedApiTest, RemovedUnreadContentObserverDoesNotReceiveCalls) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-  stream_->RemoveUnreadContentObserver(StreamType(StreamKind::kForYou),
-                                       &observer);
-  TestForYouSurface surface(stream_.get());
-
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({false}), observer.calls);
-}
-
-TEST_F(FeedApiTest, DeletedUnreadContentObserverDoesNotCrash) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  {
-    TestUnreadContentObserver observer;
-    stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou),
-                                      &observer);
-  }
-  TestForYouSurface surface(stream_.get());
-
-  WaitForIdleTaskQueue();
-}
-
-TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromStore) {
-  store_->OverwriteStream(StreamType(StreamKind::kForYou),
-                          MakeTypicalInitialModelState(), base::DoNothing());
-  TestForYouSurface surface(stream_.get());
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
-}
-
-TEST_F(FeedApiTest, ReportFeedViewedUpdatesObservers) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
-  WaitForIdleTaskQueue();
-
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(std::vector<bool>({true, false}), observer.calls);
-
-  // Verify that the fact the stream was viewed persists.
-  CreateStream();
-
-  TestUnreadContentObserver observer2;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou),
-                                    &observer2);
-  TestForYouSurface surface2(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ(std::vector<bool>({false}), observer2.calls);
-}
-
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreIndicatorSliceId) {
   // The load-more spinner's slice ID must change for each load.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -3002,8 +2886,6 @@ TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   stream_->ReportFeedViewed(surface.GetSurfaceId());
-  TestUnreadContentObserver observer;
-  stream_->AddUnreadContentObserver(StreamType(StreamKind::kForYou), &observer);
   account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
@@ -3011,9 +2893,6 @@ TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
 
   EXPECT_EQ("loading -> 2 slices -> loading -> [user@foo] 3 slices",
             surface.DescribeUpdates());
-  // Even though content is updated, the feed remains in view, so content is not
-  // unread.
-  EXPECT_EQ(std::vector<bool>({false}), observer.calls);
 }
 
 TEST_F(FeedApiTest, SignOutWhileSurfaceIsOpen) {
