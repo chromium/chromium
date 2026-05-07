@@ -754,8 +754,7 @@ const char kChromeAppStoreUrl[] =
   DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
-  raw_ptr<UrlLoadingNotifierBrowserAgent>
-      _urlLoadingNotifierBrowserAgent;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> _urlLoadingNotifierBrowserAgent;
   id<OmniboxCommands> _omniboxCommandsHandler;
   LayoutGuideCenter* _layoutGuideCenter;
   raw_ptr<WebNavigationBrowserAgent> _webNavigationBrowserAgent;
@@ -4296,6 +4295,10 @@ const char kChromeAppStoreUrl[] =
   if (readerModeBrowserAgent) {
     readerModeBrowserAgent->SetDelegate(nil);
   }
+
+  // Disconnect the presenter from the context to cancel active overlays.
+  OverlayPresenter::FromBrowser(self.browser, OverlayModality::kInfobarBanner)
+      ->SetPresentationContext(nullptr);
 }
 
 #pragma mark - ParentAccessCommands
