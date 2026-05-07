@@ -387,7 +387,7 @@ export class SettingsSecurityPageV2Element extends
     }
 
     const interactions = Array.from(this.interactions_);
-    this.hatsBrowserProxy_.securityPageHatsRequest(
+    this.hatsBrowserProxy_.securityPageV2HatsRequest(
         interactions, this.safeBrowsingStateOnOpen_, this.totalTimeInFocus_,
         this.securitySettingsBundleStateOnOpen_);
   }

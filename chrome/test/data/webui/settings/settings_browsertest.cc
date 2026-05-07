@@ -1868,6 +1868,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
   RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
+                       SecurityPageHappinessTrackingSurveys) {
+  RunTest("settings/security_page_test.js",
+          "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
   RunTest("settings/security_page_test.js",
           "runMochaSuite('JavascriptOptimizer')");
