@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -267,6 +268,56 @@ TEST_P(ViewTransitionTest, LayoutShift) {
 
   FinishTransition();
   finished_tester.WaitUntilSettled();
+}
+
+TEST_P(ViewTransitionTest, HistogramsRecorded) {
+  base::HistogramTester histogram_tester;
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  MockFunctionScope funcs(script_state);
+  auto* view_transition_callback = V8ViewTransitionCallback::Create(
+      funcs.ExpectCall()->ToV8Function(script_state));
+
+  ViewTransitionSupplement::startViewTransition(script_state, GetDocument(),
+                                                view_transition_callback,
+                                                IGNORE_EXCEPTION_FOR_TESTING);
+
+  // This should trigger kCaptureTagDiscovery and kCaptureRequestPending
+  UpdateAllLifecyclePhasesForTest();
+
+  // CaptureTagDiscoveryDuration should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.ViewTransitions.CaptureTagDiscoveryDuration", 1);
+
+  // We need to finish capture to move to kCaptured and then kDOMCallbackRunning
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  // At this point, CaptureRequestToDOMCallbackRunningDelay should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.ViewTransitions.CaptureRequestToDOMCallbackRunningDelay", 1);
+
+  // Run pending tasks to let the DOM callback finish
+  test::RunPendingTasks();
+
+  // Now DOMCallbackRunDuration should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.ViewTransitions.DOMCallbackRunDuration", 1);
+
+  // Now we are in kAnimating. We need to finish it.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  // DOMCallbackFinishedToAnimationRequestedDuration should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.ViewTransitions.DOMCallbackFinishedToAnimationRequestedDuration",
+      1);
+
+  // AnimateRequestToAnimatingDelay should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.ViewTransitions.AnimateRequestToAnimatingDelay", 1);
+
+  FinishTransition();
 }
 
 TEST_P(ViewTransitionTest, TransitionCreatesNewObject) {

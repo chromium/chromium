@@ -5978,6 +5978,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ViewTransitions.AnimateRequestToAnimatingDelay"
+    units="microseconds" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time between sending the animate request and the first animating
+    frame. This captures the delay waiting for a scheduled frame. Recorded for
+    script-based (SPA) transitions only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ViewTransitions.CaptureRequestToDOMCallbackRunningDelay"
+    units="microseconds" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time between sending a capture request and invoking the DOM change
+    callback. Recorded for script-based (SPA) transitions only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ViewTransitions.CaptureTagDiscoveryDuration"
+    units="microseconds" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time spent in capture tag discovery (adding transition elements from
+    CSS). Recorded for script-based (SPA) transitions only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.ViewTransitions.DOMCallbackFinishedToAnimationRequestedDuration"
+    units="microseconds" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time between the DOM callback finishing and the animation being
+    requested. Recorded for script-based (SPA) transitions only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ViewTransitions.DOMCallbackRunDuration"
+    units="microseconds" expires_after="2027-01-01">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>rendering-core-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Elapsed time spent running the DOM change callback. Recorded for
+    script-based (SPA) transitions only.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ViewTransitions.InitialFrameDelay" units="microseconds"
     expires_after="2027-01-01">
   <owner>vmpstr@chromium.org</owner>

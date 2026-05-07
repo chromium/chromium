@@ -533,6 +533,9 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kCompositingInputsClean);
 
+        if (creation_type_ == CreationType::kScript) {
+          capture_tag_discovery_start_time_ = base::TimeTicks::Now();
+        }
         if (creation_type_ == CreationType::kForSnapshot) {
           UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
               "Blink.ViewTransitions.InitialFrameDelay",
@@ -552,6 +555,13 @@ void ViewTransition::ProcessCurrentState() {
 
       // Capture request pending -- create the request
       case State::kCaptureRequestPending: {
+        if (creation_type_ == CreationType::kScript) {
+          capture_request_start_time_ = base::TimeTicks::Now();
+          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+              "Blink.ViewTransitions.CaptureTagDiscoveryDuration",
+              capture_request_start_time_ - capture_tag_discovery_start_time_,
+              base::Microseconds(1), base::Seconds(1), 100);
+        }
         // If we're capturing during a navigation, browser controls will be
         // forced to show via animation. Ensure they're fully showing when
         // performing the capture.
@@ -598,6 +608,11 @@ void ViewTransition::ProcessCurrentState() {
         switch (creation_type_) {
           case CreationType::kScript: {
             CHECK(script_delegate_);
+            dom_callback_start_time_ = base::TimeTicks::Now();
+            UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+                "Blink.ViewTransitions.CaptureRequestToDOMCallbackRunningDelay",
+                dom_callback_start_time_ - capture_request_start_time_,
+                base::Microseconds(1), base::Seconds(1), 100);
             script_delegate_->InvokeDOMChangeCallback();
 
             // Since invoking the callback could yield (at least when devtools
@@ -657,6 +672,13 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       case State::kDOMCallbackFinished:
+        if (creation_type_ == CreationType::kScript) {
+          dom_callback_finished_time_ = base::TimeTicks::Now();
+          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+              "Blink.ViewTransitions.DOMCallbackRunDuration",
+              dom_callback_finished_time_ - dom_callback_start_time_,
+              base::Microseconds(1), base::Seconds(4), 100);
+        }
         // For testing check: if the flag is enabled, re-create the style
         // tracker with the serialized state that the current style tracker
         // produces. This allows us to use SPA tests for MPA serialization.
@@ -706,6 +728,15 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
+        if (creation_type_ == CreationType::kScript) {
+          animate_request_time_ = base::TimeTicks::Now();
+          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+              "Blink.ViewTransitions."
+              "DOMCallbackFinishedToAnimationRequestedDuration",
+              animate_request_time_ - dom_callback_finished_time_,
+              base::Microseconds(1), base::Seconds(1), 100);
+        }
+
         if (RuntimeEnabledFeatures::
                 ViewTransitionUpdateLifecycleBeforeReadyEnabled()) {
           document_->View()->UpdateAllLifecyclePhasesExceptPaint(
@@ -730,6 +761,12 @@ void ViewTransition::ProcessCurrentState() {
       case State::kAnimating: {
         if (first_animating_frame_) {
           first_animating_frame_ = false;
+          if (creation_type_ == CreationType::kScript) {
+            UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+                "Blink.ViewTransitions.AnimateRequestToAnimatingDelay",
+                base::TimeTicks::Now() - animate_request_time_,
+                base::Microseconds(1), base::Seconds(1), 100);
+          }
           // We need to schedule an animation frame, in case this is the only
           // kAnimating frame we will get, so that we can clean up in the next
           // frame.

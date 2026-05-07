@@ -500,6 +500,24 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // Time at which we processed the initial state, used for metrics.
   base::TimeTicks initial_state_processing_time_;
 
+  // The following timing variables are only set and used for script-based
+  // transitions (CreationType::kScript).
+
+  // Time at which we started capture tag discovery, used for metrics.
+  base::TimeTicks capture_tag_discovery_start_time_;
+
+  // Time at which we started capturing, used for metrics.
+  base::TimeTicks capture_request_start_time_;
+
+  // Time at which we started running the DOM callback, used for metrics.
+  base::TimeTicks dom_callback_start_time_;
+
+  // Time at which the DOM callback finished, used for metrics.
+  base::TimeTicks dom_callback_finished_time_;
+
+  // Time at which we sent the animate request, used for metrics.
+  base::TimeTicks animate_request_time_;
+
   static int next_id_;
 };
 
