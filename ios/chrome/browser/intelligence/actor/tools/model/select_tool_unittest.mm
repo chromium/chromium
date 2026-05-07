@@ -238,4 +238,17 @@ TEST_F(SelectToolTest, Execute_NoMainFrame_ReturnsError) {
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
+TEST_F(SelectToolTest, GetActionCase) {
+  optimization_guide::proto::SelectAction action;
+  action.set_tab_id(tab_id_);
+  action.set_value("v1");
+  action.mutable_target()->mutable_coordinate()->set_x(1);
+  action.mutable_target()->mutable_coordinate()->set_y(1);
+
+  auto result = SelectTool::Create(action, profile());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->GetActionCase(),
+            optimization_guide::proto::Action::kSelect);
+}
+
 }  // namespace actor

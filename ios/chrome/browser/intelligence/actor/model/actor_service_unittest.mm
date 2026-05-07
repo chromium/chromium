@@ -59,6 +59,10 @@ class TestTool : public ActorTool {
     return web_state_;
   }
 
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override {
+    return optimization_guide::proto::Action::ACTION_NOT_SET;
+  }
+
  private:
   base::WeakPtr<web::WebState> web_state_;
 };

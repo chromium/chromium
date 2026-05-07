@@ -8,6 +8,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -49,6 +50,10 @@ class ActorTool {
 
   // Returns the target WebFrame for this tool, if any.
   virtual base::WeakPtr<web::WebFrame> GetTargetWebFrame() const;
+
+  // Returns the ActionCase (type of underlying action) for this tool.
+  virtual optimization_guide::proto::Action::ActionCase GetActionCase()
+      const = 0;
 
  protected:
   // Resolves the given `tab_id` to its associated objects in regular Browsers.

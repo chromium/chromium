@@ -295,4 +295,24 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
             result.internal_code().value());
 }
 
+TEST_F(NavigateToolTest, GetActionCase) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  std::string kUrl = "https://www.example.com/";
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kUrl);
+  action.mutable_navigate()->set_tab_id(tab_id);
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
+      NavigateTool::Create(action.navigate(), profile_.get());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->GetActionCase(),
+            optimization_guide::proto::Action::kNavigate);
+}
+
 }  // namespace actor

@@ -34,6 +34,7 @@ class ClickTool : public WebActorTool {
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override;
 
  private:
   void OnTargetFrameResolved(

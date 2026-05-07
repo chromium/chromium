@@ -289,4 +289,25 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
+TEST_F(ScrollToolTest, GetActionCase) {
+  optimization_guide::proto::Action action;
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  action.mutable_scroll()->set_tab_id(tab_id);
+  action.mutable_scroll()->set_direction(
+      optimization_guide::proto::ScrollAction::DOWN);
+  action.mutable_scroll()->set_distance(100);
+
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
+      ScrollTool::Create(action.scroll(), profile_.get());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->GetActionCase(),
+            optimization_guide::proto::Action::kScroll);
+}
+
 }  // namespace actor

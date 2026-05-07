@@ -107,6 +107,11 @@ base::WeakPtr<web::WebState> ScrollTool::GetTargetWebState() const {
   return web_state_;
 }
 
+optimization_guide::proto::Action::ActionCase ScrollTool::GetActionCase()
+    const {
+  return optimization_guide::proto::Action::kScroll;
+}
+
 ScrollTool::ScrollTool(const optimization_guide::proto::ScrollAction& action,
                        base::WeakPtr<web::WebState> web_state)
     : action_(action),

@@ -9,6 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 class ProfileIOS;
@@ -41,6 +42,7 @@ class NavigateTool : public ActorTool {
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override;
 
  private:
   NavigateTool(const std::string& url,

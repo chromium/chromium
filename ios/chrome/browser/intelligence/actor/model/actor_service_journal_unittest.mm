@@ -30,6 +30,10 @@ class MockActorTool : public ActorTool {
   base::WeakPtr<web::WebState> GetTargetWebState() const override {
     return nullptr;
   }
+
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override {
+    return optimization_guide::proto::Action::ACTION_NOT_SET;
+  }
 };
 
 class MockActorToolFactory : public ActorToolFactory {

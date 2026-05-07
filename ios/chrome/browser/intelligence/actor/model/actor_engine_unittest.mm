@@ -35,6 +35,10 @@ class MockTool : public ActorTool {
     return nullptr;
   }
 
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override {
+    return optimization_guide::proto::Action::ACTION_NOT_SET;
+  }
+
  private:
   bool success_;
 };

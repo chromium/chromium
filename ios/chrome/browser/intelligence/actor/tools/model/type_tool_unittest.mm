@@ -288,4 +288,27 @@ TEST_F(TypeToolTest, Execute_NoMainFrame_ReturnsError) {
   EXPECT_EQ(result.code(), mojom::ActionResultCode::kFrameWentAway);
 }
 
+TEST_F(TypeToolTest, GetActionCase) {
+  optimization_guide::proto::Action action;
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
+  int tab_id = web_state->GetUniqueIdentifier().identifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  action.mutable_type()->set_tab_id(tab_id);
+  action.mutable_type()->set_text("test");
+  action.mutable_type()->set_mode(
+      optimization_guide::proto::TypeAction::APPEND);
+  action.mutable_type()->mutable_target()->mutable_coordinate()->set_x(50);
+  action.mutable_type()->mutable_target()->mutable_coordinate()->set_y(50);
+
+  base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> result =
+      TypeTool::Create(action.type(), profile_.get());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->GetActionCase(),
+            optimization_guide::proto::Action::kType);
+}
+
 }  // namespace actor

@@ -7,6 +7,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 class ProfileIOS;
@@ -38,6 +39,7 @@ class WaitTool : public ActorTool {
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
+  optimization_guide::proto::Action::ActionCase GetActionCase() const override;
 
  private:
   WaitTool(base::TimeDelta wait_duration,

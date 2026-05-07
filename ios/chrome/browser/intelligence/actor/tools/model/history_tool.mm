@@ -66,6 +66,12 @@ base::WeakPtr<web::WebState> HistoryTool::GetTargetWebState() const {
   return web_state_;
 }
 
+optimization_guide::proto::Action::ActionCase HistoryTool::GetActionCase()
+    const {
+  return is_back_action_ ? optimization_guide::proto::Action::kBack
+                         : optimization_guide::proto::Action::kForward;
+}
+
 // static
 template <typename HistoryAction>
 base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>

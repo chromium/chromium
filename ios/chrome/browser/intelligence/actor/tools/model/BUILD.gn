@@ -37,6 +37,7 @@ source_set("actor_tool_interface") {
 
   deps = [
     "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",

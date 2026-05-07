@@ -201,6 +201,32 @@ TEST_F(HistoryToolTest, Execute_Forward_NotPossible) {
             result.internal_code().value());
 }
 
+TEST_F(HistoryToolTest, GetActionCase) {
+  InsertWebStateWithNavigationManager(/*first_item_active=*/false);
+  int tab_id = browser_->GetWebStateList()
+                   ->GetWebStateAt(0)
+                   ->GetUniqueIdentifier()
+                   .identifier();
+
+  {
+    optimization_guide::proto::Action action;
+    action.mutable_back()->set_tab_id(tab_id);
+    auto maybe_tool = HistoryTool::Create(action.back(), profile_.get());
+    ASSERT_TRUE(maybe_tool.has_value());
+    EXPECT_EQ(maybe_tool.value()->GetActionCase(),
+              optimization_guide::proto::Action::kBack);
+  }
+
+  {
+    optimization_guide::proto::Action action;
+    action.mutable_forward()->set_tab_id(tab_id);
+    auto maybe_tool = HistoryTool::Create(action.forward(), profile_.get());
+    ASSERT_TRUE(maybe_tool.has_value());
+    EXPECT_EQ(maybe_tool.value()->GetActionCase(),
+              optimization_guide::proto::Action::kForward);
+  }
+}
+
 }  // namespace
 
 }  // namespace actor
