@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Confirm.Event{Mobile_Messages_Confirm_Type}"
-    enum="MobileMessagesConfirmInfobarEvents" expires_after="2026-06-16">
+    enum="MobileMessagesConfirmInfobarEvents" expires_after="2027-06-16">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
