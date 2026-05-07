@@ -316,10 +316,10 @@ H264RateControlWrapper::H264RateControlWrapper(
 
 H264RateControlWrapper::~H264RateControlWrapper() = default;
 
-void H264RateControlWrapper::UpdateRateControl(
+bool H264RateControlWrapper::UpdateRateControl(
     const H264RateControlConfigRTC& config) {
   DCHECK(impl_);
-  impl_->UpdateRateControl(config);
+  return impl_->UpdateRateControl(config);
 }
 
 H264RateCtrlRTC::FrameDropDecision H264RateControlWrapper::ComputeQP(
@@ -753,7 +753,7 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
       DVLOGF(1) << "Failed creating rate control config";
       return false;
     }
-    rate_ctrl_->UpdateRateControl(*rc_config);
+    return rate_ctrl_->UpdateRateControl(*rc_config);
   }
   return true;
 }

@@ -28,7 +28,8 @@ class H264RateControlWrapper {
 
   virtual ~H264RateControlWrapper();
 
-  virtual void UpdateRateControl(const H264RateControlConfigRTC& config);
+  [[nodiscard]] virtual bool UpdateRateControl(
+      const H264RateControlConfigRTC& config);
   virtual H264RateCtrlRTC::FrameDropDecision ComputeQP(
       const H264FrameParamsRTC& frame_params);
   //  GetQP() needs to be called after ComputeQP() to get the current frame's

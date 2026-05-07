@@ -175,7 +175,7 @@ TEST_F(H264RateCtrlRTCTest, RunBasicRateCtrlRTCTest) {
   rate_control_config_rtc_.layer_settings[1].peak_bitrate =
       kCommonPeakBitrate * 4 / 3;
 
-  rate_ctrl_rtc_->UpdateRateControl(rate_control_config_rtc_);
+  EXPECT_TRUE(rate_ctrl_rtc_->UpdateRateControl(rate_control_config_rtc_));
 
   start_frame_index = last_frame_index;
   last_frame_index =
