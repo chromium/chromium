@@ -632,3 +632,37 @@ which are intended to stay in sync with the equivalent enumerations in
 [chrome/installer/mini_installer/exit_code.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/mini_installer/exit_code.h)
 * LZMA unpacker error codes:
 [chrome/installer/util/lzma_util.h](https://chromium.googlesource.com/chromium/src/+/main/chrome/installer/util/lzma_util.h)
+
+## How to manually test the Windows recovery component end-to-end
+
+* Modify `generate_policy_source.py` as per https://crrev.com/c/7817997 to
+  ignore `supported_on` constraints, allowing all policies to be supported
+  regardless of the version specified in `chrome/VERSION`. This enables
+  building a `mini_installer` with a customized lower version (like 141)
+  without running into compilation errors caused by missing generated policy
+  keys.
+* Change the `MAJOR` version in `chrome/VERSION` to a lower version, say `141`.
+
+To test the recovery component end-to-end:
+1. Build the `mini_installer` with `is_chrome_branded=true`.
+2. Run `mini_installer.exe --system-level` on a clean test machine or Windows
+   Sandbox. Wait a while for Chrome to be installed.
+3. Open Chrome and navigate to `chrome://components`.
+4. Find `Chrome Improved Recovery` and click `Check for update`.
+5. Verify that `ChromeRecovery.exe` runs as expected by checking the log at
+   `C:\Program Files (x86)\Google\GoogleUpdater\updater.log`.
+
+Step `2` above installs Chrome Stable. To test other flavors, do the following
+instead:
+* **Beta**:
+  ```cmd
+  mini_installer.exe --system-level --chrome-beta
+  ```
+* **Dev**:
+  ```cmd
+  mini_installer.exe --system-level --chrome-dev
+  ```
+* **Canary (Side-by-Side)**:
+  ```cmd
+  mini_installer.exe --system-level --chrome-sxs
+  ```
