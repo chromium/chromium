@@ -9,9 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1232,6 +1234,37 @@ TEST_F(ViewAXPlatformNodeDelegateTest, FocusOnMenuClose) {
   run_loop.Run();
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             button_accessibility()->GetFocus());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, TransientFocusDelaysNextFocusEvent) {
+  button_accessibility()->SetName("Button", ax::mojom::NameFrom::kAttribute);
+  textfield_accessibility()->SetName("Textfield",
+                                     ax::mojom::NameFrom::kAttribute);
+
+  int context_events = 0;
+  int focus_events = 0;
+  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocusContext,
+      base::BindRepeating([](int* count) { ++*count; }, &context_events));
+
+  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus,
+      base::BindRepeating([](int* count) { ++*count; }, &focus_events));
+
+  widget()->GetRootView()->GetViewAccessibility().NotifyTransientFocus();
+  EXPECT_EQ(1, context_events);
+  EXPECT_EQ(0, focus_events);
+
+  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+  EXPECT_EQ(0, focus_events);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return focus_events == 1; }));
+  EXPECT_EQ(1, focus_events);
+
+  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocusContext, {});
+  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus, {});
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, GetUnignoredSelection) {

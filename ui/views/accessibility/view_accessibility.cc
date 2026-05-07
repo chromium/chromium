@@ -294,6 +294,10 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
   NotifyEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
+void ViewAccessibility::NotifyTransientFocus() {
+  NotifyEvent(ax::mojom::Event::kFocusContext, true);
+}
+
 void ViewAccessibility::SetIsLeaf(bool value) {
   if (value == ViewAccessibility::IsLeaf()) {
     return;

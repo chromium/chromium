@@ -273,10 +273,8 @@ void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
       break;
     }
     case ax::mojom::Event::kFocusContext: {
-      // A focus context event is intended to send a focus event and a delay
-      // before the next focus event. It makes sense to delay the entire next
-      // synchronous batch of next events so that ordering remains the same.
-      // Begin queueing subsequent events and flush queue asynchronously.
+      // NotifyTransientFocus() sends a focus event before the next focus event.
+      // Delay the rest of this synchronous batch so ordering remains the same.
       PostFlushEventQueueTaskIfNecessary();
       break;
     }

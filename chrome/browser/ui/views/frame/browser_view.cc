@@ -1965,18 +1965,19 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   }
 
   if (change_tab_contents) {
-    // When the location bar or other UI focus will be restored, first focus the
-    // root view so that screen readers announce the current page title. The
-    // kFocusContext event will delay the subsequent focus event so that screen
-    // readers register them as distinct events.
+    // When the location bar or other UI focus will be restored, first send a
+    // transient root focus so that screen readers announce the current page
+    // title before the restored UI focus.
     if (will_restore_focus) {
       ChromeWebContentsViewFocusHelper* focus_helper =
           ChromeWebContentsViewFocusHelper::FromWebContents(new_contents);
       if (focus_helper &&
           focus_helper->GetStoredFocus() != active_contents_view) {
         GetWidget()->UpdateAccessibleNameForRootView();
-        GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(
-            ax::mojom::Event::kFocusContext, true);
+        GetWidget()
+            ->GetRootView()
+            ->GetViewAccessibility()
+            .NotifyTransientFocus();
       }
     }
 
