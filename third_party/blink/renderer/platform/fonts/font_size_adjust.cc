@@ -9,6 +9,26 @@
 
 namespace blink {
 
+namespace {
+
+StringView ToString(FontSizeAdjust::Metric metric) {
+  switch (metric) {
+    case FontSizeAdjust::Metric::kCapHeight:
+      return "cap-height";
+    case FontSizeAdjust::Metric::kChWidth:
+      return "ch-width";
+    case FontSizeAdjust::Metric::kIcWidth:
+      return "ic-width";
+    case FontSizeAdjust::Metric::kIcHeight:
+      return "ic-height";
+    case FontSizeAdjust::Metric::kExHeight:
+      return "ex-height";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 unsigned FontSizeAdjust::GetHash() const {
   unsigned computed_hash = 0;
   AddFloatToHash(computed_hash, value_);
@@ -17,34 +37,15 @@ unsigned FontSizeAdjust::GetHash() const {
   return computed_hash;
 }
 
-String FontSizeAdjust::ToString(Metric metric) const {
-  switch (metric) {
-    case Metric::kCapHeight:
-      return "cap-height";
-    case Metric::kChWidth:
-      return "ch-width";
-    case Metric::kIcWidth:
-      return "ic-width";
-    case Metric::kIcHeight:
-      return "ic-height";
-    case Metric::kExHeight:
-      return "ex-height";
-  }
-  NOTREACHED();
-}
-
 String FontSizeAdjust::ToString() const {
   if (value_ == kFontSizeAdjustNone) {
     return "none";
   }
-
+  String adjustment = IsFromFont() ? "from-font" : String::Number(value_);
   if (metric_ == Metric::kExHeight) {
-    return IsFromFont() ? "from-font" : String::Number(value_);
+    return adjustment;
   }
-
-  return IsFromFont()
-             ? StrCat({ToString(metric_), " from-font"})
-             : StrCat({ToString(metric_), " ", String::Number(value_)});
+  return StrCat({::blink::ToString(metric_), " ", adjustment});
 }
 
 }  // namespace blink

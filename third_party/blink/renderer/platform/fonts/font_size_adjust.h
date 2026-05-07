@@ -42,8 +42,6 @@ class PLATFORM_EXPORT FontSizeAdjust {
   String ToString() const;
 
  private:
-  String ToString(Metric metric) const;
-
   float value_{kFontSizeAdjustNone};
   Metric metric_{Metric::kExHeight};
   ValueType type_{ValueType::kNumber};
