@@ -64,12 +64,13 @@ class PageContentCache {
   void GetAllTabIds(GetAllTabIdsCallback callback);
 
   // Called when a tab is backgrounded. See PageContentStore::AddPageContent().
-  void CachePageContent(
-      int64_t tab_id,
-      const GURL& url,
-      const base::Time& visit_timestamp,
-      const base::Time& extraction_timestamp,
-      const optimization_guide::proto::PageContext& page_context);
+  // TODO(crbug.com/510750128) Use a refcounted wrapper for PageContext to avoid
+  // deep copies.
+  void CachePageContent(int64_t tab_id,
+                        const GURL& url,
+                        const base::Time& visit_timestamp,
+                        const base::Time& extraction_timestamp,
+                        optimization_guide::proto::PageContext page_context);
 
   // Called when a tab is updated or closed. This will remove any contents
   // stored for the tab.
