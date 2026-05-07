@@ -54,7 +54,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     @Before
     public void setUp() {
         // Need to configure user opt-in, otherwise WebView won't perform Safe Browsing checks.
-        AwSafeBrowsingConfigHelper.setSafeBrowsingUserOptIn(true);
+        AwSafeBrowsingConfigHelper.setSafeBrowsingUserOptInForTesting(true);
     }
 
     @After

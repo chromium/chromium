@@ -8378,7 +8378,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.Result"
-    enum="AndroidWebViewSupportedThreatTypesResult" expires_after="2027-04-01">
+    enum="AndroidWebViewGmsApiCallResult" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>

@@ -4305,18 +4305,32 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.WebView.UserOptInKnown.FirstLoad" enum="Boolean"
-    expires_after="2026-07-28">
-  <owner>ntfschr@chromium.org</owner>
+<histogram name="SafeBrowsing.WebView.GmsOptIn.ApiCallMatchesDiskCache"
+    enum="BooleanMatched" expires_after="2027-05-01">
+  <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records whether user consent for Safe Browsing is known or if we are still
-    waiting for a callback to return. A value of &quot;true&quot; means the
-    consent is known (but not necessarily whether the consent is positive or
-    negative), and a value of &quot;false&quot; means we are still waiting for a
-    result callback. This histogram is recorded exactly once, during the first
-    URL load in WebView. Warning: this histogram was expired from 2024-12-18 to
-    2025-07-29; data may be missing.
+    Records whether the result of the query for Safe Browsing user consent
+    matches the value stored in the disk cache. A value of true means they
+    match, and false means they do not. Note that if the SafeBrowsing query
+    fails (e.g due to an exception or a timeout), the result of the query is
+    false. The default value of the disk cache is false.
+
+    This histogram is recorded when the query, which is called once per WebView
+    global process startup, completes successfully or errors out.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebView.GmsOptIn.Result"
+    enum="AndroidWebViewGmsApiCallResult" expires_after="2027-05-01">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the result of the call to query Safe Browsing user consent. It logs
+    success, timeout, or unknown error. It does not record the actual user
+    consent value due to privacy considerations. This histogram is recorded when
+    the query, which is called once per WebView global process startup,
+    completes successfully or errors out.
   </summary>
 </histogram>
 

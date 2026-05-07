@@ -405,6 +405,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="RemoteException"/>
 </enum>
 
+<enum name="AndroidWebViewGmsApiCallResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="TIMEOUT"/>
+  <int value="2" label="UNKNOWN_ERROR"/>
+</enum>
+
 <enum name="AndroidWebViewMediaIntegrityApiStatus">
   <int value="0" label="DISABLED"/>
   <int value="1" label="ENABLED_WITHOUT_APP_IDENTITY"/>
@@ -513,12 +519,6 @@ chromium-metrics-reviews@google.com.
       label="(Obsolete) DISALLOWED_SITE_DETECTED. Removed in 2025/02"/>
   <int value="4" label="TIMEOUT"/>
   <int value="5" label="UNKNOWN_ERROR"/>
-</enum>
-
-<enum name="AndroidWebViewSupportedThreatTypesResult">
-  <int value="0" label="SUCCESS"/>
-  <int value="1" label="TIMEOUT"/>
-  <int value="2" label="UNKNOWN_ERROR"/>
 </enum>
 
 <enum name="AndroidWebViewTextSelectionMenuOrdering">

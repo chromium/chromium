@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
@@ -19,6 +20,9 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -74,6 +78,11 @@ AwUrlCheckerDelegateImpl::AwUrlCheckerDelegateImpl(
       allowlist_manager_(allowlist_manager) {}
 
 AwUrlCheckerDelegateImpl::~AwUrlCheckerDelegateImpl() = default;
+
+// static
+void AwUrlCheckerDelegateImpl::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingUserOptIn, false);
+}
 
 void AwUrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {}
@@ -162,9 +171,8 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   }
 
   // For other requests, follow user consent.
-  bool safe_browsing_user_consent =
-      Java_AwSafeBrowsingConfigHelper_getSafeBrowsingUserOptIn(env);
-  return !safe_browsing_user_consent;
+  PrefService* local_state = AwBrowserProcess::GetInstance()->local_state();
+  return !local_state->GetBoolean(prefs::kSafeBrowsingUserOptIn);
 }
 
 void AwUrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
@@ -316,6 +324,27 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
   resource.DispatchCallback(FROM_HERE, false /* proceed */,
                             false /* showed_interstitial */,
                             false /* has_post_commit_interstitial_skipped */);
+}
+
+static void JNI_AwSafeBrowsingConfigHelper_SetSafeBrowsingUserOptIn(
+    JNIEnv* env,
+    bool user_requires_safe_browsing_checks) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PrefService* local_state = AwBrowserProcess::GetInstance()->local_state();
+  bool old_value = local_state->GetBoolean(prefs::kSafeBrowsingUserOptIn);
+  local_state->SetBoolean(prefs::kSafeBrowsingUserOptIn,
+                          user_requires_safe_browsing_checks);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.WebView.GmsOptIn.ApiCallMatchesDiskCache",
+      old_value == user_requires_safe_browsing_checks);
+}
+
+static bool
+JNI_AwSafeBrowsingConfigHelper_GetSafeBrowsingUserOptInForTesting(  // IN-TEST
+    JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PrefService* local_state = AwBrowserProcess::GetInstance()->local_state();
+  return local_state->GetBoolean(prefs::kSafeBrowsingUserOptIn);
 }
 
 }  // namespace android_webview
