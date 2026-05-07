@@ -121,9 +121,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private void maybeApplyAdTopicsContentParity() {
         mTopicsTogglePreference.setSummary(
                 getResources().getString(R.string.settings_ad_topics_page_toggle_sub_label));
-        mActiveTopicsPreference.setSummary(
-                getResources()
-                        .getString(R.string.settings_ad_topics_page_active_topics_description));
     }
 
     private void maybeApplyAdsApiUxEnhancements() {

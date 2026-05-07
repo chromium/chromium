@@ -6,14 +6,13 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideCompletionFragmentElement} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, PrivacySandboxBrowserProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestPrivacySandboxBrowserProxy} from './test_privacy_sandbox_browser_proxy.js';
 
 /** Fire a sign in status change event and flush the UI. */
 function setSignInState(signedIn: boolean) {
@@ -28,7 +27,6 @@ suite('CompletionFragment', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
-  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -44,10 +42,6 @@ suite('CompletionFragment', function() {
     assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
-    testPrivacySandboxBrowserProxy
-        .setShouldShowPrivacySandboxAdTopicsContentParity(false);
-    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     createPage();
@@ -123,7 +117,8 @@ suite('CompletionFragment', function() {
             '#privacySandboxRow');
     assertTrue(!!privacySandboxRow);
     assertEquals(
-        fragment.i18n('privacyGuideCompletionCardPrivacySandboxSubLabel'),
+        fragment.i18n(
+            'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
         privacySandboxRow.subLabel);
     privacySandboxRow.click();
     flush();
@@ -263,46 +258,6 @@ suite(
         assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
       });
     });
-
-suite('CompletionFragmentWithAdTopicsCard', function() {
-  let fragment: PrivacyGuideCompletionFragmentElement;
-  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-      isPrivacySandboxRestrictedNoticeEnabled: false,
-      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
-    });
-    resetRouterForTesting();
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
-
-    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
-    testPrivacySandboxBrowserProxy
-        .setShouldShowPrivacySandboxAdTopicsContentParity(true);
-    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
-    fragment = document.createElement('privacy-guide-completion-fragment');
-    document.body.appendChild(fragment);
-
-    return flushTasks();
-  });
-
-  test('TestAdTopicsCrLinkRowSubLabel', function() {
-    const privacySandboxRow =
-        fragment.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxRow');
-    assertTrue(!!privacySandboxRow);
-    assertEquals(
-        fragment.i18n(
-            'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
-        privacySandboxRow.subLabel);
-  });
-});
 
 suite('CompletionFragmentAdPrivacyDeprecationEnabled', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;

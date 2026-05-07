@@ -1530,12 +1530,6 @@ IN_PROC_BROWSER_TEST_F(
           "CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
-                       CompletionFragmentWithAdTopicsCard) {
-  RunTest("settings/privacy_guide_completion_fragment_test.js",
-          "runMochaSuite('CompletionFragmentWithAdTopicsCard')");
-}
-
 // TODO(crbug.com/410848707): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AdTopicsFragment DISABLED_AdTopicsFragment
@@ -1797,12 +1791,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
                        TopicsSubpageAdTopicsContentParity) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('TopicsSubpageAdTopicsContentParity')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
-                       TopicsSubpageAdTopicsContentParityDisabled) {
-  RunTest("settings/privacy_sandbox_page_test.js",
-          "runMochaSuite('TopicsSubpageAdTopicsContentParityDisabled')");
 }
 
 using SettingsRouteTest = SettingsBrowserTest;

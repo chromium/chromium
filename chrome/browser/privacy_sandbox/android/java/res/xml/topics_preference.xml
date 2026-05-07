@@ -20,7 +20,7 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.privacy_sandbox.TopicsHeaderPreference
         android:key="active_topics"
         android:title="@string/settings_topics_page_active_topics_heading"
-        android:summary="@string/settings_topics_page_active_topics_description"
+        android:summary="@string/settings_ad_topics_page_active_topics_description"
         app:allowDividerBelow="false" />
 
     <PreferenceCategory

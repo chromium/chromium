@@ -936,13 +936,13 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
     assertFalse(isVisible(page.shadowRoot!.querySelector('#footer')));
     assertTrue(isVisible(page.shadowRoot!.querySelector('#footerV2')));
     const footerDisclaimer =
-        page.shadowRoot!.querySelector('#footerDisclaimer');
+        page.shadowRoot!.querySelector('#footerDisclaimerV2');
     assertTrue(isVisible(footerDisclaimer));
   });
 
   test('privacyPolicyLink', async function() {
     const privacyPolicyLink =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLinkV2');
     assertTrue(!!privacyPolicyLink);
     privacyPolicyLink.click();
     assertEquals(
@@ -1912,7 +1912,6 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
   });
 });
 
-// PrivacySandboxAdsTopicsContentParity is enabled.
 suite('TopicsSubpageAdTopicsContentParity', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
@@ -1929,8 +1928,6 @@ suite('TopicsSubpageAdTopicsContentParity', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
-    testPrivacySandboxBrowserProxy
-        .setShouldShowPrivacySandboxAdTopicsContentParity(true);
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -1976,72 +1973,5 @@ suite('TopicsSubpageAdTopicsContentParity', function() {
     assertEquals(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
-  });
-});
-
-// PrivacySandboxAdsTopicsContentParity is disabled
-suite('TopicsSubpageAdTopicsContentParityDisabled', function() {
-  let page: SettingsPrivacySandboxTopicsSubpageElement;
-  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(async function() {
-    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
-    testPrivacySandboxBrowserProxy
-        .setShouldShowPrivacySandboxAdTopicsContentParity(false);
-    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(settingsPrefs);
-    page = document.createElement('settings-privacy-sandbox-topics-subpage');
-    page.prefs = settingsPrefs.prefs!;
-    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
-    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
-    document.body.appendChild(page);
-    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
-    return flushTasks();
-  });
-
-  teardown(function() {
-    Router.getInstance().resetRouteForTesting();
-  });
-
-  test('privacyPolicyLink', async function() {
-    const privacyPolicyLink =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
-    assertTrue(!!privacyPolicyLink);
-    privacyPolicyLink.click();
-    assertEquals(
-        'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-  });
-
-  test('AdTopicsContentParityNotShown', function() {
-    const topicsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#topicsToggle');
-    assert(topicsToggle);
-    assertTrue(isVisible(topicsToggle));
-    assertEquals(
-        loadTimeData.getString('topicsPageToggleSubLabel'),
-        topicsToggle.subLabel);
-    assertFalse(
-        isVisible(page.shadowRoot!.querySelector('#footerDisclaimerV2')));
-    assertFalse(isVisible(
-        page.shadowRoot!.querySelector('#currentTopicsDescriptionV2')));
-    assertTrue(isVisible(page.shadowRoot!.querySelector('#footerDisclaimer')));
-    assertTrue(
-        isVisible(page.shadowRoot!.querySelector('#currentTopicsDescription')));
   });
 });

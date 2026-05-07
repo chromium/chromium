@@ -531,23 +531,13 @@ class PrivacySandboxServiceTest : public testing::Test {
   raw_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_ = nullptr;
 };
 
-// Params correspond to (IsFeatureOn, IsConsentCountry, ExpectedResult).
 class PrivacySandboxPrivacyGuideShouldShowAdTopicsTest
     : public PrivacySandboxServiceTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+      public testing::WithParamInterface<bool> {};
 
 TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
        ShownAccordingToConsentCountryAndFeature) {
-  auto [is_feature_on, is_consent_country, result] = GetParam();
-
-  feature_list()->Reset();
-  if (is_feature_on) {
-    feature_list()->InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
-  } else {
-    feature_list()->InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
-  }
+  bool is_consent_country = GetParam();
 
   ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
       .WillByDefault(testing::Return(is_consent_country));
@@ -555,15 +545,13 @@ TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
   bool should_show_card =
       privacy_sandbox_service()
           ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
-  ASSERT_EQ(should_show_card, result);
+  // The expected result is identical to the consent country status.
+  ASSERT_EQ(should_show_card, is_consent_country);
 }
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                          PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
-                         testing::Values(std::tuple(true, true, true),
-                                         std::tuple(true, false, false),
-                                         std::tuple(false, true, false),
-                                         std::tuple(false, false, false)));
+                         testing::Bool());
 
 class PrivacySandboxShouldUsePrivacyPolicyChinaDomain
     : public PrivacySandboxServiceTest {};

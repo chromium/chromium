@@ -84,8 +84,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2},
       {"topicsPageActiveTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING},
-      {"topicsPageActiveTopicsDescription",
-       IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION},
       {"topicsPageCurrentTopicsRegionA11yDescription",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_REGION_A11Y_DESCRIPTION},
       {"topicsPageCurrentTopicsDescriptionDisabled",
@@ -337,14 +335,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           chrome::kChromeUICookieSettingsURL,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Ad Topics Page - Ads API UX Enhancements
-  html_source->AddString(
-      "adTopicsPageDisclaimer",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER,
-          base::ASCIIToUTF16(privacy_policy_url),
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
-          kPrivacyPolicyFunc, kPrivacyPolicyId));
   html_source->AddString(
       "adTopicsPageFooterV2Desktop",
       l10n_util::GetStringFUTF16(

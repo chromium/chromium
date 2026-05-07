@@ -145,9 +145,6 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING" desc="A label above a list of the user's current topics of interest." formatter_data="android_java">
     Active topics
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION" desc="A description that appears beneath the 'Active topics' label." formatter_data="android_java">
-    Topics older than 4 weeks get auto-deleted
-  </message>
 
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" desc="Label for the text which displays the state of the user's Topics consent">

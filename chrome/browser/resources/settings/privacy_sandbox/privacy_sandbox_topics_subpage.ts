@@ -105,20 +105,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         computed: 'computeEmptyState_(' +
             'prefs.privacy_sandbox.m1.topics_enabled.value)',
       },
-
-      /**
-       * If true, the Ad Topics Content parity should be shown.
-       */
-      shouldShowAdTopicsContentParity_: {
-        type: Boolean,
-        value: false,
-      },
-
-      adTopicsToggleSubLabel_: {
-        type: String,
-        computed:
-            'computeAdTopicsToggleSubLabel_(shouldShowAdTopicsContentParity_)',
-      },
     };
   }
 
@@ -138,21 +124,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   declare private shouldShowBlockTopicDialog_: boolean;
   declare private blockTopicDialogTitle_: string;
   declare private blockTopicDialogBody_: string;
-  declare private shouldShowAdTopicsContentParity_: boolean;
-  declare private adTopicsToggleSubLabel_: string;
 
   override ready() {
     super.ready();
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(
         state => this.onTopicsStateChanged_(state));
-    this.privacySandboxBrowserProxy_
-        .shouldShowPrivacySandboxAdTopicsContentParity()
-        .then(
-            shouldShow => {
-              this.shouldShowAdTopicsContentParity_ = shouldShow;
-            },
-        );
   }
 
   // Goal is to not show anything but the toggle and disclaimer when the pref is
@@ -323,12 +300,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private onPrivacyPolicyLinkClicked_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked');
-  }
-
-  private computeAdTopicsToggleSubLabel_(): string {
-    return this.i18n(
-        this.shouldShowAdTopicsContentParity_ ? 'adTopicsPageToggleSubLabel' :
-                                                'topicsPageToggleSubLabel');
   }
 
   // SettingsViewMixin implementation.

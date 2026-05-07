@@ -85,12 +85,6 @@ void PrivacySandboxHandler::RegisterMessages() {
           &PrivacySandboxHandler::
               HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "shouldShowPrivacySandboxAdTopicsContentParity",
-      base::BindRepeating(
-          &PrivacySandboxHandler::
-              HandleShouldShowPrivacySandboxAdTopicsContentParity,
-          base::Unretained(this)));
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
@@ -212,14 +206,6 @@ void PrivacySandboxHandler::
       GetPrivacySandboxService()
           ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
-}
-
-void PrivacySandboxHandler::HandleShouldShowPrivacySandboxAdTopicsContentParity(
-    const base::ListValue& args) {
-  AllowJavascript();
-  ResolveJavascriptCallback(
-      args[0], base::FeatureList::IsEnabled(
-                   privacy_sandbox::kPrivacySandboxAdTopicsContentParity));
 }
 
 PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {

@@ -12,7 +12,6 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
   private firstLevelTopicsState_:
       FirstLevelTopicsState = {firstLevelTopics: [], blockedTopics: []};
   private childTopicsCurrentlyAssigned_: CanonicalTopic[] = [];
-  private shouldShowAdTopicsContentParity = false;
 
   constructor() {
     super([
@@ -23,7 +22,6 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
       'setFledgeJoiningAllowed',
       'setTopicAllowed',
       'topicsToggleChanged',
-      'shouldShowPrivacySandboxAdTopicsContentParity',
     ]);
   }
 
@@ -42,10 +40,6 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
 
   setFledgeState(fledgeState: FledgeState) {
     this.fledgeState_ = fledgeState;
-  }
-
-  setShouldShowPrivacySandboxAdTopicsContentParity(shouldShow: boolean) {
-    this.shouldShowAdTopicsContentParity = shouldShow;
   }
 
   // Test Proxy Functions
@@ -85,10 +79,5 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
         'getChildTopicsCurrentlyAssigned', topic.topicId,
         topic.taxonomyVersion);
     return Promise.resolve(this.childTopicsCurrentlyAssigned_.slice());
-  }
-
-  shouldShowPrivacySandboxAdTopicsContentParity() {
-    this.methodCalled('shouldShowPrivacySandboxAdTopicsContentParity');
-    return Promise.resolve(this.shouldShowAdTopicsContentParity);
   }
 }
