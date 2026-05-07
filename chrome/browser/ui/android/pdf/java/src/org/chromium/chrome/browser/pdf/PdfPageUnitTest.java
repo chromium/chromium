@@ -98,6 +98,7 @@ public class PdfPageUnitTest {
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
+                        false,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
@@ -109,7 +110,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals("Pdf page url should match.", encodedUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
         // Simulate tab brought from background to foreground
         View view = pdfPage.mPdfCoordinator.getView();
@@ -117,7 +118,7 @@ public class PdfPageUnitTest {
         contentView.addView(view);
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
         String jsonString = pdfPage.requestAssistContent(/* isWorkProfile= */ true);
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
@@ -161,6 +162,7 @@ public class PdfPageUnitTest {
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
+                        false,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
@@ -174,10 +176,10 @@ public class PdfPageUnitTest {
         contentView.addView(view);
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
         PdfCoordinator.ChromePdfViewerFragment oldFragment =
-                pdfPage.mPdfCoordinator.mChromePdfViewerFragment;
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).mChromePdfViewerFragment;
         Assert.assertNotNull("Fragment should not be null initially", oldFragment);
 
         pdfPage.reload();
@@ -185,7 +187,7 @@ public class PdfPageUnitTest {
         Assert.assertNotSame(
                 "Fragment should be recreated",
                 oldFragment,
-                pdfPage.mPdfCoordinator.mChromePdfViewerFragment);
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).mChromePdfViewerFragment);
 
         contentView.removeView(view);
         pdfPage.destroy();
@@ -198,6 +200,7 @@ public class PdfPageUnitTest {
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
+                        false,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
@@ -210,7 +213,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals("Pdf page url should match.", encodedUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
         // Simulate tab brought from background to foreground
         View view = pdfPage.mPdfCoordinator.getView();
@@ -218,7 +221,7 @@ public class PdfPageUnitTest {
         contentView.addView(view);
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
         contentView.removeView(view);
     }
 
@@ -241,6 +244,7 @@ public class PdfPageUnitTest {
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
+                        false,
                         mActivity,
                         pdfPageUrl,
                         mPdfInfo,
@@ -249,7 +253,7 @@ public class PdfPageUnitTest {
         Assert.assertNotNull(pdfPage);
         Assert.assertFalse(
                 "Pdf should not be loaded when the download is not completed.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
         Assert.assertNull(
                 "Assist content cannot be generated when the pdf is not ready to load",
                 pdfPage.requestAssistContent(/* isWorkProfile= */ false));
@@ -262,7 +266,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals("Pdf page url should match.", pdfPageUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
 
         // Simulate tab brought from background to foreground
         View view = pdfPage.mPdfCoordinator.getView();
@@ -270,7 +274,7 @@ public class PdfPageUnitTest {
         contentView.addView(view);
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
-                pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+                ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
         String jsonString = pdfPage.requestAssistContent(/* isWorkProfile= */ false);
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);

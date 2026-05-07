@@ -13,6 +13,8 @@ android_library("impl_java") {
   deps = [
     ":provider_java",
     "//base:service_loader_java",
+    "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/pdf/internal:java",
   ]
 }
 
@@ -20,6 +22,7 @@ android_library("impl_java") {
 android_library("provider_java") {
   sources = [ "java/src/org/chromium/chrome/modules/on_demand/OnDemandModuleEntryPoints.java" ]
   deps = [
+    "//chrome/browser/ui/android/pdf:java",
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
   ]

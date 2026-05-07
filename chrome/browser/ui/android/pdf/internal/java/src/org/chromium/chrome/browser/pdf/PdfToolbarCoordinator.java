@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /** The top-level component responsible for the setup and lifecycle of the PDF Toolbar MVC stack. */
 @NullMarked
@@ -22,11 +20,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     private final PdfToolbarActionsDelegate mDelegate;
     private final PropertyModelChangeProcessor<PropertyModel, PdfToolbar, PropertyKey>
             mPropertyModelChangeProcessor;
-    private final ArrayList<Float> mZoomLevels =
-            new ArrayList<>(
-                    List.of(
-                            0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f,
-                            1.75f, 2.0f, 2.5f, 3.0f, 4.0f, 5.0f));
+    private final List<Float> mZoomLevels =
+            List.of(
+                    0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
+                    2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
 
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
@@ -34,10 +31,10 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         // TODO(crbug.com/496180649): Only show the toolbar when the PDF is loaded via ViewStub.
         toolbar.setVisibility(View.VISIBLE);
 
+        // TODO(crbug.com/507061296): Remove hardcoded values after the PDF is loaded.
         mModel =
                 new PropertyModel.Builder(PdfToolbarProperties.ALL_KEYS)
                         .with(PdfToolbarProperties.ON_CLICK_LISTENER, this)
-                        .with(PdfToolbarProperties.ZOOM_VALUE, "100%")
                         .build();
 
         // Set up the MCP to sync the Model and View
@@ -50,9 +47,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         int actionId = view.getId();
         int currentPageNumber = mModel.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
         int totalPageCount = mModel.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
-        float currentZoomFactor =
-                Float.parseFloat(mModel.get(PdfToolbarProperties.ZOOM_VALUE).replace("%", ""))
-                        / 100f;
+        float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
 
         if (actionId == R.id.page_increase_button && currentPageNumber < totalPageCount) {
             mDelegate.navigateToPage(currentPageNumber);
@@ -68,19 +63,19 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     private float getNextZoomLevel(float currentZoomLevel, boolean increase) {
         int index = 0;
 
-        // Find the first index where the zoom level is greater than current
+        // Find the first index where the zoom level is greater than or equal to current and move
+        // to the next one if it exists.
         while (index < mZoomLevels.size() && mZoomLevels.get(index) <= currentZoomLevel) {
             index++;
         }
 
         if (increase) {
             // Return the next highest, or stay at the max if we're at the end
-            if (index >= mZoomLevels.size()) return mZoomLevels.get(mZoomLevels.size() - 1);
             return mZoomLevels.get(index);
         } else {
-            //  If the current zoom level is in the list, decrease by 2. Otherwise, decrease by 1.
+            // If the current zoom level is in the list, decrease by 1. Otherwise, decrease by 2.
             int targetIndex = mZoomLevels.contains(currentZoomLevel) ? index - 2 : index - 1;
-            if (targetIndex < 0) return mZoomLevels.get(0);
+            if (targetIndex < 0) targetIndex = 0;
             return mZoomLevels.get(targetIndex);
         }
     }
@@ -89,7 +84,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
      * Called when the PDF document is successfully loaded.
      *
      * @param pageCount The total page count of the document.
-     * @param title The title of the PDF document.
+     * @param title The title of the document.
      */
     public void onDocumentLoaded(int pageCount, String title) {
         mModel.set(PdfToolbarProperties.TOTAL_PAGE_COUNT, pageCount);
@@ -106,9 +101,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         // Fetch absolute state from engine as the single source of truth.
         // Keep the model 1-indexed.
         mModel.set(PdfToolbarProperties.CURRENT_PAGE_NUMBER, firstVisiblePage + 1);
-        mModel.set(
-                PdfToolbarProperties.ZOOM_VALUE,
-                String.format(Locale.ENGLISH, "%.0f%%", zoomLevel * 100));
+        mModel.set(PdfToolbarProperties.ZOOM_LEVEL, zoomLevel);
         mModel.set(
                 PdfToolbarProperties.ZOOM_DECREASE_BUTTON_ENABLED, zoomLevel > mZoomLevels.get(0));
         mModel.set(

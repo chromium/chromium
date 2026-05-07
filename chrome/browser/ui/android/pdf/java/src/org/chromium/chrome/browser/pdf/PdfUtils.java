@@ -208,7 +208,7 @@ public class PdfUtils {
         if (pdfPage == null || !pdfPage.isPdf()) {
             return PdfPageType.NONE;
         }
-        assert pdfPage instanceof PdfPage;
+
         GURL url = new GURL(pdfPage.getUrl());
         return getPdfPageTypeInternal(url, pdfPage.isDownloadSafe());
     }
@@ -237,7 +237,7 @@ public class PdfUtils {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 
-    static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
+    public static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         try {
@@ -371,20 +371,20 @@ public class PdfUtils {
         return ChromeFeatureList.sInlinePdfV2.isEnabled();
     }
 
-    static void recordPdfLoad() {
+    public static void recordPdfLoad() {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DocumentLoad", true);
     }
 
-    static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {
+    public static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Pdf.DocumentLoadResult.Detail", loadResult, PdfLoadResult.NUM_ENTRIES);
     }
 
-    static void recordPdfLoadTimeFirstPaired(long duration) {
+    public static void recordPdfLoadTimeFirstPaired(long duration) {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DocumentLoadTime.FirstPaired", duration);
     }
 
-    static void recordPdfLoadInterval(long duration) {
+    public static void recordPdfLoadInterval(long duration) {
         RecordHistogram.recordMediumTimesHistogram("Android.Pdf.DocumentLoadInterval", duration);
     }
 
@@ -392,17 +392,17 @@ public class PdfUtils {
         RecordHistogram.recordTimesHistogram("Android.Pdf.DownloadTime.Transient", duration);
     }
 
-    static void recordFindInPage(int findInPageCounts) {
+    public static void recordFindInPage(int findInPageCounts) {
         RecordHistogram.recordExactLinearHistogram(
                 "Android.Pdf.FindInPageCounts", findInPageCounts, /* max= */ 9);
     }
 
-    static void recordIsWorkProfile(boolean isWorkProfile) {
+    public static void recordIsWorkProfile(boolean isWorkProfile) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Pdf.AssistContent.IsWorkProfile", isWorkProfile);
     }
 
-    static void recordGetAssistantPackageResult(boolean success) {
+    public static void recordGetAssistantPackageResult(boolean success) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Pdf.AssistContent.GetAssistantPackageResult", success);
     }
@@ -415,7 +415,7 @@ public class PdfUtils {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlDecoded", decodeResult);
     }
 
-    static void recordIsUriNull(boolean isNull) {
+    public static void recordIsUriNull(boolean isNull) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.UriIsNull", isNull);
     }
 }

@@ -44,7 +44,10 @@ public class PdfCtaPageStation extends CtaPageStation {
                         instrumentationThreadConditionWithResult(
                                 "PDF coordinator",
                                 pdfNativePageElement,
-                                pdfPage -> fulfilled().withResult(pdfPage.mPdfCoordinator)));
+                                pdfPage ->
+                                        fulfilled()
+                                                .withResult(
+                                                        (PdfCoordinator) pdfPage.mPdfCoordinator)));
         declareEnterCondition(
                 instrumentationThreadCondition(
                         "PDF document is loaded successfully",

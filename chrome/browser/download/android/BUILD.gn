@@ -83,6 +83,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/pdf:pdf_utils_java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",
