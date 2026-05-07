@@ -2666,7 +2666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.StartAdjustment.LegacyPostTask.Negative" units="ms"
-    expires_after="2026-05-10">
+    expires_after="2026-09-13">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
