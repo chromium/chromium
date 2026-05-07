@@ -1843,7 +1843,7 @@
     "pabouchard@google.com",
     "bling-mony-pod@google.com"
   ],
-  "expiry_milestone": 150
+  "expiry_milestone": 155
   },
   {
     "name": "connection-allowlists",
@@ -2221,7 +2221,7 @@
   {
     "name": "default-browser-picture-in-picture",
     "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "default-browser-promo-entry-point",
@@ -2236,7 +2236,7 @@
   {
     "name": "default-browser-promo-ipad-instructions",
     "owners": [ "cheickcisse@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "default-browser-prompt-surfaces",
@@ -5836,7 +5836,7 @@
       "pabouchard@google.com",
       "bling-mony-pod@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "ios-expanded-tips",
@@ -5945,7 +5945,7 @@
   {
     "name": "ios-skip-fre-default-browser-promo-in-eea",
     "owners": ["gujen@google.com", "bmcclure@google.com", "bling-mony-pod@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "ios-soft-lock",
@@ -5982,7 +5982,7 @@
   {
     "name": "ios-tips-notifications-string-alternatives",
     "owners": [ "gayane@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "ios-trusted-vault-notification",
@@ -6764,14 +6764,6 @@
     "expiry_milestone": 151
   },
   {
-    "name": "ntp-background-customization",
-    "owners": [
-      "pabouchard@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "ntp-background-downsample-image",
     "owners": [
       "rkgibson@google.com",
@@ -7304,7 +7296,7 @@
   {
     "name": "one-time-default-browser-notification",
     "owners": [ "gujen@google.com","scottyoder@google.com",  "bling-mony-pod@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "open-edit-group-view-by-tapping-title",
@@ -7644,7 +7636,7 @@
   {
     "name": "persistent-default-browser-promo",
     "owners": [ "gujen@google.com", "bling-mony-pod@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "picture-in-picture-mute-control",
@@ -9342,7 +9334,7 @@
   {
     "name": "use-default-apps-page-for-promos",
     "owners": [ "gujen@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "use-dhcpcd10",

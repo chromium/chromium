@@ -1308,11 +1308,6 @@ inline constexpr char kNTPBackgroundColorSliderDescription[] =
     "When enabled, the color slider is available in the background "
     "customization color picker.";
 
-inline constexpr char kNTPBackgroundCustomizationName[] =
-    "Enable background customization menu on the NTP";
-inline constexpr char kNTPBackgroundCustomizationDescription[] =
-    "When enabled, the background customization menu is available on the NTP.";
-
 inline constexpr char kNTPBackgroundDownsampleImageName[] =
     "NTP Background Downsample Image";
 inline constexpr char kNTPBackgroundDownsampleImageDescription[] =

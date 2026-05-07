@@ -1497,10 +1497,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::debug::kAutofillShowTypePredictions)},
-    {"ntp-background-customization",
-     flag_descriptions::kNTPBackgroundCustomizationName,
-     flag_descriptions::kNTPBackgroundCustomizationDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNTPBackgroundCustomization)},
     {"ntp-header-use-transforms-for-animations",
      flag_descriptions::kNTPHeaderUseTransformsForAnimationsName,
      flag_descriptions::kNTPHeaderUseTransformsForAnimationsDescription,
