@@ -287,39 +287,6 @@ bool MimeHandlerStreamManager::DidContentFrameFinishNavigation(
   return stream_info && stream_info->DidContentFrameFinishNavigation();
 }
 
-void MimeHandlerStreamManager::AbortAndFallbackToNativeHandler(
-    content::RenderFrameHost* embedder_host) {
-  auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  CHECK(stream_info);
-  CHECK(stream_info->did_extension_finish_navigation());
-  CHECK(!stream_info->DidContentFrameFinishNavigation());
-  const GURL original_url = stream_info->stream()->original_url();
-  CHECK(original_url.is_valid());
-
-  const content::FrameTreeNodeId embedder_ftn =
-      embedder_host->GetFrameTreeNodeId();
-  pending_native_fallback_frames_.insert(embedder_ftn);
-
-  // Re-navigate just the embedder frame -- not the whole WebContents --
-  // so iframe-hosted MIME handlers fall back without blowing away the
-  // main frame. For a primary-main-frame embedder this is equivalent to
-  // a main-frame reload. FTN is stable across the scoped navigation, so
-  // the throttle's FTN-keyed peek matches the mark set here.
-  // TODO(crbug.com/495538206): Replace this re-fetch with a cached-body
-  // handoff so the native handler can render without a second network
-  // round-trip.
-  content::NavigationController::LoadURLParams params(original_url);
-  params.frame_tree_node_id = embedder_ftn;
-  params.should_replace_current_entry = true;
-  params.transition_type = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
-  web_contents()->GetController().LoadURLWithParams(params);
-}
-
-bool MimeHandlerStreamManager::IsPendingNativeFallback(
-    content::FrameTreeNodeId frame_tree_node_id) const {
-  return pending_native_fallback_frames_.contains(frame_tree_node_id);
-}
-
 bool MimeHandlerStreamManager::PluginCanSave(
     const content::RenderFrameHost* embedder_host) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -414,9 +381,6 @@ void MimeHandlerStreamManager::RenderFrameHostChanged(
 
 void MimeHandlerStreamManager::FrameDeleted(
     content::FrameTreeNodeId frame_tree_node_id) {
-  // Drop any pending native-fallback mark keyed by the deleted frame.
-  pending_native_fallback_frames_.erase(frame_tree_node_id);
-
   // If a MIME handler host is deleted, delete the associated `StreamInfo`.
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
     extensions::StreamInfo* stream_info = iter->second.get();
@@ -512,15 +476,6 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
 
 void MimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Drop any native-fallback mark for the navigating frame. The mark
-  // must survive the full redirect chain (so the throttle's peek hits
-  // on each hop and the PDF extension_id is selected regardless of
-  // redirects), but by the time the navigation has committed or
-  // errored the re-fetch is over and the mark is spent. For a canceled
-  // navigation this still fires, so the entry is never leaked.
-  pending_native_fallback_frames_.erase(
-      navigation_handle->GetFrameTreeNodeId());
-
   if (IsContentFrameNavigation(navigation_handle)) {
     --g_debug_ongoing_content_navigations;
     SetManagerCrashKeys(stream_infos_.size());

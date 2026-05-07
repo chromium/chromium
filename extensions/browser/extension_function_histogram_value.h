@@ -2031,7 +2031,6 @@ enum HistogramValue {
   // This value was added significantly after the method was introduced and was
   // previously logged as UNKNOWN.
   OFFSCREEN_HASDOCUMENT = 1968,
-  MIMEHANDLER_ABORTANDFALLBACKTONATIVEHANDLER = 1969,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

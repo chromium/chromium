@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
-import("//pdf/features.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
@@ -30,13 +29,4 @@ source_set("browser_tests") {
     "//extensions/common",
     "//net:test_support",
   ]
-
-  if (enable_pdf) {
-    sources += [ "mime_handler_fallback_browsertest.cc" ]
-    deps += [
-      "//chrome/browser/pdf:pdf_extension_test_utils",
-      "//extensions/browser/mime_handler",
-      "//pdf:features",
-    ]
-  }
 }
