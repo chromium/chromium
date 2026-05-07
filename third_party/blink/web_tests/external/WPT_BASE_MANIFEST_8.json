@@ -1020,6 +1020,13 @@
         null,
         {}
        ]
+      ],
+      "transform-properties-from-none-to-none-crash.html": [
+       "a2f4f7aa03d9f7c2593ccefa3f768cf2b6e320c0",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "display-via-custom-prop-animation-crash.html": [
@@ -3502,6 +3509,13 @@
      "crashtests": {
       "highlight-first-letter-float-crash.html": [
        "ea3742954966931f3d42c075678ad6fdc35bb78a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-image-multiple-crash.html": [
+       "395804ace8878f8a22ee5f0c4cf9e6efe738b202",
        [
         null,
         {}
@@ -7669,6 +7683,15 @@
       ]
      }
     },
+    "collections": {
+     "childnodes-messagechannel-crash.html": [
+      "f118eff6f940cf7c95bafb2936fd2af90b7dd683",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "events": {
      "keypress-dispatch-crash.html": [
       "3207adbd8c891903b1c6edd65edc41de9b9e7312",
@@ -7715,6 +7738,13 @@
       ]
      ],
      "crashtests": {
+      "attribute-index-when-no-attributes.html": [
+       "628fdd81e4946041b4b75e1105eeb5fb27593ae8",
+       [
+        null,
+        {}
+       ]
+      ],
       "childNodes-last_visited-unwrap-crash.html": [
        "9c16a38ac2767b52a9b86eff4a400fea241b6732",
        [
@@ -7921,6 +7951,13 @@
      ],
      "delete-after-justifyleft-in-closed-editable-dialog.html": [
       "185cb01ee51dbf91717887f51ad82812690e0e90",
+      [
+       null,
+       {}
+      ]
+     ],
+     "delete-after-removing-first-child.html": [
+      "3abc98258f0e0d9450f890b1ec4b6076930361ae",
       [
        null,
        {}
@@ -9014,6 +9051,19 @@
       "the-innertext-and-outertext-properties": {
        "innertext-domnoderemoved-crash.html": [
         "94043caf69cc50dc7445ef67448058ba9ffd869b",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     }
+    },
+    "editing": {
+     "dnd": {
+      "crashtests": {
+       "DataTransfer-getData-RefCell-already-borrowed.html": [
+        "1bfdce40390f81cbff6083269664a88ed5245184",
         [
          null,
          {}
@@ -11383,7 +11433,7 @@
       ]
      ],
      "selection-modify-line-boundary-around-empty-details.html": [
-      "815a819c3367b7441be40b2294c9a2998bfcb632",
+      "ff7760e2209b9e55e4fbc55c8d6e4298b4e576b2",
       [
        null,
        {}
@@ -12447,6 +12497,15 @@
      ],
      "test_securityerrors-manual.html": [
       "add93ed69d139a5118e05ffd8ea38f1b2ca81356",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "filelist-section": {
+     "filelist_multiple_selected_files-manual.html": [
+      "2efaa059fa48978e999a2a23ef28669e45b00c54",
       [
        null,
        {}
@@ -22176,6 +22235,15 @@
       }
      },
      "editing-0": {
+      "autocorrection": {
+       "autocorrect-off-touch-keyboard-manual.html": [
+        "ae98fbe9f41f42bc8807cbb47af1385c0b3c70a1",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "contenteditable": {
        "spellcheck-insertReplacementText-input-event-manual.html": [
         "61736269634fc7135a09529f364de9457b6d9c11",
@@ -29721,6 +29789,19 @@
         [
          "/css/printing/no-resize-event-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "number-input-link-crash-print.html": [
+      "656167038df18d21604462d46573f57c42621221",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
         ]
        ],
        {}
@@ -79652,7 +79733,7 @@
       ]
      ],
      "anchor-position-multicol-011.html": [
-      "eab57bfdb841bc488708ad001f2534cdae2a5188",
+      "ce0ec15280f76818bb83e4a43ab11113c6a5016c",
       [
        null,
        [
@@ -80042,7 +80123,7 @@
       ]
      ],
      "anchor-scroll-implicit-001.html": [
-      "e0b6ded3b9b9a11eac337169559e3bdd43b1ac4a",
+      "a6652c4811249461b2d06685d305d93bf71c4a5e",
       [
        null,
        [
@@ -80055,7 +80136,7 @@
       ]
      ],
      "anchor-scroll-implicit-002.html": [
-      "f70235b8e2a117c2e65a9a03d5d67c15692bde71",
+      "040d09ef428505739fa12914b1049493af4e6a8a",
       [
        null,
        [
@@ -93350,6 +93431,93 @@
             [
              0,
              2000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline-auto-forms.html": [
+       "de6953215fecdac27ef425d6de629fecf01176ad",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-auto-forms-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             50
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline-auto-with-border.html": [
+       "131ac90f6fe2c7d06970cd0a05754d39c7af784e",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-auto-with-border-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             50
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline-auto.html": [
+       "583ff4662543d22d3b4d6b51e3aa4ddee209b425",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-auto-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             5
+            ],
+            [
+             0,
+             50
             ]
            ]
           ]
@@ -158710,6 +158878,19 @@
           ]
          ]
         },
+        "column-subgrid-ignores-width-001.html": [
+         "3ca0602159ce7ebf1020719716254a69cba4e599",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "column-subgrid-standalone-row-axis-size-001.html": [
          "6eed203dfde17e8a7d3d5dc5fc078c1ad520517d",
          [
@@ -158842,6 +159023,19 @@
           ]
          ]
         },
+        "row-subgrid-ignores-height-001.html": [
+         "43d583e78d5057373255b0ef12bea0f54226f07e",
+         [
+          null,
+          [
+           [
+            "/css/reference/ref-filled-green-100px-square.xht",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "row-subgrid-standalone-column-axis-size-001.html": [
          "f3838b3e41523aaf713466ece51163e82cdc1540",
          [
@@ -158856,6 +159050,32 @@
          ]
         ],
         "track-sizing": {
+         "auto-track-sizing-001.html": [
+          "a993a93bc77d20a1aac192d80d14b37eb9100288",
+          [
+           null,
+           [
+            [
+             "/css/css-grid/subgrid/auto-track-sizing-002-ref.html",
+             "=="
+            ]
+           ],
+           {}
+          ]
+         ],
+         "auto-track-sizing-002.html": [
+          "9afe7a8c6ea45288d79ecfb2d4c692c4cf824c71",
+          [
+           null,
+           [
+            [
+             "/css/reference/ref-filled-green-100px-square.xht",
+             "=="
+            ]
+           ],
+           {}
+          ]
+         ],
          "column-subgrid-extra-margin-001.html": [
           "fcd9d3f195a110b8866f0c0bf4f61f5b8ddc08ad",
           [
@@ -164468,7 +164688,7 @@
     },
     "css-highlight-api": {
      "highlight-image.html": [
-      "b5d44e06b29735d6a5ab9fbfc9d1f92917fd4ff3",
+      "e45b0db38248fef7b133effec03c468ddcb9bff4",
       [
        null,
        [
@@ -165682,6 +165902,32 @@
         [
          [
           "/css/css-highlight-api/painting/custom-highlight-painting-inheritance-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-insert-node-001.html": [
+       "f0a11c2dfd42ceca9d1675afaaaf68e90e6355be",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-insert-node-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-insert-node-002.html": [
+       "f4a590d12d4ec17ad8ba49a6f5170b72f518f066",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-insert-node-001-ref.html",
           "=="
          ]
         ],
@@ -168773,7 +169019,7 @@
      ],
      "image-orientation": {
       "image-orientation-background-image.html": [
-       "866e94596020286cf67f2083bc6dc64258af3506",
+       "46aa1b009cb7af02285661c7bc4f9a1e0772cac1",
        [
         null,
         [
@@ -168793,7 +169039,7 @@
             ],
             [
              0,
-             50
+             60
             ]
            ]
           ]
@@ -169260,7 +169506,7 @@
        ]
       ],
       "image-orientation-list-style-image.html": [
-       "ac735626dbd1ec8a0743cf480bddc40d85e93149",
+       "059317ecde7c7722a0671a3742df82e7a02587a5",
        [
         null,
         [
@@ -169280,7 +169526,7 @@
             ],
             [
              0,
-             50
+             60
             ]
            ]
           ]
@@ -211100,12 +211346,25 @@
       ]
      ],
      "ruby-overhang-dynamic.html": [
-      "cd138bbca3d9255acac79c34733257ad68e72b67",
+      "b41cd2b740666f2c521dee27c7dd715a0cdf82b7",
       [
        null,
        [
         [
          "/css/css-ruby/ruby-overhang-dynamic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-overhang-none.html": [
+      "4c8432d3284bccf342693a49add7bea15379be3c",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-overhang-none-ref.html",
          "=="
         ]
        ],
@@ -211171,19 +211430,6 @@
        [
         [
          "/css/css-ruby/ruby-overhang-spaces-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "ruby-overhang.html": [
-      "5c8cfd1685427b32dcc08e12c45a257f6aa7fbec",
-      [
-       null,
-       [
-        [
-         "/css/css-ruby/ruby-overhang-ref.html",
          "=="
         ]
        ],
@@ -236864,6 +237110,19 @@
         {}
        ]
       ],
+      "grow-dynamic.html": [
+       "c403a3f44d6520465bc61cc7d8d3237174fd4ab2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-fit/grow-dynamic-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grow-per-line-all-line-height.html": [
        "df1e17bee11bb08452e7a98015f687daceb8a6fa",
        [
@@ -236923,6 +237182,19 @@
         [
          [
           "/css/css-text/text-fit/shrink-consistent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shrink-dynamic.html": [
+       "9a8a5e6ae8fef2f678ca6a076d4c8a991cad746a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-fit/shrink-dynamic-ref.html",
           "=="
          ]
         ],
@@ -278373,6 +278645,19 @@
        {}
       ]
      ],
+     "html-attr-case-insensitivity.html": [
+      "39ba432a73d4eae5fb56de3d71027c72a001fa86",
+      [
+       null,
+       [
+        [
+         "/css/css-values/html-attr-case-insensitivity-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "ic-unit-001.html": [
       "5045e0108e5edec8ca8ee6f09b07d52abc02e6b9",
       [
@@ -299150,7 +299435,7 @@
       ]
      ],
      "line-box-height-vlr-003.xht": [
-      "40ac9fca129522d6d225c18ced6d2b580cb6cdcd",
+      "fdaca89390e8d061ac7d9f4b586883531702a388",
       [
        null,
        [
@@ -299163,7 +299448,7 @@
       ]
      ],
      "line-box-height-vlr-005.xht": [
-      "a40a1dd5c5af53a2bf5d9f26fcd4a9f4f28fb9f2",
+      "39caae31e3ecd21cf7ad2c93889dac5e9097a532",
       [
        null,
        [
@@ -299176,7 +299461,7 @@
       ]
      ],
      "line-box-height-vlr-007.xht": [
-      "eb65d2c18d2eb5b6e87b25097d359cd511890da9",
+      "5bb763df9cfc3d0a9c73745f420aace44d78c777",
       [
        null,
        [
@@ -299189,7 +299474,7 @@
       ]
      ],
      "line-box-height-vlr-009.xht": [
-      "444f53e2e7f36272ddbd175ad39a1c9b2a71dda9",
+      "2fa2881c1c11e552de653932dffb02ab7532b1bd",
       [
        null,
        [
@@ -299202,7 +299487,7 @@
       ]
      ],
      "line-box-height-vlr-011.xht": [
-      "3d4ecdf9fa48d516a2f5506320cf8d35b4019132",
+      "73626a0e909ad655f74f270caf5ea1f7f0682a70",
       [
        null,
        [
@@ -299215,7 +299500,7 @@
       ]
      ],
      "line-box-height-vlr-013.xht": [
-      "c617555a53c2be29522c4e3a248d79d2330ce64d",
+      "2e340b4a4d9a05fd09426dd5e9f9227bf3dfa176",
       [
        null,
        [
@@ -299228,7 +299513,7 @@
       ]
      ],
      "line-box-height-vlr-021.xht": [
-      "b3fe884fb229c815eeeeecc3318f1dedaca05505",
+      "c23c8b9e147bd75a35c8194aefaea1f9cd31d1ff",
       [
        null,
        [
@@ -299241,7 +299526,7 @@
       ]
      ],
      "line-box-height-vlr-023.xht": [
-      "235125b52ef83af34fb812ad41fbf0d62df9e705",
+      "8e8e4522c224d02b74c92550112c300e89a32d12",
       [
        null,
        [
@@ -299254,7 +299539,7 @@
       ]
      ],
      "line-box-height-vrl-002.xht": [
-      "726385e485c2612e8f61ba9ecd15f7e66f9ffe9d",
+      "6fdad5aa3d6170185bb5659cec0cab1ae94f6720",
       [
        null,
        [
@@ -299267,7 +299552,7 @@
       ]
      ],
      "line-box-height-vrl-004.xht": [
-      "2755c555e4489454ed436b4b1ebad019e0724c7f",
+      "ada7956c2e3e99ed5f35cee4a10875a78bfb214d",
       [
        null,
        [
@@ -299280,7 +299565,7 @@
       ]
      ],
      "line-box-height-vrl-006.xht": [
-      "24f2c464526e0a39eb7219c9ced551039614b931",
+      "717c47c03df8c456b7c25abeca5c5683355fb4b4",
       [
        null,
        [
@@ -299293,7 +299578,7 @@
       ]
      ],
      "line-box-height-vrl-008.xht": [
-      "afcf6f7eddcabf328568a04aa388e814fe21843f",
+      "0bdc43781c02a442ba90ff95e305d2cec054ebc3",
       [
        null,
        [
@@ -299306,7 +299591,7 @@
       ]
      ],
      "line-box-height-vrl-010.xht": [
-      "5c361efa3c9dc8acc73934d21f93bce2ff2b799b",
+      "3e71230d9dd70804e75a81908f6dcb54c91ab5b1",
       [
        null,
        [
@@ -299319,7 +299604,7 @@
       ]
      ],
      "line-box-height-vrl-012.xht": [
-      "6e1b687b039ec6ea6496e515ac932907121b1099",
+      "5ef21dbd1c1aebe3f532211f897de84358cdebfd",
       [
        null,
        [
@@ -329467,7 +329752,7 @@
         ]
        ],
        "input-text-indent.html": [
-        "ab301a2319ccb59e0e61d9a27cbd20ba2b8d121b",
+        "65011f9f259f8a5136eac85bf7bc843e578507e6",
         [
          null,
          [
@@ -335243,7 +335528,7 @@
        ]
       ],
       "interestfor-pseudo-element-appearance.tentative.html": [
-       "612216383a1eeb5e8a6f7f73e5ae83fc3e4c145c",
+       "19344a65ed3f6ca52a411a4bf5323a26926d1acd",
        [
         null,
         [
@@ -342223,6 +342508,19 @@
       {}
      ]
     ],
+    "hdr-alpha-reftest.html": [
+     "90c50ec37d49cad95366c491ef4894ecc6d8bd44",
+     [
+      null,
+      [
+       [
+        "/jpegxl/hdr-alpha-reftest-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "html-embed-object-iframe.html": [
      "a4fc7f549de5c92d642ea34da5608ed4a1c76bff",
      [
@@ -342409,6 +342707,19 @@
         ]
        ]
       }
+     ]
+    ],
+    "sdr-alpha-reftest.html": [
+     "5e7dc266f87beed6318d797e447822b743268694",
+     [
+      null,
+      [
+       [
+        "/jpegxl/sdr-alpha-reftest-ref.html",
+        "=="
+       ]
+      ],
+      {}
      ]
     ],
     "smallest-valid-reftest.html": [
@@ -347807,6 +348118,21 @@
        ]
       ],
       {}
+     ]
+    ],
+    "nested-hover-pseudo-class-removal.html": [
+     "8b66c86ffec395c12d9b05b3107ae92e4ac979ed",
+     [
+      null,
+      [
+       [
+        "/css/reference/ref-filled-green-100px-square.xht",
+        "=="
+       ]
+      ],
+      {
+       "testdriver": true
+      }
      ]
     ],
     "shadow-style-invalidation-vw-units.html": [
@@ -354176,26 +354502,13 @@
         {}
        ]
       ],
-      "textpath-path-attr-empty-no-fallback.tentative.svg": [
-       "6c64c8c5170563826c9914fb167ef062ab39ff8e",
+      "textpath-path-attr-empty-fallback.svg": [
+       "ff8a41331ff76e42554bdeacc0f31f5af72a7776",
        [
         null,
         [
          [
-          "/svg/text/reftests/textpath-path-attr-empty-ref.tentative.svg",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "textpath-path-attr-invalid-no-fallback.tentative.svg": [
-       "013672c9979e57844af78ff085eec3e010809b1d",
-       [
-        null,
-        [
-         [
-          "/svg/text/reftests/textpath-path-attr-empty-ref.tentative.svg",
+          "/svg/text/reftests/textpath-path-attr-ref.svg",
           "=="
          ]
         ],
@@ -354203,7 +354516,7 @@
        ]
       ],
       "textpath-path-attr-invalid-path-fallback.svg": [
-       "957692547ef226c96f8254e6d63e7ba3b306d206",
+       "d20b2bdf935953cfee15099ba6c258bc4e2a8818",
        [
         null,
         [
@@ -354216,7 +354529,7 @@
        ]
       ],
       "textpath-path-attr-precedence-over-href.svg": [
-       "c34e7d48dd428c40ae0f9dd4e4b1f2178b413d62",
+       "b3c38a315c498e4766271e9dc97d4125d343b2f5",
        [
         null,
         [
@@ -354228,8 +354541,8 @@
         {}
        ]
       ],
-      "textpath-path-attr-use-up-to-first-error.tentative.svg": [
-       "13e58d53670b806612c8b5f79685fb75511134d9",
+      "textpath-path-attr-use-up-to-first-error.svg": [
+       "82d2487e9c645d6db828647afb42aa09d98090ca",
        [
         null,
         [
@@ -354242,7 +354555,7 @@
        ]
       ],
       "textpath-path-attr.svg": [
-       "eea6a7160f93406d3c8e62eb70c87f2b4652d975",
+       "ea266e9b5b130f6bc1a72ad62279b7220861f88b",
        [
         null,
         [
@@ -359362,12 +359675,20 @@
       []
      ]
     },
+    "supports-modern.tentative.https.any-expected.txt": [
+     "ae0f7f8cfd13ed7ea649272761b77f0407a233fc",
+     []
+    ],
+    "supports-modern.tentative.https.any.worker-expected.txt": [
+     "ae0f7f8cfd13ed7ea649272761b77f0407a233fc",
+     []
+    ],
     "supports.tentative.https.any-expected.txt": [
-     "bc6c56d1ceda165404f99e5ee08fac64a07e5be0",
+     "961123bc0208c895bc74b6ad70b51cdbff6004b1",
      []
     ],
     "supports.tentative.https.any.worker-expected.txt": [
-     "bc6c56d1ceda165404f99e5ee08fac64a07e5be0",
+     "961123bc0208c895bc74b6ad70b51cdbff6004b1",
      []
     ],
     "tools": {
@@ -359595,10 +359916,6 @@
    },
    "ai": {
     "language-model": {
-     "language-model-prompt.tentative.https.window-expected.txt": [
-      "967626566516180b4f48180df1dd625a4f59e538",
-      []
-     ],
      "resources": {
       "iframe-helper.html": [
        "5e8cb90d0068ab88e31d1cb984bff8ce487e1d89",
@@ -359624,7 +359941,7 @@
       []
      ],
      "util.js": [
-      "ae279ffb3cca25224758ca8e08cf6dd8f9e27915",
+      "c9c8449bc37228d6d139c997acb2daac15873956",
       []
      ]
     },
@@ -364349,11 +364666,11 @@
        []
       ],
       "postmessage-opener.html": [
-       "7ee11bc78de53414cb7dde5b3ce59272bf823911",
+       "945adbdbfd638eef885314b39dbef6d3b580dd0d",
        []
       ],
       "postmessage-top.html": [
-       "242063a80e2980388f9881c097a9b387929f4396",
+       "79ca9741b55816307f2a12972ce6340d1e769402",
        []
       ],
       "srcdoc-child-frame.html": [
@@ -365187,14 +365504,6 @@
        ],
        "util.js": [
         "e813b8b13e505745c45c7ff4959d59eafad0c7d5",
-        []
-       ],
-       "worker-report-hash.js": [
-        "83cdb6ec3b426435e15d588a7b3f3af2a07a2487",
-        []
-       ],
-       "worker-report-hash.js.headers": [
-        "e0cbd93b3292317a65ec817e0d3f2da8898befd9",
         []
        ]
       }
@@ -373803,6 +374112,10 @@
       "a6e290c582a66260336d9b8984295c0a51021304",
       []
      ],
+     "position-anchor-basics-expected.txt": [
+      "dc4d957643a766626562fc351b43ebd9216b8341",
+      []
+     ],
      "position-anchor-dynamic-unset-visibility-hidden-ref.html": [
       "bc966742157aedd4525b987b00b74724edcc43fd",
       []
@@ -376738,6 +377051,18 @@
        "9c9aad052c8c544dc98c36b7a473e7349b4f8b9d",
        []
       ],
+      "border-shape-outline-auto-forms-ref.html": [
+       "31dcae70cb48c6debed0ccda6febafba3efda0d6",
+       []
+      ],
+      "border-shape-outline-auto-ref.html": [
+       "c76c1915281c32ef6afc2c3eaea1b6b3077f6955",
+       []
+      ],
+      "border-shape-outline-auto-with-border-ref.html": [
+       "10add4549b19c05bbade41568f747b136ba6c867",
+       []
+      ],
       "border-shape-outline-double-path-ref.html": [
        "25eb00128981791293de0e3b11c6a9402ecd256a",
        []
@@ -376838,10 +377163,6 @@
        "66105e1b89730663da7dd5701f0ded58c50f044f",
        []
       ],
-      "corner-computed-expected.txt": [
-       "f81f01cad29b8407546c7709a4bb7f663da4902c",
-       []
-      ],
       "corner-shape-backdrop-filter-overflow-ref.html": [
        "4aabd7e8e353f90f3ceeaf590eca42854c9552b7",
        []
@@ -376892,14 +377213,6 @@
       ],
       "corner-shape-square-ref.html": [
        "4576240ef3288a954c9a627cbafd640eacd95444",
-       []
-      ],
-      "corner-valid-expected.txt": [
-       "7d2024130e1c30cbdbce514eaafb3a59f8411795",
-       []
-      ],
-      "corners-invalid-expected.txt": [
-       "97159bd9957254e95d4b4f8cae53bb40fb1d24e2",
        []
       ],
       "render-corner-shape-ref.html": [
@@ -379136,14 +379449,6 @@
       ],
       "style-negation-with-container-name-ref.html": [
        "cc27fb65b243b919e73c1a20fea82fbf7c6a4586",
-       []
-      ],
-      "style-query-no-cycle-expected.txt": [
-       "707460938b61f7c361364d6b292f1ab6b6f2e069",
-       []
-      ],
-      "style-query-registered-custom-em-change-expected.txt": [
-       "43f9cf1d5f35f985488188edb401ff26e7f8a319",
        []
       ],
       "support": {
@@ -392290,11 +392595,11 @@
         []
        ],
        "flex-gap-decorations-fragmentation-005-ref.html": [
-        "8441da751c46807baf11fb90231c0994d8f0414a",
+        "2de66ac4f320e4646d98fa6068720f1aa1fecb73",
         []
        ],
        "flex-gap-decorations-fragmentation-006-ref.html": [
-        "fcc0f3390299bf7f451e401e19a51cc4c0ac2929",
+        "a6611851a0a66f40d0f354176b17bde7fdc62cff",
         []
        ],
        "flex-gap-decorations-fragmentation-007-ref.html": [
@@ -396636,6 +396941,10 @@
       ],
       "custom-highlight-painting-inheritance-003-ref.html": [
        "cdab7615e4c5fe3f419c2b225bb6e4f7ee7d5f76",
+       []
+      ],
+      "custom-highlight-painting-insert-node-001-ref.html": [
+       "d538c550bad83b7cd8cce31d08388ed344877d8b",
        []
       ],
       "custom-highlight-painting-invalidation-007-ref.html": [
@@ -406306,10 +406615,6 @@
        "b96648717897f152af2e20027f341654fa163fd9",
        []
       ],
-      "ruby-overhang-valid-expected.txt": [
-       "90662ecb902fed2b438ef765fba53df80a5826e4",
-       []
-      ],
       "ruby-position-valid-expected.txt": [
        "fb9d02f463fbae680f351bb6b7f8e771d38cdfb9",
        []
@@ -406565,8 +406870,8 @@
       "6106d56faf758a77c4329a8b00c7863ae0f844f2",
       []
      ],
-     "ruby-overhang-ref.html": [
-      "09b3d4608a77546739bee3b9cd4a5862057a6c03",
+     "ruby-overhang-none-ref.html": [
+      "7da60b10d54a49348c39781d8aace10d228567b4",
       []
      ],
      "ruby-overhang-spaces-001-ref.html": [
@@ -406783,6 +407088,10 @@
       "multiple-aligned-targets": {
        "positioned-target-iframe.html": [
         "65195af621adc4fb9ce78387c01247c322f89da8",
+        []
+       ],
+       "prefer-targeted-element-both-axes-iframe.html": [
+        "fdea771b15676df78f4c091502ac5375e8586eda",
         []
        ],
        "prefer-targeted-element-iframe.html": [
@@ -412249,7 +412558,7 @@
        []
       ],
       "text-autospace-preformatted-001-ref.html": [
-       "d3679fc164beaf15b1596a7ad4b36c58b431b6be",
+       "3d8234f2ea30a911d5ce89f3da5e5abbe0d305f8",
        []
       ],
       "text-autospace-supplementary-ideograph-ref.html": [
@@ -412298,6 +412607,10 @@
        "a7f5e93138769a5515372fa8cf293c3ffa47b4d3",
        []
       ],
+      "grow-dynamic-ref.html": [
+       "7b3e49fede8427173a8f37fbe6fa1b6ebb9cc3c3",
+       []
+      ],
       "grow-per-line-all-line-height-ref.html": [
        "cad68c01e3b118dc85da8c27d3325c658eb621a3",
        []
@@ -412316,6 +412629,10 @@
       ],
       "shrink-consistent-ref.html": [
        "c91a6a47a99d5c7d2ed64daf774eef02d49c0569",
+       []
+      ],
+      "shrink-dynamic-ref.html": [
+       "9317b6666356b55c0e22f9ac1db15c2391e229a7",
        []
       ],
       "shrink-per-line-all-ref.html": [
@@ -419111,6 +419428,10 @@
      ],
      "ex-calc-expression-001-ref.html": [
       "888a51ea9b6ac04fb065ee5d84a18be8fe765aca",
+      []
+     ],
+     "html-attr-case-insensitivity-ref.html": [
+      "b20171db1b98aaf2e33a391505a9e05c7c1d16c0",
       []
      ],
      "inline-cache-base-uri": {
@@ -426465,7 +426786,7 @@
        []
       ],
       "sound-state-expected.txt": [
-       "ae2a58d0c249d6c0f159a404c151a6f83b9bfbe2",
+       "eaa0be79b8668b177382a4f4ece7e59ccb00b0ba",
        []
       ],
       "support": {
@@ -427193,10 +427514,6 @@
      }
     },
     "registries": {
-     "ShadowRoot-init-declarative-expected.txt": [
-      "89735359072021bcd2f0eada39d68ac5b1b0bc51",
-      []
-     ],
      "WEB_FEATURES.yml": [
       "627c7bbb9d0cb8827e0b839a6a65555c6dc3c266",
       []
@@ -427809,7 +428126,7 @@
      ]
     },
     "test-suite-design.md": [
-     "88c5f4af9bfb36ef0ee44ee513001f013f881697",
+     "6dd9294d66ef8d9e0e3c9dd3b3ff48c5fdb5e07d",
      []
     ],
     "wpt_lint_rules.py": [
@@ -427817,6 +428134,10 @@
      []
     ],
     "writing-tests": {
+     "aamtest.md": [
+      "273dff7c9f96e07772a9cefe6c3c79202e6cdf5b",
+      []
+     ],
      "ahem.md": [
       "30a3fcde26cd48910549c23dc0cd0fbc05e7b3c7",
       []
@@ -437194,6 +437515,10 @@
        "ad5edf79866273d0debb2dbc438e6dec6f305cd3",
        []
       ],
+      "keyboard-lock-inner.sub.html": [
+       "840124e1f1aa19c115b9fa9ab5b1730984ddddd8",
+       []
+      ],
       "navigate.sub.html": [
        "4630c2e1c5fda7f6a5da4d49c9f71daad9af0edc",
        []
@@ -438113,15 +438438,7 @@
           "da279ebf82f73d7eac9266cd71cce1185504066f",
           []
          ]
-        },
-        "window-open-popup-during-load-expected.txt": [
-         "fc56a525c7608189996adccd820cbc95ab556ddd",
-         []
-        ],
-        "window-open-popup-during-pageshow-expected.txt": [
-         "fc56a525c7608189996adccd820cbc95ab556ddd",
-         []
-        ]
+        }
        },
        "resources": {
         "blank.html": [
@@ -449234,7 +449551,7 @@
         []
        ],
        "input-text-indent-ref.html": [
-        "b4dc8a8c9470b701016aac9309fa4a2f4114ed41",
+        "8b4f2d90a5a2e6e0e7494659617e363cffa67179",
         []
        ],
        "input-type-change-from-image-1-ref.html": [
@@ -450772,6 +451089,12 @@
           []
          ]
         }
+       },
+       "user-interface": {
+        "muted-expected.txt": [
+         "b3e85f3fde84a466c1713d1d3e710be255e794f9",
+         []
+        ]
        }
       },
       "resources": {
@@ -451504,7 +451827,7 @@
           []
          ],
          "sizes-iframed.sub.html": [
-          "8ad656749abcfb4a8a149dda6d479ec1a775048e",
+          "4aa353dce76de7d58097afb654f82aced90a7ca0",
           []
          ]
         }
@@ -452969,7 +453292,7 @@
        []
       ],
       "interestfor-pseudo-element-appearance-ref.html": [
-       "255ddac5d770e4c2bb88cae02af2f351bdf9c3e1",
+       "a402bd2ac597b22aed1cd5cb2801c053612efacd",
        []
       ],
       "interestfor-pseudo-element-dynamic-ref.html": [
@@ -452981,6 +453304,10 @@
        []
       ],
       "resources": {
+       "interest-button-styles.css": [
+        "82bbc1f9bf7408cc3a5188cd42d1d9c4e1c2ad75",
+        []
+       ],
        "invoker-utils.js": [
         "2a5e7498f2c7725e743db905345d3a65297feebd",
         []
@@ -454863,7 +455190,7 @@
          []
         ],
         "cross-origin.py": [
-         "abac1901b7d678964811197b5486365e40053f35",
+         "bd2a9b804539fa00b0e855edda9aa9bf28dedfdb",
          []
         ],
         "exports-cocoa.js": [
@@ -455039,15 +455366,15 @@
          []
         ],
         "ignore-content-type.any-expected.txt": [
-         "c97a7246f67152fa19970ecec58ba7a2b26fac8b",
+         "dbb18d9ecd54f1e55f987e0e473a29d1d2a8e4e6",
          []
         ],
         "ignore-content-type.any.sharedworker-expected.txt": [
-         "c97a7246f67152fa19970ecec58ba7a2b26fac8b",
+         "dbb18d9ecd54f1e55f987e0e473a29d1d2a8e4e6",
          []
         ],
         "ignore-content-type.any.worker-expected.txt": [
-         "c97a7246f67152fa19970ecec58ba7a2b26fac8b",
+         "dbb18d9ecd54f1e55f987e0e473a29d1d2a8e4e6",
          []
         ],
         "ignore-extension.any-expected.txt": [
@@ -455063,7 +455390,7 @@
          []
         ],
         "integrity-expected.txt": [
-         "48b101bb3badacbff32ef5c65bde5aed58145cb8",
+         "a795128f6a0389e8c9371f886a84193d595fe52a",
          []
         ],
         "integrity-matches.js": [
@@ -455095,15 +455422,15 @@
          []
         ],
         "repeated-imports.any-expected.txt": [
-         "7703bf8bd6538c88b5383beff18a9f5b08f176f4",
+         "331d92304142f822c1b1ccb4d1d7a39eba117896",
          []
         ],
         "repeated-imports.any.sharedworker-expected.txt": [
-         "7703bf8bd6538c88b5383beff18a9f5b08f176f4",
+         "331d92304142f822c1b1ccb4d1d7a39eba117896",
          []
         ],
         "repeated-imports.any.worker-expected.txt": [
-         "7703bf8bd6538c88b5383beff18a9f5b08f176f4",
+         "331d92304142f822c1b1ccb4d1d7a39eba117896",
          []
         ],
         "serve-js-then-text.py": [
@@ -455519,7 +455846,7 @@
      ],
      "charset": {
       "README.md": [
-       "eaa708507cb42702603c72da1c29b1c3fc9006a9",
+       "33a78e6a1318866521312248012ab6c642279dde",
        []
       ],
       "inheritance-bogus-meta-expected.txt": [
@@ -455694,6 +456021,30 @@
       ],
       "foreign_content_013.html": [
        "e88aae9e4db26e467cde9bd734f5ce4a81d48395",
+       []
+      ],
+      "html5lib_tests7_run_type=uri-expected.txt": [
+       "f315446b102914bb6e76a59634c63616f86f1ae5",
+       []
+      ],
+      "html5lib_tests7_run_type=write-expected.txt": [
+       "f315446b102914bb6e76a59634c63616f86f1ae5",
+       []
+      ],
+      "html5lib_tests7_run_type=write_single-expected.txt": [
+       "f315446b102914bb6e76a59634c63616f86f1ae5",
+       []
+      ],
+      "html5lib_webkit02_run_type=uri-expected.txt": [
+       "973dea4d79f3fc67484358b2ddf16c5ad0c03ac2",
+       []
+      ],
+      "html5lib_webkit02_run_type=write-expected.txt": [
+       "973dea4d79f3fc67484358b2ddf16c5ad0c03ac2",
+       []
+      ],
+      "html5lib_webkit02_run_type=write_single-expected.txt": [
+       "973dea4d79f3fc67484358b2ddf16c5ad0c03ac2",
        []
       ],
       "inhead-noscript-head-expected.txt": [
@@ -461120,6 +461471,10 @@
      "cf2a9a5ef403c4415fe74bf8fae2c7bd2d3ba24c",
      []
     ],
+    "hdr-alpha-reftest-ref.html": [
+     "26e0d3dac0ba2a06c6f74230c6b102ed1be349e4",
+     []
+    ],
     "html-embed-object-iframe-ref.html": [
      "acaa6a238497686ca164dbed17cde78ad0359dc0",
      []
@@ -461305,6 +461660,14 @@
       "c5def3bbe5f2de1cfed122c6709c8807a92e227f",
       []
      ],
+     "hdr_alpha.jxl": [
+      "68226864c8b81fef4facad21f9c602e1d5d1d8c9",
+      []
+     ],
+     "hdr_alpha.png": [
+      "320c0f4843bc913f3a838e1b87c7e8e19ea6fc96",
+      []
+     ],
      "hdr_hlg_test.jxl": [
       "c7a1f342d7c39bf4f376a93ef888cfc45ad22158",
       []
@@ -461373,6 +461736,14 @@
       "3cf484d968fff55fb51cfe6c4b24a386bde21c6f",
       []
      ],
+     "sdr_alpha.jxl": [
+      "9982d7295dc3a9a5480a38a7b0e16bf11f38eec0",
+      []
+     ],
+     "sdr_alpha.png": [
+      "37c22d64e65ba3916125b7017923dc11aed13be5",
+      []
+     ],
      "smallest_valid.jxl": [
       "615989a5ca12529c5a5566d73f0b9ba5a2364f2c",
       []
@@ -461398,6 +461769,10 @@
       []
      ]
     },
+    "sdr-alpha-reftest-ref.html": [
+     "2b22c7a2984ee76528b2a987018ccbb94b91db99",
+     []
+    ],
     "smallest-valid-reftest-ref.html": [
      "1c72b20dc82bb9f8f309da2273393b5a117bef81",
      []
@@ -461642,7 +462017,7 @@
     }
    },
    "lint.ignore": [
-    "408729b9df62f009faa94428bd6d39c417dcea93",
+    "7b21a36c4585f5e914f365f858ec66da84f2e8fb",
     []
    ],
    "loading": {
@@ -465343,6 +465718,10 @@
       "3f15c73b11ad450d7f876c1ce3b167ab2ed614f4",
       []
      ],
+     "autofocus_same-checkpoint-expected.txt": [
+      "4e68ee1b68fe649c0dc666fa806f6763064a459f",
+      []
+     ],
      "resources": {
       "helpers.mjs": [
        "fd611e806292e8165e96604bc8e1fcb405326292",
@@ -465507,12 +465886,96 @@
       "628b22ec48b7d0e93504eba7c734a74a916279ae",
       []
      ],
+     "anchor-download-intercept-reject_currententrychange-expected.txt": [
+      "79b976e3d8e6fed94821b7ded76ea2f3c60d4406",
+      []
+     ],
+     "anchor-download-intercept-reject_no-currententrychange-expected.txt": [
+      "b646f357444a48a7783371c8538c8f5aa113efeb",
+      []
+     ],
+     "anchor-download-intercept_currententrychange-expected.txt": [
+      "ca30c0c131216590902c2cdae8a2077dffb6955f",
+      []
+     ],
+     "anchor-download-intercept_no-currententrychange-expected.txt": [
+      "3ee4d276e473ecc27ceef6eaf6ee6642299f44c1",
+      []
+     ],
      "back-cross-document-event-order-expected.txt": [
       "67bdfe967ff1f2f9ea10bc3fbd2ab5a2d75ae00c",
       []
      ],
+     "location-href-intercept-reject_currententrychange-expected.txt": [
+      "6f5cd8862e6ff8a5977c5a91a29d25137864fdb1",
+      []
+     ],
+     "location-href-intercept-reject_no-currententrychange-expected.txt": [
+      "bbc7ede5362946c7f5c5286fa6ea04dac463fb81",
+      []
+     ],
+     "location-href-intercept_currententrychange-expected.txt": [
+      "76c0770d53b63ddee6bc9422c6ad62a6839f9f93",
+      []
+     ],
+     "location-href-intercept_no-currententrychange-expected.txt": [
+      "6b89912302c810d3277c724817ba4fa31b745e10",
+      []
+     ],
      "navigate-cross-document-event-order-expected.txt": [
       "b0cf970d08c52160b6da8b7261463f9d0729c2be",
+      []
+     ],
+     "navigate-in-transition-finished_currententrychange-expected.txt": [
+      "010add63f617998613b463da63f65099bde02944",
+      []
+     ],
+     "navigate-in-transition-finished_no-currententrychange-expected.txt": [
+      "5e18b22409cbbdc41682ec565c58c4a010a26fa9",
+      []
+     ],
+     "navigate-intercept_currententrychange-expected.txt": [
+      "7748f79551416254932afb010e8bcb34c7bbd8a8",
+      []
+     ],
+     "navigate-intercept_no-currententrychange-expected.txt": [
+      "0acee3958a7807c08065d8ca53212c218e5fd397",
+      []
+     ],
+     "navigate-same-document-intercept-reject_currententrychange-expected.txt": [
+      "81a0c84989a64f39c4303d8d64f3f5734bd4e38c",
+      []
+     ],
+     "navigate-same-document-intercept-reject_no-currententrychange-expected.txt": [
+      "744c8623574dc16a79b823324bdf0da02f68dcb0",
+      []
+     ],
+     "navigate-same-document_currententrychange-expected.txt": [
+      "33b4bbf7b55fbc0da914e4dacc665cfec075ed9e",
+      []
+     ],
+     "navigate-same-document_no-currententrychange-expected.txt": [
+      "82f9fc229c2ab7d7af2d05b49886515db4ca62ab",
+      []
+     ],
+     "reload-intercept-reject_currententrychange-expected.txt": [
+      "42e114c858ecc243d28e0d2aa588a46d8d79ce91",
+      []
+     ],
+     "reload-intercept-reject_no-currententrychange-expected.txt": [
+      "96d82c24a0395be856664c20b73d4013bee0188b",
+      []
+     ],
+     "reload-intercept_currententrychange-expected.txt": [
+      "39f1916b3c2d34986231c36eb97cd9fbaa34d1cb",
+      []
+     ],
+     "reload-intercept_no-currententrychange-expected.txt": [
+      "468af8f396773b4fa183d825bd1280a7d5e41d6e",
+      []
+     ],
+     "reload-no-popstate-expected.txt": [
+      "39f1916b3c2d34986231c36eb97cd9fbaa34d1cb",
       []
      ],
      "resources": {
@@ -465527,6 +465990,10 @@
      }
     },
     "precommit-handler": {
+     "precommitHandler-window-stop-before-commit-expected.txt": [
+      "59f4a80c8d4cb924dda0689aacc20fc48aca0c4c",
+      []
+     ],
      "resources": {
       "precommitHandler-helpers.js": [
        "1338617681feb373a47052a7f605f44d3eca2a16",
@@ -471211,10 +471678,6 @@
       "8c03d3e3350fe36498753af9021c04431738068d",
       []
      ],
-     "scroll-timeline-shorthand-expected.txt": [
-      "ed640009fa43cf386da64dbabb64e25dbbbe05ef",
-      []
-     ],
      "support": {
       "animation-range.css": [
        "1ebd0b429b228ec088bd024696180893b1922d2d",
@@ -471235,10 +471698,6 @@
      ],
      "view-timeline-pseudo-on-scroller-expected.txt": [
       "9a02af2f2900fcdc02a24460814da45bc90ddea9",
-      []
-     ],
-     "view-timeline-shorthand-expected.txt": [
-      "96fbbc1cb40dca154e8b4005f4a598ebfb14dd4c",
       []
      ]
     },
@@ -477066,19 +477525,19 @@
       ]
      },
      "from.any-expected.txt": [
-      "9045cde676b5d31368fdfb6e6ee9708e6d209849",
+      "ccbc6617482a5dfb66ea7778ed861d232b53c949",
       []
      ],
      "from.any.serviceworker-expected.txt": [
-      "9045cde676b5d31368fdfb6e6ee9708e6d209849",
+      "ccbc6617482a5dfb66ea7778ed861d232b53c949",
       []
      ],
      "from.any.sharedworker-expected.txt": [
-      "9045cde676b5d31368fdfb6e6ee9708e6d209849",
+      "ccbc6617482a5dfb66ea7778ed861d232b53c949",
       []
      ],
      "from.any.worker-expected.txt": [
-      "9045cde676b5d31368fdfb6e6ee9708e6d209849",
+      "ccbc6617482a5dfb66ea7778ed861d232b53c949",
       []
      ],
      "general.any-expected.txt": [
@@ -479024,12 +479483,8 @@
        "9264c265f71526b9e9700f1c9f37d7ac37309529",
        []
       ],
-      "textpath-path-attr-empty-ref.tentative.svg": [
-       "82230a6bd2f85b5feef830d9206e864cd037c8d0",
-       []
-      ],
       "textpath-path-attr-ref.svg": [
-       "51a780cbd1d02303b54781b8f0d6b298d59c13fe",
+       "b3687eabf11f58b269fc77e74e17e61fb5feadac",
        []
       ],
       "textpath-pathlength-css-display-none-ref.tentative.svg": [
@@ -479790,6 +480245,10 @@
     ],
     "trusted-types-sandbox-allow-scripts.html.headers": [
      "6bd66164613016269ebcee6416ed41cdf312a42a",
+     []
+    ],
+    "trusted-types-secondary-document-expected.txt": [
+     "4481d2259590973557617c683a0ab91cd32aa0de",
      []
     ]
    },
@@ -484134,6 +484593,10 @@
        "51e62e2c98405e89671f23dd36dba550cb0789a3",
        []
       ],
+      "audiobuffersource-playbackrate-negative-expected.txt": [
+       "b1ce0e0324bd4f0492e589466e0364a38193d600",
+       []
+      ],
       "resources": {
        "audiobuffersource-multi-channels-expected.wav": [
         "ab9d5fe5a9dbd736a079f0cfd7966d5e064ed7ef",
@@ -484517,7 +484980,7 @@
      []
     ],
     "README.md": [
-     "4ce861ebefe76bd81069472df9e2e6b116d05523",
+     "8f54adcde8e1bde6b9b945a1dc5572cf6f005767",
      []
     ],
     "WEB_FEATURES.yml": [
@@ -484756,6 +485219,10 @@
      "e0d6a6bedcf12dad5ec45a768f638bf1cb1ec1e7",
      []
     ],
+    "h264_444.mp4": [
+     "c79ff88f2e6048e77b76b2f1223d90d918739a69",
+     []
+    ],
     "h264_interlaced.mp4": [
      "e6223318f010f916d18a7c3d4366de4e3846911a",
      []
@@ -484889,7 +485356,7 @@
      []
     ],
     "videoDecoder-codec-specific-setup.js": [
-     "cb8d09d443809873bb6edc0d112e27994f5488ae",
+     "040d9f13a81af24ed8a05385ab310ad4b0ce9d48",
      []
     ],
     "videoFrame-construction.any.worker-expected.txt": [
@@ -486915,14 +487382,24 @@
      ]
     },
     "idlharness.https.window-expected.txt": [
-     "0d3582d53187afcfdd58f224c2e5b64278d42836",
+     "6ca09c162208aa99f05e81f1117332d4eed59dd5",
      []
     ],
     "imperative": {
      "WEB_FEATURES.yml": [
       "cf1d265b5d638446d9d8efac38fe7fe227bb0941",
       []
-     ]
+     ],
+     "resources": {
+      "helpers.js": [
+       "458365d604a5670f44e6f35393eecc9ca6991d2f",
+       []
+      ],
+      "iframe-register-tool.html": [
+       "6bb988a0bc52d12be379a7d398303b31952aed38",
+       []
+      ]
+     }
     }
    },
    "webmessaging": {
@@ -490911,10 +491388,6 @@
       "WEB_FEATURES.yml": [
        "6c25506a9dd762e5fc883e5946fd8dec84c7d470",
        []
-      ],
-      "sharedworker-in-worker-expected.txt": [
-       "c78623fd940e3a073a64f580460387fa7d946d7c",
-       []
       ]
      },
      "beta": {
@@ -490928,10 +491401,6 @@
       ],
       "script.js": [
        "bef771ff9ebad32911f9d292a13ff9a9e602efd0",
-       []
-      ],
-      "sharedworker.py": [
-       "bd6f70e7d9478c3239c047618f815fb9e6a06ce3",
        []
       ],
       "subsharedworker.js": [
@@ -490974,14 +491443,6 @@
       ],
       "script.js": [
        "0f9ce8eacf4aeab410d2b4c4254e0106d9e94e28",
-       []
-      ],
-      "sharedworker.js": [
-       "d0718cfdefc0fbcf06811e24dc88135f0f57a999",
-       []
-      ],
-      "subsharedworker.js": [
-       "e23602ff9c5654b726fc88e6aa0169416ee31d15",
        []
       ],
       "subworker.js": [
@@ -491128,10 +491589,6 @@
       ],
       "constructor-utf16-bom-expected.txt": [
        "61838162329cc5eba6fb66d2db384c2427ddcea7",
-       []
-      ],
-      "expected-self-properties.worker-expected.txt": [
-       "5e3cfcda75138a24879f0acb633980de0cfd5432",
        []
       ],
       "null": [
@@ -492561,6 +493018,10 @@
      []
     ],
     "resources": {
+     "abort-during-navigation-iframe.html": [
+      "836a90324668c57cbbd106f8115556dbeca41cd6",
+      []
+     ],
      "accept-language.py": [
       "b68cf355038ca9f9f938a5c3b2f5c75ebfd05487",
       []
@@ -522044,8 +522505,41 @@
       ]
      ]
     },
+    "supports-modern.tentative.https.any.js": [
+     "709ffcd43e2962c1585388cda81bb5baae13c622",
+     [
+      "WebCryptoAPI/supports-modern.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCrypto API: supports method tests for algorithms in https://wicg.github.io/webcrypto-modern-algos/"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "WebCryptoAPI/supports-modern.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCrypto API: supports method tests for algorithms in https://wicg.github.io/webcrypto-modern-algos/"
+        ],
+        [
+         "script",
+         "util/helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "supports.tentative.https.any.js": [
-     "dd39273e4b918b4f835efc368407ca4accf440b0",
+     "921212a0c21dfa43dd30fbee5d284cf3de32cdf0",
      [
       "WebCryptoAPI/supports.tentative.https.any.html",
       {
@@ -522624,7 +523118,7 @@
       ]
      ],
      "language-model-append.tentative.https.window.js": [
-      "dbd9edd164a0e9915f8fded000688e66a5a2a282",
+      "8a6426ffb0c50b076bb5d37548359e9d6eb87051",
       [
        "ai/language-model/language-model-append.tentative.https.window.html",
        {
@@ -522654,15 +523148,15 @@
        }
       ]
      ],
-     "language-model-availability-available-multimodal.tentative.https.window.js": [
-      "a9caa0ebceff8cc8f2b938a5c408de7ee0a446a2",
+     "language-model-availability-available.tentative.https.window.js": [
+      "40c149cb91d99ddb3808853bc39a9138ebef9386",
       [
-       "ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html",
+       "ai/language-model/language-model-availability-available.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Language Model Availability Available Multimodal"
+          "Language Model Availability Available"
          ],
          [
           "script",
@@ -522681,19 +523175,23 @@
        }
       ]
      ],
-     "language-model-availability-available.tentative.https.window.js": [
-      "40c149cb91d99ddb3808853bc39a9138ebef9386",
+     "language-model-availability-sampling-mode.tentative.https.window.js": [
+      "55d31aa8f4ed921bc6980cac6065ef43e752ce9f",
       [
-       "ai/language-model/language-model-availability-available.tentative.https.window.html",
+       "ai/language-model/language-model-availability-sampling-mode.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Language Model Availability Available"
+          "Language Model Prompt - Sampling Mode Availability"
          ],
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
          ],
          [
           "script",
@@ -522766,15 +523264,15 @@
        }
       ]
      ],
-     "language-model-create-multimodal.tentative.https.window.js": [
-      "6536ab84d7af4354a09504171f06732ab29c33ff",
+     "language-model-create-sampling-mode.tentative.https.window.js": [
+      "63af92c5b70c75357b11d8eeb0b1a7fa6fce7785",
       [
-       "ai/language-model/language-model-create-multimodal.tentative.https.window.html",
+       "ai/language-model/language-model-create-sampling-mode.tentative.https.window.html",
        {
         "script_metadata": [
          [
           "title",
-          "Language Model Create Multimodal"
+          "Language Model - Sampling Mode Create"
          ],
          [
           "script",
@@ -522927,37 +523425,6 @@
        }
       ]
      ],
-     "language-model-measure-context-usage.tentative.https.window.js": [
-      "ebeb74eab4464eea9e206e1af408d0d2686aa717",
-      [
-       "ai/language-model/language-model-measure-context-usage.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Measure Input Usage"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "language-model-params.tentative.https.window.js": [
       "2f8b198d70f2458be882440d246de453e03dd3e9",
       [
@@ -522967,312 +523434,6 @@
          [
           "title",
           "Language Model Params"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-context-destroyed.tentative.https.window.js": [
-      "89dae3c1e9962cc9da6a0d187efc14c0145f41eb",
-      [
-       "ai/language-model/language-model-prompt-context-destroyed.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Context Destroyed"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-gc.tentative.https.window.js": [
-      "db4823a454ad8cb8c94b14155528b7e462774344",
-      [
-       "ai/language-model/language-model-prompt-gc.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt GC"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-monitor-callback-exception.tentative.https.window.js": [
-      "e135a4b83a1538c4bf2b4d0d00a75b245ed424a6",
-      [
-       "ai/language-model/language-model-prompt-monitor-callback-exception.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Monitor Callback Exception"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-multimodal-audio.tentative.https.window.js": [
-      "8aeae01d896cd912d79d5b55ea4e47e261ef6eba",
-      [
-       "ai/language-model/language-model-prompt-multimodal-audio.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Multimodal Audio"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-multimodal-image.tentative.https.window.js": [
-      "7b5e29308ac1db416b80d90104f2040492ea4aa3",
-      [
-       "ai/language-model/language-model-prompt-multimodal-image.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Multimodal Image"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-multimodal-video.tentative.https.window.js": [
-      "3cfdefa2dd138618a505646deec05588d71b4ca7",
-      [
-       "ai/language-model/language-model-prompt-multimodal-video.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Multimodal Video"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-multimodal.tentative.https.window.js": [
-      "ab4155a05188519662d1f6c34f6d48d135febdb4",
-      [
-       "ai/language-model/language-model-prompt-multimodal.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Multimodal"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-streaming-gc.tentative.https.window.js": [
-      "2acc83bc654f3d423559f98c0b309ce97e0e403c",
-      [
-       "ai/language-model/language-model-prompt-streaming-gc.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Streaming GC"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt-streaming.tentative.https.window.js": [
-      "b523204067c3a375cb68fa872435dd63c5971261",
-      [
-       "ai/language-model/language-model-prompt-streaming.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt Streaming"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-prompt.tentative.https.window.js": [
-      "a24cc106e2fee1d85c6639942022290e17837539",
-      [
-       "ai/language-model/language-model-prompt.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Prompt"
          ],
          [
           "script",
@@ -523326,68 +523487,6 @@
        }
       ]
      ],
-     "language-model-response-json-schema.tentative.https.window.js": [
-      "146fcaf8636d565145d8ce4ca4615541eea21c09",
-      [
-       "ai/language-model/language-model-response-json-schema.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Response JSON Schema"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "language-model-response-regex.tentative.https.window.js": [
-      "96dc0536b0420c271aa359207ede2abc7b760440",
-      [
-       "ai/language-model/language-model-response-regex.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Language Model Response Regex"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "language-model-tool-use.tentative.https.window.js": [
       "ed82bcc67021b0025ac4921606fbbcebcfb98da9",
       [
@@ -523418,7 +523517,1660 @@
         "timeout": "long"
        }
       ]
-     ]
+     ],
+     "prompt": {
+      "context": {
+       "destroyed.tentative.https.window.js": [
+        "72d50435089eca0f8d38fa0d7b6a7d63c4513945",
+        [
+         "ai/language-model/prompt/context/destroyed.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Context Destroyed"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "measure.tentative.https.window.js": [
+        "212b4b707f159a0fadd8d67101d39f0963973eb4",
+        [
+         "ai/language-model/prompt/context/measure.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Measure Input Usage"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "overflow.tentative.https.window.js": [
+        "8222052db461022af13ed3b1c689fe1e3b2b6326",
+        [
+         "ai/language-model/prompt/context/overflow.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Context Overflow"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "usage-initial-prompt.tentative.https.window.js": [
+        "86bba1d6c2a0891b8493a947d43a1553f5583ee0",
+        [
+         "ai/language-model/prompt/context/usage-initial-prompt.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Context Usage - Initial Prompt"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "usage-prompt-quota-exceeded.tentative.https.window.js": [
+        "bd069f6e40be6eef4c827bf8e878ffb433380e88",
+        [
+         "ai/language-model/prompt/context/usage-prompt-quota-exceeded.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Context Usage - Prompt Quota Exceeded"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "usage.tentative.https.window.js": [
+        "bd103c656e2b42b7740235354ccaf067a08a7429",
+        [
+         "ai/language-model/prompt/context/usage.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Context Usage"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ]
+      },
+      "empty-inputs": {
+       "empty-array-input.tentative.https.window.js": [
+        "d1b92cadf0ee9224b041e86f1420b9e09a5706d0",
+        [
+         "ai/language-model/prompt/empty-inputs/empty-array-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - array"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-object-input.tentative.https.window.js": [
+        "d2ad23ecf238f75030ff921cc945cbc065878b4d",
+        [
+         "ai/language-model/prompt/empty-inputs/empty-object-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - object"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-sequence-input.tentative.https.window.js": [
+        "c29b21ea3df58093f5e9902a38845dfc7a010901",
+        [
+         "ai/language-model/prompt/empty-inputs/empty-sequence-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - sequence empty"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-string-input.tentative.https.window.js": [
+        "f6f86baa85e4167c49def17c327ea3c2c6d20041",
+        [
+         "ai/language-model/prompt/empty-inputs/empty-string-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - string"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "null-input.tentative.https.window.js": [
+        "0c931507e4eddcda4c7983f51cc3d91b0fc3006e",
+        [
+         "ai/language-model/prompt/empty-inputs/null-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - null"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "sequence-with-empty-string-input.tentative.https.window.js": [
+        "159b9f8e240f7dda9321219837485106f43813cd",
+        [
+         "ai/language-model/prompt/empty-inputs/sequence-with-empty-string-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - sequence string"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "undefined-input.tentative.https.window.js": [
+        "770cb103d6ff45dee48b0ce204a1dee569611ff0",
+        [
+         "ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Empty Inputs - undefined"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ]
+      },
+      "garbage-collection.tentative.https.window.js": [
+       "81f4b8350832606bd8c8cd1009f4fbee651bb12e",
+       [
+        "ai/language-model/prompt/garbage-collection.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Prompt GC"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
+      "monitor-callback-exception.tentative.https.window.js": [
+       "7b957c0ea952714c4e3eac7ed5bceb883c00f148",
+       [
+        "ai/language-model/prompt/monitor-callback-exception.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Prompt Monitor Callback Exception"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
+      "multimodal": {
+       "audio-input.tentative.https.window.js": [
+        "b3aa13f424a6c37c4552507ff580a33a1ad646ad",
+        [
+         "ai/language-model/prompt/multimodal/audio-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Multimodal Audio"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "availability.tentative.https.window.js": [
+        "0ced9024aaf9920f77c30bf8c6dcb2a108566519",
+        [
+         "ai/language-model/prompt/multimodal/availability.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Availability Available Multimodal"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "create.tentative.https.window.js": [
+        "7f47ac30d019b9738c71aa43e86c9c54d472ad80",
+        [
+         "ai/language-model/prompt/multimodal/create.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Create Multimodal"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "image": {
+        "array-buffer-view-offset.tentative.https.window.js": [
+         "c2f6ac69a1a8df6bc7cc7d52869a5c8628d3146a",
+         [
+          "ai/language-model/prompt/multimodal/image/array-buffer-view-offset.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - ArrayBufferView Offset"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "array-buffer-view.tentative.https.window.js": [
+         "e5fcdbd3a32823c7a740f09cdc1a562c8c8ccd8d",
+         [
+          "ai/language-model/prompt/multimodal/image/array-buffer-view.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - ArrayBufferView"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "array-buffer.tentative.https.window.js": [
+         "a717110a66ef187c3744169798cd1b8fc30508e9",
+         [
+          "ai/language-model/prompt/multimodal/image/array-buffer.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - ArrayBuffer"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "blob.tentative.https.window.js": [
+         "093cd58aed1a53bed52d5222668ed185a3f05945",
+         [
+          "ai/language-model/prompt/multimodal/image/blob.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - Blob"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "html-canvas-element.tentative.https.window.js": [
+         "1452da15b4ab54e29fdf3402d08b84cbba75e167",
+         [
+          "ai/language-model/prompt/multimodal/image/html-canvas-element.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - HTMLCanvasElement"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "html-image-element-svg.tentative.https.window.js": [
+         "774c2c4e3e858ef90bf0d250b95ca48916440344",
+         [
+          "ai/language-model/prompt/multimodal/image/html-image-element-svg.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - HTMLImageElement SVG"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "html-image-element.tentative.https.window.js": [
+         "df9262354dadce80cc80185b32afc821e49998d9",
+         [
+          "ai/language-model/prompt/multimodal/image/html-image-element.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - HTMLImageElement"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "image-bitmap.tentative.https.window.js": [
+         "f161bf8315bfa7cb811d1085f14b28aced1e9a2a",
+         [
+          "ai/language-model/prompt/multimodal/image/image-bitmap.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - ImageBitmap"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "image-data.tentative.https.window.js": [
+         "92bab6ce2e5790d2a6e4905536aed39f3ca6f713",
+         [
+          "ai/language-model/prompt/multimodal/image/image-data.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - ImageData"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "initial-prompt.tentative.https.window.js": [
+         "f167d2eea4ac2e0b82e7b0dfbb77112839975dbb",
+         [
+          "ai/language-model/prompt/multimodal/image/initial-prompt.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - Initial Prompt"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "offscreen-canvas.tentative.https.window.js": [
+         "bf93afc2ce0f6a37c8607fce316180e89c26a278",
+         [
+          "ai/language-model/prompt/multimodal/image/offscreen-canvas.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - OffscreenCanvas"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "svg-image-element.tentative.https.window.js": [
+         "843a47aa52b4912a81e0f57a63c5d22bb590a802",
+         [
+          "ai/language-model/prompt/multimodal/image/svg-image-element.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - SVGImageElement"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "without-image-expected-input.tentative.https.window.js": [
+         "76034cc07e0a0b1165f66eff258d4a7fcd010860",
+         [
+          "ai/language-model/prompt/multimodal/image/without-image-expected-input.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Image - Without Image Expected Input"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ]
+       },
+       "prompt-multimodal.tentative.https.window.js": [
+        "31f8d2f69fc991eaf29c38600d079080ad090d25",
+        [
+         "ai/language-model/prompt/multimodal/prompt-multimodal.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Multimodal"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "video": {
+        "html-video-element.tentative.https.window.js": [
+         "3ea5c395827a7fb37598163acf7cdc2208ba06df",
+         [
+          "ai/language-model/prompt/multimodal/video/html-video-element.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Video - HTMLVideoElement"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ],
+        "video-frame.tentative.https.window.js": [
+         "96e61d24ac21d63715d46ba06a52d1d356bb5594",
+         [
+          "ai/language-model/prompt/multimodal/video/video-frame.tentative.https.window.html",
+          {
+           "script_metadata": [
+            [
+             "title",
+             "Language Model Prompt Multimodal Video - VideoFrame"
+            ],
+            [
+             "script",
+             "/resources/testdriver.js"
+            ],
+            [
+             "script",
+             "/resources/testdriver-vendor.js"
+            ],
+            [
+             "script",
+             "../../../../resources/util.js"
+            ],
+            [
+             "timeout",
+             "long"
+            ]
+           ],
+           "timeout": "long"
+          }
+         ]
+        ]
+       }
+      },
+      "prompt-simple-question.tentative.https.window.js": [
+       "b71a7e03064ca5d17b88c05aca7bb0362caa56ed",
+       [
+        "ai/language-model/prompt/prompt-simple-question.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Prompt - Prompt Simple Question"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
+      "prompt.tentative.https.window.js": [
+       "795c997aa232514497091be3fa5c170dc979baf0",
+       [
+        "ai/language-model/prompt/prompt.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Prompt"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
+      "rejections.tentative.https.window.js": [
+       "b99ef7696c14db0263bf7f32cc0ccb1c0cf77fe1",
+       [
+        "ai/language-model/prompt/rejections.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Prompt Rejections"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
+      "streaming": {
+       "empty-array-input.tentative.https.window.js": [
+        "177a85b5ea0b1f1d76d21000441c399c2f421455",
+        [
+         "ai/language-model/prompt/streaming/empty-array-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - array"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-object-input.tentative.https.window.js": [
+        "99bd812be87d90ad83c71df06b5a989f9a757489",
+        [
+         "ai/language-model/prompt/streaming/empty-object-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - object"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-sequence-input.tentative.https.window.js": [
+        "556ef2c0f6faa8ee0213d27aba00ddd43f751b88",
+        [
+         "ai/language-model/prompt/streaming/empty-sequence-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - sequence empty"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "empty-string-input.tentative.https.window.js": [
+        "ec139cf655bbc503a53323704d3b25f87488a460",
+        [
+         "ai/language-model/prompt/streaming/empty-string-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - string"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "garbage-collection.tentative.https.window.js": [
+        "6ed73e13cd9ed3f6502afe5f327a850b61a84840",
+        [
+         "ai/language-model/prompt/streaming/garbage-collection.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming GC"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "null-input.tentative.https.window.js": [
+        "6f84f6f235710cf026d448413b9f82841c9a2a95",
+        [
+         "ai/language-model/prompt/streaming/null-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - null"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "prompt-streaming.tentative.https.window.js": [
+        "e4d223f75518076fea036498c40319e8cd31e194",
+        [
+         "ai/language-model/prompt/streaming/prompt-streaming.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "sequence-with-empty-string-input.tentative.https.window.js": [
+        "cf956539ae9dda48e626d898c09f2e6078e23403",
+        [
+         "ai/language-model/prompt/streaming/sequence-with-empty-string-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - sequence string"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "undefined-input.tentative.https.window.js": [
+        "fb8436cae17a1e7cb5a68fd056e4070361d98449",
+        [
+         "ai/language-model/prompt/streaming/undefined-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Prompt Streaming - undefined"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ]
+      }
+     },
+     "response-constraint": {
+      "json-schema": {
+       "circular-references-rejection.tentative.https.window.js": [
+        "b87029b459543ead341fbe511476f9907c5704bf",
+        [
+         "ai/language-model/response-constraint/json-schema/circular-references-rejection.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Circular References Rejection"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "invalid-type-rejection.tentative.https.window.js": [
+        "d5650cfd285b3a77a8579192d258fe60c733a200",
+        [
+         "ai/language-model/response-constraint/json-schema/invalid-type-rejection.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Invalid Type Rejection"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "prefix-deviation-rejection.tentative.https.window.js": [
+        "5bd136f86972cf1f50dbd5af531323320da7f087",
+        [
+         "ai/language-model/response-constraint/json-schema/prefix-deviation-rejection.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Prefix Deviation Rejection"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "response-schema-omitted-from-input.tentative.https.window.js": [
+        "01cb219cdcff55f0c8a9041b39ac3ced34d55761",
+        [
+         "ai/language-model/response-constraint/json-schema/response-schema-omitted-from-input.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Omitted from Input"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "valid-schema-success.tentative.https.window.js": [
+        "541a549f4d83d6f0580b01b2ce23e3cb248e4fdf",
+        [
+         "ai/language-model/response-constraint/json-schema/valid-schema-success.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Valid Schema Success"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ],
+       "valid-schema-with-prefix-success.tentative.https.window.js": [
+        "3aa704d1d1b967ec95d6ef5bc7a6296e9ec8f3a8",
+        [
+         "ai/language-model/response-constraint/json-schema/valid-schema-with-prefix-success.tentative.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Language Model Response JSON Schema - Valid Schema With Prefix Success"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "../../../resources/util.js"
+           ],
+           [
+            "timeout",
+            "long"
+           ]
+          ],
+          "timeout": "long"
+         }
+        ]
+       ]
+      },
+      "regex.tentative.https.window.js": [
+       "b57186b95d831dc138d1bc049e213a57b6a932a2",
+       [
+        "ai/language-model/response-constraint/regex.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Language Model Response Regex"
+          ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "../../resources/util.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ]
+     }
     },
     "language_detection": {
      "detector-iframe.https.html": [
@@ -523574,7 +525326,7 @@
       ]
      ],
      "proofreader-proofread.tentative.https.window.js": [
-      "4febc4446c7b146eafb4e4f10ac06e581283c994",
+      "d4e5b99c0e96bb11820f9ad6b266dd24c16f3b25",
       [
        "ai/proofreader/proofreader-proofread.tentative.https.window.html",
        {
@@ -543740,6 +545492,13 @@
      ]
     },
     "inheritance": {
+     "auxiliary-blank-document.html": [
+      "d7de318c3a66d9d7b7e50681d5a633bff92df3dd",
+      [
+       null,
+       {}
+      ]
+     ],
      "blob-inherits-from-meta-http-equiv-with-invalid-characters.html": [
       "c7ac08b25079162f07f443fdea38ee38eea59987",
       [
@@ -543771,7 +545530,7 @@
       ]
      ],
      "document-write-iframe.html": [
-      "73614e3aa2da597d17564ce290c1c0741eed4c92",
+      "07f0e2931fa0e9690c45778850964b4714b5a7f0",
       [
        null,
        {}
@@ -543785,7 +545544,7 @@
       ]
      ],
      "history-iframe.sub.html": [
-      "1f6960531ebab658df4ed02093cae67f9b9ac963",
+      "49e6a5fae1b5d2d9918c4a3bc467d0f89b9e9480",
       [
        null,
        {
@@ -543794,7 +545553,7 @@
       ]
      ],
      "history.sub.html": [
-      "5ea6abe8fb33344f38a0bdc7cf867ee72d692522",
+      "a0fda8c151890376d82c67cd77579c7bd4a904eb",
       [
        null,
        {}
@@ -544024,6 +545783,20 @@
      ],
      "media-src-7_3_2.sub.html": [
       "cb3558e6c2a3b3bf031c6e77041c47247d4fef43",
+      [
+       null,
+       {}
+      ]
+     ],
+     "media-src-blocked-blob-url.html": [
+      "6c42acf628daaddd519e59eaea66391ef9225214",
+      [
+       null,
+       {}
+      ]
+     ],
+     "media-src-blocked-data-url.html": [
+      "b419479571155ab1ee1ffb388f34d7003c792a4d",
       [
        null,
        {}
@@ -545383,34 +547156,6 @@
      "tentative": {
       "script-url-allowed-by-hash.https.html": [
        "abcf4161319d210bb427ea576e5a01cd43c34e29",
-       [
-        null,
-        {}
-       ]
-      ],
-      "script-url-blocked-report-contains-hash-dedicated-worker.https.html": [
-       "924adc04c63b417e9e77d10538f05a0887d838b1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "script-url-blocked-report-contains-hash-service-worker.https.html": [
-       "a6baad4b9d1522d5ea160a1f7926323be0c000f8",
-       [
-        null,
-        {}
-       ]
-      ],
-      "script-url-blocked-report-contains-hash-shared-worker.https.html": [
-       "cf71b7b93fc804662d785f923632cf4095333831",
-       [
-        null,
-        {}
-       ]
-      ],
-      "script-url-blocked-report-contains-hash.https.html": [
-       "67494583c10b751ac857a5be4fe6304213994161",
        [
         null,
         {}
@@ -552652,7 +554397,7 @@
       ]
      ],
      "position-anchor-basics.html": [
-      "a5179ebe13479445554c1c452c5054191f0e0d10",
+      "4fd25d8d7caa305cc51a561d201dc2d2101e5144",
       [
        null,
        {}
@@ -557593,7 +559338,7 @@
        ]
       ],
       "at-container-style-parsing.html": [
-       "1bb5e1a7e7bda911ef746b232b4aad571401cf77",
+       "36a4f7014140f047dff17514ce03bafeb0efc564",
        [
         null,
         {}
@@ -558258,7 +560003,7 @@
        ]
       ],
       "query-evaluation-style.html": [
-       "a144f4e4b707a22226a023fde2037facba8b4274",
+       "01ebda5ea9d2f7aba2e54380bc1bebc93ba52c71",
        [
         null,
         {}
@@ -559036,7 +560781,14 @@
         {}
        ]
       ]
-     }
+     },
+     "match-container.tentative.html": [
+      "981d419b7410f6a1ef8652b2b68145222c7dfd9c",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css-contain": {
      "contain-chrome-thcrash-001.html": [
@@ -561194,7 +562946,7 @@
       ]
      ],
      "flex-baseline-overflow-hidden.html": [
-      "661c1ed52d06cf9f7649bf4193fa0c8b077e6f3b",
+      "36bbd61e390fd91f93e0adeb294d6e7ba47835d6",
       [
        null,
        {}
@@ -576000,6 +577752,15 @@
        {}
       ]
      ],
+     "pseudo-element-removal.html": [
+      "0646f55fd4da6d472b84a1a3937ffd6f270eb52c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "pseudo-replaced-elements.html": [
       "8b5f994841b8e8e4f3aea05465926ee429a5718a",
       [
@@ -576172,7 +577933,7 @@
       ]
      ],
      "inheritance.html": [
-      "3120e92a7af8bc5f55eb9417a00e78c02e2346d5",
+      "fd678a1d768b73df2ae0ce2b9303f85faa62506d",
       [
        null,
        {}
@@ -576229,7 +577990,7 @@
        ]
       ],
       "ruby-overhang-valid.html": [
-       "c83d25141bbaceedfc942e976867976eabd46de5",
+       "7fa8662c098d3cf2ac1363ed9495d585362f828b",
        [
         null,
         {}
@@ -577504,7 +579265,7 @@
         ]
        ],
        "nested-supercedes-common-to-both-axes.html": [
-        "c76ba27b83c08bea790033965f0f5d4e005f785f",
+        "ecebe43c696d377f46fab56014a552f6020482d1",
         [
          null,
          {
@@ -577549,12 +579310,19 @@
         ]
        ],
        "prefer-inner-target.html": [
-        "feefbe1b5e3f41d66419e71788bef8e0b56481dc",
+        "aaf26d4410e24a27a6f476a8ef2a7735b25016cc",
         [
          null,
          {
           "testdriver": true
          }
+        ]
+       ],
+       "prefer-targeted-element-both-axes.html": [
+        "e488a611b53d5e72fb73c096c173495f74ea6511",
+        [
+         null,
+         {}
         ]
        ],
        "prefer-targeted-element-main-frame.html": [
@@ -578847,6 +580615,20 @@
       ],
       "shape-outside-interpolation.html": [
        "a0240a2509ddcf857024b30834598e21e1ba2e7e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shape-outside-path-interpolation.html": [
+       "59ff7497b62363b30de8edca4d2314960f04ccdc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "shape-outside-shape-interpolation.html": [
+       "ef0a42b4e811f7f05db7d0651b8b24c059aa08a1",
        [
         null,
         {}
@@ -591705,7 +593487,7 @@
        ]
       ],
       "url-request-modifiers-font-face-parsing.html": [
-       "00ac3b79910597b0f018a754c0101274b0e09cad",
+       "97547eab1b94d90a62f471d2c9a14b68cf3f2679",
        [
         null,
         {}
@@ -591719,14 +593501,14 @@
        ]
       ],
       "url-request-modifiers-invalid.sub.html": [
-       "bc0e0c2bc6f7c04a8d8c0fd326ddb2691bacaca3",
+       "178417fca7387e0d6081128e4988b8efd4088a10",
        [
         null,
         {}
        ]
       ],
       "url-request-modifiers-serialize.sub.html": [
-       "e60a0a268d4389d2ee715f394f05ae55a9a2bba8",
+       "5ea2b5c6b97efce8604d62a24ed6295b90b08266",
        [
         null,
         {}
@@ -593366,6 +595148,13 @@
         {}
        ]
       ],
+      "font-size-keyword-system-font.html": [
+       "ae5f9d1f101db57c6b0db2173a1e75b93a85d0eb",
+       [
+        null,
+        {}
+       ]
+      ],
       "ic-unit.html": [
        "680129016dee85365577dd9ca3059f7f1fa9478e",
        [
@@ -594397,7 +596186,7 @@
       ]
      ],
      "adoptedstylesheets-observablearray.html": [
-      "783a0541633d3f2b5fdfae90c364ffa8350be561",
+      "75d8ffc5c38c5d7dac8b1d6370fd23419c2a2af7",
       [
        null,
        {}
@@ -595323,7 +597112,7 @@
       ]
      ],
      "stylesheet-same-origin.sub.html": [
-      "6ad55190dab366f2d9e4bdf7755750d7f5945bbe",
+      "10097132993581d0fc41ba5a718e2e339b0ba19e",
       [
        null,
        {}
@@ -599042,6 +600831,13 @@
         {}
        ]
       ],
+      "empty-pseudo-in-has-display-none.html": [
+       "8513f39a6ada89f0f0bd2850cb21913b6bed2f50",
+       [
+        null,
+        {}
+       ]
+      ],
       "empty-pseudo-in-has.html": [
        "4e9f6f27378fb9579728cad3f9208b97d48f1b96",
        [
@@ -599625,7 +601421,7 @@
        ]
       ],
       "sound-state.html": [
-       "e41e4ace2be507eaa686aa054c838cc84cb46ab5",
+       "fd0e8f53a4318e3d72f1ce565c47d955a1a3c01d",
        [
         null,
         {}
@@ -599991,7 +601787,7 @@
       ]
      ],
      "webkit-pseudo-element.html": [
-      "30103fa72bf479fb80e75c03058f33a150119be8",
+      "babf2301143256ee0005dcbfbd3aafb5624b3e84",
       [
        null,
        {}
@@ -600223,6 +602019,15 @@
        {}
       ]
      ],
+     "ElementInternals-behavior-accessibility.tentative.html": [
+      "1d7d0515a97e16cd323518af9e9d68b46428527a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "ElementInternals-form.html": [
       "fd9363b4506305a0f915d9035239f57432e7a1d4",
       [
@@ -600259,7 +602064,7 @@
       ]
      ],
      "ElementInternals-submit-behavior.tentative.html": [
-      "a1f13560f30b47be7e53db571d148739b0b4b9cf",
+      "ce632503ca0018dfad20d5bdf17c63af91f0102f",
       [
        null,
        {
@@ -600996,14 +602801,14 @@
       ]
      ],
      "ShadowRoot-init-customElementRegistry.html": [
-      "b81fbce26d6a7514a54be0d2d5e40cb2bdb3ae6c",
+      "a392b50e50f6963ca5f0c6b4882a580f76f943c6",
       [
        null,
        {}
       ]
      ],
      "ShadowRoot-init-declarative.html": [
-      "13359df5e60d42b0d7642005f15225bee8eec4ed",
+      "01863a2d44eb3aac2540cfe2780bd6d3e40b9b13",
       [
        null,
        {}
@@ -601052,7 +602857,7 @@
       ]
      ],
      "element-mutation.html": [
-      "dd292b4a75ee25d60e99fe88266003cc50a8a787",
+      "d1020568adc722553b7ffede09cb1410cafc82de",
       [
        null,
        {}
@@ -601101,7 +602906,7 @@
       ]
      ],
      "scoped-registry-append-does-not-upgrade.html": [
-      "f93dbb1335b0a3163e798d8b889a4cedf8598d50",
+      "581b7eeaec3e5b48ba6b3b8ac964fe778912d894",
       [
        null,
        {}
@@ -601747,7 +603552,7 @@
      ]
     ],
     "create.tentative.https.html": [
-     "cc9690f504f5f647660e5a958737a9796d3017f1",
+     "6a48524c943b9b61b61c6803d76d74c980d68a7f",
      [
       null,
       {
@@ -601772,7 +603577,7 @@
      ]
     ],
     "digital-credentials-static-methods.tentative.https.html": [
-     "a92288b29485fa334335f8d2f084fc36354de87e",
+     "bb5e6ce2acbc27bc11589d310c0627b412278833",
      [
       null,
       {}
@@ -601806,7 +603611,7 @@
      ]
     ],
     "get.https.html": [
-     "0c7f640773ddacb018cab01909a8a7f1b265c2ea",
+     "8593bf2fb0bb0d80b6af8b20e2635c1f7deff2db",
      [
       null,
       {
@@ -608320,6 +610125,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "delete-editing-host.html": [
+      "748c40937d47bfcdfda38325a0f9a63f5c844c62",
+      [
+       null,
+       {}
       ]
      ],
      "delete-in-child-of-head.tentative.html": [
@@ -630280,74 +632092,6 @@
       }
      ]
     ],
-    "notify-event-iframe.https.html": [
-     "1f8e1b8a322d3a8c2b63d2083c7d13c0b1f09491",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
-    "notify-event-invalid.https.html": [
-     "7695f49e0b606eb938bc6e32d5cdb9070b740b0f",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
-    "notify-event-nested-fenced-frames.https.html": [
-     "d435cbc009d51ed958fd537009663e1ada289575",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "notify-event-prevent-caching.https.html": [
-     "9511dce8c8dbad82a0f2fb0681d59fa6876ccf50",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
-    "notify-event-success.https.html": [
-     "76ed9abbfa05cabdd6540363d0af4dfcc72900c5",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "notify-event-top-level-navigation.https.html": [
-     "da3435dc607b08b2ebbd6e5af64172d12db19165",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
-    "notify-event-transient-user-activation.https.html": [
-     "5e37b1180ad1da5937328e903c51da59d4e4c9d6",
-     [
-      null,
-      {
-       "testdriver": true,
-       "timeout": "long"
-      }
-     ]
-    ],
     "opaque-ad-sizes-exact-size.https.html": [
      "b23d3ab0d7165d3b6aefccdfa7ba53971262717e",
      [
@@ -644307,7 +646051,7 @@
       ]
      ],
      "text.https.html": [
-      "901e9eef8373a00942fbfafa86032be7406d5655",
+      "ba49e2b851f13d39f8810c53b762cb971a2b3ef2",
       [
        null,
        {}
@@ -661321,6 +663065,16 @@
        {}
       ]
      ],
+     "keyboard-lock-cross-origin-iframe.tentative.sub.html": [
+      "0e638bc7172a63fe5df352a8a4a626194df21011",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "navigate-iframe.sub.html": [
       "9aa0e6908d1c2e31cf8fc2590e94e377e5c37fc1",
       [
@@ -665978,14 +667732,14 @@
          ]
         ],
         "window-open-popup-during-load.html": [
-         "5308c01c39969ebee64a53d88b2e1b60b2da02e5",
+         "5d44de89461ef187a61121683e76febe41e63dc7",
          [
           null,
           {}
          ]
         ],
         "window-open-popup-during-pageshow.html": [
-         "065d9332258eb8f46cbb5f1b9c5259159a50631d",
+         "dc9f883b96d67663d813efea5eb16da7806a4563",
          [
           null,
           {}
@@ -676144,6 +677898,34 @@
         ]
        },
        "filters": {
+        "svg_diffuse_filter_visited_color_taints.html": [
+         "338f8968c97da220a725856ebef4e4b1315e7266",
+         [
+          null,
+          {}
+         ]
+        ],
+        "svg_drop_shadow_filter_visited_color_taints.html": [
+         "608e63e0ab8aaec6049f1d5146ba45e6ca718437",
+         [
+          null,
+          {}
+         ]
+        ],
+        "svg_flood_filter_visited_color_taints.html": [
+         "7c0a6a39c5b8352abc0660be7d81cfd51a6d7442",
+         [
+          null,
+          {}
+         ]
+        ],
+        "svg_specular_filter_visited_color_taints.html": [
+         "83d11ce55a6e5f7a372392fc489d2768f7f82312",
+         [
+          null,
+          {}
+         ]
+        ],
         "tentative": {
          "idl-conversions": {
           "canvas-filter-sequence-conversion.html": [
@@ -696735,7 +698517,7 @@
       ]
      ],
      "reporting-subresource-corp.https.html": [
-      "e56124a4a085d962874714b3c23b091378d9ff6b",
+      "da73f83acaa2a592c7e72ecf5401f9e6a85f28c3",
       [
        null,
        {
@@ -699547,7 +701329,7 @@
       ]
      ],
      "reporting-subresource-corp.tentative.https.html": [
-      "013eb34d1065ee7bbe274af2b5409d47a37be0bf",
+      "5ced0aa7e090c626f644813d934a2e4b0ffa72d8",
       [
        null,
        {
@@ -702843,7 +704625,7 @@
       },
       "platform": {
        "mousedown-drag-select-input-display-change.html": [
-        "fe411b65c01226d784609482e1fd431b131024db",
+        "eba3e9d570bee7512e4673f473d2528fd6d49974",
         [
          null,
          {
@@ -709876,7 +711658,7 @@
        },
        "user-interface": {
         "muted.html": [
-         "eb6d2ac688d392feb91cf07ec5b136e8a0c656b9",
+         "0bdc425750bc8907d4ec5ba341ea5dc16d7b3e58",
          [
           null,
           {}
@@ -712670,6 +714452,13 @@
           {}
          ]
         ],
+        "sizes-auto-resize-observer-removes-auto.html": [
+         "522b18ec965abeb6b2cfe36c8b5bd5948764430c",
+         [
+          null,
+          {}
+         ]
+        ],
         "sizes-auto.html": [
          "64493ee389ac305a0bcee1f78f583a90211baf2e",
          [
@@ -713425,7 +715214,7 @@
         ]
        ],
        "form_attribute.html": [
-        "dde3250dbf7c10a767e91c28c3b42078533e8748",
+        "4508a667ee2b15134307c88e8fc2e81f8d02719f",
         [
          null,
          {}
@@ -715559,7 +717348,7 @@
          ]
         ],
         "option-disabled-optgroup.html": [
-         "85bcd631f1f4a23a8067043f20060760397be1a3",
+         "2320f9f09691b9380720d15bff4b0d83eb300489",
          [
           null,
           {}
@@ -715713,6 +717502,13 @@
           }
          ]
         ],
+        "select-input-parsing.tentative.html": [
+         "cf6e94fff62f5e31628a32694c7fc8de356706d7",
+         [
+          null,
+          {}
+         ]
+        ],
         "select-inside-top-layer.html": [
          "6d70f3aaf8d3dc23b2f5fb784c399991913dc938",
          [
@@ -715814,7 +717610,7 @@
          ]
         ],
         "select-parsing.html": [
-         "5878b39f749a7ae7862a40d0f21c36ae5d1889ef",
+         "252ef6bd578471c52fff372d7e8d5d6ca11176e6",
          [
           null,
           {}
@@ -716011,7 +717807,7 @@
        },
        "customizable-select-listbox": {
         "customizable-select-listbox-keyboard-behavior.optional.html": [
-         "6915682c6ddc86229c6fe9e2192eb78d960bfe03",
+         "934ca464c2b045659f6acf6a5b74d44a48f1e026",
          [
           null,
           {
@@ -717981,6 +719777,15 @@
          {
           "testdriver": true,
           "timeout": "long"
+         }
+        ]
+       ],
+       "menu-elements-pageup-pagedown.optional.html": [
+        "dbe21aba91e5f130bfc3684c99a6ec034c9e6a92",
+        [
+         null,
+         {
+          "testdriver": true
          }
         ]
        ],
@@ -722835,7 +724640,7 @@
         ]
        ],
        "script-crossorigin-network.sub.html": [
-        "5886ab6f32c85af027872947d3b4682228e75dc1",
+        "70a0585884f0e32f085a144ee665bb5f38d0347a",
         [
          null,
          {}
@@ -723103,7 +724908,7 @@
          ]
         ],
         "ignore-content-type.any.js": [
-         "2b71b534f29cd361fc7112a465d726f00dc0ed70",
+         "e2f5cf17acebb93b92f78d57d8e8b5f851955473",
          [
           "html/semantics/scripting-1/the-script-element/text-module/ignore-content-type.any.html",
           {
@@ -723139,7 +724944,7 @@
          ]
         ],
         "ignore-extension.any.js": [
-         "a1d6cd31f1c8749ae6410d313cd4a89fdad84878",
+         "350b489a06fa3d35db6049dc6c337389b9eea006",
          [
           "html/semantics/scripting-1/the-script-element/text-module/ignore-extension.any.html",
           {
@@ -723175,7 +724980,7 @@
          ]
         ],
         "integrity.html": [
-         "bda5d6958b85b793bc4516510fc60fad5884da35",
+         "1c1060c0089076978982cdf727c9d11463a86bc8",
          [
           null,
           {}
@@ -723203,7 +725008,7 @@
          ]
         ],
         "repeated-imports.any.js": [
-         "2ebc346dd4c95ec2282aefa9f9dfc47014ce88bb",
+         "547023157da4721f1d3b0eb9c733773f9d537b55",
          [
           "html/semantics/scripting-1/the-script-element/text-module/repeated-imports.any.html",
           {
@@ -723532,7 +725337,7 @@
         ]
        ],
        "disabled.html": [
-        "142a12dd122b555dcc6eee18334f796dc9269961",
+        "1716e7ab01f66aedc11cb347b0cc05ad51638d27",
         [
          null,
          {}
@@ -738009,7 +739814,7 @@
        ]
       ],
       "href-click-004.tentative.html": [
-       "764222dd1f94ec8da2aa734653e6b1a3e87cb081",
+       "accadb8063f60a516fe6edac9b42d78e0209b641",
        [
         null,
         {
@@ -745200,14 +747005,18 @@
     },
     "focus-reset": {
      "autofocus.html": [
-      "c40e2f68f11ee1d3147bcfaf1e2dd74e93f399a5",
+      "b013dcd5ad400fe42dfa3e2763b2acddce1ef4dd",
       [
-       null,
+       "navigation-api/focus-reset/autofocus.html?delayed-checkpoint",
+       {}
+      ],
+      [
+       "navigation-api/focus-reset/autofocus.html?same-checkpoint",
        {}
       ]
      ],
      "basic.html": [
-      "f5a30972b0e5452deaf1efebe4ba580379493a8b",
+      "9c5413fc176fe113223b4e0c0674ea17035a69e0",
       [
        null,
        {
@@ -745251,7 +747060,7 @@
       ]
      ],
      "multiple-intercept.html": [
-      "75e38c98a40f1bdf6ad1d08e1bbd470ea92d64c1",
+      "103023e6911b253ae0f043ae86d5d17af49bd83d",
       [
        null,
        {
@@ -747349,7 +749158,7 @@
       ]
      ],
      "anchor-download-intercept-reject.html": [
-      "5af651eb890ff69c3974a4008e50580891209da4",
+      "a19fa91e920906e6f3126f19c980fd04d4a1a894",
       [
        "navigation-api/ordering-and-transition/anchor-download-intercept-reject.html?currententrychange",
        {}
@@ -747360,7 +749169,7 @@
       ]
      ],
      "anchor-download-intercept.html": [
-      "38478e3c9a843983da70a90a573a108c64eaa880",
+      "72dce7cc37905539edd88e9fa90a9b03c7ecab27",
       [
        "navigation-api/ordering-and-transition/anchor-download-intercept.html?currententrychange",
        {}
@@ -747472,7 +749281,7 @@
       ]
      ],
      "location-href-intercept-reject.html": [
-      "81e8f2e00804fcc333065b3b9376d79969ce1f5a",
+      "831af58f3104463f3d6ebfa086400c14fdde9287",
       [
        "navigation-api/ordering-and-transition/location-href-intercept-reject.html?currententrychange",
        {}
@@ -747483,7 +749292,7 @@
       ]
      ],
      "location-href-intercept.html": [
-      "75f1d3d1d0286b96e97793e7eb03534ae95f5ff0",
+      "7787a54f2b6cb849ad57b2100b91b0fd6d463193",
       [
        "navigation-api/ordering-and-transition/location-href-intercept.html?currententrychange",
        {}
@@ -747533,7 +749342,7 @@
       ]
      ],
      "navigate-in-transition-finished.html": [
-      "8b3811dd36fd5586930492e5d1d514d61453fc66",
+      "9cde1cb9d302f038765cbcb752763d8bcf291dae",
       [
        "navigation-api/ordering-and-transition/navigate-in-transition-finished.html?currententrychange",
        {}
@@ -747588,7 +749397,7 @@
       ]
      ],
      "navigate-intercept.html": [
-      "eec9d3ca119b82406cdd93ad4de6af93f0ef1cf2",
+      "5315ecfbc1c53d81c225420818c5f1e2b31d2d3b",
       [
        "navigation-api/ordering-and-transition/navigate-intercept.html?currententrychange",
        {}
@@ -747610,7 +749419,7 @@
       ]
      ],
      "navigate-same-document-intercept-reject.html": [
-      "1e851cf75b108ddfcd2bab2a0d885f52bb98561c",
+      "64f9612f8a99730c162b8a5c99b5389ad4b1d215",
       [
        "navigation-api/ordering-and-transition/navigate-same-document-intercept-reject.html?currententrychange",
        {}
@@ -747621,7 +749430,7 @@
       ]
      ],
      "navigate-same-document.html": [
-      "fc506cef8bf481bee89b8cfd4f78843b95459305",
+      "d96393f1310eac3b83cccefc8f0e52b956ac36c7",
       [
        "navigation-api/ordering-and-transition/navigate-same-document.html?currententrychange",
        {}
@@ -747639,7 +749448,7 @@
       ]
      ],
      "reload-intercept-reject.html": [
-      "9c8894bff488ae67aa73be4510d0a6f5555a59c6",
+      "8183383c313d57ee7b4f9ac8e3a9b5f1c52a036b",
       [
        "navigation-api/ordering-and-transition/reload-intercept-reject.html?currententrychange",
        {}
@@ -747650,7 +749459,7 @@
       ]
      ],
      "reload-intercept.html": [
-      "1494136e199c508564a7449586c2f5579d9be69c",
+      "da1ae207882e9712bf243df673acee97ada1e6aa",
       [
        "navigation-api/ordering-and-transition/reload-intercept.html?currententrychange",
        {}
@@ -747661,7 +749470,7 @@
       ]
      ],
      "reload-no-popstate.html": [
-      "6c4592b67cc1417e1aa69491c41bb69cc8caba6e",
+      "5f67b256895006219bc47ff0184d1cac2acacf19",
       [
        null,
        {}
@@ -747896,7 +749705,7 @@
       ]
      ],
      "precommitHandler-window-stop-before-commit.html": [
-      "857a21ed3a97dd695d553818b5d067fec6666534",
+      "c1a11fa91fc1c076fb08f4004bcb681888435bf4",
       [
        null,
        {}
@@ -756274,7 +758083,7 @@
      ]
     ],
     "preload-type-match.html": [
-     "f429670b539c57ac297c9174a1f39e8c3df145f8",
+     "746c179cf7af7900f50c099986ad9cc25a81b60e",
      [
       null,
       {
@@ -774849,7 +776658,7 @@
       ]
      ],
      "scroll-timeline-shorthand.html": [
-      "722a8a1f4d7b7170e0b719b75b370ce4fe201886",
+      "0803d8a84f6cf058bdbd3190ddea7a34f4d7f8f1",
       [
        null,
        {}
@@ -775045,7 +776854,7 @@
       ]
      ],
      "view-timeline-shorthand.html": [
-      "9027eb0b09dc7dd348d2d3a0df94720b0de76150",
+      "b6b2dde3b08ff667027da7c9f51ec88bc65042da",
       [
        null,
        {}
@@ -781051,6 +782860,27 @@
          {}
         ]
        ],
+       "shadowrootadoptedstylesheets-idl-absent-and-empty.html": [
+        "659b6bd65ff1e4e04775928ad7b1438211e8cca7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "shadowrootadoptedstylesheets-idl-feature-detection.html": [
+        "e9a23ae904dbc805ac75b746512cda635e256092",
+        [
+         null,
+         {}
+        ]
+       ],
+       "shadowrootadoptedstylesheets-idl-reflection.html": [
+        "41a2fecbeaa9b50f2c93849cde914e5d2551633e",
+        [
+         null,
+         {}
+        ]
+       ],
        "shadowrootadoptedstylesheets-invalid-specifier.html": [
         "34c7f876184e69555a7acc62e5af9bf9152b126d",
         [
@@ -781137,6 +782967,13 @@
        ],
        "shadowrootadoptedstylesheets-same-document.html": [
         "d34fdfc50d1dbb495d66ee8c856e47f594ac633a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "shadowrootadoptedstylesheets-serialization.html": [
+        "e36882d8a33685fa0dce2a8559c738f56e549bc2",
         [
          null,
          {}
@@ -782165,7 +784002,7 @@
        ]
       ],
       "event-path.html": [
-       "089d128252a46df1ad4f46088434a506e1ef957d",
+       "9fe2ace20f8e31fb7d2cd4ee72e17d6ed44ca3c6",
        [
         null,
         {}
@@ -795791,7 +797628,7 @@
       ]
      ],
      "from.any.js": [
-      "2b28a05fee398c523d049c56aff190e771eb19f2",
+      "77f2bbf0342a10b5f2581bca6502be5111e37a5e",
       [
        "streams/readable-streams/from.any.html",
        {
@@ -806896,7 +808733,7 @@
        ]
       ],
       "SVGGraphicsElement.getBBox-05.html": [
-       "8c0d11ed1c1cfd01484774328c773538e7bc5bf7",
+       "af25641d68455b145673cf6253a1ccc0aa4d65c4",
        [
         null,
         {}
@@ -809050,6 +810887,13 @@
     ],
     "trusted-types-sandbox-no-allow-scripts.html": [
      "c4e4683934ec2d59a521e5cb7f99e2d0799723fa",
+     [
+      null,
+      {}
+     ]
+    ],
+    "trusted-types-secondary-document.html": [
+     "01dd93d0d7a8653d690d4e62e763ffc3acff2b85",
      [
       null,
       {}
@@ -826924,7 +828768,7 @@
        ]
       ],
       "effect-value-iteration-composite-operation.html": [
-       "4679fb4d1b03cd3907fd9365b8d3f08d7d2ceb37",
+       "6408e0180aa71f81a5b6225594f2bc2a93fd23ce",
        [
         null,
         {}
@@ -830506,6 +832350,13 @@
         {}
        ]
       ],
+      "audiobuffersource-duration-loop-playbackrate.html": [
+       "0cf8e7d976e91bfb448fd8b32d09f77aa0fd1c9e",
+       [
+        null,
+        {}
+       ]
+      ],
       "audiobuffersource-duration-loop.html": [
        "fc2b55bce8a3e50b728a9606f0bfd3842199bd9c",
        [
@@ -830543,6 +832394,13 @@
       ],
       "audiobuffersource-one-sample-loop.html": [
        "af1454a5a9f4644058c71715de7541e4800d2feb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "audiobuffersource-playbackrate-negative.html": [
+       "f6083299c5c8fde6d97d91a17aec62144b023346",
        [
         null,
         {}
@@ -831920,7 +833778,7 @@
        ]
       ],
       "mediaElementAudioSourceToScriptProcessorTest.html": [
-       "1099ee8d244a9d8a2d0d3e60531d5ae9f516ca57",
+       "39d238ec2c0b9b90a574b4f8b6f9ffa646f3ec50",
        [
         null,
         {}
@@ -839286,6 +841144,47 @@
       }
      ]
     ],
+    "videoDecoder-444-h264.https.any.js": [
+     "e6ebb3148e4505a1bf113f1bbf24f6b1406be83c",
+     [
+      "webcodecs/videoDecoder-444-h264.https.any.html?h264_444_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "videoDecoder-codec-specific-setup.js"
+        ],
+        [
+         "variant",
+         "?h264_444_avc"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoDecoder-444-h264.https.any.worker.html?h264_444_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "videoDecoder-codec-specific-setup.js"
+        ],
+        [
+         "variant",
+         "?h264_444_avc"
+        ]
+       ]
+      }
+     ]
+    ],
     "videoDecoder-codec-specific-orientation.https.any.js": [
      "9fb1714a7b1126ccec08de98effec7dfa95673c9",
      [
@@ -842296,6 +844195,22 @@
     ]
    },
    "webmcp": {
+    "declarative": {
+     "toolchange-on-control-add-remove.https.html": [
+      "e365c71f3cc125bbb98f708fb981a898039ac549",
+      [
+       null,
+       {}
+      ]
+     ],
+     "toolchange-on-name-change.https.html": [
+      "3ec9fc16023f56b6663c5765066a09119c122922",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "idlharness.https.window.js": [
      "1f65593c09379e0451124fe0ff5b3628fe02df4b",
      [
@@ -842315,8 +844230,15 @@
      ]
     ],
     "imperative": {
+     "detached-frame-getTools.https.html": [
+      "fa696f2dab5d78b6a64f6451a462045eede33988",
+      [
+       null,
+       {}
+      ]
+     ],
      "detached-frame-registerTool.https.html": [
-      "0b2d4005c1754654a4a79e966b22da349ffa0ca5",
+      "df82a7c8610ec88f68cee87d2561c331f0adb275",
       [
        null,
        {}
@@ -842327,6 +844249,56 @@
       [
        "webmcp/imperative/duplicate_tool_registration.https.window.html",
        {}
+      ]
+     ],
+     "exposedTo-cross-origin-child.https.html": [
+      "78e5f3c8521c052e3d4e48c3fc6c13ea6a5a3e14",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "exposedTo-defaults-cross-origin.https.html": [
+      "0b8d015a9feff009eb6e28bb5d109cecad4189d9",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "exposedTo-defaults-same-origin.https.html": [
+      "adcef47480e51a5466ceb7774eab211e74d478d7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "exposedTo-invalid-origins.https.html": [
+      "0cc38d37163b8da42cb4861cfac29336844ad754",
+      [
+       null,
+       {}
+      ]
+     ],
+     "exposedTo-multiple-children.https.html": [
+      "efb0b7b4cc5195333b6628a10277d992aa61cca3",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "exposedTo-window-open.https.html": [
+      "9fabde9f59ec4949aa0f1e838a918c71144d277d",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "model_context.https.window.js": [
@@ -842343,10 +844315,24 @@
        {}
       ]
      ],
+     "permissions-policy.https.html": [
+      "24f25e0bdee57444ad1909f68d36d72a0cff6261",
+      [
+       null,
+       {}
+      ]
+     ],
      "register_tool_invalid_json_schema.https.window.js": [
       "b67ce9bc3d8a48526a4bc2620b23992db7ffe6af",
       [
        "webmcp/imperative/register_tool_invalid_json_schema.https.window.html",
+       {}
+      ]
+     ],
+     "register_tool_name_validation.https.window.js": [
+      "d1405a4c1ff033649407f30bd70ff54b438e60f1",
+      [
+       "webmcp/imperative/register_tool_name_validation.https.window.html",
        {}
       ]
      ],
@@ -856428,7 +858414,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "e448da4b580cdb482feb88d020439f15fc248626",
+      "c3784bd41770198d90eb06263c20d96e574c2d16",
       [
        "webnn/conformance_tests/slice.https.any.html?cpu",
        {
@@ -874404,7 +876390,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "833628a96bcb201a413937564c8b51c64499099d",
+      "1e15b41782d3d5da0012cee7cf9b65f14ff62d78",
       [
        "webnn/validation_tests/slice.https.any.html?cpu",
        {
@@ -876587,7 +878573,7 @@
      ]
     ],
     "RTCPeerConnection-remote-track-mute.https.html": [
-     "f625623e00d70d587ad3eb3bd73fb8163723a214",
+     "e1becf0008e363e56dc466499cc72aca79b1ba48",
      [
       null,
       {
@@ -897758,13 +899744,6 @@
         {}
        ]
       ],
-      "sharedworker-in-worker.html": [
-       "25d2582366eb1b739edc2fb540f41a8b0c125486",
-       [
-        null,
-        {}
-       ]
-      ],
       "worker-in-worker.html": [
        "284425ed3407735c8072753d1299ff2c38da1a47",
        [
@@ -898012,7 +899991,7 @@
        ]
       ],
       "expected-self-properties.worker.js": [
-       "0ce41b59e7496dfda26053cdfac6bd090b40a3b6",
+       "72edf495eb67e3cf832cbed01f43d9d61895a78d",
        [
         "workers/constructors/Worker/expected-self-properties.worker.html",
         {}
@@ -898035,7 +900014,7 @@
        ]
       ],
       "unexpected-self-properties.worker.js": [
-       "69d29b2297847124206b392fea67949106a8a3fe",
+       "acdd0eb303b4fc78f8061edf654e6c2a3a942daa",
        [
         "workers/constructors/Worker/unexpected-self-properties.worker.html",
         {}
@@ -900240,6 +902219,20 @@
         [
          "title",
          "XMLHttpRequest: abort() during LOADING"
+        ]
+       ]
+      }
+     ]
+    ],
+    "abort-during-navigation.window.js": [
+     "79bab924dadb6db83e6f9121db03153c257ce618",
+     [
+      "xhr/abort-during-navigation.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "XMLHttpRequest: navigation should not fire abort event"
         ]
        ]
       }
@@ -919145,7 +921138,7 @@
          ]
         ],
         "cookies.py": [
-         "d403f279d51f9746c7b6091c601edbc5664dbeaf",
+         "7dfafdf3449fbe01f4a24e53eb2a46e903ab94c6",
          [
           null,
           {}

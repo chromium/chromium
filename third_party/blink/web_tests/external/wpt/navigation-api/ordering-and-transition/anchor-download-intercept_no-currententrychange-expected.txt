@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] event and promise ordering for <a download> intercepted by intercept()
+  assert_array_equals: expected property 2 to be "navigatesuccess" but got "promise microtask" (expected array ["navigate", "handler run", "navigatesuccess", "promise microtask", "transition.finished fulfilled"] got ["navigate", "handler run", "promise microtask", "navigatesuccess", "transition.finished fulfilled"])
+Harness: the test ran to completion.
+

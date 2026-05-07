@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] existence of SharedWorker
+[FAIL] Test :muted matches .muted for content attribute default
   assert_true: expected true got false
 Harness: the test ran to completion.
 

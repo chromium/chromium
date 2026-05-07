@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] getting audio.muted with muted="" (script-created)
+  assert_true: expected true got false
+[FAIL] setting audio.muted with muted="" (script-created)
+  assert_equals: expected true but got false
+[FAIL] adding/removing muted attribute dynamically affects audio.muted
+  assert_true: expected true got false
+[FAIL] getting video.muted with muted="" (script-created)
+  assert_true: expected true got false
+[FAIL] setting video.muted with muted="" (script-created)
+  assert_equals: expected true but got false
+[FAIL] adding/removing muted attribute dynamically affects video.muted
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

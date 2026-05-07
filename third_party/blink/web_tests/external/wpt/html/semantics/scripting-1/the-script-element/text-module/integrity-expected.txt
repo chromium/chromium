@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] The integrity attribute must be verified on the top-level of a module loading a text module and allow it to execute when it matches
-  assert_array_equals: The module and its dependency must have executed lengths differ, expected array ["integrity-matches,text:text file\\n"] length 1, got [] length 0
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: "text" is not a valid module type.
 Harness: the test ran to completion.
 

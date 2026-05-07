@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL]  precommitHandler with window.stop() before fragment navigation commit
+  assert_unreached: onnavigateerror must not fire Reached unreachable code
+Harness: the test ran to completion.
+

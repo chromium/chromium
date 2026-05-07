@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property position-anchor has initial value normal in popovers
+  assert_equals: expected "normal" but got "none"
+Harness: the test ran to completion.
+

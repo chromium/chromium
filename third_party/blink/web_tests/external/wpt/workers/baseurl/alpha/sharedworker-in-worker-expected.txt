@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Base URL in workers: new SharedWorker()
-  assert_unreached: Got error event Reached unreachable code
-Harness: the test ran to completion.
-

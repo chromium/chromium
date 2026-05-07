@@ -9,7 +9,5 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
 [FAIL] Two modules of different type with the same specifier can load if the server changes its responses (first JS, then text)
   promise_test: Unhandled rejection with value: object "TypeError: "text" is not a valid module type."
-[FAIL] If an import previously succeeded for a given specifier with no type attribute, future uses of the same values should yield the same result
-  assert_equals: expected "hello" but got "world"
 Harness: the test ran to completion.
 
