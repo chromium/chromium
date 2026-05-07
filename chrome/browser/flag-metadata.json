@@ -3565,7 +3565,7 @@
   {
     "name": "enable-isolated-web-app-unmanaged-install",
     "owners": [ "simonha@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "enable-isolated-web-apps",
