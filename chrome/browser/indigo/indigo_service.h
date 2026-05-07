@@ -115,7 +115,6 @@ class IndigoService : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
-  // Test helpers:
   void SetRemoteEligibilityFetcherForTesting(RemoteEligibilityFetcher fetcher);
 
  private:

@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
+#include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
@@ -97,23 +98,58 @@ IndigoPageActionController* IndigoPageActionController::From(
 void IndigoPageActionController::InvokeAction() {
   base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
 
+  if (!indigo_service_) {
+    return;
+  }
+
+  indigo_service_->GetCombinedEligibility(
+      base::BindOnce(&IndigoPageActionController::CheckEligibilityForOnboarding,
+                     invoke_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IndigoPageActionController::CheckEligibilityForOnboarding(
+    const CombinedEligibility& eligibility) {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  const bool force_onboarding =
+      command_line->HasSwitch(kForceIndigoOnboardingSwitch);
+
+  // Show onboarding if the user is ready to onboard, or if it's forced.
+  if (eligibility.ReadyToOnboard() || force_onboarding) {
+    std::string onboarding_url =
+        command_line->GetSwitchValueASCII(kForceIndigoOnboardingSwitch);
+    if (onboarding_url.empty()) {
+      onboarding_url = features::kIndigoOnboardingUrl.Get();
+    }
+    if (onboarding_dialog_factory_for_testing_) {
+      onboarding_dialog_ = onboarding_dialog_factory_for_testing_.Run(
+          tab(), GURL(onboarding_url),
+          base::BindOnce(&IndigoPageActionController::OnOnboardingDialogClosed,
+                         invoke_weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      onboarding_dialog_ = IndigoOnboardingDialog::Show(
+          tab(), GURL(onboarding_url),
+          base::BindOnce(&IndigoPageActionController::OnOnboardingDialogClosed,
+                         invoke_weak_ptr_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+
+  ContinueInvoke(eligibility);
+}
+
+void IndigoPageActionController::ContinueInvoke(
+    const CombinedEligibility& eligibility) {
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
   }
 
-  // For now, onboarding is only triggered when forced, and the URL is specified
-  // in the command line switch. In the future, this will typically be triggered
-  // automatically based on the user's enrolment status, and the URL will be
-  // determined by a feature param.
-  std::string onboarding_url =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kForceIndigoOnboardingSwitch);
-  if (!onboarding_url.empty()) {
-    onboarding_dialog_ = IndigoOnboardingDialog::Show(
-        tab(), GURL(onboarding_url),
-        base::BindOnce(&IndigoPageActionController::OnOnboardingDialogClosed,
-                       weak_ptr_factory_.GetWeakPtr()));
+  if (!eligibility.CanGenerateImage()) {
+    // TODO(b/505743640): Show a toast or something if we can't generate an
+    // image and aren't ready to onboard.
+    LOG(WARNING)
+        << "Indigo not eligible for generation and not ready to onboard";
     return;
   }
 
@@ -138,7 +174,6 @@ void IndigoPageActionController::InvokeAction() {
     }
     return;
   }
-
 }
 
 void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
@@ -181,6 +216,10 @@ void IndigoPageActionController::DidFinishNavigation(
     toolbar_->Hide();
     toolbar_.reset();
   }
+
+  // TODO: b/508219600 Consider closing the onboarding dialog if navigates away.
+
+  invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
@@ -259,6 +298,24 @@ void IndigoPageActionController::UpdateEntryPointsState() {
 
 void IndigoPageActionController::OnOnboardingDialogClosed(
     const OnboardingResult& result) {
+  if (result.acknowledge_chrome_disclaimer) {
+    content::WebContents* web_contents = tab().GetContents();
+    if (!web_contents) {
+      return;
+    }
+
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    profile->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, true);
+
+    if (indigo_service_) {
+      indigo_service_->InvalidateRemoteEligibility();
+      indigo_service_->GetCombinedEligibility(
+          base::BindOnce(&IndigoPageActionController::ContinueInvoke,
+                         invoke_weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+  // Onboarding dialog must be reset after reading its result.
   onboarding_dialog_.reset();
 }
 

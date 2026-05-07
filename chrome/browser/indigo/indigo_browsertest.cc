@@ -8,11 +8,22 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/indigo/indigo_service_factory.h"
+#include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -46,6 +57,7 @@ const char kHtmlBody[] = R"(
 </body></html>)";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogWebContentsId);
 
 // Caveat: This observer applies insets, so it will miss layout changes that
 // only affect the border/insets but not the content bounds.
@@ -116,6 +128,27 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
 
+    IndigoService* service =
+        IndigoServiceFactory::GetForProfile(browser()->profile());
+    service->SetRemoteEligibilityFetcherForTesting(base::BindRepeating(
+        [](IndigoService::RemoteEligibilityCallback callback) {
+          std::move(callback).Run(
+              RemoteEligibility{.is_service_supported_for_account = true,
+                                .has_user_image = true});
+        }));
+
+    // Mock sign-in and capabilities to make the profile locally eligible.
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, "user@example.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
+                                                 true);
+
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -127,14 +160,24 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
             response->set_content_type("text/html");
             return response;
           }
+          if (request.relative_url == "/empty.html") {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content("<html><body>Onboarding</body></html>");
+            response->set_content_type("text/html");
+            return response;
+          }
           return nullptr;
         }));
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   base::ScopedTempDir temp_dir_;
 };
 
@@ -200,6 +243,47 @@ IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
       WaitForState(kToolbarBoundsState,
                    IsCloseToTopRightOf(std::ref(image_bounds))),
       StopObservingState(kToolbarBoundsState));
+}
+
+class IndigoOnboardingBrowserTest : public IndigoBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    IndigoBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded,
+                                                 false);
+
+    // Tell the popup to load the distinct empty page
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        "force-indigo-onboarding",
+        embedded_test_server()->GetURL("/empty.html").spec());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  const GURL popup_url = embedded_test_server()->GetURL("/empty.html");
+
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, main_tab_url),
+                  WaitForWebContentsReady(kWebContentsId, main_tab_url),
+                  WaitForShow(kIndigoPageActionIconElementId),
+                  PressButton(kIndigoPageActionIconElementId),
+                  WaitForShow(IndigoOnboardingDialog::kWebViewId),
+                  InstrumentNonTabWebView(kDialogWebContentsId,
+                                          IndigoOnboardingDialog::kWebViewId),
+                  WaitForWebContentsReady(kDialogWebContentsId, popup_url),
+                  ExecuteJs(kDialogWebContentsId,
+                            R"js(
+                    () => {
+                      window.chromeOnboarding.acknowledgeChromeDisclaimer();
+                      window.close();
+                    }
+                  )js",
+                            ExecuteJsMode::kFireAndForget),
+                  WaitForHide(IndigoOnboardingDialog::kWebViewId), Check([&]() {
+                    return browser()->profile()->GetPrefs()->GetBoolean(
+                        prefs::kIndigoHasOnboarded);
+                  }));
 }
 
 }  // namespace

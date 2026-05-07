@@ -3395,6 +3395,8 @@ if (!is_android) {
     # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
+    deps += [ "//chrome/browser/indigo/onboarding" ]
+
     allow_circular_includes_from = []
 
     if (is_win || is_chromeos) {
