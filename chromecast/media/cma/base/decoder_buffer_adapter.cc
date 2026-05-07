@@ -4,7 +4,9 @@
 
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "chromecast/media/cma/base/cast_decrypt_config_impl.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"
@@ -44,8 +46,21 @@ DecoderBufferAdapter::DecoderBufferAdapter(
       buffer_->end_of_stream() ? nullptr : buffer_->decrypt_config();
   if (decrypt_config) {
     std::vector<SubsampleEntry> subsamples;
+    base::CheckedNumeric<size_t> total_subsample_size = 0;
     for (const auto& sample : decrypt_config->subsamples()) {
       subsamples.emplace_back(sample.clear_bytes, sample.cypher_bytes);
+      total_subsample_size += sample.clear_bytes;
+      total_subsample_size += sample.cypher_bytes;
+    }
+    if (!subsamples.empty() &&
+        (!total_subsample_size.IsValid() ||
+         total_subsample_size.ValueOrDie() != buffer_->size())) {
+      LOG(ERROR) << "Invalid DecryptConfig: total_subsample_size="
+                 << static_cast<size_t>(total_subsample_size.ValueOrDefault(0))
+                 << " vs buffer size=" << buffer_->size();
+      // Invalid DecryptConfig, reject the buffer to prevent OOB read/write.
+      buffer_ = ::media::DecoderBuffer::CreateEOSBuffer();
+      return;
     }
     if (subsamples.empty()) {
       // DecryptConfig may contain 0 subsamples if all content is encrypted.

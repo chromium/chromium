@@ -48,7 +48,7 @@ class DecoderBufferAdapter : public DecoderBufferBase {
   ~DecoderBufferAdapter() override;
 
   StreamId stream_id_;
-  scoped_refptr<::media::DecoderBuffer> const buffer_;
+  scoped_refptr<::media::DecoderBuffer> buffer_;
   std::unique_ptr<CastDecryptConfig> decrypt_config_;
 };
 
