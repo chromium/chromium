@@ -11484,6 +11484,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Update password
           </message>
         </if>
+        <message name="IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON" desc="Update button text for password manager for short width dialog">
+          Update
+        </message>
         <message name="IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON" desc="Button text for the 'Save Password' bubble's 'Never remember for this site' option">
           Never
         </message>

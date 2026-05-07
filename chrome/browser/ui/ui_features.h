@@ -216,6 +216,9 @@ BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 // Enables a three-button password save dialog variant (essentially adding a
 // "not now" button alongside "never").
 BASE_DECLARE_FEATURE(kThreeButtonPasswordSaveDialog);
+
+// Enables a split button for the "Cancel" action in the Password Save bubble.
+BASE_DECLARE_FEATURE(kPasswordSaveUpdateDropdownMenuExperiment);
 #endif
 
 // Feature which uses a flyover animation for animating side panels (and

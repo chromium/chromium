@@ -424,6 +424,9 @@ void MenuScrollViewContainer::CreateBorder() {
 }
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
+  // Update the background, which relies on the border. First set it to null
+  // to avoid dangling pointers, and then update it.
+  SetBackground(nullptr);
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
   int corner_radius = GetCornerRadius();
   outside_border_insets_ = {};

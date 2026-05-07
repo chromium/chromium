@@ -30,6 +30,8 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -43,22 +45,21 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 }  // namespace
 
-class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase,
-                                   public testing::WithParamInterface<bool> {
+class PasswordSaveUpdateViewFixtureBase : public PasswordBubbleViewTestBase {
  public:
-  PasswordSaveUpdateViewTest();
-  ~PasswordSaveUpdateViewTest() override = default;
-
-  void CreateViewAndShow();
-  void SimulateSignIn();
+  PasswordSaveUpdateViewFixtureBase();
+  ~PasswordSaveUpdateViewFixtureBase() override = default;
 
   void TearDown() override {
-    std::exchange(view_, nullptr)
-        ->GetWidget()
-        ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
-
+    if (view_) {
+      std::exchange(view_, nullptr)
+          ->GetWidget()
+          ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+    }
     PasswordBubbleViewTestBase::TearDown();
   }
+
+  void CreateViewAndShow();
 
   PasswordSaveUpdateView* view() { return view_; }
 
@@ -74,6 +75,25 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase,
     return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON);
   }
 
+  password_manager::PasswordForm pending_password_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
+  raw_ptr<PasswordSaveUpdateView> view_ = nullptr;
+};
+
+enum class PasswordSaveUpdateViewTestVariant {
+  kTwoButton,
+  kThreeButton,
+};
+
+class PasswordSaveUpdateViewTest
+    : public PasswordSaveUpdateViewFixtureBase,
+      public testing::WithParamInterface<PasswordSaveUpdateViewTestVariant> {
+ public:
+  PasswordSaveUpdateViewTest();
+  ~PasswordSaveUpdateViewTest() override = default;
+
+  void SimulateSignIn();
+
   views::MdTextButton* GetNeverButton() {
     return IsThreeButton() ? view()->extra_view_for_testing()
                            : view()->GetCancelButton();
@@ -82,20 +102,15 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase,
     return IsThreeButton() ? view()->GetCancelButton() : nullptr;
   }
 
-  bool IsThreeButton() { return GetParam(); }
-
-  password_manager::PasswordForm pending_password_;
+  bool IsThreeButton() {
+    return GetParam() == PasswordSaveUpdateViewTestVariant::kThreeButton;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<PasswordSaveUpdateView> view_ = nullptr;
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 
-PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
-  scoped_feature_list_.InitWithFeatureState(
-      features::kThreeButtonPasswordSaveDialog, IsThreeButton());
-
+PasswordSaveUpdateViewFixtureBase::PasswordSaveUpdateViewFixtureBase() {
   ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(true));
   ON_CALL(*model_delegate_mock(), GetOrigin)
@@ -117,13 +132,31 @@ PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
       profile(), base::BindRepeating(&BuildTestSyncService));
 }
 
-void PasswordSaveUpdateViewTest::CreateViewAndShow() {
+void PasswordSaveUpdateViewFixtureBase::CreateViewAndShow() {
   CreateAnchorViewAndShow();
 
   view_ = new PasswordSaveUpdateView(web_contents(),
                                      views::BubbleAnchor(anchor_view()),
                                      LocationBarBubbleDelegateView::AUTOMATIC);
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
+}
+
+PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
+  switch (GetParam()) {
+    case PasswordSaveUpdateViewTestVariant::kTwoButton:
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              features::kThreeButtonPasswordSaveDialog,
+              features::kPasswordSaveUpdateDropdownMenuExperiment});
+      break;
+    case PasswordSaveUpdateViewTestVariant::kThreeButton:
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kThreeButtonPasswordSaveDialog},
+          /*disabled_features=*/{
+              features::kPasswordSaveUpdateDropdownMenuExperiment});
+      break;
+  }
 }
 
 void PasswordSaveUpdateViewTest::SimulateSignIn() {
@@ -216,14 +249,345 @@ TEST_P(PasswordSaveUpdateViewTest, SaveButtonIsDisabledWhenPasswordIsEmpty) {
       dialog_delegate->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }
 
+class PasswordDropdownExperimentTest
+    : public PasswordSaveUpdateViewFixtureBase {
+ public:
+  PasswordDropdownExperimentTest();
+  ~PasswordDropdownExperimentTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+PasswordDropdownExperimentTest::PasswordDropdownExperimentTest() {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kPasswordSaveUpdateDropdownMenuExperiment);
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       HasNoSubtitleForSameDomainAndNoHostInTitle) {
+  GURL kURL("http://example.com");
+  pending_password_.url = kURL;
+
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kURL, web_contents()->GetPrimaryMainFrame());
+
+  EXPECT_CALL(*model_delegate_mock(), GetOrigin())
+      .WillRepeatedly(Return(url::Origin::Create(kURL)));
+
+  CreateViewAndShow();
+  EXPECT_EQ(view()->GetSubtitle(), std::u16string());
+  EXPECT_EQ(view()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD));
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       HasSubtitleForDifferentDomainAndNoHostInTitle) {
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://different.com"), web_contents()->GetPrimaryMainFrame());
+
+  pending_password_.url = GURL("http://example.com");
+
+  EXPECT_CALL(*model_delegate_mock(), GetOrigin())
+      .WillRepeatedly(Return(url::Origin::Create(GURL("http://example.com"))));
+
+  CreateViewAndShow();
+  EXPECT_EQ(view()->GetSubtitle(), u"example.com");
+  EXPECT_EQ(view()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD));
+}
+
+TEST_F(PasswordDropdownExperimentTest, DropdownMenuExperimentButtons) {
+  CreateViewAndShow();
+
+  EXPECT_TRUE(view()->GetOkButtonForTesting());
+  EXPECT_FALSE(view()->GetCancelButtonForTesting());
+
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  EXPECT_TRUE(split_button);
+}
+
+TEST_F(PasswordDropdownExperimentTest, DropdownMenuExperimentUpdateBubble) {
+  EXPECT_CALL(*model_delegate_mock(), GetState)
+      .WillRepeatedly(
+          Return(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE));
+
+  CreateViewAndShow();
+
+  EXPECT_TRUE(view()->GetOkButtonForTesting());
+  EXPECT_TRUE(view()->GetCancelButtonForTesting());
+
+  EXPECT_FALSE(view()->GetViewByID(PasswordSaveUpdateView::kSplitButton));
+}
+
+TEST_F(PasswordDropdownExperimentTest, DropdownMenuExperimentMorphing) {
+  // Add an existing credential.
+  password_manager::PasswordForm existing_form;
+  existing_form.username_value = u"existing_user";
+  existing_form.password_value = u"password";
+  current_forms_.push_back(
+      std::make_unique<password_manager::PasswordForm>(existing_form));
+
+  // Set pending password to a NEW user.
+  pending_password_.username_value = u"new_user";
+  pending_password_.password_value = u"password";
+
+  // Start in Save state.
+  ON_CALL(*model_delegate_mock(), GetState)
+      .WillByDefault(Return(password_manager::ui::PENDING_PASSWORD_STATE));
+
+  CreateViewAndShow();
+
+  // Verify custom buttons are used and visible.
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  views::View* dismiss_update_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kDismissUpdateButton);
+  ASSERT_TRUE(split_button);
+  EXPECT_TRUE(split_button->GetVisible());
+  ASSERT_TRUE(dismiss_update_button);
+  EXPECT_FALSE(dismiss_update_button->GetVisible());
+
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  views::View* cancel_button = view()->GetCancelButtonForTesting();
+
+  ASSERT_TRUE(ok_button);
+  EXPECT_FALSE(cancel_button && cancel_button->GetVisible());
+
+  // In Save state:
+  EXPECT_TRUE(split_button->GetVisible());
+  EXPECT_EQ(views::AsViewClass<views::MdTextButton>(ok_button)->GetText(),
+            SaveButtonCaption());
+
+  // Now simulate state change to Update by changing username to
+  // "existing_user".
+  view()->username_dropdown_for_testing()->SetText(u"existing_user");
+  view()->TriggerOnContentChangedForTesting();
+
+  // After morphing to Update:
+  EXPECT_TRUE(dismiss_update_button->GetVisible());
+  EXPECT_FALSE(split_button->GetVisible());
+  EXPECT_TRUE(
+      view()->GetViewByID(PasswordSaveUpdateView::kDismissUpdateButton) &&
+      view()
+          ->GetViewByID(PasswordSaveUpdateView::kDismissUpdateButton)
+          ->GetVisible());
+  EXPECT_EQ(
+      views::AsViewClass<views::MdTextButton>(ok_button)->GetText(),
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON));
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       DropdownMenuExperimentInteraction_NotNow) {
+  CreateViewAndShow();
+
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  ASSERT_TRUE(split_button);
+  views::View* not_now_button =
+      split_button->GetViewByID(PasswordSaveUpdateView::kNotNowButton);
+  ASSERT_TRUE(not_now_button);
+
+  EXPECT_CALL(*model_delegate_mock(), OnNotNowClicked);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      views::AsViewClass<views::Button>(not_now_button));
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       DropdownMenuExperimentInteraction_SaveAndReplaceWithPromo) {
+  pending_password_.password_value = u"password";
+
+  CreateViewAndShow();
+
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  ASSERT_TRUE(split_button);
+  EXPECT_TRUE(split_button->GetVisible());
+
+  EXPECT_CALL(*model_delegate_mock(), SavePassword);
+
+  views::ViewTracker tracker(view());
+  view()->AcceptDialog();
+
+  // Verify that the extra view container is now hidden or deleted.
+  if (tracker.view()) {
+    views::View* container =
+        view()->GetViewByID(PasswordSaveUpdateView::kCustomButtonRow);
+    EXPECT_TRUE(!container || !container->GetVisible());
+  }
+}
+
+TEST_F(PasswordDropdownExperimentTest, DropdownMenuExperimentInteraction_Save) {
+  pending_password_.password_value = u"password";
+
+  CreateViewAndShow();
+
+  EXPECT_CALL(*model_delegate_mock(), SavePassword);
+  view()->AcceptDialog();
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       DropdownMenuExperimentInteraction_Never) {
+  pending_password_.password_value = u"password";
+  CreateViewAndShow();
+
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  ASSERT_TRUE(split_button);
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+  ASSERT_FALSE(split_button->children().empty());
+
+  views::View* caret_button =
+      split_button->GetViewByID(PasswordSaveUpdateView::kCaretButton);
+  ASSERT_TRUE(caret_button);
+
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      views::AsViewClass<views::Button>(caret_button));
+
+  ASSERT_TRUE(view()->MenuModelForTesting());
+  EXPECT_CALL(*model_delegate_mock(), NeverSavePassword);
+  view()->MenuModelForTesting()->ActivatedAt(0);
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       DropdownMenuExperimentInteraction_CancelUpdatePassword) {
+  // Add an existing credential.
+  password_manager::PasswordForm existing_form;
+  existing_form.username_value = u"existing_user";
+  existing_form.password_value = u"password";
+  current_forms_.push_back(
+      std::make_unique<password_manager::PasswordForm>(existing_form));
+
+  // Start in Save state.
+  ON_CALL(*model_delegate_mock(), GetState)
+      .WillByDefault(Return(password_manager::ui::PENDING_PASSWORD_STATE));
+
+  CreateViewAndShow();
+
+  // Morph to Update.
+  view()->username_dropdown_for_testing()->SetText(u"existing_user");
+  view()->TriggerOnContentChangedForTesting();
+
+  views::View* cancel_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kDismissUpdateButton);
+  ASSERT_TRUE(cancel_button);
+  EXPECT_TRUE(cancel_button->GetVisible());
+
+  EXPECT_CALL(*model_delegate_mock(), OnNotNowClicked);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      views::AsViewClass<views::Button>(cancel_button));
+}
+
+TEST_F(PasswordDropdownExperimentTest, OkButtonDisabledWhenPasswordIsEmpty) {
+  CreateViewAndShow();
+
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+
+  view()->password_dropdown_for_testing()->SetText(u"");
+  view()->TriggerOnContentChangedForTesting();
+  EXPECT_FALSE(ok_button->GetEnabled());
+}
+
+TEST_F(PasswordDropdownExperimentTest, OkButtonEnabledWhenPasswordIsNotEmpty) {
+  CreateViewAndShow();
+
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+
+  view()->password_dropdown_for_testing()->SetText(u"password");
+  view()->TriggerOnContentChangedForTesting();
+  EXPECT_TRUE(ok_button->GetEnabled());
+}
+
+TEST_F(PasswordDropdownExperimentTest, DropdownMenuExperimentNonBlockingMenu) {
+  pending_password_.password_value = u"password";
+  CreateViewAndShow();
+
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  ASSERT_TRUE(split_button);
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  ASSERT_TRUE(ok_button);
+  ASSERT_FALSE(split_button->children().empty());
+
+  views::View* caret_button =
+      split_button->GetViewByID(PasswordSaveUpdateView::kCaretButton);
+  ASSERT_TRUE(caret_button);
+
+  // 1. Open the menu by pressing the caret button.
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      views::AsViewClass<views::Button>(caret_button));
+
+  // 2. Attempt to click the "Save" button while the menu is open.
+  // If the menu is non-blocking, this should succeed and notify the delegate.
+  EXPECT_CALL(*model_delegate_mock(), SavePassword);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      views::AsViewClass<views::Button>(ok_button));
+}
+
+TEST_F(PasswordDropdownExperimentTest, CustomButtonRowLayoutDetails) {
+  CreateViewAndShow();
+
+  views::View* button_row =
+      view()->GetViewByID(PasswordSaveUpdateView::kCustomButtonRow);
+  ASSERT_TRUE(button_row);
+
+  // Check that it uses BoxLayout with horizontal orientation and kEnd
+  // alignment.
+  views::BoxLayoutView* box_layout_view =
+      views::AsViewClass<views::BoxLayoutView>(button_row);
+  ASSERT_TRUE(box_layout_view);
+
+  EXPECT_EQ(box_layout_view->GetOrientation(),
+            views::BoxLayout::Orientation::kHorizontal);
+  EXPECT_EQ(box_layout_view->GetMainAxisAlignment(),
+            views::BoxLayout::MainAxisAlignment::kEnd);
+
+  // Verify the buttons exist as children of the row.
+  views::View* ok_button = view()->GetOkButtonForTesting();
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  ASSERT_TRUE(ok_button);
+  ASSERT_TRUE(split_button);
+
+  EXPECT_EQ(ok_button->parent(), button_row);
+  EXPECT_EQ(split_button->parent(), button_row);
+}
+
+TEST_F(PasswordDropdownExperimentTest,
+       FederatedCredentialsBubbleShouldNotCrash) {
+  GURL kURL("https://example.com");
+  url::Origin kOrigin = url::Origin::Create(kURL);
+  EXPECT_CALL(*model_delegate_mock(), GetOrigin)
+      .WillRepeatedly(Return(kOrigin));
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      kURL, web_contents()->GetPrimaryMainFrame());
+
+  // Set the federation_origin to force a Federated Credentials bubble.
+  pending_password_.federation_origin = url::SchemeHostPort(kURL);
+  pending_password_.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
+
+  CreateViewAndShow();
+}
+
 // These tests are parameterized to run in the original two-button layout,
-// and the newer three-button variant.  Three-button is now the default, but
-// the original version still runs for a small percentage of users, so
-// maintain test coverage on both variants.  If a new UI variant is introduced,
-// the parameter can be changed to an enum or similar.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PasswordSaveUpdateViewTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "ThreeButton" : "TwoButton";
-                         });
+// and the newer three-button variant. Three-button is now the default, but
+// the original version still runs for a small percentage of users, so maintain
+// test coverage on both variants.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordSaveUpdateViewTest,
+    testing::Values(PasswordSaveUpdateViewTestVariant::kTwoButton,
+                    PasswordSaveUpdateViewTestVariant::kThreeButton),
+    [](const testing::TestParamInfo<PasswordSaveUpdateViewTestVariant>& info) {
+      switch (info.param) {
+        case PasswordSaveUpdateViewTestVariant::kTwoButton:
+          return "TwoButton";
+        case PasswordSaveUpdateViewTestVariant::kThreeButton:
+          return "ThreeButton";
+      }
+    });
