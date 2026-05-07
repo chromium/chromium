@@ -745,6 +745,7 @@
 <translation id="21613918653299710">آن لائن تصویری گیلریاں</translation>
 <translation id="2161656808144014275">متن</translation>
 <translation id="2162435186600002085">بنیادی ہیڈر لوگو</translation>
+<translation id="2162535140284745414">‏رئیل ٹائم تجاویز حاصل کریں جو آپ کو AI کے ساتھ براؤز کرنے کے نئے طریقے تلاش کرنے میں مدد کر سکتی ہیں۔</translation>
 <translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
 <translation id="2164510882479075877">چیک کریں کہ آیا <ph name="HOST_NAME" /> میں کوئی ہجوں کی کوئی غلطی تو نہیں۔</translation>
 <translation id="2166049586286450108">منتظم کیلئے مکمل رسائی</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3261488570342242926">ورچوئل کارڈز کے بارے میں جانیں</translation>
 <translation id="3262698603497362968">خریداری کے اختیارات</translation>
 <translation id="3264315627780269177">اس ٹیب کا اشتراک نہیں کیا جا سکتا</translation>
+<translation id="3264637689694266148">‏اگر آپ تجاویز کو آف کر دیتے ہیں تو آپ کے ٹیبز کے صفحہ کے عنوان اور URLs پر اب بھی Chrome کی دیگر خصوصیات کے لیے کارروائی کی جا سکتی ہے۔ آپ اپنی مطابقت پذیری کی ترتیبات میں اس ڈیٹا تک براؤزر کی رسائی کا نظم کر سکتے ہیں</translation>
 <translation id="3266793032086590337">قدر (متضاد)</translation>
 <translation id="3268451620468152448">کھلے ٹیبز</translation>
 <translation id="3270041629388773465">‏جب آپ کے CVCs محفوظ ہو جائیں تو تیزی سے چیک آؤٹ کریں</translation>
@@ -1904,7 +1906,6 @@
 <translation id="3965672182149944205">پتہ محفوظ کریں؟</translation>
 <translation id="3966044442021752214">پروڈکٹ کا تحفظ</translation>
 <translation id="396761677631735618">ٹچ پر پُر کیے جانے والے لائلٹی کارڈز دستیاب ہیں جو آدھی اونچائی پر کھلے ہیں۔</translation>
-<translation id="3969869202926863008">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="3970239200223030389">جاری کرنے کی تاریخ</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود ہے</translation>
@@ -1995,6 +1996,7 @@
 <translation id="4103249731201008433">آلہ کا سیریل نمبر غلط ہے</translation>
 <translation id="4103592298805904008">کارڈ بورڈ (سنگل وال)</translation>
 <translation id="4104702906064390950">‏‫IBAN کی معلومات کو محفوظ کیا جا رہا ہے</translation>
+<translation id="4106101218644797743">مطابقت پذیری کی ترتیبات</translation>
 <translation id="4106887816571530227">سرایت کردہ مواد کی اجازت نہیں ہے</translation>
 <translation id="4107047499377819067">‏‫VPN کی پس منظر سروسز کی انسٹالیشن شروع ہو گئی ہے، اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4110642094637545339">‏‫Google Pay, AfterPay کا لوگو</translation>
@@ -2330,6 +2332,7 @@
 <translation id="4640225694041297329">پچھلے 7 دن کے نتائج دکھائیں</translation>
 <translation id="4642296966515958616">‏اس ٹیب گروپ میں شامل ہونے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
+<translation id="4643958597583594452">‏‫Chrome آپ کے آلے پر یا کلاؤڈ میں پرائیویٹ اسپیس میں صفحہ کے عنوانات اور URLs پر کارروائی کرتا ہے</translation>
 <translation id="4644567637638438744">‏آپ کے Microsoft OneDrive میں سائن ان ہونے پر ہی فائلز اپ لوڈ ہو سکتی ہیں</translation>
 <translation id="4644670975240021822">اُلٹ ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="4648262692072505866">‏ہیش کا فارمیٹ SHA-256 ہونا چاہیے۔</translation>
@@ -2577,6 +2580,7 @@
 <translation id="5019293549442035120">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ یہ پتہ آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="5019819206251569004">موشن اور لائٹ سینسرز</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> پالیسی سیٹ ہے۔ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ایکسٹینشنز صفحہ پر ڈویلپر وضع کی دستیابی کو کنٹرول نہیں کرے گا۔</translation>
+<translation id="5020862932518041900">‏اگر آپ کسی تجویز کو منتخب کرتے ہیں یا نظر انداز کرتے ہیں تو Chrome اس بات کو یقینی بنانے کے لیے موافقت کرے گا کہ آپ صرف وہی دیکھیں جو آپ سے متعلق ہے</translation>
 <translation id="5021500396464456616">اس لنک کو بھیجنے والے فرد سے رابطہ کریں</translation>
 <translation id="5021557570875267742">‏Chrome کے ساتھ قیمتوں کو ٹریک کریں</translation>
 <translation id="5023310440958281426">اپنے منتظم کی پالیسیاں چیک کریں</translation>
@@ -3007,7 +3011,6 @@
 <translation id="5660122698869360728">ایک ایسا نیا اسمارٹ فولڈر جو آپ کی خریداری کے تمام صفحات کو ایک جگہ محفوظ کرنے میں آپ کی مدد کرتا ہے اور خودکار طور پر قیمتوں کو ٹریک کرتا ہے اور قیمت سے متعلق حقائق وغیرہ حاصل کرتا ہے۔</translation>
 <translation id="5663955426505430495">اس آلے کے منتظم نے اضافی فنکشنز کیلئے ایکسٹینشنز انسٹال کی ہیں۔ ایکسٹینشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
 <translation id="5667827081946850877">آڈیو بُکس</translation>
-<translation id="5674082555327905359">آپ سے اپنے مقامی نیٹ ورک پر کسی آلے سے منسلک ہونے کو کہا جا سکتا ہے</translation>
 <translation id="5675650730144413517">یہ صفحہ کام نہیں کر رہا ہے</translation>
 <translation id="5675809467256309336">رقص اور الیکٹرانک موسیقی</translation>
 <translation id="5675959228867414813">تاریخ کے لحاظ سے دکھائیں</translation>
@@ -3415,7 +3418,6 @@
 <translation id="6321917430147971392">‏اپنی DNS ترتیبات چیک کریں</translation>
 <translation id="6322182122604171028">‏Windows Hello کا استعمال نہیں کیا جا سکا</translation>
 <translation id="6326947323444967009">‏iOS کی ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
-<translation id="6327065120806001832">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="6328639280570009161">نیٹ ورک کی پیشین گوئی غیر فعال کرنے کی کوشش کریں</translation>
 <translation id="6329742260390895689">‏اپنی معلومات کو آٹو فل کرنے کیلئے، والٹ کی ترتیبات میں "پورے Google پر پاسز کا استعمال کریں" کو آن کریں</translation>
 <translation id="6329815962353376655">&lt;سوال ٹائپ کریں&gt;</translation>
@@ -3519,6 +3521,7 @@
 <translation id="6451458296329894277">فارم دوبارہ جمع کرانے کی توثیق کریں</translation>
 <translation id="6452429044474066211">غوطہ خوری اور زیر آب سرگرمیاں</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">‏آپ کے کھلے ٹیبز کے صفحہ کے عنوانات اور URLs آپ کو متعلقہ تجاویز دینے کے لیے استعمال کیے جاتے ہیں</translation>
 <translation id="6455632609396391811">ہیلتھ انشورنس</translation>
 <translation id="6456955391422100996">اشتہار ہٹا دیا گیا۔</translation>
 <translation id="6457206614190510200">سیڈل سلائی</translation>
@@ -4412,6 +4415,7 @@
 <translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
 <translation id="7822611063308883975">ہاتھ میں سما جانے والے گیم کونسولز</translation>
 <translation id="7825558994363763489">مائکرو ویوز</translation>
+<translation id="7827688884439021871">‏رئیل ٹائم تجاویز حاصل کریں جو آپ کو AI کے ساتھ براؤز کرنے کے نئے طریقے تلاش کرنے میں مدد کر سکتی ہیں</translation>
 <translation id="782886543891417279">‏آپ جو Wi-Fi استعمال کر رہے ہیں <ph name="WIFI_NAME" /> وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="7831993212387676366">خریداری کی فہرست کیا ہے؟</translation>
 <translation id="7840103971441592723">اسکرین کیپچر شروع ہو گئی ہے</translation>
@@ -4703,6 +4707,7 @@
 <translation id="8289355894181816810">اگر آپ کو اس کا مطلب یقینی طور پر معلوم نہیں ہے تو نیٹ ورک کے منتظم سے رابطہ کریں۔</translation>
 <translation id="8291367150570302588">‏‫ID کارڈ</translation>
 <translation id="829335040383910391">آواز</translation>
+<translation id="8294425747071240447">‏‫AI کے ذریعے تقویت یافتہ تجاویز</translation>
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8297545700510100061">کوکیز اور سائٹ کا دیگر ڈیٹا آپ کو یاد رکھنے کے لئے استعمال ہوتا ہے، مثال کے طور پر آپ کو سائن ان کرنے یا اشتہارات کو ذاتی نوعیت کا بنانے کے لیے۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے <ph name="SETTINGS" /> دیکھیں۔</translation>
 <translation id="8298115750975731693">‏آپ جو Wi-Fi استعمال کر رہے ہیں (<ph name="WIFI_NAME" />) وہ آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>

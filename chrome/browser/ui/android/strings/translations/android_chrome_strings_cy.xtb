@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Olrhain</translation>
 <translation id="1366525380420346469">Pan fydd ymlaen</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Gallwch atal y wefan hon rhag anfon hysbysiadau yn y dyfodol}zero{Gallwch atal y gwefannau hyn rhag anfon hysbysiadau yn y dyfodol}two{Gallwch atal y gwefannau hyn rhag anfon hysbysiadau yn y dyfodol}few{Gallwch atal y gwefannau hyn rhag anfon hysbysiadau yn y dyfodol}many{Gallwch atal y gwefannau hyn rhag anfon hysbysiadau yn y dyfodol}other{Gallwch atal y gwefannau hyn rhag anfon hysbysiadau yn y dyfodol}}</translation>
-<translation id="1373696734384179344">Nid oes digon o gof i lawrlwytho'r cynnwys a ddewisir.</translation>
 <translation id="137496472437646183">Dewiswch Gwell amddiffyniad</translation>
 <translation id="1376578503827013741">Wrthi'n cyfrifo…</translation>
 <translation id="1381838868249179644">Er mwyn helpu i'ch cadw'n ddiogel, dilëwyd caniatadau o rai gwefannau</translation>
@@ -292,6 +291,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="230115972905494466">Heb ganfod unrhyw ddyfeisiau cydnaws</translation>
 <translation id="2316129865977710310">Dim diolch</translation>
 <translation id="2318045970523081853">Tapiwch i wneud galwad</translation>
+<translation id="232137538351753795">Sweipiwch o'r ymyl chwith i fynd yn ôl</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
 <translation id="2328474416100889417">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yr holl ddolenni gwahoddiad yn cael eu diffodd</translation>
 <translation id="2330186936255788117">Rhagor o nodau tudalen</translation>
@@ -357,6 +357,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2553962148913791095">Nid yw rhai nodau tudalen yn cael eu cadw</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Rhwystrwyd lawrlwythiad peryglus}zero{Rhwystrwyd # lawrlwythiad peryglus}two{Rhwystrwyd # lawrlwythiad peryglus}few{Rhwystrwyd # lawrlwythiad peryglus}many{Rhwystrwyd # lawrlwythiad peryglus}other{Rhwystrwyd # lawrlwythiad peryglus}}</translation>
 <translation id="2569733278091928697">Byddwch yn gallu rheoli rheolyddion cyfryngau, sesiynau Anhysbys, lawrlwythiadau a rhagor yn hawdd</translation>
+<translation id="257088987046510401">Themâu</translation>
 <translation id="2571711316400087311">Cynnig anfon tudalennau mewn ieithoedd eraill i Google Translate</translation>
 <translation id="2571834852878229351">Creu fy un fy hun</translation>
 <translation id="2574249610672786438">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch ar eich holl ddyfeisiau</translation>
@@ -527,7 +528,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3293181007446299124">Mae eich hanes pori yn cael ei gadw'n breifat ar eich dyfais ac anfonir adroddiadau gydag oedi er mwyn diogelu eich hunaniaeth</translation>
 <translation id="3301936297336370235">Cadarnhad awgrym cyfrinair</translation>
 <translation id="3302615849591357577">Adfer grŵp tabiau <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.</translation>
-<translation id="3303414029551471755">Parhau i lawrlwytho'r cynnwys?</translation>
 <translation id="3303855915957856445">Ni chanfuwyd unrhyw ganlyniadau chwilio</translation>
 <translation id="3305130791745726624">Anfon i ddyfeisiau</translation>
 <translation id="3305795716056605962">Cyfieithwch dudalennau o'r botwm Rhagor o Opsiynau</translation>
@@ -544,7 +544,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3373701465337594448">Pan fydd ymlaen, bydd rhestr o wefannau rydych wedi ymweld â nhw sy'n dyfalu eich diddordebau yn ymddangos yma</translation>
 <translation id="3384347053049321195">Rhannu llun</translation>
 <translation id="3387650086002190359">Methwyd â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwallau system.</translation>
-<translation id="3414952576877147120">Maint:</translation>
 <translation id="3417835166382867856">Chwilio tabiau</translation>
 <translation id="3430670036890315772">Bydd diffodd eich clo proffil yn tynnu eich gwybodaeth sydd wedi'i chadw</translation>
 <translation id="3435465986463792564">Oes gennych chi lawer o ffenestri? Gallwch eu rheoli o'r fan hon</translation>
@@ -886,7 +885,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4807098396393229769">Enw ar y cerdyn</translation>
 <translation id="480990236307250886">Agor y dudalen hafan</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grŵp tabiau wedi'i gau a'i gadw</translation>
-<translation id="482405935591409882">Chwilio eich tabiau a'ch grwpiau</translation>
 <translation id="4834250788637067901">Dulliau talu, cynigion a chyfeiriadau sy'n defnyddio Google Pay</translation>
 <translation id="4835385943915508971">Nid oes gan Chrome fynediad at yr adnodd y gofynnwyd amdano.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Adfer grŵp tabiau o <ph name="TAB_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}zero{Adfer grŵp tabiau o <ph name="TAB_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}two{Adfer grŵp tabiau o <ph name="TAB_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}few{Adfer grŵp tabiau o <ph name="TAB_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}many{Adfer grŵp tabiau o <ph name="TAB_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}other{Adfer grŵp tabiau o <ph name="TAB_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.}}</translation>
@@ -896,7 +894,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4860895144060829044">Galw</translation>
 <translation id="4864369630010738180">Wrthi'n mewngofnodi...</translation>
 <translation id="4866368707455379617">Methu â gosod <ph name="MODULE" /> ar gyfer Chrome</translation>
-<translation id="487567923005969537">Galluogi'r Dull AI</translation>
 <translation id="4875775213178255010">Awgrymiadau Cynnwys</translation>
 <translation id="4877678010818027629">Dechrau'r modd Anhysbys</translation>
 <translation id="4878404682131129617">Wedi methu â sefydlu twnnel drwy weinydd dirprwyol</translation>
@@ -989,7 +986,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
 <translation id="5264813352784073502">24 awr ddiwethaf</translation>
 <translation id="5267572070504076962">Trowch Bori'n Ddiogel ymlaen i gael amddiffyniad rhag gwefannau peryglus</translation>
-<translation id="5271967389191913893">Ni all y ddyfais agor y cynnwys i'w lawrlwytho.</translation>
 <translation id="5273031377282080577">Eich gweinyddwr sy'n rheoli'r gosodiad hwn.</translation>
 <translation id="5290322819358431297">Awtolenwi'ch cyfrineiriau</translation>
 <translation id="5292796745632149097">Anfon at</translation>
@@ -1062,7 +1058,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5619633276517849615">Mae eich sefydliad wedi troi Pori'n Ddiogel ymlaen</translation>
 <translation id="5620163320393916465">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw</translation>
 <translation id="5620928963363755975">Gallwch ddod o hyd i'ch ffeiliau a'ch tudalennau yn Lawrlwythiadau o'r botwm Rhagor o Ddewisiadau</translation>
-<translation id="5626134646977739690">Enw:</translation>
 <translation id="5628604359369369630">Heb eu darllen - Ar gael all-lein</translation>
 <translation id="5631483240431073854">Rheoli tabiau agored</translation>
 <translation id="5632485077360054581">Dangoswch i fi sut</translation>
@@ -1094,7 +1089,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5763382633136178763">Tabiau Anhysbys</translation>
 <translation id="5763514718066511291">Tapiwch i gopïo'r URL ar gyfer yr ap hwn</translation>
 <translation id="5765517223145864268">Dywedwch wrthym am eich profiad. Neu <ph name="BEGIN_LINK" />newidiwch eich gosodiadau<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Disgrifiad:</translation>
 <translation id="5776970333778123608">Data nad ydynt yn bwysig</translation>
 <translation id="5793665092639000975">Yn defnyddio <ph name="SPACE_USED" /> o <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Pwnc sydd wedi'i rwystro</translation>
@@ -1525,7 +1519,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7365073365123878797">I ddechrau cadw a defnyddio cyfrineiriau gyda Rheolwr Cyfrineiriau Google, diweddarwch wasanaethau Google Play</translation>
 <translation id="7368009310682364976">Gweld tabiau a agorwyd yn ddiweddar</translation>
 <translation id="7368927539449986686">Golygu chwiliad gwefan</translation>
-<translation id="7375125077091615385">Math:</translation>
 <translation id="7376560087009844242">Drwy gynnwys mwy o destun tudalen, gallech weld canlyniadau gwell wrth ddefnyddio Cyffwrdd i Chwilio. I newid hyn, gallwch bob amser fynd i'r <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Mae'r thema dywyll ar gyfer gwefannau ar gael</translation>
 <translation id="7384486627147155832">Hyrwyddiad hysbysiadau awgrymiadau wedi'i agor ar hanner uchder</translation>
@@ -1665,7 +1658,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7957413488482743710">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabiau ar y ddyfais hon</translation>
 <translation id="7961926449547174351">Rydych wedi analluogi mynediad Storio, ewch i'r Gosodiadau i'w alluogi.</translation>
-<translation id="7963646190083259054">Gwerthwr:</translation>
 <translation id="7965838025086216108">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
@@ -1674,6 +1666,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
+<translation id="7997875520309653083">Sweipiwch o'r ymyl dde i fynd yn ôl</translation>
 <translation id="7998918019931843664">Ailagor tab sydd wedi'i gau</translation>
 <translation id="8001245658307297681">Rydych yn edrych ar ffeil leol</translation>
 <translation id="8004582292198964060">Porwr</translation>
@@ -1837,7 +1830,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="860282621117673749">Hysbysiadau gostyngiadau prisiau</translation>
 <translation id="8611922158252451755">Gall unrhyw un sydd â'r ddolen olygu pob tab, felly rhannwch yn ddoeth. Dolen yn darfod mewn 48 awr.</translation>
 <translation id="8616006591992756292">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Agor yr URL a awgrymir a nodwyd yn y cynnwys sydd wedi'i lawrlwytho?</translation>
 <translation id="8629093325209491835">Agorwch Ddewislen Chrome &gt; Gosodiadau</translation>
 <translation id="8634050254805484913">Wedi'i guddio ar sgriniau cul</translation>
 <translation id="8635399646025169806">Cadw'r grŵp tabiau?</translation>
@@ -1878,7 +1870,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="881688628773363275">Nid oes modd gweld cynnwys y tab rhagweld.</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
 <translation id="8824359129672223138">Gallwch gael hyd at <ph name="MAX_WINDOW_COUNT" /> ffenestr.</translation>
-<translation id="883806473910249246">Bu gwall wrth lawrlwytho'r cynnwys.</translation>
 <translation id="8840953339110955557">Gall y dudalen hon fod yn wahanol i'r fersiwn ar-lein.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Wedi'i chuddio</translation>

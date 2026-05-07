@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nie, dziękuję</translation>
 <translation id="1531038290222364269">Pokaż karty</translation>
 <translation id="1536390784834419204">Przetłumacz stronę</translation>
+<translation id="1539535193627863227">Nie znaleziono haseł ani kluczy dostępu do tej witryny</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Otwieraj karty z innych urządzeń na ekranie blokady.</translation>
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Wyłącz Tryb czytania</translation>
 <translation id="3106690631878101882">Ukryj opcję Tłumacz</translation>
 <translation id="310900540163454140">Usunąć hasło użytkownika w aplikacji <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Zwinięty</translation>
 <translation id="3112556859945124369">Oznacz…</translation>
 <translation id="3116695032231023709">Zapisz dowód tożsamości</translation>
 <translation id="3119874402040566234">Nastąpi wylogowanie, a dane przeglądania zostaną usunięte</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Nie udało się zapisać zmiany.</translation>
 <translation id="3254806613790954367">Ostatnia otwarta karta na wszystkich Twoich urządzeniach</translation>
 <translation id="325717987950204592">Kliknij „Prywatność i bezpieczeństwo”</translation>
+<translation id="3259451381796379533">To konto nie będzie działać z Gemini. Zaloguj się na inne konto Google.</translation>
 <translation id="3265736395246760288">Loguj się szybciej na dowolnym z synchronizowanych urządzeń.</translation>
 <translation id="3272527697863656322">Anuluj</translation>
 <translation id="3273510436356991673">Dostosuj ekran główny</translation>
@@ -1780,6 +1783,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7186568385131859684">Określ sposób wykorzystywania historii przeglądania w połączeniu z innymi danymi w usługach Google</translation>
 <translation id="719133302483559673">Zarządzaj zainteresowaniami i preferencjami.</translation>
 <translation id="7191382490098297347">Zdjęcie z rolki z aparatu</translation>
+<translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7203496777391039568">Dbamy o prywatność i bezpieczeństwo danych Twojej organizacji</translation>
 <translation id="720399613139435155">Nie udało się przetłumaczyć</translation>
 <translation id="7204922488054642675">Spersonalizowane wiadomości</translation>
@@ -1864,6 +1868,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7498234416455752244">Edytuj dalej</translation>
 <translation id="7500244509706269886">Automatycznie uzupełnij formularz</translation>
 <translation id="750493650310597496">Nic nie wybrałeś</translation>
+<translation id="7505402981231763928">Aby korzystać z Gemini, musisz się zalogować</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Aby zablokować karty incognito, skonfiguruj Touch ID, Face ID lub hasło.</translation>
 <translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>

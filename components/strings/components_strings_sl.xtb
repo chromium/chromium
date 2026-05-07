@@ -478,6 +478,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1727613060316725209">Potrdilo je veljavno</translation>
 <translation id="1728677426644403582">Ogledujete si izvorno kodo spletne strani</translation>
 <translation id="173080396488393970">Ta vrsta kartice ni podprta</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Vprašaj raje osebno</translation>
 <translation id="1733064249834771892">pisave</translation>
 <translation id="1733631169686303142">Avdio oprema</translation>
@@ -1596,6 +1597,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="350069200438440499">Ime datoteke:</translation>
 <translation id="3501300228850242680">Metalska glasba</translation>
 <translation id="350421688684366066">Labels (High-Gloss)</translation>
+<translation id="3507062913298382727">Shranite osebno izkaznico</translation>
 <translation id="350763432931695541">Pridobivanje besedila na naslednjih nekaj straneh</translation>
 <translation id="3507869775212388416">Zaposlitev na področju prava</translation>
 <translation id="3507936815618196901">Ustvarjanje 3D-zemljevida vaše okolice in spremljanje položaja kamere</translation>
@@ -1905,7 +1907,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3965672182149944205">Želite shraniti naslov?</translation>
 <translation id="3966044442021752214">Varnost izdelka</translation>
 <translation id="396761677631735618">Kartice zvestobe, ki jih je mogoče izpolniti z dotikom, odprte pri polovični višini.</translation>
-<translation id="3969869202926863008">Dostop v lokalnem omrežju</translation>
 <translation id="3970239200223030389">Datum izdaje</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="3973234410852337861">Spletno mesto <ph name="HOST_NAME" /> je blokirano</translation>
@@ -1990,6 +1991,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4098306082496067348">Dotaknite se podrobnosti navidezne kartice, da jih dodate v zaključek nakupa.</translation>
 <translation id="4099048595830172239">Pravilnik skrbnika ne priporoča deljenja zaslona z aplikacijo <ph name="APPLICATION_TITLE" />, kadar je vidna zaupna vsebina:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prilagoditi velikost pisav in tipografije v Chromu</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Besedilo in grafični elementi</translation>
 <translation id="4101917550061398111">Izbriši izbrane elemente</translation>
 <translation id="4102567721634170493">Lokalne novice</translation>
@@ -2217,6 +2219,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
 <translation id="4415426530740016218">Naslov za prevzem</translation>
 <translation id="4415748029120993980">Eliptična krivulja SECG secp384r1 (oziroma NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Gesla lahko izbrišete v nastavitvah upravljanja</translation>
 <translation id="4424024547088906515">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chrome ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="4425750422187370446">Športna oblačila</translation>
@@ -2956,6 +2959,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5573641252776268565">Urejanje potnega lista</translation>
 <translation id="5578606540385219379">Ponudniki storitev</translation>
 <translation id="5580958916614886209">Preverite mesec poteka veljavnosti in poskusite znova</translation>
+<translation id="5582453333200265572">Posodobite osebno izkaznico</translation>
 <translation id="5583442610070676234">Več dejanj za primerjalno tabelo »<ph name="COMPARE_SET_NAME" />«</translation>
 <translation id="55841966151154662">Te številke IBAN ni bilo mogoče shraniti v Google Denarnici. Namesto tega je shranjena v Chromu v tej napravi.</translation>
 <translation id="558420943003240152">Upravljanje gesel in gesel …</translation>
@@ -3011,7 +3015,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5660122698869360728">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo.</translation>
 <translation id="5663955426505430495">Skrbnik te naprave je namestil razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="5667827081946850877">Zvočne knjige</translation>
-<translation id="5674082555327905359">Lahko zahteva vzpostavitev povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="5675650730144413517">Ta stran ne deluje</translation>
 <translation id="5675809467256309336">Plesna in elektronska glasba</translation>
 <translation id="5675959228867414813">Prikaz glede na datum</translation>
@@ -3090,6 +3093,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5808435672482059465">Ogled zgodovine v Chromu</translation>
 <translation id="5810442152076338065">Povezava z domeno <ph name="DOMAIN" /> je šifrirana z zastarelo šifrirno zbirko.</translation>
 <translation id="5813119285467412249">&amp;Uveljavi dodajanje</translation>
+<translation id="5813274153495000141">Shranite podatke in hitreje izpolnite obrazce. Shranijo se v napravi.</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Seznani</translation>
 <translation id="5820625124144807242">Ko pregledate naročilo, se morate prijaviti v račun za <ph name="BNPL_ISSUER_NAME" /> ali ga ustvariti. Ta račun bo samodejno povezan z Googlom Pay.</translation>
@@ -3418,7 +3422,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6321917430147971392">Preverite nastavitve za DNS</translation>
 <translation id="6322182122604171028">Funkcije Windows Hello ni bilo mogoče uporabiti</translation>
 <translation id="6326947323444967009">Nastavite Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS</translation>
-<translation id="6327065120806001832">dostop v lokalnem omrežju</translation>
 <translation id="6328639280570009161">Poskusite onemogočiti omrežno predvidevanje</translation>
 <translation id="6329742260390895689">Če želite samodejno izpolniti podatke, v nastavitvah Denarnice vklopite »Uporaba kartic v Googlu«</translation>
 <translation id="6329815962353376655">&lt;Vnesite vprašanje&gt;</translation>

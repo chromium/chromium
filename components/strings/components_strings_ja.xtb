@@ -1905,7 +1905,6 @@
 <translation id="3965672182149944205">住所を保存しますか？</translation>
 <translation id="3966044442021752214">製品の安全性</translation>
 <translation id="396761677631735618">タップ操作で入力できるポイントカードが画面の下半分に表示されています。</translation>
-<translation id="3969869202926863008">ローカル ネットワークへのアクセス</translation>
 <translation id="3970239200223030389">発行日</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> はブロックされています</translation>
@@ -3011,7 +3010,6 @@
 <translation id="5660122698869360728">新しいスマート フォルダを使用すると、すべてのショッピング ページを 1 か所に保存して、価格のトラッキングや検討などを自動的に行えます。</translation>
 <translation id="5663955426505430495">このデバイスの管理者によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="5667827081946850877">オーディオブック</translation>
-<translation id="5674082555327905359">ローカル ネットワーク上のすべてのデバイスへの接続を要求できます</translation>
 <translation id="5675650730144413517">このページは動作していません</translation>
 <translation id="5675809467256309336">ダンス音楽、エレクトロニック ミュージック</translation>
 <translation id="5675959228867414813">日付別に表示</translation>
@@ -3418,7 +3416,6 @@
 <translation id="6321917430147971392">DNS 設定を確認してください</translation>
 <translation id="6322182122604171028">Windows Hello を使用できませんでした</translation>
 <translation id="6326947323444967009">iOS 設定で Chrome をシステムの既定のブラウザとして設定します</translation>
-<translation id="6327065120806001832">ローカル ネットワークへのアクセス</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
 <translation id="6329742260390895689">情報を自動入力するには、ウォレットの設定で [Google の各種サービスでパスを使用する] をオンにしてください</translation>
 <translation id="6329815962353376655">&lt;質問を入力&gt;</translation>

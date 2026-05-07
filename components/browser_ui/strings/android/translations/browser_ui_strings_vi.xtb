@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1415855080660575082">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này trong phần cài đặt của Chrome.</translation>
 <translation id="1420688843103859429">Di chuyển qua lại bằng cách vuốt hai ngón tay trên bàn di chuột</translation>
-<translation id="1432650420699700107">Các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="1442081309487427303">Bật các đường liên kết ở Chế độ đọc</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1464044141348608623">Không cho phép các trang web biết khi bạn đang dùng thiết bị</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Khi bạn bật chế độ này, các trang web có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn. Khi bạn tắt chế độ này, các trang web không thể quản lý các cửa sổ trên tất cả màn hình của bạn.</translation>
 <translation id="1738912554587725807">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng</translation>
 <translation id="1743802530341753419">Hỏi trước khi cho phép trang web kết nối với một thiết bị (khuyên dùng)</translation>
-<translation id="1766455884659449403">Nhận thông báo về mẹo dùng Chrome</translation>
 <translation id="1777815584158991902">Bảng nguồn cấp dữ liệu Khám phá ở dưới cùng</translation>
 <translation id="1779089405699405702">Bộ giải mã hình ảnh</translation>
 <translation id="1781533683087883868">Tắt các đường liên kết ở Chế độ đọc</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Do <ph name="APP_NAME" /> quản lý</translation>
 <translation id="2498359688066513246">Trợ giúp và phản hồi</translation>
 <translation id="2501278716633472235">Quay lại</translation>
-<translation id="2533138527374486328">Khi tuỳ chọn này bật, các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn. Khi tuỳ chọn này tắt, các trang web không thể kết nối với thiết bị trên mạng cục bộ của bạn.</translation>
 <translation id="2536779053640817375">Được cho phép lần này • Vị trí chính xác</translation>
 <translation id="2544997614631598250">Giao diện màu tối</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Khởi động nhanh Thanh địa chỉ</translation>
 <translation id="2789132527330338807">Các trang web có thể yêu cầu tạo bản đồ 3D khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của camera</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
-<translation id="2794551654724114396">Bật thông báo để nhận các mẹo hữu ích giúp bạn tận dụng Chrome</translation>
 <translation id="2795716239552913152">Các trang web thường sử dụng thông tin vị trí của bạn cho các tính năng hoặc thông tin liên quan, như tin tức địa phương hoặc cửa hàng lân cận</translation>
 <translation id="2800760947029405028">Tải ảnh lên</translation>
 <translation id="2802908157808345702">Không cho phép các trang web hiển thị cửa sổ bật lên hay dùng lệnh chuyển hướng</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Không cho phép các trang web kết nối với thiết bị USB</translation>
 <translation id="3965467402665811906">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
-<translation id="3969869202926863008">Quyền truy cập mạng cục bộ</translation>
 <translation id="3981465354637804599">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là hiện quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Các lối tắt của tôi</translation>
 <translation id="656065428026159829">Xem thêm</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
-<translation id="6565144332292237355">Các trang web có thể sử dụng tính năng này để tìm và kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="6593061639179217415">Trang cho máy tính</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}other{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Ở lại</translation>
 <translation id="6630443592285535486">Nhập mã màu hex tại đây</translation>
 <translation id="6635327442719709864">Khi bạn bật nút này, các trang web có thể yêu cầu sử dụng cổng nối tiếp. Khi bạn tắt nút này, các trang web không thể sử dụng cổng nối tiếp.</translation>
-<translation id="6669390930482049506">Thông báo cho tôi</translation>
 <translation id="6678072580827808850">Xem lại kết quả Kiểm tra an toàn</translation>
 <translation id="6682057173375416470">Xem các bài viết được đề xuất trên trang Thẻ mới</translation>
 <translation id="6683865262523156564">Trang web này nằm trong một nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="RWS_OWNER" /> xác định</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
-<translation id="7213166370492037743">Không cho phép các trang web kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>
 <translation id="7243246278722455312">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng</translation>
@@ -701,6 +694,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="823874716226307142">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các thiết bị khác trên mạng cục bộ của bạn. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các thiết bị khác trên mạng cục bộ của bạn.</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xoá</translation>
+<translation id="8273596202562472147">Lựa chọn khác cho <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8301363963630676147">Được cho phép lần này • Đang sử dụng vị trí ước chừng</translation>

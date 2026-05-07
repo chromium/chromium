@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">不用了</translation>
 <translation id="1531038290222364269">显示标签页</translation>
 <translation id="1536390784834419204">翻译网页</translation>
+<translation id="1539535193627863227">未找到此网站的密码或通行密钥</translation>
 <translation id="1540800554400757039">地址第1行</translation>
 <translation id="154312949627292154">在锁屏状态下打开从其他设备接收的标签页。</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">关闭阅读模式</translation>
 <translation id="3106690631878101882">隐藏“翻译”</translation>
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
+<translation id="3109724472072898302">已收起</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3116695032231023709">保存身份证件</translation>
 <translation id="3119874402040566234">您将退出账号，而且浏览数据将被删除</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">无法保存您的更改。</translation>
 <translation id="3254806613790954367">您在所有设备上最后使用的标签页。</translation>
 <translation id="325717987950204592">点按“隐私与安全”</translation>
+<translation id="3259451381796379533">此账号无法使用 Gemini。请换个 Google 账号登录。</translation>
 <translation id="3265736395246760288">在任何已同步的设备上更快地登录。</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">打造您的专属主屏幕</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
 <translation id="7191382490098297347">相机胶卷中的图片</translation>
+<translation id="7203150201908454328">已展开</translation>
 <translation id="7203496777391039568">组织数据的隐私性和安全性有保障</translation>
 <translation id="720399613139435155">翻译失败</translation>
 <translation id="7204922488054642675">个性化新闻</translation>
@@ -1864,6 +1868,7 @@
 <translation id="7498234416455752244">继续修改</translation>
 <translation id="7500244509706269886">自动填充表单</translation>
 <translation id="750493650310597496">未选中任何项</translation>
+<translation id="7505402981231763928">您需要登录账号，才能使用 Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置触控 ID、面容 ID 或密码。</translation>
 <translation id="750886945254958667">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组</translation>

@@ -745,6 +745,7 @@
 <translation id="21613918653299710">在线图库</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162435186600002085">主要标题徽标</translation>
+<translation id="2162535140284745414">获取实时建议，探索 AI 助力的浏览新方式。</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中是否有拼写错误。</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
@@ -992,6 +993,7 @@
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2521736961081452453">创建表单</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系统会将结账页中的内容分享给 Google，以便提供这些选项。<ph name="END_BOLD" />支付方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
@@ -1456,6 +1458,7 @@
 <translation id="3261488570342242926">详细了解虚拟卡</translation>
 <translation id="3262698603497362968">购买选项</translation>
 <translation id="3264315627780269177">无法分享此标签页</translation>
+<translation id="3264637689694266148">如果您关闭建议功能，系统仍可能会处理标签页的网页标题和网址，以便提供其他 Chrome 功能。如要管理浏览器对此类数据的访问权限，请前往</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3270041629388773465">保存银行卡验证码 (CVC) 后，结账更快捷</translation>
@@ -1898,7 +1901,6 @@
 <translation id="3965672182149944205">要保存地址吗？</translation>
 <translation id="3966044442021752214">产品安全</translation>
 <translation id="396761677631735618">会员卡列表已以一半高度显示，轻触即可填充。</translation>
-<translation id="3969869202926863008">本地网络访问权限</translation>
 <translation id="3970239200223030389">签发日期</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
@@ -1989,6 +1991,7 @@
 <translation id="4103249731201008433">设备序列号无效</translation>
 <translation id="4103592298805904008">纸板（单层）</translation>
 <translation id="4104702906064390950">正在保存 IBAN 信息</translation>
+<translation id="4106101218644797743">同步设置</translation>
 <translation id="4106887816571530227">不允许嵌入内容</translation>
 <translation id="4107047499377819067">已开始安装 VPN 后台服务，这可能需要几分钟时间。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay 徽标</translation>
@@ -2324,6 +2327,7 @@
 <translation id="4640225694041297329">显示过去 7 天的结果</translation>
 <translation id="4642296966515958616">如需加入此标签页分组，请更新 Chrome</translation>
 <translation id="464342062220857295">搜索功能</translation>
+<translation id="4643958597583594452">Chrome 会在您的设备上或云端的私密空间中处理网页标题和网址</translation>
 <translation id="4644567637638438744">您必须登录 Microsoft OneDrive 才能上传文件</translation>
 <translation id="4644670975240021822">逆转顺序，正面朝下</translation>
 <translation id="4648262692072505866">哈希值格式必须为 SHA-256。</translation>
@@ -2571,6 +2575,7 @@
 <translation id="5019293549442035120">您可以在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
 <translation id="5019819206251569004">移动传感器和光传感器</translation>
 <translation id="5019952743397118625">已设置 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不会控制开发者模式在扩展程序页面上的使用情况。</translation>
+<translation id="5020862932518041900">无论您是采纳还是忽略建议，Chrome 都会不断学习，确保只为您呈现与您相关的内容</translation>
 <translation id="5021500396464456616">请与发送此链接的人联系</translation>
 <translation id="5021557570875267742">使用 Chrome 跟踪价格</translation>
 <translation id="5023310440958281426">请查看管理员制定的政策</translation>
@@ -3001,7 +3006,6 @@
 <translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="5667827081946850877">有声读物</translation>
-<translation id="5674082555327905359">可以请求连接到本地网络上的任何设备</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
 <translation id="5675809467256309336">舞曲与电子音乐</translation>
 <translation id="5675959228867414813">按日期显示</translation>
@@ -3407,7 +3411,6 @@
 <translation id="6321917430147971392">请检查您的DNS设置是否正确</translation>
 <translation id="6322182122604171028">无法使用 Windows Hello</translation>
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
-<translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
 <translation id="6329742260390895689">如需自动填充信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
 <translation id="6329815962353376655">&lt;输入问题&gt;</translation>
@@ -3511,6 +3514,7 @@
 <translation id="6451458296329894277">确认重新提交表单</translation>
 <translation id="6452429044474066211">潜水与水下活动</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">系统会根据您打开的标签页的网页标题和网址，为您提供相关建议</translation>
 <translation id="6455632609396391811">健康保险</translation>
 <translation id="6456955391422100996">已移除广告。</translation>
 <translation id="6457206614190510200">鞍式装订</translation>
@@ -4405,6 +4409,7 @@
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7822611063308883975">掌上游戏机</translation>
 <translation id="7825558994363763489">微波炉</translation>
+<translation id="7827688884439021871">获取实时建议，探索 AI 助力的浏览新方式</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
 <translation id="7831993212387676366">什么是购物清单？</translation>
 <translation id="7840103971441592723">已开始截屏/录屏</translation>
@@ -4696,6 +4701,7 @@
 <translation id="8289355894181816810">如果您不确定这是什么意思，请与您的网络管理员联系。</translation>
 <translation id="8291367150570302588">身份证</translation>
 <translation id="829335040383910391">声音</translation>
+<translation id="8294425747071240447">由 AI 提供支持的建议</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8297545700510100061">网站会使用 Cookie 和其他数据来记住您，以便帮您登录或向您展示个性化广告等。如需管理所有网站的 Cookie，请前往<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>

@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">প্ৰমাণপত্ৰখন মান্য</translation>
 <translation id="1728677426644403582">আপুনি কোনো ৱেব পৃষ্ঠাৰ উৎস চাই আছে</translation>
 <translation id="173080396488393970">এই ধৰণৰ কার্ড সমর্থন নকৰে</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">ইয়াৰ সলনি ব্যক্তিগতভাৱে সোধক</translation>
 <translation id="1733064249834771892">ফ’ণ্ট</translation>
 <translation id="1733631169686303142">অডিঅ’ৰ সৰঞ্জাম</translation>
@@ -1593,6 +1594,7 @@
 <translation id="350069200438440499">ফাইলৰ নাম:</translation>
 <translation id="3501300228850242680">মেটেল (সংগীত)</translation>
 <translation id="350421688684366066">লেবেল (হাই-গ্লছ)</translation>
+<translation id="3507062913298382727">আইডি কাৰ্ড ছেভ কৰক</translation>
 <translation id="350763432931695541">পৰৱৰ্তী কেইখনমান পৃ্ষ্ঠাত পাঠ আহৰণ কৰি থকা হৈছে</translation>
 <translation id="3507869775212388416">আইনী সেৱাৰ চাকৰি</translation>
 <translation id="3507936815618196901">আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিছে</translation>
@@ -1902,7 +1904,6 @@
 <translation id="3965672182149944205">ঠিকনাটো ছেভ কৰিবনে?</translation>
 <translation id="3966044442021752214">প্ৰ’ডাক্টৰ সুৰক্ষা</translation>
 <translation id="396761677631735618">স্পৰ্শ কৰিলে পূৰ হ’বলগীয়া উপলব্ধ লয়েল্টী কাৰ্ডসমূহ অৰ্ধ উচ্চতাত খোল খাইছে।</translation>
-<translation id="3969869202926863008">স্থানীয় নেটৱৰ্কৰ এক্সেছ</translation>
 <translation id="3970239200223030389">জাৰি কৰা তাৰিখ</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />ক অৱৰোধ কৰা হৈছে</translation>
@@ -1987,6 +1988,7 @@
 <translation id="4098306082496067348">ভাৰ্ছুৱেল কাৰ্ডৰ সবিশেষ চেকআউটত যোগ দিবলৈ সেইটোত টিপক।</translation>
 <translation id="4099048595830172239">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল এটা দেখা পোৱা অৱস্থাত আপোনাৰ স্ক্ৰীনখন <ph name="APPLICATION_TITLE" />ৰ সৈতে শ্বেয়াৰ কৰা টো চুপাৰিছ নকৰে:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeত ফণ্টৰ আকাৰ আৰু টাইপফেচ কাষ্টমাইজ কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">পাঠ আৰু গ্ৰাফিক</translation>
 <translation id="4101917550061398111">বাছনি কৰা বস্তুসমূহ মচক</translation>
 <translation id="4102567721634170493">স্থানীয় বাতৰি</translation>
@@ -2213,6 +2215,7 @@
 <translation id="4415156962929755728">প্লাষ্টিক (হাই গ্লছ)</translation>
 <translation id="4415426530740016218">পিকআপ কৰাৰ ঠিকনা</translation>
 <translation id="4415748029120993980">SECG উপবৃত্তাকাৰ লেখ secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">পাছৱৰ্ডসমূহ তেওঁৰ পৰিচালনাৰ ছেটিঙত মচিব পাৰি</translation>
 <translation id="4424024547088906515">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" />; বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু Chromeএ ইয়াৰ সুৰক্ষাৰ প্ৰমাণপত্ৰ বিশ্বাস নকৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে।</translation>
 <translation id="4425750422187370446">ক্ৰীড়াবিদৰ পোছাক</translation>
@@ -2952,6 +2955,7 @@
 <translation id="5573641252776268565">পাছপ’ৰ্টৰ তথ্য সম্পাদনা কৰা</translation>
 <translation id="5578606540385219379">সেৱা প্ৰদানকাৰী</translation>
 <translation id="5580958916614886209">আপোনাৰ ক্ৰেডিট কার্ডৰ ম্যাদ উকলাৰ মাহ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক</translation>
+<translation id="5582453333200265572">আইডি কাৰ্ড আপডে’ট কৰক</translation>
 <translation id="5583442610070676234">তুলনাৰ তালিকা <ph name="COMPARE_SET_NAME" />ৰ বাবে অধিক কাৰ্য</translation>
 <translation id="55841966151154662">এই IBAN Google Walletত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে।</translation>
 <translation id="558420943003240152">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক…</translation>
@@ -3007,7 +3011,6 @@
 <translation id="5660122698869360728">আপোনাৰ আটাইবোৰ শ্বপিঙৰ পৃষ্ঠা এঠাইতে ছেভ কৰা আৰু স্বয়ংক্ৰিয়ভাৱে দাম ট্ৰেক কৰা, দাম সম্পর্কীয় অন্তৰ্দৃষ্টিসমূহ আৰু বহুতো তথ্য পোৱাত সহায় কৰা এটা নতুন স্মার্ট ফ'ল্ডাৰ।</translation>
 <translation id="5663955426505430495">এই ডিভাইচটোৰ প্ৰশাসকে অতিৰিক্ত ফাংশ্বনৰ বাবে এক্সটেনশ্বন ইনষ্টল কৰিছে। এক্সটেনশ্বনসমূহৰ আপোনাৰ কিছুসংখ্যক ডেটাৰ এক্সেছ আছে।</translation>
 <translation id="5667827081946850877">অডিঅ’বুক</translation>
-<translation id="5674082555327905359">আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ ক’ব পাৰে</translation>
 <translation id="5675650730144413517">এই পৃষ্ঠাটোৱে কাম কৰা নাই</translation>
 <translation id="5675809467256309336">নৃত্য আৰু ইলেক্ট্ৰনিক সংগীত</translation>
 <translation id="5675959228867414813">তাৰিখ অনুসৰি দেখুৱাওক</translation>
@@ -3086,6 +3089,7 @@
 <translation id="5808435672482059465">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="5810442152076338065">আপোনাৰ <ph name="DOMAIN" />ৰ সৈতে থকা সংযোগ কোনো অপ্ৰচলিত চাইফাৰ ছুট ব্যৱহাৰ কৰি এনক্ৰিপ্ট কৰা হৈছে।</translation>
 <translation id="5813119285467412249">যোগ কৰা কার্য &amp;ৰিডু কৰক</translation>
+<translation id="5813274153495000141">আপোনাৰ তথ্য ছেভ কৰক আৰু ফৰ্মসমূহ দ্ৰুততাৰে পূৰ কৰক। আপোনাৰ ডিভাইচত ছেভ কৰে।</translation>
 <translation id="5813753398265398978">পদাৰ্থ বিজ্ঞান</translation>
 <translation id="5817918615728894473">পেয়াৰ কৰক</translation>
 <translation id="5820625124144807242">আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি <ph name="BNPL_ISSUER_NAME" />ত ছাইন ইন কৰিবই লাগিব বা সেইটোৰ সৈতে এটা একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে Google Payৰ সৈতে লিংক কৰা হ’ব।</translation>
@@ -3413,7 +3417,6 @@
 <translation id="6321917430147971392">আপোনাৰ DNS ছেটিং পৰীক্ষা কৰক</translation>
 <translation id="6322182122604171028">Windows Hello ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
 <translation id="6326947323444967009">iOS ছেটিঙত Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
-<translation id="6327065120806001832">স্থানীয় নেটৱৰ্কৰ এক্সেছ</translation>
 <translation id="6328639280570009161">নেটৱৰ্কৰ পূৰ্বানুমান অক্ষম কৰি চাওক</translation>
 <translation id="6329742260390895689">আপোনাৰ তথ্য স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, Walletৰ ছেটিঙত "সমগ্ৰ Googleত পাছ ব্যৱহাৰ কৰক" অন কৰক</translation>
 <translation id="6329815962353376655">&lt;এটা প্ৰশ্ন টাইপ কৰক&gt;</translation>

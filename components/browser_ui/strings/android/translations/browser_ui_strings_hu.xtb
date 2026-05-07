@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1415855080660575082">Engedélyezze a Chrome-nak, hogy megossza eszközével a nemrég megnyitott lapokat, hogy azok megjelenjenek az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt a Chrome beállításai között kapcsolhatja be vagy ki.</translation>
 <translation id="1420688843103859429">Navigálhat előre és hátra az érintőpadon két ujjal történő gyors csúsztatással</translation>
-<translation id="1432650420699700107">A webhelyek engedélyt kérhetnek a helyi hálózaton lévő bármelyik eszközhöz való csatlakozásra</translation>
 <translation id="1442081309487427303">Az Olvasási mód linkjeinek bekapcsolása</translation>
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="1464044141348608623">A webhelyek nem tudhatják, hogy Ön mikor használja aktívan az eszközt</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Ha be van kapcsolva, a webhelyek kérhetik az ablakok kezelését az összes kijelzőn. Ha ki van kapcsolva, a webhelyek nem kezelhetnek ablakokat egyik kijelzőn sem.</translation>
 <translation id="1738912554587725807">Az Új lap oldal megjelenéséhez tartozó témagyűjtemények alsó lapja</translation>
 <translation id="1743802530341753419">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára egy adott eszközhöz való csatlakozást (ajánlott)</translation>
-<translation id="1766455884659449403">Chrome-tippekről szóló értesítések fogadása</translation>
 <translation id="1777815584158991902">Discover-feed alsó lapja</translation>
 <translation id="1779089405699405702">Képdekóder</translation>
 <translation id="1781533683087883868">Az Olvasási mód linkjeinek kikapcsolása</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Kezelő: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Súgó és visszajelzés</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
-<translation id="2533138527374486328">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő bármelyik eszközhöz való csatlakozásra. Ha ki van kapcsolva, a webhelyek nem tudnak csatlakozni a helyi hálózaton lévő eszközökhöz.</translation>
 <translation id="2536779053640817375">Erre az alkalomra engedélyezve van • Pontos</translation>
 <translation id="2544997614631598250">Sötét színű téma</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Gyorsindítás a cím- és keresősávval</translation>
 <translation id="2789132527330338807">A webhelyek kérhetik az Ön környezetéről készített 3D-s térkép létrehozását, valamint a kamera pozíciójának nyomon követését</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
-<translation id="2794551654724114396">Kapcsolja be az értesítéseket, hogy hasznos tippeket kapjon, amelyek segítségével a legtöbbet hozhatja ki a Chrome-ból</translation>
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
 <translation id="2800760947029405028">Kép feltöltése</translation>
 <translation id="2802908157808345702">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">A webhelyek nem csatlakozhatnak USB-eszközökhöz</translation>
 <translation id="3965467402665811906">A webhelyek engedélyt kérhetnek arra, hogy felhasználják az Önről mentett adatokat</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
-<translation id="3969869202926863008">Hozzáférés helyi hálózaton</translation>
 <translation id="3981465354637804599">A webhelyek általában azért jelenítenek meg hirdetéseket, hogy díjmentesen kínálhassanak tartalmakat és szolgáltatásokat. Egyes webhelyek azonban köztudottan tolakodó vagy félrevezető hirdetéseket jelenítenek meg.</translation>
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3991845972263764475">? / <ph name="BYTES_DOWNLOADED_WITH_UNITS" /></translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Saját parancsikonok</translation>
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>
 <translation id="6561560012278703671">Csendesebb üzenetküldés használata (letiltja az értesítéseket, hogy ne zavarják meg Önt)</translation>
-<translation id="6565144332292237355">A webhelyek ezt a funkciót használhatják a helyi hálózaton lévő bármely eszköz megkeresésére és a hozzá való csatlakozásra</translation>
 <translation id="6593061639179217415">Asztali webhely</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}other{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Mégse</translation>
 <translation id="6630443592285535486">Írja be ide a hexadecimális kódot</translation>
 <translation id="6635327442719709864">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a soros portok használatára. Ha ki van kapcsolva, a webhelyek nem használhatják a soros portokat.</translation>
-<translation id="6669390930482049506">Értesítést kérek</translation>
 <translation id="6678072580827808850">Biztonsági ellenőrzés áttekintése</translation>
 <translation id="6682057173375416470">Javasolt cikkek megjelenítése az Új lap oldalon</translation>
 <translation id="6683865262523156564">Ez a webhely egy olyan csoportban található, amely láthatja az Ön tevékenységeit. A csoportot a következő határozza meg: <ph name="RWS_OWNER" />.</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Előugró ablakok és átirányítások letiltása a webhelyeken (ajánlott)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Frissítés</translation>
+<translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7201549776650881587">A művelet törli a(z) <ph name="ORIGIN" /> alatti összes webhelyen tárolt és az eredetnek az Ön kezdőképernyőjén található alkalmazása által tárolt összes adatot és cookie-t.</translation>
-<translation id="7213166370492037743">A webhelyek nem csatlakozhatnak a helyi hálózaton lévő eszközökhöz</translation>
 <translation id="7219254577985949841">Törli a webhelyadatokat?</translation>
 <translation id="723171743924126238">Képek kiválasztása</translation>
 <translation id="7243246278722455312">Az Új lap oldal alsó lapjának személyre szabása</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> engedélyezve</translation>
 <translation id="7276071417425470385">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a virtuálisvalóság-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak virtuálisvalóság-eszközöket.</translation>
+<translation id="7279851812866769760">Névjegyek megosztása</translation>
 <translation id="7282197670900591579">Citromsárga téma</translation>
 <translation id="728412880473384942">A webhelyek gyorsabbak, de kevésbé biztonságosak</translation>
 <translation id="7352902948037373520">Az <ph name="BEGIN_LINK1" />Android-beállításokban<ph name="END_LINK1" /> kezelheti.
@@ -700,6 +694,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="823874716226307142">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő más eszközökhöz való hozzáférésre. Ha ki van kapcsolva, a webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz.</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
+<translation id="8273596202562472147">További lehetőségek a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
 <translation id="8301363963630676147">Erre az alkalomra engedélyezve van • A hozzávetőleges hely van használatban</translation>
@@ -794,6 +789,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="9156722768168878035">Engedélyezze a Chrome-nak, hogy megjeleníthesse a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>
+<translation id="927148002081263046">Névjegy megosztása</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>
 <translation id="960590623979248167">Linkek megjelenítése</translation>

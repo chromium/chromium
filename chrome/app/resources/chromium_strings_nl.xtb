@@ -100,9 +100,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2066690553719545730">AI-modus altijd tonen</translation>
 <translation id="2086476982681781442">Chromium heeft deze download geblokkeerd, omdat het bestand misleidend is en onverwachte wijzigingen kan aanbrengen op je apparaat</translation>
 <translation id="208726765006323911">De volgende keer dat je Chromium iOS opent, zie je een prompt om <ph name="FEATURE_NAME" /> te proberen.</translation>
-<translation id="2090163042413910600">Chromium zet JavaScript-optimalisatie uit als je een site voor het eerst bezoekt.
-
-Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</translation>
 <translation id="2099452623287920103">Je wachtwoorden en andere Chromium-gegevens die je hebt opgeslagen in je Google-account, worden verwijderd van dit apparaat. Log opnieuw in om ze weer te gebruiken in Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Je organisatie verwijdert browsegegevens automatisch als Chromium 1 minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}other{Je organisatie verwijdert browsegegevens automatisch als Chromium # minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}}</translation>
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>

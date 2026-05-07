@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Jo, faleminderit</translation>
 <translation id="1531038290222364269">Shfaq skedat</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
+<translation id="1539535193627863227">Nuk u gjet asnjë fjalëkalim apo çelës kalimi për këtë sajt</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="154312949627292154">Hap skedat e marra nga pajisjet e tjera nga ekrani i kyçjes.</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Çaktivizo "Modalitetin e leximit"</translation>
 <translation id="3106690631878101882">Fshih "Përkthe"</translation>
 <translation id="310900540163454140">Të fshihet fjalëkalimi për <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Palosur</translation>
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3116695032231023709">Ruaj kartën e identitetit</translation>
 <translation id="3119874402040566234">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
 <translation id="3254806613790954367">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua</translation>
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
+<translation id="3259451381796379533">Kjo llogari nuk do të funksionojë me Gemini. Identifikohu me një "Llogari tjetër të Google".</translation>
 <translation id="3265736395246760288">Identifikohu më shpejt nga çdo pajisje e sinkronizuar.</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
@@ -1780,6 +1783,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7186568385131859684">Kontrollo se si përdoret historiku i shfletimit me të dhënat e tua të tjera nëpër shërbimet e Google</translation>
 <translation id="719133302483559673">Menaxho interesat dhe preferencat e tua.</translation>
 <translation id="7191382490098297347">Imazhi i filmit të kamerës</translation>
+<translation id="7203150201908454328">I zgjeruar</translation>
 <translation id="7203496777391039568">Të dhënat e organizatës sate janë private dhe të sigurta</translation>
 <translation id="720399613139435155">Përkthimi dështoi</translation>
 <translation id="7204922488054642675">Lajme të personalizuara</translation>
@@ -1864,6 +1868,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7498234416455752244">Vazhdo redaktimin</translation>
 <translation id="7500244509706269886">Plotëso automatikisht formularin</translation>
 <translation id="750493650310597496">0 të përzgjedhura</translation>
+<translation id="7505402981231763928">Duhet të identifikohesh për të përdorur Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Për të kyçur skedat e tua "e fshehta", konfiguro Touch ID, Face ID, ose Passcode.</translation>
 <translation id="750886945254958667">Mbaje këtë grup për të shtuar skeda më vonë ose largohu nga ai nëse nuk dëshiron më të kesh qasje në të</translation>

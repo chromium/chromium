@@ -993,6 +993,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2521385132275182522">Sponka vpravo dole</translation>
 <translation id="2521736961081452453">Vytvořit formulář</translation>
 <translation id="2524461107774643265">Přidání dalších informací</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Aby bylo možné nabízet tyto možnosti, sdílí se obsah stránky placení s Googlem.<ph name="END_BOLD" /> Platební tarify jsou závislé na způsobilosti. Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEGIN_LINK" />nastavení plateb<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Pokud chcete spustit tuto aplikaci, znovu zapněte režim pro vývojáře izolovaných webových aplikací</translation>
 <translation id="2526280916094749336">Uložené adresy můžete používat ve službách Google. Tato adresa bude uložena ve vašem účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Váš kód CVC je na přední straně karty. Je to 4místný kód vpravo nahoře nad číslem vaší karty.</translation>
@@ -1900,7 +1901,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3965672182149944205">Uložit adresu?</translation>
 <translation id="3966044442021752214">Bezpečnost výrobku</translation>
 <translation id="396761677631735618">Věrnostní karty dostupné k vyplnění dotykem jsou otevřené na polovinu výšky.</translation>
-<translation id="3969869202926863008">Přístup k místní síti</translation>
 <translation id="3970239200223030389">Datum vydání</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je blokován</translation>
@@ -3006,7 +3006,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5660122698869360728">Nová chytrá složka, která umožňuje uložit si všechny nákupní stránky na jednom místě, automaticky sledovat ceny, získat informace o cenách a nejen to.</translation>
 <translation id="5663955426505430495">Administrátor tohoto zařízení nainstaloval rozšíření pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
 <translation id="5667827081946850877">Audioknihy</translation>
-<translation id="5674082555327905359">Může žádat o připojení k libovolnému zařízení v místní síti</translation>
 <translation id="5675650730144413517">Tato stránka nefunguje</translation>
 <translation id="5675809467256309336">Taneční a elektronická hudba</translation>
 <translation id="5675959228867414813">Zobrazit podle data</translation>
@@ -3412,7 +3411,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6321917430147971392">Zkontrolujte nastavení DNS</translation>
 <translation id="6322182122604171028">Windows Hello nebylo možné použít</translation>
 <translation id="6326947323444967009">V nastavení iOS nastavte Chrome jako výchozí prohlížeč</translation>
-<translation id="6327065120806001832">přístup k místní síti</translation>
 <translation id="6328639280570009161">Zkuste deaktivovat předvídání akcí sítě</translation>
 <translation id="6329742260390895689">Pokud chcete automaticky vyplňovat své údaje, zapněte v nastavení Peněženky možnost Používat karty napříč Googlem</translation>
 <translation id="6329815962353376655">&lt;Zadejte otázku&gt;</translation>
@@ -4702,7 +4700,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8289355894181816810">Pokud nevíte, co dělat, obraťte se na svého správce sítě.</translation>
 <translation id="8291367150570302588">Průkaz totožnosti</translation>
 <translation id="829335040383910391">zvuk</translation>
-<translation id="8294425747071240447">Návrhy využívá AI</translation>
+<translation id="8294425747071240447">Návrhy – s využitím AI</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8297545700510100061">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Pokud chcete spravovat soubory cookie pro všechny weby, přejděte do <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

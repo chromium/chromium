@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
 <translation id="1420688843103859429">Puuteplaadil kahe sõrmega pühkides edasi ja tagasi navigeerimine.</translation>
-<translation id="1432650420699700107">Saidid saavad küsida luba teie kohalikus võrgus mis tahes seadmega ühenduse loomiseks</translation>
 <translation id="1442081309487427303">Lugemisrežiimi linkide sisselülitamine</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="1464044141348608623">Ära luba saitidel teada, millal seadet aktiivselt kasutan</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Kui see on sisse lülitatud, saavad saidid küsida luba akende haldamiseks kõikidel teie ekraanidel. Kui see on välja lülitatud, ei saa saidid kõikidel teie ekraanidel aknaid hallata.</translation>
 <translation id="1738912554587725807">Uue vahelehe välimuse teema kogude alumine leht</translation>
 <translation id="1743802530341753419">Küsi luba, kui saidid üritavad seadmega ühendust luua (soovitatav)</translation>
-<translation id="1766455884659449403">Hankige Chrome'i nõuandemärguanded</translation>
 <translation id="1777815584158991902">Avastamisvoo alumine leht</translation>
 <translation id="1779089405699405702">Pildi dekooder</translation>
 <translation id="1781533683087883868">Lugemisrežiimi linkide väljalülitamine</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Abi ja tagasiside</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
-<translation id="2533138527374486328">Kui see on sisse lülitatud, saavad saidid küsida luba ühenduse loomiseks mis tahes seadmega teie kohalikus võrgus. Kui see on välja lülitatud, ei saa saidid teie kohalikus võrgus seadmetega ühendust luua.</translation>
 <translation id="2536779053640817375">Lubatud sel korral • Täpne</translation>
 <translation id="2544997614631598250">Tume teemavärv</translation>
 <translation id="2546283357679194313">Küpsised ja saidi andmed</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2789132527330338807">Lubage saitidel küsida luba luua teie ümbrusest 3D-kaarti või jälgida kaamera asendit</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
-<translation id="2794551654724114396">Lülitage sisse märguanded, et saada kasulikke nõuandeid Chrome’i parimal moel kasutamiseks.</translation>
 <translation id="2795716239552913152">Saidid kasutavad teie asukohateavet tavaliselt asjakohaste funktsioonide või teabe (nt kohalikud uudised või läheduses asuvad kauplused) pakkumiseks</translation>
 <translation id="2800760947029405028">Laadige üles pilt</translation>
 <translation id="2802908157808345702">Ärge lubage saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Ära luba saitidel USB-seadmetega ühendust luua</translation>
 <translation id="3965467402665811906">Saidid saavad küsida luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
-<translation id="3969869202926863008">Juurdepääs kohalikule võrgule</translation>
 <translation id="3981465354637804599">Tavaliselt esitavad saidid reklaame selleks, et sisu või teenuseid maksekohustuseta pakkuda. Mõned saidid aga kuvavad sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="3987993985790029246">Kop. link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Minu otseteed</translation>
 <translation id="656065428026159829">Kuva rohkem</translation>
 <translation id="6561560012278703671">Kasuta vaiksemat sõnumsidet (märguandeviibad blokeeritakse)</translation>
-<translation id="6565144332292237355">Saidid saavad selle funktsiooni abil otsida teie kohalikust võrgust seadmeid ja luua nendega ühenduse</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Jää siia</translation>
 <translation id="6630443592285535486">Sisestage kuueteistkümnendkood siia</translation>
 <translation id="6635327442719709864">Kui see on sisse lülitatud, saavad saidid küsida jadaportide kasutamist. Kui see on välja lülitatud, ei saa saidid jadaporte kasutada.</translation>
-<translation id="6669390930482049506">Teavita mind</translation>
 <translation id="6678072580827808850">Ohutuskontrolli ülevaatamine</translation>
 <translation id="6682057173375416470">Soovitatud artiklite kuvamine lehel Uus vaheleht</translation>
 <translation id="6683865262523156564">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="RWS_OWNER" />.</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Blokeeri saitidel hüpikakende ja ümbersuunamiste kuvamine (soovitatav)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Värskenda</translation>
+<translation id="7180865173735832675">Kohandamine</translation>
 <translation id="7188508872042490670">Seadmes olevad saidiandmed</translation>
 <translation id="7201549776650881587">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
-<translation id="7213166370492037743">Ära luba saitidel luua ühendust ühegi seadmega minu kohalikus võrgus</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
 <translation id="723171743924126238">Kujutiste valimine</translation>
 <translation id="7243246278722455312">Uue vahelehe kohandamise alumine leht</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
 <translation id="7276071417425470385">Kui see on sisse lülitatud, võivad saidid küsida luba VR-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid VR-seadmeid kasutada.</translation>
+<translation id="7279851812866769760">Kontaktide jagamine</translation>
 <translation id="7282197670900591579">Sidrunikollane teema</translation>
 <translation id="728412880473384942">Saidid on kiiremad, aga ebaturvalisemad</translation>
 <translation id="7352902948037373520">Hallake <ph name="BEGIN_LINK1" />Androidi seadetes<ph name="END_LINK1" />
@@ -794,6 +788,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
+<translation id="927148002081263046">Kontakti jagamine</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>
 <translation id="960590623979248167">Kuva hüperlingid</translation>

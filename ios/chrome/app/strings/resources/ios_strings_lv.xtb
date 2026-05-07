@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nē, paldies</translation>
 <translation id="1531038290222364269">Rādīt cilnes</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
+<translation id="1539535193627863227">Šai vietnei nav atrasta neviena parole vai piekļuves atslēga.</translation>
 <translation id="1540800554400757039">1. adrese</translation>
 <translation id="154312949627292154">Bloķēšanas ekrānā varat atvērt no citām ierīcēm saņemtās cilnes.</translation>
 <translation id="1545749641540134597">Skenējiet kvadrātkodu</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Izslēgt lasīšanas režīmu</translation>
 <translation id="3106690631878101882">Paslēpt vienumu “Tulkot”</translation>
 <translation id="310900540163454140">Vai dzēst paroli <ph name="WEBSITE" /> kontam?</translation>
+<translation id="3109724472072898302">Sakļauts</translation>
 <translation id="3112556859945124369">Atzīmēt…</translation>
 <translation id="3116695032231023709">Identifikācijas kartes saglabāšana</translation>
 <translation id="3119874402040566234">Jūs tiksiet izrakstīts, un pārlūkošanas dati tiks dzēsti</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Jūsu veiktās izmaiņas nevarēja saglabāt.</translation>
 <translation id="3254806613790954367">Pēdējā atvērtā cilne visās jūsu ierīcēs</translation>
 <translation id="325717987950204592">Pieskarieties vienumam “Konfidencialitāte un drošība”.</translation>
+<translation id="3259451381796379533">Šis konts nedarbosies ar Gemini. Pierakstieties ar citu Google kontu.</translation>
 <translation id="3265736395246760288">Ātrāk pierakstieties no jebkuras sinhronizētās ierīces.</translation>
 <translation id="3272527697863656322">Atcelt</translation>
 <translation id="3273510436356991673">Pielāgojiet sākuma ekrānu</translation>
@@ -1780,6 +1783,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7186568385131859684">Varat kontrolēt, kā Google pakalpojumos tiek izmantota pārlūkošanas vēsture un citi jūsu dati</translation>
 <translation id="719133302483559673">Pārvaldiet savas intereses un preferences.</translation>
 <translation id="7191382490098297347">Kameras fotoalbuma attēls</translation>
+<translation id="7203150201908454328">Izvērsts</translation>
 <translation id="7203496777391039568">Jūsu organizācijas dati ir konfidenciāli un aizsargāti</translation>
 <translation id="720399613139435155">Pārtulkošana neizdevās</translation>
 <translation id="7204922488054642675">Personalizētas ziņas</translation>
@@ -1864,6 +1868,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7498234416455752244">Turpināt rediģēšanu</translation>
 <translation id="7500244509706269886">Automātiska veidlapas aizpildīšana</translation>
 <translation id="750493650310597496">Atlasītas: 0</translation>
+<translation id="7505402981231763928">Lai varētu izmantot Gemini, jums ir jāpierakstās.</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Lai bloķētu savas inkognito cilnes, iestatiet Touch ID, Face ID vai piekļuves kodu.</translation>
 <translation id="750886945254958667">Paturiet šo grupu, lai tai vēlāk pievienotu cilnes, vai pametiet to, ja vairs nevēlaties tai piekļūt.</translation>

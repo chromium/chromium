@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1415855080660575082">Erlaube Chrome, deine zuletzt geöffneten Tabs mit deinem Gerät zu teilen, damit sie dort in der App-Liste und in den Suchergebnissen angezeigt werden können. Diese Funktion lässt sich in den Chrome-Einstellungen aktivieren oder deaktivieren.</translation>
 <translation id="1420688843103859429">Du kannst vorwärts- und zurückgehen, indem du mit zwei Fingern auf dem Touchpad wischst</translation>
-<translation id="1432650420699700107">Websites können nachfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf</translation>
 <translation id="1442081309487427303">Links im Lesemodus aktivieren</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
 <translation id="1464044141348608623">Websites dürfen keine Informationen zu meiner aktiven Nutzung dieses Geräts abrufen</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Wenn diese Option aktiviert ist, können Websites anfragen, ob sie Fenster auf allen deinen Bildschirmen verwalten dürfen. Falls die Option deaktiviert ist, können Websites keine Fenster auf deinen Bildschirmen verwalten.</translation>
 <translation id="1738912554587725807">Ansicht am unteren Rand mit Designsammlungen für die Seite „Neuer Tab“</translation>
 <translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
-<translation id="1766455884659449403">Benachrichtigungen mit Chrome-Tipps erhalten</translation>
 <translation id="1777815584158991902">Ansicht des Discover-Feeds am unteren Rand</translation>
 <translation id="1779089405699405702">Bild-Decodierer</translation>
 <translation id="1781533683087883868">Links im Lesemodus deaktivieren</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Über <ph name="APP_NAME" /> verwaltet</translation>
 <translation id="2498359688066513246">Hilfe &amp; Feedback</translation>
 <translation id="2501278716633472235">Zurück</translation>
-<translation id="2533138527374486328">Wenn diese Option aktiviert ist, können Websites anfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf. Ist sie deaktiviert, können Websites keine Verbindung zu Geräten in deinem lokalen Netzwerk herstellen.</translation>
 <translation id="2536779053640817375">Einmalig gewährt • Genau</translation>
 <translation id="2544997614631598250">Designfarbe dunkel</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Direkt mit Omnibox starten</translation>
 <translation id="2789132527330338807">Websites dürfen nachfragen, ob sie eine 3D-Karte meiner Umgebung erstellen oder die Kameraposition erfassen können</translation>
 <translation id="2790501146643349491">Wenn dieser Schalter aktiviert ist, können vor Kurzem geschlossene Websites das Senden und Empfangen von Daten abschließen. Wenn er deaktiviert ist, können vor Kurzem geschlossene Websites das Senden oder Empfangen von Daten nicht abschließen.</translation>
-<translation id="2794551654724114396">Aktiviere Benachrichtigungen für Tipps zur optimalen Nutzung von Chrome</translation>
 <translation id="2795716239552913152">Websites verwenden deinen Standort normalerweise für relevante Funktionen oder Informationen, wie etwa Lokalnachrichten oder Geschäfte in deiner Nähe</translation>
 <translation id="2800760947029405028">Bild hochladen</translation>
 <translation id="2802908157808345702">Websites dürfen weder Pop-up-Fenster senden noch Weiterleitungen verwenden</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Websites dürfen keine Verbindung mit USB-Geräten herstellen</translation>
 <translation id="3965467402665811906">Websites dürfen darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
-<translation id="3969869202926863008">Zugriff auf lokales Netzwerk</translation>
 <translation id="3981465354637804599">Websites zeigen für gewöhnlich Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="3987993985790029246">Link kopieren</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Meine Verknüpfungen</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6561560012278703671">Unaufdringlichere Benachrichtigungen verwenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
-<translation id="6565144332292237355">Websites können diese Funktion verwenden, um nach Geräten in deinem lokalen Netzwerk zu suchen und sich mit ihnen zu verbinden</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Website von <ph name="RWS_OWNER" />}other{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Websites von <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Bleiben</translation>
 <translation id="6630443592285535486">Hex-Code eingeben</translation>
 <translation id="6635327442719709864">Wenn diese Funktion aktiviert ist, können Websites anfragen, ob sie serielle Ports verwenden dürfen. Ist sie deaktiviert, können Websites keine seriellen Ports verwenden.</translation>
-<translation id="6669390930482049506">Benachrichtigen</translation>
 <translation id="6678072580827808850">Sicherheitscheck aufrufen</translation>
 <translation id="6682057173375416470">Vorgeschlagene Artikel auf der Seite „Neuer Tab“ abrufen</translation>
 <translation id="6683865262523156564">Diese Website ist einer Gruppe zugeordnet, die deine Aktivitäten sehen kann. Die Gruppe wird durch <ph name="RWS_OWNER" /> definiert.</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
+<translation id="7180865173735832675">Anpassen</translation>
 <translation id="7188508872042490670">Websitedaten auf dem Gerät</translation>
 <translation id="7201549776650881587">Durch diese Aktion werden alle Daten und Cookies gelöscht, die von allen Websites unter <ph name="ORIGIN" /> oder von der zugehörigen App auf dem Startbildschirm gespeichert wurden</translation>
-<translation id="7213166370492037743">Websites nicht erlauben, eine Verbindung zu Geräten in deinem lokalen Netzwerk herzustellen</translation>
 <translation id="7219254577985949841">Websitedaten löschen?</translation>
 <translation id="723171743924126238">Bilder auswählen</translation>
 <translation id="7243246278722455312">Ansicht am unteren Rand für „Seite ‚Neuer Tab‘ anpassen“</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
 <translation id="7276071417425470385">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Virtual-Reality-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Virtual-Reality-Geräte verwenden.</translation>
+<translation id="7279851812866769760">Kontakte teilen</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
 <translation id="728412880473384942">Websites sind schneller, aber weniger sicher</translation>
 <translation id="7352902948037373520">In den <ph name="BEGIN_LINK1" />Android-Einstellungen<ph name="END_LINK1" /> verwalten
@@ -700,6 +694,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="823874716226307142">Wenn diese Option aktiviert ist, können Websites anfragen, ob sie auf andere Geräte in deinem lokalen Netzwerk zugreifen dürfen. Wenn sie deaktiviert ist, können Websites nicht auf andere Geräte in deinem lokalen Netzwerk zugreifen.</translation>
 <translation id="8249310407154411074">Ganz nach oben</translation>
 <translation id="8261506727792406068">Löschen</translation>
+<translation id="8273596202562472147">Weitere Optionen für <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="8300705686683892304">Von App verwaltet</translation>
 <translation id="8301363963630676147">Einmal gewährt • Ungefähr</translation>
@@ -794,6 +789,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="9156722768168878035">Erlaube Chrome, deine zuletzt geöffneten Tabs in der App-Liste und in den Suchergebnissen deines Geräts anzuzeigen. Diese Funktion lässt sich jederzeit in den Chrome-Einstellungen deaktivieren.</translation>
 <translation id="9162462602695099906">Diese Seite ist gefährlich</translation>
 <translation id="9182556968660520230">Websites dürfen keine geschützten Inhalte wiedergeben</translation>
+<translation id="927148002081263046">Kontakt teilen</translation>
 <translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist.</translation>
 <translation id="959682366969460160">Besser organisiert</translation>
 <translation id="960590623979248167">Hyperlinks anzeigen</translation>

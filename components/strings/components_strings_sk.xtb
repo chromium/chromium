@@ -993,6 +993,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2521385132275182522">Zošiť spinkou vpravo dolu</translation>
 <translation id="2521736961081452453">Vytvoriť formulár</translation>
 <translation id="2524461107774643265">Pridanie ďalších informácií</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Obsah stránky platby sa zdieľa s Googlom, aby sa vám mohli ponúkať tieto možnosti.<ph name="END_BOLD" /> Ak chcete používať platobné tarify, musíte spĺňať podmienky. Ak chcete možnosti zaplatenia neskôr skryť, prejdite do <ph name="BEGIN_LINK" />nastavení platieb<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Ak chcete spustiť túto aplikáciu, znova povoľte režim vývojára izolovanej webovej aplikácie</translation>
 <translation id="2526280916094749336">V službách Googlu môžete používať uložené adresy. Táto adresa bude uložená do vášho účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Overovací kód karty nájdete na jej prednej strane. Ide o štvormiestny kód vpravo hore nad číslom karty.</translation>
@@ -1900,7 +1901,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3965672182149944205">Chcete adresu uložiť?</translation>
 <translation id="3966044442021752214">Bezpečnosť služby</translation>
 <translation id="396761677631735618">Vernostné karty, ktoré môžete dopĺňať klepnutím, sú otvorené na polovičnú výšku.</translation>
-<translation id="3969869202926863008">Prístup k miestnej sieti</translation>
 <translation id="3970239200223030389">Dátum vydania</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je zablokovaný</translation>
@@ -3006,7 +3006,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5660122698869360728">Nový inteligentný priečinok, ktorý vám pomáha ukladať všetky nákupné stránky na jednom mieste, automaticky sledovať ceny, získavať cenové štatistiky a viac.</translation>
 <translation id="5663955426505430495">Správca tohto zariadenia nainštaloval rozšírenia pre ďalšie funkcie. Rozšírenia majú prístup k niektorým vašim údajom.</translation>
 <translation id="5667827081946850877">Audioknihy</translation>
-<translation id="5674082555327905359">Môžu žiadať o povolenie pripojiť sa k akémukoľvek zariadeniu vo vašej miestnej sieti</translation>
 <translation id="5675650730144413517">Táto stránka nefunguje</translation>
 <translation id="5675809467256309336">Tanečná a elektronická hudba</translation>
 <translation id="5675959228867414813">Zobrazovať podľa dátumu</translation>
@@ -3412,7 +3411,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6321917430147971392">Skontrolujte nastavenia DNS</translation>
 <translation id="6322182122604171028">Windows Hello sa nepodarilo použiť</translation>
 <translation id="6326947323444967009">Nastaviť Chrome ako predvolený prehliadač systému v nastaveniach iOS</translation>
-<translation id="6327065120806001832">prístup k miestnej sieti</translation>
 <translation id="6328639280570009161">Skúste zakázať predpovede siete</translation>
 <translation id="6329742260390895689">Ak chcete, aby sa vaše údaje dopĺňali automaticky, v nastaveniach Peňaženky zapnite možnosť Používanie kariet v službách Googlu</translation>
 <translation id="6329815962353376655">&lt;Napíšte otázku&gt;</translation>

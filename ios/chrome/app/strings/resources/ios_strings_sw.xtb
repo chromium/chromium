@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Hapana</translation>
 <translation id="1531038290222364269">Onyesha vichupo</translation>
 <translation id="1536390784834419204">Tafsiri ukurasa</translation>
+<translation id="1539535193627863227">Hakuna manenosiri au funguo za siri zilizopatikana kwenye tovuti hii</translation>
 <translation id="1540800554400757039">Anwani ya 1</translation>
 <translation id="154312949627292154">Fungua vichupo ulivyopokea kutoka kwenye vifaa vyako vingine katika skrini iliyofungwa.</translation>
 <translation id="1545749641540134597">Changanua Msimbo wa QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Zima Hali ya Kusoma</translation>
 <translation id="3106690631878101882">Ficha Kitendo cha Kutafsiri</translation>
 <translation id="310900540163454140">Ungependa kufuta nenosiri la <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Imekunjwa</translation>
 <translation id="3112556859945124369">Tia alama…</translation>
 <translation id="3116695032231023709">Hifadhi maelezo ya kitambulisho</translation>
 <translation id="3119874402040566234">Utaondolewa kwenye akaunti na data yako ya kuvinjari itafutwa</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Imeshindwa kuhifadhi mabadiliko uliyofanya.</translation>
 <translation id="3254806613790954367">Kichupo ulichofungua mwisho kwenye vifaa vyako vyote</translation>
 <translation id="325717987950204592">Gusa "Usalama na Faragha"</translation>
+<translation id="3259451381796379533">Akaunti hii haitatumika kwenye Gemini. Ingia katika akaunti ukitumia Akaunti tofauti ya Google.</translation>
 <translation id="3265736395246760288">Ingia katika akaunti haraka kwenye kifaa chochote ulichosawazisha.</translation>
 <translation id="3272527697863656322">Ghairi</translation>
 <translation id="3273510436356991673">Weka mapendeleo kwenye skrini yako ya kwanza</translation>
@@ -1780,6 +1783,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7186568385131859684">Dhibiti jinsi historia ya kuvinjari inavyotumika na data yako nyingine kwenye huduma za Google</translation>
 <translation id="719133302483559673">Dhibiti mapendeleo yako.</translation>
 <translation id="7191382490098297347">Picha ya albamu ya kamera</translation>
+<translation id="7203150201908454328">Imepanuliwa</translation>
 <translation id="7203496777391039568">Data ya shirika lako ni ya faragha na salama</translation>
 <translation id="720399613139435155">Imeshindwa kutafsiri</translation>
 <translation id="7204922488054642675">Habari zilizolingana na mapendeleo yako</translation>
@@ -1864,6 +1868,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7498234416455752244">Endelea kubadilisha</translation>
 <translation id="7500244509706269886">Kujaza fomu kiotomatiki</translation>
 <translation id="750493650310597496">Hakuna zilizochaguliwa</translation>
+<translation id="7505402981231763928">Unahitaji kuingia katika akaunti ili utumie Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ili uweze kufunga vichupo vyako Fiche, weka mipangilio ya Touch ID, Face ID au Nambari ya siri.</translation>
 <translation id="750886945254958667">Hifadhi kikundi hiki ili uweke vichupo baadaye au uondoke iwapo hungependa tena kukifikia</translation>

@@ -1734,6 +1734,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
 <translation id="2165177462441582039">Izberite, kako dolgo naj posamezen element ostane označen</translation>
 <translation id="2166369534954157698">Hitra rjava lisica preskoči lenega psa</translation>
+<translation id="2168036794078614559">Prijava je poslana</translation>
 <translation id="2169062631698640254">Kljub temu se želim prijaviti</translation>
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2173801458090845390">Dodajanje ID-ja zahteve tej napravi</translation>
@@ -10025,7 +10026,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7939062555109487992">Dodatne možnosti</translation>
 <translation id="793923212791838">Naprave ni mogoče uporabljati s tem spletnim mestom</translation>
 <translation id="7939328347457537652">Upravljanje potrdil v napravi</translation>
-<translation id="7939918959917132075">Razširitev je spremenila v to</translation>
+<translation id="7939918959917132075">Razširitev je vašo nastavitev spremenila v to možnost</translation>
 <translation id="7940087892955752820">Skupne rabe mape ni bilo mogoče preklicati, ker jo uporablja določena aplikacija. Skupna raba mape bo preklicana ob naslednji zaustavitvi sistema <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Razvrsti glede na to: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pripravljenost za povezavo računalnika z internetom prek mobilnega telefona:</translation>

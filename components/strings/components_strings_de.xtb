@@ -745,6 +745,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="21613918653299710">Onlinebildergalerien</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Logo der primären Kopfzeile</translation>
+<translation id="2162535140284745414">Du erhältst Echtzeitvorschläge, die dir helfen können, neue Möglichkeiten zum Surfen mit KI zu finden.</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Prüfe, ob „<ph name="HOST_NAME" />“ einen Tippfehler enthält.</translation>
 <translation id="2166049586286450108">Vollständiger Administratorzugriff</translation>
@@ -992,6 +993,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2521385132275182522">Heftklammer unten rechts</translation>
 <translation id="2521736961081452453">Formular erstellen</translation>
 <translation id="2524461107774643265">Weitere Informationen hinzufügen</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Inhalte von der Zahlungsseite werden an Google weitergegeben, um diese Optionen anzubieten.<ph name="END_BOLD" /> Die Verfügbarkeit von Ratenzahlungen hängt von der Erfüllung bestimmter Voraussetzungen ab. Du kannst die Option „Später bezahlen“ in den <ph name="BEGIN_LINK" />Zahlungseinstellungen<ph name="END_LINK" /> ausblenden.</translation>
 <translation id="2526062290525841862">Wenn du diese App ausführen möchtest, aktiviere den Entwicklermodus für isolierte Web-Apps wieder</translation>
 <translation id="2526280916094749336">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="2527451058878391043">Der CVC befindet sich auf der Vorderseite deiner Karte. Er ist der vierstellige Code rechts oben über der Kartennummer.</translation>
@@ -1458,6 +1460,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3261488570342242926">Informationen zu virtuellen Karten</translation>
 <translation id="3262698603497362968">Kaufoptionen</translation>
 <translation id="3264315627780269177">Dieser Tab kann nicht geteilt werden</translation>
+<translation id="3264637689694266148">Wenn du Vorschläge deaktivierst, können der Seitentitel und die URLs deiner Tabs weiterhin für andere Chrome-Funktionen verarbeitet werden. Du kannst den Browserzugriff auf diese Daten in deinen</translation>
 <translation id="3266793032086590337">Wert (Konflikt)</translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
 <translation id="3270041629388773465">Schneller bezahlen mit gespeicherten CVCs</translation>
@@ -1900,7 +1903,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3965672182149944205">Adresse speichern?</translation>
 <translation id="3966044442021752214">Produktsicherheit</translation>
 <translation id="396761677631735618">Die Liste mit den Kundenkarten, deren Daten bei Berührung eingefügt werden, ist halb geöffnet.</translation>
-<translation id="3969869202926863008">Zugriff auf lokales Netzwerk</translation>
 <translation id="3970239200223030389">Ausstellungsdatum</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ist gesperrt</translation>
@@ -1991,6 +1993,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4103249731201008433">Seriennummer des Geräts ist ungültig.</translation>
 <translation id="4103592298805904008">Karton (einwandig)</translation>
 <translation id="4104702906064390950">IBAN-Informationen werden gespeichert</translation>
+<translation id="4106101218644797743">Synchronisierungseinstellungen verwalten.</translation>
 <translation id="4106887816571530227">Eingebettete Inhalte nicht zulässig</translation>
 <translation id="4107047499377819067">Die Installation der VPN-Hintergrunddienste wurde gestartet. Dies kann einige Minuten dauern.</translation>
 <translation id="4110642094637545339">Google Pay-Logo, AfterPay-Logo</translation>
@@ -2326,6 +2329,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4640225694041297329">Ergebnisse der letzten 7 Tage anzeigen</translation>
 <translation id="4642296966515958616">Damit du dieser Tabgruppe beitreten kannst, musst du Chrome aktualisieren</translation>
 <translation id="464342062220857295">Suchfunktionen</translation>
+<translation id="4643958597583594452">Chrome verarbeitet Seitentitel und URLs auf deinem Gerät oder in einem vertraulichen Profil in der Cloud</translation>
 <translation id="4644567637638438744">Dateien können nur hochgeladen werden, wenn du in Microsoft OneDrive angemeldet bist</translation>
 <translation id="4644670975240021822">Umgekehrte Reihenfolge mit der Vorderseite nach unten</translation>
 <translation id="4648262692072505866">Der Hashwert muss das Format SHA-256 haben.</translation>
@@ -2573,6 +2577,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5019293549442035120">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="5019819206251569004">Bewegungs- und Lichtsensoren</translation>
 <translation id="5019952743397118625">Die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ ist festgelegt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> steuert nicht die Verfügbarkeit des Entwicklermodus auf der Seite „Erweiterungen“.</translation>
+<translation id="5020862932518041900">Wenn du einen Vorschlag auswählst oder ignorierst, passt Chrome sich an, damit du nur für dich relevante Inhalte siehst</translation>
 <translation id="5021500396464456616">Kontaktiere die Person, die diesen Link gesendet hat</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
 <translation id="5023310440958281426">Informiere dich über die von deinem Administrator festgelegten Richtlinien.</translation>
@@ -3003,7 +3008,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5660122698869360728">Ein neuer intelligenter Ordner, in dem du alle deine Shoppingseiten an einem einzigen Ort speichern und beispielsweise automatisch Preise beobachten und Preisinformationen abrufen kannst.</translation>
 <translation id="5663955426505430495">Der Administrator dieses Geräts hat Erweiterungen für zusätzliche Funktionen installiert. Diese Erweiterungen können auf einige deiner Daten zugreifen.</translation>
 <translation id="5667827081946850877">Hörbücher</translation>
-<translation id="5674082555327905359">Kann nachfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf</translation>
 <translation id="5675650730144413517">Diese Seite funktioniert nicht</translation>
 <translation id="5675809467256309336">Dance und elektronische Musik</translation>
 <translation id="5675959228867414813">Nach Datum anzeigen</translation>
@@ -3410,7 +3414,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6321917430147971392">Überprüfe die DNS-Einstellungen.</translation>
 <translation id="6322182122604171028">Windows Hello konnte nicht verwendet werden</translation>
 <translation id="6326947323444967009">Chrome in den iOS-Einstellungen als Standardbrowser für das System festlegen</translation>
-<translation id="6327065120806001832">Zugriff auf lokales Netzwerk</translation>
 <translation id="6328639280570009161">Deaktiviere die Netzwerkvorhersage.</translation>
 <translation id="6329742260390895689">Wenn du deine Informationen automatisch ausfüllen lassen möchtest, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
 <translation id="6329815962353376655">&lt;Frage eingeben&gt;</translation>
@@ -3514,6 +3517,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6451458296329894277">Erneute Formular-Übermittlung bestätigen</translation>
 <translation id="6452429044474066211">Tauchen und Unterwasseraktivitäten</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Die Seitentitel und URLs deiner geöffneten Tabs werden verwendet, um dir relevante Vorschläge zu bieten</translation>
 <translation id="6455632609396391811">Krankenversicherung</translation>
 <translation id="6456955391422100996">Werbeanzeige entfernt.</translation>
 <translation id="6457206614190510200">Rückendrahtheftung</translation>
@@ -4408,6 +4412,7 @@ Weitere Details:
 <translation id="7819605256207059717">Von deiner Organisation blockiert</translation>
 <translation id="7822611063308883975">Tragbare Spielekonsolen</translation>
 <translation id="7825558994363763489">Mikrowellen</translation>
+<translation id="7827688884439021871">Du erhältst Echtzeitvorschläge, die dir helfen können, neue Möglichkeiten zum Surfen mit KI zu finden</translation>
 <translation id="782886543891417279">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken (<ph name="WIFI_NAME" />) aufrufen.</translation>
 <translation id="7831993212387676366">Was ist die Einkaufsliste?</translation>
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
@@ -4699,6 +4704,7 @@ Weitere Details:
 <translation id="8289355894181816810">Wenn du weitere Informationen dazu benötigst, kann dir dein Netzwerkadministrator weiterhelfen.</translation>
 <translation id="8291367150570302588">Personalausweis</translation>
 <translation id="829335040383910391">Ton</translation>
+<translation id="8294425747071240447">Vorschläge – basierend auf KI</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297545700510100061">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. für die Anmeldung oder personalisierte Werbung. Du kannst Cookies für alle Websites in den <ph name="SETTINGS" /> verwalten.</translation>
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>

@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1415855080660575082">Benarkan Chrome berkongsi tab terbaharu anda dengan peranti anda untuk melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh menghidupkan atau mematikan ciri ini dalam tetapan Chrome.</translation>
 <translation id="1420688843103859429">Navigasi ke belakang dan ke hadapan dengan meleret menggunakan dua jari pada pad sentuh</translation>
-<translation id="1432650420699700107">Laman boleh meminta untuk menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="1442081309487427303">Hidupkan pautan Mod Membaca</translation>
 <translation id="1448064542941920355">Zum keluar</translation>
 <translation id="1464044141348608623">Jangan benarkan laman mengetahui waktunya anda aktif menggunakan peranti</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Apabila dihidupkan, laman boleh meminta untuk mengurus tetingkap pada semua paparan anda. Apabila dimatikan, laman tidak dapat mengurus tetingkap pada semua paparan anda.</translation>
 <translation id="1738912554587725807">Helaian bawah koleksi tema penampilan halaman tab baharu</translation>
 <translation id="1743802530341753419">Tanya sebelum membenarkan tapak menyambung ke peranti (disyorkan)</translation>
-<translation id="1766455884659449403">Dapatkan pemberitahuan petua Chrome</translation>
 <translation id="1777815584158991902">Temukan helaian bawah suapan</translation>
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1781533683087883868">Matikan pautan Mod Membaca</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Diurus oleh <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Bantuan &amp; maklum balas</translation>
 <translation id="2501278716633472235">Kembali</translation>
-<translation id="2533138527374486328">Apabila dihidupkan, laman boleh meminta untuk menyambung kepada mana-mana peranti pada rangkaian setempat anda. Apabila dimatikan, laman tidak boleh menyambung kepada peranti pada rangkaian setempat anda.</translation>
 <translation id="2536779053640817375">Dibenarkan pada masa ini • Tepat</translation>
 <translation id="2544997614631598250">Tema warna gelap</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Mulakan Omnibox</translation>
 <translation id="2789132527330338807">Laman boleh meminta untuk membuat peta 3D persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
-<translation id="2794551654724114396">Hidupkan pemberitahuan untuk mendapatkan petua berguna yang membantu anda memanfaatkan Chrome sepenuhnya</translation>
 <translation id="2795716239552913152">Tapak biasanya menggunakan lokasi anda untuk ciri atau maklumat yang berkaitan, seperti berita tempatan atau kedai berdekatan</translation>
 <translation id="2800760947029405028">Muat naik imej</translation>
 <translation id="2802908157808345702">Jangan benarkan laman menghantar kandungan timbul dan menggunakan ubah hala</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Jangan benarkan laman menyambung kepada peranti USB</translation>
 <translation id="3965467402665811906">Laman boleh meminta untuk menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
-<translation id="3969869202926863008">Akses rangkaian setempat</translation>
 <translation id="3981465354637804599">Laman biasanya memaparkan iklan agar dapat memberikan kandungan atau perkhidmatan percuma. Akan tetapi, sesetengah laman diketahui memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Pintasan saya</translation>
 <translation id="656065428026159829">Lihat lagi</translation>
 <translation id="6561560012278703671">Gunakan pemesejan yang lebih senyap (menyekat gesaan pemberitahuan daripada mengganggu anda)</translation>
-<translation id="6565144332292237355">Laman boleh menggunakan ciri ini untuk menemukan dan menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="6593061639179217415">Tapak desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}other{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6630443592285535486">Taip heks di sini</translation>
 <translation id="6635327442719709864">Apabila dihidupkan, laman dapat meminta untuk menggunakan port bersiri. Apabila dimatikan, laman tidak dapat menggunakan port bersiri.</translation>
-<translation id="6669390930482049506">Beritahu saya</translation>
 <translation id="6678072580827808850">Semak Pemeriksaan Keselamatan</translation>
 <translation id="6682057173375416470">Dapatkan artikel yang dicadangkan pada halaman Tab Baharu</translation>
 <translation id="6683865262523156564">Laman ini berada dalam kumpulan yang boleh melihat aktiviti anda. Kumpulan tersebut ditakrifkan oleh <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Sekat tapak daripada memaparkan tetingkap timbul dan ubah hala (disyorkan)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Muat semula</translation>
+<translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7188508872042490670">Data laman pada peranti</translation>
 <translation id="7201549776650881587">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh semua laman di bawah <ph name="ORIGIN" /> atau disimpan oleh apl laman tersebut pada Skrin utama anda</translation>
-<translation id="7213166370492037743">Jangan benarkan laman menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
 <translation id="723171743924126238">Pilih imej</translation>
 <translation id="7243246278722455312">Sesuaikan helaian bawah halaman tab baharu anda</translation>

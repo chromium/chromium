@@ -745,6 +745,7 @@
 <translation id="21613918653299710">Galeries d'images en ligne</translation>
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2162435186600002085">Logo d'en-tête principal</translation>
+<translation id="2162535140284745414">Obtenez des suggestions en temps réel qui peuvent vous aider à trouver de nouvelles façons de naviguer avec l'IA.</translation>
 <translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Vérifiez si <ph name="HOST_NAME" /> est écrit correctement.</translation>
 <translation id="2166049586286450108">Accès administrateur complet</translation>
@@ -992,6 +993,7 @@
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2521736961081452453">Créer un formulaire</translation>
 <translation id="2524461107774643265">Ajouter plus de renseignements</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Le contenu de la page de paiement est partagé avec Google pour proposer ces options.<ph name="END_BOLD" /> Les forfaits de paiement sont assujettis à des critères d'admissibilité. Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres des paiements<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Pour exécuter cette appli, réactivez le mode Développeur pour les applis Web isolées</translation>
 <translation id="2526280916094749336">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse sera enregistrée dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Votre code CVC se trouve au recto de votre carte. Il s'agit du code à 4 chiffres en haut à droite au-dessus de votre numéro de carte.</translation>
@@ -1458,6 +1460,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3261488570342242926">En savoir plus sur les cartes virtuelles</translation>
 <translation id="3262698603497362968">Options d'achat</translation>
 <translation id="3264315627780269177">Impossible de partager cet onglet</translation>
+<translation id="3264637689694266148">Si vous désactivez les suggestions, le titre de la page et les URL de vos onglets peuvent toujours être traités pour d'autres fonctionnalités de Chrome. Vous pouvez gérer l'accès du navigateur à ces données dans vos</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3270041629388773465">Payer plus rapidement lorsque vos codes CVC sont enregistrés</translation>
@@ -1902,7 +1905,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3965672182149944205">Enregistrer l'adresse?</translation>
 <translation id="3966044442021752214">Sécurité du produit</translation>
 <translation id="396761677631735618">Cartes de fidélité qui peuvent être remplies d'un toucher, ouvertes à mi-hauteur.</translation>
-<translation id="3969869202926863008">Accès au réseau local</translation>
 <translation id="3970239200223030389">Date d'émission</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
@@ -1993,6 +1995,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4103249731201008433">Le numéro de série de l'appareil n'est pas valide</translation>
 <translation id="4103592298805904008">Carton (paroi simple)</translation>
 <translation id="4104702906064390950">Enregistrement des informations IBAN en cours…</translation>
+<translation id="4106101218644797743">paramètres de synchronisation</translation>
 <translation id="4106887816571530227">Contenu intégré non autorisé</translation>
 <translation id="4107047499377819067">L'installation des services de RPV en arrière-plan a commencé; cette opération peut prendre quelques minutes.</translation>
 <translation id="4110642094637545339">Logos de Google Pay et d'AfterPay</translation>
@@ -2328,6 +2331,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4640225694041297329">Afficher les résultats des 7 derniers jours</translation>
 <translation id="4642296966515958616">Pour rejoindre ce groupe d'onglets, mettez à jour Chrome</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
+<translation id="4643958597583594452">Chrome traite les titres de pages et les URL sur votre appareil ou dans un espace privé dans le nuage</translation>
 <translation id="4644567637638438744">Les fichiers peuvent être téléversés uniquement si vous êtes connecté à Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre inversé, face vers le bas</translation>
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
@@ -2575,6 +2579,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5019293549442035120">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse sera enregistrée dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">capteurs de mouvement et de luminosité</translation>
 <translation id="5019952743397118625">La politique <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est définie. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne contrôlera pas la disponibilité du mode Développeur sur la page des extensions.</translation>
+<translation id="5020862932518041900">Si vous sélectionnez ou ignorez une suggestion, Chrome s'adaptera pour s'assurer que vous ne voyez que ce qui vous concerne</translation>
 <translation id="5021500396464456616">Communiquez avec la personne qui a envoyé ce lien</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
@@ -3005,7 +3010,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5660122698869360728">Un nouveau dossier intelligent qui vous aide à enregistrer toutes vos pages d'achats au même endroit, à suivre automatiquement les prix, à obtenir des statistiques sur les prix, et plus.</translation>
 <translation id="5663955426505430495">L'administrateur de cet appareil a installé des extensions offrant des fonctions supplémentaires. Les extensions ont accès à certaines de vos données.</translation>
 <translation id="5667827081946850877">Livres audio</translation>
-<translation id="5674082555327905359">Peut demander à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="5675650730144413517">Cette page ne fonctionne pas</translation>
 <translation id="5675809467256309336">Dance et musique électronique</translation>
 <translation id="5675959228867414813">Afficher par date</translation>
@@ -3412,7 +3416,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6321917430147971392">Vérifier vos paramètres DNS</translation>
 <translation id="6322182122604171028">Impossible d'utiliser Windows Hello</translation>
 <translation id="6326947323444967009">Définir Chrome comme navigateur par défaut du système dans les réglages iOS</translation>
-<translation id="6327065120806001832">accès au réseau local</translation>
 <translation id="6328639280570009161">Essayez de désactiver la prédiction du réseau</translation>
 <translation id="6329742260390895689">Pour remplir automatiquement vos informations, activez « Utiliser des cartes partout sur Google » dans les paramètres de Portefeuille</translation>
 <translation id="6329815962353376655">&lt;Tapez une question&gt;</translation>
@@ -3516,6 +3519,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6451458296329894277">Confirmer le nouvel envoi du formulaire</translation>
 <translation id="6452429044474066211">Plongée et activités sous-marines</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Les titres de pages et les URL de vos onglets ouverts sont utilisés pour vous donner des suggestions pertinentes</translation>
 <translation id="6455632609396391811">Assurance maladie</translation>
 <translation id="6456955391422100996">Annonce supprimée.</translation>
 <translation id="6457206614190510200">Agrafage à cheval</translation>
@@ -4409,6 +4413,7 @@ Détails supplémentaires :
 <translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7822611063308883975">Consoles de jeux portables</translation>
 <translation id="7825558994363763489">Micro-ondes</translation>
+<translation id="7827688884439021871">Obtenez des suggestions en temps réel qui peuvent vous aider à trouver de nouvelles façons de naviguer avec l'IA</translation>
 <translation id="782886543891417279">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter sa page de connexion.</translation>
 <translation id="7831993212387676366">Qu'est-ce que la liste d'achats?</translation>
 <translation id="7840103971441592723">La capture d'écran a commencé</translation>
@@ -4700,6 +4705,7 @@ Détails supplémentaires :
 <translation id="8289355894181816810">Communiquez avec votre administrateur réseau si vous n'êtes pas certain de ce que cela signifie.</translation>
 <translation id="8291367150570302588">Carte d'identité</translation>
 <translation id="829335040383910391">Son</translation>
+<translation id="8294425747071240447">Suggestions, propulsées par l'IA</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Les témoins et d'autres données relatives aux sites sont utilisés pour se souvenir de vous, comme pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, voir <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

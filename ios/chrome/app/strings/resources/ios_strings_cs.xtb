@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ne, díky</translation>
 <translation id="1531038290222364269">Zobrazit karty</translation>
 <translation id="1536390784834419204">Přeložit stránku</translation>
+<translation id="1539535193627863227">Pro tento web nebyla nalezena žádná hesla ani přístupové klíče</translation>
 <translation id="1540800554400757039">První řádek adresy</translation>
 <translation id="154312949627292154">Otevírejte z obrazovky uzamčení karty přijaté ze svých ostatních zařízení.</translation>
 <translation id="1545749641540134597">Naskenujte QR kód</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Vypnout režim čtení</translation>
 <translation id="3106690631878101882">Skrýt možnost Přeložit</translation>
 <translation id="310900540163454140">Smazat heslo pro web <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Sbaleno</translation>
 <translation id="3112556859945124369">Označit…</translation>
 <translation id="3116695032231023709">Uložení průkazu totožnosti</translation>
 <translation id="3119874402040566234">Budete odhlášeni a vymažou se údaje o prohlížení</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Změnu nebylo možné uložit.</translation>
 <translation id="3254806613790954367">Naposledy otevřená karta ze všech vašich zařízení</translation>
 <translation id="325717987950204592">Klepněte na Ochrana soukromí a zabezpečení</translation>
+<translation id="3259451381796379533">Tento účet nebude s Gemini fungovat. Přihlaste se pomocí jiného účtu Google.</translation>
 <translation id="3265736395246760288">Přihlašujte se ze svých synchronizovaných zařízení rychleji.</translation>
 <translation id="3272527697863656322">Zrušit</translation>
 <translation id="3273510436356991673">Přizpůsobení plochy</translation>
@@ -1780,6 +1783,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
 <translation id="719133302483559673">Spravujte své zájmy a preference.</translation>
 <translation id="7191382490098297347">Obrázek z alba fotoaparátu</translation>
+<translation id="7203150201908454328">Rozbaleno</translation>
 <translation id="7203496777391039568">Data vaší organizace jsou soukromá a zabezpečená</translation>
 <translation id="720399613139435155">Překlad se nezdařil</translation>
 <translation id="7204922488054642675">Personalizované zprávy</translation>
@@ -1864,6 +1868,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7498234416455752244">Pokračovat v úpravách</translation>
 <translation id="7500244509706269886">Automaticky vyplnit formulář</translation>
 <translation id="750493650310597496">Vybráno 0</translation>
+<translation id="7505402981231763928">Pokud chcete používat Gemini, musíte se přihlásit</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pokud chcete uzamknout anonymní karty, nastavte Touch ID, Face ID nebo heslo.</translation>
 <translation id="750886945254958667">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit, pokud k ní už nechcete mít přístup.</translation>

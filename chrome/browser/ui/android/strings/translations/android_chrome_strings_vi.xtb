@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Theo dõi</translation>
 <translation id="1366525380420346469">Khi bật</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Bạn có thể ngăn trang web này gửi thông báo trong tương lai}other{Bạn có thể ngăn các trang web này gửi thông báo trong tương lai}}</translation>
-<translation id="1373696734384179344">Không đủ bộ nhớ để tải xuống nội dung được chọn.</translation>
 <translation id="137496472437646183">Chọn Bảo vệ nâng cao</translation>
 <translation id="1376578503827013741">Đang tính toán...</translation>
 <translation id="1381838868249179644">Để đảm bảo an toàn cho bạn, chúng tôi đã loại bỏ quyền của một số trang web</translation>
@@ -358,6 +357,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2553962148913791095">Một số dấu trang không được lưu</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Đã chặn tệp tải xuống nguy hiểm}other{Đã chặn # tệp tải xuống nguy hiểm}}</translation>
 <translation id="2569733278091928697">Bạn có thể dễ dàng quản lý chế độ điều khiển nội dung nghe nhìn, phiên truy cập ẩn danh, tệp đã tải xuống, v.v.</translation>
+<translation id="257088987046510401">Chủ đề</translation>
 <translation id="2571711316400087311">Đề xuất gửi các trang có nội dung bằng các ngôn ngữ khác cho Google Dịch</translation>
 <translation id="2571834852878229351">Tự tạo mật khẩu</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
@@ -527,7 +527,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3293181007446299124">Nhật ký duyệt web của bạn được bảo mật trên thiết bị của bạn. Các báo cáo gửi đi sẽ được trì hoãn để bảo vệ danh tính của bạn</translation>
 <translation id="3301936297336370235">Xác nhận đề xuất về mật khẩu</translation>
 <translation id="3302615849591357577">Khôi phục nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.</translation>
-<translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
 <translation id="3305130791745726624">Gửi đến các thiết bị</translation>
 <translation id="3305795716056605962">Dịch trang từ nút Tuỳ chọn khác</translation>
@@ -544,7 +543,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3373701465337594448">Khi chế độ cài đặt này bật, danh sách trang web bạn truy cập đoán được mối quan tâm của bạn sẽ xuất hiện ở đây</translation>
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
 <translation id="3387650086002190359">Tải xuống <ph name="FILE_NAME" /> không thành công do lỗi hệ thống tệp.</translation>
-<translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3417835166382867856">Tìm kiếm thẻ</translation>
 <translation id="3430670036890315772">Nếu bạn tắt khoá hồ sơ, thông tin đã lưu sẽ bị xoá</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
@@ -886,7 +884,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4807098396393229769">Tên trên thẻ</translation>
 <translation id="480990236307250886">Mở trang chủ</translation>
 <translation id="4822710610088666676">Đã đóng và lưu nhóm thẻ <ph name="TAB_GROUP_TITLE" /></translation>
-<translation id="482405935591409882">Tìm kiếm trong thẻ và nhóm của bạn</translation>
 <translation id="4834250788637067901">Phương thức thanh toán, ưu đãi và địa chỉ sử dụng Google Pay</translation>
 <translation id="4835385943915508971">Chrome không có quyền truy cập vào tài nguyên đã yêu cầu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Khôi phục nhóm <ph name="TAB_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}other{Khôi phục nhóm <ph name="TAB_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.}}</translation>
@@ -896,7 +893,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
 <translation id="4866368707455379617">Không thể cài đặt <ph name="MODULE" /> cho Chrome</translation>
-<translation id="487567923005969537">Bật Chế độ AI</translation>
 <translation id="4875775213178255010">Đề xuất nội dung</translation>
 <translation id="4877678010818027629">Chuyển sang chế độ Ẩn danh</translation>
 <translation id="4878404682131129617">Thiết lập đường hầm qua máy chủ proxy không thành công</translation>
@@ -989,7 +985,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5246093389635966745">Chỉnh sửa phím tắt thanh công cụ</translation>
 <translation id="5264813352784073502">24 giờ qua</translation>
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
-<translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
 <translation id="5273031377282080577">Quản trị viên của bạn quản lý chế độ cài đặt này.</translation>
 <translation id="5290322819358431297">Tự động điền mật khẩu</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
@@ -1062,7 +1057,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5619633276517849615">Tổ chức của bạn đã bật tính năng Duyệt web an toàn</translation>
 <translation id="5620163320393916465">Bạn chưa lưu mật khẩu nào</translation>
 <translation id="5620928963363755975">Tìm tệp và trang của bạn trong Tài nguyên đã tải xuống từ nút Tùy chọn khác</translation>
-<translation id="5626134646977739690">Tên:</translation>
 <translation id="5628604359369369630">Chưa đọc – Có thể đọc khi không có mạng</translation>
 <translation id="5631483240431073854">Quản lý các thẻ đang mở</translation>
 <translation id="5632485077360054581">Xem cách làm</translation>
@@ -1094,7 +1088,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
 <translation id="5765517223145864268">Cho chúng tôi biết về trải nghiệm của bạn. Hoặc <ph name="BEGIN_LINK" />thay đổi các chế độ cài đặt của bạn<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Mô tả:</translation>
 <translation id="5776970333778123608">Dữ liệu không quan trọng</translation>
 <translation id="5793665092639000975">Đang dùng: <ph name="SPACE_USED" />/<ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Đã chặn chủ đề</translation>
@@ -1525,7 +1518,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7365073365123878797">Để bắt đầu lưu và sử dụng mật khẩu bằng Trình quản lý mật khẩu của Google, hãy cập nhật dịch vụ Google Play</translation>
 <translation id="7368009310682364976">Xem các thẻ đã mở gần đây</translation>
 <translation id="7368927539449986686">Chỉnh sửa công cụ tìm kiếm trên trang web</translation>
-<translation id="7375125077091615385">Loại:</translation>
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
 <translation id="7379900596734708416">Đã có giao diện tối cho các trang web</translation>
 <translation id="7384486627147155832">Thông báo quảng cáo kèm mẹo đã mở trên một nửa màn hình</translation>
@@ -1665,7 +1657,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7957413488482743710">Thẻ ảo giúp bạn ẩn thẻ thực, bảo vệ bạn trước nguy cơ bị lừa đảo. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Thẻ trên thiết bị này</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
-<translation id="7963646190083259054">Nhà cung cấp:</translation>
 <translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
@@ -1838,7 +1829,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
 <translation id="8611922158252451755">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ. Vì vậy, hãy chia sẻ một cách sáng suốt. Đường liên kết này sẽ hết hạn sau 48 giờ nữa.</translation>
 <translation id="8616006591992756292">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Mở URL đề xuất được chỉ định trong nội dung được tải xuống?</translation>
 <translation id="8629093325209491835">Mở trình đơn Chrome &gt; Cài đặt</translation>
 <translation id="8634050254805484913">Ẩn trên màn hình hẹp</translation>
 <translation id="8635399646025169806">Giữ lại nhóm thẻ?</translation>
@@ -1879,7 +1869,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="881688628773363275">Không thể xem nội dung trên thẻ Xem trước.</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="8824359129672223138">Bạn có thể mở tối đa <ph name="MAX_WINDOW_COUNT" /> cửa sổ.</translation>
-<translation id="883806473910249246">Đã xảy ra lỗi khi tải nội dung xuống.</translation>
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Đã ẩn</translation>

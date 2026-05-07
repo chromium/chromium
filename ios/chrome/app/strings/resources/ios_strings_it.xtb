@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, grazie</translation>
 <translation id="1531038290222364269">Mostra schede</translation>
 <translation id="1536390784834419204">Traduci pagina</translation>
+<translation id="1539535193627863227">Nessuna password o passkey trovata per questo sito</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Disattiva la modalità Lettura</translation>
 <translation id="3106690631878101882">Nascondi Traduci</translation>
 <translation id="310900540163454140">Eliminare la password di <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Compresso</translation>
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3116695032231023709">Salva la carta di identità</translation>
 <translation id="3119874402040566234">Il tuo account verrà disconnesso e i dati di navigazione verranno eliminati</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3254806613790954367">L'ultima scheda aperta su tutti i tuoi dispositivi</translation>
 <translation id="325717987950204592">Tocca "Privacy e sicurezza"</translation>
+<translation id="3259451381796379533">Questo account non funziona con Gemini. Accedi con un altro Account Google.</translation>
 <translation id="3265736395246760288">Accedi più velocemente da tutti i tuoi dispositivi sincronizzati.</translation>
 <translation id="3272527697863656322">Annulla</translation>
 <translation id="3273510436356991673">Personalizza la schermata Home</translation>
@@ -1780,6 +1783,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7186568385131859684">Controlla il modo in cui la cronologia di navigazione viene utilizzata con gli altri dati sui servizi Google</translation>
 <translation id="719133302483559673">Gestisci i tuoi interessi e le tue preferenze.</translation>
 <translation id="7191382490098297347">Immagine di un rullino</translation>
+<translation id="7203150201908454328">Espanso</translation>
 <translation id="7203496777391039568">I dati della tua organizzazione sono privati e protetti</translation>
 <translation id="720399613139435155">Traduzione non riuscita</translation>
 <translation id="7204922488054642675">Notizie personalizzate</translation>
@@ -1864,6 +1868,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7498234416455752244">Continua modifica</translation>
 <translation id="7500244509706269886">Compila automaticamente il modulo</translation>
 <translation id="750493650310597496">0 selezionati</translation>
+<translation id="7505402981231763928">Devi accedere per usare Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloccare le schede Incognito, configura Touch ID, Face ID o un passcode.</translation>
 <translation id="750886945254958667">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci se non vuoi più accedervi</translation>

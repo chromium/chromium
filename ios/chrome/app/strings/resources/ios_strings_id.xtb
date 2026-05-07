@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Lain Kali</translation>
 <translation id="1531038290222364269">Tampilkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
+<translation id="1539535193627863227">Tidak ada sandi atau kunci sandi yang ditemukan untuk situs ini</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="154312949627292154">Buka tab yang diterima dari perangkat Anda yang lain dari layar kunci.</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Nonaktifkan Mode Baca</translation>
 <translation id="3106690631878101882">Sembunyikan Terjemahkan</translation>
 <translation id="310900540163454140">Hapus sandi untuk <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Diciutkan</translation>
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3116695032231023709">Simpan kartu identitas</translation>
 <translation id="3119874402040566234">Anda akan logout dan data penjelajahan akan dihapus</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Perubahan Anda tidak dapat disimpan.</translation>
 <translation id="3254806613790954367">Tab yang terakhir dibuka di semua perangkat Anda</translation>
 <translation id="325717987950204592">Ketuk "Privasi dan Keamanan"</translation>
+<translation id="3259451381796379533">Akun ini tidak akan berfungsi dengan Gemini. Login dengan Akun Google lain.</translation>
 <translation id="3265736395246760288">Login lebih cepat dari perangkat Anda yang disinkronkan.</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3273510436356991673">Sesuaikan layar utama Anda</translation>
@@ -1780,6 +1783,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7186568385131859684">Kontrol cara histori penjelajahan digunakan dengan data Anda yang lain di berbagai layanan Google</translation>
 <translation id="719133302483559673">Kelola minat dan preferensi Anda.</translation>
 <translation id="7191382490098297347">Gambar rol kamera</translation>
+<translation id="7203150201908454328">Diperluas</translation>
 <translation id="7203496777391039568">Privasi dan keamanan data organisasi Anda tetap terjaga</translation>
 <translation id="720399613139435155">Terjemahan gagal</translation>
 <translation id="7204922488054642675">Berita yang dipersonalisasi</translation>
@@ -1864,6 +1868,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7498234416455752244">Lanjut mengedit</translation>
 <translation id="7500244509706269886">Isi otomatis formulir</translation>
 <translation id="750493650310597496">Tak ada yang dipilih</translation>
+<translation id="7505402981231763928">Anda harus login untuk menggunakan Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Samaran, siapkan Touch ID, Face ID, atau Kode Sandi.</translation>
 <translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>

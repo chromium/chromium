@@ -160,7 +160,7 @@
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531038290222364269">Prikaz kartica</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
-<translation id="1539535193627863227">Nije pronađena nijedna zaporka ili pristupni ključ za ovu web-lokaciju</translation>
+<translation id="1539535193627863227">Nije pronađena nijedna lozinka ni pristupni ključ za ovu web lokaciju</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="154312949627292154">Otvorene kartice primljene s drugih uređaja dok je ekran bio zaključan.</translation>
 <translation id="1545749641540134597">Skeniraj QR kôd</translation>
@@ -599,6 +599,7 @@
 <translation id="3106258548858559536">Isključi način rada za čitanje</translation>
 <translation id="3106690631878101882">Sakrij prevod</translation>
 <translation id="310900540163454140">Izbrisati lozinku za <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Skupljeno</translation>
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3116695032231023709">Sačuvajte ličnu karticu</translation>
 <translation id="3119874402040566234">Odjavit ćete se, a podaci o pregledanju će se izbrisati</translation>
@@ -643,7 +644,7 @@
 <translation id="3245744387817103524">Pohranjivanje promjene nije uspjelo.</translation>
 <translation id="3254806613790954367">Posljednja otvorena kartica na svim vašim uređajima</translation>
 <translation id="325717987950204592">Dodirnite "Privatnost i sigurnost"</translation>
-<translation id="3259451381796379533">Ovaj račun neće funkcionirati s Geminijem. Prijavite se drugim Google računom.</translation>
+<translation id="3259451381796379533">Ovaj račun neće funkcionirati s Geminijem. Prijavite se s drugim Google računom.</translation>
 <translation id="3265736395246760288">Brže se prijavljujte s bilo kojeg sinhroniziranog uređaja.</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3273510436356991673">Prilagođavanje početnog ekrana</translation>
@@ -1782,6 +1783,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7186568385131859684">Upravljajte načinom na koji se historija pregledanja koristi s drugim podacima na Googleovim uslugama</translation>
 <translation id="719133302483559673">Upravljajte interesovanjima i postavkama.</translation>
 <translation id="7191382490098297347">Slika iz snimljenih fotografija</translation>
+<translation id="7203150201908454328">Prošireno</translation>
 <translation id="7203496777391039568">Podaci vaše organizacije su privatni i zaštićeni</translation>
 <translation id="720399613139435155">Prevod nije uspio</translation>
 <translation id="7204922488054642675">Personalizirane vijesti</translation>
@@ -1866,7 +1868,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7498234416455752244">Nastavi uređivanje</translation>
 <translation id="7500244509706269886">Automatski popuni obrazac</translation>
 <translation id="750493650310597496">Odabrano je 0 oznaka</translation>
-<translation id="7505402981231763928">Da biste upotrebljavali Gemini, trebate se prijaviti</translation>
+<translation id="7505402981231763928">Morate se prijaviti da koristite Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Da zaključate anonimne kartice, postavite Touch ID, Face ID ili šifru.</translation>
 <translation id="750886945254958667">Zadržite ovu grupu da kasnije dodate kartice ili je napustite ako joj više ne želite pristupati</translation>

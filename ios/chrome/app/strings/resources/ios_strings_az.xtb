@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
 <translation id="1531038290222364269">Tabları göstərin</translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
+<translation id="1539535193627863227">Bu sayt üçün parol və ya giriş açarı tapılmadı</translation>
 <translation id="1540800554400757039">Ünvan 1</translation>
 <translation id="154312949627292154">Digər cihazlardan alınan tabları kilidli ekrandan açın.</translation>
 <translation id="1545749641540134597">QR Kodunu skan edin</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Oxu rejimini deaktiv edin</translation>
 <translation id="3106690631878101882">"Tərcümə edin" seçimini gizlədin</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> parolu silinsin?</translation>
+<translation id="3109724472072898302">Yığcamlaşdı</translation>
 <translation id="3112556859945124369">Qeyd edin...</translation>
 <translation id="3116695032231023709">Kimlik sənədini yadda saxlayın</translation>
 <translation id="3119874402040566234">Çıxacaqsınız və baxış datası silinəcək</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Dəyişiklik yaddaşda saxlanmadı.</translation>
 <translation id="3254806613790954367">Bütün cihazlarınızda son açıq tab</translation>
 <translation id="325717987950204592">"Məxfilik və güvənlik" üzərinə toxunun</translation>
+<translation id="3259451381796379533">Bu hesab Gemini ilə işləməyəcək. Başqa Google Hesabı ilə daxil olun.</translation>
 <translation id="3265736395246760288">Sinxronlaşdırılmış cihazlarınızdan daha sürətlə daxil olun.</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
 <translation id="3273510436356991673">Əsas ekranı fərdiləşdirin</translation>
@@ -1780,6 +1783,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7186568385131859684">Brauzer tarixçəsinin Google xidmətlərindəki digər data ilə necə istifadə olunduğuna nəzarət edin</translation>
 <translation id="719133302483559673">Maraq və tərcihlərinizi idarə edin.</translation>
 <translation id="7191382490098297347">Foto lent şəkli</translation>
+<translation id="7203150201908454328">Genişləndirilmiş</translation>
 <translation id="7203496777391039568">Təşkilatınızın datası məxfi və təhlükəsizdir</translation>
 <translation id="720399613139435155">Tərcümə uğursuz oldu</translation>
 <translation id="7204922488054642675">Fərdiləşdirilmiş xəbərlər</translation>
@@ -1864,6 +1868,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7498234416455752244">Düzəlişə davam edin</translation>
 <translation id="7500244509706269886">Formanı avtomatik doldurun</translation>
 <translation id="750493650310597496">1 ədəd seçilib</translation>
+<translation id="7505402981231763928">Gemini-dan istifadə etmək üçün hesaba daxil olmalısınız</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Anonim tablarınızı kilidləmək üçün Touch ID, Face ID və ya Parol ayarlayın.</translation>
 <translation id="750886945254958667">Sonra tab əlavə etmək üçün bu qrupu saxlayın və ya artıq ona daxil olmaq istəmirsinizsə, çıxın</translation>

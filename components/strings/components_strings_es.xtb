@@ -478,6 +478,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo el código fuente de una página web</translation>
 <translation id="173080396488393970">No se admite este tipo de tarjeta</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Preguntar en persona</translation>
 <translation id="1733064249834771892">fuentes</translation>
 <translation id="1733631169686303142">Equipos de sonido</translation>
@@ -745,6 +746,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="21613918653299710">Galerías de imágenes online</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162435186600002085">Logotipo del encabezado principal</translation>
+<translation id="2162535140284745414">Recibe sugerencias en tiempo real que pueden ayudarte a descubrir nuevas formas de navegar con IA.</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprueba si hay un error de escritura en <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -1459,6 +1461,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3261488570342242926">Más información sobre tarjetas virtuales</translation>
 <translation id="3262698603497362968">Opciones de compra</translation>
 <translation id="3264315627780269177">Esta pestaña no se puede compartir</translation>
+<translation id="3264637689694266148">Si desactivas las sugerencias, es posible que el título de la página y las URLs de tus pestañas se sigan procesando para otras funciones de Chrome. Puedes gestionar el acceso del navegador a estos datos en</translation>
 <translation id="3266793032086590337">Valor (en conflicto)</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3270041629388773465">Compra más rápido con tus CVCs guardados</translation>
@@ -1594,6 +1597,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="350069200438440499">Nombre:</translation>
 <translation id="3501300228850242680">Metal (música)</translation>
 <translation id="350421688684366066">Etiquetas (brillo intenso)</translation>
+<translation id="3507062913298382727">Guardar documento de identidad</translation>
 <translation id="350763432931695541">Extrayendo texto de las páginas siguientes</translation>
 <translation id="3507869775212388416">Trabajos del sector jurídico</translation>
 <translation id="3507936815618196901">Crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
@@ -1903,7 +1907,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3965672182149944205">¿Guardar dirección?</translation>
 <translation id="3966044442021752214">Seguridad del producto</translation>
 <translation id="396761677631735618">Las tarjetas de fidelización que puedes rellenar con un toque están abiertas a media altura.</translation>
-<translation id="3969869202926863008">Acceso a la red local</translation>
 <translation id="3970239200223030389">Fecha de emisión</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
@@ -1988,12 +1991,14 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4098306082496067348">Toca la información de la tarjeta virtual para añadirla a la tramitación de la compra.</translation>
 <translation id="4099048595830172239">La política del administrador no recomienda que compartas tu pantalla con <ph name="APPLICATION_TITLE" /> cuando se muestra contenido confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para personalizar los tamaños de fuente y los tipos de letra de Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Texto e imágenes</translation>
 <translation id="4101917550061398111">Eliminar los elementos seleccionados</translation>
 <translation id="4102567721634170493">Noticias locales</translation>
 <translation id="4103249731201008433">El número de serie del dispositivo no es válido.</translation>
 <translation id="4103592298805904008">Cartón (una capa)</translation>
 <translation id="4104702906064390950">Guardando información del IBAN</translation>
+<translation id="4106101218644797743">los ajustes de sincronización</translation>
 <translation id="4106887816571530227">Contenido insertado no permitido</translation>
 <translation id="4107047499377819067">Se ha iniciado la instalación de los servicios en segundo plano de VPN. Este proceso puede tardar unos minutos.</translation>
 <translation id="4110642094637545339">Logotipos de Google Pay y AfterPay</translation>
@@ -2214,6 +2219,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
 <translation id="4415426530740016218">Dirección de recogida</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (también denominada NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Las contraseñas se pueden eliminar en sus ajustes de gestión</translation>
 <translation id="4424024547088906515">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chrome no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="4425750422187370446">Ropa para hacer deporte</translation>
@@ -2329,6 +2335,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4640225694041297329">Mostrar resultados de los últimos 7 días</translation>
 <translation id="4642296966515958616">Para unirte a este grupo de pestañas, actualiza Chrome</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
+<translation id="4643958597583594452">Chrome procesa los títulos de las páginas y las URLs en tu dispositivo o en un espacio privado en la nube</translation>
 <translation id="4644567637638438744">Solo puedes subir archivos si has iniciado sesión en Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orden inverso boca abajo</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA‑256.</translation>
@@ -2576,6 +2583,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5019293549442035120">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu cuenta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">sensores de luz y de movimiento</translation>
 <translation id="5019952743397118625">Se ha definido la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlará la disponibilidad del modo Desarrollador en la página de extensiones.</translation>
+<translation id="5020862932518041900">Si seleccionas o ignoras una sugerencia, Chrome se adaptará para asegurarse de que solo veas lo que te interesa</translation>
 <translation id="5021500396464456616">Ponte en contacto con la persona que te ha enviado este enlace</translation>
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Consulta las políticas del administrador</translation>
@@ -2951,6 +2959,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5573641252776268565">Editar pasaporte</translation>
 <translation id="5578606540385219379">Proveedores de servicios</translation>
 <translation id="5580958916614886209">Consulta el mes de vencimiento y vuelve a intentarlo</translation>
+<translation id="5582453333200265572">Actualizar documento de identidad</translation>
 <translation id="5583442610070676234">Más acciones para la tabla comparativa <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">No se ha podido guardar este IBAN en Google Wallet. Se ha guardado en Chrome en este dispositivo.</translation>
 <translation id="558420943003240152">Gestionar contraseñas y llaves de acceso…</translation>
@@ -3006,7 +3015,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5660122698869360728">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un mismo lugar, a hacer un seguimiento automático de los precios, a obtener estadísticas sobre ellos y más.</translation>
 <translation id="5663955426505430495">El administrador de este dispositivo ha instalado extensiones que aportan funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
-<translation id="5674082555327905359">Puede solicitar permiso para conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="5675650730144413517">Esta página no funciona</translation>
 <translation id="5675809467256309336">Música dance y electrónica</translation>
 <translation id="5675959228867414813">Mostrar por fecha</translation>
@@ -3085,6 +3093,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5808435672482059465">Ver tu historial de Chrome</translation>
 <translation id="5810442152076338065">Tu conexión con <ph name="DOMAIN" /> está cifrada con un conjunto de cifrado obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Rehacer acción de añadir</translation>
+<translation id="5813274153495000141">Guarda tu información y rellena formularios más rápido. Se guarda en tu dispositivo.</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Emparejar</translation>
 <translation id="5820625124144807242">Después de revisar tu pedido, debes iniciar sesión o crear una cuenta de <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a Google Pay.</translation>
@@ -3413,7 +3422,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6321917430147971392">Comprueba tu configuración de DNS</translation>
 <translation id="6322182122604171028">No se ha podido usar Windows Hello</translation>
 <translation id="6326947323444967009">Establece Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
-<translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
 <translation id="6329742260390895689">Para autocompletar tu información, en los ajustes de Wallet, activa Usar mis documentos en todo Google.</translation>
 <translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>
@@ -3517,6 +3525,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6451458296329894277">Confirmar reenvío del formulario</translation>
 <translation id="6452429044474066211">Buceo y actividades bajo el agua</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Los títulos de las páginas y las URLs de tus pestañas abiertas se usan para ofrecerte sugerencias relevantes</translation>
 <translation id="6455632609396391811">Seguros médicos</translation>
 <translation id="6456955391422100996">Se ha retirado el anuncio.</translation>
 <translation id="6457206614190510200">Grapado en el pliegue central</translation>
@@ -4411,6 +4420,7 @@ Más información:
 <translation id="7819605256207059717">Bloqueado por tu organización</translation>
 <translation id="7822611063308883975">Videoconsolas portátiles</translation>
 <translation id="7825558994363763489">Microondas</translation>
+<translation id="7827688884439021871">Recibe sugerencias en tiempo real que pueden ayudarte a encontrar nuevas formas de navegar con IA</translation>
 <translation id="782886543891417279">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a su página de inicio de sesión.</translation>
 <translation id="7831993212387676366">¿Qué es la lista de la compra?</translation>
 <translation id="7840103971441592723">Captura de pantalla iniciada</translation>
@@ -4702,6 +4712,7 @@ Más información:
 <translation id="8289355894181816810">Si tienes alguna duda, ponte en contacto con el administrador de red.</translation>
 <translation id="8291367150570302588">Documento de identidad</translation>
 <translation id="829335040383910391">sonido</translation>
+<translation id="8294425747071240447">Sugerencias basadas en IA</translation>
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8297545700510100061">Las cookies y otros datos de los sitios se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios, ve a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

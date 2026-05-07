@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Snit</translation>
 <translation id="1366525380420346469">Wanneer dit aan is</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Jy kan keer dat hierdie werf in die toekoms kennisgewings stuur}other{Jy kan keer dat hierdie werwe in die toekoms kennisgewings stuur}}</translation>
-<translation id="1373696734384179344">Onvoldoende berging om die geselekteerde inhoud af te laai.</translation>
 <translation id="137496472437646183">Kies Verbeterde beskerming</translation>
 <translation id="1376578503827013741">Bereken tans …</translation>
 <translation id="1381838868249179644">Toestemmings is van sommige werwe verwyder om jou veilig te hou</translation>
@@ -292,6 +291,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
 <translation id="2318045970523081853">Tik om 'n oproep te maak</translation>
+<translation id="232137538351753795">Swiep van die linkerkant af om terug te gaan</translation>
 <translation id="2323763861024343754">Werfberging</translation>
 <translation id="2328474416100889417">Almal sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en alle uitnodigingskakels sal afgeskakel word</translation>
 <translation id="2330186936255788117">Meer boekmerke</translation>
@@ -357,6 +357,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2553962148913791095">Sommige boekmerke is nie gestoor nie</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Gevaarlike aflaai is geblokkeer}other{# gevaarlike aflaaie is geblokkeer}}</translation>
 <translation id="2569733278091928697">Jy sal mediakontroles, Incognito-sessies, aflaaie, en meer maklik kan bestuur</translation>
+<translation id="257088987046510401">Temas</translation>
 <translation id="2571711316400087311">Bied aan om bladsye in ander tale na Google Vertaal te stuur</translation>
 <translation id="2571834852878229351">Skep my eie</translation>
 <translation id="2574249610672786438">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
@@ -526,7 +527,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3293181007446299124">Jou blaai-aktiwiteit word privaat op jou toestel gehou en verslae word met ’n vertraging gestuur om jou identiteit te beskerm</translation>
 <translation id="3301936297336370235">Bevestiging van wagwoordvoorstel</translation>
 <translation id="3302615849591357577">Stel oortjiegroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.</translation>
-<translation id="3303414029551471755">Gaan voort om die inhoud af te laai?</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3305130791745726624">Stuur na toestelle</translation>
 <translation id="3305795716056605962">Vertaal bladsye deur die Meer Opsies-knoppie</translation>
@@ -543,7 +543,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3373701465337594448">Indien dit aan is, verskyn ’n lys werwe wat jy besoek wat jou belangstellings raai hier</translation>
 <translation id="3384347053049321195">Deel prent</translation>
 <translation id="3387650086002190359">Kon <ph name="FILE_NAME" /> weens lêerstelselfoute nie aflaai nie.</translation>
-<translation id="3414952576877147120">Grootte:</translation>
 <translation id="3417835166382867856">Soek oortjies</translation>
 <translation id="3430670036890315772">Jou gestoorde inligting sal verwyder word as jy jou profielslot afskakel</translation>
 <translation id="3435465986463792564">Het jy baie vensters? Jy kan hulle van hier af bestuur</translation>
@@ -885,7 +884,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="480990236307250886">Maak die tuisblad oop</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" />-oortjiegroep is toegemaak en gestoor</translation>
-<translation id="482405935591409882">Soek jou oortjies en groepe</translation>
 <translation id="4834250788637067901">Betaalmetodes, aanbiedings en adresse wat Google Pay gebruik</translation>
 <translation id="4835385943915508971">Chrome het nie toegang tot die hulpbron wat versoek is nie.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Stel oortjiegroep van <ph name="TAB_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.}other{Stel oortjiegroep van <ph name="TAB_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.}}</translation>
@@ -895,7 +893,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4860895144060829044">Bel</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4866368707455379617">Kan nie <ph name="MODULE" /> vir Chrome installeer nie</translation>
-<translation id="487567923005969537">Aktiveer KI-modus</translation>
 <translation id="4875775213178255010">Inhoudvoorstelle</translation>
 <translation id="4877678010818027629">Gebruik Incognitomodus</translation>
 <translation id="4878404682131129617">Kon nie 'n tonnel deur instaanbediener vestig nie</translation>
@@ -988,7 +985,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5246093389635966745">Wysig nutsbalkkortpad</translation>
 <translation id="5264813352784073502">afgelope 24 uur</translation>
 <translation id="5267572070504076962">Skakel Veiligblaai aan om beskerming teen gevaarlike werwe te kry</translation>
-<translation id="5271967389191913893">Toestel kan nie die inhoud oopmaak wat afgelaai moet word nie.</translation>
 <translation id="5273031377282080577">Jou admin bestuur hierdie instelling.</translation>
 <translation id="5290322819358431297">Vul jou wagwoorde outomaties in</translation>
 <translation id="5292796745632149097">Stuur na</translation>
@@ -1061,7 +1057,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5619633276517849615">Jou organisasie het Veiligblaai aangeskakel</translation>
 <translation id="5620163320393916465">Geen gestoorde wagwoorde nie</translation>
 <translation id="5620928963363755975">Kry jou lêers en bladsye in Aflaaie vanaf die Meer Opsies-knoppie</translation>
-<translation id="5626134646977739690">Naam:</translation>
 <translation id="5628604359369369630">Ongelees – vanlyn beskikbaar</translation>
 <translation id="5631483240431073854">Bestuur oop oortjies</translation>
 <translation id="5632485077360054581">Wys my hoe</translation>
@@ -1093,7 +1088,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5763382633136178763">Incognito-oortjies</translation>
 <translation id="5763514718066511291">Tik om hierdie app se URL te kopieer</translation>
 <translation id="5765517223145864268">Vertel ons van jou ervaring. Of <ph name="BEGIN_LINK" />verander jou instellings<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Beskrywing:</translation>
 <translation id="5776970333778123608">Onbelangrike data</translation>
 <translation id="5793665092639000975">Gebruik tans <ph name="SPACE_USED" /> van <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Geblokkeerde onderwerp</translation>
@@ -1524,7 +1518,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7365073365123878797">Dateer Google Play Dienste op om wagwoorde met Google Wagwoordbestuurder te begin stoor en te gebruik</translation>
 <translation id="7368009310682364976">Bekyk oortjies wat onlangs oopgemaak is</translation>
 <translation id="7368927539449986686">Wysig werfsoektog</translation>
-<translation id="7375125077091615385">Tipe:</translation>
 <translation id="7376560087009844242">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien wanneer jy Raak om te Soek gebruik. Jy kan altyd <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> besoek om dit te verander.</translation>
 <translation id="7379900596734708416">Donkertema vir werwe is beskikbaar</translation>
 <translation id="7384486627147155832">Wenkekennisgewingspromosie teen halwe hoogte oopgemaak</translation>
@@ -1664,7 +1657,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7957413488482743710">’n Virtuele kaart versteek jou werklike kaart om te help om jou teen potensiële bedrog te beskerm. <ph name="BEGIN_LINK1" />Kom meer te wete oor virtuele kaarte<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Oortjies op hierdie toestel</translation>
 <translation id="7961926449547174351">Jy het bergingtoegang gedeaktiveer. Gaan na Instellings om dit te aktiveer.</translation>
-<translation id="7963646190083259054">Verskaffer:</translation>
 <translation id="7965838025086216108">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word in Google Wagwoordbestuurder gestoor vir <ph name="ACCOUNT" /></translation>
 <translation id="7968014550143838305">By leeslys gevoeg</translation>
 <translation id="7968982339740310781">Bekyk details</translation>
@@ -1673,6 +1665,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder, want jy het nie onlangs die werf besoek nie</translation>
 <translation id="799576009106109668">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
+<translation id="7997875520309653083">Swiep van die regterkant af om terug te gaan</translation>
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8001245658307297681">Jy bekyk ’n plaaslike lêer</translation>
 <translation id="8004582292198964060">Blaaier</translation>
@@ -1836,7 +1829,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
 <translation id="8611922158252451755">Enigiemand met die skakel kan alle oortjies wysig, so deel verstandig. Skakel verval oor 48 uur.</translation>
 <translation id="8616006591992756292">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
-<translation id="8617240290563765734">Maak die voorgestelde URL oop wat in die afgelaaide inhoud gespesifiseer word?</translation>
 <translation id="8629093325209491835">Maak Chrome-kieslys &gt; Instellings oop</translation>
 <translation id="8634050254805484913">Word versteek op klein skerms</translation>
 <translation id="8635399646025169806">Hou oortjiegroep?</translation>
@@ -1877,7 +1869,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8824359129672223138">Jy kan tot <ph name="MAX_WINDOW_COUNT" /> vensters hê.</translation>
-<translation id="883806473910249246">Kon nie die inhoud aflaai nie.</translation>
 <translation id="8840953339110955557">Hierdie bladsy kan van die aanlyn weergawe verskil.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Versteek</translation>

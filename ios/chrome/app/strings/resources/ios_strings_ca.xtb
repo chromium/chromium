@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1531038290222364269">Mostra les pestanyes</translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
+<translation id="1539535193627863227">No s'ha trobat cap contrasenya ni clau d'accés per a aquest lloc web</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
 <translation id="154312949627292154">Obre les pestanyes rebudes dels teus altres dispositius des de la pantalla de bloqueig.</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Desactiva el mode de lectura</translation>
 <translation id="3106690631878101882">Amaga l'opció Tradueix</translation>
 <translation id="310900540163454140">Vols suprimir la contrasenya de <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Reduït</translation>
 <translation id="3112556859945124369">Marca com a…</translation>
 <translation id="3116695032231023709">Desa el document d'identitat</translation>
 <translation id="3119874402040566234">Es tancarà la teva sessió i se suprimiran les dades de navegació</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3254806613790954367">La darrera pestanya oberta en tots els teus dispositius</translation>
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
+<translation id="3259451381796379533">Aquest compte no funcionarà amb Gemini. Inicia la sessió amb un altre Compte de Google.</translation>
 <translation id="3265736395246760288">Inicia la sessió més ràpidament des de qualsevol dels teus dispositius sincronitzats.</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
@@ -1779,6 +1782,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
 <translation id="719133302483559673">Gestiona els teus interessos i les teves preferències.</translation>
 <translation id="7191382490098297347">Imatge del carret</translation>
+<translation id="7203150201908454328">Ampliat</translation>
 <translation id="7203496777391039568">Mantenim la privadesa i la seguretat de les dades de la teva organització</translation>
 <translation id="720399613139435155">Ha fallat la traducció</translation>
 <translation id="7204922488054642675">Notícies personalitzades</translation>
@@ -1863,6 +1867,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7498234416455752244">Continua editant</translation>
 <translation id="7500244509706269886">Formulari d'emplenament automàtic</translation>
 <translation id="750493650310597496">No se n'ha seleccionat cap</translation>
+<translation id="7505402981231763928">Has d'iniciar la sessió per utilitzar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o una contrasenya.</translation>
 <translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>

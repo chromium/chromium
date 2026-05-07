@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1420688843103859429">在触控板上用两根手指滑动，即可向后/向前导航</translation>
-<translation id="1432650420699700107">网站可以请求连接到本地网络上的任何设备</translation>
 <translation id="1442081309487427303">打开阅读模式下的链接</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">开启此设置后，网站可以询问能否管理所有显示屏上的窗口。关闭此设置后，网站无法管理所有显示屏上的窗口。</translation>
 <translation id="1738912554587725807">“新标签页”页面外观主题集合底部动作条</translation>
 <translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
-<translation id="1766455884659449403">接收 Chrome 提示通知</translation>
 <translation id="1777815584158991902">探索信息流底部动作条</translation>
 <translation id="1779089405699405702">图片解码器</translation>
 <translation id="1781533683087883868">关闭阅读模式下的链接</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
 <translation id="2498359688066513246">帮助和反馈</translation>
 <translation id="2501278716633472235">返回</translation>
-<translation id="2533138527374486328">开启后，网站可以请求连接到本地网络上的任何设备。关闭后，网站无法连接到本地网络上的设备。</translation>
 <translation id="2536779053640817375">这次允许使用 • 精确位置</translation>
 <translation id="2544997614631598250">主题颜色：深色</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">快速启动多功能框</translation>
 <translation id="2789132527330338807">网站可以请求为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
-<translation id="2794551654724114396">开启通知，获取实用提示，尽享 Chrome 的出色功能</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
 <translation id="2800760947029405028">上传图片</translation>
 <translation id="2802908157808345702">不允许网站显示弹出式窗口和使用重定向</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">不允许网站连接到 USB 设备</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3967822245660637423">下载完毕</translation>
-<translation id="3969869202926863008">本地网络访问权限</translation>
 <translation id="3981465354637804599">网站通常会显示广告，以便能够免费提供内容或服务。但据我们所知，有些网站会展示侵扰性或误导性广告。</translation>
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">我的快捷方式</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6561560012278703671">改用干扰性更低的提示方式（禁止网站发送通知，以免干扰）</translation>
-<translation id="6565144332292237355">网站可以使用此功能查找并连接到本地网络上的任何设备</translation>
 <translation id="6593061639179217415">桌面版网站</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}other{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">留下</translation>
 <translation id="6630443592285535486">在此处输入十六进制代码</translation>
 <translation id="6635327442719709864">开启此设置后，网站可以请求使用串行端口。关闭此设置后，网站无法使用串行端口。</translation>
-<translation id="6669390930482049506">通知我</translation>
 <translation id="6678072580827808850">查看安全检查</translation>
 <translation id="6682057173375416470">在“新标签页”页面上获取推荐的文章</translation>
 <translation id="6683865262523156564">此网站属于由 <ph name="RWS_OWNER" /> 定义的群组，因此能查看您的活动记录。</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">刷新</translation>
+<translation id="7180865173735832675">自定义</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
-<translation id="7213166370492037743">不允许网站连接到本地网络上的任何设备</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="723171743924126238">选择图片</translation>
 <translation id="7243246278722455312">自定义新标签页页面底部动作条</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="7276071417425470385">开启此设置后，网站可以请求使用虚拟现实设备。关闭此设置后，网站无法使用虚拟现实设备。</translation>
+<translation id="7279851812866769760">分享联系人</translation>
 <translation id="7282197670900591579">香橼黄色主题</translation>
 <translation id="728412880473384942">网站速度更快，但安全性更低</translation>
 <translation id="7352902948037373520">在 <ph name="BEGIN_LINK1" />Android 设置<ph name="END_LINK1" />中管理
@@ -794,6 +788,7 @@
 <translation id="9156722768168878035">让 Chrome 在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="9182556968660520230">不允许网站播放受保护内容</translation>
+<translation id="927148002081263046">分享联系人</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="960590623979248167">显示超链接</translation>

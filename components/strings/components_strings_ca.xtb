@@ -992,6 +992,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2521385132275182522">Grapat a la part inferior dreta</translation>
 <translation id="2521736961081452453">Crea un formulari</translation>
 <translation id="2524461107774643265">Afegeix més informació</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions<ph name="END_BOLD" />. Els plans de pagament estan subjectes a la idoneïtat. Per amagar les opcions que permeten pagar més tard, ves a la <ph name="BEGIN_LINK" />configuració de pagament<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Per executar aquesta aplicació, torna a activar el mode de desenvolupador d'aplicacions web aïllades</translation>
 <translation id="2526280916094749336">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC és a l'anvers de la targeta. És el codi de 4 dígits que hi ha a la part superior dreta sobre el número de la targeta.</translation>
@@ -1902,7 +1903,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3965672182149944205">Vols desar l'adreça?</translation>
 <translation id="3966044442021752214">Seguretat del producte</translation>
 <translation id="396761677631735618">Les targetes de fidelització que es poden emplenar amb un toc s'han obert a mitja alçada.</translation>
-<translation id="3969869202926863008">Accés a la xarxa local</translation>
 <translation id="3970239200223030389">Data d’emissió</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> està bloquejat</translation>
@@ -3005,7 +3005,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5660122698869360728">Una carpeta intel·ligent nova que et permet desar totes les teves pàgines de compra en un sol lloc i fer un seguiment automàtic dels preus, obtenir estadístiques de preus i més.</translation>
 <translation id="5663955426505430495">L'administrador del dispositiu ha instal·lat extensions per obtenir funcions addicionals. Les extensions tenen accés a algunes de les teves dades.</translation>
 <translation id="5667827081946850877">Audiollibres</translation>
-<translation id="5674082555327905359">Pot demanar permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="5675650730144413517">Aquesta pàgina no funciona</translation>
 <translation id="5675809467256309336">Música dance i electrònica</translation>
 <translation id="5675959228867414813">Mostra per data</translation>
@@ -3412,7 +3411,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6321917430147971392">Reviseu la configuració de DNS</translation>
 <translation id="6322182122604171028">No s'ha pogut fer servir Windows Hello</translation>
 <translation id="6326947323444967009">Estableix Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
-<translation id="6327065120806001832">accés a la xarxa local</translation>
 <translation id="6328639280570009161">Proveu de desactivar la predicció de xarxa</translation>
 <translation id="6329742260390895689">Per emplenar automàticament la teva informació, activa l'opció "Utilitza passis en tot Google" a la configuració de Wallet</translation>
 <translation id="6329815962353376655">&lt;Escriu una pregunta&gt;</translation>

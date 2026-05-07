@@ -341,6 +341,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="840168496893712993">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Proovige need desinstallida.</translation>
 <translation id="8413500425974960807">Chrome'i nõuanne: teisaldage Chrome dokki</translation>
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
+<translation id="8447479329557998927">Chrome kasutab Google Mapsi, et anda teile Mapsi linkide kohta juhiseid ja kohalikku teavet.</translation>
 <translation id="84594714173170813">Jätkake Chrome'i andmete kasutamist Google'i kontol</translation>
 <translation id="8491300088149538575">Sisse logitud kasutajana <ph name="EMAIL" />.
 

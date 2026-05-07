@@ -99,9 +99,6 @@
 <translation id="2066690553719545730">Sempre mostrar o Modo IA</translation>
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="208726765006323911">Você verá uma mensagem para testar o recurso <ph name="FEATURE_NAME" /> na próxima vez que abrir o Chromium para iOS.</translation>
-<translation id="2090163042413910600">O Chromium desativa a otimização do JavaScript quando você acessa um site pela primeira vez.
-
-Se esta página não funcionar como o esperado, permita a otimização.</translation>
 <translation id="2099452623287920103">As senhas e outros dados do Chromium salvos na sua Conta do Google serão removidos deste dispositivo. Para os usar de novo no Chromium, faça login outra vez.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>

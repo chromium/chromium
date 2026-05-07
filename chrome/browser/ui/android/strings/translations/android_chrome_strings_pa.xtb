@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">ਟਰੈਕ</translation>
 <translation id="1366525380420346469">ਚਾਲੂ ਹੋਣ 'ਤੇ</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}one{ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}other{ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}}</translation>
-<translation id="1373696734384179344">ਚੁਣੀ ਗਈ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਮੈਮੋਰੀ ਨਹੀਂ।</translation>
 <translation id="137496472437646183">“ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ” ਚੁਣੋ</translation>
 <translation id="1376578503827013741">ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="1381838868249179644">ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਕੁਝ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ</translation>
@@ -292,6 +291,7 @@
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="2316129865977710310">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
+<translation id="232137538351753795">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2328474416100889417">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਸੱਦੇ ਦੇ ਸਾਰੇ ਲਿੰਕਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2330186936255788117">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
@@ -357,6 +357,7 @@
 <translation id="2553962148913791095">ਕੁਝ ਬੁੱਕਮਾਰਕ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{ਖਤਰਨਾਕ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{# ਖਤਰਨਾਕ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{# ਖਤਰਨਾਕ ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="2569733278091928697">ਤੁਸੀਂ ਮੀਡੀਆ ਕੰਟਰੋਲਾਂ, ਇਨਕੋਗਨਿਟੋ ਸੈਸ਼ਨਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦਾ ਆਸਾਨੀ ਨਾਲ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕੋਗੇ</translation>
+<translation id="257088987046510401">ਵਿਸ਼ੇ</translation>
 <translation id="2571711316400087311">Google Translate 'ਤੇ ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਪੰਨੇ ਭੇਜਣ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="2571834852878229351">ਮੇਰਾ ਖੁਦ ਦਾ ਪਾਸਵਰਡ ਬਣਾਓ</translation>
 <translation id="2574249610672786438">ਜਿਸ ਡੀਵਾਈਸ 'ਤੇ ਵੀ ਤੁਸੀਂ Chrome ਵਰਤਦੇ ਹੋ, ਉੱਥੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -526,7 +527,6 @@
 <translation id="3293181007446299124">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਈਵੇਟ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਰਿਪੋਰਟਾਂ ਨੂੰ ਦੇਰੀ ਨਾਲ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3301936297336370235">ਪਾਸਵਰਡ ਸੁਝਾਅ ਸੰਬੰਧੀ ਤਸਦੀਕ</translation>
 <translation id="3302615849591357577">ਟੈਬ ਗਰੁੱਪ <ph name="TITLE_OF_GROUP" />, ਰੰਗ <ph name="COLOR_NAME" /> ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
-<translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3305130791745726624">ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3305795716056605962">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -543,7 +543,6 @@
 <translation id="3373701465337594448">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ ਜੋ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਂਦੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਦੀ ਸੂਚੀ ਇੱਥੇ ਦਿਸਦੀ ਹੈ</translation>
 <translation id="3384347053049321195">ਚਿਤਰ ਸਾਂਝੇ ਕਰੋ</translation>
 <translation id="3387650086002190359">ਫ਼ਾਈਲ ਸਿਸਟਮ ਗੜਬੜੀਆਂ ਦੇ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
-<translation id="3414952576877147120">ਆਕਾਰ:</translation>
 <translation id="3417835166382867856">ਖੋਜ ਟੈਬਾਂ</translation>
 <translation id="3430670036890315772">ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਹਟ ਜਾਵੇਗੀ</translation>
 <translation id="3435465986463792564">ਕੀ ਬਹੁਤ ਸਾਰੀਆਂ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਨ? ਤੁਸੀਂ ਇੱਥੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
@@ -885,7 +884,6 @@
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
 <translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="482405935591409882">ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪ ਖੋਜੋ</translation>
 <translation id="4834250788637067901">Google Pay ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਪਤੇ</translation>
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਟੈਬ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}one{<ph name="TAB_COUNT_MANY" /> ਟੈਬ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}other{<ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ, ਰੰਗ <ph name="COLOR_NAME" /> ਦੇ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।}}</translation>
@@ -895,7 +893,6 @@
 <translation id="4860895144060829044">ਕਾਲ ਕਰੋ</translation>
 <translation id="4864369630010738180">ਸਾਈਨ ਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4866368707455379617">Chrome ਲਈ <ph name="MODULE" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
-<translation id="487567923005969537">AI Mode ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4875775213178255010">ਸਮੱਗਰੀ ਦੇ ਸੁਝਾਅ</translation>
 <translation id="4877678010818027629">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="4878404682131129617">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਰਾਹੀਂ ਕੋਈ ਟਨਲ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -988,7 +985,6 @@
 <translation id="5246093389635966745">ਟੂਲਬਾਰ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5264813352784073502">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
 <translation id="5267572070504076962">ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਵਿਰੁੱਧ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
-<translation id="5271967389191913893">ਡੀਵਾਈਸ ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਸਮੱਗਰੀ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5273031377282080577">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5290322819358431297">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="5292796745632149097">ਇਸ 'ਤੇ ਭੇਜੋ</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5619633276517849615">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="5620163320393916465">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="5620928963363755975">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਡਾਊਨਲੋਡਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਲੱਭੋ</translation>
-<translation id="5626134646977739690">ਨਾਮ:</translation>
 <translation id="5628604359369369630">ਨਾ-ਪੜ੍ਹਿਆ - ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="5631483240431073854">ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
@@ -1093,7 +1088,6 @@
 <translation id="5763382633136178763">ਗੁਮਨਾਮ ਟੈਬਸ</translation>
 <translation id="5763514718066511291">ਇਸ ਐਪ ਲਈ URL ਕਾਪੀ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5765517223145864268">ਸਾਨੂੰ ਆਪਣੇ ਅਨੁਭਵ ਬਾਰੇ ਦੱਸੋ। ਜਾਂ <ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਬਦਲੋ<ph name="END_LINK" />।</translation>
-<translation id="5765780083710877561">ਵਰਣਨ:</translation>
 <translation id="5776970333778123608">ਗੈਰ-ਮਹੱਤਵਪੂਰਨ ਡਾਟਾ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> ਵਿੱਚੋਂ <ph name="SPACE_USED" /> ਦੀ ਵਰਤੋਂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="5797949256525811424">ਵਿਸ਼ੇ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -1524,7 +1518,6 @@
 <translation id="7365073365123878797">Google Password Manager ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਅਤੇ ਵਰਤਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, Google Play ਸੇਵਾਵਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7368009310682364976">ਹਾਲ ਹੀ ਵਿੱਚ ਖੋਲ੍ਹੀਆਂ ਗਈਆਂ ਟੈਬਾਂ ਦੇਖੋ</translation>
 <translation id="7368927539449986686">ਸਾਈਟ ਖੋਜ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
-<translation id="7375125077091615385">ਪ੍ਰਕਾਰ:</translation>
 <translation id="7376560087009844242">ਕਿਸੇ ਪੰਨੇ ਦੀ ਹੋਰ ਲਿਖਤ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਨਾਲ, 'ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ' ਵਰਤਣ ਵੇਲੇ ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ ਬਿਹਤਰ ਨਤੀਜੇ ਦਿਖਾਈ ਦੇਣ। ਤੁਸੀਂ ਇਸਨੂੰ ਬਦਲਣ ਲਈ ਕਦੇ ਵੀ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7379900596734708416">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="7384486627147155832">ਨੁਕਤਿਆਂ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਵਾਲਾ ਪ੍ਰੋਮੋ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
@@ -1664,7 +1657,6 @@
 <translation id="7957413488482743710">ਤੁਹਾਨੂੰ ਸੰਭਾਵੀ ਧੋਖਾਧੜੀ ਤੋਂ ਬਚਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਆਭਾਸੀ ਕਾਰਡ ਤੁਹਾਡੇ ਅਸਲ ਕਾਰਡ ਨੂੰ ਲੁਕਾ ਦਿੰਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਟੈਬਾਂ</translation>
 <translation id="7961926449547174351">ਤੁਸੀਂ ਸਟੋਰੇਜ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
-<translation id="7963646190083259054">ਵੈਂਡਰ:</translation>
 <translation id="7965838025086216108">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਵਰਤ ਸਕਦੇ ਹੋ। ਉਹ <ph name="ACCOUNT" /> ਦੇ ਲਈ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="7968014550143838305">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
@@ -1673,6 +1665,7 @@
 <translation id="7977451675950311423">ਇਹ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਕਿਤੇ ਤੁਸੀਂ ਉਸ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਤਾਂ ਨਹੀਂ ਕੀਤੀ ਜਿਸ ਨਾਲ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਛੇੜਛਾੜ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਇਨ੍ਹਾਂ 'ਤੇ ਨਹੀਂ ਗਏ</translation>
 <translation id="799576009106109668">ਤੁਸੀਂ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋਗੇ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਮੌਜੂਦਾ ਵੈੱਬ-ਪੰਨੇ ਦੇ ਆਧਾਰ 'ਤੇ ਸਮੱਗਰੀ ਚੁਸਤੀ ਨਾਲ ਲੋਡ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="7997875520309653083">ਪਿੱਛੇ ਜਾਣ ਲਈ ਸੱਜੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="7998918019931843664">ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8001245658307297681">ਤੁਸੀਂ ਇੱਕ ਸਥਾਨਕ ਫ਼ਾਈਲ ਦੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
@@ -1836,7 +1829,6 @@
 <translation id="860282621117673749">ਕੀਮਤ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ</translation>
 <translation id="8611922158252451755">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ ਉਹ ਸਾਰੀਆਂ ਟੈਬਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਇਸ ਲਈ ਸਮਝਦਾਰੀ ਨਾਲ ਸਾਂਝਾ ਕਰੋ। ਲਿੰਕ ਦੀ ਮਿਆਦ 48 ਘੰਟਿਆਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="8616006591992756292">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
-<translation id="8617240290563765734">ਕੀ ਡਾਊਨਲੋਡ ਕੀਤੀ ਸਮੱਗਰੀ ਵਿੱਚ ਦੱਸੇ ਗਏ ਸੁਝਾਏ URLਖੋਲ੍ਹਣੇ ਹਨ?</translation>
 <translation id="8629093325209491835">Chrome ਮੀਨੂ &gt; ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8634050254805484913">ਛੋਟੀਆਂ ਸਕ੍ਰੀਨਾਂ 'ਤੇ ਅਦਿੱਖ</translation>
 <translation id="8635399646025169806">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖਣਾ ਹੈ?</translation>
@@ -1877,7 +1869,6 @@
 <translation id="881688628773363275">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਦੇਖਣਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8824359129672223138">ਤੁਸੀਂ <ph name="MAX_WINDOW_COUNT" /> ਤੱਕ ਵਿੰਡੋਆਂ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
-<translation id="883806473910249246">ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨ ਸਮੇਂ ਕੋਈ ਗੜਬੜ ਹੋਈ।</translation>
 <translation id="8840953339110955557">ਇਹ ਪੰਨਾ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ਲੁਕੀ ਹੋਈ</translation>

@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">ट्रॅक</translation>
 <translation id="1366525380420346469">सुरू असताना</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{तुम्ही या साइटला भविष्यातील नोटिफिकेशन पाठवण्यापासून थांबवू शकता}other{तुम्ही या साइटना भविष्यातील नोटिफिकेशन पाठवण्यापासून थांबवू शकता}}</translation>
-<translation id="1373696734384179344">निवडलेला आशय डाउनलोड करण्यासाठी अपुरी मेमरी.</translation>
 <translation id="137496472437646183">वर्धित संरक्षण निवडा</translation>
 <translation id="1376578503827013741">गणना करत आहे...</translation>
 <translation id="1381838868249179644">तुम्हाला सुरक्षित ठेवण्यात मदत व्हावी, यासाठी काही साइटच्या परवानग्या काढून टाकल्या आहेत</translation>
@@ -358,6 +357,7 @@
 <translation id="2553962148913791095">काही बुकमार्क सेव्ह केले गेले नाहीत</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{धोकादायक डाउनलोड ब्लॉक केला आहे}other{# धोकादायक डाउनलोड ब्लॉक केले आहेत}}</translation>
 <translation id="2569733278091928697">तुम्ही मीडिया नियंत्रणे, गुप्त सेशन, डाउनलोड आणि आणखी बरेच काही सहजरीत्या व्यवस्थापित करू शकाल</translation>
+<translation id="257088987046510401">थीम</translation>
 <translation id="2571711316400087311">Google Translate ला इतर भाषांमध्ये पेज पाठवण्याची ऑफर</translation>
 <translation id="2571834852878229351">माझा स्वतःचा पासवर्ड तयार करा</translation>
 <translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
@@ -527,7 +527,6 @@
 <translation id="3293181007446299124">तुमचा ब्राउझिंग इतिहास तुमच्या डिव्हाइसवर खाजगी ठेवला जातो आणि तुमची ओळख संरक्षित करण्यासाठी अहवाल विलंबाने पाठवले जातात</translation>
 <translation id="3301936297336370235">पासवर्डसंबंधित सूचना कन्फर्म करणे</translation>
 <translation id="3302615849591357577">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TITLE_OF_GROUP" /> टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.</translation>
-<translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3305130791745726624">डिव्हाइसना पाठवा</translation>
 <translation id="3305795716056605962">आणखी पर्याय बटणावरून पेज भाषांतरित करा</translation>
@@ -544,7 +543,6 @@
 <translation id="3373701465337594448">सुरू असताना, तुम्ही भेट देता त्या तुमच्या स्वारस्यांचा अंदाज लावणाऱ्या साइटची सूची येथे दिसते</translation>
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
 <translation id="3387650086002190359">फाइल सिस्टीम एररमुळे <ph name="FILE_NAME" /> डाउनलोड करता आले नाही.</translation>
-<translation id="3414952576877147120">आकार:</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3430670036890315772">तुमचे प्रोफाइल लॉक बंद केल्याने तुमची सेव्ह केलेली माहिती काढून टाकली जाईल</translation>
 <translation id="3435465986463792564">खूप विंडो उघडल्या आहेत का? तुम्ही त्या येथे व्यवस्थापित करू शकता</translation>
@@ -886,7 +884,6 @@
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
 <translation id="480990236307250886">होम पेज उघडा</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> टॅब गट बंद आणि सेव्ह केला आहे</translation>
-<translation id="482405935591409882">तुमच्या टॅबमध्ये आणि गटांमध्ये शोधा</translation>
 <translation id="4834250788637067901">Google Pay वापरून पेमेंट पद्धती, ऑफर आणि अ‍ॅड्रेस</translation>
 <translation id="4835385943915508971">Chrome ला विनंती केलेल्या संसाधनांचा ॲक्सेस नाही.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_ONE" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}other{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_MANY" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}}</translation>
@@ -896,7 +893,6 @@
 <translation id="4860895144060829044">कॉल करा</translation>
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4866368707455379617">Chrome साठी <ph name="MODULE" /> इंस्टॉल करू शकत नाही</translation>
-<translation id="487567923005969537">AI मोड सुरू करा</translation>
 <translation id="4875775213178255010">आशय सूचना</translation>
 <translation id="4877678010818027629">गुप्त मोडमध्ये प्रवेश करा</translation>
 <translation id="4878404682131129617">प्रॉक्सी सर्व्हर मार्फत टनेल स्थापन करणे अयशस्वी झाले</translation>
@@ -989,7 +985,6 @@
 <translation id="5246093389635966745">टूलबार शॉर्टकट संपादित करा</translation>
 <translation id="5264813352784073502">मागील २४ तासांमधील</translation>
 <translation id="5267572070504076962">धोकादायक साइटपासून संरक्षण मिळवण्यासाठी सुरक्षित ब्राउझिंग सुरू करा</translation>
-<translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5273031377282080577">तुमचा अ‍ॅडमिनिस्ट्रेटर हे सेटिंग व्यवस्थापित करत आहे.</translation>
 <translation id="5290322819358431297">तुमचे पासवर्ड ऑटोफिल करा</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
@@ -1062,7 +1057,6 @@
 <translation id="5619633276517849615">तुमच्या संस्थेने सुरक्षित ब्राउझिंग सुरू केले आहे</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="5620928963363755975">तुमच्या फाइल आणि पेज अधिक पर्याय बटणावरील डाउनलोडमध्ये शोधा</translation>
-<translation id="5626134646977739690">नाव:</translation>
 <translation id="5628604359369369630">न वाचलेले - ऑफलाइन उपलब्ध आहे</translation>
 <translation id="5631483240431073854">उघडे असलेले टॅब व्यवस्थापित करा</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
@@ -1094,7 +1088,6 @@
 <translation id="5763382633136178763">गुप्त टॅब</translation>
 <translation id="5763514718066511291">या ॲपची URL कॉपी करण्यासाठी टॅप करा</translation>
 <translation id="5765517223145864268">तुमच्या अनुभवाबद्दल आम्हाला सांगा. किंवा <ph name="BEGIN_LINK" />तुमची सेटिंग्ज बदलणे<ph name="END_LINK" /> हे करा.</translation>
-<translation id="5765780083710877561">वर्णन:</translation>
 <translation id="5776970333778123608">महत्त्वाचा नसलेला डेटा</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> पैकी <ph name="SPACE_USED" /> वापरत आहे</translation>
 <translation id="5797949256525811424">ब्लॉक केलेला विषय</translation>
@@ -1525,7 +1518,6 @@
 <translation id="7365073365123878797">Google Password Manager सह पासवर्ड सेव्ह करणे आणि वापरणे सुरू करण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="7368009310682364976">अलीकडे उघडलेले टॅब पहा</translation>
 <translation id="7368927539449986686">साइट शोध संपादित करा</translation>
-<translation id="7375125077091615385">प्रकार:</translation>
 <translation id="7376560087009844242">एखाद्या पेजवरील जास्त मजकुराचा समावेश केल्याने, शोधण्यासाठी स्पर्श करा हे वापरताना तुम्हाला आणखी चांगले परिणाम दिसू शकतात. हे बदलण्यासाठी तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> ना कधीही भेट देऊ शकता.</translation>
 <translation id="7379900596734708416">साइटसाठी गडद थीम उपलब्ध आहेत</translation>
 <translation id="7384486627147155832">टिपा असलेला नोटिफिकेशन प्रोमो अर्ध्या उंचीवर उघडला आहे</translation>
@@ -1665,7 +1657,6 @@
 <translation id="7957413488482743710">संभाव्य फसवणुकीपासून तुमचे संरक्षण करण्यात मदत करण्यासाठी, व्हर्च्युअल कार्ड तुमचे मूळ कार्ड लपवते. <ph name="BEGIN_LINK1" />व्हर्च्युअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">या डिव्हाइसवर टॅब आहेत</translation>
 <translation id="7961926449547174351">तुम्ही स्टोरेज चा ॲक्सेस बंद केला आहे, तो सुरू करण्यासाठी कृपया सेटिंग्ज मध्ये जा.</translation>
-<translation id="7963646190083259054">विक्रेता:</translation>
 <translation id="7965838025086216108">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="ACCOUNT" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले आहेत.</translation>
 <translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
@@ -1838,7 +1829,6 @@
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="8611922158252451755">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते, त्यामुळे विचारपूर्वक शेअर करा. लिंक ४८ तासांमध्ये एक्स्पायर होते.</translation>
 <translation id="8616006591992756292">तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची अन्य स्वरूपे असू शकतात.</translation>
-<translation id="8617240290563765734">डाउनलोड केलेल्या आशयमध्ये नमूद केलेली सुचविलेली URL उघडायची?</translation>
 <translation id="8629093325209491835">Chrome मेनू &gt; सेटिंग्ज उघडा</translation>
 <translation id="8634050254805484913">अरुंद स्क्रीनवर लपवला आहे</translation>
 <translation id="8635399646025169806">टॅब गट कायम ठेवायचा आहे का?</translation>
@@ -1879,7 +1869,6 @@
 <translation id="881688628773363275">पूर्वावलोकन टॅब आशय पाहण्यायोग्य नाही.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8824359129672223138">तुमच्याकडे कमाल <ph name="MAX_WINDOW_COUNT" /> विंडो असू शकतात.</translation>
-<translation id="883806473910249246">आशय डाउनलोड करताना एरर आली.</translation>
 <translation id="8840953339110955557">हे पेज ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>

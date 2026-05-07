@@ -993,6 +993,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2521385132275182522">Zszywka w prawym dolnym rogu</translation>
 <translation id="2521736961081452453">Utwórz formularz</translation>
 <translation id="2524461107774643265">Dodaj więcej informacji</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Aby oferować te opcje, Google otrzymuje informacje o zawartości strony płatności.<ph name="END_BOLD" /> Subskrypcje podlegają kryteriom kwalifikacji. Aby ukryć opcje płatności odroczonej, otwórz <ph name="BEGIN_LINK" />ustawienia płatności<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Aby uruchomić tę aplikację, ponownie włącz tryb programisty izolowanych aplikacji internetowych</translation>
 <translation id="2526280916094749336">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
@@ -1904,7 +1905,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3965672182149944205">Zapisać adres?</translation>
 <translation id="3966044442021752214">Bezpieczeństwo produktu</translation>
 <translation id="396761677631735618">Karty lojalnościowe dostępne do uzupełnienia kliknięciem są otwarte do połowy wysokości.</translation>
-<translation id="3969869202926863008">Dostęp przez sieć lokalną</translation>
 <translation id="3970239200223030389">Data wystawienia</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3973234410852337861">Strona <ph name="HOST_NAME" /> jest zablokowana</translation>
@@ -3010,7 +3010,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5660122698869360728">Nowy inteligentny folder, który pozwala zapisać wszystkie strony zakupów w 1 miejscu, automatycznie obserwować ceny, sprawdzać statystyki dotyczące cen i korzystać z innych funkcji.</translation>
 <translation id="5663955426505430495">Administrator urządzenia zainstalował rozszerzenia obsługujące dodatkowe funkcje. Rozszerzenia mają dostęp do niektórych Twoich danych.</translation>
 <translation id="5667827081946850877">Audiobooki</translation>
-<translation id="5674082555327905359">Może prosić o zgodę na połączenie z dowolnym urządzeniem w Twojej sieci lokalnej</translation>
 <translation id="5675650730144413517">Ta strona nie działa</translation>
 <translation id="5675809467256309336">Muzyka dance i elektroniczna</translation>
 <translation id="5675959228867414813">Pokaż według daty</translation>
@@ -3417,7 +3416,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6321917430147971392">Sprawdź ustawienia DNS</translation>
 <translation id="6322182122604171028">Nie udało się użyć Windows Hello</translation>
 <translation id="6326947323444967009">Ustaw Chrome jako domyślną przeglądarkę systemową w ustawieniach iOS</translation>
-<translation id="6327065120806001832">dostęp przez sieć lokalną</translation>
 <translation id="6328639280570009161">Wyłącz przewidywanie działań sieciowych</translation>
 <translation id="6329742260390895689">Aby automatycznie uzupełniać informacje, w ustawieniach Portfela włącz opcję „Korzystanie z kart w Google”</translation>
 <translation id="6329815962353376655">&lt;Wpisz pytanie&gt;</translation>

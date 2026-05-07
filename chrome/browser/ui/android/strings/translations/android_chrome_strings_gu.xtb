@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">ટ્રૅક</translation>
 <translation id="1366525380420346469">જ્યારે ચાલુ હોય</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{તમે આ સાઇટને ભાવિ નોટિફિકેશન મોકલતા રોકી શકો છો}one{તમે આ સાઇટને ભાવિ નોટિફિકેશન મોકલતા રોકી શકો છો}other{તમે આ સાઇટને ભાવિ નોટિફિકેશન મોકલતા રોકી શકો છો}}</translation>
-<translation id="1373696734384179344">પસંદ કરેલ કન્ટેન્ટ ડાઉનલોડ કરવા માટે મેમરી અપૂરતી છે.</translation>
 <translation id="137496472437646183">'વધારેલું સંરક્ષણ' પસંદ કરો</translation>
 <translation id="1376578503827013741">ગણતરી કરી રહ્યાં છે…</translation>
 <translation id="1381838868249179644">તમને સુરક્ષિત રાખવામાં સહાય કરવા માટે, અમુક સાઇટ પરથી પરવાનગીઓ દૂર કરવામાં આવી હતી</translation>
@@ -358,6 +357,7 @@
 <translation id="2553962148913791095">કેટલાક બુકમાર્ક સાચવવામાં આવ્યા નથી</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{જોખમી ડાઉનલોડને બ્લૉક કરેલું છે}one{# જોખમી ડાઉનલોડને બ્લૉક કરેલું છે}other{# જોખમી ડાઉનલોડને બ્લૉક કરેલા છે}}</translation>
 <translation id="2569733278091928697">તમે મીડિયા સંબંધિત નિયંત્રણો, છૂપા મોડના સત્રો, ડાઉનલોડ અને બીજા ઘણા કાર્યો સરળતાથી મેનેજ કરી શકશો</translation>
+<translation id="257088987046510401">થીમ્સ</translation>
 <translation id="2571711316400087311">Google Translateને અન્ય ભાષાઓમાં પેજ મોકલવાનું ઑફર કરો</translation>
 <translation id="2571834852878229351">મારો પોતાનો પાસવર્ડ બનાવો</translation>
 <translation id="2574249610672786438">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
@@ -527,7 +527,6 @@
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
 <translation id="3301936297336370235">પાસવર્ડના સૂચનનું કન્ફર્મેશન</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" />ને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.</translation>
-<translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3305130791745726624">ડિવાઇસ પર મોકલો</translation>
 <translation id="3305795716056605962">'વધુ વિકલ્પો' બટન વડે પેજનો અનુવાદ કરો</translation>
@@ -544,7 +543,6 @@
 <translation id="3373701465337594448">જ્યારે ચાલુ હોય, ત્યારે તમારી રુચિઓનું અનુમાન લગાવતી હોય તેવી તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાય છે</translation>
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
-<translation id="3414952576877147120">કદ:</translation>
 <translation id="3417835166382867856">ટૅબ શોધો</translation>
 <translation id="3430670036890315772">તમારું પ્રોફાઇલ લૉક બંધ કરવાથી તમારી સાચવેલી માહિતી કાઢી નાખવામાં આવશે</translation>
 <translation id="3435465986463792564">શું ઘણી વિન્ડો ખોલી છે? તમે તેમને અહીંથી મેનેજ કરી શકો છો</translation>
@@ -886,7 +884,6 @@
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
 <translation id="480990236307250886">હોમ પેજ ખોલો</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ટૅબનું ગ્રૂપ બંધ છે અને સાચવ્યું છે</translation>
-<translation id="482405935591409882">તમારા ટૅબ અને ગ્રૂપ શોધો</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
 <translation id="4835385943915508971">Chrome ને વિનંતી કરેલ સંસાધનની ઍક્સેસ નથી.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}one{<ph name="TAB_COUNT_MANY" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}other{<ph name="TAB_COUNT_MANY" /> ટૅબવાળા <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.}}</translation>
@@ -896,7 +893,6 @@
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4864369630010738180">સાઇન ઇન થઈ રહ્યું છે...</translation>
 <translation id="4866368707455379617">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરવામાં અસમર્થ</translation>
-<translation id="487567923005969537">AI મોડ ચાલુ કરો</translation>
 <translation id="4875775213178255010">કન્ટેન્ટ માટે સૂચનો</translation>
 <translation id="4877678010818027629">છૂપો મોડમાં દાખલ થાઓ</translation>
 <translation id="4878404682131129617">પ્રૉક્સી સર્વર મારફતે એક ટનલને સ્થાપિત કરવું નિષ્ફળ થયું</translation>
@@ -989,7 +985,6 @@
 <translation id="5246093389635966745">ટૂલબારના શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="5264813352784073502">છેલ્લા 24 કલાક</translation>
 <translation id="5267572070504076962">જોખમી સાઇટ સામે સંરક્ષણ મેળવવા માટે Safe Browsingની સુવિધા ચાલુ કરો</translation>
-<translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
 <translation id="5273031377282080577">તમારા ઍડમિનિસ્ટ્રેટર આ સેટિંગ મેનેજ કરે છે.</translation>
 <translation id="5290322819358431297">તમારા પાસવર્ડ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
@@ -1062,7 +1057,6 @@
 <translation id="5619633276517849615">તમારી સંસ્થાએ Safe Browsing ચાલુ કર્યું</translation>
 <translation id="5620163320393916465">કોઈ સાચવેલો પાસવર્ડ નથી</translation>
 <translation id="5620928963363755975">ડાઉનલોડમાં વધુ વિકલ્પો બટનની મદદથી તમારી ફાઇલો અને પેજ શોધો</translation>
-<translation id="5626134646977739690">નામ:</translation>
 <translation id="5628604359369369630">વાંચ્યા વગરનું - ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="5631483240431073854">ખુલ્લા ટૅબ મેનેજ કરો</translation>
 <translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
@@ -1094,7 +1088,6 @@
 <translation id="5763382633136178763">છૂપા ટેબ્સ</translation>
 <translation id="5763514718066511291">આ ઍપ માટેની URL કૉપિ કરવા માટે ટૅપ કરો</translation>
 <translation id="5765517223145864268">અમને તમારા અનુભવ વિશે જણાવો. અથવા <ph name="BEGIN_LINK" />તમારા સેટિંગને બદલો<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">વર્ણન:</translation>
 <translation id="5776970333778123608">બિનમહત્ત્વપૂર્ણ ડેટા</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />માંથી <ph name="SPACE_USED" />નો વપરાશ કરી રહ્યાં છીએ</translation>
 <translation id="5797949256525811424">બ્લૉક કરેલો વિષય</translation>
@@ -1525,7 +1518,6 @@
 <translation id="7365073365123878797">Google Password Manager વડે પાસવર્ડ સાચવવા અને ઉપયોગમાં લેવાનું શરૂ કરવા માટે, Google Playની સેવાઓ અપડેટ કરો</translation>
 <translation id="7368009310682364976">તાજેતરમાં ખોલેલા ટૅબ જુઓ</translation>
 <translation id="7368927539449986686">સાઇટની શોધમાં ફેરફાર કરો</translation>
-<translation id="7375125077091615385">પ્રકાર:</translation>
 <translation id="7376560087009844242">પેજની વધુ ટેક્સ્ટને શામેલ કરીને, 'શોધવા માટે ટચ કરો'માં તમે કદાચ બહેતર પરિણામો જોઈ શકશો. આમાં ફેરફાર કરવા માટે, તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />ની મુલાકાત લઈ શકો છો.</translation>
 <translation id="7379900596734708416">સાઇટ માટેની ઘેરી થીમ ઉપલબ્ધ છે</translation>
 <translation id="7384486627147155832">ટિપ સંબંધિત નોટિફિકેશન પ્રોમો અડધી ઊંચાઈએ ખોલ્યો</translation>
@@ -1665,7 +1657,6 @@
 <translation id="7957413488482743710">વર્ચ્યુઅલ કાર્ડ સંભવિત કપટથી તમારું સંરક્ષણ કરવા માટે, તમારા વાસ્તવિક કાર્ડની ઓળખ છુપાવે છે. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">આ ડિવાઇસ પરના ટૅબ</translation>
 <translation id="7961926449547174351">તમે સ્ટોરેજ ઍક્સેસની સુવિધા બંધ કરી છે, તેને ચાલુ કરવા માટે કૃપા કરીને સેટિંગમાં જાઓ.</translation>
-<translation id="7963646190083259054">વિક્રેતા:</translation>
 <translation id="7965838025086216108">તમે કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો. તેમને <ph name="ACCOUNT" /> માટેના Google Password Managerમાં સાચવવામાં આવે છે.</translation>
 <translation id="7968014550143838305">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
@@ -1838,7 +1829,6 @@
 <translation id="860282621117673749">કિંમતમાં ઘટાડા વિશે અલર્ટ</translation>
 <translation id="8611922158252451755">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સમજદારીપૂર્વક શેર કરો. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
 <translation id="8616006591992756292">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
-<translation id="8617240290563765734">ડાઉનલોડ કરેલી કન્ટેન્ટમાં ઉલ્લેખિત, સૂચવેલ URL ખોલીએ?</translation>
 <translation id="8629093325209491835">Chrome મેનૂ &gt; સેટિંગ ખોલો</translation>
 <translation id="8634050254805484913">સાંકડી સ્ક્રીન પર છુપાવેલા</translation>
 <translation id="8635399646025169806">ટૅબનું ગ્રૂપ રાખીએ?</translation>
@@ -1868,6 +1858,7 @@
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chromeને એવો નબળો પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}one{Chromeને એવો # નબળો પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}other{Chromeને એવા # નબળો પાસવર્ડ મળી આવ્યા છે જેમને તમે બહેતર બનાવી શકો છો}}</translation>
 <translation id="8766529642647037772">શું આના જેવી હાઇલાઇટ કરેલી લિંક બનાવીએ?</translation>
+<translation id="8769783688897433958">સાઇટની માહિતી અને પરવાનગીઓ જુઓ</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8790193082819560975">કોઈ નવા ટૅબમાં, પ્રોડક્ટની ખરીદી કરવાના વિકલ્પો શોધવા માટે ટૅપ કરો.</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>
@@ -1879,7 +1870,6 @@
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8824359129672223138">તમે વધુમાં વધુ <ph name="MAX_WINDOW_COUNT" /> વિન્ડો ખુલ્લી રાખી શકો છો.</translation>
-<translation id="883806473910249246">કન્ટેન્ટ ડાઉનલોડ કરતી વખતે એક ભૂલ આવી.</translation>
 <translation id="8840953339110955557">આ પેજ ઑનલાઇન વર્ઝનથી અલગ હોય શકે છે.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>

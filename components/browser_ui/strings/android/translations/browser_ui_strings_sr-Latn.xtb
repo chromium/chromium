@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1415855080660575082">Dozvolite Chrome-u da deli nedavne kartice sa uređajem da biste ih videli na listi aplikacija i u rezultatima pretrage uređaja. To možete da uključite ili isključite u Chrome podešavanjima.</translation>
 <translation id="1420688843103859429">Pomerajte unazad i unapred prevlačenjem sa dva prsta na tačpedu</translation>
-<translation id="1432650420699700107">Sajtovi mogu da traže da se povežu sa bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="1442081309487427303">Uključi linkove Režima čitanja</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1464044141348608623">Ne dozvolite sajtovima da znaju kada aktivno koristite uređaj</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Kada je uključeno, sajtovi mogu da traže da upravljaju prozorima na svim ekranima. Kada je isključeno, sajtovi ne mogu da upravljaju prozorima na svim ekranima.</translation>
 <translation id="1738912554587725807">Donja tabela sa kolekcijama tema za izgled stranice nove kartice</translation>
 <translation id="1743802530341753419">Pitaj pre nego što dozvoliš sajtovima da se povezuju sa uređajem (preporučeno)</translation>
-<translation id="1766455884659449403">Dobijajte obaveštenja o savetima za Chrome</translation>
 <translation id="1777815584158991902">Donja tabela Discover fida</translation>
 <translation id="1779089405699405702">Dekoder slika</translation>
 <translation id="1781533683087883868">Isključi linkove Režima čitanja</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Upravlja <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoć i povratne informacije</translation>
 <translation id="2501278716633472235">Nazad</translation>
-<translation id="2533138527374486328">Kada je uključeno, sajtovi mogu da traže da se povežu sa bilo kojim uređajem na lokalnoj mreži. Kada je isključeno, sajtovi ne mogu da se povezuju sa uređajima na lokalnoj mreži.</translation>
 <translation id="2536779053640817375">Dozvoljeno ovaj put • Precizno</translation>
 <translation id="2544997614631598250">Tamna boja teme</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Pokreni omniboks</translation>
 <translation id="2789132527330338807">Sajtovi mogu da traže da prave 3D mapu okruženja ili da prate položaj kamere</translation>
 <translation id="2790501146643349491">Kada je uključeno, nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka. Kada je isključeno, nedavno zatvoreni sajtovi ne mogu da završe slanje niti prijem podataka.</translation>
-<translation id="2794551654724114396">Uključite obaveštenja o korisnim savetima koji će vam pomoći da iskoristite Chrome na najbolji način</translation>
 <translation id="2795716239552913152">Sajtovi obično koriste vašu lokaciju za relevantne funkcije ili informacije, poput lokalnih vesti ili prodavnica u blizini</translation>
 <translation id="2800760947029405028">Otpremi sliku</translation>
 <translation id="2802908157808345702">Ne dozvoljavaj sajtovima da šalju iskačuće prozore i koriste preusmeravanja</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Ne dozvoljavaj sajtovima da se povezuju sa USB uređajima</translation>
 <translation id="3965467402665811906">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
-<translation id="3969869202926863008">Pristup lokalnoj mreži</translation>
 <translation id="3981465354637804599">Sajtovi obično prikazuju oglase da bi mogli da pružaju sadržaj ili usluge bez naknade. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Moje prečice</translation>
 <translation id="656065428026159829">Prikaži još</translation>
 <translation id="6561560012278703671">Koristite nenametljivu razmenu poruka (sprečava upite sa obaveštenjima da vas ometaju)</translation>
-<translation id="6565144332292237355">Sajtovi mogu da koriste ovu funkciju da bi tražili uređaje na lokalnoj mreži i povezivali se sa njima</translation>
 <translation id="6593061639179217415">Verzija sajta za računar</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajt}one{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajt}few{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajta}other{Kolačići su dozvoljeni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sajtova}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Ne zatvaraj</translation>
 <translation id="6630443592285535486">Ovde unesite heksadecimalni kôd</translation>
 <translation id="6635327442719709864">Kada je uključeno, sajtovi mogu da zatraže da koriste serijske portove. Kada je isključeno, sajtovi ne mogu da koriste serijske portove.</translation>
-<translation id="6669390930482049506">Obaveštavaj me</translation>
 <translation id="6678072580827808850">Pregledajte Proveru bezbednosti</translation>
 <translation id="6682057173375416470">Dobijajte predložene članke na stranici Nova kartica</translation>
 <translation id="6683865262523156564">Ovaj sajt je u grupi koja može da vidi vaše aktivnosti. Grupu definiše <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
-<translation id="7213166370492037743">Ne dozvoljavaj sajtovima da se povezuju sa bilo kojim uređajem na lokalnoj mreži</translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
 <translation id="723171743924126238">Izaberite slike</translation>
 <translation id="7243246278722455312">Prilagodite donju tabelu stranice nove kartice</translation>

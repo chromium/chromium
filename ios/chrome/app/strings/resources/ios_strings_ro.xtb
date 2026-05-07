@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nu, mulțumesc</translation>
 <translation id="1531038290222364269">Afișează filele</translation>
 <translation id="1536390784834419204">Tradu pagina</translation>
+<translation id="1539535193627863227">Nu s-au găsit parole sau chei de acces pentru acest site</translation>
 <translation id="1540800554400757039">Adresă 1</translation>
 <translation id="154312949627292154">Deschide filele primite de pe alte dispozitive de pe ecranul de blocare.</translation>
 <translation id="1545749641540134597">Scanează codul QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Dezactivează Modul de lectură</translation>
 <translation id="3106690631878101882">Ascunde Traducere</translation>
 <translation id="310900540163454140">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Restrâns</translation>
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3116695032231023709">Salvează cartea de identitate</translation>
 <translation id="3119874402040566234">Vei fi deconectat(ă), iar datele de navigare se vor șterge</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Modificarea nu a putut fi salvată.</translation>
 <translation id="3254806613790954367">Ultima filă deschisă pe toate dispozitivele</translation>
 <translation id="325717987950204592">Atinge Confidențialitate și securitate</translation>
+<translation id="3259451381796379533">Acest cont nu va funcționa cu Gemini. Conectează-te cu alt Cont Google.</translation>
 <translation id="3265736395246760288">Conectează-te mai rapid de pe oricare dintre dispozitivele tale sincronizate.</translation>
 <translation id="3272527697863656322">Anulează</translation>
 <translation id="3273510436356991673">Personalizează ecranul de pornire</translation>
@@ -1780,6 +1783,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7186568385131859684">Alege modul în care se folosește istoricul de navigare împreună cu celelalte date ale tale din serviciile Google</translation>
 <translation id="719133302483559673">Gestionează-ți interesele și preferințele.</translation>
 <translation id="7191382490098297347">Imagine din dosarul camerei foto</translation>
+<translation id="7203150201908454328">Extins</translation>
 <translation id="7203496777391039568">Datele organizației tale sunt private și în siguranță</translation>
 <translation id="720399613139435155">Traducere nereușită</translation>
 <translation id="7204922488054642675">Știri personalizate</translation>
@@ -1864,6 +1868,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7498234416455752244">Continuați editarea</translation>
 <translation id="7500244509706269886">Completare automată a formularelor</translation>
 <translation id="750493650310597496">Niciunul selectat</translation>
+<translation id="7505402981231763928">Trebuie să te conectezi pentru a folosi Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pentru a bloca filele incognito, configurează Touch ID, Face ID sau un cod de acces.</translation>
 <translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>

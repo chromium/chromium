@@ -1048,6 +1048,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Pregledni način</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
+<translation id="4244765461494758482">Te nastavitve se sinhronizirajo v drugih napravah ChromeOS. Spremenite jih lahko tukaj ali upravljate celoten seznam v nastavitvah.</translation>
 <translation id="4247123849143712100">Posodobi in zaustavi</translation>
 <translation id="4249248555939881673">Čakanje na povezavo z omrežjem ...</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
@@ -2328,6 +2329,7 @@ Nova namestitev</translation>
 <translation id="8051716679295756675">Predloga <ph name="DESK_TEMPLATE_NAME" /> že obstaja.</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
 <translation id="8054466585765276473">Izračunavanje časa trajanja akumulatorja.</translation>
+<translation id="8063363226185507157">Sinhronizirane nastavitve dostopnosti</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8079538659226626406">Deljenje zaslona</translation>
 <translation id="8083540854303889870">Shranjeno za pozneje</translation>

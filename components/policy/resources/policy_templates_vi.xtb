@@ -1897,6 +1897,25 @@ Nếu bạn không đặt chính sách này hoặc đặt thành Tắt, người
 <translation id="225340736558643885">Bật cảnh báo đối với biểu mẫu không an toàn</translation>
 <translation id="2258126710006312594">Cho phép người dùng truy cập từ xa chuyển tệp từ/đến máy chủ</translation>
 <translation id="225830954785359083">Ngăn các trang hiển thị cửa sổ bật lên trong khi huỷ tải</translation>
+<translation id="2260635608598936994">Định cấu hình bộ lọc để chọn những chứng chỉ máy khách được đưa vào báo cáo tín hiệu bảo mật của <ph name="PRODUCT_NAME" />. Những báo cáo này sẽ gửi thông tin về trạng thái của trình duyệt và thiết bị đến <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />. Quản trị viên có thể sử dụng thông tin này để định cấu hình các quy tắc <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />.
+
+Chính sách này cho phép bạn xác định bộ lọc dựa trên các thuộc tính của chứng chỉ máy khách, chẳng hạn như tên phân biệt của ISSUER (TỔ CHỨC PHÁT HÀNH) và/hoặc SUBJECT (CHỦ THỂ). <ph name="PRODUCT_NAME" /> sẽ chỉ đưa vào báo cáo tín hiệu những chứng chỉ khớp với ít nhất một trong các bộ lọc được chỉ định.
+
+     Ví dụ về cách sử dụng mục <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Khi bạn đặt <ph name="SELECTOR_PLACEHOLDER" /> thành <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />, chỉ những chứng chỉ máy khách do chứng chỉ có CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> cấp mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa cả mục <ph name="ISSUER_STRING_VALUE" /> và <ph name="SUBJECT_STRING_VALUE" />, chỉ những chứng chỉ máy khách đáp ứng cả hai điều kiện mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa mục <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATION" />, chứng chỉ phải có ít nhất một tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa mục <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, chứng chỉ phải có ít nhất một đơn vị tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi bạn đặt <ph name="SELECTOR_PLACEHOLDER" /> thành <ph name="EMPTY_DICTIONARY" />, phần thông tin trống sẽ bị bỏ qua đối với chính sách này.
+
+      Nếu bạn không đặt chính sách này thì sẽ không có chứng chỉ máy khách nào được chọn trong quá trình báo cáo tín hiệu.
+
+*Quan trọng*: Chính sách này chỉ có hiệu lực nếu bạn đã bật chính sách <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />, tức là chính sách kiểm soát toàn bộ tính năng cho phép gửi tín hiệu bảo mật từ Chrome.</translation>
 <translation id="2261648512244797294">Tắt tính năng in privet đã ngừng hoạt động</translation>
 <translation id="2262701937800507517">Sử dụng thứ tự thuật toán mật mã mặc định của <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Cho phép dùng Trình quản lý mật khẩu bên thứ ba trong <ph name="PRODUCT_NAME" /> trên <ph name="ANDROID_NAME" /></translation>
@@ -4904,6 +4923,7 @@ Chính sách này dùng để tắt tính năng tự động nâng cấp nội d
       Nếu bạn tắt hoặc không đặt chính sách này, thì người dùng có thể thay đổi chế độ cài đặt của chính sách.
 
       Xin lưu ý: Đối với Android, hãy dùng chính sách <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Tự động chọn chứng chỉ máy khách khớp với bộ lọc cho báo cáo tín hiệu bảo mật của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4261820385751181068">Ngôn ngữ màn hình đăng nhập thiết bị</translation>
 <translation id="4263788921751326798">Tắt tính năng báo cáo thông tin trong báo cáo sự cố của thiết bị</translation>
 <translation id="4268586991084547853">Tương thích tốt hơn với danh sách trang web ở chế độ doanh nghiệp (enterprise mode sitelists) của Microsoft IE/Edge.</translation>

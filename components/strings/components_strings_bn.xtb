@@ -746,6 +746,7 @@
 <translation id="21613918653299710">অনলাইন ছবি সংক্রান্ত গ্যালারি</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
 <translation id="2162435186600002085">প্রাথমিক হেডারের লোগো</translation>
+<translation id="2162535140284745414">রিয়েল-টাইমে এমন সাজেশন পান যা আপনাকে AI-এর মাধ্যমে ব্রাউজ করার নতুন উপায় খুঁজে পাওয়ার ব্যাপারে সাহায্য করতে পারবে।</translation>
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />-এ কোনও বানান ভুল লেখা হয়েছে কিনা তা চেক করে দেখুন।</translation>
 <translation id="2166049586286450108">পূর্ণ প্রশাসক অ্যাক্সেস</translation>
@@ -993,6 +994,7 @@
 <translation id="2521385132275182522">নিচে ডানদিকে স্টেপল করুন</translation>
 <translation id="2521736961081452453">ফর্ম তৈরি করুন</translation>
 <translation id="2524461107774643265">আরও তথ্য যোগ করুন</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />এইসব বিকল্প অফার করতে, চেক-আউট করার পৃষ্ঠা থেকে কন্টেন্ট Google-এর সাথে শেয়ার করা হয়।<ph name="END_BOLD" /> পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে। পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="BEGIN_LINK" />পেমেন্ট সেটিংসে<ph name="END_LINK" /> যান।</translation>
 <translation id="2526062290525841862">এই অ্যাপ চালাতে, আইসোলেটেড ওয়েব অ্যাপ ডেভেলপার মোড আবার চালু করুন</translation>
 <translation id="2526280916094749336">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
@@ -1459,6 +1461,7 @@
 <translation id="3261488570342242926">ভার্চুয়াল কার্ডের বিষয়ে জানুন</translation>
 <translation id="3262698603497362968">কেনাকাটার বিকল্প</translation>
 <translation id="3264315627780269177">এই ট্যাব শেয়ার করা যাবে না</translation>
+<translation id="3264637689694266148">আপনি সাজেশনের বিকল্প বন্ধ করে দিলেও, অন্যান্য Chrome ফিচারের জন্য আপনার ট্যাবের পৃষ্ঠার টাইটেল ও URL প্রসেস করা হতে পারে। আপনি এই ডেটায় ব্রাউজারের অ্যাক্সেস আপনার যে সেটিংসে ম্যানেজ করতে পারবেন</translation>
 <translation id="3266793032086590337">মান (ম্যাচ করছে না)</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
 <translation id="3270041629388773465">আপনার CVC সেভ করা থাকলে আরও দ্রুত চেক-আউট হয়ে যায়</translation>
@@ -1903,7 +1906,6 @@
 <translation id="3965672182149944205">ঠিকানা সেভ করতে চান?</translation>
 <translation id="3966044442021752214">প্রোডাক্টের নিরাপত্তা</translation>
 <translation id="396761677631735618">টাচ করে পূরণ করার জন্য উপলভ্য লয়্যালটি কার্ড অর্ধেক উচ্চতায় খোলা আছে।</translation>
-<translation id="3969869202926863008">স্থানীয় নেটওয়ার্ক অ্যাক্সেস</translation>
 <translation id="3970239200223030389">ইস্যু করার তারিখ</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> অবরুদ্ধ হয়ে রয়েছে</translation>
@@ -1994,6 +1996,7 @@
 <translation id="4103249731201008433">ডিভাইসের ক্রমিক সংখ্যা ভুল</translation>
 <translation id="4103592298805904008">কার্ডবোর্ড (সিঙ্গেল ওয়াল)</translation>
 <translation id="4104702906064390950">IBAN সম্পর্কিত তথ্য সেভ করা হচ্ছে</translation>
+<translation id="4106101218644797743">সিঙ্ক সংক্রান্ত সেটিংস</translation>
 <translation id="4106887816571530227">এম্বেড করা কন্টেন্ট ব্যবহার করা যাবে না</translation>
 <translation id="4107047499377819067">VPN ব্যাকগ্রাউন্ড পরিষেবা ইনস্টলেশন চালু হয়েছে, এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay লোগো</translation>
@@ -2329,6 +2332,7 @@
 <translation id="4640225694041297329">গত ৭ দিনের ফলাফল দেখুন</translation>
 <translation id="4642296966515958616">এই ট্যাব গ্রুপে যোগ দিতে, Chrome আপডেট করুন</translation>
 <translation id="464342062220857295">সার্চের ফিচার</translation>
+<translation id="4643958597583594452">Chrome আপনার ডিভাইসে বা ক্লাউডের কোনও প্রাইভেট স্পেসে পৃষ্ঠার টাইটেল ও URL প্রসেস করে</translation>
 <translation id="4644567637638438744">আপনি Microsoft OneDrive-এ সাইন-ইন করলেই শুধুমাত্র ফাইল আপলোড করা যাবে</translation>
 <translation id="4644670975240021822">রিভার্স অর্ডার, সামনের দিক নীচে</translation>
 <translation id="4648262692072505866">হ্যাশ অবশ্যই SHA-256 ফর্ম্যাটের হতে হবে।</translation>
@@ -2576,6 +2580,7 @@
 <translation id="5019293549442035120">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="5019819206251569004">মোশন ও লাইট সেন্সর</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> নীতি স্থির করা হয়েছে। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> এক্সটেনশন পৃষ্ঠায় ডেভেলপার মোডের উপলভ্যতা নিয়ন্ত্রণ করবে না।</translation>
+<translation id="5020862932518041900">আপনি কোনও সাজেশন বেছে নিলে বা এড়িয়ে গেলে, Chrome নিজেকে আপনার ক্ষেত্রে প্রাসঙ্গিক বিষয়গুলি দেখানোর উপযুক্ত করে নেবে</translation>
 <translation id="5021500396464456616">যিনি এই লিঙ্ক শেয়ার করেছেন তার সাথে যোগাযোগ করুন</translation>
 <translation id="5021557570875267742">Chrome ব্যবহার করে দাম ট্র্যাক করুন</translation>
 <translation id="5023310440958281426">আপনার প্রশাসকের নীতিগুলি দেখুন</translation>
@@ -3006,7 +3011,6 @@
 <translation id="5660122698869360728">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে।</translation>
 <translation id="5663955426505430495">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর অতিরিক্ত ক্রিয়াকলাপের জন্য এক্সটেনশন ইনস্টল করেছেন। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করতে পারে।</translation>
 <translation id="5667827081946850877">অডিওবুক</translation>
-<translation id="5674082555327905359">আপনার স্থানীয় নেটওয়ার্কে যেকোনও ডিভাইসে কানেক্ট করতে বলতে পারে</translation>
 <translation id="5675650730144413517">এই পৃষ্ঠাটি কাজ করছে না</translation>
 <translation id="5675809467256309336">নাচ ও ইলেক্ট্রনিক মিউজিক</translation>
 <translation id="5675959228867414813">তারিখ অনুযায়ী দেখুন</translation>
@@ -3412,7 +3416,6 @@
 <translation id="6321917430147971392">আপনার DNS সেটিংস পরীক্ষা করুন</translation>
 <translation id="6322182122604171028">Windows Hello ব্যবহার করা যায়নি</translation>
 <translation id="6326947323444967009">iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
-<translation id="6327065120806001832">স্থানীয় নেটওয়ার্ক অ্যাক্সেস</translation>
 <translation id="6328639280570009161">নেটওয়ার্ক পূর্বানুমান নিষ্ক্রিয় করার চেষ্টা করুন</translation>
 <translation id="6329742260390895689">আপনার তথ্য অটোফিল করতে, Wallet সেটিংসে “Google জুড়ে পাস ব্যবহার করুন” বিকল্প চালু করুন</translation>
 <translation id="6329815962353376655">&lt;প্রশ্ন টাইপ করুন&gt;</translation>
@@ -3516,6 +3519,7 @@
 <translation id="6451458296329894277">ফর্ম পুনঃজমা নিশ্চিত করুন</translation>
 <translation id="6452429044474066211">ডাইভিং ও আন্ডারওয়াটার অ্যাক্টিভিটি</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">আপনাকে প্রাসঙ্গিক সাজেশন দিতে, আপনার খোলা ট্যাবের পৃষ্ঠার টাইটেল ও URL ব্যবহার করা হয়</translation>
 <translation id="6455632609396391811">স্বাস্থ্য বীমা</translation>
 <translation id="6456955391422100996">বিজ্ঞাপন সরানো হয়েছে।</translation>
 <translation id="6457206614190510200">স্যাডল স্টিচ</translation>
@@ -4410,6 +4414,7 @@
 <translation id="7819605256207059717">আপনার সংস্থা ব্লক করে দিয়েছে</translation>
 <translation id="7822611063308883975">হ্যান্ডহেল্ড গেম কনসোল</translation>
 <translation id="7825558994363763489">মাইক্রোওয়েভ</translation>
+<translation id="7827688884439021871">রিয়েল-টাইমে এমন সাজেশন পান যা আপনাকে AI-এর মাধ্যমে ব্রাউজ করার নতুন উপায় খুঁজে পাওয়ার ব্যাপারে সাহায্য করতে পারবে</translation>
 <translation id="782886543891417279">আপনি যে (<ph name="WIFI_NAME" />) ওয়াই-ফাই ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
 <translation id="7831993212387676366">কেনাকাটার তালিকা কী?</translation>
 <translation id="7840103971441592723">'স্ক্রিন ক্যাপচার' করা শুরু হয়েছে</translation>
@@ -4701,6 +4706,7 @@
 <translation id="8289355894181816810">যদি আপনি এর অর্থের ব্যাপারে নিশ্চিত না হন তাহলে আপনার নেটওয়ার্ক প্রশাসকের সঙ্গে যোগাযোগ করুন৷</translation>
 <translation id="8291367150570302588">আইডি কার্ড</translation>
 <translation id="829335040383910391">সাউন্ড</translation>
+<translation id="8294425747071240447">সাজেশন, যেটি AI-এর মাধ্যমে পরিচালিত</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8297545700510100061">কুকি এবং অন্যন্য সাইটের ডেটা আপনার অ্যাকাউন্টের তথ্য মনে রাখে, যেমন আপনাকে সাইন-ইন করানোর সময় অথবা আপনার পছন্দমতো বিজ্ঞাপন দেখানোর সময়। সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="SETTINGS" /> দেখুন।</translation>
 <translation id="8298115750975731693">আপনি যে (<ph name="WIFI_NAME" />) Wi-Fiটি ব্যবহার করছেন সেটির জন্য অপনাকে <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> তে যেতে হতে পারে৷</translation>

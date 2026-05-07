@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
 <translation id="1420688843103859429">Przechodź do przodu i do tyłu, przesuwając 2 palcami po touchpadzie</translation>
-<translation id="1432650420699700107">Strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="1442081309487427303">Włącz linki w Trybie czytania</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1464044141348608623">Nie zezwalaj witrynom na sprawdzanie, kiedy używasz urządzenia</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Gdy ta opcja jest włączona, strony mogą prosić o zgodę na zarządzanie oknami na wszystkich wyświetlaczach. Gdy jest wyłączona, strony nie mogą zarządzać oknami na wszystkich wyświetlaczach.</translation>
 <translation id="1738912554587725807">Plansza dolna kolekcji motywów wyglądu strony Nowa karta</translation>
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
-<translation id="1766455884659449403">Otrzymuj powiadomienia o wskazówkach dotyczących Chrome</translation>
 <translation id="1777815584158991902">Plansza dolna karty Discover</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1781533683087883868">Wyłącz linki w Trybie czytania</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Zarządzane przez <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoc i opinie</translation>
 <translation id="2501278716633472235">Wróć</translation>
-<translation id="2533138527374486328">Gdy ta opcja jest włączona, strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w Twojej sieci lokalnej. Gdy jest wyłączona, strony nie mogą łączyć się z urządzeniami w sieci lokalnej.</translation>
 <translation id="2536779053640817375">Dozwolona jednorazowo • Dokładna</translation>
 <translation id="2544997614631598250">Kolor motywu: ciemny</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2789132527330338807">Strony mogą prosić o utworzenie mapy 3D otoczenia lub śledzenie pozycji kamery</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
-<translation id="2794551654724114396">Włącz powiadomienia, aby otrzymywać przydatne wskazówki, które pomogą Ci w pełni wykorzystać możliwości Chrome</translation>
 <translation id="2795716239552913152">Strony zwykle używają lokalizacji w celu dobierania funkcji lub informacji, na przykład wiadomości lokalnych lub sklepów w pobliżu</translation>
 <translation id="2800760947029405028">Prześlij obraz</translation>
 <translation id="2802908157808345702">Nie zezwalaj stronom na wysyłanie wyskakujących okienek ani używanie przekierowań</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Nie zezwalaj witrynom na łączenie się z urządzeniami USB</translation>
 <translation id="3965467402665811906">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
-<translation id="3969869202926863008">Dostęp przez sieć lokalną</translation>
 <translation id="3981465354637804599">Strony zwykle wyświetlają reklamy, aby mogły dostarczać treści i usługi bezpłatnie. Istnieją jednak strony, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd.</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Moje skróty</translation>
 <translation id="656065428026159829">Pokaż więcej</translation>
 <translation id="6561560012278703671">Pokazuj wiadomości dyskretnie (blokuje powiadomienia, by Ci nie przeszkadzały)</translation>
-<translation id="6565144332292237355">Witryny mogą używać tej funkcji do wyszukiwania urządzeń w Twojej sieci lokalnej i łączenia się z nimi</translation>
 <translation id="6593061639179217415">Wersja na komputer</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryn <ph name="RWS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="RWS_MEMBERS_COUNT" /> witryny <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Zostań</translation>
 <translation id="6630443592285535486">Wpisz tutaj wartość szesnastkową</translation>
 <translation id="6635327442719709864">Gdy to ustawienie jest włączone, strony mogą prosić o zgodę na używanie portów szeregowych. Gdy jest wyłączone, strony nie mogą używać portów szeregowych.</translation>
-<translation id="6669390930482049506">Powiadom mnie</translation>
 <translation id="6678072580827808850">Przeprowadź kontrolę zabezpieczeń</translation>
 <translation id="6682057173375416470">Otrzymuj sugerowane artykuły na stronie Nowa karta</translation>
 <translation id="6683865262523156564">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Odśwież</translation>
+<translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
-<translation id="7213166370492037743">Nie zezwalaj witrynom na łączenie się z żadnym urządzeniem w sieci lokalnej</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
 <translation id="723171743924126238">Wybierz zdjęcia</translation>
 <translation id="7243246278722455312">Plansza dolna Dostosuj stronę nowej karty</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń rzeczywistości wirtualnej. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
+<translation id="7279851812866769760">Udostępnianie kontaktów</translation>
 <translation id="7282197670900591579">Motyw cytrynowy</translation>
 <translation id="728412880473384942">Strony są szybsze, ale mniej bezpieczne</translation>
 <translation id="7352902948037373520">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
@@ -700,6 +694,7 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="823874716226307142">Gdy ta opcja jest włączona, strony mogą prosić o dostęp do innych urządzeń w sieci lokalnej. Gdy jest wyłączona, strony nie mogą uzyskiwać dostępu do innych urządzeń w sieci lokalnej.</translation>
 <translation id="8249310407154411074">Przenieś na początek</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8273596202562472147"><ph name="SITE_NAME" /> – więcej opcji</translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8301363963630676147">Przyznano jednorazowo • Używana jest przybliżona lokalizacja</translation>
@@ -794,6 +789,7 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>
+<translation id="927148002081263046">Udostępnianie kontaktu</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="959682366969460160">Większy porządek</translation>
 <translation id="960590623979248167">Pokaż hiperlinki</translation>

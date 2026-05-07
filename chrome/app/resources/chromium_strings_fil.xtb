@@ -101,9 +101,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2066690553719545730">Palaging Ipakita ang AI Mode</translation>
 <translation id="2086476982681781442">Na-block ng Chromium ang pag-download na ito dahil mapanlinlang ang file at posible itong gumawa ng mga hindi inaasahang pagbabago sa iyong device</translation>
 <translation id="208726765006323911">Makakakita ka ng prompt na subukan ang <ph name="FEATURE_NAME" /> sa susunod na buksan mo ang Chromium iOS.</translation>
-<translation id="2090163042413910600">Ino-off ng Chromium ang pag-optimize ng JavaScript kapag bumisita ka sa isang site sa unang pagkakataon.
-
-Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-optimize.</translation>
 <translation id="2099452623287920103">Aalisin sa device na ito ang iyong mga password at iba pang data sa Chromium na na-save mo sa iyong Google Account. Para magamit ulit ang mga ito sa Chromium, mag-sign in ulit.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang 1 minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}one{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}other{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chromium nang # na minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}}</translation>
 <translation id="2126108037660393668">Hindi na-verify ang na-download na file.</translation>

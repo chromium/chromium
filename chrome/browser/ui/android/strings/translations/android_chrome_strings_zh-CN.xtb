@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">跟踪</translation>
 <translation id="1366525380420346469">开启时</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知}other{您可以阻止这些网站继续发送通知}}</translation>
-<translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
 <translation id="137496472437646183">选择“增强型保护”</translation>
 <translation id="1376578503827013741">正在计算…</translation>
 <translation id="1381838868249179644">为保护您的安全，Chrome 已移除某些网站的权限</translation>
@@ -292,6 +291,7 @@
 <translation id="230115972905494466">未找到任何兼容设备</translation>
 <translation id="2316129865977710310">不用了</translation>
 <translation id="2318045970523081853">点按即可拨打电话</translation>
+<translation id="232137538351753795">从左侧边缘滑动即可返回</translation>
 <translation id="2323763861024343754">网站存储数据</translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
 <translation id="2330186936255788117">更多书签</translation>
@@ -357,6 +357,7 @@
 <translation id="2553962148913791095">部分书签未保存</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{已屏蔽危险下载内容}other{已屏蔽 # 项危险下载内容}}</translation>
 <translation id="2569733278091928697">您将能轻松管理媒体控件、无痕式会话、下载内容等等</translation>
+<translation id="257088987046510401">主题</translation>
 <translation id="2571711316400087311">询问是否要在其他语言的网页上显示 Google 翻译</translation>
 <translation id="2571834852878229351">创建我自己的密码</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
@@ -526,7 +527,6 @@
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
 <translation id="3301936297336370235">密码建议确认</translation>
 <translation id="3302615849591357577">将标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）恢复为新的背景标签页分组。</translation>
-<translation id="3303414029551471755">要开始下载该内容吗？</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3305130791745726624">发送到设备</translation>
 <translation id="3305795716056605962">通过“更多选项”按钮翻译网页</translation>
@@ -543,7 +543,6 @@
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
-<translation id="3414952576877147120">大小：</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
@@ -885,7 +884,6 @@
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="480990236307250886">打开主页</translation>
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
-<translation id="482405935591409882">搜索标签页和标签页分组</translation>
 <translation id="4834250788637067901">Google Pay 中存储的支付方式、优惠和地址信息</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
@@ -895,7 +893,6 @@
 <translation id="4860895144060829044">致电</translation>
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4866368707455379617">无法为 Chrome 安装<ph name="MODULE" /></translation>
-<translation id="487567923005969537">启用 AI 模式</translation>
 <translation id="4875775213178255010">内容建议</translation>
 <translation id="4877678010818027629">进入无痕模式</translation>
 <translation id="4878404682131129617">未能成功通过代理服务器建立隧道</translation>
@@ -988,7 +985,6 @@
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
-<translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
 <translation id="5290322819358431297">可自动填充密码</translation>
 <translation id="5292796745632149097">发送到</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5619633276517849615">您的组织已开启“安全浏览”功能</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
-<translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
 <translation id="5631483240431073854">管理打开的标签页</translation>
 <translation id="5632485077360054581">操作步骤</translation>
@@ -1093,7 +1088,6 @@
 <translation id="5763382633136178763">无痕模式标签页</translation>
 <translation id="5763514718066511291">点按即可复制该应用的网址</translation>
 <translation id="5765517223145864268">与我们分享您的体验。或者，<ph name="BEGIN_LINK" />更改您的设置<ph name="END_LINK" />。</translation>
-<translation id="5765780083710877561">说明：</translation>
 <translation id="5776970333778123608">不重要的数据</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" />，共 <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">已屏蔽此主题</translation>
@@ -1522,7 +1516,6 @@
 <translation id="7365073365123878797">如需开始使用 Google 密码管理工具保存和使用密码，请更新 Google Play 服务</translation>
 <translation id="7368009310682364976">查看最近打开的标签页</translation>
 <translation id="7368927539449986686">修改网站搜索引擎</translation>
-<translation id="7375125077091615385">类型：</translation>
 <translation id="7376560087009844242">如果选择纳入相应页面上的更多文字，您便可能会在使用“轻触搜索”功能时看到相关性更高的结果。您随时可访问<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />以更改此设置。</translation>
 <translation id="7379900596734708416">可为网站启用深色主题</translation>
 <translation id="7384486627147155832">提示通知宣传内容已以一半高度显示</translation>
@@ -1662,7 +1655,6 @@
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此设备上的标签页</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
-<translation id="7963646190083259054">供应商：</translation>
 <translation id="7965838025086216108">您可在任何设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7968982339740310781">查看详情</translation>
@@ -1671,6 +1663,7 @@
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这些权限</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
+<translation id="7997875520309653083">从右侧边缘滑动即可返回</translation>
 <translation id="7998918019931843664">重新打开关闭的标签页</translation>
 <translation id="8001245658307297681">您正在查看本地文件</translation>
 <translation id="8004582292198964060">浏览器</translation>
@@ -1834,7 +1827,6 @@
 <translation id="860282621117673749">降价提醒</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
 <translation id="8616006591992756292">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
-<translation id="8617240290563765734">要打开下载的内容中指定的建议网址吗？</translation>
 <translation id="8629093325209491835">依次打开 Chrome 菜单 &gt;“设置”</translation>
 <translation id="8634050254805484913">在窄屏设备上隐藏</translation>
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
@@ -1875,7 +1867,6 @@
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8824359129672223138">您最多只能打开 <ph name="MAX_WINDOW_COUNT" /> 个窗口。</translation>
-<translation id="883806473910249246">下载此内容时出错。</translation>
 <translation id="8840953339110955557">此网页可能与在线版本有所不同。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>

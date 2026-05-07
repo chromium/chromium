@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
 <translation id="1531038290222364269">Erakutsi fitxak</translation>
 <translation id="1536390784834419204">Itzuli orria</translation>
+<translation id="1539535193627863227">Ez da aurkitu pasahitzik edo sarbide-gakorik webgune honetarako</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="154312949627292154">Ireki beste gailuetatik jasotako fitxak pantaila blokeatutik.</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Desaktibatu irakurtzeko modua</translation>
 <translation id="3106690631878101882">Ezkutatu "Itzuli"</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> zerbitzuko pasahitza ezabatu nahi duzu?</translation>
+<translation id="3109724472072898302">Tolestuta</translation>
 <translation id="3112556859945124369">Markatu…</translation>
 <translation id="3116695032231023709">Gorde nortasun-agiria</translation>
 <translation id="3119874402040566234">Zure saioa amaituko da, eta arakatze-datuak ezabatuko dira</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Ezin izan da gorde aldaketa.</translation>
 <translation id="3254806613790954367">Gailu guztien artean azkenekoz ireki duzun fitxa</translation>
 <translation id="325717987950204592">Sakatu "Pribatutasuna eta segurtasuna".</translation>
+<translation id="3259451381796379533">Kontu honek ez du funtzionatuko Gemini-rekin. Hasi saioa Google-ko beste kontu batekin.</translation>
 <translation id="3265736395246760288">Hasi saioa bizkorrago sinkronizatutako edozein gailutatik.</translation>
 <translation id="3272527697863656322">Utzi</translation>
 <translation id="3273510436356991673">Pertsonalizatu orri nagusia</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7186568385131859684">Kontrolatu nola erabiltzen den arakatze-historia Google-ren zerbitzuetako zure beste datuekin</translation>
 <translation id="719133302483559673">Kudeatu zure interesak eta hobespenak.</translation>
 <translation id="7191382490098297347">Kamerako argazkien irudia</translation>
+<translation id="7203150201908454328">Zabalduta</translation>
 <translation id="7203496777391039568">Zure erakundearen datuak pribatuak dira eta babestuta daude</translation>
 <translation id="720399613139435155">Ezin izan da itzuli</translation>
 <translation id="7204922488054642675">Albiste pertsonalizatuak</translation>
@@ -1864,6 +1868,7 @@
 <translation id="7498234416455752244">Jarraitu editatzen</translation>
 <translation id="7500244509706269886">Bete inprimakia automatikoki</translation>
 <translation id="750493650310597496">Ez da bat ere hautatu</translation>
+<translation id="7505402981231763928">Saioa hasi behar duzu Gemini erabiltzeko</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ezkutuko moduko fitxak blokeatzeko, konfiguratu Touch ID, Face ID edo pasakode bat.</translation>
 <translation id="750886945254958667">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>

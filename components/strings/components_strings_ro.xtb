@@ -745,6 +745,7 @@
 <translation id="21613918653299710">Galerii de imagini online</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Sigla principală din antet</translation>
+<translation id="2162535140284745414">Primește sugestii în timp real care te pot ajuta să găsești noi moduri de a naviga cu AI.</translation>
 <translation id="2162620598375156287">Acum la <ph name="CURRENT_PRICE" /> pe <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifică dacă există vreo greșeală de scriere în <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acces complet de administrare</translation>
@@ -992,6 +993,7 @@
 <translation id="2521385132275182522">Capsare în dreapta jos</translation>
 <translation id="2521736961081452453">Creează un formular</translation>
 <translation id="2524461107774643265">Adaugă mai multe informații</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Conținutul paginii de finalizare a achiziției este trimis la Google pentru a oferi aceste opțiuni.<ph name="END_BOLD" /> Planurile de plată se supun condițiilor de eligibilitate. Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LINK" />setările pentru plăți<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Pentru a rula această aplicație, reactivează modul pentru dezvoltatori de aplicații web izolate</translation>
 <translation id="2526280916094749336">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Codul CVC se află pe partea din față a cardului. Este codul din patru cifre din dreapta sus, deasupra numărului cardului.</translation>
@@ -1458,6 +1460,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3261488570342242926">Află despre cardurile virtuale</translation>
 <translation id="3262698603497362968">Opțiuni de cumpărare</translation>
 <translation id="3264315627780269177">Această filă nu poate fi trimisă</translation>
+<translation id="3264637689694266148">Chiar dacă dezactivezi sugestiile, titlul paginii și adresele URL ale filelor pot fi în continuare procesate pentru alte funcții Chrome. Poți gestiona accesul browserului la aceste date în</translation>
 <translation id="3266793032086590337">Valoare (conflictuală)</translation>
 <translation id="3268451620468152448">File deschise</translation>
 <translation id="3270041629388773465">Finalizează achiziția mai rapid, cu codurile CVC salvate</translation>
@@ -1902,7 +1905,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3965672182149944205">Salvezi adresa?</translation>
 <translation id="3966044442021752214">Siguranța produsului</translation>
 <translation id="396761677631735618">Cardurile de fidelitate disponibile pentru completarea la atingere, deschise la jumătate din înălțime.</translation>
-<translation id="3969869202926863008">Accesul la rețeaua locală</translation>
 <translation id="3970239200223030389">Data publicării</translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
@@ -1993,6 +1995,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4103249731201008433">Numărul de serie al gadgetului este nevalid</translation>
 <translation id="4103592298805904008">Carton (un perete)</translation>
 <translation id="4104702906064390950">Se salvează informațiile codului IBAN</translation>
+<translation id="4106101218644797743">setările de sincronizare</translation>
 <translation id="4106887816571530227">Conținutul încorporat nu este permis</translation>
 <translation id="4107047499377819067">Instalarea serviciilor VPN în fundal a început. Poate dura câteva minute.</translation>
 <translation id="4110642094637545339">Sigla Google Pay, AfterPay</translation>
@@ -2328,6 +2331,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4640225694041297329">Afișează rezultate din ultimele 7 zile</translation>
 <translation id="4642296966515958616">Pentru a te alătura acestui grup de file, actualizează Chrome</translation>
 <translation id="464342062220857295">Funcții de căutare</translation>
+<translation id="4643958597583594452">Chrome procesează titlurile paginilor și adresele URL pe dispozitivul tău sau într-un spațiu privat în cloud</translation>
 <translation id="4644567637638438744">Fișierele pot fi încărcate numai dacă te-ai conectat la Microsoft OneDrive</translation>
 <translation id="4644670975240021822">În ordine inversă, cu fața în jos</translation>
 <translation id="4648262692072505866">Valoarea hash trebuie să fie în formatul SHA-256.</translation>
@@ -2575,6 +2579,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5019293549442035120">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">senzori de mișcare și de lumină</translation>
 <translation id="5019952743397118625">Politica <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> este setată. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nu va controla disponibilitatea modului pentru dezvoltatori în pagina de extensii.</translation>
+<translation id="5020862932518041900">Dacă selectezi sau ignori o sugestie, Chrome se va adapta pentru a se asigura că vezi numai conținut relevant pentru tine</translation>
 <translation id="5021500396464456616">Contactează persoana care ți-a trimis acest link</translation>
 <translation id="5021557570875267742">Urmărește prețurile cu Chrome</translation>
 <translation id="5023310440958281426">Consultați politicile administratorului</translation>
@@ -3005,7 +3010,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5660122698869360728">Un nou dosar inteligent care te ajută să salvezi toate paginile de cumpărături într-un singur loc și să urmărești automat prețurile, să primești statistici despre prețuri și altele.</translation>
 <translation id="5663955426505430495">Administratorul acestui dispozitiv a instalat extensii pentru funcții suplimentare. Extensiile au acces la unele dintre datele tale.</translation>
 <translation id="5667827081946850877">Cărți audio</translation>
-<translation id="5674082555327905359">Poate solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="5675650730144413517">Pagina nu funcționează</translation>
 <translation id="5675809467256309336">Muzică dance și electronică</translation>
 <translation id="5675959228867414813">Afișează în funcție de dată</translation>
@@ -3412,7 +3416,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6321917430147971392">Verificați setările DNS</translation>
 <translation id="6322182122604171028">Nu am putut folosi Windows Hello</translation>
 <translation id="6326947323444967009">Setează Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
-<translation id="6327065120806001832">accesul la rețeaua locală</translation>
 <translation id="6328639280570009161">Încercați să dezactivați anticiparea rețelei</translation>
 <translation id="6329742260390895689">Ca să completezi automat informațiile, activează opțiunea Folosește permisele pe Google în setările Portofelului</translation>
 <translation id="6329815962353376655">&lt;Scrie o întrebare&gt;</translation>
@@ -3516,6 +3519,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6451458296329894277">Confirmă retrimiterea formularului</translation>
 <translation id="6452429044474066211">Scufundări și activități subacvatice</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Titlurile paginilor și adresele URL ale filelor deschise sunt folosite pentru a-ți oferi sugestii relevante</translation>
 <translation id="6455632609396391811">Asigurări de sănătate</translation>
 <translation id="6456955391422100996">Anunțul a fost eliminat.</translation>
 <translation id="6457206614190510200">Broșare pe mijloc</translation>
@@ -4410,6 +4414,7 @@ Detalii suplimentare:
 <translation id="7819605256207059717">Blocat de organizația ta</translation>
 <translation id="7822611063308883975">Console mobile pentru jocuri</translation>
 <translation id="7825558994363763489">Cuptoare cu microunde</translation>
+<translation id="7827688884439021871">Primește sugestii în timp real care te pot ajuta să găsești noi moduri de a naviga cu AI</translation>
 <translation id="782886543891417279">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea paginii de conectare.</translation>
 <translation id="7831993212387676366">Ce este lista de cumpărături?</translation>
 <translation id="7840103971441592723">Captura de ecran a început</translation>
@@ -4701,6 +4706,7 @@ Detalii suplimentare:
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
 <translation id="8291367150570302588">Cartea de identitate</translation>
 <translation id="829335040383910391">Sunet</translation>
+<translation id="8294425747071240447">Sugestii bazate pe AI</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

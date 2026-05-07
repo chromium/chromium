@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1420688843103859429">Navighează înainte și înapoi glisând cu două degete pe touchpad</translation>
-<translation id="1432650420699700107">Site-urile pot solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="1442081309487427303">Activează linkurile în modul de lectură</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="1464044141348608623">Nu permite site-urilor să afle când folosești activ dispozitivul</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Când opțiunea este activată, site-urile pot solicita permisiunea de a gestiona ferestre pe toate ecranele. Când opțiunea este dezactivată, site-urile nu pot gestiona ferestre pe toate ecranele.</translation>
 <translation id="1738912554587725807">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă</translation>
 <translation id="1743802530341753419">Întreabă înainte de a permite site-urilor să se conecteze la un dispozitiv (recomandat)</translation>
-<translation id="1766455884659449403">Primește notificări cu sfaturi pentru Chrome</translation>
 <translation id="1777815584158991902">Foaia din partea de jos a feedului Discover</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
 <translation id="1781533683087883868">Dezactivează linkurile în modul de lectură</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Gestionate de <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajutor și feedback</translation>
 <translation id="2501278716633472235">Înapoi</translation>
-<translation id="2533138527374486328">Când opțiunea este activată, site-urile pot solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală. Când opțiunea este dezactivată, site-urile nu se pot conecta la dispozitivele din rețeaua locală.</translation>
 <translation id="2536779053640817375">Permisă de data aceasta • Exactă</translation>
 <translation id="2544997614631598250">Culoarea temei închisă</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Pornește direct în caseta polivalentă</translation>
 <translation id="2789132527330338807">Site-urile pot solicita permisiunea de a crea o hartă 3D a lucrurilor din jur sau de a urmări poziția camerei video</translation>
 <translation id="2790501146643349491">Când opțiunea este activată, site-urile închise recent pot să finalizeze trimiterea și primirea datelor. Când opțiunea este dezactivată, site-urile închise recent nu pot finaliza trimiterea sau primirea datelor.</translation>
-<translation id="2794551654724114396">Activează notificările pentru sfaturi utile care te ajută să profiți din plin de Chrome</translation>
 <translation id="2795716239552913152">Site-urile folosesc de obicei locația pentru funcții sau informații relevante, cum ar fi știri locale sau magazine din apropiere</translation>
 <translation id="2800760947029405028">Încarcă o imagine</translation>
 <translation id="2802908157808345702">Nu permite site-urilor să afișeze ferestre pop-up sau să folosească redirecționări</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Nu permite site-urilor să se conecteze la dispozitive USB</translation>
 <translation id="3965467402665811906">Site-urile pot solicita permisiunea de a folosi informațiile pe care le-au salvat despre tine</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
-<translation id="3969869202926863008">Accesul la rețeaua locală</translation>
 <translation id="3981465354637804599">În general, site-urile afișează anunțuri pentru a putea oferi conținut sau servicii fără costuri. Unele site-uri afișează însă anunțuri deranjante sau înșelătoare.</translation>
 <translation id="3987993985790029246">Copiază linkul</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Comenzile mele rapide</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
-<translation id="6565144332292237355">Site-urile pot folosi această funcție pentru a căuta și a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="6593061639179217415">Versiune site desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site <ph name="RWS_OWNER" />}few{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> site-uri <ph name="RWS_OWNER" />}other{Cookie-uri permise pentru <ph name="RWS_MEMBERS_COUNT" /> de site-uri <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Rămâi pe pagină</translation>
 <translation id="6630443592285535486">Introdu codul hexazecimal aici</translation>
 <translation id="6635327442719709864">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi porturi seriale. Când opțiunea este dezactivată, site-urile nu pot folosi porturi seriale.</translation>
-<translation id="6669390930482049506">Doresc să primesc notificări</translation>
 <translation id="6678072580827808850">Examinează Verificarea de siguranță</translation>
 <translation id="6682057173375416470">Primește articole sugerate în pagina Filă nouă</translation>
 <translation id="6683865262523156564">Site-ul este într-un grup care îți poate vedea activitatea. Grupul este definit de <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Împiedică site-urile să afișeze ferestre pop-up și redirecționări (recomandat)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Actualizați</translation>
+<translation id="7180865173735832675">Personalizează</translation>
 <translation id="7188508872042490670">Date privind site-urile pe dispozitiv</translation>
 <translation id="7201549776650881587">Această acțiune va șterge toate datele și cookie-urile stocate de toate site-urile subordonate <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire</translation>
-<translation id="7213166370492037743">Nu permite site-urilor să se conecteze la niciun dispozitiv din rețeaua locală</translation>
 <translation id="7219254577985949841">Ștergi datele privind site-ul?</translation>
 <translation id="723171743924126238">Selectează imagini</translation>
 <translation id="7243246278722455312">Foaia de jos a paginii Personalizează Fila nouă</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selectate</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> și <ph name="PERMISSION_2" /> sunt permise</translation>
 <translation id="7276071417425470385">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive de realitate virtuală.</translation>
+<translation id="7279851812866769760">Trimite intrări din agendă</translation>
 <translation id="7282197670900591579">Temă galben-lămâi</translation>
 <translation id="728412880473384942">Site-urile sunt mai rapide, dar mai puțin sigure</translation>
 <translation id="7352902948037373520">Gestionează în <ph name="BEGIN_LINK1" />setările Android<ph name="END_LINK1" />
@@ -794,6 +788,7 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="9156722768168878035">Permite ca Chrome să-ți afișeze filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
+<translation id="927148002081263046">Trimite o intrare din agendă</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
 <translation id="960590623979248167">Afișează hyperlinkurile</translation>

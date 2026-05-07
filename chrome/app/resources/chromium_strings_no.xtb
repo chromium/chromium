@@ -99,9 +99,6 @@
 <translation id="2066690553719545730">Vis alltid AI-modus</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="208726765006323911">Du ser en forespørsel om å prøve <ph name="FEATURE_NAME" /> neste gang du åpner Chromium iOS.</translation>
-<translation id="2090163042413910600">Chromium slår av JavaScript-optimalisering når du besøker et nettsted for første gang.
-
-Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalisering.</translation>
 <translation id="2099452623287920103">Passordene dine og andre Chromium-data du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på 1 minutt. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}}</translation>
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>

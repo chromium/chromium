@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Raita</translation>
 <translation id="1366525380420346469">Ominaisuuden ollessa päällä</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Voit estää tätä sivustoa lähettämästä ilmoituksia jatkossa}other{Voit estää näitä sivustoja lähettämästä ilmoituksia jatkossa}}</translation>
-<translation id="1373696734384179344">Liian vähän muistia valitun sisällön lataamiseen.</translation>
 <translation id="137496472437646183">Valitse Parannettu suojaus</translation>
 <translation id="1376578503827013741">Lasketaan…</translation>
 <translation id="1381838868249179644">Turvallisuutesi vuoksi luvat on poistettu joiltakin sivustoilta</translation>
@@ -292,6 +291,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2318045970523081853">Soita napauttamalla</translation>
+<translation id="232137538351753795">Palaa takaisin pyyhkäisemällä vasemmasta reunasta</translation>
 <translation id="2323763861024343754">Sivustotietoja tallennettu</translation>
 <translation id="2328474416100889417">Kaikki menettävät välittömästi pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />", ja kaikki kutsulinkit poistetaan käytöstä</translation>
 <translation id="2330186936255788117">Lisää kirjanmerkkejä</translation>
@@ -357,6 +357,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2553962148913791095">Joitakin kirjanmerkkejä ei tallennettu</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Vaarallinen lataus estetty}other{# vaarallista latausta estetty}}</translation>
 <translation id="2569733278091928697">Voit helposti ylläpitää esimerkiksi mediaohjaimia, incognito-käyttökertoja ja latauksia</translation>
+<translation id="257088987046510401">Teemat</translation>
 <translation id="2571711316400087311">Tarjoudu lähettämään muunkielisiä sivuja Google Kääntäjälle</translation>
 <translation id="2571834852878229351">Luo oma</translation>
 <translation id="2574249610672786438">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
@@ -526,7 +527,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3293181007446299124">Selaushistoriasi pysyy yksityisenä laitteellasi. Raportit lähetetään viiveellä henkilöllisyytesi suojaamiseksi.</translation>
 <translation id="3301936297336370235">Salasanaehdotuksen vahvistus</translation>
 <translation id="3302615849591357577">Palauta välilehtiryhmä <ph name="TITLE_OF_GROUP" /> (värinä <ph name="COLOR_NAME" />) uutena taustavälilehtiryhmänä.</translation>
-<translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
 <translation id="3303855915957856445">Ei hakutuloksia</translation>
 <translation id="3305130791745726624">Lähetä laitteisiin</translation>
 <translation id="3305795716056605962">Käännä sivuja Lisäasetukset-painikkeen kautta</translation>
@@ -543,7 +543,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3373701465337594448">Kun tämä on päällä, näet kaikki sivustot, jotka arvaavat kiinnostuksen kohteesi</translation>
 <translation id="3384347053049321195">Jaa kuva</translation>
 <translation id="3387650086002190359">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui tiedostojärjestelmävirheen vuoksi.</translation>
-<translation id="3414952576877147120">Koko:</translation>
 <translation id="3417835166382867856">Hae välilehtiä</translation>
 <translation id="3430670036890315772">Jos laitat profiilin lukituksen pois päältä, tallennetut tiedot poistetaan</translation>
 <translation id="3435465986463792564">Onko monta ikkunaa auki? Voit ylläpitää niitä täältä</translation>
@@ -885,7 +884,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4807098396393229769">Kortissa oleva nimi</translation>
 <translation id="480990236307250886">Avaa oma etusivu</translation>
 <translation id="4822710610088666676">Välilehtiryhmä (<ph name="TAB_GROUP_TITLE" />) suljettu ja tallennettu</translation>
-<translation id="482405935591409882">Hae välilehtiä ja ryhmiä</translation>
 <translation id="4834250788637067901">Maksutavat, tarjoukset ja osoitteet Google Payta käyttäen</translation>
 <translation id="4835385943915508971">Chromella ei ole pyydetyn resurssin käyttöoikeutta.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Palauta <ph name="TAB_COUNT_ONE" /> välilehden välilehtiryhmä (värinä <ph name="COLOR_NAME" />) uutena taustavälilehtiryhmänä.}other{Palauta <ph name="TAB_COUNT_MANY" /> välilehden välilehtiryhmä (värinä <ph name="COLOR_NAME" />) uutena taustavälilehtiryhmänä.}}</translation>
@@ -895,7 +893,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4860895144060829044">Soita</translation>
 <translation id="4864369630010738180">Kirjaudutaan...</translation>
 <translation id="4866368707455379617">Kohteen <ph name="MODULE" /> asennus Chromeen epäonnistui</translation>
-<translation id="487567923005969537">Ota tekoälytila käyttöön</translation>
 <translation id="4875775213178255010">Sisältöehdotukset</translation>
 <translation id="4877678010818027629">Siirry incognito-tilaan</translation>
 <translation id="4878404682131129617">Tunnelin muodostaminen välityspalvelimen kautta epäonnistui</translation>
@@ -988,7 +985,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5246093389635966745">Muokkaa työkalupalkin pikakuvaketta</translation>
 <translation id="5264813352784073502">24 viime tuntia</translation>
 <translation id="5267572070504076962">Suojaudu haitallisilta sivustoilta laittamalla Selaussuoja päälle</translation>
-<translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
 <translation id="5273031377282080577">Järjestelmänvalvoja ylläpitää tätä asetusta.</translation>
 <translation id="5290322819358431297">Salasanojen automaattinen täyttö</translation>
 <translation id="5292796745632149097">Lähetä:</translation>
@@ -1061,7 +1057,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5619633276517849615">Organisaatiosi on laittanut Selaussuojan päälle</translation>
 <translation id="5620163320393916465">Ei tallennettuja salasanoja</translation>
 <translation id="5620928963363755975">Valitse Lisäasetukset ja sitten Lataukset, niin löydät tiedostosi ja sivusi.</translation>
-<translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lukematon – luettavissa ilman verkkoyhteyttä</translation>
 <translation id="5631483240431073854">Hallitse avoimia välilehtiä</translation>
 <translation id="5632485077360054581">Näytä miten</translation>
@@ -1093,7 +1088,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5763382633136178763">Incognito-välilehdet</translation>
 <translation id="5763514718066511291">Kosketa kopioidaksesi tämän sovelluksen URL-osoite</translation>
 <translation id="5765517223145864268">Kerro meille kokemuksistasi. Voit myös <ph name="BEGIN_LINK" />muuttaa asetuksia<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Kuvaus:</translation>
 <translation id="5776970333778123608">Vähemmän tärkeä data</translation>
 <translation id="5793665092639000975">Käytössä <ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Estetty aihe</translation>
@@ -1524,7 +1518,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7365073365123878797">Päivitä Google Play Palvelut, jotta voit alkaa tallentamaan ja käyttämään salasanoja Google Salasanojen avulla</translation>
 <translation id="7368009310682364976">Katso äskettäin avatut välilehdet</translation>
 <translation id="7368927539449986686">Muokkaa sivustohakua</translation>
-<translation id="7375125077091615385">Tyyppi:</translation>
 <translation id="7376560087009844242">Voit saada parempia tuloksia käyttäessäsi Koskettamalla hakemista, jos sisällytät enemmän tekstiä sivulta. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Sivustojen tumma teema on saatavilla</translation>
 <translation id="7384486627147155832">Vinkki-ilmoitusten mainos avattu puolen näytön kokoisena</translation>
@@ -1664,7 +1657,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7957413488482743710">Virtuaalinen kortti piilottaa käyttämäsi kortin ja saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Välilehdet tällä laitteella</translation>
 <translation id="7961926449547174351">Olet estänyt pääsyn tallennustilaan. Salli se asetuksista.</translation>
-<translation id="7963646190083259054">Toimittaja:</translation>
 <translation id="7965838025086216108">Voit käyttää tallennettuja salasanoja kaikilla laitteilla. Ne on tallennettu Google Salasanoihin tilillä <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Lisätty lukulistalle</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>
@@ -1673,6 +1665,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7977451675950311423">Varoittaa, jos käytät salasanaa, joka on vaarantunut tietosuojaloukkauksen yhteydessä.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome poisti nämä luvat, koska et ole käynyt sivustolla viime aikoina</translation>
 <translation id="799576009106109668">Selaaminen sujuu nopeammin, koska sisältö ladataan proaktiivisesti tällä hetkellä auki olevan verkkosivun perusteella</translation>
+<translation id="7997875520309653083">Palaa takaisin pyyhkäisemällä oikeasta reunasta</translation>
 <translation id="7998918019931843664">Avaa suljettu välilehti uudelleen</translation>
 <translation id="8001245658307297681">Katselet paikallista tiedostoa</translation>
 <translation id="8004582292198964060">Selain</translation>
@@ -1836,7 +1829,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="860282621117673749">Ilmoitukset hinnanalennuksista</translation>
 <translation id="8611922158252451755">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten ne kannattaa jakaa harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
 <translation id="8616006591992756292">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Avataanko ladatussa sisällössä määritetty ehdotettu URL-osoite?</translation>
 <translation id="8629093325209491835">Avaa Chrome-valikko &gt; Asetukset</translation>
 <translation id="8634050254805484913">Piilotettu kapeilla näytöillä</translation>
 <translation id="8635399646025169806">Säilytetäänkö välilehtiryhmä?</translation>
@@ -1866,6 +1858,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome on löytänyt heikon salasanan, jota voisi parantaa}other{Chrome on löytänyt # heikkoa salasanaa, joita voisi parantaa}}</translation>
 <translation id="8766529642647037772">Luodaanko tällainen korostettu linkki?</translation>
+<translation id="8769783688897433958">Näytä sivuston tiedot ja luvat</translation>
 <translation id="8788265440806329501">Navigointihistoria suljettu</translation>
 <translation id="8790193082819560975">Hae tuotteen ostovaihtoehtoja uudella välilehdellä napauttamalla.</translation>
 <translation id="8798449543960971550">Lue</translation>
@@ -1877,7 +1870,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="881688628773363275">Esikatseluvälilehden sisältö ei ole katsottavissa.</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8824359129672223138">Sinulla voi olla enintään <ph name="MAX_WINDOW_COUNT" /> ikkunaa.</translation>
-<translation id="883806473910249246">Sisältöä ladattaessa tapahtui virhe.</translation>
 <translation id="8840953339110955557">Tämä sivu saattaa poiketa verkossa olevasta versiosta.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Piilotettu</translation>

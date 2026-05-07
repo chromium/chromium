@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Hayır, teşekkürler</translation>
 <translation id="1531038290222364269">Sekmeleri göster</translation>
 <translation id="1536390784834419204">Sayfayı çevir</translation>
+<translation id="1539535193627863227">Bu site için şifre veya geçiş anahtarı bulunamadı</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Diğer cihazlarınızdan alınan sekmeleri kilit ekranından açın.</translation>
 <translation id="1545749641540134597">QR Kodunu Tara</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Okuma Modu'nu kapat</translation>
 <translation id="3106690631878101882">Çeviriyi gizle</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> için şifre silinsin mi?</translation>
+<translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3112556859945124369">İşaretle…</translation>
 <translation id="3116695032231023709">Kimlik kartını kaydedin</translation>
 <translation id="3119874402040566234">Oturumunuz kapatılacak ve tarama verileri silinecek</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Yaptığınız değişiklik kaydedilemedi.</translation>
 <translation id="3254806613790954367">Tüm cihazlarınızda en son açtığınız sekme</translation>
 <translation id="325717987950204592">"Gizlilik ve Güvenlik"e dokunun.</translation>
+<translation id="3259451381796379533">Bu hesap, Gemini ile çalışmaz. Farklı bir Google Hesabı ile oturum açın.</translation>
 <translation id="3265736395246760288">Senkronize edilmiş cihazlarınızdan daha hızlı oturum açın.</translation>
 <translation id="3272527697863656322">İptal</translation>
 <translation id="3273510436356991673">Ana ekranınızı özelleştirme</translation>
@@ -1780,6 +1783,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7186568385131859684">Tarama geçmişinizin Google hizmetlerinde diğer verilerinizle nasıl kullanıldığını kontrol edin</translation>
 <translation id="719133302483559673">İlgi alanlarınızı ve tercihlerinizi yönetin.</translation>
 <translation id="7191382490098297347">Film rulosu resmi</translation>
+<translation id="7203150201908454328">Genişletilmiş</translation>
 <translation id="7203496777391039568">Kuruluşunuzun verilerinin gizliliği ve güvenliği sağlanır</translation>
 <translation id="720399613139435155">Çeviri başarısız oldu</translation>
 <translation id="7204922488054642675">Kişiselleştirilmiş haberler</translation>
@@ -1864,6 +1868,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7498234416455752244">Düzenlemeye devam et</translation>
 <translation id="7500244509706269886">Formu otomatik doldur</translation>
 <translation id="750493650310597496">0 yer işareti seçildi</translation>
+<translation id="7505402981231763928">Gemini'ı kullanmak için oturum açmanız gerekir</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Gizli sekmelerinizi kilitlemek için Touch ID, Face ID veya Şife Kodu kurun.</translation>
 <translation id="750886945254958667">Daha sonra sekme eklemek için bu grubu tutun veya artık erişmek istemiyorsanız gruptan ayrılın</translation>

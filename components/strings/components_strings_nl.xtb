@@ -1900,7 +1900,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3965672182149944205">Adres opslaan?</translation>
 <translation id="3966044442021752214">Productveiligheid</translation>
 <translation id="396761677631735618">Lijst met klantenkaarten die kunnen worden ingevuld via aanraking, is op halve hoogte geopend.</translation>
-<translation id="3969869202926863008">Toegang tot lokaal netwerk</translation>
 <translation id="3970239200223030389">Uitgiftedatum</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
@@ -3005,7 +3004,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5660122698869360728">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>
 <translation id="5663955426505430495">De beheerder van dit apparaat heeft extensies voor aanvullende functies geïnstalleerd. Extensies hebben toegang tot sommige van je gegevens.</translation>
 <translation id="5667827081946850877">Audioboeken</translation>
-<translation id="5674082555327905359">Kan vragen of deze site verbinding mag maken met apparaten in je lokale netwerk</translation>
 <translation id="5675650730144413517">Deze pagina werkt niet</translation>
 <translation id="5675809467256309336">Dance en elektronische muziek</translation>
 <translation id="5675959228867414813">Tonen op datum</translation>
@@ -3411,7 +3409,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6321917430147971392">Controleer je DNS-instellingen</translation>
 <translation id="6322182122604171028">Kan Windows Hello niet gebruiken</translation>
 <translation id="6326947323444967009">Chrome instellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
-<translation id="6327065120806001832">toegang tot lokaal netwerk</translation>
 <translation id="6328639280570009161">Probeer netwerkvoorspelling uit te zetten</translation>
 <translation id="6329742260390895689">Als je je gegevens automatisch wilt invullen, zet je Kaarten gebruiken op Google aan in de Wallet-instellingen</translation>
 <translation id="6329815962353376655">&lt;Typ een vraag&gt;</translation>

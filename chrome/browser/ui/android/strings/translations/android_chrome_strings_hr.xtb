@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Zvučni zapis</translation>
 <translation id="1366525380420346469">Kad je značajka uključena</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Možete spriječiti ovu web-lokaciju da ubuduće šalje obavijesti}one{Možete spriječiti ove web-lokacije da ubuduće šalju obavijesti}few{Možete spriječiti ove web-lokacije da ubuduće šalju obavijesti}other{Možete spriječiti ove web-lokacije da ubuduće šalju obavijesti}}</translation>
-<translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje odabranog sadržaja.</translation>
 <translation id="137496472437646183">Odaberite Poboljšana zaštita</translation>
 <translation id="1376578503827013741">Izračunavanje…</translation>
 <translation id="1381838868249179644">Radi vaše zaštite s nekih su web-lokacija uklonjena dopuštenja</translation>
@@ -358,6 +357,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2553962148913791095">Neke oznake nisu spremljene</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Blokirano je opasno preuzimanje}one{Blokirano je # opasno preuzimanje}few{Blokirana su # opasna preuzimanja}other{Blokirano je # opasnih preuzimanja}}</translation>
 <translation id="2569733278091928697">Moći ćete jednostavno upravljati medijskim kontrolama, anonimnim sesijama, preuzimanjima itd.</translation>
+<translation id="257088987046510401">Teme</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima na Google prevoditelj</translation>
 <translation id="2571834852878229351">Izradi moju zaporku</translation>
 <translation id="2574249610672786438">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se na svim svojim uređajima</translation>
@@ -527,7 +527,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3293181007446299124">Vaša povijest pregledavanja ostaje privatna na vašem uređaju, a izvješća se šalju s odgodom radi zaštite vašeg identiteta</translation>
 <translation id="3301936297336370235">Potvrda prijedloga zaporke</translation>
 <translation id="3302615849591357577">Vratite grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.</translation>
-<translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretraživanja</translation>
 <translation id="3305130791745726624">Pošalji na uređaje</translation>
 <translation id="3305795716056605962">Prevedite stranice pomoću gumba Više opcija</translation>
@@ -544,7 +543,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3373701465337594448">Kad je ta postavka uključena, ovdje se prikazuje popis web-lokacija koje posjećujete, a koje pogađaju vaše interese</translation>
 <translation id="3384347053049321195">Dijeli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate pogreške sustava datoteka.</translation>
-<translation id="3414952576877147120">Veličina:</translation>
 <translation id="3417835166382867856">Pretraži kartice</translation>
 <translation id="3430670036890315772">Isključivanjem zaključavanja profila uklonit će se vaši spremljeni podaci</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
@@ -886,7 +884,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4807098396393229769">Ime na kartici</translation>
 <translation id="480990236307250886">Otvori početnu stranicu</translation>
 <translation id="4822710610088666676">Grupa kartica <ph name="TAB_GROUP_TITLE" /> zatvorena je i spremljena</translation>
-<translation id="482405935591409882">Pretražite kartice i grupe</translation>
 <translation id="4834250788637067901">Načini plaćanja, ponude i adrese s Google Paya</translation>
 <translation id="4835385943915508971">Chrome nema pristup zatraženom resursu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Vratite grupu kartica u kojoj je <ph name="TAB_COUNT_ONE" /> kartica, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.}one{Vratite grupu kartica u kojoj je <ph name="TAB_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.}few{Vratite grupu kartica u kojoj su <ph name="TAB_COUNT_MANY" /> kartice, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.}other{Vratite grupu kartica u kojoj je <ph name="TAB_COUNT_MANY" /> kartica, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.}}</translation>
@@ -896,7 +893,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4860895144060829044">Poziv</translation>
 <translation id="4864369630010738180">Prijavljivanje...</translation>
 <translation id="4866368707455379617">Instaliranje modula <ph name="MODULE" /> za Chrome nije uspjelo</translation>
-<translation id="487567923005969537">Omogućite AI način</translation>
 <translation id="4875775213178255010">Prijedlozi sadržaja</translation>
 <translation id="4877678010818027629">Otvori anonimni način</translation>
 <translation id="4878404682131129617">Uspostava tunela putem proxy poslužitelja nije uspjela</translation>
@@ -989,7 +985,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5246093389635966745">Uređivanje prečaca alatne trake</translation>
 <translation id="5264813352784073502">posljednja 24 sata</translation>
 <translation id="5267572070504076962">Uključite sigurno pregledavanje da biste se zaštitili od opasnih web-lokacija</translation>
-<translation id="5271967389191913893">Uređaj ne može otvoriti sadržaj za preuzimanje.</translation>
 <translation id="5273031377282080577">Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="5290322819358431297">Automatski popunite zaporke</translation>
 <translation id="5292796745632149097">Pošalji na uređaj</translation>
@@ -1062,7 +1057,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5619633276517849615">Vaša organizacija uključila je sigurno pregledavanje</translation>
 <translation id="5620163320393916465">Nema spremljenih zaporki</translation>
 <translation id="5620928963363755975">Pronađite svoje datoteke i stranice u Preuzimanjima pomoću gumba Više opcija</translation>
-<translation id="5626134646977739690">Naziv:</translation>
 <translation id="5628604359369369630">Nepročitano – dostupno izvanmrežno</translation>
 <translation id="5631483240431073854">Upravljajte otvorenim karticama</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
@@ -1094,7 +1088,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5763382633136178763">Anonimne kartice</translation>
 <translation id="5763514718066511291">Dodirnite da biste kopirali URL za tu aplikaciju</translation>
 <translation id="5765517223145864268">Podijelite svoj doživljaj s nama. Možete i <ph name="BEGIN_LINK" />promijeniti postavke<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Opis:</translation>
 <translation id="5776970333778123608">Nevažni podaci</translation>
 <translation id="5793665092639000975">Upotrebljava se <ph name="SPACE_USED" /> od <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Tema je blokirana</translation>
@@ -1525,7 +1518,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7365073365123878797">Da biste počeli spremati i upotrebljavati zaporke putem Google upravitelja zaporki, ažurirajte usluge za Google Play</translation>
 <translation id="7368009310682364976">Prikaz nedavno otvorenih kartica</translation>
 <translation id="7368927539449986686">Uređivanje pretraživanja web-lokacije</translation>
-<translation id="7375125077091615385">Vrsta:</translation>
 <translation id="7376560087009844242">Ako uključite više teksta sa stranice, možda ćete dobiti bolje rezultate kad koristite značajku Dodirnite za pretraživanje. To uvijek možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Dostupna je tamna tema za web-lokacije</translation>
 <translation id="7384486627147155832">Promotivna obavijest o savjetima otvorena je na pola visine</translation>
@@ -1665,7 +1657,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7957413488482743710">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Kartice na ovom uređaju</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
-<translation id="7963646190083259054">Dobavljač:</translation>
 <translation id="7965838025086216108">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u Google upravitelj zaporki za <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Dodano na popis za čitanje</translation>
 <translation id="7968982339740310781">Prikaži pojedinosti</translation>
@@ -1838,7 +1829,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="860282621117673749">Obavijesti o padu cijena</translation>
 <translation id="8611922158252451755">Svatko s vezom može uređivati sve kartice, pa budite oprezni prilikom dijeljenja. Veza istječe za 48 sati.</translation>
 <translation id="8616006591992756292">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Želite li otvoriti predloženi URL naveden u preuzetom sadržaju?</translation>
 <translation id="8629093325209491835">Otvorite izbornik preglednika Chrome &gt; Postavke</translation>
 <translation id="8634050254805484913">Skriveno na uskim zaslonima</translation>
 <translation id="8635399646025169806">Sačuvati grupu kartica?</translation>
@@ -1879,7 +1869,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="881688628773363275">Sadržaj kartice pregleda nije vidljiv.</translation>
 <translation id="8820817407110198400">Oznake</translation>
 <translation id="8824359129672223138">Možete imati najviše ovoliko prozora: <ph name="MAX_WINDOW_COUNT" />.</translation>
-<translation id="883806473910249246">Prilikom preuzimanja sadržaja dogodila se pogreška.</translation>
 <translation id="8840953339110955557">Ta se stranica možda razlikuje od online verzije.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skriveno</translation>

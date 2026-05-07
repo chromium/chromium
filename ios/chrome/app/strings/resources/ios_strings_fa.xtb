@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1531038290222364269">نشان دادن زبانه‌ها</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
+<translation id="1539535193627863227">گذرواژه یا گذرکلیدی برای این سایت پیدا نشد</translation>
 <translation id="1540800554400757039">آدرس ۱</translation>
 <translation id="154312949627292154">برگه‌های دریافت‌شده از دستگاه‌های دیگرتان را از صفحه قفل باز کنید.</translation>
 <translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">خاموش کردن «حالت خواندن»</translation>
 <translation id="3106690631878101882">‏پنهان کردن «ترجمه Google»</translation>
 <translation id="310900540163454140">گذرواژه مربوط به <ph name="WEBSITE" /> حذف شود؟</translation>
+<translation id="3109724472072898302">جمع شده</translation>
 <translation id="3112556859945124369">علامت‌گذاری...</translation>
 <translation id="3116695032231023709">ذخیره کارت شناسایی</translation>
 <translation id="3119874402040566234">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">تغییر ذخیره نشد.</translation>
 <translation id="3254806613790954367">آخرین زبانه باز شما در دستگاه‌های مختلف</translation>
 <translation id="325717987950204592">روی «حریم خصوصی و امنیت» تک‌ضرب بزنید</translation>
+<translation id="3259451381796379533">‏این حساب با Gemini کار نخواهد کرد. با «حساب Google» دیگری به سیستم وارد شوید.</translation>
 <translation id="3265736395246760288">از هریک از دستگاه‌های همگام‌سازی‌شده‌تان سریع‌تر به سیستم وارد شوید.</translation>
 <translation id="3272527697863656322">لغو</translation>
 <translation id="3273510436356991673">سفارشی‌سازی کردن صفحه اصلی</translation>
@@ -1780,6 +1783,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7186568385131859684">‏کنترل کنید چگونه از سابقه مرور شما با دیگر داده‌هایتان از همه سرویس‌های Google استفاده شود</translation>
 <translation id="719133302483559673">علایق و اولویت‌هایتان را مدیریت کنید.</translation>
 <translation id="7191382490098297347">تصویر حلقه فیلم دوربین</translation>
+<translation id="7203150201908454328">باز شده</translation>
 <translation id="7203496777391039568">داده‌های سازمانتان ایمن و خصوصی است</translation>
 <translation id="720399613139435155">ترجمه نشد</translation>
 <translation id="7204922488054642675">خبرهای شخصی‌سازی‌شده</translation>
@@ -1864,6 +1868,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7498234416455752244">ادامه ویرایش</translation>
 <translation id="7500244509706269886">تکمیل خودکار فرم</translation>
 <translation id="750493650310597496">۰ نشانک انتخاب شده است</translation>
+<translation id="7505402981231763928">‏برای استفاده از Gemini باید به سیستم وارد شوید</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">برای قفل کردن برگه‌های ناشناس، راه‌اندازی شناسه لمسی، شناسه چهره، یا گذرنویسه.</translation>
 <translation id="750886945254958667">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر نمی‌خواهید به آن دسترسی داشته باشید، آن را ترک کنید</translation>

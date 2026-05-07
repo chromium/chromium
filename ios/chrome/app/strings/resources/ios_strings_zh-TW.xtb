@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
+<translation id="1539535193627863227">找不到這個網站的密碼或密碼金鑰</translation>
 <translation id="1540800554400757039">地址 1</translation>
 <translation id="154312949627292154">在螢幕鎖定畫面開啟其他裝置傳送的分頁。</translation>
 <translation id="1545749641540134597">掃描 QR code</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">關閉閱讀模式</translation>
 <translation id="3106690631878101882">隱藏「翻譯」</translation>
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
+<translation id="3109724472072898302">已收合</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3116695032231023709">儲存身分證件</translation>
 <translation id="3119874402040566234">系統會將你登出並刪除瀏覽資料</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">無法儲存變更。</translation>
 <translation id="3254806613790954367">你在所有裝置上最後開啟的分頁</translation>
 <translation id="325717987950204592">輕觸「隱私權和安全性」</translation>
+<translation id="3259451381796379533">這個帳戶無法使用 Gemini，請登入其他 Google 帳戶。</translation>
 <translation id="3265736395246760288">在已同步的任一裝置上快速登入。</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
 <translation id="7191382490098297347">相機膠卷圖片</translation>
+<translation id="7203150201908454328">已展開</translation>
 <translation id="7203496777391039568">我們會確保貴組織的資料隱私與安全</translation>
 <translation id="720399613139435155">無法翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
@@ -1864,6 +1868,7 @@
 <translation id="7498234416455752244">繼續編輯</translation>
 <translation id="7500244509706269886">自動填入表單</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
+<translation id="7505402981231763928">必須登入才能使用 Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如要鎖定無痕分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="750886945254958667">如果保留，之後可以新增分頁；如果不會再使用，可以退出群組</translation>

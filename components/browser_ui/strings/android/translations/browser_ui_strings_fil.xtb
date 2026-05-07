@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
 <translation id="1420688843103859429">Mag-navigate pabalik-balik sa pamamagitan ng pag-swipe gamit ang dalawang daliri sa touchpad</translation>
-<translation id="1432650420699700107">Puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="1442081309487427303">I-on ang mga link sa Reading Mode</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1464044141348608623">Huwag payagan ang mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Kapag naka-on, posibleng hilingin ng mga site na pamahalaan ang mga window sa lahat ng iyong screen. Kapag naka-off, hindi mapapamahalaan ng mga site ang mga window sa lahat ng iyong screen.</translation>
 <translation id="1738912554587725807">Bottom sheet ng mga koleksyon ng tema para sa hitsura ng page ng bagong tab</translation>
 <translation id="1743802530341753419">Magtanong bago payagan ang mga site na kumonekta sa isang device (inirerekomenda)</translation>
-<translation id="1766455884659449403">Makakuha ng mga notification sa mga tip sa Chrome</translation>
 <translation id="1777815584158991902">Bottom sheet ng feed ng Discover</translation>
 <translation id="1779089405699405702">Pang-decode ng larawan</translation>
 <translation id="1781533683087883868">I-off ang mga link sa Reading Mode</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Pinapamahalaan ng <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Tulong at feedback</translation>
 <translation id="2501278716633472235">Bumalik</translation>
-<translation id="2533138527374486328">Kapag naka-on, puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network. Kapag naka-off, hindi makakakonekta ang mga site sa mga device sa iyong lokal na network.</translation>
 <translation id="2536779053640817375">Pinapayagan sa pagkakataong ito • Eksakto</translation>
 <translation id="2544997614631598250">Madilim na kulay ng tema</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Simulan ang Omnibox</translation>
 <translation id="2789132527330338807">Puwedeng hilingin ng mga site na gumawa ng 3D na map ng iyong kapaligiran o subaybayan ang posisyon ng camera</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
-<translation id="2794551654724114396">I-on ang mga notification para sa mga kapaki-pakinabang na tip para matulungan kang masulit ang Chrome</translation>
 <translation id="2795716239552913152">Karaniwang ginagamit ng mga site ang iyong lokasyon para sa mga nauugnay na feature o impormasyon, gaya ng lokal na balita o mga kalapit na tindahan</translation>
 <translation id="2800760947029405028">Mag-upload ng larawan</translation>
 <translation id="2802908157808345702">Huwag payagan ang mga site na magpadala ng mga pop-up at gumamit ng mga redirect</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Huwag payagan ang mga site na kumonekta sa mga USB device</translation>
 <translation id="3965467402665811906">Puwedeng humiling ang mga site na gumamit ng impormasyong na-save ng mga ito tungkol sa iyo</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
-<translation id="3969869202926863008">Access sa lokal na network</translation>
 <translation id="3981465354637804599">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Aking mga shortcut</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6561560012278703671">Gamitin ang mas tahimik na pagmemensahe (bina-block ang mga prompt ng notification na gumagambala sa iyo)</translation>
-<translation id="6565144332292237355">Puwedeng gamitin ng mga site ang feature na ito para maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> site ng<ph name="RWS_OWNER" />}one{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> site ng <ph name="RWS_OWNER" />}other{Pinapahintulutan ang cookies para sa <ph name="RWS_MEMBERS_COUNT" /> na site ng <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Manatili</translation>
 <translation id="6630443592285535486">I-type ang hex dito</translation>
 <translation id="6635327442719709864">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga serial port. Kapag naka-off, hindi magagamit ng mga site ang mga serial port.</translation>
-<translation id="6669390930482049506">Abisuhan ako</translation>
 <translation id="6678072580827808850">Suriin ang Pag-check sa Kaligtasan</translation>
 <translation id="6682057173375416470">Makakuha ng mga iminumungkahing artikulo sa page na Bagong Tab</translation>
 <translation id="6683865262523156564">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ng <ph name="RWS_OWNER" /> ang grupo</translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">I-refresh</translation>
+<translation id="7180865173735832675">I-customize</translation>
 <translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7201549776650881587">Ide-delete ng pagkilos na ito ang lahat ng data at cookies na na-store ng lahat ng site sa ilalim ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen</translation>
-<translation id="7213166370492037743">Huwag payagan ang mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
 <translation id="723171743924126238">Pumili ng mga larawan</translation>
 <translation id="7243246278722455312">Bottom sheet ng pag-customize ng page ng bagong tab mo</translation>

@@ -478,6 +478,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Perguntar pessoalmente</translation>
 <translation id="1733064249834771892">fontes</translation>
 <translation id="1733631169686303142">Equipamento de áudio</translation>
@@ -1095,6 +1096,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679216653373462289">Usar sensores de movimento e luz</translation>
 <translation id="2679659833697380">Suas informações são salvas no dispositivo</translation>
+<translation id="2680837394649649718">Enviado para o Chrome no seu <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Outros resultados encontrados</translation>
 <translation id="2686919536310834199">Enviar feedback para a opção "Me ajude a escrever".</translation>
 <translation id="2687555958734450033">Melhor ajuste</translation>
@@ -1596,6 +1598,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="350069200438440499">Nome do arquivo:</translation>
 <translation id="3501300228850242680">Metal (Música)</translation>
 <translation id="350421688684366066">Rótulos (alto brilho)</translation>
+<translation id="3507062913298382727">Salvar documento de identificação</translation>
 <translation id="350763432931695541">Extraindo texto em algumas das páginas a seguir</translation>
 <translation id="3507869775212388416">Empregos na área de direito</translation>
 <translation id="3507936815618196901">Criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
@@ -1905,7 +1908,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3965672182149944205">Salvar endereço?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
 <translation id="396761677631735618">Cartões fidelidade disponíveis para preenchimento com um toque abertos na metade do tamanho.</translation>
-<translation id="3969869202926863008">Acesso à rede local</translation>
 <translation id="3970239200223030389">Data de emissão</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
@@ -1990,6 +1992,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4098306082496067348">Toque nos detalhes do cartão virtual para adicioná-lo ao pagamento.</translation>
 <translation id="4099048595830172239">A política do administrador não recomenda compartilhar a tela com o app <ph name="APPLICATION_TITLE" /> quando algum conteúdo confidencial estiver visível:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar tamanhos e fontes no Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
 <translation id="4101917550061398111">Excluir itens selecionados</translation>
 <translation id="4102567721634170493">Notícias locais</translation>
@@ -2217,6 +2220,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4415156962929755728">Plástico (alto brilho)</translation>
 <translation id="4415426530740016218">Endereço de Retirada</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (também conhecida como NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">As senhas podem ser excluídas nas configurações de gerenciamento</translation>
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chrome. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4425750422187370446">Roupas para esporte</translation>
@@ -2956,6 +2960,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5573641252776268565">Editar passaporte</translation>
 <translation id="5578606540385219379">Provedores de serviços</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
+<translation id="5582453333200265572">Atualizar documento de identificação?</translation>
 <translation id="5583442610070676234">Mais ações para a tabela de comparação <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Não foi possível salvar o IBAN na Carteira do Google. Ele foi salvo no Chrome neste dispositivo.</translation>
 <translation id="558420943003240152">Gerenciar senhas e chaves de acesso…</translation>
@@ -3011,7 +3016,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5660122698869360728">Uma nova pasta inteligente que ajuda você a salvar todas as páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais.</translation>
 <translation id="5663955426505430495">O administrador do dispositivo instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
 <translation id="5667827081946850877">Audiolivros</translation>
-<translation id="5674082555327905359">Pode pedir para se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="5675650730144413517">Esta página não está funcionando</translation>
 <translation id="5675809467256309336">Dance e música eletrônica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
@@ -3083,6 +3087,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5787146423283493983">Acordo de chave</translation>
 <translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de monitoramento de preços</translation>
+<translation id="5797984091151707075">Bloqueado pela política do administrador</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -3090,6 +3095,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5808435672482059465">Ver seu histórico do Chrome</translation>
 <translation id="5810442152076338065">Sua conexão com <ph name="DOMAIN" /> está criptografada com um pacote de criptografia obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refazer adicionar</translation>
+<translation id="5813274153495000141">Salve suas informações e preencha formulários com mais rapidez. Fica salvo no dispositivo.</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Parear</translation>
 <translation id="5820625124144807242">Depois de analisar o pedido, faça login ou crie uma conta do <ph name="BNPL_ISSUER_NAME" />. Ela será vinculada automaticamente ao Google Pay.</translation>
@@ -3418,7 +3424,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6321917430147971392">Verifique suas configurações do DNS</translation>
 <translation id="6322182122604171028">Não foi possível usar o Windows Hello</translation>
 <translation id="6326947323444967009">Defina o Chrome como o navegador padrão do sistema nas configurações do iOS</translation>
-<translation id="6327065120806001832">acesso à rede local</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6329742260390895689">Para preencher automaticamente suas informações, ative a opção "Usar os cartões no Google" nas configurações da Carteira</translation>
 <translation id="6329815962353376655">&lt;Digite uma pergunta&gt;</translation>

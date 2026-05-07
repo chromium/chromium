@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Número de seguimento</translation>
 <translation id="1366525380420346469">Se a función está activada</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Podes evitar que este sitio envíe notificacións no futuro}other{Podes evitar que estes sitios envíen notificacións no futuro}}</translation>
-<translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="137496472437646183">Selecciona Protección mellorada</translation>
 <translation id="1376578503827013741">Calculando...</translation>
 <translation id="1381838868249179644">Para protexerte, quitáronse os permisos dalgúns sitios</translation>
@@ -292,6 +291,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2318045970523081853">Toca para chamar</translation>
+<translation id="232137538351753795">Pasa o dedo desde o bordo esquerdo para volver</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2328474416100889417">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
 <translation id="2330186936255788117">Máis marcadores</translation>
@@ -357,6 +357,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2553962148913791095">Algúns marcadores non se gardaron</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Bloqueouse unha descarga perigosa}other{Bloqueáronse # descargas perigosas}}</translation>
 <translation id="2569733278091928697">Poderás xestionar con facilidade os controis multimedia, as sesións do modo de incógnito, as descargas e moito máis</translation>
+<translation id="257088987046510401">Temas</translation>
 <translation id="2571711316400087311">Ofrecer opción de enviar ao Tradutor de Google as páxinas escritas noutros idiomas</translation>
 <translation id="2571834852878229351">Crear un propio</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
@@ -526,7 +527,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3293181007446299124">O teu historial de navegación mantense privado no dispositivo e os informes envíanse con atraso para protexer a túa identidade</translation>
 <translation id="3301936297336370235">Confirmación de suxestión de contrasinal</translation>
 <translation id="3302615849591357577">Restablecer grupo de pestanas <ph name="TITLE_OF_GROUP" />, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.</translation>
-<translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3305130791745726624">Enviar aos dispositivos</translation>
 <translation id="3305795716056605962">Traduce páxinas desde o botón Máis opcións</translation>
@@ -543,7 +543,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3373701465337594448">Cando esta opción de configuración está activada, aquí móstrase unha lista dos sitios que visitas e nos que se estiman os teus intereses</translation>
 <translation id="3384347053049321195">Compartir imaxe</translation>
 <translation id="3387650086002190359">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros no sistema de ficheiros.</translation>
-<translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
@@ -885,7 +884,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4807098396393229769">Nome que aparece na tarxeta</translation>
 <translation id="480990236307250886">Abre a páxina de inicio</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas pechado e gardado</translation>
-<translation id="482405935591409882">Busca nas túas pestanas ou grupos</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ten acceso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> pestana, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> pestanas, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.}}</translation>
@@ -895,7 +893,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">Non se puido instalar o módulo <ph name="MODULE" /> para Chrome</translation>
-<translation id="487567923005969537">Activar o modo de IA</translation>
 <translation id="4875775213178255010">Suxestións de contido</translation>
 <translation id="4877678010818027629">Entrar no modo de incógnito</translation>
 <translation id="4878404682131129617">Produciuse un erro ao establecer un túnel a través do servidor proxy</translation>
@@ -988,7 +985,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5246093389635966745">Editar atallo da barra de ferramentas</translation>
 <translation id="5264813352784073502">últimas 48 horas</translation>
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
-<translation id="5271967389191913893">O dispositivo non pode abrir o contido que se debe descargar.</translation>
 <translation id="5273031377282080577">A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="5290322819358431297">Autocompleta os contrasinais</translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -1061,7 +1057,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5619633276517849615">A túa organización activou Navegación segura</translation>
 <translation id="5620163320393916465">Non hai contrasinais gardados</translation>
 <translation id="5620928963363755975">A través do botón Máis opcións, atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
-<translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Sen ler: dispoñibles sen conexión</translation>
 <translation id="5631483240431073854">Xestionar as pestanas abertas</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
@@ -1093,7 +1088,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5763382633136178763">Pestanas do modo de incógnito</translation>
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
 <translation id="5765517223145864268">Coméntanos a túa experiencia. Tamén podes <ph name="BEGIN_LINK" />cambiar a configuración<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Descrición:</translation>
 <translation id="5776970333778123608">Datos non importantes</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Tema bloqueado</translation>
@@ -1524,7 +1518,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7365073365123878797">Para comezar a gardar e usar contrasinais co xestor de contrasinais de Google, actualiza os servizos de Google Play</translation>
 <translation id="7368009310682364976">Mira as pestanas abertas recentemente</translation>
 <translation id="7368927539449986686">Editar a busca do sitio</translation>
-<translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
 <translation id="7379900596734708416">Xa está dispoñible o tema escuro para os sitios</translation>
 <translation id="7384486627147155832">Mensaxe promocional de notificacións de consellos aberta a altura media</translation>
@@ -1664,7 +1657,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Pestanas neste dispositivo</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>
-<translation id="7963646190083259054">Vendedor:</translation>
 <translation id="7965838025086216108">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Engadiuse á lista de lectura</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
@@ -1673,6 +1665,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>
 <translation id="799576009106109668">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
+<translation id="7997875520309653083">Pasa o dedo desde o bordo dereito para volver</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8001245658307297681">Estás vendo un ficheiro local</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1836,7 +1829,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8611922158252451755">Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao compartila. A ligazón caduca ás 48 horas.</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Queres abrir o URL específico suxerido no contido descargado?</translation>
 <translation id="8629093325209491835">Abre Menú de Chrome &gt; Configuración</translation>
 <translation id="8634050254805484913">Oculta en pantallas estreitas</translation>
 <translation id="8635399646025169806">Queres manter o grupo de pestanas?</translation>
@@ -1877,7 +1869,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8824359129672223138">Podes ter ata <ph name="MAX_WINDOW_COUNT" /> ventás.</translation>
-<translation id="883806473910249246">Produciuse un erro ao descargar o contido.</translation>
 <translation id="8840953339110955557">Esta páxina pode ser diferente da versión en liña.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Жок, рахмат</translation>
 <translation id="1531038290222364269">Өтмөктөрдү көрсөтүү</translation>
 <translation id="1536390784834419204">Баракты которуу</translation>
+<translation id="1539535193627863227">Бул сайт үчүн сырсөздөр же киргизүүчү ачкычтар табылган жок</translation>
 <translation id="1540800554400757039">1-дарек</translation>
 <translation id="154312949627292154">Башка түзмөктөрдөн алынган өтмөктөрдү кулпуланган экранда ачасыз.</translation>
 <translation id="1545749641540134597">QR кодду скандоо</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Окуу режими өчүрүү</translation>
 <translation id="3106690631878101882">Котормочуну жашыруу</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> сырсөзүн өчүрөсүзбү?</translation>
+<translation id="3109724472072898302">Жыйналды</translation>
 <translation id="3112556859945124369">Белгилөө…</translation>
 <translation id="3116695032231023709">Өздүгүн аныктоо картасын сактаңыз</translation>
 <translation id="3119874402040566234">Чыгасыз жана серептөө дайындары өчүрүлөт</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Өзгөртүүңүз сакталган жок.</translation>
 <translation id="3254806613790954367">Бардык түзмөктөрдө ачылган акыркы өтмөк</translation>
 <translation id="325717987950204592">"Купуялык жана коопсуздук" параметрин таптап коюңуз</translation>
+<translation id="3259451381796379533">Бул аккаунт Gemini менен иштебейт. Башка Google аккаунту менен кириңиз.</translation>
 <translation id="3265736395246760288">Шайкештирилген түзмөктөрүңүздөн тезирээк кириңиз.</translation>
 <translation id="3272527697863656322">Жокко чыгаруу</translation>
 <translation id="3273510436356991673">Башкы экранды ыңгайлаштырыңыз</translation>
@@ -1780,6 +1783,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7186568385131859684">Көрүлгөн вебсайттар Google кызматтарындагы башка маалыматыңыз менен кантип колдонуларын көзөмөлдөңүз</translation>
 <translation id="719133302483559673">Кызыккан нерселер менен параметрлерди тескеңиз.</translation>
 <translation id="7191382490098297347">Галериядан сүрөт</translation>
+<translation id="7203150201908454328">Жайылып көрсөтүлгөн</translation>
 <translation id="7203496777391039568">Уюмуңуздун маалыматтары купуя жана коопсуз сакталат</translation>
 <translation id="720399613139435155">Которулбай калды</translation>
 <translation id="7204922488054642675">Жекелештирилген жаңылыктар</translation>
@@ -1864,6 +1868,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7498234416455752244">Оңдой берүү</translation>
 <translation id="7500244509706269886">Форманы автотолтуруу</translation>
 <translation id="750493650310597496">0 тандалды</translation>
+<translation id="7505402981231763928">Gemini'ды колдонуу үчүн аккаунтуңузга киришиңиз керек</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
 <translation id="750886945254958667">Өтмөктөрдү кийинчерээк кошуу үчүн бул топту калтырып, же ага кирүүнү каалабасаңыз, андан чыгыңыз</translation>

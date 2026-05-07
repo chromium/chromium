@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1366525380420346469">Kiedy funkcja jest włączona</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Możesz uniemożliwić tej witrynie wysyłanie kolejnych powiadomień}few{Możesz uniemożliwić tym witrynom wysyłanie kolejnych powiadomień}many{Możesz uniemożliwić tym witrynom wysyłanie kolejnych powiadomień}other{Możesz uniemożliwić tym witrynom wysyłanie kolejnych powiadomień}}</translation>
-<translation id="1373696734384179344">Za mało pamięci, by pobrać te treści.</translation>
 <translation id="137496472437646183">Wybierz opcję Silniejsza ochrona</translation>
 <translation id="1376578503827013741">Obliczam…</translation>
 <translation id="1381838868249179644">Aby zwiększyć Twoje bezpieczeństwo, usunęliśmy uprawnienia niektórych witryn</translation>
@@ -292,6 +291,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
 <translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
+<translation id="232137538351753795">Aby wrócić, przesuń palcem od lewej krawędzi</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2328474416100889417">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />”, a wszystkie linki z zaproszeniami zostaną wyłączone</translation>
 <translation id="2330186936255788117">Więcej zakładek</translation>
@@ -357,6 +357,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2553962148913791095">Niektóre zakładki nie zostały zapisane</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Zablokowano pobieranie niebezpiecznego pliku}few{Zablokowano pobieranie # niebezpiecznych plików}many{Zablokowano pobieranie # niebezpiecznych plików}other{Zablokowano pobieranie # niebezpiecznego pliku}}</translation>
 <translation id="2569733278091928697">Będziesz mieć możliwość łatwego zarządzania opcjami sterowania multimediami, sesjami incognito, pobranymi plikami i nie tylko</translation>
+<translation id="257088987046510401">Motywy</translation>
 <translation id="2571711316400087311">Proponuj przesyłanie stron w innych językach do Tłumacza Google</translation>
 <translation id="2571834852878229351">Utwórz własne</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
@@ -526,7 +527,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="3293181007446299124">Historia przeglądania jest przechowywana na Twoim urządzeniu w sposób poufny, a raporty są przesyłane z opóźnieniem, co chroni Twoją tożsamość</translation>
 <translation id="3301936297336370235">Potwierdzenie sugestii hasła</translation>
 <translation id="3302615849591357577">Przywróć grupę kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.</translation>
-<translation id="3303414029551471755">Przejść do pobrania treści?</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
 <translation id="3305130791745726624">Wyślij na urządzenia</translation>
 <translation id="3305795716056605962">Przetłumacz strony przy użyciu przycisku Więcej opcji</translation>
@@ -543,7 +543,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="3373701465337594448">Gdy ta opcja jest włączona, w tym miejscu wyświetla się lista witryn, które próbują rozpoznać Twoje zainteresowania</translation>
 <translation id="3384347053049321195">Udostępnij zdjęcie</translation>
 <translation id="3387650086002190359">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu błędów systemu plików.</translation>
-<translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="3417835166382867856">Wyszukaj karty</translation>
 <translation id="3430670036890315772">Jeśli wyłączysz blokadę profilu, zostaną usunięte zapisane informacje</translation>
 <translation id="3435465986463792564">Masz sporo okien? Tutaj możesz nimi zarządzać</translation>
@@ -885,7 +884,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
 <translation id="480990236307250886">Otwórz stronę główną</translation>
 <translation id="4822710610088666676">Zamknięto i zapisano grupę kart <ph name="TAB_GROUP_TITLE" /></translation>
-<translation id="482405935591409882">Wyszukaj karty i grupy</translation>
 <translation id="4834250788637067901">Formy płatności, oferty i adresy korzystające z Google Pay</translation>
 <translation id="4835385943915508971">Chrome nie ma dostępu do żądanego zasobu.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Przywróć grupę kart z <ph name="TAB_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}few{Przywróć grupę <ph name="TAB_COUNT_MANY" /> kart, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}many{Przywróć grupę <ph name="TAB_COUNT_MANY" /> kart, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}other{Przywróć grupę <ph name="TAB_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.}}</translation>
@@ -895,7 +893,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4866368707455379617">Nie można zainstalować modułu <ph name="MODULE" /> do Chrome</translation>
-<translation id="487567923005969537">Włącz Tryb AI</translation>
 <translation id="4875775213178255010">Polecane treści</translation>
 <translation id="4877678010818027629">Włącz tryb incognito</translation>
 <translation id="4878404682131129617">Nie udało się utworzyć tunelu przez serwer proxy</translation>
@@ -988,7 +985,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5246093389635966745">Edytuj skrót na pasku narzędzi</translation>
 <translation id="5264813352784073502">ostatnich 24 godzin</translation>
 <translation id="5267572070504076962">Włącz Bezpieczne przeglądanie, aby korzystać z ochrony przed niebezpiecznymi stronami</translation>
-<translation id="5271967389191913893">Na tym urządzeniu nie można otworzyć treści, które chcesz pobrać.</translation>
 <translation id="5273031377282080577">Tym ustawieniem zarządza administrator.</translation>
 <translation id="5290322819358431297">Ustaw autouzupełnianie haseł</translation>
 <translation id="5292796745632149097">Wyślij na</translation>
@@ -1061,7 +1057,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5619633276517849615">Twoja organizacja włączyła Bezpieczne przeglądanie</translation>
 <translation id="5620163320393916465">Brak zapisanych haseł</translation>
 <translation id="5620928963363755975">Znajdź pliki i strony w Pobranych plikach, używając przycisku Więcej opcji</translation>
-<translation id="5626134646977739690">Nazwa:</translation>
 <translation id="5628604359369369630">Nieprzeczytane – dostępne offline</translation>
 <translation id="5631483240431073854">Zarządzaj otwartymi kartami</translation>
 <translation id="5632485077360054581">Pokaż jak</translation>
@@ -1093,7 +1088,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5763382633136178763">Karty incognito</translation>
 <translation id="5763514718066511291">Kliknij, by skopiować URL tej aplikacji</translation>
 <translation id="5765517223145864268">Podziel się z nami swoją opinią. Lub <ph name="BEGIN_LINK" />zmień ustawienia<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Opis:</translation>
 <translation id="5776970333778123608">Nieistotne dane</translation>
 <translation id="5793665092639000975">Zajmują <ph name="SPACE_USED" /> z <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Temat został zablokowany</translation>
@@ -1524,7 +1518,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7365073365123878797">Aby zacząć zapisywać hasła w Menedżerze haseł Google i ich używać, zaktualizuj Usługi Google Play</translation>
 <translation id="7368009310682364976">Wyświetl ostatnio otwarte karty</translation>
 <translation id="7368927539449986686">Edytuj wyszukiwanie w witrynie</translation>
-<translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Jeśli podczas korzystania z funkcji Dotknij, by wyszukać dołączysz więcej tekstu ze strony, możesz zobaczyć lepsze wyniki. Zawsze możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">Dostępny jest ciemny motyw dla witryn</translation>
 <translation id="7384486627147155832">Promocja powiadomień o wskazówkach otwarta do połowy wysokości</translation>
@@ -1664,7 +1657,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7957413488482743710">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Karty na tym urządzeniu</translation>
 <translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia i włącz go.</translation>
-<translation id="7963646190083259054">Dostawca:</translation>
 <translation id="7965838025086216108">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Dodano do listy Do przeczytania</translation>
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
@@ -1673,6 +1665,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
 <translation id="799576009106109668">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie.</translation>
+<translation id="7997875520309653083">Aby wrócić, przesuń palcem od prawej krawędzi</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8001245658307297681">Wyświetlasz plik lokalny</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
@@ -1836,7 +1829,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="860282621117673749">Alerty o obniżkach cen</translation>
 <translation id="8611922158252451755">Każda osoba mająca link może edytować wszystkie karty, więc zachowaj ostrożność podczas udostępniania. Link wygaśnie za 48 godzin.</translation>
 <translation id="8616006591992756292">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Otworzyć sugerowany URL określony w pobranych materiałach?</translation>
 <translation id="8629093325209491835">Otwórz menu Chrome &gt; Ustawienia</translation>
 <translation id="8634050254805484913">Ukryte na wąskich ekranach</translation>
 <translation id="8635399646025169806">Zachować grupę kart?</translation>
@@ -1877,7 +1869,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8824359129672223138">Maksymalna dozwolona liczba okien: <ph name="MAX_WINDOW_COUNT" />.</translation>
-<translation id="883806473910249246">Podczas pobierania treści wystąpił błąd.</translation>
 <translation id="8840953339110955557">Ta strona może różnić się od wersji online.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Ukryte</translation>

@@ -599,6 +599,7 @@
 <translation id="3106258548858559536">Mutolaa rejimini faolsizlantirish</translation>
 <translation id="3106690631878101882">Tarjimani berkitish</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> paroli olib tashlansinmi?</translation>
+<translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="3112556859945124369">Belgilash…</translation>
 <translation id="3116695032231023709">ID kartani saqlash</translation>
 <translation id="3119874402040566234">Hisobingizdan chiqasiz va brauzer maʼlumotlari tozalanadi</translation>
@@ -1782,6 +1783,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7186568385131859684">Brauzer tarixi va boshqa maʼlumotlaringiz Google xizmatlarida qanday ishlatilishini boshqaring</translation>
 <translation id="719133302483559673">Qiziqish va sozlamalaringizni boshqaring</translation>
 <translation id="7191382490098297347">Kamera jildi rasmi</translation>
+<translation id="7203150201908454328">Yoyilgan</translation>
 <translation id="7203496777391039568">Tashkilot maʼlumotlari yopiq va xavfsiz saqlanadi</translation>
 <translation id="720399613139435155">Tarjima qilinmadi</translation>
 <translation id="7204922488054642675">Siz uchun moslangan yangiliklar</translation>
@@ -1999,6 +2001,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Brauzer maʼlumotlarini oʻchirish…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Hisobingizda ({email}) saqlangan sahifalarga sahifa kiritildi.}other{Hisobingizda ({email}) saqlangan sahifalarga {count} ta sahifa kiritildi.}}</translation>
+<translation id="7948579849190819732">Joriy varaq</translation>
 <translation id="7952353944614086413">Ochiq varaqlar va guruhlar</translation>
 <translation id="7952670906562503188">Quyidagilar oʻchiriladi: {passkey_count} ta kalit va hisob maʼlumotlari hech qachon saqlanmasligi tanlangan sayt va ilovalar roʻyxati. Sayt va ilovalarda yaratilgan hisoblar oʻchirilmaydi.</translation>
 <translation id="7958575506592576831">Sahifa xavfsizligi axboroti</translation>

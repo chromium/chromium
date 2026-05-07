@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">પ્રમાણપત્ર માન્ય છે</translation>
 <translation id="1728677426644403582">તમે વેબ પેજનો સ્રોત જોઈ રહ્યાં છો</translation>
 <translation id="173080396488393970">આ પ્રકારનું કાર્ડ સમર્થિત નથી</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">તેના બદલે રૂબરૂમાં પૂછો</translation>
 <translation id="1733064249834771892">ફૉન્ટ</translation>
 <translation id="1733631169686303142">ઑડિયોનું સાધન</translation>
@@ -1596,6 +1597,7 @@
 <translation id="350069200438440499">ફાઇલનું નામ:</translation>
 <translation id="3501300228850242680">મેટલ (મ્યુઝિક)</translation>
 <translation id="350421688684366066">લેબલ (હાઇ-ગ્લોસ)</translation>
+<translation id="3507062913298382727">ID કાર્ડ સાચવો</translation>
 <translation id="350763432931695541">આગામી થોડાક પેજમાં ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છે</translation>
 <translation id="3507869775212388416">કાનૂની નોકરીઓ</translation>
 <translation id="3507936815618196901">તમારી આજુબાજુનો 3D નકશો બનાવો અને કૅમેરાનું સ્ટેટસ ટ્રૅક કરો</translation>
@@ -1905,7 +1907,6 @@
 <translation id="3965672182149944205">સરનામું સાચવીએ?</translation>
 <translation id="3966044442021752214">પ્રોડક્ટની સલામતી</translation>
 <translation id="396761677631735618">ટચ કરીને ભરવા માટે ઉપલબ્ધ લૉયલ્ટિ કાર્ડ અડધી ઊંચાઈએ ખોલ્યા છે.</translation>
-<translation id="3969869202926863008">સ્થાનિક નેટવર્કનો ઍક્સેસ</translation>
 <translation id="3970239200223030389">જારી કર્યાની તારીખ</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> અવરોધિત છે</translation>
@@ -1990,6 +1991,7 @@
 <translation id="4098306082496067348">ચેકઆઉટ પર વર્ચ્યુઅલ કાર્ડની વિગતો ઉમેરવા માટે, તેના પર ટૅપ કરો.</translation>
 <translation id="4099048595830172239">ગોપનીય કન્ટેન્ટ દેખાતું હોય ત્યારે વ્યવસ્થાપકની પૉલિસી <ph name="APPLICATION_TITLE" /> સાથે તમારી સ્ક્રીન શેર કરવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં ફૉન્ટના કદ અને ટાઇપફેસ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">ટેક્સ્ટ અને ગ્રાફિક</translation>
 <translation id="4101917550061398111">પસંદ કરેલી આઇટમ ડિલીટ કરો</translation>
 <translation id="4102567721634170493">સ્થાનિક ન્યૂઝ</translation>
@@ -2217,6 +2219,7 @@
 <translation id="4415156962929755728">પ્લાસ્ટિક (હાઇ ગ્લોસ)</translation>
 <translation id="4415426530740016218">પિકઅપ માટેનું સરનામું</translation>
 <translation id="4415748029120993980">SECG એલિપ્ટિક કર્વ secp384r1 (ઉર્ફ NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">પાસવર્ડને તેના મેનેજમેન્ટ સેટિંગમાં જઈને ડિલીટ કરી શકાય છે</translation>
 <translation id="4424024547088906515">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર Chrome દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="4425750422187370446">કસરત માટેનો પોશાક</translation>
@@ -2956,6 +2959,7 @@
 <translation id="5573641252776268565">પાસપોર્ટની માહિતીમાં ફેરફાર કરો</translation>
 <translation id="5578606540385219379">સેવા પ્રદાતાઓ</translation>
 <translation id="5580958916614886209">તમારો સમાપ્તિ મહિનો તપાસો અને ફરી પ્રયાસ કરો</translation>
+<translation id="5582453333200265572">ID કાર્ડ અપડેટ કરો</translation>
 <translation id="5583442610070676234">સરખામણી ટેબલ <ph name="COMPARE_SET_NAME" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="55841966151154662">આ IBAN Google Walletમાં સાચવી શકાયો નથી. એના બદલે તે આ ડિવાઇસ પર Chromeમાં સાચવવામાં આવ્યો છે.</translation>
 <translation id="558420943003240152">પાસવર્ડ અને પાસકી મેનેજ કરો…</translation>
@@ -3011,7 +3015,6 @@
 <translation id="5660122698869360728">એક નવું સ્માર્ટ ફોલ્ડર જે તમારા તમામ શૉપિંગ પેજ એક જગ્યાએ સાચવવામાં, ઑટોમેટિક રીતે કિંમતો ટ્રૅક કરવામાં, કિંમતો વિશે જાણકારી મેળવવામાં અને બીજું ઘણું કરવામાં સહાય કરે છે.</translation>
 <translation id="5663955426505430495">આ ડિવાઇસના વ્યવસ્થાપકે વધારાના કાર્યો માટે એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે. એક્સ્ટેંશન પાસે તમારા કેટલાક ડેટાનો ઍક્સેસ છે.</translation>
 <translation id="5667827081946850877">ઑડિયોબુક</translation>
-<translation id="5674082555327905359">તમારા સ્થાનિક નેટવર્ક પરના કોઈપણ ડિવાઇસ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
 <translation id="5675650730144413517">આ પેજ કામ કરી રહ્યું નથી</translation>
 <translation id="5675809467256309336">ડાન્સ અને ઇલેક્ટ્રોનિક મ્યુઝિક</translation>
 <translation id="5675959228867414813">તારીખ અનુસાર બતાવો</translation>
@@ -3090,6 +3093,7 @@
 <translation id="5808435672482059465">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> સાથેના તમારા કનેક્શનને ઑબ્સોલિટ સાઇફર સ્યૂટનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરાયું છે.</translation>
 <translation id="5813119285467412249">&amp;ઉમેરવું ફરી કરો</translation>
+<translation id="5813274153495000141">તમારી માહિતી સાચવો અને ફોર્મ વધુ ઝડપથી ભરો. તમારા ડિવાઇસમાં સાચવે છે.</translation>
 <translation id="5813753398265398978">ભૌતિકશાસ્ત્ર</translation>
 <translation id="5817918615728894473">જોડી કરો</translation>
 <translation id="5820625124144807242">તમે તમારા ઑર્ડરનો રિવ્યૂ કરી લો, પછી તમારે <ph name="BNPL_ISSUER_NAME" />માં સાઇન ઇન કરવું કે તેમાં નવું એકાઉન્ટ બનાવવું આવશ્યક છે. આ એકાઉન્ટ ઑટોમૅટિક રીતે Google Pay સાથે લિંક થઈ જશે.</translation>
@@ -3418,7 +3422,6 @@
 <translation id="6321917430147971392">તમારા DNS સેટિંગ તપાસો</translation>
 <translation id="6322182122604171028">Windows Helloનો ઉપયોગ કરી શક્યાં નથી</translation>
 <translation id="6326947323444967009">iOS સેટિંગમાં Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
-<translation id="6327065120806001832">સ્થાનિક નેટવર્કનો ઍક્સેસ</translation>
 <translation id="6328639280570009161">નેટવર્ક પૂર્વાનુમાનને અક્ષમ કરવાનો પ્રયાસ કરો</translation>
 <translation id="6329742260390895689">તમારી માહિતી ઑટોમૅટિક રીતે ભરવા માટે, Walletના સેટિંગમાં "સમગ્ર Google પર પાસનો ઉપયોગ કરો" સુવિધા ચાલુ કરો</translation>
 <translation id="6329815962353376655">&lt;પ્રશ્ન ટાઇપ કરો&gt;</translation>

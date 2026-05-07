@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1366525380420346469">開啟時</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{你可禁止此網站在日後傳送通知}other{你可禁止這些網站在日後傳送通知}}</translation>
-<translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="137496472437646183">選取 [強化保護]</translation>
 <translation id="1376578503827013741">正在運算…</translation>
 <translation id="1381838868249179644">為保障你的安全，系統已移除部分網站的權限</translation>
@@ -292,6 +291,7 @@
 <translation id="230115972905494466">找不到兼容的裝置</translation>
 <translation id="2316129865977710310">不用了，謝謝</translation>
 <translation id="2318045970523081853">輕按即可撥打電話</translation>
+<translation id="232137538351753795">從左邊向右輕掃即可返回</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328474416100889417">所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而所有邀請連結亦將會關閉</translation>
 <translation id="2330186936255788117">更多書籤</translation>
@@ -357,6 +357,7 @@
 <translation id="2553962148913791095">部分書籤無法儲存</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{已封鎖危險下載項目}other{已封鎖 # 個危險下載項目}}</translation>
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
+<translation id="257088987046510401">主題背景</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2571834852878229351">建立自己的密碼</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
@@ -526,7 +527,6 @@
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="3301936297336370235">密碼建議確認</translation>
 <translation id="3302615849591357577">將「<ph name="TITLE_OF_GROUP" />」分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。</translation>
-<translation id="3303414029551471755">繼續下載內容？</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
 <translation id="3305130791745726624">傳送到裝置</translation>
 <translation id="3305795716056605962">透過「更多選項」掣翻譯頁面</translation>
@@ -543,7 +543,6 @@
 <translation id="3373701465337594448">開啟設定後，系統會在此顯示您曾瀏覽的網站清單來推斷您的興趣。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
-<translation id="3414952576877147120">大小：</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
@@ -885,7 +884,6 @@
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
 <translation id="480990236307250886">開啟首頁</translation>
 <translation id="4822710610088666676">已關閉並儲存「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
-<translation id="482405935591409882">搜尋分頁和群組</translation>
 <translation id="4834250788637067901">使用 Google Pay 儲存的付款方法、優惠和地址</translation>
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{將有 <ph name="TAB_COUNT_ONE" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}other{將有 <ph name="TAB_COUNT_MANY" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}}</translation>
@@ -895,7 +893,6 @@
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
-<translation id="487567923005969537">啟用 AI 模式</translation>
 <translation id="4875775213178255010">內容建議</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">透過 Proxy 伺服器建立通道失敗</translation>
@@ -988,7 +985,6 @@
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
 <translation id="5264813352784073502">過去 24 小時</translation>
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
-<translation id="5271967389191913893">裝置無法開啟下載的檔案。</translation>
 <translation id="5273031377282080577">此設定由管理員管理。</translation>
 <translation id="5290322819358431297">自動填入密碼</translation>
 <translation id="5292796745632149097">傳送至</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5619633276517849615">你的機構已開啟「安全瀏覽」功能</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕，喺「下載」主畫面搵您嘅檔案同網頁</translation>
-<translation id="5626134646977739690">名稱：</translation>
 <translation id="5628604359369369630">未讀 - 可離線閱讀</translation>
 <translation id="5631483240431073854">管理開啟的分頁</translation>
 <translation id="5632485077360054581">顯示方法</translation>
@@ -1093,7 +1088,6 @@
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕按即可複製此應用程式的網址</translation>
 <translation id="5765517223145864268">請分享您的使用體驗。您亦可<ph name="BEGIN_LINK" />變更設定<ph name="END_LINK" />。</translation>
-<translation id="5765780083710877561">描述：</translation>
 <translation id="5776970333778123608">資料不重要</translation>
 <translation id="5793665092639000975">已使用 <ph name="SPACE_USED" /> (共 <ph name="SPACE_AVAILABLE" />)</translation>
 <translation id="5797949256525811424">已封鎖主題</translation>
@@ -1524,7 +1518,6 @@
 <translation id="7365073365123878797">如要開始在「Google 密碼管理工具」儲存並使用密碼，請更新 Google Play 服務</translation>
 <translation id="7368009310682364976">查看最近開啟的分頁</translation>
 <translation id="7368927539449986686">編輯站內搜尋</translation>
-<translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用「輕觸搜尋」時，加入網頁上的更多文字可能會找到更相關的結果。您可隨時前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />調整設定。</translation>
 <translation id="7379900596734708416">現已推出網站的深色主題</translation>
 <translation id="7384486627147155832">提示通知宣傳目前顯示於畫面下半部</translation>
@@ -1664,7 +1657,6 @@
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此裝置上的分頁</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
-<translation id="7963646190083259054">供應商：</translation>
 <translation id="7965838025086216108">您可在任何裝置上使用已儲存的密碼。密碼已儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」。</translation>
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
@@ -1673,6 +1665,7 @@
 <translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 由於你最近沒有瀏覽過此網站，因此 Chrome 已移除有關權限</translation>
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
+<translation id="7997875520309653083">從右邊向左輕掃即可返回</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8001245658307297681">你正在檢視本機檔案</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
@@ -1836,7 +1829,6 @@
 <translation id="860282621117673749">降價快訊</translation>
 <translation id="8611922158252451755">任何擁有連結的人均可編輯所有分頁，因此分享時緊記要謹慎。連結將在 48 小時後失效。</translation>
 <translation id="8616006591992756292">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
-<translation id="8617240290563765734">您要開啟下載檔案中指定的建議網址嗎？</translation>
 <translation id="8629093325209491835">開啟 Chrome 選單 &gt; [設定]</translation>
 <translation id="8634050254805484913">在較窄的螢幕隱藏</translation>
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
@@ -1877,7 +1869,6 @@
 <translation id="881688628773363275">無法查看預覽分頁內容。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8824359129672223138">你最多可同時開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。</translation>
-<translation id="883806473910249246">下載內容時發生錯誤。</translation>
 <translation id="8840953339110955557">此網頁可能與網上版本不同。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
+<translation id="1539535193627863227">Non se atopou ningún contrasinal nin clave de acceso para este sitio</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
 <translation id="154312949627292154">Abre as pestanas recibidas doutros dispositivos desde a pantalla de bloqueo.</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Desactivar modo de lectura</translation>
 <translation id="3106690631878101882">Ocultar Traducir</translation>
 <translation id="310900540163454140">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Contraído</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3116695032231023709">Garda o documento de identidade</translation>
 <translation id="3119874402040566234">Pecharase a túa sesión e eliminaranse os datos de navegación</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Non se puido gardar o cambio.</translation>
 <translation id="3254806613790954367">Última pestana que abriches en todos os teus dispositivos</translation>
 <translation id="325717987950204592">Toca Privacidade e seguranza</translation>
+<translation id="3259451381796379533">Esta conta non funciona con Gemini. Inicia sesión con outra Conta de Google.</translation>
 <translation id="3265736395246760288">Inicia sesión máis rápido desde calquera dos teus dispositivos sincronizados.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalizar a pantalla de inicio</translation>
@@ -1780,6 +1783,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7186568385131859684">Controla como se utiliza o historial de navegación xunto con outros datos nos servizos de Google</translation>
 <translation id="719133302483559673">Xestiona os teus intereses e preferencias.</translation>
 <translation id="7191382490098297347">Imaxe do carrete</translation>
+<translation id="7203150201908454328">Ampliado</translation>
 <translation id="7203496777391039568">Os datos da túa organización son privados e están protexidos</translation>
 <translation id="720399613139435155">Produciuse un erro durante a tradución</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
@@ -1864,6 +1868,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7500244509706269886">Autocompletar formulario</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
+<translation id="7505402981231763928">Debes iniciar sesión para usar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear as pestanas do modo de incógnito, configura Touch ID, Face ID ou un código de desbloqueo.</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>

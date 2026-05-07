@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1531038290222364269">Sýna flipa</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
+<translation id="1539535193627863227">Engin aðgangsorð eða aðgangslyklar fundust fyrir þetta vefsvæði</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
 <translation id="154312949627292154">Opna flipa sem tekið var á móti úr hinum tækjunum þínum af lásskjánum.</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Slökkva á lesstillingu</translation>
 <translation id="3106690631878101882">Fela „Þýða“</translation>
 <translation id="310900540163454140">Eyða aðgangsorði að <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Minnkað</translation>
 <translation id="3112556859945124369">Merkja…</translation>
 <translation id="3116695032231023709">Vista nafnskírteini</translation>
 <translation id="3119874402040566234">Þú verður skráð(ur) út og vefskoðunargögnum verður eytt</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Ekki tókst að vista breytinguna.</translation>
 <translation id="3254806613790954367">Flipinn sem var síðast opinn í öllum tækjunum þínum</translation>
 <translation id="325717987950204592">Ýttu á „Persónuvernd og öryggi“</translation>
+<translation id="3259451381796379533">Þessi reikningur mun ekki virka með Gemini. Skráðu þig inn með öðrum Google-reikningi</translation>
 <translation id="3265736395246760288">Skráðu þig inn hraðar úr öllum samstilltu tækjunum þínim.</translation>
 <translation id="3272527697863656322">Hætta við</translation>
 <translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
@@ -1780,6 +1783,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7186568385131859684">Stjórnaðu því hvernig vafraferillinn er notaður með öðrum gögnum úr Google-þjónustum</translation>
 <translation id="719133302483559673">Stjórnaðu áhugasviðum þínum og kjörstillingum.</translation>
 <translation id="7191382490098297347">Mynd í myndavélarmöppu</translation>
+<translation id="7203150201908454328">Stækkað</translation>
 <translation id="7203496777391039568">Gögn fyrirtækisins þíns eru lokuð og örugg</translation>
 <translation id="720399613139435155">Þýðing mistókst</translation>
 <translation id="7204922488054642675">Sérsniðnar fréttir</translation>
@@ -1864,6 +1868,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7498234416455752244">Halda áfram að breyta</translation>
 <translation id="7500244509706269886">Fylla út eyðublað sjálfkrafa</translation>
 <translation id="750493650310597496">Ekkert valið</translation>
+<translation id="7505402981231763928">Þú þarft að skrá þig inn til að nota Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Settu upp snertiauðkenni, andlitskennsl eða aðgangskóða til að læsa huliðsflipunum þínum.</translation>
 <translation id="750886945254958667">Haltu hópnum ef þú vilt bæta flipum við síðar eða yfirgefðu hann ef þú vilt ekki hafa aðgang að honum lengur.</translation>

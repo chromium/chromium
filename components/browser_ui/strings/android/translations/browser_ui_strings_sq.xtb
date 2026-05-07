@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1415855080660575082">Lejo që Chrome të ndajë skedat e tua të fundit me pajisjen tënde për t'i shikuar në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta aktivizosh ose çaktivizosh këtë te cilësimet e Chrome.</translation>
 <translation id="1420688843103859429">Navigo prapa dhe përpara duke rrëshqitur shpejt me dy gishta në bllokun me prekje</translation>
-<translation id="1432650420699700107">Sajtet mund të kërkojnë të lidhen me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="1442081309487427303">Aktivizo lidhjet e "Modalitetit të leximit"</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="1464044141348608623">Mos i lejo sajtet të dinë kur e përdor pajisjen tënde në mënyrë aktive</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të menaxhojnë dritaret në të gjitha ekranet e tua. Kur cilësimi është joaktiv, sajtet nuk mund të menaxhojnë dritaret në të gjitha ekranet e tua.</translation>
 <translation id="1738912554587725807">Fleta e poshtme e koleksioneve të temave për pamjen e faqeve të skedave të reja</translation>
 <translation id="1743802530341753419">Pyet përpara se sajtet të lejohen të lidhen me një pajisje (rekomandohet)</translation>
-<translation id="1766455884659449403">Merr njoftime për "Këshillat për Chrome"</translation>
 <translation id="1777815584158991902">Fleta e poshtme e furnizimit të "Zbulo"</translation>
 <translation id="1779089405699405702">Dekoduesi i imazheve</translation>
 <translation id="1781533683087883868">Çaktivizo lidhjet e "Modalitetit të leximit"</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Menaxhuar nga <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ndihmë dhe komente</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
-<translation id="2533138527374486328">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të lidhen me çdo pajisje në rrjetin tënde lokal. Kur cilësimi është joaktiv, sajtet nuk mund të lidhen me pajisjet në rrjetin tënd lokal.</translation>
 <translation id="2536779053640817375">Lejohet këtë herë • E saktë</translation>
 <translation id="2544997614631598250">Ngjyra e temës e errët</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Nis me shpejti omnibox-in</translation>
 <translation id="2789132527330338807">Sajtet mund të kërkojnë të krijojnë një hartë 3D të ambientit tënd rrethues ose të monitorojnë pozicionin e kamerës</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
-<translation id="2794551654724114396">Aktivizo njoftimet për këshilla të dobishme për të të ndihmuar të përfitosh sa më shumë nga Chrome</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
 <translation id="2800760947029405028">Ngarko imazh</translation>
 <translation id="2802908157808345702">Mos lejo që sajtet të dërgojnë dritare kërcyese apo të përdorin ridrejtimet</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Mos lejo që sajtet të lidhen me pajisjet me USB</translation>
 <translation id="3965467402665811906">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
-<translation id="3969869202926863008">Qasja në rrjetin lokal</translation>
 <translation id="3981465354637804599">Sajtet shfaqin zakonisht reklama që të mund të ofrojnë përmbajtje ose shërbime pa pagesë. Megjithatë, disa sajte dihet se shfaqin reklama ndërhyrëse ose çorientuese.</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Shkurtoret e mia</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
 <translation id="6561560012278703671">Përdor mesazhe më të qeta (bllokon kërkesat e njoftimeve që mos të të ndërpresin)</translation>
-<translation id="6565144332292237355">Sajtet mund ta përdorin këtë veçori për të kërkuar dhe për t'u lidhur me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="6593061639179217415">Sajti për desktop</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajt të <ph name="RWS_OWNER" />}other{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajte të <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Qëndro</translation>
 <translation id="6630443592285535486">Shkruaj kodin hekzadecimal këtu</translation>
 <translation id="6635327442719709864">Kur cilësimi është aktiv, sajtet mund të kërkojnë të përdorin portat seriale. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin portat seriale.</translation>
-<translation id="6669390930482049506">Më njofto</translation>
 <translation id="6678072580827808850">Rishiko "Kontrollin e sigurisë"</translation>
 <translation id="6682057173375416470">Merr artikuj të sugjeruar në faqen "Skedë e re"</translation>
 <translation id="6683865262523156564">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Rifresko</translation>
+<translation id="7180865173735832675">Personalizo</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
-<translation id="7213166370492037743">Mos i lejo sajtet të lidhen me asnjë pajisje në rrjetin tënd lokal</translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
 <translation id="723171743924126238">Zgjidh imazhet</translation>
 <translation id="7243246278722455312">Fleta e poshtme "Personalizo faqen e skedës së re"</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> janë lejuar</translation>
 <translation id="7276071417425470385">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet e realitetit virtual. Kur cilësimi është joaktiv, sajtet mund të përdorin pajisjet e realitetit virtual.</translation>
+<translation id="7279851812866769760">Ndaj kontaktet</translation>
 <translation id="7282197670900591579">Tema ngjyrë limoni</translation>
 <translation id="728412880473384942">Sajtet janë më të shpejta, por më pak të sigurta</translation>
 <translation id="7352902948037373520">Menaxhoje te <ph name="BEGIN_LINK1" />Cilësimet e Android<ph name="END_LINK1" />
@@ -794,6 +788,7 @@
 <translation id="9156722768168878035">Lejo që Chrome të shfaqë skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
+<translation id="927148002081263046">Ndaj një kontakt</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="959682366969460160">Organizohu</translation>
 <translation id="960590623979248167">Shfaq hiperlidhjet</translation>

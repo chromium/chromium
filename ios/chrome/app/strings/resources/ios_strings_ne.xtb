@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">पर्दैन, धन्यवाद</translation>
 <translation id="1531038290222364269">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
+<translation id="1539535193627863227">यो साइटका कुनै पनि पासवर्ड वा पासकी भेटिएन</translation>
 <translation id="1540800554400757039">ठेगाना 1</translation>
 <translation id="154312949627292154">आफ्ना अन्य डिभाइसबाट प्राप्त ट्याबहरू लक स्क्रिनबाटै खोल्नुहोस्।</translation>
 <translation id="1545749641540134597">QR कोड स्क्यान गर्नुहोस्</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">रिडिङ मोड अफ गर्नुहोस्</translation>
 <translation id="3106690631878101882">"अनुवाद गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" /> को पासवर्ड मेट्ने हो?</translation>
+<translation id="3109724472072898302">ध्वस्त भएको</translation>
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3116695032231023709">परिचयपत्र सेभ गर्नुहोस्</translation>
 <translation id="3119874402040566234">तपाईंलाई साइन आउट गरिने छ र ब्राउजिङ डेटा मेटाइने छ</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">तपाईंले गरेको परिवर्तन सेभ गर्न सकिएन।</translation>
 <translation id="3254806613790954367">तपाईंका सबै डिभाइसमा खोलिएका ट्याबहरूमध्ये पछिल्लो पटक खोलिएको ट्याब</translation>
 <translation id="325717987950204592">"गोपनीयता तथा सुरक्षा" मा ट्याप गर्नुहोस्</translation>
+<translation id="3259451381796379533">यो खातामार्फत Gemini प्रयोग गर्न मिल्दैन। अर्कै Google खाता प्रयोग गरी साइन इन गर्नुहोस्।</translation>
 <translation id="3265736395246760288">सिंक गरिएका आफ्ना जुनसुकै डिभाइसबाट अझ छिटो साइन इन गर्नुहोस्।</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3273510436356991673">आफ्नो होम स्क्रिन कस्टमाइज गर्नुहोस्</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7186568385131859684">Google का विभिन्न सेवाहरूमा रहेका तपाईंका अरू डेटासँग ब्राउजिङ हिस्ट्री प्रयोग गर्ने तरिका नियन्त्रण गर्छ</translation>
 <translation id="719133302483559673">आफ्ना रुचि तथा प्राथमिकताहरू व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="7191382490098297347">क्यामेरा रोलको फोटो</translation>
+<translation id="7203150201908454328">विस्तारित</translation>
 <translation id="7203496777391039568">तपाईंको सङ्गठनको जानकारी गोप्य र सुरक्षित रहन्छ</translation>
 <translation id="720399613139435155">अनुवाद गर्न सकिएन</translation>
 <translation id="7204922488054642675">पर्सनलाइज गरिएको समाचार</translation>
@@ -1864,6 +1868,7 @@
 <translation id="7498234416455752244">सम्पादन गरिरहनुहोस्</translation>
 <translation id="7500244509706269886">अटोफिल फाराम</translation>
 <translation id="750493650310597496">0 चयन गरियो</translation>
+<translation id="7505402981231763928">Gemini प्रयोग गर्न तपाईंले साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्न Touch ID, Face ID वा पासकोड सेटअप गर्नुहोस्।</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>

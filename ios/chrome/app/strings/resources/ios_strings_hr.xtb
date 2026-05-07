@@ -599,6 +599,7 @@
 <translation id="3106258548858559536">Isključi prozor za čitanje</translation>
 <translation id="3106690631878101882">Sakrij stavku Prevedi</translation>
 <translation id="310900540163454140">Želite li izbrisati zaporku za <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Sažeto</translation>
 <translation id="3112556859945124369">Označi...</translation>
 <translation id="3116695032231023709">Spremite osobnu iskaznicu</translation>
 <translation id="3119874402040566234">Odjavit ćete se i izbrisat će se vaši podaci o pregledavanju</translation>
@@ -1782,6 +1783,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7186568385131859684">Upravljajte načinom na koji se povijest pregledavanja upotrebljava s vašim ostalim podacima na Googleovim uslugama</translation>
 <translation id="719133302483559673">Upravljajte svojim interesima i postavkama.</translation>
 <translation id="7191382490098297347">Slika iz snimljenih fotografija</translation>
+<translation id="7203150201908454328">Proširen</translation>
 <translation id="7203496777391039568">Podaci vaše organizacije privatni su i sigurni</translation>
 <translation id="720399613139435155">Prijevod nije uspio</translation>
 <translation id="7204922488054642675">Personalizirane vijesti</translation>
@@ -2299,7 +2301,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="892185197271200809">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i izbrisat će se sa svih uređaja</translation>
 <translation id="8923178205567790913">Zaporke</translation>
-<translation id="8926498511977337209">Pregledavanje u anonimnom načinu</translation>
+<translation id="8926498511977337209">Pregledavajte anonimno</translation>
 <translation id="892776311701544612">Saznajte više…</translation>
 <translation id="8928133177108699615">Računalo</translation>
 <translation id="8928426232677696166">Trenutačno je odabran račun <ph name="EMAIL" /> kojim upravlja vaša organizacija. Odaberite račun.</translation>

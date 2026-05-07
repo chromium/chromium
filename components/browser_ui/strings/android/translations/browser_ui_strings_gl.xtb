@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta as pestanas recentes co teu dispositivo para que se mostren na lista de aplicacións e nos resultados de busca do aparello. Activa ou desactiva esta opción na configuración de Chrome.</translation>
 <translation id="1420688843103859429">Pasa dous dedos no panel táctil para navegar cara adiante ou cara atrás</translation>
-<translation id="1432650420699700107">Os sitios poden pedir permiso para conectarse a calquera dispositivo da túa rede local</translation>
 <translation id="1442081309487427303">Activar as ligazóns do modo de lectura</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1464044141348608623">Non permitir que os sitios saiban cando estás utilizando o dispositivo de maneira activa</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Cando esta opción está activada, os sitios poden pedir permiso para xestionar as ventás en todas as pantallas. Cando está desactivada, non poden xestionalas.</translation>
 <translation id="1738912554587725807">Panel inferior de coleccións de temas de aparencia da páxina Nova pestana</translation>
 <translation id="1743802530341753419">Preguntar antes de permitir que os sitios se conecten a un dispositivo (recomendado)</translation>
-<translation id="1766455884659449403">Recibe notificacións de Consellos de Chrome</translation>
 <translation id="1777815584158991902">Panel inferior do feed de Discover</translation>
 <translation id="1779089405699405702">Descodificador de imaxes</translation>
 <translation id="1781533683087883868">Desactivar as ligazóns do modo de lectura</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Xestionadas por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Axuda e comentarios</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
-<translation id="2533138527374486328">Cando esta opción está activada, os sitios poden pedir permiso para conectarse a calquera dispositivo da túa rede local. Cando está desactivada, os sitios non poden establecer esa conexión.</translation>
 <translation id="2536779053640817375">Permitida esta vez • Precisa</translation>
 <translation id="2544997614631598250">Cor de tema escuro</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Iniciar rapidamente omnibox</translation>
 <translation id="2789132527330338807">Os sitios poden solicitar permiso para crear un mapa 3D do que te rodea e facer o seguimento da posición da cámara</translation>
 <translation id="2790501146643349491">Cando esta opción está activada, os sitios pechados recentemente poden terminar de enviar e recibir datos. Cando esta opción está desactivada, os sitios pechados recentemente non poden terminar de enviar nin de recibir datos.</translation>
-<translation id="2794551654724114396">Activa as notificacións para recibir consellos útiles que che axudarán a tirar o máximo proveito de Chrome</translation>
 <translation id="2795716239552913152">Os sitios adoitan usar a túa localización para ofrecerche funcións ou información relevantes (por exemplo, noticias locais ou tendas próximas)</translation>
 <translation id="2800760947029405028">Subir unha imaxe</translation>
 <translation id="2802908157808345702">Non permitir que os sitios mostren ventás emerxentes nin usen redireccións</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Non permitir que os sitios se conecten a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sitios poderán usar a información que garden sobre ti</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
-<translation id="3969869202926863008">Acceso á rede local</translation>
 <translation id="3981465354637804599">Os sitios adoitan mostrar anuncios para poder ofrecer contido ou servizos sen custo económico. Non obstante, algúns conteñen anuncios enganosos ou intrusivos.</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Os meus atallos</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6561560012278703671">Utilizar mensaxaría máis silenciosa (impide que as notificacións te interrompan)</translation>
-<translation id="6565144332292237355">Os sitios poden usar esta función para buscar calquera dispositivo da túa rede local ou conectarse a el</translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6630443592285535486">Escribe o valor hexadecimal da cor aquí</translation>
 <translation id="6635327442719709864">Cando esta opción está activada, os sitios poden pedir permiso para utilizar portos de serie. Cando está desactivada, os sitios non poden usar eses portos.</translation>
-<translation id="6669390930482049506">Recibir notificación</translation>
 <translation id="6678072580827808850">Revisar Comprobación de seguranza</translation>
 <translation id="6682057173375416470">Obter artículos suxeridos na páxina Nova pestana</translation>
 <translation id="6683865262523156564">Este sitio está nun grupo que pode ver a túa actividade. O grupo está definido por <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Non permite que os sitios mostren ventás emerxentes nin redireccións (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7180865173735832675">Personalizar</translation>
 <translation id="7188508872042490670">Datos dos sitios no dispositivo</translation>
 <translation id="7201549776650881587">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenasen os subsitios de <ph name="ORIGIN" /> ou a súa aplicación na túa pantalla de inicio</translation>
-<translation id="7213166370492037743">Non permitir que os sitios se conecten a calquera dispositivo da túa rede local</translation>
 <translation id="7219254577985949841">Eliminar datos do sitio?</translation>
 <translation id="723171743924126238">Selecciona imaxes</translation>
 <translation id="7243246278722455312">Panel inferior de Personaliza a páxina Nova pestana</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (permitidos)</translation>
 <translation id="7276071417425470385">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos de realidade virtual. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos de realidade virtual.</translation>
+<translation id="7279851812866769760">Compartir contactos</translation>
 <translation id="7282197670900591579">Tema cidra</translation>
 <translation id="728412880473384942">Os sitios son máis rápidos, pero menos seguros</translation>
 <translation id="7352902948037373520">Xestiónaa na <ph name="BEGIN_LINK1" />configuración de Android<ph name="END_LINK1" />
@@ -794,6 +788,7 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="9156722768168878035">Permite que Chrome mostre as pestanas recentes na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta páxina é perigosa</translation>
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
+<translation id="927148002081263046">Compartir un contacto</translation>
 <translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="959682366969460160">Organízate</translation>
 <translation id="960590623979248167">Mostrar as hiperligazóns</translation>

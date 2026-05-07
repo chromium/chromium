@@ -101,9 +101,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2066690553719545730">Uvek prikazuj AI režim</translation>
 <translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je ovaj fajl obmanjujući i može da izvrši neočekivane promene na uređaj</translation>
 <translation id="208726765006323911">Sledeći put kada otvorite Chromium iOS, videćete upit da isprobate <ph name="FEATURE_NAME" />.</translation>
-<translation id="2090163042413910600">Chromium isključuje optimizaciju JavaScript-a kad prvi put posetite sajt.
-
-Ako ova stranica ne radi na očekivani način, probajte da dozvolite optimizaciju.</translation>
 <translation id="2099452623287920103">Lozinke i drugi Chromium podaci koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chromium-u, ponovo se prijavite.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi 1 minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minut. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Organizacija automatski briše podatke pregledanja kada se Chromium ne koristi # minuta. To može da obuhvata istoriju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>

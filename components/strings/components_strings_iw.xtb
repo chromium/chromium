@@ -1904,7 +1904,6 @@
 <translation id="3965672182149944205">לשמור את הכתובת?</translation>
 <translation id="3966044442021752214">בטיחות המוצר</translation>
 <translation id="396761677631735618">רשימת כרטיסי מועדון הלקוחות שאפשר למלא באמצעות מגע נפתחה בחצי מגובה המסך.</translation>
-<translation id="3969869202926863008">גישה לרשת המקומית</translation>
 <translation id="3970239200223030389">תאריך ההנפקה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
@@ -3015,7 +3014,6 @@ Del</translation>
 <translation id="5660122698869360728">תיקייה חכמה חדשה שעוזרת לך לשמור את כל דפי הקניות במקום אחד, ולעקוב אחר מחירים, לקבל מדדי מחירים באופן אוטומטי ועוד.</translation>
 <translation id="5663955426505430495">מנהל המערכת של המכשיר הזה התקין תוספים שמאפשרים להשתמש בפונקציות נוספות. לתוספים יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="5667827081946850877">ספרי אודיו</translation>
-<translation id="5674082555327905359">האתר יכול לבקש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
 <translation id="5675650730144413517">הדף הזה לא עובד</translation>
 <translation id="5675809467256309336">מוזיקת דאנס ומוזיקה אלקטרונית</translation>
 <translation id="5675959228867414813">הצגה לפי תאריך</translation>
@@ -3422,7 +3420,6 @@ Del</translation>
 <translation id="6321917430147971392">‏יש לבדוק את הגדרות ה-DNS</translation>
 <translation id="6322182122604171028">‏לא ניתן היה להשתמש ב-Windows Hello</translation>
 <translation id="6326947323444967009">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
-<translation id="6327065120806001832">גישה לרשת המקומית</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
 <translation id="6329742260390895689">‏כדי למלא את הפרטים באופן אוטומטי, צריך להפעיל את ההגדרה "שימוש בכרטיסים בשירותי Google" ב-Wallet</translation>
 <translation id="6329815962353376655">&lt;כאן מקלידים שאלה&gt;</translation>

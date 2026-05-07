@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1531038290222364269">แสดงแท็บ</translation>
 <translation id="1536390784834419204">แปลหน้าเว็บ</translation>
+<translation id="1539535193627863227">ไม่พบรหัสผ่านหรือพาสคีย์สำหรับเว็บไซต์นี้</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
 <translation id="154312949627292154">เปิดแท็บที่ได้รับจากอุปกรณ์อื่นๆ ของคุณจากหน้าจอล็อก</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">ปิดโหมดการอ่าน</translation>
 <translation id="3106690631878101882">ซ่อน "แปลภาษา"</translation>
 <translation id="310900540163454140">ลบรหัสผ่านสำหรับ <ph name="WEBSITE" /> ใช่ไหม</translation>
+<translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
 <translation id="3116695032231023709">บันทึกบัตรประจำตัว</translation>
 <translation id="3119874402040566234">คุณจะออกจากระบบ และข้อมูลการท่องเว็บจะถูกลบ</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3254806613790954367">แท็บที่เปิดล่าสุดในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="325717987950204592">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
+<translation id="3259451381796379533">บัญชีนี้จะใช้กับ Gemini ไม่ได้ ลงชื่อเข้าใช้ด้วยบัญชี Google บัญชีอื่น</translation>
 <translation id="3265736395246760288">ลงชื่อเข้าใช้ได้เร็วขึ้นจากอุปกรณ์ที่ซิงค์ไว้</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7186568385131859684">ควบคุมการใช้ประวัติการท่องเว็บกับข้อมูลอื่นๆ ของคุณในบริการต่างๆ ของ Google</translation>
 <translation id="719133302483559673">จัดการความสนใจและความต้องการของคุณ</translation>
 <translation id="7191382490098297347">รูปภาพจากกล้อง</translation>
+<translation id="7203150201908454328">ขยาย</translation>
 <translation id="7203496777391039568">ข้อมูลองค์กรของคุณจะปลอดภัยและเป็นส่วนตัว</translation>
 <translation id="720399613139435155">แปลไม่สำเร็จ</translation>
 <translation id="7204922488054642675">ข่าวที่คัดสรรมาให้ผู้ใช้โดยเฉพาะ</translation>
@@ -1864,6 +1868,7 @@
 <translation id="7498234416455752244">แก้ไขต่อ</translation>
 <translation id="7500244509706269886">ป้อนข้อความอัตโนมัติในแบบฟอร์ม</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
+<translation id="7505402981231763928">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="750886945254958667">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>

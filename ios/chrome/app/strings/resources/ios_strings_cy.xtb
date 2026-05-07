@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531038290222364269">Dangos tabiau</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
+<translation id="1539535193627863227">Ni chanfuwyd unrhyw gyfrineiriau na chodau pas ar gyfer y wefan hon</translation>
 <translation id="1540800554400757039">Cyfeiriad 1</translation>
 <translation id="154312949627292154">Agor tabiau a dderbyniwyd gan eich dyfeisiau eraill o'r clo sgrîn.</translation>
 <translation id="1545749641540134597">Sganio Cod QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Diffodd y Modd Darllen</translation>
 <translation id="3106690631878101882">Cuddio Cyfieithu</translation>
 <translation id="310900540163454140">Dileu cyfrinair ar gyfer <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="3112556859945124369">Nodi…</translation>
 <translation id="3116695032231023709">Cadw cerdyn adnabod</translation>
 <translation id="3119874402040566234">Byddwch yn cael eich allgofnodi a bydd data pori yn cael eu dileu</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Ni fu modd cadw'ch newid.</translation>
 <translation id="3254806613790954367">Eich tab agored diwethaf ar draws eich holl ddyfeisiau</translation>
 <translation id="325717987950204592">Tapiwch "Preifatrwydd a Diogelwch"</translation>
+<translation id="3259451381796379533">Ni fydd y cyfrif hwn yn gweithio gyda Gemini. Mewngofnodwch gyda Chyfrif Google gwahanol.</translation>
 <translation id="3265736395246760288">Mewngofnodwch yn gyflymach o unrhyw un o'ch dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3272527697863656322">Canslo</translation>
 <translation id="3273510436356991673">Addasu eich sgrîn hafan</translation>
@@ -1780,6 +1783,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7186568385131859684">Rheoli sut mae hanes pori yn cael ei ddefnyddio gyda'ch data eraill ar draws gwasanaethau Google</translation>
 <translation id="719133302483559673">Rheoli eich diddordebau a'ch dewisiadau.</translation>
 <translation id="7191382490098297347">Llun o'r rhôl camera</translation>
+<translation id="7203150201908454328">Wedi'i ehangu</translation>
 <translation id="7203496777391039568">Mae data eich sefydliad yn breifat ac yn ddiogel</translation>
 <translation id="720399613139435155">Cyfieithu wedi methu</translation>
 <translation id="7204922488054642675">Newyddion personol</translation>
@@ -1864,6 +1868,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7498234416455752244">Parhau i olygu</translation>
 <translation id="7500244509706269886">Awtolenwi ffurflen</translation>
 <translation id="750493650310597496">Ni ddewisir yr un ohonynt</translation>
+<translation id="7505402981231763928">Mae angen i chi fewngofnodi i ddefnyddio Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">I gloi eich tabiau anhysbys, gosodwch Touch ID, Face ID, neu God Pas.</translation>
 <translation id="750886945254958667">Cadwch y grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu gadewch ef os nad ydych am gael mynediad ato mwyach</translation>

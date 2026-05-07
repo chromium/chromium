@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1531038290222364269">Mostrar las pestañas</translation>
 <translation id="1536390784834419204">Traducir la página</translation>
+<translation id="1539535193627863227">No se encontraron contraseñas ni llaves de acceso para este sitio</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="154312949627292154">Abre las pestañas que recibes de tus otros dispositivos desde la pantalla de bloqueo.</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Desactivar el Modo de lectura</translation>
 <translation id="3106690631878101882">Ocultar la opción Traductor</translation>
 <translation id="310900540163454140">¿Quieres borrar la contraseña de <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Contraído</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3116695032231023709">Guardar el documento de identificación</translation>
 <translation id="3119874402040566234">Saldrás de tu cuenta y se borrarán los datos de navegación</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">No se pudo guardar el cambio.</translation>
 <translation id="3254806613790954367">La última pestaña que abriste en todos tus dispositivos</translation>
 <translation id="325717987950204592">Presiona "Privacidad y seguridad".</translation>
+<translation id="3259451381796379533">Esta cuenta no funcionará con Gemini. Accede con otra Cuenta de Google.</translation>
 <translation id="3265736395246760288">Accede más rápido desde cualquiera de tus dispositivos sincronizados.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personaliza tu pantalla principal</translation>
@@ -1780,6 +1783,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
 <translation id="719133302483559673">Administra tus intereses y preferencias.</translation>
 <translation id="7191382490098297347">Imagen de la galería de fotos</translation>
+<translation id="7203150201908454328">Expandido</translation>
 <translation id="7203496777391039568">Los datos de tu organización se mantienen privados y seguros</translation>
 <translation id="720399613139435155">Se produjo un error al traducir</translation>
 <translation id="7204922488054642675">Noticias personalizadas</translation>
@@ -1864,6 +1868,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7500244509706269886">Autocompletar formulario</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
+<translation id="7505402981231763928">Debes acceder a tu cuenta para usar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear tus pestañas de incógnito, configura Touch ID, Face ID o una contraseña.</translation>
 <translation id="750886945254958667">Conserva este grupo para agregar pestañas más tarde o abandónalo si ya no quieres acceder a él</translation>

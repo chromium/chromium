@@ -599,6 +599,7 @@
 <translation id="3106258548858559536">Desativar Modo de leitura</translation>
 <translation id="3106690631878101882">Ocultar opção "Traduzir"</translation>
 <translation id="310900540163454140">Excluir a senha de <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Recolhido</translation>
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3116695032231023709">Salvar documento de identidade</translation>
 <translation id="3119874402040566234">Sua conta será desconectada e os dados de navegação serão excluídos</translation>
@@ -1782,6 +1783,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7191382490098297347">Imagem do rolo da câmera</translation>
+<translation id="7203150201908454328">Expandido</translation>
 <translation id="7203496777391039568">A privacidade e segurança dos dados da sua organização ficam garantidas</translation>
 <translation id="720399613139435155">Falha na tradução</translation>
 <translation id="7204922488054642675">Notícias personalizadas</translation>
@@ -1999,6 +2001,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Excluir dados de navegação…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Página adicionada à lista de leitura na sua conta ({email})}one{{count} página adicionada à lista de leitura na sua conta ({email})}other{{count} páginas adicionadas à lista de leitura na sua conta ({email})}}</translation>
+<translation id="7948579849190819732">Guia atual</translation>
 <translation id="7952353944614086413">Seus grupos e guias abertos</translation>
 <translation id="7952670906562503188">Você está prestes a excluir {passkey_count} chaves de acesso e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>

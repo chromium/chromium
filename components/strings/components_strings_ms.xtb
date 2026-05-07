@@ -478,6 +478,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1727613060316725209">Sijil sah</translation>
 <translation id="1728677426644403582">Anda sedang melihat sumber halaman web</translation>
 <translation id="173080396488393970">Jenis kad ini tidak disokong</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Minta kebenaran secara langsung</translation>
 <translation id="1733064249834771892">fon</translation>
 <translation id="1733631169686303142">Peralatan Audio</translation>
@@ -1596,6 +1597,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="350069200438440499">Nama fail:</translation>
 <translation id="3501300228850242680">Metal (Muzik)</translation>
 <translation id="350421688684366066">Label (Kilat Tinggi)</translation>
+<translation id="3507062913298382727">Simpan kad ID</translation>
 <translation id="350763432931695541">Mengekstrak teks dalam beberapa halaman seterusnya</translation>
 <translation id="3507869775212388416">Pekerjaan Perundangan</translation>
 <translation id="3507936815618196901">Buat peta 3D bagi persekitaran anda dan jejaki kedudukan kamera</translation>
@@ -1906,7 +1908,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3965672182149944205">Simpan alamat?</translation>
 <translation id="3966044442021752214">Keselamatan produk</translation>
 <translation id="396761677631735618">Kad kesetiaan tersedia untuk diisi apabila disentuh, dibuka pada ketinggian separuh.</translation>
-<translation id="3969869202926863008">Akses rangkaian setempat</translation>
 <translation id="3970239200223030389">Tarikh keluaran</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
@@ -1991,6 +1992,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4098306082496067348">Ketik butiran kad maya untuk menambahkan kad maya tersebut pada semak keluar.</translation>
 <translation id="4099048595830172239">Dasar pentadbir tidak mengesyorkan anda berkongsi skrin dengan <ph name="APPLICATION_TITLE" /> semasa kandungan sulit kelihatan:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk menyesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Teks dan grafik</translation>
 <translation id="4101917550061398111">Padamkan item yang dipilih</translation>
 <translation id="4102567721634170493">Berita Tempatan</translation>
@@ -2218,6 +2220,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4415156962929755728">Plastik (Kilat Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
 <translation id="4415748029120993980">Lengkung eliptik SECG secp384r1 (alias NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Kata laluan boleh dipadamkan dalam tetapan pengurusan</translation>
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="4425750422187370446">Pakaian Olahraga</translation>
@@ -2957,6 +2960,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5573641252776268565">Edit pasport</translation>
 <translation id="5578606540385219379">Penyedia Perkhidmatan</translation>
 <translation id="5580958916614886209">Semak bulan tamat tempoh anda dan cuba lagi</translation>
+<translation id="5582453333200265572">Kemas kinikan kad ID</translation>
 <translation id="5583442610070676234">Lebih tindakan untuk jadual perbandingan <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">IBAN ini tidak dapat disimpan dalam Google Wallet. IBAN ini telah disimpan pada Chrome pada peranti ini.</translation>
 <translation id="558420943003240152">Urus kata laluan dan kunci laluan…</translation>
@@ -3012,7 +3016,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5660122698869360728">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik.</translation>
 <translation id="5663955426505430495">Pentadbir peranti ini telah memasang sambungan bagi fungsi tambahan. Sambungan mempunyai akses kepada sesetengah data anda.</translation>
 <translation id="5667827081946850877">Buku audio</translation>
-<translation id="5674082555327905359">Boleh meminta untuk menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
 <translation id="5675650730144413517">Halaman ini tidak berfungsi</translation>
 <translation id="5675809467256309336">Muzik Tarian &amp; Elektronik</translation>
 <translation id="5675959228867414813">Paparkan mengikut tarikh</translation>
@@ -3091,6 +3094,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5808435672482059465">Lihat Sejarah Chrome Anda</translation>
 <translation id="5810442152076338065">Sambungan anda ke <ph name="DOMAIN" /> disulitkan menggunakan suit sifer yang sudah usang.</translation>
 <translation id="5813119285467412249">&amp;Buat Semula Tambahkan</translation>
+<translation id="5813274153495000141">Simpan maklumat anda dan isi borang dengan lebih pantas. Disimpan pada peranti anda.</translation>
 <translation id="5813753398265398978">Fizik</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
 <translation id="5820625124144807242">Selepas anda menyemak pesanan anda, anda mestilah log masuk atau membuat akaun dengan <ph name="BNPL_ISSUER_NAME" />. Akaun ini akan dipautkan kepada Google Pay secara automatik.</translation>
@@ -3419,7 +3423,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6321917430147971392">Semak tetapan DNS anda</translation>
 <translation id="6322182122604171028">Tidak dapat menggunakan Windows Hello</translation>
 <translation id="6326947323444967009">Tetapkan Chrome sebagai penyemak imbas lalai sistem dalam tetapan iOS</translation>
-<translation id="6327065120806001832">akses rangkaian setempat</translation>
 <translation id="6328639280570009161">Cuba lumpuhkan ramalan rangkaian</translation>
 <translation id="6329742260390895689">Untuk autolengkap maklumat anda, hidupkan "Gunakan pas merentas Google" dalam tetapan Wallet</translation>
 <translation id="6329815962353376655">&lt;Taip soalan&gt;</translation>

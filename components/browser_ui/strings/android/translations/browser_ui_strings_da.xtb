@@ -41,7 +41,6 @@
 <translation id="1415402041810619267">Webadressen er forkortet</translation>
 <translation id="1415855080660575082">Få Chrome til at dele dine seneste faner med din enhed for at se dem på din enheds appliste og i søgeresultaterne. Du kan slå dette til eller fra i Chrome-indstillingerne.</translation>
 <translation id="1420688843103859429">Naviger frem og tilbage ved at stryge med to fingre på touchpladen</translation>
-<translation id="1432650420699700107">Websites kan anmode om at oprette tilknytning til enhver enhed på dit lokale netværk</translation>
 <translation id="1442081309487427303">Aktivér links i Læsetilstand</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
@@ -75,7 +74,6 @@
 <translation id="1717996979683942279">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at administrere vinduer på alle dine skærme. Når denne indstilling er deaktiveret, kan websites ikke administrere vinduer på alle dine skærme.</translation>
 <translation id="1738912554587725807">Feltet i bunden med temasamlinger til udseendet af siden Ny fane</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
-<translation id="1766455884659449403">Få notifikationer med tips til Chrome</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1781533683087883868">Deaktiver links i Læsetilstand</translation>
@@ -156,7 +154,6 @@
 <translation id="2490684707762498678">Administreret af <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjælp og feedback</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
-<translation id="2533138527374486328">Når denne indstilling er aktiveret, kan websites anmode om at oprette tilknytning til enhver enhed på dit lokale netværk. Når denne indstilling er deaktiveret, kan websites ikke oprette tilknytning til enheder på dit lokale netværk.</translation>
 <translation id="2536779053640817375">Tilladt denne gang • Præcis</translation>
 <translation id="2544997614631598250">Mørk temafarve</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
@@ -185,7 +182,6 @@
 <translation id="2787357173144933081">Åbn omnifeltet</translation>
 <translation id="2789132527330338807">Websites kan anmode om at oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
-<translation id="2794551654724114396">Aktivér notifikationer for at få nyttige tips, der hjælper dig med at få mest muligt ud af Chrome</translation>
 <translation id="2795716239552913152">Websites bruger normalt din lokation til relevante formål eller oplysninger om lokale nyheder eller butikker i nærheden</translation>
 <translation id="2800760947029405028">Upload et billede</translation>
 <translation id="2802908157808345702">Tillad ikke, at websites sender pop op-vinduer og anvender omdirigeringer</translation>
@@ -302,7 +298,6 @@
 <translation id="3955321697524543127">Tillad ikke, at websites opretter forbindelse til USB-enheder</translation>
 <translation id="3965467402665811906">Websites kan anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
-<translation id="3969869202926863008">Lokal netværksadgang</translation>
 <translation id="3981465354637804599">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden beregning. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
@@ -545,7 +540,6 @@
 <translation id="6557290421156335491">Mine genveje</translation>
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationer ikke forstyrrer dig)</translation>
-<translation id="6565144332292237355">Websites kan bruge denne funktion til at søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}one{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}other{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> websites tilhørende <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
@@ -554,7 +548,6 @@
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6630443592285535486">Angiv hex-kode her</translation>
 <translation id="6635327442719709864">Når denne indstilling er aktiveret, kan websites anmode om at anvende serieporte. Når denne indstilling er deaktiveret, kan websites ikke anvende serieporte.</translation>
-<translation id="6669390930482049506">Send mig notifikationer</translation>
 <translation id="6678072580827808850">Gennemgå sikkerhedstjek</translation>
 <translation id="6682057173375416470">Få forslag til artikler på siden Ny fane</translation>
 <translation id="6683865262523156564">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="RWS_OWNER" /></translation>
@@ -599,9 +592,9 @@
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Opdater</translation>
+<translation id="7180865173735832675">Tilpas</translation>
 <translation id="7188508872042490670">Websitedata på enheden</translation>
 <translation id="7201549776650881587">Denne handling sletter alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startside</translation>
-<translation id="7213166370492037743">Tillad ikke, at websites opretter tilknytning til enheder på dit lokale netværk</translation>
 <translation id="7219254577985949841">Vil du slette websitedata?</translation>
 <translation id="723171743924126238">Vælg billeder</translation>
 <translation id="7243246278722455312">Feltet i bunden med tilpasning af siden Ny fane</translation>
@@ -609,6 +602,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
+<translation id="7279851812866769760">Del kontakter</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Websites er hurtigere, men mindre sikre</translation>
 <translation id="7352902948037373520">Administrer i <ph name="BEGIN_LINK1" />Android-indstillingerne<ph name="END_LINK1" />
@@ -700,6 +694,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="823874716226307142">Når funktionen er aktiveret, kan websites anmode om adgang til andre enheder på dit lokale netværk. Når funktionen er deaktiveret, kan websites ikke tilgå andre enheder på dit lokale netværk.</translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8273596202562472147">Flere valgmuligheder for <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
 <translation id="8301363963630676147">Tilladt denne gang • Bruger omtrentlig</translation>
@@ -794,6 +789,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="9156722768168878035">Få Chrome til at vise dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
+<translation id="927148002081263046">Del en kontakt</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
 <translation id="960590623979248167">Vis hyperlinks</translation>

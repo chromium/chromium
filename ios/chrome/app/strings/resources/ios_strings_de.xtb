@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nein, danke</translation>
 <translation id="1531038290222364269">Tabs anzeigen</translation>
 <translation id="1536390784834419204">Seite übersetzen</translation>
+<translation id="1539535193627863227">Keine Passwörter oder Passkeys für diese Website gefunden</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Tabs, die du von anderen Geräten erhalten hast, vom Sperrbildschirm aus öffnen.</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Lesemodus deaktivieren</translation>
 <translation id="3106690631878101882">„Übersetzen“ ausblenden</translation>
 <translation id="310900540163454140">Passwort für <ph name="WEBSITE" /> löschen?</translation>
+<translation id="3109724472072898302">Minimiert</translation>
 <translation id="3112556859945124369">Markieren…</translation>
 <translation id="3116695032231023709">Amtlichen Ausweis speichern</translation>
 <translation id="3119874402040566234">Du wirst abgemeldet und Browserdaten werden gelöscht</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Deine Änderung konnte nicht gespeichert werden.</translation>
 <translation id="3254806613790954367">Der zuletzt geöffnete Tab auf allen deinen Geräten</translation>
 <translation id="325717987950204592">Tippe auf „Datenschutz und Sicherheit“</translation>
+<translation id="3259451381796379533">Dieses Konto funktioniert nicht mit Gemini. Melde dich mit einem anderen Google-Konto an.</translation>
 <translation id="3265736395246760288">Du kannst dich auf allen deinen synchronisierten Geräten schneller anmelden.</translation>
 <translation id="3272527697863656322">Abbrechen</translation>
 <translation id="3273510436356991673">Startbildschirm personalisieren</translation>
@@ -1780,6 +1783,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7186568385131859684">Festlegen, wie der Browserverlauf mit deinen anderen Daten in Google-Diensten verwendet wird</translation>
 <translation id="719133302483559673">Verwalte deine Interessen und Einstellungen.</translation>
 <translation id="7191382490098297347">Bild aus Aufnahmen</translation>
+<translation id="7203150201908454328">Erweitert</translation>
 <translation id="7203496777391039568">Deine Unternehmensdaten bleiben privat und geschützt</translation>
 <translation id="720399613139435155">Fehler beim Übersetzen</translation>
 <translation id="7204922488054642675">Personalisierte Nachrichten</translation>
@@ -1864,6 +1868,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7498234416455752244">Weiter bearbeiten</translation>
 <translation id="7500244509706269886">Autofill-Formular</translation>
 <translation id="750493650310597496">0 ausgewählt</translation>
+<translation id="7505402981231763928">Melde dich an, um Gemini zu verwenden</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Wenn du deine Inkognitotabs sperren möchtest, richte zuerst Touch ID, Face ID oder einen Sicherheitscode ein.</translation>
 <translation id="750886945254958667">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest</translation>

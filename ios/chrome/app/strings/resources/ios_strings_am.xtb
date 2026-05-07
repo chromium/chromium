@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">አይ፣ አመሰግናለሁ</translation>
 <translation id="1531038290222364269">ትሮችን አሳይ</translation>
 <translation id="1536390784834419204">ገፅ ተርጉም</translation>
+<translation id="1539535193627863227">ለዚህ ጣቢያ ምንም የይለፍ ቃላት ወይም የይለፍ ቁልፎች አልተገኙም</translation>
 <translation id="1540800554400757039">አድራሻ 1</translation>
 <translation id="154312949627292154">ከሌሎች መሣሪያዎችዎ የተቀበሉትን ትሮችን ከመቆለፊያ ማያ ገፅ ቁልፍ ይክፈቱ።</translation>
 <translation id="1545749641540134597">የኪውአር ኮድ ይቃኙ</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">የንባብ ሁነታ ያጥፉ</translation>
 <translation id="3106690631878101882">መተርጎሚያን ደብቅ</translation>
 <translation id="310900540163454140">የ<ph name="WEBSITE" /> የይለፍ ቃል ይሰረዝ?</translation>
+<translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3116695032231023709">የመታወቂያ ካርድን ያስቀምጡ</translation>
 <translation id="3119874402040566234">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና የአሰሳ ውሂብዎ ይሰረዛል</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">ለውጥዎ መቀመጥ አልቻለም።</translation>
 <translation id="3254806613790954367">በመላው መሣሪያዎችዎ ላይ የእርስዎ መጨረሻ የተከፈተ ትር</translation>
 <translation id="325717987950204592">«ግላዊነት እና ደኅንነት» ላይ መታ ያድርጉ</translation>
+<translation id="3259451381796379533">ይህ መለያ ከGemini ጋር አይሠራም። በተለየ Google መለያ ይግቡ።</translation>
 <translation id="3265736395246760288">ከማናቸውም የሠመሩ መሣሪያዎችዎ በፍጥነት ይግቡ።</translation>
 <translation id="3272527697863656322">ይቅር</translation>
 <translation id="3273510436356991673">መነሻ ማያ ገፅዎን ያብጁ</translation>
@@ -1780,6 +1783,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7186568385131859684">በመላ የGoogle አገልግሎቶች ውስጥ ከሌላ ውሂብዎ ጋር የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="719133302483559673">የእርስዎን ዝንባሌዎች እና ምርጫዎች ያስተዳድሩ።</translation>
 <translation id="7191382490098297347">የካሜራ ጥቅል ምስል</translation>
+<translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7203496777391039568">የድርጅትዎ ውሂብ የግል እና ደህንነቱ የተጠበቀ ነው</translation>
 <translation id="720399613139435155">ትርጉም አልተሳካም</translation>
 <translation id="7204922488054642675">ግላዊነት የተላበሰ ዜና</translation>
@@ -1864,6 +1868,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7498234416455752244">አርትዖቱን ቀጥል</translation>
 <translation id="7500244509706269886">ቅፅን በራስ-ሙላ</translation>
 <translation id="750493650310597496">0 ተመርጧል</translation>
+<translation id="7505402981231763928">Geminiን ለመጠቀም በመለያ መግባት አለብዎት</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)።</translation>
 <translation id="7508728395076009983">ማንነት የማያሳውቁ ትሮችዎን ለመቆለፍ። የንኪ መታወቂያ፣ የፊት መታወቂያ፣ ወይም የይለፍ ኮድ ያዘጋጁ።</translation>
 <translation id="750886945254958667">በኋላ ላይ ትሮችን ለማከል ይህን ቡድን ያቆዩት ወይም ከእንግዲህ ሊደርሱት ካልፈለጉ ለቅቀው ይውጡ</translation>

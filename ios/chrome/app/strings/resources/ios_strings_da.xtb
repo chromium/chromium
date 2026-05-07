@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nej tak</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversæt side</translation>
+<translation id="1539535193627863227">Der blev ikke fundet nogen adgangskoder eller adgangsnøgler til dette website</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Åbn faner, der er modtaget fra dine andre enheder, via låseskærmen.</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Deaktiver Læsetilstand</translation>
 <translation id="3106690631878101882">Skjul Oversæt</translation>
 <translation id="310900540163454140">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
+<translation id="3109724472072898302">Skjult</translation>
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3116695032231023709">Gem identitetskort</translation>
 <translation id="3119874402040566234">Du logges ud, og browserdataene slettes.</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
 <translation id="3254806613790954367">Din seneste åbne fane på tværs af alle dine enheder</translation>
 <translation id="325717987950204592">Tryk på "Privatliv og sikkerhed"</translation>
+<translation id="3259451381796379533">Denne konto fungerer ikke med Gemini. Log ind med en anden Google-konto.</translation>
 <translation id="3265736395246760288">Log hurtigere ind fra en hvilken som helst af dine synkroniserede enheder.</translation>
 <translation id="3272527697863656322">Annuller</translation>
 <translation id="3273510436356991673">Tilpas din startskærm</translation>
@@ -1780,6 +1783,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7186568385131859684">Administrer, hvordan browserhistorik bruges sammen med dine øvrige data i Google-tjenester</translation>
 <translation id="719133302483559673">Administrer dine interesser og præferencer.</translation>
 <translation id="7191382490098297347">Billede fra kamerarulle</translation>
+<translation id="7203150201908454328">Udvidet</translation>
 <translation id="7203496777391039568">Din organisations data beskyttes og holdes fortrolige</translation>
 <translation id="720399613139435155">Oversættelsen mislykkedes</translation>
 <translation id="7204922488054642675">Personligt tilpassede nyheder</translation>
@@ -1864,6 +1868,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7498234416455752244">Fortsæt redigering</translation>
 <translation id="7500244509706269886">Udfyld formularen automatisk</translation>
 <translation id="750493650310597496">0 valgt</translation>
+<translation id="7505402981231763928">Du skal logge ind for at bruge Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Du kan låse dine inkognitofaner ved at konfigurere Touch ID, Face ID eller en adgangskode.</translation>
 <translation id="750886945254958667">Behold denne gruppe for at tilføje faner senere, eller forlad den, hvis du ikke længere vil have adgang til den</translation>

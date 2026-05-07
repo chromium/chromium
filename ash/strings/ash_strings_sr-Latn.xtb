@@ -1049,6 +1049,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Režim pregleda</translation>
 <translation id="4242533952199664413">Otvori podešavanja</translation>
+<translation id="4244765461494758482">Ova podešavanja se sinhronizuju na drugim ChromeOS uređajima. Možete da ih promenite ovde ili da upravljate celom listom u Podešavanjima.</translation>
 <translation id="4247123849143712100">Ažuriraj i isključi</translation>
 <translation id="4249248555939881673">Čeka se mrežna veza...</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
@@ -2330,6 +2331,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8051716679295756675">Šablon pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
 <translation id="8054466585765276473">Izračunavanje vremena trajanja baterije.</translation>
+<translation id="8063363226185507157">Sinhronizovana podešavanja pristupačnosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079538659226626406">Deljenje sadržaja ekrana</translation>
 <translation id="8083540854303889870">Sačuvano za kasnije</translation>

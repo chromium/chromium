@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">تراک</translation>
 <translation id="1366525380420346469">وقتی روشن است</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{می‌توانید اجازه ندهید این سایت دیگر اعلان ارسال کند}one{می‌توانید اجازه ندهید این سایت دیگر اعلان ارسال کند}other{می‌توانید اجازه ندهید این سایت‌ها دیگر اعلان ارسال کنند}}</translation>
-<translation id="1373696734384179344">حافظه برای بارگیری محتوای انتخابی کافی نیست.</translation>
 <translation id="137496472437646183">«محافظت بهبودیافته» را انتخاب کنید</translation>
 <translation id="1376578503827013741">درحال محاسبه…</translation>
 <translation id="1381838868249179644">برای کمک به حفظ امنیت شما، اجازه‌های چند سایت برداشته شد</translation>
@@ -292,6 +291,7 @@
 <translation id="230115972905494466">هیچ دستگاه سازگاری پیدا نشد</translation>
 <translation id="2316129865977710310">نه متشکرم</translation>
 <translation id="2318045970523081853">برای برقراری تماس، تک‌ضرب بزنید.</translation>
+<translation id="232137538351753795">برای برگشتن، از لبه راست تند بکشید</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
 <translation id="2328474416100889417">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
 <translation id="2330186936255788117">نشانک‌های بیشتر</translation>
@@ -357,6 +357,7 @@
 <translation id="2553962148913791095">برخی‌از نشانک‌ها ذخیره نمی‌شوند</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{بارگیری خطرناک مسدود شد}one{‫# بارگیری خطرناک مسدود شد}other{‫# بارگیری خطرناک مسدود شد}}</translation>
 <translation id="2569733278091928697">به‌راحتی می‌توانید کنترل‌های رسانه، جلسه‌های «ناشناس»، بارگیری‌ها، و موارد دیگر را مدیریت کنید</translation>
+<translation id="257088987046510401">طرح‌‌های قسمت</translation>
 <translation id="2571711316400087311">‏پیشنهاد ارسال صفحه‌های نوشته‌شده به زبان‌های دیگر به «ترجمه Google»</translation>
 <translation id="2571834852878229351">ایجاد گذرواژه خودم</translation>
 <translation id="2574249610672786438">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
@@ -526,7 +527,6 @@
 <translation id="3293181007446299124">سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگه داشته می‌شود و گزارش‌ها برای محافظت از هویتتان با تأخیر ارسال می‌شود</translation>
 <translation id="3301936297336370235">تأیید پیشنهاد گذرواژه</translation>
 <translation id="3302615849591357577">بازیابی کردن گروه زبانه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.</translation>
-<translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
 <translation id="3305130791745726624">ارسال به دستگاه‌ها</translation>
 <translation id="3305795716056605962">ترجمه صفحه‌ها ازطریق دکمه «گزینه‌های بیشتر»</translation>
@@ -543,7 +543,6 @@
 <translation id="3373701465337594448">وقتی روشن باشد، فهرست سایت‌هایی که بازدید می‌کنید و علایقتان را حدس می‌زنند، در اینجا نشان داده می‌شود</translation>
 <translation id="3384347053049321195">اشتراک‌گذاری تصویر</translation>
 <translation id="3387650086002190359">به‌دلیل خطاهای سیستم فایل، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
-<translation id="3414952576877147120">اندازه:</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3430670036890315772">خاموش کردن قفل نمایه باعث برداشته شدن اطلاعات ذخیره‌شده‌تان می‌شود</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
@@ -885,7 +884,6 @@
 <translation id="4807098396393229769">نام روی کارت</translation>
 <translation id="480990236307250886">باز کردن صفحه اصلی</translation>
 <translation id="4822710610088666676">گروه زبانه <ph name="TAB_GROUP_TITLE" /> بسته و ذخیره شد</translation>
-<translation id="482405935591409882">زبانه‌ها و گروه‌هایتان را جستجو کنید</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
 <translation id="4835385943915508971">‏Chrome به منبع درخواستی دسترسی ندارد.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}one{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}other{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}}</translation>
@@ -895,7 +893,6 @@
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4864369630010738180">درحال ورود به سیستم…</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>
-<translation id="487567923005969537">فعال کردن «حالت هوشواره‌ای»</translation>
 <translation id="4875775213178255010">محتواهای پیشنهادی</translation>
 <translation id="4877678010818027629">ورود به «حالت ناشناس»</translation>
 <translation id="4878404682131129617">برقراری تونل ازطریق سرور پروکسی ناموفق بود</translation>
@@ -988,7 +985,6 @@
 <translation id="5246093389635966745">میان‌بر ویرایش نوار ابزار</translation>
 <translation id="5264813352784073502">۲۴ ساعت گذشته</translation>
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
-<translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
 <translation id="5273031377282080577">سرپرستتان این تنظیم را مدیریت می‌کند.</translation>
 <translation id="5290322819358431297">تکمیل خودکار گذرواژه‌های شما</translation>
 <translation id="5292796745632149097">ارسال به</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5619633276517849615">سازمانتان «مرور ایمن» را روشن کرده است</translation>
 <translation id="5620163320393916465">گذرواژه‌ای ذخیره نشده است</translation>
 <translation id="5620928963363755975">با استفاده از دکمه «گزینه‌های بیشتر»، فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
-<translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">خوانده‌نشده - دردسترس درحالت آفلاین</translation>
 <translation id="5631483240431073854">مدیریت کردن برگه‌های باز</translation>
 <translation id="5632485077360054581">نشان دادن روش کار</translation>
@@ -1093,7 +1088,6 @@
 <translation id="5763382633136178763">برگه‌های ناشناس</translation>
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه تک‌ضرب بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">توضیح:</translation>
 <translation id="5776970333778123608">داده‌های غیرمهم</translation>
 <translation id="5793665092639000975">درحال استفاده از <ph name="SPACE_USED" /> از <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">موضوع مسدود‌شده</translation>
@@ -1524,7 +1518,6 @@
 <translation id="7365073365123878797">‏برای ذخیره و استفاده از گذرواژه‌ها در «مدیر گذرواژه Google»، «خدمات Google Play» را به‌روز کنید</translation>
 <translation id="7368009310682364976">مشاهده زبانه‌هایی که اخیراً بازشده‌اند</translation>
 <translation id="7368927539449986686">ویرایش جستجوی سایت</translation>
-<translation id="7375125077091615385">نوع:</translation>
 <translation id="7376560087009844242">با گنجاندن بخش بیشتری از نوشتار صفحه، ممکن هنگام استفاده از «لمس کردن برای جستجو» نتایج بهتری دریافت کنید. همواره می‌توانید با رفتن به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> این مورد را تغییر دهید.</translation>
 <translation id="7379900596734708416">زمینه تاریک برای سایت‌ها دردسترس است</translation>
 <translation id="7384486627147155832">تبلیغ اعلان نکات به‌صورت نیمه باز شده است</translation>
@@ -1664,7 +1657,6 @@
 <translation id="7957413488482743710">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">برگه‌های موجود در این دستگاه</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>
-<translation id="7963646190083259054">ارائه‌دهنده:</translation>
 <translation id="7965838025086216108">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
 <translation id="7968014550143838305">به فهرست خواندن اضافه شد</translation>
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
@@ -1673,6 +1665,7 @@
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
 <translation id="7987499071758862048">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome این اجازه‌ها را برداشت زیرا اخیراً بازدیدی نداشته‌اید</translation>
 <translation id="799576009106109668">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
+<translation id="7997875520309653083">برای برگشتن، از لبه چپ تند بکشید</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8001245658307297681">درحال مشاهده فایل محلی هستید</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -1836,7 +1829,6 @@
 <translation id="860282621117673749">اعلان‌های کاهش قیمت</translation>
 <translation id="8611922158252451755">هر کسی پیوند را داشته باشد می‌تواند همه زبانه‌ها را ویرایش کند، پس بااحتیاط هم‌رسانی کنید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
 <translation id="8616006591992756292">‏ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
-<translation id="8617240290563765734">نشانی وب مشخص شده در محتوای بارگیری‌شده باز شود؟</translation>
 <translation id="8629093325209491835">‏«منو Chrome &gt; تنظیمات» را باز کنید</translation>
 <translation id="8634050254805484913">در صفحه‌نمایش‌های باریک پنهان است</translation>
 <translation id="8635399646025169806">گروه زبانه نگه داشته شود؟</translation>
@@ -1877,7 +1869,6 @@
 <translation id="881688628773363275">محتوای زبانه پیش‌نمایش قابل‌مشاهده نیست.</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8824359129672223138">حداکثر <ph name="MAX_WINDOW_COUNT" /> پنجره می‌توانید داشته باشید.</translation>
-<translation id="883806473910249246">هنگام بارگیری محتوا خطایی روی داد.</translation>
 <translation id="8840953339110955557">ممکن است این صفحه با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">پنهان</translation>

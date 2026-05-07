@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ei, tänan</translation>
 <translation id="1531038290222364269">Kuva vahelehed</translation>
 <translation id="1536390784834419204">Tõlgi leht</translation>
+<translation id="1539535193627863227">Selle saidi jaoks ei leitud paroole ega pääsuvõtmeid</translation>
 <translation id="1540800554400757039">Aadress 1</translation>
 <translation id="154312949627292154">Saate avada lukustuskuvalt vahelehed, mis on vastu võetud teie teistest seadmetest.</translation>
 <translation id="1545749641540134597">QR-koodi skannimine</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Lülita lugemisrežiim välja</translation>
 <translation id="3106690631878101882">Peida valik Tõlgi</translation>
 <translation id="310900540163454140">Kas kustutada saidi <ph name="WEBSITE" /> parool?</translation>
+<translation id="3109724472072898302">Ahendatud</translation>
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3116695032231023709">Salvesta ID-kaart</translation>
 <translation id="3119874402040566234">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Teie muudatust ei õnnestunud salvestada.</translation>
 <translation id="3254806613790954367">Viimane avatud vahekaart kõigis teie seadmetes</translation>
 <translation id="325717987950204592">Puudutage valikut „Privaatsus ja turvalisus”</translation>
+<translation id="3259451381796379533">See konto ei tööta Geminiga. Logige sisse mõne teise Google'i kontoga.</translation>
 <translation id="3265736395246760288">Logige kiiremini sisse mis tahes sünkroonitud seadmest</translation>
 <translation id="3272527697863656322">Loobu</translation>
 <translation id="3273510436356991673">Avakuva kohandamine</translation>
@@ -1780,6 +1783,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
 <translation id="719133302483559673">Hallake oma huvisid ja eelistusi.</translation>
 <translation id="7191382490098297347">Kaamera albumi pilt</translation>
+<translation id="7203150201908454328">Laiendatud</translation>
 <translation id="7203496777391039568">Teie organisatsiooni andmed on privaatsed ja kaitstud</translation>
 <translation id="720399613139435155">Tõlkimine ebaõnnestus</translation>
 <translation id="7204922488054642675">Isikupärastatud uudised</translation>
@@ -1864,6 +1868,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7498234416455752244">Jätka muutmist</translation>
 <translation id="7500244509706269886">Täida vorm automaatselt</translation>
 <translation id="750493650310597496">0 valitud</translation>
+<translation id="7505402981231763928">Gemini kasutamiseks peate sisse logima</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Inkognito vahelehtede lukustamiseks seadistage Touch ID, Face ID või pääsukood.</translation>
 <translation id="750886945254958667">Saate säilitada selle grupi, et lisada vahelehed hiljem, või lahkuda sellest, kui te ei soovi sellele enam juurde pääseda</translation>

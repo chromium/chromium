@@ -745,6 +745,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="21613918653299710">Phòng trưng bày hình ảnh trực tuyến</translation>
 <translation id="2161656808144014275">Văn bản</translation>
 <translation id="2162435186600002085">Biểu trưng tiêu đề chính</translation>
+<translation id="2162535140284745414">Nhận đề xuất theo thời gian thực giúp bạn tìm ra những cách duyệt web mới với sự hỗ trợ của AI.</translation>
 <translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kiểm tra xem có lỗi chính tả trong <ph name="HOST_NAME" /> hay không.</translation>
 <translation id="2166049586286450108">Quyền truy cập quản trị đầy đủ</translation>
@@ -1459,6 +1460,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3261488570342242926">Tìm hiểu về thẻ ảo</translation>
 <translation id="3262698603497362968">Các lựa chọn mua hàng</translation>
 <translation id="3264315627780269177">Không thể chia sẻ thẻ này</translation>
+<translation id="3264637689694266148">Nếu bạn tắt tính năng đề xuất, tiêu đề trang và URL của các thẻ vẫn có thể được xử lý cho các tính năng khác của Chrome. Bạn có thể quản lý quyền truy cập của trình duyệt vào dữ liệu này trong</translation>
 <translation id="3266793032086590337">Giá trị (xung đột)</translation>
 <translation id="3268451620468152448">Thẻ đang mở</translation>
 <translation id="3270041629388773465">Bạn sẽ thanh toán nhanh hơn khi lưu mã CVC</translation>
@@ -1903,7 +1905,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3965672182149944205">Lưu địa chỉ?</translation>
 <translation id="3966044442021752214">Sự an toàn của sản phẩm</translation>
 <translation id="396761677631735618">Thẻ khách hàng thân thiết có thể điền bằng thao tác chạm đã mở trên một nửa màn hình.</translation>
-<translation id="3969869202926863008">Quyền truy cập mạng cục bộ</translation>
 <translation id="3970239200223030389">Ngày cấp</translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> bị chặn</translation>
@@ -1994,6 +1995,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4103249731201008433">Số sê-ri thiết bị không hợp lệ</translation>
 <translation id="4103592298805904008">Bìa cứng (Một lớp)</translation>
 <translation id="4104702906064390950">Đang lưu thông tin IBAN</translation>
+<translation id="4106101218644797743">phần cài đặt đồng bộ hoá</translation>
 <translation id="4106887816571530227">Không cho phép nội dung đã nhúng</translation>
 <translation id="4107047499377819067">Quá trình cài đặt dịch vụ nền VPN đã bắt đầu. Quá trình này có thể mất vài phút.</translation>
 <translation id="4110642094637545339">Biểu trưng của Google Pay, AfterPay</translation>
@@ -2329,6 +2331,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4640225694041297329">Hiện kết quả trong vòng 7 ngày qua</translation>
 <translation id="4642296966515958616">Để tham gia nhóm thẻ này, hãy cập nhật Chrome</translation>
 <translation id="464342062220857295">Tìm kiếm tính năng</translation>
+<translation id="4643958597583594452">Chrome sẽ xử lý các tiêu đề trang và URL trên thiết bị của bạn hoặc trong một không gian riêng tư trên đám mây</translation>
 <translation id="4644567637638438744">Bạn chỉ có thể tải tệp lên nếu đã đăng nhập vào Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Thứ tự đảo ngược hướng xuống</translation>
 <translation id="4648262692072505866">Hàm băm phải có định dạng SHA-256.</translation>
@@ -2576,6 +2579,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5019293549442035120">Bạn có thể sử dụng địa chỉ đã lưu trên các sản phẩm của Google. Địa chỉ này sẽ được lưu trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
 <translation id="5019819206251569004">cảm biến chuyển động và ánh sáng</translation>
 <translation id="5019952743397118625">Bạn đã đặt chính sách <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ không kiểm soát khả năng sử dụng chế độ nhà phát triển trên trang tiện ích.</translation>
+<translation id="5020862932518041900">Nếu bạn chọn hoặc bỏ qua một đề xuất, Chrome sẽ điều chỉnh để đảm bảo bạn chỉ thấy những nội dung phù hợp với mình</translation>
 <translation id="5021500396464456616">Liên hệ với người đã gửi đường liên kết này</translation>
 <translation id="5021557570875267742">Theo dõi giá bằng Chrome</translation>
 <translation id="5023310440958281426">Kiểm tra chính sách của quản trị viên của bạn</translation>
@@ -3006,7 +3010,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5660122698869360728">Đây là một thư mục thông minh mới ra mắt, giúp bạn lưu tất cả các trang mua sắm ở cùng một nơi, tự động theo dõi giá và nhận thông tin chi tiết về giá, v.v.</translation>
 <translation id="5663955426505430495">Quản trị viên của thiết bị này đã cài đặt các tiện ích để bổ sung thêm chức năng. Các tiện ích có quyền truy cập vào một số dữ liệu của bạn.</translation>
 <translation id="5667827081946850877">Sách nói</translation>
-<translation id="5674082555327905359">Có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="5675650730144413517">Trang này hiện không hoạt động</translation>
 <translation id="5675809467256309336">Nhạc vũ trường và nhạc điện tử</translation>
 <translation id="5675959228867414813">Hiển thị theo ngày</translation>
@@ -3413,7 +3416,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6321917430147971392">Kiểm tra cài đặt DNS của bạn</translation>
 <translation id="6322182122604171028">Không thể dùng Windows Hello</translation>
 <translation id="6326947323444967009">Đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
-<translation id="6327065120806001832">quyền truy cập mạng cục bộ</translation>
 <translation id="6328639280570009161">Thử tắt dự đoán mạng</translation>
 <translation id="6329742260390895689">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
 <translation id="6329815962353376655">&lt;Nhập câu hỏi&gt;</translation>
@@ -3517,6 +3519,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6451458296329894277">Xác nhận việc Gửi lại Biểu mẫu</translation>
 <translation id="6452429044474066211">Lặn và các hoạt động dưới nước</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Tiêu đề trang và URL của các thẻ đang mở sẽ được sử dụng để đưa ra những đề xuất phù hợp với bạn</translation>
 <translation id="6455632609396391811">Bảo hiểm y tế</translation>
 <translation id="6456955391422100996">Đã xóa quảng cáo.</translation>
 <translation id="6457206614190510200">Đóng kim lồng</translation>
@@ -4411,6 +4414,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7819605256207059717">Tổ chức của bạn đã chặn</translation>
 <translation id="7822611063308883975">Máy chơi trò chơi cầm tay</translation>
 <translation id="7825558994363763489">Lò vi sóng</translation>
+<translation id="7827688884439021871">Nhận đề xuất theo thời gian thực giúp bạn tìm ra những cách duyệt web mới với sự hỗ trợ của AI</translation>
 <translation id="782886543891417279">Wi-Fi mà bạn đang sử dụng (<ph name="WIFI_NAME" />) có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
 <translation id="7831993212387676366">Danh sách mua sắm là gì?</translation>
 <translation id="7840103971441592723">Đã bắt đầu chụp ảnh màn hình</translation>
@@ -4702,6 +4706,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8289355894181816810">Hãy liên hệ với quản trị viên mạng của bạn nếu bạn không chắc chắn về điều này có ý nghĩa gì.</translation>
 <translation id="8291367150570302588">Thẻ căn cước</translation>
 <translation id="829335040383910391">âm thanh</translation>
+<translation id="8294425747071240447">Đề xuất, do AI hỗ trợ</translation>
 <translation id="8294431847097064396">Nguồn</translation>
 <translation id="8297545700510100061">Cookie và dữ liệu trang web khác được dùng để ghi nhớ bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hoá quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi mà bạn đang sử dụng (<ph name="WIFI_NAME" />) có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>

@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">רצועה</translation>
 <translation id="1366525380420346469">במצב מופעל</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{אפשר להפסיק את שליחת ההתראות מהאתר הזה בעתיד}one{אפשר להפסיק את שליחת ההתראות מהאתרים האלו בעתיד}two{אפשר להפסיק את שליחת ההתראות מהאתרים האלו בעתיד}other{אפשר להפסיק את שליחת ההתראות מהאתרים האלו בעתיד}}</translation>
-<translation id="1373696734384179344">אין מספיק זיכרון להורדת התוכן הנבחר.</translation>
 <translation id="137496472437646183">בוחרים באפשרות "הגנה משופרת"</translation>
 <translation id="1376578503827013741">מחשב...</translation>
 <translation id="1381838868249179644">כדי להגן עליך, הוסרו הרשאות מכמה אתרים</translation>
@@ -357,6 +356,7 @@
 <translation id="2553962148913791095">חלק מהסימניות לא נשמרו</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{הורדה מסוכנת נחסמה}one{נחסמו # הורדות מסוכנות}two{נחסמו # הורדות מסוכנות}other{נחסמו # הורדות מסוכנות}}</translation>
 <translation id="2569733278091928697">באמצעות ההתראות, קל יותר לנהל את בקרי המדיה, הסשנים הפרטיים, ההורדות ועוד</translation>
+<translation id="257088987046510401">ערכות נושא</translation>
 <translation id="2571711316400087311">‏הצעה לשלוח דפים בשפות אחרות ל-Google Translate</translation>
 <translation id="2571834852878229351">יצירת סיסמה משלי</translation>
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
@@ -526,7 +526,6 @@
 <translation id="3293181007446299124">היסטוריית הגלישה נשמרת באופן פרטי במכשיר, והדוחות נשלחים לאחר השהיה כדי להגן על הפרטיות שלך.</translation>
 <translation id="3301936297336370235">אישור של ההצעה לסיסמה</translation>
 <translation id="3302615849591357577">שחזור של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />, כקבוצת כרטיסיות חדשה ברקע.</translation>
-<translation id="3303414029551471755">האם להוריד את התוכן?</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3305130791745726624">שליחה למכשיר</translation>
 <translation id="3305795716056605962">תרגום הדפים באמצעות הכפתור 'אפשרויות נוספות'</translation>
@@ -543,7 +542,6 @@
 <translation id="3373701465337594448">כשההגדרה מופעלת, מוצגת כאן רשימה של אתרים שיכולים להעריך את תחומי העניין שלך</translation>
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
-<translation id="3414952576877147120">גודל:</translation>
 <translation id="3417835166382867856">חיפוש כרטיסיות</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
@@ -885,7 +883,6 @@
 <translation id="4807098396393229769">שם על הכרטיס</translation>
 <translation id="480990236307250886">פתיחת דף הבית</translation>
 <translation id="4822710610088666676">קבוצת הכרטיסיות <ph name="TAB_GROUP_TITLE" /> נסגרה ונשמרה</translation>
-<translation id="482405935591409882">חיפוש בכרטיסיות ובקבוצות</translation>
 <translation id="4834250788637067901">‏אמצעי תשלום, מבצעים וכתובות שנשמרו ב‑Google Pay</translation>
 <translation id="4835385943915508971">‏ל-Chrome אין גישה למשאב המבוקש.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{שחזור של קבוצת כרטיסיות שמכילה כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) בצבע <ph name="COLOR_NAME" /> כקבוצת כרטיסיות חדשה ברקע.}one{שחזור של קבוצת כרטיסיות שמכילה <ph name="TAB_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, כקבוצת כרטיסיות חדשה ברקע.}two{שחזור של קבוצת כרטיסיות שמכילה <ph name="TAB_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, כקבוצת כרטיסיות חדשה ברקע.}other{שחזור של קבוצת כרטיסיות שמכילה <ph name="TAB_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />, כקבוצת כרטיסיות חדשה ברקע.}}</translation>
@@ -895,7 +892,6 @@
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
-<translation id="487567923005969537">‏הפעלת מצב AI</translation>
 <translation id="4875775213178255010">תוכן מוצע</translation>
 <translation id="4877678010818027629">מעבר למצב אנונימי</translation>
 <translation id="4878404682131129617">‏יצירת מנהרה בעזרת שרת proxy נכשלה</translation>
@@ -988,7 +984,6 @@
 <translation id="5246093389635966745">עריכת קיצור הדרך בסרגל הכלים</translation>
 <translation id="5264813352784073502">24 השעות האחרונות</translation>
 <translation id="5267572070504076962">כדאי להפעיל את הגלישה הבטוחה ולקבל הגנה מפני אתרים מסוכנים</translation>
-<translation id="5271967389191913893">המכשיר לא מצליח לפתוח את התוכן להורדה.</translation>
 <translation id="5273031377282080577">ההגדרה הזו מנוהלת על ידי האדמין.</translation>
 <translation id="5290322819358431297">מילוי אוטומטי של סיסמאות</translation>
 <translation id="5292796745632149097">שליחה אל</translation>
@@ -1061,7 +1056,6 @@
 <translation id="5619633276517849615">הארגון שלך הפעיל את הגלישה הבטוחה</translation>
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
 <translation id="5620928963363755975">איתור הקבצים והדפים שלך ב'הורדות' דרך הכפתור 'אפשרויות נוספות'</translation>
-<translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
 <translation id="5631483240431073854">ניהול הכרטיסיות הפתוחות</translation>
 <translation id="5632485077360054581">איך עושים זאת?</translation>
@@ -1093,7 +1087,6 @@
 <translation id="5763382633136178763">כרטיסיות אנונימיות</translation>
 <translation id="5763514718066511291">לחיצה מעתיקה את כתובת האתר של האפליקציה הזו</translation>
 <translation id="5765517223145864268">נשמח לשמוע על החוויה שלך. אפשר גם <ph name="BEGIN_LINK" />לשנות את ההגדרות<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">תיאור:</translation>
 <translation id="5776970333778123608">נתונים לא חשובים</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> מתוך <ph name="SPACE_AVAILABLE" /> נמצאים בשימוש</translation>
 <translation id="5797949256525811424">הנושא חסום</translation>
@@ -1524,7 +1517,6 @@
 <translation id="7365073365123878797">‏צריך לעדכן את Google Play Services כדי להתחיל לשמור סיסמאות ולהשתמש בהן עם מנהל הסיסמאות של Google</translation>
 <translation id="7368009310682364976">צופים בכרטיסיות שנפתחו לאחרונה</translation>
 <translation id="7368927539449986686">עריכת החיפוש באתר</translation>
-<translation id="7375125077091615385">סוג:</translation>
 <translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7379900596734708416">העיצוב הכהה זמין לאתרים</translation>
 <translation id="7384486627147155832">ההודעה עם הטיפים פתוחה בחצי מגובה המסך</translation>
@@ -1664,7 +1656,6 @@
 <translation id="7957413488482743710">כרטיס וירטואלי מסתיר את הכרטיס שלך בפועל כדי להגן עליך מפני תרמיות פוטנציאליות. <ph name="BEGIN_LINK1" />כאן מפורט מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">הכרטיסיות במכשיר הזה</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
-<translation id="7963646190083259054">ספק:</translation>
 <translation id="7965838025086216108">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google לחשבון <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">נוסף לרשימת הקריאה</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
@@ -1836,7 +1827,6 @@
 <translation id="860282621117673749">התראות על הנחות</translation>
 <translation id="8611922158252451755">צריך לשים לב עם מי משתפים את הכרטיסיות כי כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="8616006591992756292">‏ייתכן שלחשבון Google שלך יהיו צורות אחרות של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">האם לעבור אל כתובת האתר שצוינה כהצעה בתוכן שהורדת?</translation>
 <translation id="8629093325209491835">‏פותחים את תפריט Chrome &gt; הגדרות</translation>
 <translation id="8634050254805484913">הסרגל מוסתר במסכים צרים</translation>
 <translation id="8635399646025169806">לשמור את קבוצת הכרטיסיות?</translation>
@@ -1877,7 +1867,6 @@
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8824359129672223138">ניתן לפתוח עד <ph name="MAX_WINDOW_COUNT" /> חלונות.</translation>
-<translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>
 <translation id="8840953339110955557">ייתכן שהדף הזה שונה מהגרסה באינטרנט.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">מוסתר</translation>

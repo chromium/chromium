@@ -101,9 +101,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2066690553719545730">Always show AI Mode</translation>
 <translation id="2086476982681781442">Chromium blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="208726765006323911">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chromium iOS.</translation>
-<translation id="2090163042413910600">Chromium turns off JavaScript optimisation when you visit a site for the first time.
-
-If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>

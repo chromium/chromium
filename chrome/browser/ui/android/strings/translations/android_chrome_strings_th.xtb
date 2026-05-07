@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">ติดตาม</translation>
 <translation id="1366525380420346469">เมื่อเปิด</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{คุณป้องกันไม่ให้เว็บไซต์นี้ส่งการแจ้งเตือนในอนาคตได้}other{คุณป้องกันไม่ให้เว็บไซต์เหล่านี้ส่งการแจ้งเตือนในอนาคตได้}}</translation>
-<translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
 <translation id="137496472437646183">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
 <translation id="1376578503827013741">กำลังประมวลผล…</translation>
 <translation id="1381838868249179644">ระบบได้นำสิทธิ์ออกจากบางเว็บไซต์เพื่อช่วยให้คุณปลอดภัย</translation>
@@ -292,6 +291,7 @@
 <translation id="230115972905494466">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2316129865977710310">ไม่เป็นไร</translation>
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
+<translation id="232137538351753795">ปัดจากขอบด้านซ้ายเพื่อย้อนกลับ</translation>
 <translation id="2323763861024343754">พื้นที่เก็บข้อมูลเว็บไซต์</translation>
 <translation id="2328474416100889417">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะปิดลิงก์คำเชิญทั้งหมด</translation>
 <translation id="2330186936255788117">บุ๊กมาร์กเพิ่มเติม</translation>
@@ -357,6 +357,7 @@
 <translation id="2553962148913791095">ระบบไม่ได้บันทึกบุ๊กมาร์กบางรายการ</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว}other{บล็อกการดาวน์โหลดที่เป็นอันตราย # รายการแล้ว}}</translation>
 <translation id="2569733278091928697">คุณสามารถจัดการการควบคุมสื่อ เซสชันไม่ระบุตัวตน การดาวน์โหลด และอื่นๆ ได้โดยง่าย</translation>
+<translation id="257088987046510401">ธีม</translation>
 <translation id="2571711316400087311">เสนอการส่งหน้าในภาษาอื่นๆ ไปยัง Google แปลภาษา</translation>
 <translation id="2571834852878229351">สร้างของฉันเอง</translation>
 <translation id="2574249610672786438">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
@@ -526,7 +527,6 @@
 <translation id="3293181007446299124">ระบบจะจัดเก็บประวัติการท่องเว็บไว้เป็นส่วนตัวในอุปกรณ์ และจะส่งรายงานล่าช้าเพื่อปกป้องตัวตนของคุณ</translation>
 <translation id="3301936297336370235">การยืนยันคําแนะนํารหัสผ่าน</translation>
 <translation id="3302615849591357577">คืนค่ากลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> สี<ph name="COLOR_NAME" />เป็นกลุ่มแท็บใหม่ในเบื้องหลัง</translation>
-<translation id="3303414029551471755">ต้องการดำเนินการดาวน์โหลดเนื้อหานี้ไหม</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3305130791745726624">ส่งไปที่อุปกรณ์</translation>
 <translation id="3305795716056605962">ดูข้อความแจ้งเกี่ยวกับการแปลหน้าเว็บจากปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
@@ -543,7 +543,6 @@
 <translation id="3373701465337594448">เมื่อเปิดใช้การตั้งค่านี้ รายการเว็บไซต์ที่คุณเข้าชมซึ่งคาดเดาความสนใจของคุณจะปรากฏขึ้นที่นี่</translation>
 <translation id="3384347053049321195">แชร์รูปภาพ</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
-<translation id="3414952576877147120">ขนาด:</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3430670036890315772">การปิดการล็อกโปรไฟล์จะนําข้อมูลที่บันทึกไว้ออก</translation>
 <translation id="3435465986463792564">หากมีหน้าต่างเปิดอยู่หลายหน้า คุณจัดการหน้าต่างเหล่านั้นได้จากที่นี่</translation>
@@ -885,7 +884,6 @@
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
 <translation id="480990236307250886">เปิดหน้าแรก</translation>
 <translation id="4822710610088666676">ปิดและบันทึกกลุ่มแท็บ "<ph name="TAB_GROUP_TITLE" />" แล้ว</translation>
-<translation id="482405935591409882">ค้นหาแท็บและกลุ่ม</translation>
 <translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
 <translation id="4835385943915508971">Chrome ไม่มีสิทธิ์เข้าถึงทรัพยากรที่ขอ</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{คืนค่ากลุ่มแท็บ <ph name="TAB_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />เป็นกลุ่มแท็บใหม่ในเบื้องหลัง}other{คืนค่ากลุ่มแท็บ <ph name="TAB_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />เป็นกลุ่มแท็บใหม่ในเบื้องหลัง}}</translation>
@@ -895,7 +893,6 @@
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4866368707455379617">ติดตั้ง <ph name="MODULE" /> สำหรับ Chrome ไม่ได้</translation>
-<translation id="487567923005969537">เปิดใช้โหมด AI</translation>
 <translation id="4875775213178255010">การแนะนำเนื้อหา</translation>
 <translation id="4877678010818027629">เข้าสู่โหมดไม่ระบุตัวตน</translation>
 <translation id="4878404682131129617">สร้างช่องทางผ่านพร็อกซีเซิร์ฟเวอร์ไม่ได้</translation>
@@ -988,7 +985,6 @@
 <translation id="5246093389635966745">แก้ไขทางลัดแถบเครื่องมือ</translation>
 <translation id="5264813352784073502">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="5267572070504076962">เปิด Google Safe Browsing เพื่อปกป้องคุณจากเว็บไซต์ที่เป็นอันตราย</translation>
-<translation id="5271967389191913893">อุปกรณ์ไม่สามารถเปิดเนื้อหาที่จะดาวน์โหลดได้</translation>
 <translation id="5273031377282080577">ผู้ดูแลระบบจัดการการตั้งค่านี้</translation>
 <translation id="5290322819358431297">ป้อนรหัสผ่านของคุณโดยอัตโนมัติ</translation>
 <translation id="5292796745632149097">ส่งไปที่</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5619633276517849615">องค์กรเปิด Google Safe Browsing ไว้</translation>
 <translation id="5620163320393916465">ไม่มีรหัสผ่านที่บันทึกไว้</translation>
 <translation id="5620928963363755975">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลดจากปุ่มตัวเลือกเพิ่มเติม</translation>
-<translation id="5626134646977739690">ชื่อ:</translation>
 <translation id="5628604359369369630">ยังไม่อ่าน - อ่านขณะออฟไลน์ได้</translation>
 <translation id="5631483240431073854">จัดการแท็บที่เปิดอยู่</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
@@ -1093,7 +1088,6 @@
 <translation id="5763382633136178763">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5763514718066511291">แตะเพื่อคัดลอก URL สำหรับแอปนี้</translation>
 <translation id="5765517223145864268">เล่าประสบการณ์ของคุณให้เราฟัง หรือ<ph name="BEGIN_LINK" />เปลี่ยนการตั้งค่า<ph name="END_LINK" /></translation>
-<translation id="5765780083710877561">คำอธิบาย:</translation>
 <translation id="5776970333778123608">ข้อมูลที่ไม่สำคัญ</translation>
 <translation id="5793665092639000975">ใช้ไป <ph name="SPACE_USED" /> จาก <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">บล็อกหัวข้อแล้ว</translation>
@@ -1524,7 +1518,6 @@
 <translation id="7365073365123878797">หากต้องการเริ่มบันทึกและใช้รหัสผ่านด้วยเครื่องมือจัดการรหัสผ่านบน Google ให้อัปเดตบริการ Google Play</translation>
 <translation id="7368009310682364976">ดูแท็บที่เพิ่งเปิด</translation>
 <translation id="7368927539449986686">แก้ไขการค้นหาเว็บไซต์</translation>
-<translation id="7375125077091615385">ประเภท:</translation>
 <translation id="7376560087009844242">การรวมข้อความของหน้ามากขึ้นอาจช่วยให้คุณเห็นผลการค้นหาที่ดีขึ้นเมื่อใช้ฟีเจอร์แตะเพื่อค้นหา คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อโดยไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="7379900596734708416">ธีมมืดสำหรับเว็บไซต์พร้อมให้ใช้งาน</translation>
 <translation id="7384486627147155832">การโปรโมตการแจ้งเตือนเคล็ดลับเปิดอยู่ครึ่งหน้าจอ</translation>
@@ -1664,7 +1657,6 @@
 <translation id="7957413488482743710">บัตรเสมือนจะซ่อนบัตรจริงไว้เพื่อช่วยปกป้องคุณจากการฉ้อโกงที่อาจเกิดขึ้น <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">แท็บในอุปกรณ์นี้</translation>
 <translation id="7961926449547174351">คุณปิดการเข้าถึงพื้นที่เก็บข้อมูลไว้ โปรดไปที่การตั้งค่าเพื่อเปิดการเข้าถึง</translation>
-<translation id="7963646190083259054">ผู้ขาย:</translation>
 <translation id="7965838025086216108">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="7968014550143838305">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
@@ -1673,6 +1665,7 @@
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากคุณไม่ได้เข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="799576009106109668">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
+<translation id="7997875520309653083">ปัดจากขอบด้านขวาเพื่อย้อนกลับ</translation>
 <translation id="7998918019931843664">เปิดแท็บที่ปิดไปแล้วขึ้นใหม่</translation>
 <translation id="8001245658307297681">คุณกำลังดูไฟล์ในเครื่อง</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
@@ -1836,7 +1829,6 @@
 <translation id="860282621117673749">การแจ้งเตือนการลดราคา</translation>
 <translation id="8611922158252451755">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดแชร์อย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชั่วโมง</translation>
 <translation id="8616006591992756292">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
-<translation id="8617240290563765734">ต้องการเปิด URL แนะนำซึ่งระบุอยู่ในเนื้อหาที่ดาวน์โหลดไหม</translation>
 <translation id="8629093325209491835">เปิดเมนู Chrome &gt; การตั้งค่า</translation>
 <translation id="8634050254805484913">ซ่อนในหน้าจอแคบ</translation>
 <translation id="8635399646025169806">เก็บกลุ่มแท็บไว้ใช่ไหม</translation>
@@ -1877,7 +1869,6 @@
 <translation id="881688628773363275">ดูเนื้อหาในแท็บตัวอย่างไม่ได้</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8824359129672223138">คุณมีหน้าต่างได้ไม่เกิน <ph name="MAX_WINDOW_COUNT" /> รายการ</translation>
-<translation id="883806473910249246">เกิดข้อผิดพลาดขณะดาวน์โหลดเนื้อหา</translation>
 <translation id="8840953339110955557">หน้าเว็บนี้อาจแตกต่างไปจากเวอร์ชันที่ออนไลน์</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ซ่อน</translation>

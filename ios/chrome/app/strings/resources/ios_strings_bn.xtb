@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">না থাক</translation>
 <translation id="1531038290222364269">ট্যাব দেখুন</translation>
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
+<translation id="1539535193627863227">এই সাইটের জন্য কোনও পাসওয়ার্ড বা পাসকী পাওয়া যায়নি</translation>
 <translation id="1540800554400757039">ঠিকানা ১</translation>
 <translation id="154312949627292154">আপনার অন্য ডিভাইস থেকে পাওয়া ট্যাবগুলি লক স্ক্রিনে খুলুন।</translation>
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">রিডিং মোড বন্ধ করুন</translation>
 <translation id="3106690631878101882">'অনুবাদ করুন' বিকল্প লুকান</translation>
 <translation id="310900540163454140"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছতে চান?</translation>
+<translation id="3109724472072898302">সঙ্কুচিত</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3116695032231023709">আইডি কার্ড সেভ করা</translation>
 <translation id="3119874402040566234">আপনি সাইন-আউট হয়ে যাবেন এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">আপনার পরিবর্তন সেভ করা যায়নি।</translation>
 <translation id="3254806613790954367">আপনার সব ডিভাইস জুড়ে শেষ যে ট্যাবটি খুলেছেন</translation>
 <translation id="325717987950204592">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন</translation>
+<translation id="3259451381796379533">এই অ্যাকাউন্ট Gemini-তে কাজ করবে না। অন্য একটি Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
 <translation id="3265736395246760288">আপনার সিঙ্ক করা যেকোনও ডিভাইস থেকে আরও দ্রুত সাইন-ইন করুন।</translation>
 <translation id="3272527697863656322">বাতিল করুন</translation>
 <translation id="3273510436356991673">আপনার হোম স্ক্রিন কাস্টমাইজ করুন</translation>
@@ -1781,6 +1784,7 @@
 <translation id="7186568385131859684">Google পরিষেবা জুড়ে আপনার অন্যান্য ডেটার সাথে কীভাবে আপনার ব্রাউজিং ইতিহাস ব্যবহার করা হয় তা নিয়ন্ত্রণ করুন</translation>
 <translation id="719133302483559673">আপনার আগ্রহের বিষয় ও পছন্দ ম্যানেজ করুন।</translation>
 <translation id="7191382490098297347">ক্যামেরা রোলের ছবি</translation>
+<translation id="7203150201908454328">প্রসারিত</translation>
 <translation id="7203496777391039568">আপনার প্রতিষ্ঠানের ডেটা ব্যক্তিগত ও সুরক্ষিত</translation>
 <translation id="720399613139435155">অনুবাদ করা যায়নি</translation>
 <translation id="7204922488054642675">আপনার পছন্দের খবর</translation>
@@ -1865,6 +1869,7 @@
 <translation id="7498234416455752244">এডিট করতে থাকুন</translation>
 <translation id="7500244509706269886">ফর্ম অটোফিল করুন</translation>
 <translation id="750493650310597496">০টি নির্বাচিত</translation>
+<translation id="7505402981231763928">Gemini ব্যবহার করার জন্য আপনাকে সাইন-ইন করতে হবে</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">আপনার 'ছদ্মবেশী' ট্যাব লক করতে 'টাচ আইডি', 'ফেস আইডি' বা 'পাসকোড' সেট করুন।</translation>
 <translation id="750886945254958667">পরে ট্যাব যোগ করার জন্য এই গ্রুপটি রেখে দিন অথবা আর অ্যাক্সেস করতে না চাইলে ছেড়ে বেরিয়ে আসুন</translation>

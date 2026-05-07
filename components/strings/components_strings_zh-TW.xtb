@@ -744,6 +744,7 @@
 <translation id="21613918653299710">線上圖庫</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162435186600002085">主要頁首標誌</translation>
+<translation id="2162535140284745414">運用 AI 即時建議，體驗全新瀏覽方式。</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
@@ -991,6 +992,7 @@
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系統會將結帳頁面的內容分享給 Google，以便提供這些選項。<ph name="END_BOLD" />付款方案須符合資格條件。如要隱藏「先買後付」選項，請前往<ph name="BEGIN_LINK" />付款設定<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如要執行這個應用程式，請重新啟用隔離網頁應用程式的開發人員模式</translation>
 <translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
@@ -1456,6 +1458,7 @@
 <translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3262698603497362968">購買選項</translation>
 <translation id="3264315627780269177">無法分享這個分頁</translation>
+<translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的網頁標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3270041629388773465">儲存信用卡驗證碼可加快結帳速度</translation>
@@ -1900,7 +1903,6 @@
 <translation id="3965672182149944205">要儲存地址嗎？</translation>
 <translation id="3966044442021752214">產品安全</translation>
 <translation id="396761677631735618">會員卡已顯示在畫面下半部，輕觸即可填入。</translation>
-<translation id="3969869202926863008">區域網路存取權</translation>
 <translation id="3970239200223030389">核發日期</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 遭到封鎖</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4103249731201008433">裝置序號無效</translation>
 <translation id="4103592298805904008">紙板 (單層瓦楞紙)</translation>
 <translation id="4104702906064390950">正在儲存 IBAN 資訊</translation>
+<translation id="4106101218644797743">同步處理設定</translation>
 <translation id="4106887816571530227">不允許內嵌的內容</translation>
 <translation id="4107047499377819067">VPN 背景服務已開始安裝，可能需要幾分鐘才能完成。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay 標誌</translation>
@@ -2326,6 +2329,7 @@
 <translation id="4640225694041297329">顯示過去 7 天的結果</translation>
 <translation id="4642296966515958616">如要加入這個分頁群組，請更新 Chrome</translation>
 <translation id="464342062220857295">搜尋功能</translation>
+<translation id="4643958597583594452">Chrome 會在裝置端或雲端私人空間處理網頁標題和網址</translation>
 <translation id="4644567637638438744">你必須登入 Microsoft OneDrive 才能上傳檔案</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4648262692072505866">雜湊的格式必須是 SHA-256。</translation>
@@ -2573,6 +2577,7 @@
 <translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="5019819206251569004">動作和光源感應器</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策已設定。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不會控管能否在擴充功能頁面上使用開發人員模式。</translation>
+<translation id="5020862932518041900">無論你選取或忽略建議，Chrome 都會調整內容，確保你只看到相關資訊</translation>
 <translation id="5021500396464456616">請與傳送這個連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看你的管理員政策</translation>
@@ -3003,7 +3008,6 @@
 <translation id="5660122698869360728">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等。</translation>
 <translation id="5663955426505430495">這部裝置的管理員已安裝支援額外功能的擴充功能。這些擴充功能可存取你的部分資料。</translation>
 <translation id="5667827081946850877">有聲書</translation>
-<translation id="5674082555327905359">可以要求連線到區域網路上的任何裝置</translation>
 <translation id="5675650730144413517">這個網頁無法正常運作</translation>
 <translation id="5675809467256309336">舞曲與電子音樂</translation>
 <translation id="5675959228867414813">依日期顯示</translation>
@@ -3410,7 +3414,6 @@
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
 <translation id="6322182122604171028">無法使用 Windows Hello</translation>
 <translation id="6326947323444967009">在 iOS 設定中將 Chrome 設為系統的預設瀏覽器</translation>
-<translation id="6327065120806001832">區域網路存取權</translation>
 <translation id="6328639280570009161">建議停用網路預測功能</translation>
 <translation id="6329742260390895689">如要自動填入資訊，請前往 Google 錢包設定開啟「在各項 Google 服務中使用憑證」</translation>
 <translation id="6329815962353376655">&lt;輸入問題&gt;</translation>
@@ -3514,6 +3517,7 @@
 <translation id="6451458296329894277">確認重新提交表單</translation>
 <translation id="6452429044474066211">潛水活動</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">系統會使用你開啟的分頁標題和網址，提供相關建議</translation>
 <translation id="6455632609396391811">健康保險</translation>
 <translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬訂</translation>
@@ -4408,6 +4412,7 @@
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7822611063308883975">掌上型遊戲主機</translation>
 <translation id="7825558994363763489">微波爐</translation>
+<translation id="7827688884439021871">運用 AI 即時建議，體驗全新瀏覽方式</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">開始擷取螢幕畫面</translation>
@@ -4699,6 +4704,7 @@
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>
 <translation id="8291367150570302588">身分證</translation>
 <translation id="829335040383910391">音訊</translation>
+<translation id="8294425747071240447">AI 提供的建議</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料來記住你，用於登入帳戶或是放送個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>

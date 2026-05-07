@@ -95,7 +95,6 @@
 <translation id="1363028406613469049">Traccia</translation>
 <translation id="1366525380420346469">Quando la funzionalità è attiva</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Puoi impedire a questo sito di inviare notifiche future}other{Puoi impedire a questi siti di inviare notifiche future}}</translation>
-<translation id="1373696734384179344">Memoria non sufficiente per scaricare i contenuti selezionati.</translation>
 <translation id="137496472437646183">Scegli Protezione avanzata</translation>
 <translation id="1376578503827013741">Elaborazione...</translation>
 <translation id="1381838868249179644">Per contribuire alla tua sicurezza, sono state rimosse le autorizzazioni di alcuni siti</translation>
@@ -292,6 +291,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
 <translation id="2316129865977710310">No, grazie</translation>
 <translation id="2318045970523081853">Tocca per chiamare</translation>
+<translation id="232137538351753795">Scorri dal bordo sinistro per tornare indietro</translation>
 <translation id="2323763861024343754">Memoria utilizzata dai siti</translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
@@ -357,6 +357,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2553962148913791095">Alcuni preferiti non sono stati salvati</translation>
 <translation id="2566471851103108967">{FILE_COUNT,plural, =1{Download pericoloso bloccato}other{# download pericolosi bloccati}}</translation>
 <translation id="2569733278091928697">Potrai gestire facilmente i controlli multimediali, le sessioni in incognito, i download e altro ancora</translation>
+<translation id="257088987046510401">Temi</translation>
 <translation id="2571711316400087311">Proponi di inviare pagine in altre lingue a Google Traduttore</translation>
 <translation id="2571834852878229351">Creane una personalizzata</translation>
 <translation id="2574249610672786438">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome per visualizzare le tue schede</translation>
@@ -526,7 +527,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3293181007446299124">La cronologia di navigazione rimane privata sul tuo dispositivo e i report vengono inviati in ritardo per proteggere la tua identità</translation>
 <translation id="3301936297336370235">Conferma suggerimento password</translation>
 <translation id="3302615849591357577">Ripristina il gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />, come nuovo gruppo di schede in background.</translation>
-<translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
 <translation id="3305130791745726624">Invia a dispositivi</translation>
 <translation id="3305795716056605962">Traduci le pagine dal pulsante Altre opzioni</translation>
@@ -543,7 +543,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3373701465337594448">Quando l'opzione è attiva, viene visualizzato qui un elenco di siti che ipotizza i tuoi interessi</translation>
 <translation id="3384347053049321195">Condividi immagine</translation>
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
-<translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="3417835166382867856">Cerca tra le schede</translation>
 <translation id="3430670036890315772">Se disattivi il blocco del profilo, le informazioni salvate verranno rimosse</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
@@ -885,7 +884,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="480990236307250886">Apri pagina iniziale</translation>
 <translation id="4822710610088666676">Gruppo di schede <ph name="TAB_GROUP_TITLE" /> chiuso e salvato</translation>
-<translation id="482405935591409882">Cerca nelle schede e nei gruppi</translation>
 <translation id="4834250788637067901">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
 <translation id="4835385943915508971">Chrome non ha accesso alla risorsa richiesta.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Ripristina il gruppo di schede di <ph name="TAB_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, come nuovo gruppo di schede in background.}other{Ripristina il gruppo di schede di <ph name="TAB_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, come nuovo gruppo di schede in background.}}</translation>
@@ -895,7 +893,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4866368707455379617">Impossibile installare <ph name="MODULE" /> per Chrome</translation>
-<translation id="487567923005969537">Attiva AI Mode</translation>
 <translation id="4875775213178255010">Contenuti suggeriti</translation>
 <translation id="4877678010818027629">Accedi alla modalità Incognito</translation>
 <translation id="4878404682131129617">Creazione di un tunnel tramite server proxy non riuscita</translation>
@@ -988,7 +985,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5246093389635966745">Modifica scorciatoia per la barra degli strumenti</translation>
 <translation id="5264813352784073502">ultime 24 ore</translation>
 <translation id="5267572070504076962">Attiva Navigazione sicura per proteggerti da siti pericolosi</translation>
-<translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5273031377282080577">Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="5290322819358431297">Compila automaticamente le tue password</translation>
 <translation id="5292796745632149097">Invia a</translation>
@@ -1061,7 +1057,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5619633276517849615">La tua organizzazione ha attivato Navigazione sicura</translation>
 <translation id="5620163320393916465">Nessuna password salvata</translation>
 <translation id="5620928963363755975">Usa il pulsante Altre opzioni per trovare i tuoi file e le tue pagine nella cartella Download</translation>
-<translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Da leggere - Disponibile offline</translation>
 <translation id="5631483240431073854">Gestisci schede aperte</translation>
 <translation id="5632485077360054581">Mostrami come fare</translation>
@@ -1093,7 +1088,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5763382633136178763">Schede in incognito</translation>
 <translation id="5763514718066511291">Tocca per copiare l'URL di quest'app</translation>
 <translation id="5765517223145864268">Raccontaci la tua esperienza o <ph name="BEGIN_LINK" />cambia le impostazioni<ph name="END_LINK" />.</translation>
-<translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5776970333778123608">Dati non importanti</translation>
 <translation id="5793665092639000975">Spazio utilizzato: <ph name="SPACE_USED" /> di <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Argomento bloccato</translation>
@@ -1524,7 +1518,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7365073365123878797">Per iniziare a salvare e utilizzare le password con Gestore delle password di Google, aggiorna Google Play Services</translation>
 <translation id="7368009310682364976">Visualizza le schede aperte di recente</translation>
 <translation id="7368927539449986686">Modifica ricerca su sito</translation>
-<translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se includi più testo di una pagina, potresti vedere risultati migliori quando utilizzi Tocca per cercare. Puoi andare alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" /> per modificare questa scelta in qualsiasi momento.</translation>
 <translation id="7379900596734708416">Il tema scuro per i siti è disponibile</translation>
 <translation id="7384486627147155832">Notifica di promozione suggerita aperta nella parte inferiore dello schermo</translation>
@@ -1664,7 +1657,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7957413488482743710">Una carta virtuale nasconde la tua carta effettiva per proteggerti meglio da potenziali attività fraudolente. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Schede su questo dispositivo</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
-<translation id="7963646190083259054">Fornitore:</translation>
 <translation id="7965838025086216108">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
@@ -1673,6 +1665,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni perché non hai visitato il sito di recente</translation>
 <translation id="799576009106109668">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
+<translation id="7997875520309653083">Scorri dal bordo destro per tornare indietro</translation>
 <translation id="7998918019931843664">Riapri la scheda chiusa</translation>
 <translation id="8001245658307297681">Stai visualizzando un file locale</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1836,7 +1829,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="860282621117673749">Avvisi su cali di prezzo</translation>
 <translation id="8611922158252451755">Chiunque abbia il link può modificare tutte le schede, quindi condividilo con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="8616006591992756292">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
-<translation id="8617240290563765734">Aprire l'URL consigliato specificato nei contenuti scaricati?</translation>
 <translation id="8629093325209491835">Apri il menu Chrome &gt; Impostazioni</translation>
 <translation id="8634050254805484913">Nascosto su schermi stretti</translation>
 <translation id="8635399646025169806">Mantenere il gruppo di schede?</translation>
@@ -1877,7 +1869,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="881688628773363275">I contenuti della scheda di anteprima non sono visualizzabili.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8824359129672223138">Puoi avere fino a <ph name="MAX_WINDOW_COUNT" /> finestre.</translation>
-<translation id="883806473910249246">Si è verificato un errore durante il download dei contenuti.</translation>
 <translation id="8840953339110955557">Questa pagina potrebbe essere diversa dalla versione online.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Nascosto</translation>

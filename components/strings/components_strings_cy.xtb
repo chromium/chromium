@@ -993,6 +993,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2521385132275182522">Stapl ar y dde isaf</translation>
 <translation id="2521736961081452453">Creu ffurflen</translation>
 <translation id="2524461107774643265">Ychwanegu Rhagor o Wybodaeth</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Mae cynnwys o'r dudalen dalu yn cael ei rannu â Google i gynnig yr opsiynau hyn.<ph name="END_BOLD" /> Mae cynlluniau talu yn amodol ar gymhwysedd. I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiadau talu<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">I redeg yr ap hwn, ail-alluogwch y Modd Datblygwr Ap Gwe Ynysig</translation>
 <translation id="2526280916094749336">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
@@ -1904,7 +1905,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3965672182149944205">Cadw'r cyfeiriad?</translation>
 <translation id="3966044442021752214">Diogelwch cynnyrch</translation>
 <translation id="396761677631735618">Cardiau teyrngarwch ar gael i'w llenwi ar gyffwrdd wedi'u hagor ar hanner uchder.</translation>
-<translation id="3969869202926863008">Mynediad rhwydwaith lleol</translation>
 <translation id="3970239200223030389">Dyddiad cyhoeddi</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
 <translation id="3973234410852337861">Mae <ph name="HOST_NAME" /> wedi'i rwystro</translation>
@@ -3010,7 +3010,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5660122698869360728">Ffolder smart newydd sy'n eich helpu i gadw'ch holl dudalennau siopa mewn un lle, olrhain prisiau yn awtomatig, cael mewnwelediadau pris, a rhagor.</translation>
 <translation id="5663955426505430495">Mae gweinyddwr y ddyfais hon wedi gosod estyniadau ar gyfer swyddogaethau ychwanegol. Mae gan estyniadau fynediad at rywfaint o'ch data.</translation>
 <translation id="5667827081946850877">Llyfrau Llafar</translation>
-<translation id="5674082555327905359">Yn gallu gofyn i gysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="5675650730144413517">Nid yw'r dudalen hon yn gweithio</translation>
 <translation id="5675809467256309336">Cerddoriaeth Dawns ac Electronig</translation>
 <translation id="5675959228867414813">Dangos yn ôl dyddiad</translation>
@@ -3417,7 +3416,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6321917430147971392">Gwiriwch eich gosodiadau DNS</translation>
 <translation id="6322182122604171028">Ni ellid defnyddio Windows Hello</translation>
 <translation id="6326947323444967009">Gosod Chrome fel porwr diofyn y system yng ngosodiadau iOS</translation>
-<translation id="6327065120806001832">mynediad rhwydwaith lleol</translation>
 <translation id="6328639280570009161">Rhowch gynnig ar analluogi rhagfynegiad rhwydwaith</translation>
 <translation id="6329742260390895689">I awtolenwi'ch gwybodaeth, trowch "Defnyddio tocynnau ar draws Google" ymlaen yng ngosodiadau Wallet</translation>
 <translation id="6329815962353376655">&lt;Teipiwch gwestiwn&gt;</translation>

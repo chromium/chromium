@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1531038290222364269">Näytä välilehdet</translation>
 <translation id="1536390784834419204">Käännä sivu</translation>
+<translation id="1539535193627863227">Tälle sivustolle ei löytynyt salasanoja tai avainkoodeja</translation>
 <translation id="1540800554400757039">Osoite 1</translation>
 <translation id="154312949627292154">Avaa muilta laitteilta saadut välilehdet lukitusnäytöltä.</translation>
 <translation id="1545749641540134597">Skannaa QR-koodi</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Laita lukutila pois päältä</translation>
 <translation id="3106690631878101882">Piilota "Kääntäjä"</translation>
 <translation id="310900540163454140">Poistetaanko salasana (<ph name="WEBSITE" />)?</translation>
+<translation id="3109724472072898302">Tiivistetty</translation>
 <translation id="3112556859945124369">Merkitse…</translation>
 <translation id="3116695032231023709">Tallenna henkilötodistus</translation>
 <translation id="3119874402040566234">Sinut kirjataan ulos ja selausdata poistetaan</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Muutosta ei voitu tallentaa.</translation>
 <translation id="3254806613790954367">Viimeinen avoin välilehti kaikilla laitteillasi</translation>
 <translation id="325717987950204592">Valitse "Yksityisyys ja turvallisuus"</translation>
+<translation id="3259451381796379533">Tämä tili ei toimi Geminin kanssa. Kirjaudu toiselle Google-tilille.</translation>
 <translation id="3265736395246760288">Kirjaudu sisään nopeammin kaikilla synkronoiduilla laitteilla.</translation>
 <translation id="3272527697863656322">Peru</translation>
 <translation id="3273510436356991673">Muokkaa aloitusnäyttöä</translation>
@@ -1780,6 +1783,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7186568385131859684">Valitse, miten selaushistoriaa käytetään muun datan kanssa Googlen palveluissa</translation>
 <translation id="719133302483559673">Ylläpidä kiinnostuksen kohteita ja valintoja.</translation>
 <translation id="7191382490098297347">Kameran rulla -kuva</translation>
+<translation id="7203150201908454328">Laajennettu</translation>
 <translation id="7203496777391039568">Organisaatiosi data pysyy yksityisenä ja suojattuna</translation>
 <translation id="720399613139435155">Kääntäminen epäonnistui</translation>
 <translation id="7204922488054642675">Omat uutiset</translation>
@@ -1864,6 +1868,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7498234416455752244">Jatka muokkausta</translation>
 <translation id="7500244509706269886">Täytä lomake automaattisesti</translation>
 <translation id="750493650310597496">0 valittu</translation>
+<translation id="7505402981231763928">Sinun on kirjauduttava sisään, jotta voit käyttää Geminiä</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Jos haluat lukita incognito-välilehdet, ota käyttöön Touch ID, Face ID tai tunnuskoodi.</translation>
 <translation id="750886945254958667">Säilytä ryhmä, niin voit lisätä siihen välilehtiä myöhemmin, tai poistu ryhmästä, jos et enää halua käyttää sitä</translation>

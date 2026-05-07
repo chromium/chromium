@@ -745,6 +745,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="21613918653299710">Myndasöfn á netinu</translation>
 <translation id="2161656808144014275">Texti</translation>
 <translation id="2162435186600002085">Lógó aðalhauss</translation>
+<translation id="2162535140284745414">Fáðu tillögur í rauntíma sem geta hjálpað þér að finna nýjar leiðir til að skoða með gervigreind.</translation>
 <translation id="2162620598375156287">Núna <ph name="CURRENT_PRICE" /> á <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Kannaðu hvort innsláttarvillu sé að finna í <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Fullt stjórnandaaðgengi</translation>
@@ -992,6 +993,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2521385132275182522">Hefti neðst til hægri</translation>
 <translation id="2521736961081452453">Búa til eyðublað</translation>
 <translation id="2524461107774643265">Bæta við fleiri upplýsingum</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Efni frá greiðslusíðunni er deilt með Google til að bjóða upp á þessa valkosti.<ph name="END_BOLD" /> Greiðsluáætlanir eru háðar gjaldgengi. Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til að fela valkosti greiðslufrests</translation>
 <translation id="2526062290525841862">Til að keyra þetta forrit skaltu virkja aftur forritarastillingu einangraðs vefforrits</translation>
 <translation id="2526280916094749336">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang verður vistað á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-númerið er á framhlið kortsins. Það er 4 tölustafa kóðinn efst til hægri ofan við kortanúmerið.</translation>
@@ -1458,6 +1460,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3261488570342242926">Nánar um sýndarkort</translation>
 <translation id="3262698603497362968">Kaupvalkostir</translation>
 <translation id="3264315627780269177">Ekki er hægt að deila þessum flipa</translation>
+<translation id="3264637689694266148">Ef þú slekkur á tillögum verður heiti síðu og vefslóðir flipanna þinna hugsanlega áfram unnið fyrir aðra eiginleika Chrome. Þú getur stjórnað aðgangi vafra að þessum gögnum í</translation>
 <translation id="3266793032086590337">Gildi (skörun)</translation>
 <translation id="3268451620468152448">Opna flipa</translation>
 <translation id="3270041629388773465">Þú getur gengið hraðar frá kaupum þegar CVC-númerin þín eru vistuð</translation>
@@ -1902,7 +1905,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3965672182149944205">Vista heimilisfang?</translation>
 <translation id="3966044442021752214">Öryggi vörunnar</translation>
 <translation id="396761677631735618">Tryggðarkort sem hægt er að fylla út með einni snertingu, opin til hálfs.</translation>
-<translation id="3969869202926863008">Aðgangur að staðarneti</translation>
 <translation id="3970239200223030389">Útgáfudagur</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="3973234410852337861">Lokað er fyrir <ph name="HOST_NAME" /></translation>
@@ -1993,6 +1995,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4103249731201008433">Raðnúmer tækisins er ógilt</translation>
 <translation id="4103592298805904008">Pappi (einfaldur)</translation>
 <translation id="4104702906064390950">Vistar IBAN-upplýsingar</translation>
+<translation id="4106101218644797743">samstillingarkostir</translation>
 <translation id="4106887816571530227">Innfellt efni er ekki leyft</translation>
 <translation id="4107047499377819067">Uppsetning á bakgrunnsþjónustu VPN er hafin, þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="4110642094637545339">Lógó fyrir Google Pay og AfterPay</translation>
@@ -2328,6 +2331,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4640225694041297329">Sýna niðurstöður síðustu 7 daga</translation>
 <translation id="4642296966515958616">Uppfærðu Chrome til að taka þátt í þessum flipahópi</translation>
 <translation id="464342062220857295">Leitareiginleikar</translation>
+<translation id="4643958597583594452">Chrome vinnur úr heitum síðna og vefslóðum í tækinu þínu eða í lokuðu rými í skýinu</translation>
 <translation id="4644567637638438744">Aðeins er hægt að hlaða upp skrám ef þú ert innskráð(ur) í Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Öfug röð, snýr niður</translation>
 <translation id="4648262692072505866">Tætigildi verður að vera á sniðinu SHA-256.</translation>
@@ -2575,6 +2579,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5019293549442035120">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang verður vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">hreyfi- og birtuskynjara</translation>
 <translation id="5019952743397118625">Reglan <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er stillt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> mun ekki stjórna tiltækileika forritarastillingar á viðbótasíðu.</translation>
+<translation id="5020862932518041900">Ef þú velur eða hunsar tillögu mun Chrome aðlaga sig til að tryggja að þú sjáir aðeins það sem á við um þig</translation>
 <translation id="5021500396464456616">Hafðu samband við einstaklinginn sem sendi þennan tengil</translation>
 <translation id="5021557570875267742">Vaktaðu verð með Chrome</translation>
 <translation id="5023310440958281426">Athugaðu stjórnandastefnurnar</translation>
@@ -3005,7 +3010,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5660122698869360728">Ný snjallmappa sem auðveldar þér að vista allar verslunarsíður á einum stað, fylgjast sjálfkrafa með verði, fá upplýsingar um verð og fleira.</translation>
 <translation id="5663955426505430495">Kerfisstjóri þessa tækis hefur sett upp viðbætur fyrir fleiri aðgerðir. Viðbætur hafa aðgang að sumum af gögnunum þínum.</translation>
 <translation id="5667827081946850877">Hljóðbækur</translation>
-<translation id="5674082555327905359">Mega biðja um að tengjast hvaða tæki sem er á staðarnetinu þínu</translation>
 <translation id="5675650730144413517">Þessi síða virkar ekki</translation>
 <translation id="5675809467256309336">Dans- og raftónlist</translation>
 <translation id="5675959228867414813">Sýna eftir dagsetningu</translation>
@@ -3412,7 +3416,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6321917430147971392">Athugaðu DNS-stillingarnar</translation>
 <translation id="6322182122604171028">Ekki var hægt að nota Windows Hello</translation>
 <translation id="6326947323444967009">Stilltu Chrome sem sjálfgefinn vafra kerfisins í stillingum iOS</translation>
-<translation id="6327065120806001832">aðgangur að staðarneti</translation>
 <translation id="6328639280570009161">Prófaðu að slökkva á netspá</translation>
 <translation id="6329742260390895689">Kveiktu á „Nota passa alls staðar á Google“ í stillingum veskis til að fylla upplýsingarnar þínar sjálfkrafa út</translation>
 <translation id="6329815962353376655">&lt;Sláðu inn spurningu&gt;</translation>
@@ -3516,6 +3519,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6451458296329894277">Staðfesta endursendingu eyðublaðs</translation>
 <translation id="6452429044474066211">Köfun og neðansjávarskoðun</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Síðutitlar og vefslóðir opinna flipa eru notaðar til að veita þér viðeigandi tillögur</translation>
 <translation id="6455632609396391811">Sjúkratryggingar</translation>
 <translation id="6456955391422100996">Auglýsing fjarlægð.</translation>
 <translation id="6457206614190510200">Kjalhefting</translation>
@@ -4409,6 +4413,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7819605256207059717">Fyrirtækið setti á bannlista</translation>
 <translation id="7822611063308883975">Leikjatölvur sem haldið er á</translation>
 <translation id="7825558994363763489">Örbylgjuofnar</translation>
+<translation id="7827688884439021871">Fáðu tillögur í rauntíma sem geta hjálpað þér að finna nýjar leiðir til að skoða vefinn með gervigreind</translation>
 <translation id="782886543891417279">Wi-Fi netið sem þú notar (<ph name="WIFI_NAME" />) kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
 <translation id="7831993212387676366">Hvað er innkaupalistinn?</translation>
 <translation id="7840103971441592723">Skjáupptaka er hafin</translation>
@@ -4700,6 +4705,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8289355894181816810">Hafðu samband við kerfisstjóra ef þú ert ekki viss um hvað þetta þýðir.</translation>
 <translation id="8291367150570302588">Skilríki</translation>
 <translation id="829335040383910391">hljóð</translation>
+<translation id="8294425747071240447">Tillögur, knúnar af gervigreind</translation>
 <translation id="8294431847097064396">Uppruni</translation>
 <translation id="8297545700510100061">Fótspor og önnur vefsvæðagögn eru notuð til að muna eftir þér, t.d. til að skrá þig inn eða sérsníða auglýsingar. Upplýsingar um stjórnun fótspora fyrir öll vefsvæði eru í <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi netið sem þú notar (<ph name="WIFI_NAME" />) kann að fara fram á að þú farir á <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>

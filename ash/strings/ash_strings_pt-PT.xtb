@@ -1048,6 +1048,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista geral</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
+<translation id="4244765461494758482">Estas definições estão a ser sincronizadas nos seus outros dispositivos com ChromeOS. Pode alterá-las aqui ou gerir a lista completa nas Definições.</translation>
 <translation id="4247123849143712100">Atualizar e encerrar</translation>
 <translation id="4249248555939881673">A aguardar ligação à rede...</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
@@ -2328,6 +2329,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8051716679295756675">O modelo denominado <ph name="DESK_TEMPLATE_NAME" /> já existe</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
+<translation id="8063363226185507157">Definições de acessibilidade sincronizadas</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8079538659226626406">Partilha de ecrã</translation>
 <translation id="8083540854303889870">Guardados para mais tarde</translation>

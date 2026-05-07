@@ -478,6 +478,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1727613060316725209">A tanúsítvány érvényes</translation>
 <translation id="1728677426644403582">Jelenleg weboldal forrását tekinti meg</translation>
 <translation id="173080396488393970">Ez a kártyatípus nem támogatott</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Inkább személyesen oldom meg</translation>
 <translation id="1733064249834771892">betűtípusok</translation>
 <translation id="1733631169686303142">Hangtechnika</translation>
@@ -745,6 +746,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="21613918653299710">Internetes képgalériák</translation>
 <translation id="2161656808144014275">Szöveg</translation>
 <translation id="2162435186600002085">Elsődleges fejléclogó</translation>
+<translation id="2162535140284745414">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával.</translation>
 <translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Ellenőrizze, hogy van-e elírás a(z) <ph name="HOST_NAME" /> domainnévben.</translation>
 <translation id="2166049586286450108">Teljes rendszergazdai hozzáférés</translation>
@@ -992,6 +994,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2521385132275182522">Kapocs jobbra lent</translation>
 <translation id="2521736961081452453">Űrlap létrehozása</translation>
 <translation id="2524461107774643265">További adatok hozzáadása</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />A fizetési oldal tartalmát megosztjuk a Google-lal, hogy felkínálhassuk ezeket a lehetőségeket.<ph name="END_BOLD" /> A fizetési konstrukciók a jogosultságtól függnek. A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LINK" />fizetési beállításokhoz<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">Az alkalmazás futtatásához engedélyezze újra az izolált internetes alkalmazások fejlesztői módját</translation>
 <translation id="2526280916094749336">A mentett címeket használhatja a Google-termékekben. Ezt a címet az Ön Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer.</translation>
 <translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
@@ -1456,6 +1459,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3261488570342242926">További információ a virtuális kártyákról</translation>
 <translation id="3262698603497362968">Vásárlási lehetőségek</translation>
 <translation id="3264315627780269177">Ez a lap nem osztható meg</translation>
+<translation id="3264637689694266148">Ha kikapcsolja a javaslatokat, a lapok oldalcímeit és URL-jeit továbbra is feldolgozhatja a rendszer más Chrome-funkciókhoz. A böngészőnek az adatokhoz való hozzáférését</translation>
 <translation id="3266793032086590337">Érték (ütközés)</translation>
 <translation id="3268451620468152448">Megnyitott lapok</translation>
 <translation id="3270041629388773465">Gyorsabban fizethet mentett CVC-kódokkal.</translation>
@@ -1591,6 +1595,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="350069200438440499">Fájlnév?</translation>
 <translation id="3501300228850242680">Metál (zene)</translation>
 <translation id="350421688684366066">Címkék (magas fényű)</translation>
+<translation id="3507062913298382727">Igazolvány mentése</translation>
 <translation id="350763432931695541">Szöveg kibontása a következő néhány oldalon</translation>
 <translation id="3507869775212388416">Jogi állások</translation>
 <translation id="3507936815618196901">3D-s térkép készítése az Ön környezetéről és a kamera pozíciójának követése</translation>
@@ -1900,7 +1905,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3965672182149944205">Menti a címet?</translation>
 <translation id="3966044442021752214">Termékbiztonság</translation>
 <translation id="396761677631735618">Az érintéssel kitölthető hűségkártyák listája félmagasságban van megnyitva.</translation>
-<translation id="3969869202926863008">Hozzáférés helyi hálózaton</translation>
 <translation id="3970239200223030389">Kiadás dátuma</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
@@ -1984,12 +1988,14 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4098306082496067348">Koppintson a virtuális kártyája adataira a fizetésnél való használathoz.</translation>
 <translation id="4099048595830172239">A rendszergazda által beállított házirend nem javasolja a képernyő <ph name="APPLICATION_TITLE" /> alkalmazással való megosztását, ha bizalmas tartalom látható a képernyőn:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban megjelenő betűméretek és betűképek személyre szabásához.</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Szöveg és grafika</translation>
 <translation id="4101917550061398111">Kijelölt elemek törlése</translation>
 <translation id="4102567721634170493">Helyi hírek</translation>
 <translation id="4103249731201008433">Az eszköz sorozatszáma érvénytelen</translation>
 <translation id="4103592298805904008">Karton (egyfalú)</translation>
 <translation id="4104702906064390950">IBAN-adatok mentése folyamatban</translation>
+<translation id="4106101218644797743">a szinkronizálási beállításokban kezelheti.</translation>
 <translation id="4106887816571530227">A beágyazott tartalmak nem engedélyezettek</translation>
 <translation id="4107047499377819067">Elkezdődött a VPN-háttérszolgáltatások telepítése. Ez eltarthat néhány percig.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay-logó</translation>
@@ -2210,6 +2216,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4415156962929755728">Műanyag (magas fényű)</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
 <translation id="4415748029120993980">SECG elliptikus görbe secp384r1 (vagyis NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">A jelszavak a kezelési beállításokban törölhetők.</translation>
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="4425750422187370446">Atlétikai ruházat</translation>
@@ -2325,6 +2332,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4640225694041297329">Az elmúlt 7 napból származó találatok megjelenítése</translation>
 <translation id="4642296966515958616">A lapcsoporthoz való csatlakozáshoz frissítse a Chrome-ot</translation>
 <translation id="464342062220857295">Funkciók keresése</translation>
+<translation id="4643958597583594452">A Chrome az eszközön vagy a felhőben lévő privát területen dolgozza fel az oldalcímeket és az URL-eket</translation>
 <translation id="4644567637638438744">Csak akkor tölthet fel fájlokat, ha be van jelentkezve a Microsoft OneDrive szolgáltatásba</translation>
 <translation id="4644670975240021822">Fordított sorrend, lefelé fordítva</translation>
 <translation id="4648262692072505866">A hashnek SHA-256 formátumúnak kell lennie.</translation>
@@ -2572,6 +2580,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5019293549442035120">A mentett címeket használhatja a Google-termékben. Ezt a címet az Ön Google-fiókjába (<ph name="USER_EMAIL" />) menti a rendszer.</translation>
 <translation id="5019819206251569004">mozgás- és fényérzékelők</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> házirend beállítva. A(z) <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nem szabályozza a fejlesztői mód bővítmények oldalán való rendelkezésre állását.</translation>
+<translation id="5020862932518041900">Ha kiválaszt egy javaslatot, vagy ha figyelmen kívül hagyja azt, a Chrome igazodik hozzá úgy, hogy csak az Ön számára releváns tartalmakat jelenítse meg</translation>
 <translation id="5021500396464456616">Lépjen kapcsolatba a linket küldő személlyel</translation>
 <translation id="5021557570875267742">Árak nyomon követése a Chrome segítségével</translation>
 <translation id="5023310440958281426">Ellenőrizze rendszergazdai házirendjeit</translation>
@@ -2947,6 +2956,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5573641252776268565">Útlevél szerkesztése</translation>
 <translation id="5578606540385219379">Szolgáltatók</translation>
 <translation id="5580958916614886209">Ellenőrizze a lejárati hónapot, majd próbálja újra</translation>
+<translation id="5582453333200265572">Igazolvány frissítése</translation>
 <translation id="5583442610070676234">További műveletek a(z) <ph name="COMPARE_SET_NAME" /> összehasonlító táblázathoz</translation>
 <translation id="55841966151154662">Nem sikerült elmenteni az IBAN-t a Google Walletbe. Csak az eszköz Chrome alkalmazásába mentette a rendszer.</translation>
 <translation id="558420943003240152">Jelszavak és azonosítókulcsok kezelése…</translation>
@@ -3002,7 +3012,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5660122698869360728">Új intelligens mappa, amelynek segítségével egy helyen mentheti az összes vásárlási oldalát, automatikusan nyomon követheti az árakat, valamint árváltozásokról és -összehasonlításokról szóló értesítéseket, illetve egyéb információkat tekinthet meg.</translation>
 <translation id="5663955426505430495">Az eszköz rendszergazdája bővítményeket telepített további funkciók használata céljából. A bővítmények hozzáférhetnek az Ön bizonyos adataihoz.</translation>
 <translation id="5667827081946850877">Hangoskönyvek</translation>
-<translation id="5674082555327905359">Engedélyt kérhet a helyi hálózaton lévő bármelyik eszközhöz való csatlakozásra</translation>
 <translation id="5675650730144413517">Az oldal nem működik</translation>
 <translation id="5675809467256309336">Dance és elektronikus zene</translation>
 <translation id="5675959228867414813">Megjelenítés dátum szerint</translation>
@@ -3081,6 +3090,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5808435672482059465">Chrome-előzmények megtekintése</translation>
 <translation id="5810442152076338065">A(z) <ph name="DOMAIN" /> domainnel való kapcsolata elavult kriptográfiával van titkosítva.</translation>
 <translation id="5813119285467412249">&amp;Hozzáadás újra</translation>
+<translation id="5813274153495000141">Mentheti adatait, és gyorsabban tölthet ki űrlapokat. A rendszer az eszközére menti őket.</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Párosítás</translation>
 <translation id="5820625124144807242">A megrendelés ellenőrzését követően be kell jelentkeznie <ph name="BNPL_ISSUER_NAME" />-fiókjába, vagy létre kell hoznia egy újat. Ezt a fiókot automatikusan összekapcsoljuk a Google Pay szolgáltatással.</translation>
@@ -3409,7 +3419,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6321917430147971392">Ellenőrizze a DNS-beállításokat</translation>
 <translation id="6322182122604171028">Hiba történt a Windows Hello használata során</translation>
 <translation id="6326947323444967009">A Chrome beállítása a rendszer alapértelmezett böngészőjeként az iOS beállításaiban</translation>
-<translation id="6327065120806001832">a hozzáférés helyi hálózaton</translation>
 <translation id="6328639280570009161">Próbálkozzon a hálózati előrejelzések kikapcsolásával</translation>
 <translation id="6329742260390895689">Az adatok automatikus kitöltéséhez kapcsolja be a „Kártyák használata a Google-on” beállítást a Wallet beállításaiban.</translation>
 <translation id="6329815962353376655">&lt;Írja be a kérdését&gt;</translation>
@@ -3513,6 +3522,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6451458296329894277">Képernyő újraküldésének megerősítése</translation>
 <translation id="6452429044474066211">Búvárkodás és víz alatti tevékenységek</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">A megnyitott lapok oldalcímeit és URL-jeit arra használja a böngésző, hogy releváns javaslatokat adjon Önnek</translation>
 <translation id="6455632609396391811">Egészségbiztosítás</translation>
 <translation id="6456955391422100996">Hirdetés eltávolítva.</translation>
 <translation id="6457206614190510200">Gerinctűzés</translation>
@@ -4407,6 +4417,7 @@ További részletek:
 <translation id="7819605256207059717">Letiltotta a szervezete</translation>
 <translation id="7822611063308883975">Kézi játékkonzolok</translation>
 <translation id="7825558994363763489">Mikrohullámú sütők</translation>
+<translation id="7827688884439021871">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával</translation>
 <translation id="782886543891417279">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a bejelentkezést a bejelentkezési oldalán.</translation>
 <translation id="7831993212387676366">Mi az a bevásárlólista?</translation>
 <translation id="7840103971441592723">A képernyőfelvétel elindult</translation>
@@ -4699,6 +4710,7 @@ További részletek:
 <translation id="8289355894181816810">Forduljon a hálózati rendszergazdához, ha nem tudja, hogy ez mit jelent.</translation>
 <translation id="8291367150570302588">Igazolvány</translation>
 <translation id="829335040383910391">hang</translation>
+<translation id="8294425747071240447">AI-alapú javaslatok</translation>
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8297545700510100061">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztessék, vagy személyre szabják a hirdetéseket. A <ph name="SETTINGS" /> szakaszban kezelheti a webhelyek cookie-jait.</translation>
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>

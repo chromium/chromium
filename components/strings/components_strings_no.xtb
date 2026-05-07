@@ -1905,7 +1905,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3965672182149944205">Vil du lagre adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhet</translation>
 <translation id="396761677631735618">Stamkundekort som kan fylles ut ved berøring, åpnes i halv høyde.</translation>
-<translation id="3969869202926863008">Lokal nettverkstilgang</translation>
 <translation id="3970239200223030389">Utstedelsesdato</translation>
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokkert</translation>
@@ -3011,7 +3010,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5660122698869360728">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer.</translation>
 <translation id="5663955426505430495">Enhetsadministratoren har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
 <translation id="5667827081946850877">Lydbøker</translation>
-<translation id="5674082555327905359">Kan be om å få koble til enheter på det lokale nettverket</translation>
 <translation id="5675650730144413517">Denne siden fungerer ikke</translation>
 <translation id="5675809467256309336">Dance og elektronisk musikk</translation>
 <translation id="5675959228867414813">Vis etter dato</translation>
@@ -3418,7 +3416,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6321917430147971392">Kontroller DNS-innstillingene dine</translation>
 <translation id="6322182122604171028">Kunne ikke bruke Windows Hello</translation>
 <translation id="6326947323444967009">Angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
-<translation id="6327065120806001832">lokal nettverkstilgang</translation>
 <translation id="6328639280570009161">Prøv å slå av nettverksforutsigelse</translation>
 <translation id="6329742260390895689">For å autofylle informasjonen din, slå på «Bruk kort og billetter i hele Google» i Wallet-innstillingene</translation>
 <translation id="6329815962353376655">&lt;Skriv inn et spørsmål&gt;</translation>

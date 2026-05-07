@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nee, dankie</translation>
 <translation id="1531038290222364269">Wys oortjies</translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
+<translation id="1539535193627863227">Geen wagwoorde of toegangsleutels is vir hierdie werf gekry nie</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Oortjies wat ontvang is vanaf jou ander toestelle van die sluitskerm af.</translation>
 <translation id="1545749641540134597">Skandeer QR-kode</translation>
@@ -598,6 +599,7 @@
 <translation id="3106258548858559536">Skakel Leesmodus af</translation>
 <translation id="3106690631878101882">Versteek Vertaal</translation>
 <translation id="310900540163454140">Vee wagwoord vir <ph name="WEBSITE" /> uit?</translation>
+<translation id="3109724472072898302">Ingevou</translation>
 <translation id="3112556859945124369">Merk …</translation>
 <translation id="3116695032231023709">Stoor identiteitkaart</translation>
 <translation id="3119874402040566234">Jy sal afgemeld word en blaaierdata sal uitgevee word</translation>
@@ -642,6 +644,7 @@
 <translation id="3245744387817103524">Jou verandering kon nie gestoor word nie.</translation>
 <translation id="3254806613790954367">Jou laaste oop oortjie op al jou toestelle</translation>
 <translation id="325717987950204592">Tik op “Privaatheid en sekuriteit”</translation>
+<translation id="3259451381796379533">Hierdie rekening sal nie met Gemini werk nie. Meld aan met ’n ander Google-rekening.</translation>
 <translation id="3265736395246760288">Meld vinniger aan vanaf enige van jou gesinkroniseerde toestelle.</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
 <translation id="3273510436356991673">Pasmaak jou tuisskerm</translation>
@@ -1780,6 +1783,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7186568385131859684">Beheer hoe blaaigeskiedenis met jou ander data oral in Google-dienste gebruik word</translation>
 <translation id="719133302483559673">Bestuur jou belangstellings en voorkeure.</translation>
 <translation id="7191382490098297347">Kameraspoelbeeld</translation>
+<translation id="7203150201908454328">Uitgevou</translation>
 <translation id="7203496777391039568">Jou organisasie se data is privaat en veilig</translation>
 <translation id="720399613139435155">Kon nie vertaal nie</translation>
 <translation id="7204922488054642675">Gepersonaliseerde nuus</translation>
@@ -1864,6 +1868,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7498234416455752244">Hou aan wysig</translation>
 <translation id="7500244509706269886">Outovul vorm</translation>
 <translation id="750493650310597496">0 gekies</translation>
+<translation id="7505402981231763928">Jy moet aanmeld om Gemini te gebruik</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Stel Raak-ID, Gesig-ID of 'n wagkode op om jou Incognito-oortjies te sluit.</translation>
 <translation id="750886945254958667">Hou hierdie groep om later oortjies by te voeg, of verlaat dit as jy nie meer toegang daartoe wil hê nie</translation>
