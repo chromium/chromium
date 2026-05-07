@@ -145,7 +145,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 
 // Whether the DevTools AI Code Completion for Styles pane is enabled.
 BASE_FEATURE(kDevToolsAiCodeCompletionStyles,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiCodeCompletionStylesModelId{
     &kDevToolsAiCodeCompletionStyles, "aida_model_id",
     /*default_value=*/""};
