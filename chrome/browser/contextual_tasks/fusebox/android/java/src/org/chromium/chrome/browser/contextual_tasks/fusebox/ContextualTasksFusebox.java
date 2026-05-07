@@ -181,9 +181,17 @@ public class ContextualTasksFusebox {
         if (bridge == null) {
             loadUrlCallback.onResult(url);
         } else {
-            String rawQueryText = mLocationBarCoordinator.getUrlBarData().displayText.toString();
-            bridge.submitQueryToAimPage(rawQueryText);
+            bridge.submitQueryToAimPage(url);
+
+            var session = mDataProvider.getFuseboxSessionState();
+            if (session != null) {
+                var input = session.getAutocompleteInput();
+                input.setUserText("");
+                input.setInitialUserText("");
+            }
+
             mLocationBarCoordinator.setOmniboxEditingText("");
+            mLocationBarCoordinator.clearOmniboxFocus();
         }
         return true;
     }

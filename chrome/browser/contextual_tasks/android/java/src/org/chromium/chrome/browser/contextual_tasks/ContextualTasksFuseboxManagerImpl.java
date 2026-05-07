@@ -233,9 +233,6 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
             // 3. Input State: Focus fusebox if on the AIM page.
             if (isOnAimPage) {
                 ensureFuseboxInitialized();
-                if (mFusebox != null) {
-                    mFusebox.beginInput();
-                }
             } else {
                 if (mFusebox != null) {
                     mFusebox.endInput();
