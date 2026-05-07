@@ -66,13 +66,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void createGroup(String protoParams, long nativeCallbackPtr) {
+    public void createGroup(byte[] protoParams, long nativeCallbackPtr) {
         CreateGroupParams params;
         try {
-            params = CreateGroupParams.parseFrom(protoParams.getBytes());
+            params = CreateGroupParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runCreateGroupCallback(
@@ -91,13 +91,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void readGroups(String protoParams, long nativeCallbackPtr) {
+    public void readGroups(byte[] protoParams, long nativeCallbackPtr) {
         ReadGroupsParams params;
         try {
-            params = ReadGroupsParams.parseFrom(protoParams.getBytes());
+            params = ReadGroupsParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runReadGroupsCallback(
@@ -116,13 +116,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void readGroupWithToken(String protoParams, long nativeCallbackPtr) {
+    public void readGroupWithToken(byte[] protoParams, long nativeCallbackPtr) {
         ReadGroupWithTokenParams params;
         try {
-            params = ReadGroupWithTokenParams.parseFrom(protoParams.getBytes());
+            params = ReadGroupWithTokenParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runReadGroupsCallback(
@@ -141,13 +141,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void addMember(String protoParams, long nativeCallbackPtr) {
+    public void addMember(byte[] protoParams, long nativeCallbackPtr) {
         AddMemberParams params;
         try {
-            params = AddMemberParams.parseFrom(protoParams.getBytes());
+            params = AddMemberParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runGetStatusCallback(nativeCallbackPtr, Status.FAILURE);
@@ -162,13 +162,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void removeMember(String protoParams, long nativeCallbackPtr) {
+    public void removeMember(byte[] protoParams, long nativeCallbackPtr) {
         RemoveMemberParams params;
         try {
-            params = RemoveMemberParams.parseFrom(protoParams.getBytes());
+            params = RemoveMemberParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runGetStatusCallback(nativeCallbackPtr, Status.FAILURE);
@@ -183,13 +183,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void leaveGroup(String protoParams, long nativeCallbackPtr) {
+    public void leaveGroup(byte[] protoParams, long nativeCallbackPtr) {
         LeaveGroupParams params;
         try {
-            params = LeaveGroupParams.parseFrom(protoParams.getBytes());
+            params = LeaveGroupParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runGetStatusCallback(nativeCallbackPtr, Status.FAILURE);
@@ -204,13 +204,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void deleteGroup(String protoParams, long nativeCallbackPtr) {
+    public void deleteGroup(byte[] protoParams, long nativeCallbackPtr) {
         DeleteGroupParams params;
         try {
-            params = DeleteGroupParams.parseFrom(protoParams.getBytes());
+            params = DeleteGroupParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runGetStatusCallback(nativeCallbackPtr, Status.FAILURE);
@@ -225,13 +225,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void lookupGaiaIdByEmail(String protoParams, long nativeCallbackPtr) {
+    public void lookupGaiaIdByEmail(byte[] protoParams, long nativeCallbackPtr) {
         LookupGaiaIdByEmailParams params;
         try {
-            params = LookupGaiaIdByEmailParams.parseFrom(protoParams.getBytes());
+            params = LookupGaiaIdByEmailParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runLookupGaiaIdByEmailCallback(
@@ -254,13 +254,13 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
-    public void addAccessToken(String protoParams, long nativeCallbackPtr) {
+    public void addAccessToken(byte[] protoParams, long nativeCallbackPtr) {
         AddAccessTokenParams params;
         try {
-            params = AddAccessTokenParams.parseFrom(protoParams.getBytes());
+            params = AddAccessTokenParams.parseFrom(protoParams);
         } catch (InvalidProtocolBufferException e) {
             PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
+                    TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         DataSharingSDKDelegateBridgeJni.get()
                                 .runAddAccessTokenCallback(
