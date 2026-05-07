@@ -39,12 +39,15 @@ class MockVideoCaptureProvider : public VideoCaptureProvider {
               CloseNativeScreenCapturePicker,
               (DesktopMediaID device_id),
               (override));
+#if BUILDFLAG(IS_MAC)
   MOCK_METHOD(
       void,
-      GetMainBundleId,
+      GetApplicationAudioCaptureId,
       (DesktopMediaID::Id session_id,
-       base::OnceCallback<void(const std::optional<std::string>&)> callback),
+       base::OnceCallback<void(
+           const std::optional<media::ApplicationAudioCaptureId>&)> callback),
       (override));
+#endif
 };
 
 class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {

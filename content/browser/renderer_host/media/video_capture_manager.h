@@ -243,9 +243,12 @@ class CONTENT_EXPORT VideoCaptureManager
 
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id);
 
-  void GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+  void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback);
+      base::OnceCallback<void(
+          const std::optional<media::ApplicationAudioCaptureId>&)> callback);
+#endif
 
   VideoCaptureProvider& video_capture_provider() {
     return *video_capture_provider_.get();

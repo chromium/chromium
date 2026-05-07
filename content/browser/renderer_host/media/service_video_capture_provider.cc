@@ -171,11 +171,14 @@ void ServiceVideoCaptureProvider::CloseNativeScreenCapturePicker(
   NOTREACHED();
 }
 
-void ServiceVideoCaptureProvider::GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+void ServiceVideoCaptureProvider::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+    base::OnceCallback<void(
+        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
   std::move(callback).Run(std::nullopt);
 }
+#endif
 
 void ServiceVideoCaptureProvider::OnServiceStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

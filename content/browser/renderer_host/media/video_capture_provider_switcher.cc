@@ -103,11 +103,14 @@ void VideoCaptureProviderSwitcher::CloseNativeScreenCapturePicker(
   other_types_capture_provider_->CloseNativeScreenCapturePicker(device_id);
 }
 
-void VideoCaptureProviderSwitcher::GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+void VideoCaptureProviderSwitcher::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  other_types_capture_provider_->GetMainBundleId(session_id,
-                                                 std::move(callback));
+    base::OnceCallback<void(
+        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
+  other_types_capture_provider_->GetApplicationAudioCaptureId(
+      session_id, std::move(callback));
 }
+#endif
 
 }  // namespace content

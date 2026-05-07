@@ -17,13 +17,14 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
-#include "content/browser/media/capture/capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 
 // Enables the allowsChangingSelectedContent property on the native macOS
 // picker (SCContentSharingPicker). This allows users to select a new window or
@@ -134,98 +135,37 @@ BASE_FEATURE(kMaxContentShareCount, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kMaxContentShareCountValue = {
     &kMaxContentShareCount, "max_content_share_count", 50};
 
-class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
-    : public NativeScreenCapturePicker {
- public:
-  using PickerUpdateCallback =
-      base::RepeatingCallback<void(SCContentFilter*, SCStream*)>;
-  using PickerCancelCallback = base::RepeatingCallback<void(SCStream*)>;
+namespace {
+API_AVAILABLE(macos(14.0))
+NativeScreenCapturePickerMac::GetWindowOwnerPidCallback& GetTestingCallback() {
+  static base::NoDestructor<
+      NativeScreenCapturePickerMac::GetWindowOwnerPidCallback>
+      callback;
+  return *callback;
+}
 
-  NativeScreenCapturePickerMac();
-  ~NativeScreenCapturePickerMac() override = default;
+API_AVAILABLE(macos(14.0))
+pid_t GetWindowOwnerPid(DesktopMediaID::Id id) {
+  if (auto& testing_callback = GetTestingCallback()) {
+    return testing_callback.Run(id);
+  }
+  return webrtc::GetWindowOwnerPid(id);
+}
+}  // namespace
 
-  void Open(DesktopMediaID::Type type,
-            base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
-            base::OnceCallback<void(Source)> picker_callback,
-            base::OnceClosure cancel_callback,
-            base::OnceClosure error_callback,
-            base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback)
-      override;
-  void Close(DesktopMediaID device_id) override;
-  void GetMainBundleId(DesktopMediaID::Id session_id,
-                       GetMainBundleIdCallback callback) override;
-  std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
-      const DesktopMediaID& source) override;
-
-  base::WeakPtr<NativeScreenCapturePicker> GetWeakPtr() override;
-
- private:
-  struct CaptureSession {
-    CaptureSession();
-    ~CaptureSession();
-
-    // The filter defining what is being captured.
-    SCContentFilter* __strong filter;
-    // Tracks if the initial OS response (update/cancel/error) has occurred.
-    bool received_first_response = false;
-    // Timer to cleanup the session state after the device is closed.
-    base::OneShotTimer cleanup_timer;
-
-    std::optional<std::string> primary_bundle_id;
-    base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback;
-  };
-
-  // Callbacks called by PickerObserver when it receives an event from the OS.
-  void OnPickerObserverUpdated(SCContentFilter* filter, SCStream* stream);
-  void OnPickerObserverCancelled(SCStream* stream);
-  void OnPickerObserverEncounteredError(NSError* error);
-
-  void UpdateAudioStatusForSession(CaptureSession& session,
-                                   DesktopMediaID::Id session_id,
-                                   SCContentFilter* filter);
-
-  void ScheduleCleanup(DesktopMediaID::Id id);
-  void CleanupContentFilter(DesktopMediaID::Id id);
-
-  // Callback called by `ScreenCaptureKitDeviceMac` on creating a new stream.
-  void UpdateStreamMap(DesktopMediaID::Id id, SCStream* stream);
-
-  // Get the capture session or create it if it doesn't exist.
-  CaptureSession& GetOrCreateCaptureSession(DesktopMediaID::Id id);
-
-  // There is only one picker observer which has callbacks initialized only
-  // once.
-  PickerObserver* __strong picker_observer_;
-  base::OnceCallback<void(Source)> picker_callback_;
-  base::OnceClosure cancel_callback_;
-  base::OnceClosure error_callback_;
-
-  // On every new getDisplayMedia request, we increment
-  // `active_picker_source_id_` and assign `active_picker_type_` the type of the
-  // request. Since while making a selection of the capture surface the rest of
-  // the UI becomes non-interactive, it is ensured that the callbacks are called
-  // for the right selection.
-  DesktopMediaID::Id active_picker_source_id_ = 0;
-  DesktopMediaID::Type active_picker_type_;
-
-  // Map of all sessions, indexed by their unique DesktopMediaID::Id.
-  absl::flat_hash_map<DesktopMediaID::Id, std::unique_ptr<CaptureSession>>
-      sessions_;
-  // `active_source_ids_` keeps a track of the number of active capture
-  // sessions.
-  absl::flat_hash_set<DesktopMediaID::Id> active_source_ids_;
-  // Reverse lookup to find session ID when the OS provides an SCStream*.
-  absl::flat_hash_map<SCStream*, DesktopMediaID::Id> stream_to_id_map_;
-
-  const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
-  base::WeakPtrFactory<NativeScreenCapturePickerMac> weak_ptr_factory_{this};
-};
+void API_AVAILABLE(macos(14.0))
+    NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(  // IN-TEST
+        GetWindowOwnerPidCallback callback) {
+  GetTestingCallback() = std::move(callback);
+}
 
 NativeScreenCapturePickerMac::CaptureSession::CaptureSession() = default;
 NativeScreenCapturePickerMac::CaptureSession::~CaptureSession() = default;
 
 NativeScreenCapturePickerMac::NativeScreenCapturePickerMac()
     : device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+
+NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() = default;
 
 void NativeScreenCapturePickerMac::Open(
     DesktopMediaID::Type type,
@@ -247,7 +187,7 @@ void NativeScreenCapturePickerMac::Open(
     // Ensure the session entry exists and store the stop_audio_callback.
     auto& session = GetOrCreateCaptureSession(active_picker_source_id_);
     session.stop_audio_callback = std::move(stop_audio_callback);
-    session.primary_bundle_id.reset();
+    session.primary_audio_capture_id.reset();
 
     PickerUpdateCallback observer_update_callback = base::BindPostTask(
         device_task_runner_,
@@ -311,28 +251,31 @@ void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
     DesktopMediaID::Id session_id,
     SCContentFilter* filter) {
   if (@available(macOS 15.2, *)) {
-    // At the initial update, set `primary_bundle_id` to the main
-    // bundle id of the application that owns the first of the
-    // selected windows. Since the picker is run in single-window
-    // mode, this list should typically only contain one window.
-    if (!session.primary_bundle_id && filter.includedWindows.count > 0) {
+    // At the initial update, set `primary_audio_capture_id` to the
+    // ApplicationAudioCaptureId of the application that owns the
+    // first of the selected windows. Since the picker is run in
+    // single-window mode, this list should typically only contain one
+    // window.
+    if (!session.primary_audio_capture_id && filter.includedWindows.count > 0) {
       SCWindow* first_window = filter.includedWindows.firstObject;
-      session.primary_bundle_id =
-          GetMainBundleIdForNativeWindowId(first_window.windowID);
-      if (session.primary_bundle_id) {
+      session.primary_audio_capture_id =
+          media::GetApplicationAudioCaptureIdForProcess(
+              GetWindowOwnerPid(first_window.windowID));
+      if (session.primary_audio_capture_id) {
         VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
-                << " Set primary_bundle_id = " << *session.primary_bundle_id;
+                << " Set primary_audio_capture_id = "
+                << session.primary_audio_capture_id->bundle_id;
       }
     }
 
     // If no window owned by the primary application remains in the
     // selection, the `stop_audio_callback` is called to signal that
     // audio capture should stop.
-    if (session.primary_bundle_id && session.stop_audio_callback) {
+    if (session.primary_audio_capture_id && session.stop_audio_callback) {
       bool primary_app_present = false;
       for (SCWindow* window in filter.includedWindows) {
-        if (GetMainBundleIdForNativeWindowId(window.windowID) ==
-            session.primary_bundle_id) {
+        if (media::GetApplicationAudioCaptureIdForProcess(GetWindowOwnerPid(
+                window.windowID)) == session.primary_audio_capture_id) {
           primary_app_present = true;
           break;
         }
@@ -482,18 +425,18 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
   }
 }
 
-void NativeScreenCapturePickerMac::GetMainBundleId(
+void NativeScreenCapturePickerMac::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    GetMainBundleIdCallback callback) {
+    GetApplicationAudioCaptureIdCallback callback) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
-  std::optional<std::string> bundle_id;
+  std::optional<media::ApplicationAudioCaptureId> application_audio_capture_id;
 
   auto it = sessions_.find(session_id);
   if (it != sessions_.end()) {
-    bundle_id = it->second->primary_bundle_id;
+    application_audio_capture_id = it->second->primary_audio_capture_id;
   }
 
-  std::move(callback).Run(bundle_id);
+  std::move(callback).Run(application_audio_capture_id);
 }
 
 std::unique_ptr<media::VideoCaptureDevice>

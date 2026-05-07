@@ -13,24 +13,22 @@
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "content/browser/media/capture/capture_util_mac.h"
+#include "base/test/test_future.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/video/mac/test/screen_capture_kit_test_helper.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using Source = webrtc::DesktopCapturer::Source;
 
-@class FakeSCContentSharingPicker;
-// Globals used for swizzling.
-API_AVAILABLE(macos(14.0))
-static FakeSCContentSharingPicker* g_fake_picker = nil;
-
-// --- Mocking helpers for GetMainBundleIdForNativeWindowId --------------------
+// --- Mocking helpers for GetApplicationAudioCaptureIdForNativeWindowId
+// --------------------
 
 static std::map<content::DesktopMediaID::Id, std::string>& GetBundleMap() {
   static base::NoDestructor<std::map<content::DesktopMediaID::Id, std::string>>
@@ -38,20 +36,44 @@ static std::map<content::DesktopMediaID::Id, std::string>& GetBundleMap() {
   return *bundle_map;
 }
 
-static std::optional<std::string> GetBundleIdForProcessFake(pid_t pid) {
-  // Use pid as window id for simplicity in this fake setup.
-  auto it = GetBundleMap().find(static_cast<content::DesktopMediaID::Id>(pid));
-  return it != GetBundleMap().end() ? std::make_optional(it->second)
-                                    : std::nullopt;
-}
-
 static pid_t GetWindowOwnerPidFake(content::DesktopMediaID::Id window_id) {
+  // Use window_id as PID for simplicity.
   return static_cast<pid_t>(window_id);
 }
 
-static pid_t GetParentPidFake(pid_t pid) {
-  return 0;
+@interface FakeNSRunningApplication : NSObject
+@property(nonatomic, copy) NSString* bundleIdentifier;
+@property(nonatomic, assign) pid_t processIdentifier;
+@end
+
+@implementation FakeNSRunningApplication
+@synthesize bundleIdentifier = _bundleIdentifier;
+@synthesize processIdentifier = _processIdentifier;
+@end
+
+@interface MockNSRunningApplication : NSObject
++ (nullable NSRunningApplication*)runningApplicationWithProcessIdentifier:
+    (pid_t)pid;
+@end
+
+@implementation MockNSRunningApplication
++ (nullable NSRunningApplication*)runningApplicationWithProcessIdentifier:
+    (pid_t)pid {
+  auto it = GetBundleMap().find(static_cast<content::DesktopMediaID::Id>(pid));
+  if (it == GetBundleMap().end()) {
+    return nil;
+  }
+  FakeNSRunningApplication* fake_app = [[FakeNSRunningApplication alloc] init];
+  fake_app.bundleIdentifier = base::SysUTF8ToNSString(it->second);
+  fake_app.processIdentifier = pid;
+  return (NSRunningApplication*)fake_app;
 }
+@end
+
+@class FakeSCContentSharingPicker;
+// Globals used for swizzling.
+API_AVAILABLE(macos(14.0))
+static FakeSCContentSharingPicker* g_fake_picker = nil;
 
 // --- FakeSCContentSharingPicker ----------------------------------------------
 
@@ -125,10 +147,13 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
       picker_swizzler_ = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
           [SCContentSharingPicker class], @selector(sharedPicker),
           @selector(fakeSharedPicker));
+      ns_running_app_swizzler_ =
+          std::make_unique<base::apple::ScopedObjCClassSwizzler>(
+              [NSRunningApplication class], [MockNSRunningApplication class],
+              @selector(runningApplicationWithProcessIdentifier:));
+      NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(
+          base::BindRepeating(&GetWindowOwnerPidFake));
       picker_ = CreateNativeScreenCapturePickerMac();
-      content::SetGetBundleIdForProcessForTesting(GetBundleIdForProcessFake);
-      content::SetGetWindowOwnerPidForTesting(GetWindowOwnerPidFake);
-      content::SetGetParentPidForTesting(GetParentPidFake);
     } else {
       GTEST_SKIP() << "Skipping tests on macOS < 14.0";
     }
@@ -137,11 +162,11 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
   void TearDown() override {
     picker_.reset();
     picker_swizzler_.reset();
+    ns_running_app_swizzler_.reset();
     if (@available(macOS 14.0, *)) {
       g_fake_picker = nil;
-      content::SetGetBundleIdForProcessForTesting(nullptr);
-      content::SetGetWindowOwnerPidForTesting(nullptr);
-      content::SetGetParentPidForTesting(nullptr);
+      NativeScreenCapturePickerMac::SetGetWindowOwnerPidForTesting(
+          base::NullCallback());
     }
   }
 
@@ -194,24 +219,29 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
     return id;
   }
 
-  // Calls GetMainBundleId and verifies the result.
-  void VerifyMainBundleId(
+  // Calls GetApplicationAudioCaptureId and verifies the result.
+  void VerifyApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
       const std::optional<std::string>& expected_bundle_id) {
-    base::RunLoop run_loop;
-    picker_->GetMainBundleId(
-        session_id, base::BindLambdaForTesting(
-                        [&](const std::optional<std::string>& bundle_id) {
-                          EXPECT_EQ(bundle_id, expected_bundle_id);
-                          run_loop.Quit();
-                        }));
-    run_loop.Run();
+    base::test::TestFuture<
+        const std::optional<media::ApplicationAudioCaptureId>&>
+        future;
+    picker_->GetApplicationAudioCaptureId(session_id, future.GetCallback());
+    const auto& capture_id = future.Get();
+    if (expected_bundle_id.has_value()) {
+      ASSERT_TRUE(capture_id.has_value());
+      EXPECT_EQ(capture_id->bundle_id, *expected_bundle_id);
+    } else {
+      EXPECT_FALSE(capture_id.has_value());
+    }
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NativeScreenCapturePicker> picker_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> picker_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
+      ns_running_app_swizzler_;
 };
 
 TEST_F(NativeScreenCapturePickerMacTest, OpenCallsSystemPickerForScreen) {
@@ -317,7 +347,8 @@ TEST_F(NativeScreenCapturePickerMacTest,
     GetBundleMap()[kWindowId] = kExpectedBundleId;
 
     OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowId);
-    VerifyMainBundleId(1, kExpectedBundleId);
+    ASSERT_NO_FATAL_FAILURE(
+        VerifyApplicationAudioCaptureId(1, kExpectedBundleId));
   }
 }
 
@@ -381,15 +412,15 @@ TEST_F(NativeScreenCapturePickerMacTest, SequentialOpenCalls) {
     GetBundleMap()[kWindow1] = kBundle1;
 
     OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindow1);
-    VerifyMainBundleId(1, kBundle1);
+    ASSERT_NO_FATAL_FAILURE(VerifyApplicationAudioCaptureId(1, kBundle1));
 
     const CGWindowID kWindow2 = 102;
     const std::string kBundle2 = "com.example.app2";
     GetBundleMap()[kWindow2] = kBundle2;
 
     OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindow2);
-    VerifyMainBundleId(1, kBundle1);
-    VerifyMainBundleId(2, kBundle2);
+    ASSERT_NO_FATAL_FAILURE(VerifyApplicationAudioCaptureId(1, kBundle1));
+    ASSERT_NO_FATAL_FAILURE(VerifyApplicationAudioCaptureId(2, kBundle2));
   }
 }
 

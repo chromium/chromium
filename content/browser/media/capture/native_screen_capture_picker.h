@@ -9,8 +9,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "media/webrtc/application_audio_capture_id_mac.h"
+#endif
+
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace media {
@@ -23,8 +29,10 @@ class NativeScreenCapturePicker {
  public:
   virtual ~NativeScreenCapturePicker() = default;
 
-  using GetMainBundleIdCallback =
-      base::OnceCallback<void(const std::optional<std::string>&)>;
+#if BUILDFLAG(IS_MAC)
+  using GetApplicationAudioCaptureIdCallback = base::OnceCallback<void(
+      const std::optional<media::ApplicationAudioCaptureId>&)>;
+#endif
 
   // Opens the picker dialog.
   // `type` is the type of the content capture (window/screen).
@@ -46,9 +54,13 @@ class NativeScreenCapturePicker {
   // Closes the picker.
   virtual void Close(DesktopMediaID device_id) = 0;
 
-  // Resolves a picker session handle into its main application bundle ID.
-  virtual void GetMainBundleId(DesktopMediaID::Id session_id,
-                               GetMainBundleIdCallback callback) = 0;
+#if BUILDFLAG(IS_MAC)
+  // Resolves a picker session handle into its corresponding
+  // ApplicationAudioCaptureId.
+  virtual void GetApplicationAudioCaptureId(
+      DesktopMediaID::Id session_id,
+      GetApplicationAudioCaptureIdCallback callback) = 0;
+#endif
 
   // Creates a video capture device for a surface selected during a previous
   // call to Open.

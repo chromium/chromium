@@ -11,6 +11,9 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
+#if BUILDFLAG(IS_MAC)
+#include "media/webrtc/application_audio_capture_id_mac.h"
+#endif
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -48,9 +51,13 @@ class VideoCaptureProvider {
 
   virtual void CloseNativeScreenCapturePicker(DesktopMediaID device_id) = 0;
 
-  virtual void GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+  virtual void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback) = 0;
+      base::OnceCallback<
+          void(const std::optional<media::ApplicationAudioCaptureId>&)>
+          callback) = 0;
+#endif
 };
 
 }  // namespace content

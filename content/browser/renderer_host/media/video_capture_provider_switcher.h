@@ -36,10 +36,13 @@ class CONTENT_EXPORT VideoCaptureProviderSwitcher
 
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id) override;
 
-  void GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+  void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback)
+      base::OnceCallback<void(
+          const std::optional<media::ApplicationAudioCaptureId>&)> callback)
       override;
+#endif
 
  private:
   const std::unique_ptr<VideoCaptureProvider> media_device_capture_provider_;

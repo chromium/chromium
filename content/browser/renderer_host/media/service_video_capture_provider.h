@@ -60,12 +60,16 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
       override;
   void CloseNativeScreenCapturePicker(DesktopMediaID device_id) override;
 
-  void GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+  void GetApplicationAudioCaptureId(
       DesktopMediaID::Id session_id,
-      base::OnceCallback<void(const std::optional<std::string>&)> callback)
+      base::OnceCallback<void(
+          const std::optional<media::ApplicationAudioCaptureId>&)> callback)
       override;
+#endif
 
   // content::GpuDataManagerObserver implementation.
+
   void OnGpuInfoUpdate() override;
 
  private:

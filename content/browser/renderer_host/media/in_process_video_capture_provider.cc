@@ -76,18 +76,22 @@ void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(
                      native_screen_capture_picker_->GetWeakPtr(), device_id));
 }
 
-void InProcessVideoCaptureProvider::GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+void InProcessVideoCaptureProvider::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+    base::OnceCallback<void(
+        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
   if (!native_screen_capture_picker_) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   device_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&NativeScreenCapturePicker::GetMainBundleId,
-                                native_screen_capture_picker_->GetWeakPtr(),
-                                session_id, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePicker::GetApplicationAudioCaptureId,
+                     native_screen_capture_picker_->GetWeakPtr(), session_id,
+                     std::move(callback)));
 }
+#endif
 
 }  // namespace content

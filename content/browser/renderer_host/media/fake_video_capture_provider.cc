@@ -44,9 +44,12 @@ void FakeVideoCaptureProvider::OpenNativeScreenCapturePicker(
 void FakeVideoCaptureProvider::CloseNativeScreenCapturePicker(
     DesktopMediaID device_id) {}
 
-void FakeVideoCaptureProvider::GetMainBundleId(
+#if BUILDFLAG(IS_MAC)
+void FakeVideoCaptureProvider::GetApplicationAudioCaptureId(
     DesktopMediaID::Id session_id,
-    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+    base::OnceCallback<void(
+        const std::optional<media::ApplicationAudioCaptureId>&)> callback) {
   std::move(callback).Run(std::nullopt);
 }
+#endif
 }  // namespace content

@@ -3159,7 +3159,6 @@ test("content_unittests") {
       "../browser/child_process_task_port_provider_mac_unittest.cc",
       "../browser/cocoa/system_hotkey_map_unittest.mm",
       "../browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker_unittest.cc",
-      "../browser/media/capture/capture_util_mac_unittest.mm",
       "../browser/media/capture/native_screen_capture_picker_mac_unittest.mm",
       "../browser/media/capture/screen_capture_kit_device_mac_unittest.mm",
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
