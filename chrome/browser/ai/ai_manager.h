@@ -234,6 +234,7 @@ class AIManager : public base::SupportsUserData::Data,
   void MaybeLogExperimentalLanguageWarning(
       const std::string_view api_name,
       const base::flat_set<std::string>& default_supported_languages);
+  void MaybeLogSpeedPreferenceMarkdownWarning();
 
   // |model_broker_client_| is keeping |CanCreateLanguageModel| callbacks alive
   // until it is destroyed, so we need to ensure those callbacks are safely
@@ -255,6 +256,7 @@ class AIManager : public base::SupportsUserData::Data,
   bool did_log_missing_output_language_warning_ = false;
   bool did_log_unsupported_language_error_ = false;
   bool did_log_experimental_language_warning_ = false;
+  bool did_log_speed_preference_markdown_warning_ = false;
 
   // Features that have attempted initialization in this session.
   base::flat_set<optimization_guide::mojom::OnDeviceFeature> tried_init_;

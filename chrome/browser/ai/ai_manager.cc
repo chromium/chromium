@@ -108,6 +108,9 @@ const char kEmptyOutputLanguageWarning[] =
 const char kExperimentalLanguageWarning[] =
     "The specified languages are experimental in %s API and output quality "
     "cannot be guaranteed. The supported language codes are: [%s]";
+const char kSpeedPreferenceMarkdownWarning[] =
+    "The 'speed' performance preference utilizes a model with limited support "
+    "for 'markdown' format.";
 
 constexpr char kModelVersionParam[] = "model_version";
 // Feature flag for enabling foundational models in the AI API, requires the
@@ -472,9 +475,9 @@ bool IsLanguageInSet(const blink::mojom::AILanguageCodePtr& language,
 
 // Checks if the provided options satisfy the requirements for the 'speed'
 // performance preference:
-// 1. Languages must be supported for speed preference. 2. Format must be plain
-// text. 3. Type must be TLDR or KeyPoints. 4. Length must be short or medium.
-// 5. `shared_context` must not be specified.
+// 1. Languages must be supported for speed preference.
+// 2. Type must be TLDR or KeyPoints. 3. Length must be short or medium.
+// 4. `shared_context` must not be specified.
 // TODO(crbug.com/508631503): In the long term, model configs should express
 // the subset of supported options, and this matching code should be more
 // generalized.
@@ -483,7 +486,6 @@ enum class SpeedPreferenceIncompatibilityReason {
   kInputLanguageNotSupported,
   kContextLanguageNotSupported,
   kSharedContextNotSupported,
-  kFormatNotSupported,
   kTypeNotSupported,
   kLengthNotSupported,
   kManifestBrokerDisabled,
@@ -526,11 +528,6 @@ IsSpeedPreferenceCompatible(
       !options->shared_context.value().empty()) {
     return base::unexpected(
         SpeedPreferenceIncompatibilityReason::kSharedContextNotSupported);
-  }
-
-  if (options->format != blink::mojom::AISummarizerFormat::kPlainText) {
-    return base::unexpected(
-        SpeedPreferenceIncompatibilityReason::kFormatNotSupported);
   }
 
   if (options->type != blink::mojom::AISummarizerType::kTLDR &&
@@ -881,6 +878,9 @@ void AIManager::CanCreateSummarizer(
               kUnavailableUnsupportedOptionsForPerformancePreference);
       return;
     }
+    if (options->format == blink::mojom::AISummarizerFormat::kMarkDown) {
+      MaybeLogSpeedPreferenceMarkdownWarning();
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -935,6 +935,9 @@ void AIManager::CreateSummarizer(
           client_remote, blink::mojom::AIManagerCreateClientError::
                              kUnsupportedOptionsForPerformancePreference);
       return;
+    }
+    if (options->format == blink::mojom::AISummarizerFormat::kMarkDown) {
+      MaybeLogSpeedPreferenceMarkdownWarning();
     }
   }
 
@@ -1722,4 +1725,14 @@ void AIManager::MaybeLogExperimentalLanguageWarning(
   rfh->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
       base::StringPrintf(kExperimentalLanguageWarning, api_name, list));
+}
+
+void AIManager::MaybeLogSpeedPreferenceMarkdownWarning() {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (!rfh || did_log_speed_preference_markdown_warning_) {
+    return;
+  }
+  did_log_speed_preference_markdown_warning_ = true;
+  rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
+                           kSpeedPreferenceMarkdownWarning);
 }
