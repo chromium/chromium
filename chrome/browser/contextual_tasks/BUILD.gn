@@ -169,7 +169,11 @@ source_set("ui") {
   ]
 
   if (is_android) {
-    sources += [ "android/contextual_tasks_panel_host_android.h" ]
+    if (is_desktop_android) {
+      sources += [ "android/contextual_tasks_panel_host_desktop_android.h" ]
+    } else {
+      sources += [ "android/contextual_tasks_panel_host_android.h" ]
+    }
   }
 
   if (!is_android) {
@@ -209,6 +213,10 @@ source_set("ui") {
   if (is_android) {
     public_deps +=
         [ "//chrome/browser/context_sharing/tab_bottom_sheet/android" ]
+
+    if (is_desktop_android) {
+      public_deps += [ "//chrome/browser/ui/side_panel" ]
+    }
   }
 
   if (!is_android || enable_webui_ntp) {
@@ -261,7 +269,11 @@ source_set("ui_impl") {
   ]
 
   if (is_android) {
-    sources += [ "android/contextual_tasks_panel_host_android.cc" ]
+    if (is_desktop_android) {
+      sources += [ "android/contextual_tasks_panel_host_desktop_android.cc" ]
+    } else {
+      sources += [ "android/contextual_tasks_panel_host_android.cc" ]
+    }
   }
 
   if (!is_android) {
@@ -326,6 +338,12 @@ source_set("ui_impl") {
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android",
     ]
+    if (is_desktop_android) {
+      deps += [
+        "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+        "//chrome/browser/ui/side_panel/android",
+      ]
+    }
   }
 
   if (!is_android) {
