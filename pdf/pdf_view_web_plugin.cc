@@ -129,6 +129,7 @@
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module.h"
 #include "pdf/pdf_ink_module_client.h"
+#include "pdf/pdf_ink_text.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #endif
 
@@ -386,6 +387,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
 
   bool IsSelectableTextOrLinkArea(const gfx::PointF& point) override {
     return plugin_->engine_->IsSelectableTextOrLinkArea(point);
+  }
+
+  DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf() override {
+    return plugin_->engine_->LoadTextAnnotationsFromPdf();
   }
 
   DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() override {

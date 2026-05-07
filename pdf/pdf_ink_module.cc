@@ -143,6 +143,13 @@ SkColor GetColorFromDict(const base::DictValue& dict) {
   return SkColorSetRGB(color_r, color_g, color_b);
 }
 
+base::DictValue SkColorToDict(SkColor color) {
+  return base::DictValue()
+      .Set("r", static_cast<int>(SkColorGetR(color)))
+      .Set("g", static_cast<int>(SkColorGetG(color)))
+      .Set("b", static_cast<int>(SkColorGetB(color)));
+}
+
 InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
   const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
   gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
@@ -1429,10 +1436,47 @@ void PdfInkModule::HandleAnnotationUndoMessage(const base::DictValue& message) {
 
 void PdfInkModule::HandleGetAllTextAnnotationsMessage(
     const base::DictValue& message) {
-  // TODO(crbug.com/408926609): Fill in this method. For now, just return an
-  // empty set of annotations.
+  base::ListValue annotations;
+
+  DocumentInkTextBoxesMap document_text_boxes =
+      client_->LoadTextAnnotationsFromPdf();
+
+  for (auto& [page_index, text_boxes] : document_text_boxes) {
+    for (const auto& item : text_boxes) {
+      auto text_attributes =
+          base::DictValue()
+              .Set("typeface", TextTypefaceToString(item.attributes.typeface))
+              .Set("size", static_cast<double>(item.attributes.css_font_size))
+              .Set("color", SkColorToDict(item.attributes.color))
+              .Set("alignment",
+                   TextAlignmentToString(item.attributes.alignment))
+              .Set("styles", base::DictValue()
+                                 .Set("bold", item.attributes.is_bold)
+                                 .Set("italic", item.attributes.is_italic));
+
+      const gfx::RectF& rect = item.attributes.rect;
+      auto textbox_rect = base::DictValue()
+                              .Set("height", static_cast<double>(rect.height()))
+                              .Set("locationX", static_cast<double>(rect.x()))
+                              .Set("locationY", static_cast<double>(rect.y()))
+                              .Set("width", static_cast<double>(rect.width()));
+
+      annotations.Append(
+          base::DictValue()
+              .Set("id", item.id)
+              .Set("pageIndex", page_index)
+              // The backend always operates at 100% zoom. The frontend ignores
+              // this value.
+              .Set("pdfZoom", 1.0)
+              .Set("text", item.attributes.text)
+              .Set("textAttributes", std::move(text_attributes))
+              .Set("textBoxRect", std::move(textbox_rect))
+              .Set("textOrientation", item.attributes.orientation));
+    }
+  }
+
   client_->PostMessage(
-      PrepareReplyMessage(message).Set("annotations", base::ListValue()));
+      PrepareReplyMessage(message).Set("annotations", std::move(annotations)));
 }
 
 void PdfInkModule::HandleGetAnnotationBrushMessage(
@@ -1471,10 +1515,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
   data.Set("size", ink_brush.GetSize());
 
   SkColor color = GetSkColorFromInkBrush(ink_brush);
-  data.Set("color", base::DictValue()
-                        .Set("r", static_cast<int>(SkColorGetR(color)))
-                        .Set("g", static_cast<int>(SkColorGetG(color)))
-                        .Set("b", static_cast<int>(SkColorGetB(color))));
+  data.Set("color", SkColorToDict(color));
 
   reply.Set("data", std::move(data));
   client_->PostMessage(std::move(reply));

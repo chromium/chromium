@@ -133,6 +133,9 @@ class PdfInkModuleClient {
   // `point` must be in device coordinates.
   virtual bool IsSelectableTextOrLinkArea(const gfx::PointF& point) = 0;
 
+  // Returns the saved text annotations across the document.
+  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf() = 0;
+
   // Asks the client to load Ink data from the PDF.
   virtual DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() = 0;
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace chrome_pdf {
 namespace {
@@ -104,6 +105,30 @@ void MaybeCorrectNonZeroFirstOffset(InkTextInfo& input) {
 }
 
 }  // namespace
+
+std::string TextTypefaceToString(TextTypeface typeface) {
+  switch (typeface) {
+    case TextTypeface::kSansSerif:
+      return "sans-serif";
+    case TextTypeface::kSerif:
+      return "serif";
+    case TextTypeface::kMonospace:
+      return "monospace";
+  }
+  NOTREACHED();
+}
+
+std::string TextAlignmentToString(TextAlignment alignment) {
+  switch (alignment) {
+    case TextAlignment::kLeft:
+      return "left";
+    case TextAlignment::kCenter:
+      return "center";
+    case TextAlignment::kRight:
+      return "right";
+  }
+  NOTREACHED();
+}
 
 InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
                                            SkColor color,

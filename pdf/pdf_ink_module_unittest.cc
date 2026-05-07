@@ -354,6 +354,11 @@ class FakeClient : public PdfInkModuleClient {
               (const gfx::PointF& point),
               (override));
 
+  MOCK_METHOD(DocumentInkTextBoxesMap,
+              LoadTextAnnotationsFromPdf,
+              (),
+              (override));
+
   MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
               LoadV2InkPathsFromPdf,
               (),
@@ -530,6 +535,73 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
 TEST_P(PdfInkModuleTest, UnknownMessage) {
   EXPECT_FALSE(
       ink_module().OnMessage(base::DictValue().Set("type", "nonInkMessage")));
+}
+
+TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
+  std::vector<gfx::RectF> layouts(2, gfx::RectF(0, 0, 100, 100));
+  client().set_page_layouts(layouts);
+
+  std::vector<InkTextBox> test_boxes;
+  test_boxes.push_back(InkTextBox(
+      /*id=*/42, InkTextBoxAttributes(
+                     /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 50.0f),
+                     /*color=*/SkColorSetRGB(0, 0, 255),
+                     /*css_font_size=*/12.0f,
+                     /*typeface=*/TextTypeface::kMonospace,
+                     /*alignment=*/TextAlignment::kCenter,
+                     /*orientation=*/1,
+                     /*is_bold=*/false,
+                     /*is_italic=*/true,
+                     /*text=*/"Hello World from Test!")));
+
+  DocumentInkTextBoxesMap map;
+  map[0] = std::move(test_boxes);
+
+  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf())
+      .WillOnce(Return(std::move(map)));
+
+  EXPECT_CALL(client(), PostMessage).WillOnce([](const base::DictValue& dict) {
+    auto expected = base::test::ParseJsonDict(R"({
+            "type": "getAllTextAnnotationsReply",
+            "messageId": "bar",
+            "annotations": [
+              {
+                "id": 42,
+                "text": "Hello World from Test!",
+                "pageIndex": 0,
+                "pdfZoom": 1.0,
+                "textOrientation": 1,
+                "textBoxRect": {
+                  "height": 50.0,
+                  "locationX": 10.0,
+                  "locationY": 20.0,
+                  "width": 100.0
+                },
+                "textAttributes": {
+                  "typeface": "monospace",
+                  "size": 12.0,
+                  "color": {
+                    "r": 0,
+                    "g": 0,
+                    "b": 255
+                  },
+                  "alignment": "center",
+                  "styles": {
+                    "bold": false,
+                    "italic": true
+                  }
+                }
+              }
+            ]
+        })");
+    EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+  });
+
+  base::DictValue message = base::DictValue()
+                                .Set("type", "getAllTextAnnotations")
+                                .Set("messageId", "bar");
+
+  EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
 // Verify that a get eraser message gets the eraser parameters.

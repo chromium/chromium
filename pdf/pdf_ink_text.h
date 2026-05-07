@@ -40,6 +40,9 @@ enum class TextAlignment {
   kLast = kRight,
 };
 
+std::string TextTypefaceToString(TextTypeface typeface);
+std::string TextAlignmentToString(TextAlignment alignment);
+
 struct InkTextBoxAttributes {
   InkTextBoxAttributes(gfx::RectF rect,
                        SkColor color,
