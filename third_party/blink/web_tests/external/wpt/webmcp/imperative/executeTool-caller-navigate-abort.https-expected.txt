@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] executeTool() aborts target signal when the invoker document (same-origin) navigates away
+  promise_test: Unhandled rejection with value: "signal not provided to execute()"
+[FAIL] executeTool() aborts target signal when the invoker document (cross-origin) navigates away
+  promise_test: Unhandled rejection with value: "signal not provided to execute()"
+Harness: the test ran to completion.
+

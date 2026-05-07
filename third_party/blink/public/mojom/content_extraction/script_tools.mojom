@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 
 // See ToolAnnotations in model_context_tool.idl for details of this
@@ -23,6 +24,14 @@ struct ScriptTool {
   ScriptToolAnnotations? annotations;
   // See the documentation in `model_context.idl` for more about this member.
   array<url.mojom.Origin> exposed_origins;
+
+  // The token of the frame that registered this tool.
+  blink.mojom.FrameToken tool_owner_frame_token;
+  // The origin of the frame that registered this tool. This can be an opaque
+  // origin, however it would only have access to tools on its own origin, as no
+  // other document would be able to express its origin in `exposed_origins`
+  // above.
+  url.mojom.Origin origin;
 };
 
 // Interface for the renderer to request actions from the browser related to
@@ -52,6 +61,28 @@ interface ModelContextHost {
 
   // Returns all script tools visible to the caller document.
   GetScriptTools() => (array<ScriptTool> tools);
+
+  // Executes a ScriptTool hosted in another Document. The tool can be located
+  // based on the unique combination of (`tool_owner_frame_token`, `name`), but
+  // we pass `expected_target_origin` too, since it is possible that
+  // `tool_owner_frame_token` points to a remote frame whose frame tree node's
+  // host has changed since tool registration.
+  //
+  // Note that `success` generally
+  // controls whether the caller's Promise resolves or rejects:
+  //   - When the Promise returned by the remote tool resolves, then `success`
+  //     will be true, and the caller's Promise resolves.
+  //   - The same is true in the inverse, for rejection.
+  // ... but note that `success` can be false even before the remote tool's
+  // response is obtained, e.g., if the browser process failed to locate the
+  // tool, or if it was unregistered mid-execution.
+  //
+  // TODO(https://crbug.com/509555636): Consider making `success` more granular
+  // in the error case, perhaps by using `ScriptToolErrorCode`.
+  ExecuteRemoteScriptTool(blink.mojom.FrameToken tool_owner_frame_token,
+                          url.mojom.Origin expected_target_origin,
+                          string name,
+                          string input_arguments) => (string? result, bool success);
 };
 
 // Interface implemented by `blink::ModelContext` for the browser to notify the
@@ -59,4 +90,14 @@ interface ModelContextHost {
 interface ModelContext {
   // Fires the `toolchange` event against the `blink::ModelContext` object.
   NotifyToolChange();
+
+  // Executes a ScriptTool by the name of `name`, hosted in this Document. This
+  // invokes JavaScript and obtains a Promise representing the tool result. The
+  // tool result is always a string for now; but see https://crbug.com/508306795
+  // which tracks the task of changing this.
+  //
+  // Resolution of the JavaScript Promise results in the callback being called
+  // with `success=true`, while rejection results in `success=false`.
+  ExecuteScriptTool(string name, string input_arguments)
+      => (string? result, bool success);
 };

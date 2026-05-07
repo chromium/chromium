@@ -126,6 +126,8 @@ generated_callback_interface_sources_in_core = [
 generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_registered_tool.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_registered_tool_deprecated.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_registered_tool_deprecated.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_accelerator.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_accelerator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_autofill_field_data.cc",

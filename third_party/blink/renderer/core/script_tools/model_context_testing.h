@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_execute_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool_deprecated.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 namespace blink {
 class ModelContext;
-class RegisteredTool;
+class RegisteredToolDeprecated;
 
 class CORE_EXPORT ModelContextTesting : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,7 +23,7 @@ class CORE_EXPORT ModelContextTesting : public EventTarget {
  public:
   explicit ModelContextTesting(ModelContext& model_context);
 
-  HeapVector<Member<RegisteredTool>> listTools();
+  HeapVector<Member<RegisteredToolDeprecated>> listTools();
   ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* state,
                                                     String tool_name,
                                                     String input_arguments,

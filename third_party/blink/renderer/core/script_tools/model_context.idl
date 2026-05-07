@@ -21,6 +21,11 @@ dictionary ModelContextRegisterToolOptions {
   sequence<USVString> exposedTo;
 };
 
+dictionary RegisteredTool : RegisteredToolDeprecated {
+  required Window window;
+  required USVString origin;
+};
+
 [
     Exposed=Window,
     SecureContext,
@@ -28,5 +33,10 @@ dictionary ModelContextRegisterToolOptions {
 ] interface ModelContext : EventTarget {
   [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
   [CallWith=ScriptState] Promise<sequence<RegisteredTool>> getTools();
+  [CallWith=ScriptState] Promise<DOMString?> executeTool(
+      RegisteredTool tool,
+      DOMString input_arguments,
+      optional ExecuteToolOptions options = {}
+  );
   attribute EventHandler ontoolchange;
 };

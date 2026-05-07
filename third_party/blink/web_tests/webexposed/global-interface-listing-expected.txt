@@ -6763,6 +6763,7 @@ interface ModelContext : EventTarget
     attribute @@toStringTag
     getter ontoolchange
     method constructor
+    method executeTool
     method getTools
     method registerTool
     setter ontoolchange
