@@ -59,4 +59,14 @@ public interface BottomSheetObserver {
 
     /** Called when the sheet background color override is changed. */
     default void onSheetBackgroundColorOverrideChanged() {}
+
+    /**
+     * Called before the inset animation starts. This event is triggered before any layout changes
+     * occur.
+     */
+    default void beforeInsetAnimationStart() {}
+
+    /** Called when the inset animation ends. */
+    default void onInsetAnimationEnd() {}
 }
+

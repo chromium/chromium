@@ -477,7 +477,11 @@ class BottomSheet extends FrameLayout
         mInsetObserver.addWindowInsetsAnimationListener(
                 new WindowInsetsAnimationListener() {
                     @Override
-                    public void onPrepare(WindowInsetsAnimationCompat animation) {}
+                    public void onPrepare(WindowInsetsAnimationCompat animation) {
+                        for (BottomSheetObserver obs : mObservers) {
+                            obs.beforeInsetAnimationStart();
+                        }
+                    }
 
                     @Override
                     public void onStart(
@@ -495,6 +499,9 @@ class BottomSheet extends FrameLayout
                     @Override
                     public void onEnd(WindowInsetsAnimationCompat animation) {
                         onInsetChanged();
+                        for (BottomSheetObserver obs : mObservers) {
+                            obs.onInsetAnimationEnd();
+                        }
                     }
                 });
 
