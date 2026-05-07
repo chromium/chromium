@@ -36,7 +36,7 @@ class GlicUiEmbedder {
         const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
-    virtual void WillCloseFor(EmbedderKey key) = 0;
+    virtual void WillCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
     virtual Host& host() = 0;
     virtual void Show(const ShowOptions& options) = 0;
     // Closes the side panel UI and opens the floating UI for this instance.

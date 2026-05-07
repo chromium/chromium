@@ -203,8 +203,12 @@ void GlicSidePanelUi::SidePanelStateChanged(
     instance_metrics_->OnSidePanelClosed(tab_.get(), reason);
     panel_state_.kind = mojom::PanelStateKind::kHidden;
     delegate_->NotifyPanelStateChanged();
+    EmbedderCloseReason close_reason =
+        state == GlicSidePanelCoordinator::State::kBackgrounded
+            ? EmbedderCloseReason::kBackgrounded
+            : EmbedderCloseReason::kExplicitlyClosed;
     // NOTE: `this` will be destroyed after this call.
-    delegate_->WillCloseFor(tab_.get());
+    delegate_->WillCloseFor(tab_.get(), close_reason);
   }
 }
 

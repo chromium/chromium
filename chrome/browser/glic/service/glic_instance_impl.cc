@@ -1313,7 +1313,8 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
   NotifyPanelWillOpen(invocation_source, std::nullopt, fre_override);
 }
 
-void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
+void GlicInstanceImpl::WillCloseFor(EmbedderKey key,
+                                    EmbedderCloseReason reason) {
   MaybeDeactivateEmbedder(key);
 }
 

@@ -30,6 +30,11 @@ struct FloatingEmbedderKey {
 using EmbedderKey = std::variant<tabs::TabInterface*, FloatingEmbedderKey>;
 std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key);
 
+enum class EmbedderCloseReason {
+  kExplicitlyClosed,
+  kBackgrounded,
+};
+
 struct SidePanelShowOptions {
   explicit SidePanelShowOptions(tabs::TabInterface& bound_tab)
       : tab(bound_tab) {}
