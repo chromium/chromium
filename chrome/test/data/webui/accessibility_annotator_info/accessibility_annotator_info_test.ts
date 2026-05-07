@@ -6,7 +6,6 @@ import 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
 
 import type {AccessibilityAnnotatorInfoElement} from 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
 import {AccessibilityAnnotatorInfoBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -89,25 +88,5 @@ suite('AccessibilityAnnotatorInfoTest', function() {
                                ?.querySelector<HTMLElement>('.account-info');
     assertTrue(!!accountInfoDiv);
     assertTrue(accountInfoDiv.hidden);
-  });
-
-  test('RendersTriggerCard', function() {
-    const triggerCard = accessibilityAnnotatorInfoElement.shadowRoot
-                            ?.querySelector<HTMLElement>('#triggerCard');
-    assertTrue(!!triggerCard);
-
-    // Assert the formatting is there.
-    const pillFormatting = triggerCard.querySelector<HTMLElement>('.pill');
-    assertTrue(!!pillFormatting);
-
-    // Assert the constructed string is correct.
-    const textWithPlaceholder =
-        loadTimeData.getString('accessibilityAnnotatorInfoCard1');
-    const placeholder =
-        loadTimeData.getString('accessibilityAnnotatorTriggerText');
-    const expectedText = textWithPlaceholder.replace('$1', placeholder);
-    const actualText =
-        (triggerCard.textContent || '').replace(/\s+/g, ' ').trim();
-    assertEquals(expectedText, actualText);
   });
 });

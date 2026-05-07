@@ -19,27 +19,19 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
       <!-- TODO(crbug.com/488321731): Add illustration here. -->
     </div>
   </div>
-  <h1 class="title">$i18n{accessibilityAnnotatorInfoTitle}</h1>
+  <!-- TODO(crbug.com/500663691): Update strings below. -->
+  <h1 class="title">$i18n{privacyPageTitle}</h1>
   <div class="description">
     <p>
-      $i18n{accessibilityAnnotatorInfoDescription}
+      $i18n{privacyPageTitle}
     </p>
     <div class="features-container">
       <div class="feature-item">
         <div class="feature-icon">
           <img src="keyboard.svg" alt="">
         </div>
-        <div class="feature-text" id="triggerCard">
-          ${this.i18n('accessibilityAnnotatorInfoCard1')
-            .split('$1')
-            .map((text, i, arr) => html`
-              ${text}${
-                i < arr.length - 1 ?
-                  html`<span class="pill">
-                    ${this.i18n('accessibilityAnnotatorTriggerText')}
-                  </span>` :
-                  ''
-              }`)}
+        <div class="feature-text">
+          <span class="pill">@@</span> $i18n{privacyPageTitle}
         </div>
       </div>
       <div class="feature-item">
@@ -47,22 +39,22 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
           <div class="g-icon"></div>
         </div>
         <div class="feature-text">
-          $i18n{accessibilityAnnotatorInfoCard2}
+          $i18n{privacyPageTitle}
         </div>
       </div>
     </div>
-        <p class="footer-text" .innerHTML=
-            "${this.i18nAdvanced('accessibilityAnnotatorInfoLearnMore')}">
+    <p class="footer-text">
+      $i18n{privacyPageTitle}
     </p>
   </div>
 
   <div class="actions">
     <cr-button id="manageSettings" class="tonal-button"
       @click="${this.onManageSettingsClick_}">
-      $i18n{accessibilityAnnotatorInfoSecondaryButton}
+      $i18n{privacyPageTitle}
     </cr-button>
     <cr-button id="gotIt" class="action-button" @click="${this.onGotItClick_}">
-      $i18n{accessibilityAnnotatorInfoPrimaryButton}
+      $i18n{privacyPageTitle}
     </cr-button>
   </div>
 </div>
