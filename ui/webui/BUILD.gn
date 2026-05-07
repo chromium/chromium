@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/features.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
-if (!is_ios) {
+if (use_blink) {
   static_library("webui") {
     sources = [
       "mojo_web_ui_controller.cc",
