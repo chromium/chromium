@@ -3565,7 +3565,7 @@
   {
     "name": "enable-isolated-web-apps",
     "owners": [ "greengrape@google.com", "simonha@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-iwa-key-distribution-component",
