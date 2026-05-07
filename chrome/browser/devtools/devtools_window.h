@@ -32,6 +32,8 @@
 class Browser;
 class BrowserWindowInterface;
 class BrowserWindow;
+class Profile;
+class TabModel;
 class DevToolsWindowTesting;
 class DevToolsEventForwarder;
 class DevToolsEyeDropper;
@@ -147,6 +149,12 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // Open or reveal DevTools window, with no special action.
   // How to get pointer to the created window see comments for
   // ToggleDevToolsWindow().
+#if BUILDFLAG(IS_ANDROID)
+  static TabModel* GetTabModelForDefaultRouting(
+      Profile* profile,
+      content::WebContents* inspected_web_contents);
+#endif
+
   static void OpenDevToolsWindow(content::WebContents* inspected_web_contents,
                                  DevToolsOpenedByAction opened_by);
   static void OpenDevToolsWindow(

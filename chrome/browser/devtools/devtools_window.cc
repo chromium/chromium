@@ -1026,6 +1026,35 @@ void DevToolsWindow::ScheduleShow(const DevToolsToggleAction& action) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// static
+TabModel* DevToolsWindow::GetTabModelForDefaultRouting(
+    Profile* profile,
+    WebContents* inspected_web_contents) {
+  // On Android, DevTools must be opened in a TabModel.
+  // First, try to find the TabModel that contains the inspected WebContents.
+  // This ensures that DevTools is opened in the same window/activity as the
+  // inspected page, which is important for multi-window and split-screen support.
+  TabModel* tab_model =
+      inspected_web_contents
+          ? TabModelList::GetTabModelForWebContents(inspected_web_contents)
+          : nullptr;
+
+  if (!tab_model) {
+    // If there is no inspected WebContents (e.g., when inspecting a Service
+    // Worker or a background page), or if it's not in a TabModel, fall back
+    // to the first TabModel that matches the profile.
+    for (TabModel* model : TabModelList::models()) {
+      if (model->GetProfile() == profile) {
+        tab_model = model;
+        break;
+      }
+    }
+  }
+  return tab_model;
+}
+#endif
+
 void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   if (life_stage_ == kClosing) {
     return;
@@ -1036,11 +1065,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (TabModelList::models().empty()) {
-    return;
-  }
-
-  TabModel* tab_model = TabModelList::models()[0];
+  TabModel* tab_model = GetTabModelForDefaultRouting(profile_, GetInspectedWebContents());
   if (!tab_model) {
     return;
   }
