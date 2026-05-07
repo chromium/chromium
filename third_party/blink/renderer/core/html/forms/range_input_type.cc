@@ -278,7 +278,10 @@ void RangeInputType::CreateShadowSubtree() {
   track->SetShadowPseudoId(shadow_element_names::kPseudoSliderTrack);
   track->setAttribute(html_names::kIdAttr,
                       shadow_element_names::kIdSliderTrack);
-  track->AppendChild(MakeGarbageCollected<SliderThumbElement>(document));
+  auto* thumb = MakeGarbageCollected<SliderThumbElement>(document);
+  thumb->setAttribute(html_names::kIdAttr,
+                      shadow_element_names::kIdSliderThumb);
+  track->AppendChild(thumb);
   auto* container = MakeGarbageCollected<SliderContainerElement>(document);
   container->AppendChild(track);
   GetElement().UserAgentShadowRoot()->AppendChild(container);
