@@ -317,6 +317,10 @@ class CORE_EXPORT Node : public EventTarget {
   Node* PseudoAwarePreviousSibling() const;
   Node* PseudoAwareFirstChild() const;
   Node* PseudoAwareLastChild() const;
+  // When changing the order of pseudos in this array, you might also need to
+  // change the order of pseudo-elements listed in
+  // Element::AttachSucceedingPseudoElements and
+  // Element::DetachSucceedingPseudoElements.
   static constexpr std::array kElementChildPseudoOrder{
       kPseudoIdScrollMarkerGroupBefore,
       kPseudoIdMarker,
@@ -330,9 +334,9 @@ class CORE_EXPORT Node : public EventTarget {
       kPseudoIdCheckMark,
       kPseudoIdBefore,
       kPseudoIdNone,  // special case: this means the regular children
-      kPseudoIdPickerIcon,
-      kPseudoIdExpandIcon,
       kPseudoIdAfter,
+      kPseudoIdExpandIcon,
+      kPseudoIdPickerIcon,
       kPseudoIdInterestButton,
       kPseudoIdScrollMarkerGroupAfter,
       kPseudoIdViewTransition,  // layout traversals special case this when it
