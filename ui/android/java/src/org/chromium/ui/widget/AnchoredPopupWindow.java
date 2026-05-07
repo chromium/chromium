@@ -286,6 +286,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         private @StyleRes int mAnimationStyleId;
         private boolean mAnimateFromAnchor;
         private boolean mFocusable;
+        private boolean mTouchable;
+        private boolean mIsTouchableSet;
         private float mElevation;
         private boolean mTouchModal;
         private boolean mOutsideTouchable;
@@ -499,6 +501,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
 
         /**
+         * @param touchable True if the popup is touchable, false otherwise.
+         */
+        public Builder setTouchable(boolean touchable) {
+            mTouchable = touchable;
+            mIsTouchableSet = true;
+            return this;
+        }
+
+        /**
          * @param elevation The elevation of the popup.
          */
         public Builder setElevation(float elevation) {
@@ -575,6 +586,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         }
         setAnimateFromAnchor(builder.mAnimateFromAnchor);
         setFocusable(builder.mFocusable);
+        if (builder.mIsTouchableSet) {
+            mPopupWindow.setTouchable(builder.mTouchable);
+        }
         setElevation(builder.mElevation);
         setTouchModal(builder.mTouchModal);
         if (builder.mIsOutsideTouchableSet) {
