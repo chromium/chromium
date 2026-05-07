@@ -123,7 +123,17 @@ InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
       is_bold(is_bold),
       is_italic(is_italic),
       text(text) {}
+InkTextBoxAttributes::InkTextBoxAttributes(InkTextBoxAttributes&&) noexcept =
+    default;
+InkTextBoxAttributes& InkTextBoxAttributes::operator=(
+    InkTextBoxAttributes&&) noexcept = default;
 InkTextBoxAttributes::~InkTextBoxAttributes() = default;
+
+InkTextBox::InkTextBox(int id, InkTextBoxAttributes attributes)
+    : id(id), attributes(std::move(attributes)) {}
+InkTextBox::InkTextBox(InkTextBox&&) noexcept = default;
+InkTextBox& InkTextBox::operator=(InkTextBox&&) noexcept = default;
+InkTextBox::~InkTextBox() = default;
 
 InkTextInfo::InkTextInfo(FontId font_id,
                          std::vector<uint32_t> glyphs,

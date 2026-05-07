@@ -5319,6 +5319,24 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   return page_shape_map;
 }
 
+DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
+  DocumentInkTextBoxesMap document_textboxes;
+  for (size_t i = 0; i < pages_.size(); ++i) {
+    PDFiumPage* page = pages_[i].get();
+    std::vector<InkTextBox> page_textboxes =
+        ReadInkTextAnnotationsFromPage(page->GetPage());
+    if (page_textboxes.empty()) {
+      continue;
+    }
+    document_textboxes[i] = std::move(page_textboxes);
+  }
+
+  // TODO(crbug.com/504697272): Track the textboxes.
+
+  // TODO(crbug.com/408926609): Implement ID collision prevention.
+  return document_textboxes;
+}
+
 void PDFiumEngine::UpdateShapeActive(int page_index,
                                      InkModeledShapeId id,
                                      bool active) {

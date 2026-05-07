@@ -3252,6 +3252,45 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   }
 }
 
+TEST_P(PDFiumEngineInkDrawTextTest, LoadTextAnnotationsFromPdfMultiPages) {
+  NiceMock<TestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("ink_text_multi_pages.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(3, engine->GetNumberOfPages());
+
+  DocumentInkTextBoxesMap document_textboxes =
+      engine->LoadTextAnnotationsFromPdf();
+  ASSERT_EQ(2u, document_textboxes.size());
+
+  // Page 0 and Page 2 have text annotations; Page 1 is empty and should be
+  // skipped.
+  constexpr int kPageIndex0 = 0;
+  constexpr int kPageIndex1 = 1;
+  constexpr int kPageIndex2 = 2;
+
+  // Page 0 and Page 2 have text annotations; Page 1 is empty and should be
+  // skipped.
+  ASSERT_EQ(2u, document_textboxes.size());
+  auto itr0 = document_textboxes.find(kPageIndex0);
+  ASSERT_NE(itr0, document_textboxes.end());
+  EXPECT_FALSE(document_textboxes.contains(kPageIndex1));
+  auto itr2 = document_textboxes.find(kPageIndex2);
+  ASSERT_NE(itr2, document_textboxes.end());
+
+  // Page 0 annotation.
+  const auto& page0_boxes = itr0->second;
+  ASSERT_EQ(1u, page0_boxes.size());
+  EXPECT_EQ(0, page0_boxes[0].id);
+  EXPECT_EQ("Hello Page 0", page0_boxes[0].attributes.text);
+
+  // Page 2 annotation.
+  const auto& page2_boxes = itr2->second;
+  ASSERT_EQ(1u, page2_boxes.size());
+  EXPECT_EQ(42, page2_boxes[0].id);
+  EXPECT_EQ("Hello Page 2", page2_boxes[0].attributes.text);
+}
+
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All,

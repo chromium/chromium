@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_ink_text.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
@@ -43,6 +44,20 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
 // Exposes internal CreateInkMeshFromPolyline() for testing.
 std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(
     base::span<const ink::Point> polyline);
+
+// Returns whether the given `page` contains any text annotations.
+// Returns false if `page` is null.
+bool PageContainsInkTextAnnotation(FPDF_PAGE page);
+
+// For the given `page`, iterates through all page objects and reconstructs
+// text annotations. For each textbox, groups internal text objects and returns
+// their associated metadata and string payload.
+//
+// If a text object does not match the characteristics of a text annotation,
+// or if it holds corrupted parameters, it is ignored.
+//
+// If `page` is null, then the return value is an empty vector.
+std::vector<InkTextBox> ReadInkTextAnnotationsFromPage(FPDF_PAGE page);
 
 }  // namespace chrome_pdf
 

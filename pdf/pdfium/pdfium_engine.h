@@ -34,6 +34,7 @@
 #include "pdf/pdf_annotation_agent.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_caret_client.h"
+#include "pdf/pdf_ink_text.h"
 #include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
@@ -461,6 +462,12 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Virtual to support testing.
   virtual std::map<InkModeledShapeId, ink::PartitionedMesh>
   LoadV2InkPathsForPage(int page_index);
+
+  // Loads the saved text annotations across the PDF document. Returns a map of
+  // 0-based page indexes to the vector of reconstructed textboxes.
+  //
+  // Virtual to support testing.
+  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf();
 
   // Modifies an existing shape identified by `id` on the page at `page_index`
   // to become either active or inactive. The caller must pass the same
