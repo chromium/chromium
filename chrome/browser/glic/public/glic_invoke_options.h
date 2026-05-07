@@ -203,9 +203,6 @@ struct GlicInvokeOptions {
   // The amount of time to wait before canceling the invocation.
   std::optional<base::TimeDelta> timeout;
 
-  // The amount of time to wait for actuation to complete after it starts.
-  std::optional<base::TimeDelta> actuation_timeout;
-
   // The level of navigation events allowed without canceling the invocation.
   AllowedInflightNavigation allowed_inflight_navigation =
       AllowedInflightNavigation::kAll;
