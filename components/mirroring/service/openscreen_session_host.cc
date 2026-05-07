@@ -372,6 +372,7 @@ void OpenscreenSessionHost::OnNegotiated(
     openscreen::cast::SenderSession::ConfiguredSenders senders,
     Recommendations capture_recommendations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  offering_fallback_codecs_ = false;
   if (state_ == State::kStopped) {
     return;
   }
@@ -606,10 +607,23 @@ void OpenscreenSessionHost::OnError(
       ReportAndLogError(SessionError::ANSWER_NOT_OK, error.ToString());
       return;
 
-    case openscreen::Error::Code::kNoStreamSelected:
+    case openscreen::Error::Code::kNoStreamSelected: {
+      const bool should_send_fallback_offer =
+          state_ == State::kMirroring && !offering_fallback_codecs_ &&
+          base::FeatureList::IsEnabled(
+              mirroring::features::kCastStreamingOfferHardwareFirst);
+      if (should_send_fallback_offer) {
+        logger_.LogInfo(
+            "No stream selected for ideal, hardware-accelerated codecs. "
+            "Attempting fallback to software codecs.");
+        offering_fallback_codecs_ = true;
+        NegotiateMirroring();
+        return;
+      }
       ReportAndLogError(SessionError::ANSWER_NO_AUDIO_OR_VIDEO,
                         error.ToString());
       return;
+    }
 
     // If remoting is not supported, the session will continue but
     // OnCapabilitiesDetermined() will never be called and the media remoter
@@ -862,6 +876,7 @@ void OpenscreenSessionHost::StopSession() {
   }
 
   state_ = State::kStopped;
+  offering_fallback_codecs_ = false;
   StopStreaming();
 
   bandwidth_update_timer_.Stop();
@@ -1133,6 +1148,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
   }
 
   if (session_params_.type != SessionType::AUDIO_ONLY) {
+    bool offered_hardware_codec = false;
     // First, check if hardware encoders are available and should be offered.
     for (auto codec : kSupportedVideoCodecs) {
       if (media::cast::encoding_support::IsHardwareEnabled(
@@ -1142,18 +1158,25 @@ void OpenscreenSessionHost::NegotiateMirroring() {
         config.use_hardware_encoder = true;
         last_offered_video_configs_.push_back(config);
         video_configs.push_back(ToOpenscreenVideoConfig(config));
+        offered_hardware_codec = true;
       }
     }
 
-    // Then add any enabled software encoders.
-    for (auto codec : kSupportedVideoCodecs) {
-      if (!media::cast::encoding_support::IsHardwareEnabled(
-              codec, supported_profiles_) &&
-          media::cast::encoding_support::IsSoftwareEnabled(codec)) {
-        auto config = MirrorSettings::GetDefaultVideoConfig(codec);
-        UpdateConfigUsingSessionParameters(session_params_, config);
-        last_offered_video_configs_.push_back(config);
-        video_configs.push_back(ToOpenscreenVideoConfig(config));
+    const bool should_offer_software =
+        !base::FeatureList::IsEnabled(
+            mirroring::features::kCastStreamingOfferHardwareFirst) ||
+        offering_fallback_codecs_ || !offered_hardware_codec;
+
+    if (should_offer_software) {
+      for (auto codec : kSupportedVideoCodecs) {
+        if (!media::cast::encoding_support::IsHardwareEnabled(
+                codec, supported_profiles_) &&
+            media::cast::encoding_support::IsSoftwareEnabled(codec)) {
+          auto config = MirrorSettings::GetDefaultVideoConfig(codec);
+          UpdateConfigUsingSessionParameters(session_params_, config);
+          last_offered_video_configs_.push_back(config);
+          video_configs.push_back(ToOpenscreenVideoConfig(config));
+        }
       }
     }
   }

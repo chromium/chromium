@@ -319,6 +319,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // video codec configurations.
   std::optional<media::cast::FrameSenderConfig> last_offered_audio_config_;
   std::vector<media::cast::FrameSenderConfig> last_offered_video_configs_;
+  bool offering_fallback_codecs_ = false;
 
   // Created after OFFER/ANSWER exchange succeeds.
   std::unique_ptr<AudioRtpStream> audio_stream_;

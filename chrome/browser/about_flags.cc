@@ -5560,6 +5560,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kCastStreamingWinHardwareH264)},
 #endif
 
+    {"enable-cast-streaming-offer-hardware-first",
+     flag_descriptions::kCastStreamingOfferHardwareFirstName,
+     flag_descriptions::kCastStreamingOfferHardwareFirstDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastStreamingOfferHardwareFirst)},
+
     {"enable-cast-streaming-vp8", flag_descriptions::kCastStreamingVp8Name,
      flag_descriptions::kCastStreamingVp8Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingVp8)},

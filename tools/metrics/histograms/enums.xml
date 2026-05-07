@@ -8901,6 +8901,7 @@ from previous Chrome versions.
   <int value="-1703479539"
       label="InternalServerSideSpeechRecognition:disabled"/>
   <int value="-1703308540" label="disable-webaudio"/>
+  <int value="-1703050195" label="CastStreamingOfferHardwareFirst:enabled"/>
   <int value="-1702323888" label="MediaAppPdfSignature:disabled"/>
   <int value="-1701760225" label="ApiPrintingMarginsAndScale:disabled"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
@@ -17835,6 +17836,7 @@ from previous Chrome versions.
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254018350" label="InsecureDownloadWarnings:enabled"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
+  <int value="1254742560" label="CastStreamingOfferHardwareFirst:disabled"/>
   <int value="1254761280" label="LacrosForkZygotesAtLoginScreen:enabled"/>
   <int value="1255712526" label="FedCmUseOtherAccount:enabled"/>
   <int value="1255967063" label="IsolatedSandboxedIframesName:enabled"/>
