@@ -171,9 +171,6 @@ ComputeIMCBForPositionFallback(const LogicalSize& available_size,
 // It needs to be computed in 2 stages:
 // 1. The inline-dimensions with |ComputeOofInlineDimensions|.
 // 2. The block-dimensions with |ComputeOofBlockDimensions|.
-//
-// NOTE: |ComputeOofInlineDimensions| may call |ComputeOofBlockDimensions| if
-// its required to correctly determine the min/max content sizes.
 
 // |replaced_size| should be set if and only if element is replaced element.
 // Will return true if |BlockNode::ComputeMinMaxSizes| was called.

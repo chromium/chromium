@@ -2506,16 +2506,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       anchor_center_position, alignment, border_padding, replaced_size,
       container_insets, inline_auto_size_behavior, block_auto_size_behavior,
       container_writing_direction, &node_dimensions);
-
-  // We may have already pre-computed our block-dimensions when determining
-  // our min/max sizes, only run if needed.
-  if (node_dimensions.size.block_size == kIndefiniteSize) {
-    offset_info.initial_layout_result = ComputeOofBlockDimensions(
-        node_info.node, node_info.break_token, candidate_style, space, imcb,
-        anchor_center_position, alignment, border_padding, replaced_size,
-        container_insets, block_auto_size_behavior, container_writing_direction,
-        &node_dimensions);
-  }
+  offset_info.initial_layout_result = ComputeOofBlockDimensions(
+      node_info.node, node_info.break_token, candidate_style, space, imcb,
+      anchor_center_position, alignment, border_padding, replaced_size,
+      container_insets, block_auto_size_behavior, container_writing_direction,
+      &node_dimensions);
 
   if (try_fit_available_space) {
     const PhysicalToLogicalGetter has_non_auto_inset(

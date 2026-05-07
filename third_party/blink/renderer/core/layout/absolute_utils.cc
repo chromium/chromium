@@ -424,16 +424,12 @@ void ComputeInsets(const LayoutUnit available_size,
   *inset_end_out = imcb_end + margin_end;
 }
 
-bool CanComputeBlockSizeWithoutLayout(const BlockNode& node,
-                                      AutoSizeBehavior block_auto_size_behavior,
-                                      bool has_inline_size) {
+bool CanComputeBlockSizeWithoutLayout(
+    const BlockNode& node,
+    AutoSizeBehavior block_auto_size_behavior) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
     return false;
-  }
-  // Replaced elements always have their size computed ahead of time.
-  if (node.IsReplaced()) {
-    return true;
   }
   const auto& style = node.Style();
   if (style.LogicalHeight().HasContentOrIntrinsic() ||
@@ -450,11 +446,8 @@ bool CanComputeBlockSizeWithoutLayout(const BlockNode& node,
     case AutoSizeBehavior::kStretchExplicit:
       return true;
     case AutoSizeBehavior::kStretchImplicit:
-      // An aspect-ratio (with a definite inline-size) will trigger fit-content.
-      if (has_inline_size && !style.AspectRatio().IsAuto()) {
-        return false;
-      }
-      return true;
+      // An aspect-ratio will trigger fit-content.
+      return style.AspectRatio().IsAuto();
   }
 }
 
@@ -686,38 +679,18 @@ bool ComputeOofInlineDimensions(
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
   bool depends_on_min_max_sizes = false;
-  const bool can_compute_block_size_without_layout =
-      CanComputeBlockSizeWithoutLayout(node, block_auto_size_behavior,
-                                       /* has_inline_size */ false);
-
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
 
     // Mark the inline calculations as being dependent on min/max sizes.
     depends_on_min_max_sizes = true;
 
-    // If we can't compute our block-size without layout, we can use the
-    // provided space to determine our min/max sizes.
-    if (!can_compute_block_size_without_layout)
-      return node.ComputeMinMaxSizes(style.GetWritingMode(), type, space);
-
-    // Compute our block-size if we haven't already.
-    if (dimensions->size.block_size == kIndefiniteSize) {
-      ComputeOofBlockDimensions(node, break_token, style, space, imcb,
-                                anchor_center_position, alignment,
-                                border_padding, /*replaced_size=*/std::nullopt,
-                                container_insets, block_auto_size_behavior,
-                                container_writing_direction, dimensions);
-    }
-
-    // Create a new space, setting the fixed block-size.
     ConstraintSpaceBuilder builder(style.GetWritingMode(),
                                    style.GetWritingDirection(),
                                    /* is_new_fc */ true);
-    builder.SetAvailableSize(
-        {space.AvailableSize().inline_size, dimensions->size.block_size});
-    builder.SetIsFixedBlockSize(true);
+    builder.SetAvailableSize(imcb.Size());
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
+    builder.SetBlockAutoBehavior(block_auto_size_behavior);
     return node.ComputeMinMaxSizes(style.GetWritingMode(), type,
                                    builder.ToConstraintSpace());
   };
@@ -727,15 +700,27 @@ bool ComputeOofInlineDimensions(
     DCHECK(node.IsReplaced());
     inline_size = replaced_size->inline_size;
   } else {
+    auto may_apply_aspect_ratio = [&]() -> bool {
+      // Check if we have an aspect-ratio.
+      if (style.AspectRatio().IsAuto()) {
+        return false;
+      }
+      // Check if we can resolve our main block-size.
+      return ResolveMainBlockLength(
+                 space, style, border_padding, style.LogicalHeight(),
+                 block_auto_size_behavior == AutoSizeBehavior::kFitContent
+                     ? &Length::FitContent()
+                     : &Length::Stretch(),
+                 kIndefiniteSize, imcb.BlockSize()) != kIndefiniteSize;
+    };
+
     // Determine how "auto" should resolve.
     bool apply_automatic_min_size = false;
     const Length& auto_length = ([&]() {
-      const bool may_apply_aspect_ratio = !style.AspectRatio().IsAuto() &&
-                                          can_compute_block_size_without_layout;
       switch (inline_auto_size_behavior) {
         case AutoSizeBehavior::kFitContent:
           // Check if we need to apply the auto min-size.
-          if (may_apply_aspect_ratio &&
+          if (may_apply_aspect_ratio() &&
               style.OverflowInlineDirection() == EOverflow::kVisible) {
             apply_automatic_min_size = true;
           }
@@ -747,7 +732,7 @@ bool ComputeOofInlineDimensions(
           const bool is_block_explicit =
               !style.LogicalHeight().HasAuto() ||
               block_auto_size_behavior == AutoSizeBehavior::kStretchExplicit;
-          if (may_apply_aspect_ratio && is_block_explicit) {
+          if (is_block_explicit && may_apply_aspect_ratio()) {
             if (style.OverflowInlineDirection() == EOverflow::kVisible) {
               apply_automatic_min_size = true;
             }
@@ -833,10 +818,7 @@ const LayoutResult* ComputeOofBlockDimensions(
   if (replaced_size) {
     DCHECK(node.IsReplaced());
     block_size = replaced_size->block_size;
-  } else if (CanComputeBlockSizeWithoutLayout(
-                 node, block_auto_size_behavior,
-                 /* has_inline_size */ dimensions->size.inline_size !=
-                     kIndefiniteSize)) {
+  } else if (CanComputeBlockSizeWithoutLayout(node, block_auto_size_behavior)) {
     DCHECK(!node.IsTable());
 
     // Nothing depends on our intrinsic-size, so we can safely use the initial
