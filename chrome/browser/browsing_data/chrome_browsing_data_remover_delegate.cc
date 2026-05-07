@@ -1471,8 +1471,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                    std::ranges::any_of(
                        filter_builder->GetOrigins(),
                        [&](const url::Origin& origin) -> bool {
-                         return setting.primary_pattern.Matches(
-                                    origin.GetURL()) ||
+                         // TopLevelStorageAccessPermissionContext creates
+                         // grants using (origin, site) patterns. We explicitly
+                         // use the primary pattern's site here to ensure any
+                         // permission granted to subdomains of an RWS site are
+                         // properly cleared.
+                         return net::SchemefulSite(setting.primary_pattern
+                                                       .ToRepresentativeUrl())
+                                    .IsSameSiteWith(origin) ||
                                 setting.secondary_pattern.Matches(
                                     origin.GetURL());
                        });

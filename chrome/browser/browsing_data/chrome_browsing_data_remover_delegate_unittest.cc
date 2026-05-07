@@ -4739,3 +4739,65 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(FilterOrigins::kByPrimaryUrl,
                         FilterOrigins::kBySecondaryUrl,
                         FilterOrigins::kByBothUrls)));
+
+// Regression test for https://crbug.com/502363986.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       RWSRevocationIncludesSubdomainKeyedRSAForGrants) {
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  // a.test & b.test are assumed to be in an RWS together, but b.test will be
+  // removed from the set and have its data cleared.
+  const GURL kTopLevel("https://a.test");
+  const GURL kRequestedSubdomain("https://accounts.b.test");
+
+  content_settings::ContentSettingConstraints rws_constraints;
+  rws_constraints.set_lifetime(base::Days(30));
+  rws_constraints.set_decided_by_related_website_sets(true);
+  settings_map->SetContentSettingDefaultScope(
+      kRequestedSubdomain, kTopLevel,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
+      rws_constraints);
+  settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(kRequestedSubdomain),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(kTopLevel),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW,
+      rws_constraints);
+
+  // 1 wildcard setting each, plus 1 specific setting each.
+  ASSERT_EQ(
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS)
+          .size(),
+      2u);
+  ASSERT_EQ(
+      settings_map
+          ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS)
+          .size(),
+      2u);
+
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  // RWS data clearing is site-based (see FirstPartySetsSiteDataRemover).
+  filter_builder->AddOrigin(
+      url::Origin::Create(net::SchemefulSite(kRequestedSubdomain).GetURL()));
+
+  BlockUntilOriginDataRemoved(
+      base::Time(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS,
+      std::move(filter_builder));
+
+  EXPECT_EQ(
+      settings_map
+          ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS)
+          .size(),
+      1u);
+  EXPECT_EQ(
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS)
+          .size(),
+      1u);
+  EXPECT_EQ(
+      settings_map->GetContentSetting(kRequestedSubdomain, kTopLevel,
+                                      ContentSettingsType::STORAGE_ACCESS),
+      CONTENT_SETTING_ASK);
+}
