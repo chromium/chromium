@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
-#include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -98,7 +97,6 @@ class PaymentHandlerWebFlowViewController
   void AbortPayment();
   void SetHeaderColorsAndOriginLabelText();
 
-  DeveloperConsoleLogger log_;
   raw_ptr<Profile> profile_;
   GURL target_;
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;

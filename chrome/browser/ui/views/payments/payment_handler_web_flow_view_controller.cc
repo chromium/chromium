@@ -271,7 +271,6 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     GURL target,
     PaymentHandlerOpenWindowCallback first_navigation_complete_callback)
     : PaymentRequestSheetController(spec, state, dialog),
-      log_(payment_request_web_contents),
       profile_(profile),
       target_(target),
       first_navigation_complete_callback_(
@@ -322,7 +321,7 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
       web_contents());
   web_contents()->SetDelegate(this);
-  content::WebContents* parent_tab_web_contents = log_.web_contents();
+  content::WebContents* parent_tab_web_contents = state()->GetWebContents();
 
   DCHECK_NE(parent_tab_web_contents, web_contents());
   content::PaymentAppProvider::GetOrCreateForWebContents(
@@ -334,7 +333,7 @@ void PaymentHandlerWebFlowViewController::FillContentView(
           payments::features::kPaymentHandlerDialogUseInitiatorInUrlLoad)) {
     content::NavigationController::LoadURLParams params(target_);
     params.initiator_origin =
-        url::Origin::Create(state()->GetWebContents()->GetLastCommittedURL());
+        url::Origin::Create(parent_tab_web_contents->GetLastCommittedURL());
     web_view->GetWebContents()->GetController().LoadURLWithParams(params);
   } else {
     web_view->LoadInitialURL(target_);
