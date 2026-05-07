@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -36,7 +37,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
                        public LocalHotkeyManager::Panel,
                        public views::WidgetObserver,
                        public web_modal::WebContentsModalDialogManagerDelegate,
-                       public web_modal::WebContentsModalDialogHost {
+                       public web_modal::WebContentsModalDialogHost,
+                       public glic::BrowserAttachObserver {
  public:
   GlicFloatingUi(Profile* profile,
                  BrowserWindowInterface* browser,
@@ -90,6 +92,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetUserResizeStarted(views::Widget* widget) override;
   void OnWidgetUserResizeEnded(views::Widget* widget) override;
+
+  // BrowserAttachObserver implementation:
+  void CanAttachToBrowserChanged(bool can_attach) override;
 
   // LocalHotkeyManager::Panel:
   void FocusIfOpen() override;
@@ -157,6 +162,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   tabs::TabHandle source_tab_;
   base::CallbackListSubscription source_tab_destruction_subscription_;
+
+  std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
 
   base::WeakPtrFactory<GlicFloatingUi> weak_ptr_factory_{this};
 };

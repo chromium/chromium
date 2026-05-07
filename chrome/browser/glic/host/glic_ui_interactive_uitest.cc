@@ -185,6 +185,31 @@ class GlicUiInteractiveUiTestBase : public test::InteractiveGlicTest {
     return steps;
   }
 
+  auto WaitForMockElementChecked(const DeepQuery& where, bool checked) {
+    return Do([this, where, checked]() {
+      content::RenderFrameHost* frame = FindGlicGuestMainFrame();
+      ASSERT_TRUE(frame);
+      auto result =
+          content::EvalJs(frame, content::JsReplace(R"js(
+        (async () => {
+          return new Promise((resolve) => {
+            const check = () => {
+              const el = document.querySelector($1);
+              if (el && el.checked === $2) {
+                resolve(true);
+              } else {
+                setTimeout(check, 100);
+              }
+            };
+            check();
+          });
+        })()
+      )js",
+                                                    where[0], checked));
+      EXPECT_EQ(true, result);
+    });
+  }
+
   auto CheckEscapeKeyDismisses(const DeepQuery& panel) {
     return InAnyContext(
         WaitForShow(test::kGlicHostElementId), CheckElementVisible(panel, true),
@@ -318,16 +343,11 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, CanAttachWithBrowserWindow) {
 
 // TODO(crbug.com/454087646): Not reliable yet.
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
-                       DISABLED_CanNotAttachWithMinimizedBrowser) {
-  RunTestSequence(
-      OpenGlic(GlicInstrumentMode::kHostAndContents),
-      CheckMockElementChecked({"#canAttachCheckbox"}, true),
-      Do([&]() { browser()->GetBrowserView().Minimize(); }),
-      // TODO(harringtond): Ideally this would wait until not checked, rather
-      // than check only once. There's no guarantee the web client
-      // has been updated before this code runs. Currently, this
-      // test works, though it's a risk for flakiness.
-      CheckMockElementChecked({"#canAttachCheckbox"}, false));
+                       CanNotAttachWithMinimizedBrowser) {
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents), Detach(),
+                  WaitForMockElementChecked({"#canAttachCheckbox"}, true),
+                  Do([&]() { browser()->GetBrowserView().Minimize(); }),
+                  WaitForMockElementChecked({"#canAttachCheckbox"}, false));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,

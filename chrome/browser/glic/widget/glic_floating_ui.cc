@@ -78,6 +78,7 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->OnPictureInPictureWidgetOpened(glic_widget_.get());
+  browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 }
 
 GlicFloatingUi::~GlicFloatingUi() {
@@ -284,6 +285,10 @@ void GlicFloatingUi::FloatingPanelCanAttachChanged(bool can_attach) {
   delegate_->host().FloatingPanelCanAttachChanged(can_attach);
 }
 
+void GlicFloatingUi::CanAttachToBrowserChanged(bool can_attach) {
+  FloatingPanelCanAttachChanged(can_attach && source_tab_.Get() != nullptr);
+}
+
 void GlicFloatingUi::ConfigureWebContentsModalDialogs() {
   // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
   // enterprise users) via constrained_window APIs.
@@ -321,7 +326,9 @@ bool GlicFloatingUi::IsShowingOrBackgrounded() const {
 }
 
 void GlicFloatingUi::Show(const ShowOptions& options) {
-  FloatingPanelCanAttachChanged(source_tab_.Get() != nullptr);
+  FloatingPanelCanAttachChanged(
+      browser_attach_observation_->CanAttachToBrowser() &&
+      source_tab_.Get() != nullptr);
   instance_metrics_->OnShowInFloaty(options);
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
