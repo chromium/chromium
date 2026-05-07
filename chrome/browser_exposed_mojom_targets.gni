@@ -43,6 +43,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/extensions_zero_state_promo:mojo_bindings",
   "//chrome/browser/ui/webui/indigo_internals:mojo_bindings",
   "//chrome/browser/ui/webui/infobar_internals:mojo_bindings",
+  "//chrome/browser/ui/webui/intro:mojo_bindings",
   "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
   "//chrome/browser/ui/webui/location_internals:mojo_bindings",
   "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",

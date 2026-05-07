@@ -9,11 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
+#include "chrome/browser/ui/webui/intro/sign_in_celebration_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 enum class IntroChoice {
   kContinueWithAccount,
@@ -63,7 +65,8 @@ class IntroUIConfig : public content::DefaultWebUIConfig<IntroUI> {
 // The WebUI controller for `chrome://intro`.
 // Drops user inputs until a callback to receive the next one is provided by
 // calling `SetSigninChoiceCallback()`.
-class IntroUI : public content::WebUIController {
+class IntroUI : public ui::MojoWebUIController,
+                public intro::mojom::PageHandlerFactory {
  public:
   explicit IntroUI(content::WebUI* web_ui);
 
@@ -76,6 +79,14 @@ class IntroUI : public content::WebUIController {
   void SetDefaultBrowserCallback(DefaultBrowserCallback callback);
   void SetCanPinToTaskbar(bool can_pin);
 
+  void BindInterface(
+      mojo::PendingReceiver<intro::mojom::PageHandlerFactory> receiver);
+
+  // intro::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<intro::mojom::Page> page,
+      mojo::PendingReceiver<intro::mojom::PageHandler> receiver) override;
+
  private:
   void HandleSigninChoice(IntroChoice choice);
   void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
@@ -83,6 +94,10 @@ class IntroUI : public content::WebUIController {
   IntroSigninChoiceCallback signin_choice_callback_;
   DefaultBrowserCallback default_browser_callback_;
   raw_ptr<IntroHandler> intro_handler_;
+  std::unique_ptr<SignInCelebrationHandler>
+      intro_sign_in_celebration_handler_;
+
+  mojo::Receiver<intro::mojom::PageHandlerFactory> factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

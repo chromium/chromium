@@ -22,6 +22,10 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTest, IntroApp) {
   RunTest("intro/intro_app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(IntroBrowserTest, SignInCelebration) {
+  RunTest("intro/sign_in_celebration_test.js", "mocha.run()");
+}
+
 class IntroBrowserTestWithRefreshEnabled : public IntroBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

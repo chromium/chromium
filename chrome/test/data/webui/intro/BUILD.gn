@@ -14,6 +14,7 @@ build_webui_tests("build") {
     "default_browser_refresh_test.ts",
     "fake_media_query_list.ts",
     "intro_app_test.ts",
+    "sign_in_celebration_test.ts",
     "sign_in_promo_refresh_test.ts",
     "sign_in_promo_test.ts",
     "test_intro_browser_proxy.ts",

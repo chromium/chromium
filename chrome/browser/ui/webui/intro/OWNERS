@@ -1,2 +1,5 @@
 file://chrome/browser/profiles/OWNERS
 dgn@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

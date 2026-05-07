@@ -96,7 +96,9 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
   }
 
   protected getAnimationUrl_(): string {
-    return `animations/avatar_animation${this.isDarkMode_ ? '_dark' : ''}.json`;
+    return this.isDarkMode_ ?
+        'animations/avatar_sign_in_celebration_dark.json' :
+        'animations/avatar_sign_in_celebration.json';
   }
 
   protected shouldShowAnimations_(): boolean {

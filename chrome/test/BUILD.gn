@@ -6867,6 +6867,7 @@ test("unit_tests") {
       "../browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop_unittest.cc",
+      "../browser/ui/webui/intro/sign_in_celebration_handler_unittest.cc",
     ]
   }
 
@@ -7265,6 +7266,7 @@ test("unit_tests") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
+    "//chrome/browser/ui/webui/intro:mojo_bindings",
     "//chrome/browser/unified_consent",
     "//chrome/browser/update_client",
     "//chrome/browser/update_client:unit_tests",
