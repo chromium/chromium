@@ -342,6 +342,24 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualTasksApp.updateComplete;
     await microtasksFinished();
 
+    // Simulate the initial load.
+    let resolveInitNavigation: () => void;
+    const initNavigationFinished = new Promise<void>(r => resolveInitNavigation = r);
+    contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(
+        resolveInitNavigation!);
+
+    const initEvent = new Event('loadstart');
+    Object.assign(initEvent, {url: 'http://example.com', isTopLevel: true});
+    contextualTasksApp.onThreadFrameLoadStartForTesting(
+        initEvent as chrome.webviewTag.LoadStartEvent);
+
+    const initCommitEvent = new Event('loadcommit');
+    Object.assign(initCommitEvent, {url: 'http://example.com', isTopLevel: true});
+    contextualTasksApp.onThreadFrameLoadCommitForTesting(
+        initCommitEvent as chrome.webviewTag.LoadCommitEvent);
+
+    await initNavigationFinished;
+
     const composeboxWrapper = contextualTasksApp.$.composebox;
 
     const headerWrapper = contextualTasksApp.$.composeboxHeaderWrapper;
