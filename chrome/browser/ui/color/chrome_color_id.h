@@ -93,6 +93,7 @@
   E_CPONLY(kColorBnplIssuerLinkedIneligibleBackground) \
   E_CPONLY(kColorBnplIssuerLinkedPillBackground) \
   E_CPONLY(kColorBnplIssuerLinkedPillForeground) \
+  E_CPONLY(kColorAutofillPopupDeactivatedBnplForeground) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
   E_CPONLY(kColorComposeDialogDivider) \
