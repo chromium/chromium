@@ -879,6 +879,10 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [self.viewController recordLensOverlayAvailability];
 }
 
+- (void)updateAIHubNewBadgeVisibility {
+  [self.viewController updateAIHubNewBadgeVisibility];
+}
+
 #pragma mark - URLDragDataSource
 
 - (URLInfo*)URLInfoForView:(UIView*)view {

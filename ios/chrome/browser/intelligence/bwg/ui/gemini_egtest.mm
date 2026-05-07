@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -77,6 +78,9 @@ id<GREYMatcher> GeminiButton() {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey setIntegerValue:0 forUserPref:prefs::kGeminiEnabledByPolicy];
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kAIHubEligibilityTriggered];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kIOSBwgConsent];
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -86,6 +90,12 @@ id<GREYMatcher> GeminiButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kPageActionMenu);
+
+  if ([self isRunningTest:@selector(testAIHubNewBadgeAccessibility)]) {
+    config.iph_feature_enabled = "IPH_iOSAIHubNewBadge";
+    config.relaunch_policy = ForceRelaunchByKilling;
+  }
+
   return config;
 }
 
@@ -115,6 +125,22 @@ id<GREYMatcher> GeminiButton() {
   [[EarlGrey selectElementWithMatcher:ConsentPrimaryButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:ConsentSecondaryButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the AI Hub entry point conveys the "New" context to accessibility.
+- (void)testAIHubNewBadgeAccessibility {
+  NSString* baseLabel = l10n_util::GetNSString(
+      IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
+  NSString* expectedLabel =
+      [NSString stringWithFormat:@"%@, %@", baseLabel,
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
+
+  id<GREYMatcher> entrypointMatcher = grey_allOf(
+      grey_accessibilityLabel(expectedLabel), grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey selectElementWithMatcher:entrypointMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

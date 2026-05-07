@@ -142,6 +142,19 @@
   }
 }
 
+- (void)setTracker:(feature_engagement::Tracker*)tracker {
+  _tracker = tracker;
+  if (_tracker) {
+    __weak __typeof(self) weakSelf = self;
+    _tracker->AddOnInitializedCallback(base::BindRepeating(^(bool success) {
+      if (!success) {
+        return;
+      }
+      [weakSelf.consumer updateAIHubNewBadgeVisibility];
+    }));
+  }
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {

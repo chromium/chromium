@@ -98,9 +98,22 @@ NSTimeInterval kAnimationDuration = 0.3;
   }
   _newBadgeVisible = visible;
 
+  NSString* baseLabel = @"";
+  if (IsDirectBWGEntryPoint()) {
+    baseLabel =
+        l10n_util::GetNSString(IDS_IOS_BWG_ASK_GEMINI_ACCESSIBILITY_LABEL);
+  } else {
+    baseLabel = l10n_util::GetNSString(
+        IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
+  }
+
   if (_newBadgeVisible) {
     [self setEntrypointIconWithScale:kHighlightScaling];
     [self setUpButtonWithNewFeatureBadge];
+    self.accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", baseLabel,
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT)];
   } else {
     __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:kAnimationDuration
@@ -108,6 +121,7 @@ NSTimeInterval kAnimationDuration = 0.3;
                        [weakSelf removeNewFeatureBadge];
                        [weakSelf applyDefaultButtonState];
                      }];
+    self.accessibilityLabel = baseLabel;
   }
 }
 

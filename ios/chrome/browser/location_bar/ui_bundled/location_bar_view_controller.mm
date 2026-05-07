@@ -1178,6 +1178,12 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 }
 
+- (void)updateAIHubNewBadgeVisibility {
+  if (_placeholderType == LocationBarPlaceholderType::kPageActionMenu) {
+    [self updatePlaceholderView];
+  }
+}
+
 // Creates and shows the LVF input selection UI.
 - (void)openLensViewFinder {
   TriggerHapticFeedbackForSelectionChange();

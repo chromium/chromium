@@ -33,4 +33,7 @@
 - (void)recordLensOverlayAvailability {
 }
 
+- (void)updateAIHubNewBadgeVisibility {
+}
+
 @end

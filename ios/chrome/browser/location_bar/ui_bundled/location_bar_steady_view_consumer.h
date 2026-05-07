@@ -35,6 +35,9 @@
 // Notifies the consumer to record the lens overlay entrypoint availability.
 - (void)recordLensOverlayAvailability;
 
+// Updates the visibility of the AI Hub "New" feature badge.
+- (void)updateAIHubNewBadgeVisibility;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_STEADY_VIEW_CONSUMER_H_
