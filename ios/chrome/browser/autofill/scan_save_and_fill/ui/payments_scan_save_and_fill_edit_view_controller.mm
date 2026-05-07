@@ -318,6 +318,24 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
         [NSString stringWithFormat:@"%@/%@", expirationMonth, expirationYear];
   }
 
+  std::string appLocale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+
+  base::UmaHistogramBoolean(
+      "IOS.ScanCardOfferToSave.ValidNumber",
+      [AutofillCreditCardUtil isValidCreditCardNumber:cardNumber
+                                             appLocal:appLocale]);
+
+  base::UmaHistogramBoolean(
+      "IOS.ScanCardOfferToSave.ValidExpMonth",
+      [AutofillCreditCardUtil
+          isValidCreditCardExpirationMonth:expirationMonth]);
+
+  base::UmaHistogramBoolean(
+      "IOS.ScanCardOfferToSave.ValidExpYear",
+      [AutofillCreditCardUtil isValidCreditCardExpirationYear:expirationYear
+                                                     appLocal:appLocale]);
+
   if (_cardNumberItem && _expirationDateItem) {
     _cardNumberItem.textFieldValue = _cardNumber;
     _expirationDateItem.textFieldValue = _expirationDate;

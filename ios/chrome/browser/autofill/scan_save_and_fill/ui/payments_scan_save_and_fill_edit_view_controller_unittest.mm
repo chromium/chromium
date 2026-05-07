@@ -524,3 +524,45 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
       "IOS.ScanCardOfferToSave",
       static_cast<int>(ScanCardOfferToSaveAction::kIgnore), 0);
 }
+
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestMetricsOnScan) {
+  base::HistogramTester histogram_tester;
+  [view_controller_ loadViewIfNeeded];
+
+  NSCalendar* calendar = NSCalendar.currentCalendar;
+  NSDateComponents* calendarComponents = [calendar components:NSCalendarUnitYear
+                                                     fromDate:[NSDate date]];
+  NSInteger currentYear = [calendarComponents year];
+  NSString* expirationYear =
+      [NSString stringWithFormat:@"%ld", (long)currentYear];
+
+  // Simulate incoming scanned results.
+  [view_controller_ setCreditCardNumber:@"4242424242424242"
+                        expirationMonth:@"12"
+                         expirationYear:expirationYear];
+
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidNumber",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpMonth",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpYear",
+                                      true, 1);
+}
+
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestMetricsOnScanInvalid) {
+  base::HistogramTester histogram_tester;
+  [view_controller_ loadViewIfNeeded];
+
+  // Simulate incoming scanned results.
+  [view_controller_ setCreditCardNumber:@"122"
+                        expirationMonth:@"13"
+                         expirationYear:@"20"];
+
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidNumber",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpMonth",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpYear",
+                                      false, 1);
+}

@@ -6766,6 +6766,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ScanCardOfferToSave.ValidExpMonth" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the scanned credit card expiration month was valid. Recorded
+    when the scan result is received.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScanCardOfferToSave.ValidExpYear" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the scanned credit card expiration year was valid. Recorded
+    when the scan result is received.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScanCardOfferToSave.ValidNumber" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the scanned credit card number was valid. Recorded when the
+    scan result is received.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchWith.CharSelected" units="characters"
     expires_after="2027-04-01">
   <owner>olivierrobin@chromium.org</owner>
