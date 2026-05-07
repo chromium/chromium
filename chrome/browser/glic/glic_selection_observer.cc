@@ -129,6 +129,29 @@ void PostUpdateNudgeLabel(
                                 std::move(invoke_glic)));
 }
 
+mojom::AdditionalContextPtr CreateAdditionalContext(
+    content::WebContents* web_contents,
+    const std::u16string& selected_text) {
+  auto context = mojom::AdditionalContext::New();
+  context->source = mojom::AdditionalContextSource::kTextSelection;
+  std::vector<mojom::AdditionalContextPartPtr> parts;
+  if (!selected_text.empty()) {
+    auto context_data = mojom::ContextData::New();
+    context_data->mime_type = kSelectionMimeType;
+    std::string utf8_text = base::UTF16ToUTF8(selected_text);
+    context_data->data =
+        mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
+    parts.push_back(
+        mojom::AdditionalContextPart::NewData(std::move(context_data)));
+  }
+  if (auto* tab_interface =
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    context->tab_id = tab_interface->GetHandle().raw_value();
+  }
+  context->parts = std::move(parts);
+  return context;
+}
+
 }  // namespace
 
 GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
@@ -441,26 +464,10 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         Profile* profile =
             Profile::FromBrowserContext(web_contents->GetBrowserContext());
         if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
-          auto context = mojom::AdditionalContext::New();
-          context->source = mojom::AdditionalContextSource::kTextSelection;
-          std::vector<mojom::AdditionalContextPartPtr> parts;
-
-          {
-            auto context_data = mojom::ContextData::New();
-            context_data->mime_type = kSelectionMimeType;
-            std::string utf8_text = base::UTF16ToUTF8(selected_text);
-            context_data->data =
-                mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
-            parts.push_back(
-                mojom::AdditionalContextPart::NewData(std::move(context_data)));
-          }
-
-          context->parts = std::move(parts);
-
           GlicInvokeOptions options(glic::Target(tab_interface),
                                     mojom::InvocationSource::kNudge);
-          options.additional_context = std::move(context);
-
+          options.additional_context =
+              CreateAdditionalContext(web_contents.get(), selected_text);
           glic_keyed_service->Invoke(std::move(options));
         }
       }
@@ -493,11 +500,10 @@ void GlicSelectionObserver::UpdateSelectionState(
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
       if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-        auto context = mojom::AdditionalContext::New();
-        context->source = mojom::AdditionalContextSource::kTextSelection;
-        context->parts = std::vector<mojom::AdditionalContextPartPtr>();
-        glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
-                                                   std::move(context));
+        // TODO(b/508916357): Use the invoke API.
+        glic_keyed_service_->SendAdditionalContext(
+            tab_interface->GetHandle(),
+            CreateAdditionalContext(web_contents(), u""));
       }
       has_sent_selection_context_ = false;
     }
@@ -521,24 +527,10 @@ void GlicSelectionObserver::UpdateSelectionState(
           views::Widget::ClosedReason::kLostFocus);
     }
 
-    auto context = mojom::AdditionalContext::New();
-    context->source = mojom::AdditionalContextSource::kTextSelection;
-    std::vector<mojom::AdditionalContextPartPtr> parts;
-
-    {
-      auto context_data = mojom::ContextData::New();
-      context_data->mime_type = kSelectionMimeType;
-      std::string utf8_text = base::UTF16ToUTF8(selected_text);
-      context_data->data =
-          mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
-      parts.push_back(
-          mojom::AdditionalContextPart::NewData(std::move(context_data)));
-    }
-
-    context->parts = std::move(parts);
-
-    glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
-                                               std::move(context));
+    // TODO(b/508916357): Use the invoke API.
+    glic_keyed_service_->SendAdditionalContext(
+        tab_interface->GetHandle(),
+        CreateAdditionalContext(web_contents(), selected_text));
     has_sent_selection_context_ = true;
   } else {
     if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {

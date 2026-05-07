@@ -765,6 +765,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "glic_selection_observer_interactive_uitest.cc",
       "glic_settings_util_interactive_uitest.cc",
       "glic_user_status_interactive_uitest.cc",
       "host/glic_actor_attempt_form_filling_interactive_ui_test.cc",
