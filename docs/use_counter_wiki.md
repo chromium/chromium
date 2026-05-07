@@ -30,6 +30,8 @@ feature to UseCounter, simply:
     * `blink::UseCounter::CountWebDXFeature()` or `blink::UseCounter::Count()` for blink side features; Or
     * `content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage()` for browser side features.
 + Run [`update_use_counter_feature_enum.py`] to update the UMA mappings.
++ Use a WebDX use counter to track usage of your feature as a whole. For example, use a WebDX use counter to track usage of Flexbox in general.
++ For more fine grained usage metrics related to your feature, use the WebFeature use counter. For example, use a WebFeature use counter to track usage of different kinds of reversals in Flexbox.
 
 Example:
 ```c++
