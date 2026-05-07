@@ -14,10 +14,12 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stacks/call_stack_profile_encoding.h"
@@ -47,12 +49,8 @@ GetBrowserProcessReceiverCallbackInstance() {
 // Convert |filename| to its MD5 hash.
 uint64_t HashModuleFilename(const base::FilePath& filename) {
   const base::FilePath::StringType basename = filename.BaseName().value();
-  // Copy the bytes in basename into a string buffer.
-  size_t basename_length_in_bytes =
-      basename.size() * sizeof(base::FilePath::CharType);
-  std::string name_bytes(basename_length_in_bytes, '\0');
-  UNSAFE_TODO(memcpy(&name_bytes[0], &basename[0], basename_length_in_bytes));
-  return base::HashMetricName(name_bytes);
+  return base::HashMetricName(
+      base::as_string_view(base::as_chars(base::span(basename))));
 }
 
 }  // namespace
