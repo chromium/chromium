@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_DATABASE_HELPERS_H_
 
 #include <string>
+#include <string_view>
 
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/common/background_fetch/background_fetch_types.h"
@@ -34,26 +35,25 @@ const char kStorageVersionKeyPrefix[] = "bgfetch_storage_version_";
 
 // Database Keys.
 CONTENT_EXPORT std::string ActiveRegistrationUniqueIdKey(
-    const std::string& developer_id);
+    std::string_view developer_id);
 
-CONTENT_EXPORT std::string RegistrationKey(const std::string& unique_id);
+CONTENT_EXPORT std::string RegistrationKey(std::string_view unique_id);
 
-std::string UIOptionsKey(const std::string& unique_id);
+std::string UIOptionsKey(std::string_view unique_id);
 
-std::string PendingRequestKeyPrefix(const std::string& unique_id);
+std::string PendingRequestKeyPrefix(std::string_view unique_id);
 
-std::string PendingRequestKey(const std::string& unique_id, int request_index);
+std::string PendingRequestKey(std::string_view unique_id, int request_index);
 
-std::string ActiveRequestKeyPrefix(const std::string& unique_id);
+std::string ActiveRequestKeyPrefix(std::string_view unique_id);
 
-std::string ActiveRequestKey(const std::string& unique_id, int request_index);
+std::string ActiveRequestKey(std::string_view unique_id, int request_index);
 
-std::string CompletedRequestKeyPrefix(const std::string& unique_id);
+std::string CompletedRequestKeyPrefix(std::string_view unique_id);
 
-std::string CompletedRequestKey(const std::string& unique_id,
-                                int request_index);
+std::string CompletedRequestKey(std::string_view unique_id, int request_index);
 
-CONTENT_EXPORT std::string StorageVersionKey(const std::string& unique_id);
+CONTENT_EXPORT std::string StorageVersionKey(std::string_view unique_id);
 
 // Database status.
 enum class DatabaseStatus { kOk, kFailed, kNotFound };
@@ -81,10 +81,10 @@ bool MojoFailureReasonFromRegistrationProto(
 // Use `MakeCacheUrlUnique` before writing to the cache, and
 // `RemoveUniqueParamFromCacheURL` when querying from the cache.
 CONTENT_EXPORT GURL MakeCacheUrlUnique(const GURL& url,
-                                       const std::string& unique_id,
+                                       std::string_view unique_id,
                                        size_t request_index);
 CONTENT_EXPORT GURL RemoveUniqueParamFromCacheURL(const GURL& url,
-                                                  const std::string& unique_id);
+                                                  std::string_view unique_id);
 
 }  // namespace background_fetch
 }  // namespace content
