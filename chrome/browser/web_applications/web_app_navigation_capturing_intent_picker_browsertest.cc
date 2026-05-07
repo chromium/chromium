@@ -66,14 +66,8 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
   }
 };
 
-// TODO(crbug.com/376641667): Flaky on Mac & Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_FocusExisting DISABLED_FocusExisting
-#else
-#define MAYBE_FocusExisting FocusExisting
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
-                       MAYBE_FocusExisting) {
+                       FocusExisting) {
   webapps::AppId app_id = test::InstallWebApp(
       profile(), WebAppInstallInfo::CreateForTesting(
                      GetAppUrl("manifest_focus.json"),
@@ -115,15 +109,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                                    GetAppUrlWithQuery("manifest_focus.json")));
 }
 
-// TODO(crbug.com/382315984): Fix this flake.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NavigateExisting DISABLED_NavigateExisting
-#else
-#define MAYBE_NavigateExisting NavigateExisting
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
-                       MAYBE_NavigateExisting) {
+                       NavigateExisting) {
   webapps::AppId app_id = InstallWebApp(WebAppInstallInfo::CreateForTesting(
       GetAppUrl("manifest_navigate.json"),
       blink::mojom::DisplayMode::kMinimalUi,
