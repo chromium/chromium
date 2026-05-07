@@ -68,13 +68,20 @@ bool Compress(std::string_view uncompressed_data,
               std::string* compressed_data) {
   CHECK(compressed_data) << "compressed_data is null";
 #if USE_ZSTD_FOR_SEEDS
-  auto buff_size = ZSTD_compressBound(uncompressed_data.size());
+  size_t buff_size = ZSTD_compressBound(uncompressed_data.size());
+  if (ZSTD_isError(buff_size)) {
+    return false;
+  }
   compressed_data->resize(buff_size);
-  auto seed_compressed_size = ZSTD_compress(
+  size_t seed_compressed_size = ZSTD_compress(
       /*dst=*/compressed_data->data(), /*dstCapacity=*/buff_size,
       /*src=*/uncompressed_data.data(),
       /*srcSize=*/uncompressed_data.size(), kZstdCompressionLevel);
-  return seed_compressed_size > 0;
+  if (ZSTD_isError(seed_compressed_size)) {
+    return false;
+  }
+  compressed_data->resize(seed_compressed_size);
+  return true;
 #else   // !USE_ZSTD_FOR_SEEDS
   // Android does not support ZSTD because of binary size increase, so use gzip
   // compression instead.
