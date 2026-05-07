@@ -13,6 +13,8 @@ inline constexpr char kAccessibilityAnnotatorLearnMoreURL[] =
 inline constexpr char kAccessibilityAnnotatorSettingsURL[] =
     "https://gemini.google.com/personalization-settings";
 
+inline constexpr char kAccessibilityAnnotatorTriggerText[] = "@@";
+
 }  // namespace accessibility_annotator
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_URL_CONSTANTS_H_

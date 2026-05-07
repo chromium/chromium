@@ -30,6 +30,7 @@ source_set("accessibility_annotator") {
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/first_run",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_variant_strings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//skia",

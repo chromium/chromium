@@ -52,7 +52,8 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties
                                         .LEARN_MORE_DESCRIPTION,
-                                context.getString(R.string.accessibility_annotator_info_learn_more))
+                                context.getString(
+                                        R.string.accessibility_annotator_info_learn_more_android))
                         .with(
                                 AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_1_TEXT,
                                 context.getString(
