@@ -159,26 +159,8 @@ void CanvasResourceDispatcher::DispatchFrame(
     const gfx::Rect& damage_rect,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
-  viz::CompositorFrame frame;
-  if (!PrepareFrame(std::move(canvas_resource), damage_rect, is_opaque,
-                    &frame)) {
-    return;
-  }
-
-  pending_compositor_frames_++;
-  sink_->SubmitCompositorFrame(
-      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(frame), std::nullopt, 0);
-}
-
-bool CanvasResourceDispatcher::PrepareFrame(
-    scoped_refptr<CanvasResource>&& canvas_resource,
-    const gfx::Rect& damage_rect,
-    bool is_opaque,
-    viz::CompositorFrame* frame) {
-  TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
   if (!canvas_resource) {
-    return false;
+    return;
   }
 
   auto exported_resource =
@@ -191,8 +173,24 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
-    return false;
+    return;
   }
+
+  viz::CompositorFrame frame;
+  PrepareFrame(std::move(exported_resource), damage_rect, is_opaque, &frame);
+
+  pending_compositor_frames_++;
+  sink_->SubmitCompositorFrame(
+      parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
+      std::move(frame), std::nullopt, 0);
+}
+
+void CanvasResourceDispatcher::PrepareFrame(
+    scoped_refptr<ExportedCanvasResource>&& exported_resource,
+    const gfx::Rect& damage_rect,
+    bool is_opaque,
+    viz::CompositorFrame* frame) {
+  TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
 
   // TODO(crbug.com/652931): update the device_scale_factor
   frame->metadata.device_scale_factor = 1.0f;
@@ -271,8 +269,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
         parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
     change_size_for_next_commit_ = false;
   }
-
-  return true;
 }
 
 void CanvasResourceDispatcher::DidReceiveCompositorFrameAck(
