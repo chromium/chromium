@@ -58,8 +58,9 @@
   --cr-composebox-collapse-duration: 500ms;
   --cr-composebox-expand-curve: cubic-bezier(0.40, 1.38, 0.22, 0.96);
   --cr-composebox-expand-duration: 500ms;
-  --cr-composebox-file-thumbnail-animation-curve: cubic-bezier(0.38, 1.21, 0.22, 1);
-  --cr-composebox-file-thumbnail-animation-duration: var(--cr-composebox-expand-duration);
+  --cr-composebox-carousel-fade-curve: cubic-bezier(0.38, 1.21, 0.22, 1);
+  --cr-composebox-carousel-fade-delay: 65ms;
+  --cr-composebox-carousel-fade-duration: 450ms;
   --cr-composebox-tool-chip-animation:
     fade-in 100ms cubic-bezier(0, 0, 0, 1) forwards,
     slide-in 350ms cubic-bezier(0.42, 1.67, 0.21, 0.9) forwards;
@@ -74,14 +75,15 @@
   --box-shadow-animation-duration: 650ms;
 }
 
+:host([energy-effect-enabled_][is-zero-state]) {
+  --cr-composebox-carousel-fade-delay: 85ms;
+  --cr-composebox-carousel-fade-duration: 500ms;
+}
+
 @media (prefers-color-scheme: light) {
   :host([energy-effect-enabled_]) {
     --color-composebox-file-chip-background: rgba(240, 242, 245, 1);
   }
-}
-
-:host([energy-effect-enabled_][is-zero-state]) {
-  --cr-composebox-file-thumbnail-animation-name: zero-state-thumbnail-fade;
 }
 
 /* Composebox default colors are for light mode on AIM results. */
@@ -343,7 +345,7 @@
 }
 
 :host([energy-effect-enabled_]) #composebox[show-file-carousel][expanding_]::part(carousel-container) {
-  transition: opacity var(--cr-composebox-expand-duration) var(--cr-composebox-expand-curve);
+  transition: opacity var(--cr-composebox-carousel-fade-duration) var(--cr-composebox-carousel-fade-curve) var(--cr-composebox-carousel-fade-delay);
 }
 
 #composebox[show-file-carousel]::part(carousel-container) {

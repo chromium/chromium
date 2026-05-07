@@ -310,32 +310,6 @@ cr-spinner {
   white-space: nowrap;
 }
 
-@keyframes thumbnail-fade {
-  0%,
-  13% {
-    opacity: 0;
-  }
-  90%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes zero-state-thumbnail-fade {
-  0%,
-  17% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.chip,
-.img-chip {
-  animation:
-    var(--cr-composebox-file-thumbnail-animation-name, thumbnail-fade) var(--cr-composebox-file-thumbnail-animation-duration, 0s) var(--cr-composebox-file-thumbnail-animation-curve, linear) forwards;
-}
 
 @media (forced-colors: active) {
   .chip,
