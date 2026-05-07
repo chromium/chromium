@@ -194,6 +194,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualCueing.V2.CueInteraction.{InteractionType}"
+    units="hash" expires_after="2026-09-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>pulkitaga@google.com</owner>
+  <summary>
+    The hashed string of the CUJ for a contextual cue. Recorded when the
+    contextual cue is {InteractionType}.
+  </summary>
+  <token key="InteractionType">
+    <variant name="Clicked" summary="clicked"/>
+    <variant name="Dismissed"
+        summary="user opened 3 dot menu and clicked dismiss"/>
+    <variant name="EditPrompt"
+        summary="user opened 3 dot menu and clicked to edit the prompt"/>
+    <variant name="Settings"
+        summary="user opened 3 dot menu and clicked to go to settings"/>
+  </token>
+</histogram>
+
 <histogram name="ContextualCueing.V2.Decision" enum="ContextualCueingDecision"
     expires_after="2026-09-13">
   <owner>sophiechang@chromium.org</owner>

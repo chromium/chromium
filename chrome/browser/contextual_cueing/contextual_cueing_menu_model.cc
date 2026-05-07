@@ -68,19 +68,22 @@ void ContextualCueingMenuModel::ExecuteCommand(int command_id,
   switch (command_id) {
     case kContextualCueingDismissCommand:
       RecordContextualCueingInteraction(
-          ContextualCueingInteraction::kCueDismissed);
+          ContextualCueingInteraction::kCueDismissed,
+          controller_->current_cuj());
       contextual_cueing_service_->OnCueDismissed(cue_type_);
       break;
     case kContextualCueingEditPromptCommand:
       RecordContextualCueingInteraction(
-          ContextualCueingInteraction::kCueEditPrompt);
+          ContextualCueingInteraction::kCueEditPrompt,
+          controller_->current_cuj());
       if (CueTarget* target = controller_->GetTarget(cue_type_)) {
         target->OnEditPrompt(std::move(data_));
       }
       break;
     case kContextualCueingOpenSettingsCommand: {
       RecordContextualCueingInteraction(
-          ContextualCueingInteraction::kCueSuggestionsSettings);
+          ContextualCueingInteraction::kCueSuggestionsSettings,
+          controller_->current_cuj());
       chrome::ShowSettingsSubPageForProfile(profile_,
                                             chrome::kSuggestionsSubPage);
       break;

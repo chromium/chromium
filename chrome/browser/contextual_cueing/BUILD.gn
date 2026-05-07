@@ -24,6 +24,10 @@ source_set("contextual_cueing") {
     "//components/tabs:public",
     "//url",
   ]
+
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/ui/page_action" ]
+  }
 }
 
 source_set("impl") {
@@ -72,8 +76,8 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/user_education",
-      "//chrome/browser/ui/views/page_action",
     ]
   }
 }
@@ -94,6 +98,7 @@ if (!is_android) {
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

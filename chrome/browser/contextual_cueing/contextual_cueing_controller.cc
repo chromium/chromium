@@ -57,6 +57,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #endif
 
@@ -105,6 +106,25 @@ bool AreTabsEqual(optimization_guide::proto::Tab tab1,
          tab1.title() == tab2.title();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class ContextualCueingPageActionObserver
+    : public page_actions::PageActionObserver {
+ public:
+  explicit ContextualCueingPageActionObserver(
+      base::RepeatingClosure hidden_callback)
+      : page_actions::PageActionObserver(kActionAnchoredContextualCue),
+        hidden_callback_(hidden_callback) {}
+
+  void OnPageActionIconHidden(
+      const page_actions::PageActionState& page_action) override {
+    hidden_callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure hidden_callback_;
+};
+#endif
+
 }  // namespace
 
 ContextualCueingController::ContextualCueingController(
@@ -124,6 +144,11 @@ ContextualCueingController::ContextualCueingController(
           browser_window_interface_->GetProfile())),
       template_url_service_(TemplateURLServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile())) {
+#if !BUILDFLAG(IS_ANDROID)
+  page_action_observer_ = std::make_unique<ContextualCueingPageActionObserver>(
+      base::BindRepeating(&ContextualCueingController::OnCueHidden,
+                          weak_ptr_factory_.GetWeakPtr()));
+#endif
   if (page_content_annotations_service_) {
     page_content_annotations_service_->AddObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
@@ -524,6 +549,10 @@ void ContextualCueingController::ShowCue(
       "Showing cue for CUJ %s: %s [%s]", response.suggested_cuj(),
       strings.anchored_message_text(), strings.action_text()));
 
+  page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
+
+  current_cuj_ = response.suggested_cuj();
+
   contextual_cueing_service_->OnCueShown(
       tab->GetContents()->GetLastCommittedURL());
 #endif
@@ -532,6 +561,10 @@ void ContextualCueingController::ShowCue(
                            base::HashMetricName(response.suggested_cuj()));
 
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
+}
+
+void ContextualCueingController::OnCueHidden() {
+  current_cuj_.clear();
 }
 
 void ContextualCueingController::OnCueClicked(
@@ -546,7 +579,8 @@ void ContextualCueingController::OnCueClicked(
   }
   contextual_cueing_service_->OnCueClicked(cue_type);
 
-  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked);
+  RecordContextualCueingInteraction(ContextualCueingInteraction::kCueClicked,
+                                    current_cuj_);
 
   HideCue();
 }
