@@ -117,6 +117,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
@@ -2515,7 +2516,8 @@ void RenderViewContextMenu::AppendRotationItems() {
 void RenderViewContextMenu::AppendSearchProvider() {
   DCHECK(browser_context_);
 
-  if (!enterprise_data_protection::IsSearchWithAllowed(source_web_contents_)) {
+  if (!enterprise_data_protection::IsSearchWithAllowed(
+          GetWebContentsForDataControls())) {
     return;
   }
 
@@ -3636,7 +3638,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
 
       enterprise_data_protection::ShouldAllowSearchWith(
-          source_web_contents_, params_.selection_text.size(),
+          GetWebContentsForDataControls(), params_.selection_text.size(),
           base::BindOnce(
               [](base::WeakPtr<content::WebContents> web_contents,
                  content::OpenURLParams params) {
@@ -5001,6 +5003,27 @@ void RenderViewContextMenu::OpenTextQueryInLens() {
       /*suppress_contextualization=*/
       !lens::features::
           IsLensOverlayTextSelectionContextMenuEntrypointContextualized());
+}
+
+content::WebContents* RenderViewContextMenu::GetWebContentsForDataControls()
+    const {
+  if (auto* glue =
+          ReadAnythingControllerGlue::FromWebContents(source_web_contents_)) {
+    if (glue->controller() && glue->controller()->tab()) {
+      if (auto* contents = glue->controller()->tab()->GetContents()) {
+        return contents;
+      }
+    }
+  }
+  if (auto* glue = ReadAnythingSidePanelControllerGlue::FromWebContents(
+          source_web_contents_)) {
+    if (glue->controller() && glue->controller()->tab()) {
+      if (auto* contents = glue->controller()->tab()->GetContents()) {
+        return contents;
+      }
+    }
+  }
+  return source_web_contents_;
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {

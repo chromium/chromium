@@ -38,6 +38,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
@@ -97,6 +98,8 @@
 #include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/compose/buildflags.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/buildflags.h"
@@ -107,6 +110,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
@@ -1463,6 +1467,85 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ShowsToastOnVideoFrameCopied) {
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
+class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
+ public:
+  DataControlsContextMenuBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        data_controls::kDataControlsSearchWith);
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> SetUpReadingModeAndCreateMenu(
+      const std::string& data_controls_rule) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    EXPECT_NE(model, nullptr);
+    search_test_utils::WaitForTemplateURLServiceToLoad(model);
+
+    data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+                                   {data_controls_rule});
+
+    auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    EXPECT_TRUE(side_panel_ui);
+    side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+    auto* const web_contents =
+        side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
+    EXPECT_TRUE(web_contents);
+
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
+    params.selection_text = u"Google";
+    params.page_url = web_contents->GetVisibleURL();
+    params.source_type = ui::mojom::MenuSourceType::kMouse;
+    params.properties[prefs::kDefaultSearchProviderContextMenuAccessAllowed] =
+        "";
+
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetPrimaryMainFrame(), params);
+    menu->SetBrowser(browser());
+    menu->Init();
+
+    return menu;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
+                       DataControlsSearchWith_ReadingModeBlock) {
+  auto menu = SetUpReadingModeAndCreateMenu(R"({
+      "name": "block",
+      "rule_id": "987",
+      "sources": {"urls": ["*"]},
+      "restrictions": [{"class": "CLIPBOARD", "level": "BLOCK"}]
+  })");
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
+                       DataControlsSearchWith_ReadingModeWarn) {
+  auto menu = SetUpReadingModeAndCreateMenu(R"({
+      "name": "warn",
+      "rule_id": "987",
+      "sources": {"urls": ["*"]},
+      "restrictions": [{"class": "CLIPBOARD", "level": "WARN"}]
+  })");
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardActionWarn);
+
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFOR, /*event_flags=*/0);
+
+  helper.WaitForDialogToInitialize();
+  helper.CloseDialogWithoutBypass();
+  helper.WaitForDialogToClose();
+}
+
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ShowToastOnSidePanelContextMenus) {
   auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
@@ -2444,8 +2527,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
     // The test server must start first, so that we know the port that the test
     // server is using.
     ASSERT_TRUE(embedded_test_server()->Start());
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeaturesAndParameters(
         {
             {lens::features::kLensStandalone,
              {{lens::features::kHomepageURLForLens.name, GetLensURL().spec()}}},
@@ -2609,6 +2691,9 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
     event_generator_.reset();
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
   void OpenImagePageAndContextMenuForLensImageSearch(
       std::string image_path,
       int event_flags,
@@ -2708,8 +2793,7 @@ IN_PROC_BROWSER_TEST_F(LensBrowserBaseTest, LensImageSearch) {
 class LensOverlayBrowserTest : public LensBrowserBaseTest {
  protected:
   void SetUp() override {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
+    feature_list_.InitWithFeatures(
         {lens::features::kLensOverlay,
          lens::features::kLensOverlayTextSelectionContextMenuEntrypoint},
         {lens::features::kLensOverlayKeyboardSelection});
