@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IsolatedModeSettings": 1
+        },
+        "prefs": {
+          "enterprise.isolated_mode": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "IsolatedModeSettings": 2
+        },
+        "prefs": {
+          "enterprise.isolated_mode": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,42 @@
+caption: Replace Incognito Mode with Isolated Mode
+default: 0
+desc: |-
+  Specifies whether to replace Incognito Mode with Isolated Mode.
+
+  Isolated Mode is an Enterprise-only ephemeral browsing mode which replaces Incognito mode.
+  Unlike Incognito mode, Isolated mode supports DLP-related Enterprise policies and force-installed extensions.
+
+  Note that Incognito-related policies are not applied to Isolated Mode.
+
+  If set to 1 - Enabled, Isolated Mode is enabled and replaces Incognito Mode.
+
+  If set to 0 - Disabled or left unset, Isolated Mode is disabled, and standard Incognito behavior is used.
+
+  This policy requires a Chrome Enterprise Premium license to take effect.
+example_value: 1
+features:
+  cloud_only: true
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+- ios
+items:
+- caption: Isolated mode disabled
+  name: Disabled
+  value: 0
+- caption: Isolated mode available
+  name: Enabled
+  value: 1
+owners:
+- file://components/policy/OWNERS
+- proberge@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+tags: []
+type: int-enum

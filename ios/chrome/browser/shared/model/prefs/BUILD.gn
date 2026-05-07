@@ -49,6 +49,7 @@ source_set("browser_prefs") {
     "//components/enterprise/connectors/core",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/idle",
+    "//components/enterprise/isolated_mode",
     "//components/feature_engagement/public:prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/gcm_driver",

@@ -88,6 +88,7 @@ source_set("model") {
     "//components/enterprise/connectors/core",
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/idle",
+    "//components/enterprise/isolated_mode",
     "//components/history/core/common",
     "//components/lens:enterprise_policy",
     "//components/metrics",

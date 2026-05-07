@@ -1217,6 +1217,7 @@ static_library("browser") {
     "//components/enterprise/data_protection",
     "//components/enterprise/device_trust",
     "//components/enterprise/encryption/cache",
+    "//components/enterprise/isolated_mode",
     "//components/enterprise/networking",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/error_page/common",

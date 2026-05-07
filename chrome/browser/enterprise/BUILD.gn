@@ -62,6 +62,7 @@ source_set("enterprise") {
     "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/data_protection",
     "//components/enterprise/encryption/cache",
+    "//components/enterprise/isolated_mode",
     "//components/enterprise/watermarking",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

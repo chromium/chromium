@@ -2429,6 +2429,7 @@ chromium-metrics-reviews@google.com.
   <int value="1448" label="DefaultSubAppsWithoutPromptsSetting"/>
   <int value="1449" label="SubAppsWithoutPromptsAllowedForOrigins"/>
   <int value="1450" label="SubAppsWithoutPromptsBlockedForOrigins"/>
+  <int value="1451" label="IsolatedModeSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

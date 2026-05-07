@@ -29,6 +29,7 @@
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/idle/idle_pref_names.h"
+#import "components/enterprise/isolated_mode/prefs.h"
 #import "components/feature_engagement/public/pref_names.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/handoff/handoff_manager.h"
@@ -778,6 +779,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
   registry->RegisterBooleanPref(
       enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
+
+  // Register prefs related to Enterprise Isolated Mode.
+  enterprise_isolated_mode::RegisterProfilePrefs(registry);
 
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterProfilePrefs(registry);

@@ -28,6 +28,7 @@
 #import "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
+#import "components/enterprise/isolated_mode/prefs.h"
 #import "components/history/core/common/pref_names.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -191,6 +192,9 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
     base::Value::Type::INTEGER },
   { policy::key::kProvisionManagedClientCertificateForBrowser,
     client_certificates::prefs::kProvisionManagedClientCertificateForBrowserPrefs,
+    base::Value::Type::INTEGER },
+  { policy::key::kIsolatedModeSettings,
+    enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
     base::Value::Type::INTEGER },
 });
 // clang-format on

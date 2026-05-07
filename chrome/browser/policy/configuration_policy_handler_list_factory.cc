@@ -85,6 +85,7 @@
 #include "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/enterprise/device_trust/prefs.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -489,6 +490,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowSocketPoolSizeRandomizationForProxies,
     prefs::kAllowSocketPoolSizeRandomizationForProxies,
     base::Value::Type::BOOLEAN },
+  { key::kIsolatedModeSettings,
+    enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+    base::Value::Type::INTEGER },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
