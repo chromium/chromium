@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/util",
     "//components/user_education/webui",

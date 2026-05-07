@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
@@ -225,4 +226,56 @@ TEST_F(WebUILocationBarTest, MouseClickSuppression) {
       toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
       /*is_mouse_interaction=*/true);
   EXPECT_FALSE(GetSuppressLhsChipClicked());
+}
+
+class MockPermissionChipObserver : public PermissionChipInterface::Observer {
+ public:
+  MOCK_METHOD(void, OnMousePressed, (), (override));
+};
+
+TEST_F(WebUILocationBarTest, PermissionChipMouseEvents) {
+  // Ensure the permission dashboard is initialized.
+  ASSERT_TRUE(permission_dashboard());
+
+  bool request_chip_clicked = false;
+  bool indicator_chip_clicked = false;
+
+  permission_dashboard()->request_chip()->SetPressedCallback(
+      base::BindLambdaForTesting([&]() { request_chip_clicked = true; }));
+  permission_dashboard()->indicator_chip()->SetPressedCallback(
+      base::BindLambdaForTesting([&]() { indicator_chip_clicked = true; }));
+
+  testing::StrictMock<MockPermissionChipObserver> request_observer;
+  testing::StrictMock<MockPermissionChipObserver> indicator_observer;
+  permission_dashboard()->request_chip()->AddObserver(&request_observer);
+  permission_dashboard()->indicator_chip()->AddObserver(&indicator_observer);
+
+  // Test Mouse Pressed events are forwarded.
+  EXPECT_CALL(request_observer, OnMousePressed());
+  location_bar_->OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  testing::Mock::VerifyAndClearExpectations(&request_observer);
+
+  EXPECT_CALL(indicator_observer, OnMousePressed());
+  location_bar_->OnLhsChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  testing::Mock::VerifyAndClearExpectations(&indicator_observer);
+
+  // Test Click events are forwarded.
+  location_bar_->OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_mouse_interaction=*/true);
+  EXPECT_TRUE(request_chip_clicked);
+  EXPECT_FALSE(indicator_chip_clicked);
+
+  request_chip_clicked = false;
+
+  location_bar_->OnLhsChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/false);
+  EXPECT_TRUE(indicator_chip_clicked);
+  EXPECT_FALSE(request_chip_clicked);
+
+  permission_dashboard()->request_chip()->RemoveObserver(&request_observer);
+  permission_dashboard()->indicator_chip()->RemoveObserver(&indicator_observer);
 }

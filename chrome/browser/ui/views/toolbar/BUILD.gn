@@ -328,6 +328,7 @@ if (!is_android) {
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/page_info",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
       "//components/commerce/core:feature_list",

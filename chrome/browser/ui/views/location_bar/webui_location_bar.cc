@@ -206,11 +206,28 @@ void WebUILocationBar::UpdateContentSettingsIcons() {
   if (!web_contents) {
     return;
   }
+
+  bool permission_dashboard_changed = false;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    ContentSettingImageModel* media_stream_model =
+        content_setting_image_control_.GetModel(
+            ContentSettingImageModel::ImageType::kMediaStream);
+    if (media_stream_model) {
+      permission_dashboard_changed |=
+          permission_dashboard_controller_->Update(media_stream_model);
+    }
+  }
+
   if (!toolbar_delegate_) {
     return;
   }
   toolbar_delegate_->OnContentSettingChanged(
       content_setting_image_control_.ProcessContentSettingState(web_contents));
+
+  if (permission_dashboard_changed) {
+    UpdateLhsChipsState();
+  }
 }
 
 void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {

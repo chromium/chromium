@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -88,6 +89,13 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
   }
 
   for (auto& model : models_) {
+    // The activity indicators (camera, mic) are drawn on the left side of the
+    // location bar, managed by the Permissions Dashboard, so we don't include
+    // them in the right hand side content setting images here.
+    if (model->image_type() == ImageType::kMediaStream) {
+      continue;
+    }
+
     auto image_state = GetImageStateForModel(model.get(), web_contents);
     if (image_state) {
       state.push_back(std::move(image_state));
@@ -111,6 +119,13 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
   return state;
 }
 
+ContentSettingImageModel* WebUIContentSettingImageControl::GetModel(
+    ImageType type) const {
+  auto it =
+      std::ranges::find(models_, type, &ContentSettingImageModel::image_type);
+  return it != models_.end() ? it->get() : nullptr;
+}
+
 void WebUIContentSettingImageControl::ShowContentSettingsBubble(
     ImageType type,
     toolbar_ui_api::mojom::ToolbarUIService::ShowContentSettingsBubbleCallback
@@ -126,13 +141,7 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
     return std::monostate();
   }
 
-  ContentSettingImageModel* model = nullptr;
-  for (auto& m : models_) {
-    if (m->image_type() == type) {
-      model = m.get();
-      break;
-    }
-  }
+  ContentSettingImageModel* model = GetModel(type);
 
   if (!model) {
     return base::unexpected(Error::New(

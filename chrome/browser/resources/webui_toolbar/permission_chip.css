@@ -34,6 +34,15 @@
   padding-inline-start: var(--location-bar-chip-padding);
   position: relative;
   user-select: none;
+  /* TODO(crbug.com/502598627): max-width is an arbitrary magic number. If the
+   * translated string exceeds this, it will be truncated. Animating to a very
+   * large max-width breaks the easing curve. Investigate using CSS Grid
+   * 0fr->1fr transition to animate to the exact intrinsic width instead. */
+  max-width: 250px; /* Arbitrary large max-width for expanded state */
+  /* 350ms matches the C++ expand duration in PermissionDashboardController.
+     ease-out matches the native SlideAnimation's default Tween::EASE_OUT. */
+  transition: max-width 350ms ease-out,
+              padding-inline-end 350ms ease-out;
 }
 
 #chip:focus-visible {
@@ -48,18 +57,54 @@
   }
 }
 
-#chip::before {
-  background-color: transparent;
+#chip[collapsed] {
+  padding-inline-end: var(--location-bar-chip-padding);
+  max-width: calc(
+      var(--location-bar-chip-icon-size) +
+      var(--location-bar-chip-padding) * 2);
+  /* 250ms matches the C++ collapse duration. */
+  transition: max-width 250ms ease-out,
+              padding-inline-end 250ms ease-out;
+}
+
+/* An invisible overlay that mimics the native views::InkDrop highlight
+   (hover state). */
+#chip::before,
+#chip::after {
   border-radius: inherit;
   content: '';
   inset: 0;
+  opacity: 0;
   pointer-events: none;
   position: absolute;
 }
 
-#chip:hover::before {
-  background-color:
-      var(--color-omnibox-chip-ink-drop-hover, rgba(0, 0, 0, 0.08));
+#chip::before {
+  background-color: var(--color-omnibox-chip-ink-drop-hover, transparent);
+  /* Matches views::kHighlightFadeOutOnHoverChangeDuration (250ms) */
+  transition: opacity 250ms ease-in-out;
+}
+
+/* An invisible overlay that mimics the native views::InkDrop ripple
+   (pressed state). */
+#chip::after {
+  background-color: var(--color-omnibox-chip-ink-drop-ripple, transparent);
+  /* Matches views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT (300ms) */
+  transition: opacity 300ms ease-in-out;
+}
+
+#chip:hover::before,
+:host(:active) #chip::before,
+:host([anchor-highlighted]) #chip::before {
+  /* The alpha value is baked directly into the color variable in C++. */
+  opacity: 1;
+}
+
+:host(:active) #chip::after,
+:host([anchor-highlighted]) #chip::after {
+  /* The alpha value is baked directly into the color variable in C++. */
+  opacity: 1;
+  transition: none; /* Instant press */
 }
 
 #icon {
@@ -72,6 +117,10 @@
   mask-repeat: no-repeat;
   mask-size: contain;
   width: var(--location-bar-chip-icon-size);
+}
+
+#chip[collapsed] #icon {
+  margin-inline-end: 0;
 }
 
 #message {

@@ -35,12 +35,12 @@ PermissionChipInterface* WebUIPermissionDashboard::GetIndicatorChip() {
 }
 
 views::BubbleAnchor WebUIPermissionDashboard::GetAnchor() {
-  // The WebUI element tracker registration happens asynchronously over Mojo.
-  // If a permission is requested during browser startup, we might attempt to
-  // anchor the bubble before the WebUI has finished registering the tracked
-  // element, causing GetAnchorOrNull() to return nullptr. We fallback to the
-  // main window contents view to prevent a crash during this sub-millisecond
-  // race condition.
+  // Note: Native Views anchors the bubble to the PermissionDashboardView
+  // (which tightly bounds the chips). However, when manually tested, the bubble
+  // seems to always align with the left side of the location bar anyway.
+  // For WebUI, we just anchor to the location bar for simplicity. We can
+  // revisit this as a follow-up if tighter anchoring to the individual WebUI
+  // chips is found to be necessary.
   if (ui::TrackedElement* element = location_bar_->GetAnchorOrNull()) {
     return views::BubbleAnchor(element);
   }

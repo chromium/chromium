@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -61,12 +62,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/collaboration/public/features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -112,6 +115,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -3736,3 +3740,164 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
       "InitialWebUI.Toolbar.ProcessAlreadyExistsForTheSameProfileOnCreation",
       false, 1);
 }
+
+class WebUIToolbarWebViewPermissionBrowserTest
+    : public WebUIToolbarWebViewBrowserTest,
+      public testing::WithParamInterface<permissions::RequestType> {
+ protected:
+  WebUIToolbarWebViewPermissionBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUILocationBar},
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
+                       PermissionChipE2E) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  test::PermissionRequestManagerTestApi test_api(browser());
+  permissions::PermissionRequestObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_NE(nullptr, test_api.manager());
+  test_api.AddSimpleRequest(browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame(),
+                            GetParam());
+
+  observer.Wait();
+
+  std::string get_chip_js =
+      "document.querySelector('toolbar-app')?.shadowRoot?"
+      ".querySelector('location-bar')?.shadowRoot?"
+      ".querySelector('permission-dashboard')?.shadowRoot?"
+      ".querySelector('#request-chip')?.shadowRoot?"
+      ".querySelector('#chip')";
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents,
+                           base::StrCat({get_chip_js, " !== null && ",
+                                         get_chip_js, ".offsetHeight > 0"}))
+        .ExtractBool();
+  }));
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "PermissionPromptBubbleBaseView");
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "%s?.dispatchEvent(new MouseEvent('click', "
+          "{bubbles: true, cancelable: true, view: window, button: 0}));",
+          get_chip_js.c_str())));
+
+  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  // Test the suppression logic: simulating the OS closing the bubble due to
+  // focus loss, followed immediately by the async Mojo IPCs arriving from the
+  // WebUI click that caused the focus loss.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "%s?.dispatchEvent(new PointerEvent('pointerdown', "
+          "{bubbles: true, cancelable: true, view: window, button: 0}));"
+          "%s?.dispatchEvent(new PointerEvent('click', "
+          "{bubbles: true, cancelable: true, view: window, button: 0, "
+          "pointerType: 'mouse'}));",
+          get_chip_js.c_str(), get_chip_js.c_str())));
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+  run_loop.Run();
+
+  // The Permission Prompt Bubble should NOT have reopened!
+  EXPECT_FALSE(test_api.manager()->IsRequestInProgress());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
+                       LocationIconSuppressionE2E) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string get_icon_js =
+      "document.querySelector('toolbar-app')?.shadowRoot?"
+      ".querySelector('location-bar')?.shadowRoot?"
+      ".querySelector('location-icon')?.shadowRoot?"
+      ".querySelector('#iconContainer')";
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents,
+                           base::StrCat({get_icon_js, " !== null && ",
+                                         get_icon_js, ".offsetHeight > 0"}))
+        .ExtractBool();
+  }));
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "PageInfoBubbleView");
+
+  // First click: opens the Page Info Bubble.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "%s?.dispatchEvent(new MouseEvent('click', "
+          "{bubbles: true, cancelable: true, view: window, button: 0}));",
+          get_icon_js.c_str())));
+
+  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+  EXPECT_TRUE(bubble_widget);
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  // Second click (simulating clicking to close): the pointerdown should trigger
+  // OnLhsChipMousePressed which sets suppress_lhs_chip_clicked_, and then
+  // the bubble closes natively due to focus loss. Since JS events don't
+  // natively trigger blur, we explicitly close the bubble.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  destroyed_waiter.Wait();
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "%s?.dispatchEvent(new PointerEvent('pointerdown', "
+          "{bubbles: true, cancelable: true, view: window, button: 0}));"
+          "%s?.dispatchEvent(new PointerEvent('click', "
+          "{bubbles: true, cancelable: true, view: window, button: 0, "
+          "pointerType: 'mouse'}));",
+          get_icon_js.c_str(), get_icon_js.c_str())));
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+  run_loop.Run();
+
+  // The Page Info Bubble should NOT have reopened!
+  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebUIToolbarWebViewPermissionBrowserTest,
+    testing::Values(permissions::RequestType::kGeolocation,
+                    permissions::RequestType::kCameraStream,
+                    permissions::RequestType::kMicStream));
