@@ -166,8 +166,9 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
         // minimum granularity.
       }
       alarm.minimum_granularity = min_delay;
-      if (alarm.granularity < alarm.minimum_granularity)
+      if (alarm.granularity < alarm.minimum_granularity) {
         alarm.granularity = alarm.minimum_granularity;
+      }
       alarms.emplace_back(std::move(alarm));
     }
   }
@@ -200,8 +201,9 @@ AlarmManager::AlarmManager(content::BrowserContext* context)
       ExtensionRegistry::Get(browser_context_));
 
   StateStore* storage = ExtensionSystem::Get(browser_context_)->state_store();
-  if (storage)
+  if (storage) {
     storage->RegisterKey(kRegisteredAlarms);
+  }
 }
 
 AlarmManager::~AlarmManager() = default;
@@ -306,12 +308,14 @@ AlarmManager::AlarmIterator AlarmManager::GetAlarmIterator(
     const ExtensionId& extension_id,
     const std::string& name) {
   auto list = alarms_.find(extension_id);
-  if (list == alarms_.end())
+  if (list == alarms_.end()) {
     return make_pair(alarms_.end(), AlarmList::iterator());
+  }
 
   for (auto it = list->second.begin(); it != list->second.end(); ++it) {
-    if (it->js_alarm->name == name)
+    if (it->js_alarm->name == name) {
       return make_pair(list, it);
+    }
   }
 
   return make_pair(alarms_.end(), AlarmList::iterator());
@@ -344,8 +348,9 @@ AlarmManager* AlarmManager::Get(content::BrowserContext* browser_context) {
 void AlarmManager::RemoveAlarmIterator(const AlarmIterator& iter) {
   AlarmList& list = iter.first->second;
   list.erase(iter.second);
-  if (list.empty())
+  if (list.empty()) {
     alarms_.erase(iter.first);
+  }
 
   // Cancel the timer if there are no more alarms.
   // We don't need to reschedule the poll otherwise, because in
@@ -388,27 +393,31 @@ void AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
   // Override any old alarm with the same name.
   AlarmIterator old_alarm =
       GetAlarmIterator(extension_id, alarm.js_alarm->name);
-  if (old_alarm.first != alarms_.end())
+  if (old_alarm.first != alarms_.end()) {
     RemoveAlarmIterator(old_alarm);
+  }
 
   base::Time alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
       alarm.js_alarm->scheduled_time);
   alarms_[extension_id].emplace_back(std::move(alarm));
-  if (next_poll_time_.is_null() || alarm_time < next_poll_time_)
+  if (next_poll_time_.is_null() || alarm_time < next_poll_time_) {
     SetNextPollTime(alarm_time);
+  }
 }
 
 void AlarmManager::WriteToStorage(const ExtensionId& extension_id) {
   StateStore* storage = ExtensionSystem::Get(browser_context_)->state_store();
-  if (!storage)
+  if (!storage) {
     return;
+  }
 
   base::Value alarms;
   auto list = alarms_.find(extension_id);
-  if (list != alarms_.end())
+  if (list != alarms_.end()) {
     alarms = base::Value(AlarmsToValue(list->second));
-  else
+  } else {
     alarms = base::Value(AlarmsToValue(AlarmList()));
+  }
   storage->SetExtensionValue(extension_id, kRegisteredAlarms,
                              std::move(alarms));
 }
@@ -456,15 +465,19 @@ void AlarmManager::ScheduleNextPoll() {
          ++l_it) {
       base::Time cur_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
           l_it->js_alarm->scheduled_time);
-      if (cur_alarm_time < soonest_alarm_time)
+      if (cur_alarm_time < soonest_alarm_time) {
         soonest_alarm_time = cur_alarm_time;
-      if (l_it->granularity < min_granularity)
+      }
+      if (l_it->granularity < min_granularity) {
         min_granularity = l_it->granularity;
+      }
       base::TimeDelta cur_alarm_delta = cur_alarm_time - last_poll_time_;
-      if (cur_alarm_delta < l_it->minimum_granularity)
+      if (cur_alarm_delta < l_it->minimum_granularity) {
         cur_alarm_delta = l_it->minimum_granularity;
-      if (cur_alarm_delta < min_granularity)
+      }
+      if (cur_alarm_delta < min_granularity) {
         min_granularity = cur_alarm_delta;
+      }
     }
   }
 
@@ -473,8 +486,9 @@ void AlarmManager::ScheduleNextPoll() {
   // Otherwise, only poll as often as min_granularity.
   // As a special case, if we've never checked for an alarm before
   // (e.g. during startup), let alarms fire asap.
-  if (last_poll_time_.is_null() || next_poll < soonest_alarm_time)
+  if (last_poll_time_.is_null() || next_poll < soonest_alarm_time) {
     next_poll = soonest_alarm_time;
+  }
 
   // Schedule the poll.
   SetNextPollTime(next_poll);
@@ -573,8 +587,9 @@ Alarm::Alarm(const std::string& name,
     granularity = delay;
   }
 
-  if (granularity < min_granularity)
+  if (granularity < min_granularity) {
     granularity = min_granularity;
+  }
 
   // Check for repetition.
   js_alarm->period_in_minutes = create_info.period_in_minutes;
