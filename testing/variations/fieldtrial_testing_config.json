@@ -9221,6 +9221,7 @@
                     "params": {
                         "SqlDiskCacheLoadIndexOnInit": "true",
                         "SqlDiskCacheShardCount": "3",
+                        "SqlDiskCacheSizeAndPriorityAwareEviction": "true",
                         "SqlDiskCacheSynchronousOff": "true",
                         "backend": "sql"
                     },
