@@ -24,7 +24,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         blob_url_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
-    const base::UnguessableToken& devtools_frame_token,
+    const base::UnguessableToken& devtools_throttling_token,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const std::optional<std::vector<net::SourceStreamType>>&
         devtools_accepted_stream_types,
@@ -51,7 +51,7 @@ NavigationRequestInfo::NavigationRequestInfo(
       upgrade_if_insecure(upgrade_if_insecure),
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
       devtools_navigation_token(devtools_navigation_token),
-      devtools_frame_token(devtools_frame_token),
+      devtools_throttling_token(devtools_throttling_token),
       client_security_state(std::move(client_security_state)),
       devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),

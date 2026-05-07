@@ -43,7 +43,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           blob_url_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
-      const base::UnguessableToken& devtools_frame_token,
+      const base::UnguessableToken& devtools_throttling_token,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const std::optional<std::vector<net::SourceStreamType>>&
           devtools_accepted_stream_types,
@@ -117,7 +117,11 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   const base::UnguessableToken devtools_navigation_token;
 
-  const base::UnguessableToken devtools_frame_token;
+  // Token used by DevTools to apply throttling to this navigation.
+  // This token should identify the Chrome DevTools Protocol (CDP) target that
+  // is controlling the throttling. For frames, it has to be token of the local
+  // frame root that matches the CDP target.
+  const base::UnguessableToken devtools_throttling_token;
 
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.

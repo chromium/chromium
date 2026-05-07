@@ -5744,6 +5744,14 @@ void NavigationRequest::OnStartChecksComplete(
             ->GetWeakPtr();
   }
 
+  // DevTools throttling profiles are only associated with local frame roots,
+  // not each individual frame.
+  RenderFrameHostImpl* local_root_rfh = frame_tree_node_->current_frame_host();
+  while (!local_root_rfh->is_local_root()) {
+    local_root_rfh = local_root_rfh->GetParent();
+  }
+  CHECK(local_root_rfh);
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
@@ -5757,8 +5765,7 @@ void NavigationRequest::OnStartChecksComplete(
           upgrade_if_insecure_,
           blob_url_loader_factory_ ? blob_url_loader_factory_->Clone()
                                    : nullptr,
-          devtools_navigation_token(),
-          frame_tree_node_->current_frame_host()->devtools_frame_token(),
+          devtools_navigation_token(), local_root_rfh->devtools_frame_token(),
           BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, is_pdf_, GetInitiatorProcessId(),
           initiator_document_token_, std::move(serving_page_metrics_container),
