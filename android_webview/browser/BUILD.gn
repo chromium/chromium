@@ -274,6 +274,7 @@ source_set("browser") {
     "//components/content_capture/android",
     "//components/content_capture/browser",
     "//components/content_relationship_verification",
+    "//components/content_settings/core/browser",
     "//components/input",
     "//components/stylus_handwriting/android",
 
